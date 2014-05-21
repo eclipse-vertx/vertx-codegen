@@ -10,6 +10,7 @@ import org.vertx.java.core.gen.VertxGen;
 import org.vertx.java.core.json.DecodeException;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.core.net.NetServer;
+import org.vertx.java.core.net.NetSocket;
 
 import javax.annotation.processing.Completion;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -42,15 +43,28 @@ import java.util.*;
  * under the License.
  *
  */
-public class LoadJavaModel {
+public class Generator {
+
+  public static void main(String[] args) {
+    try {
+      new Generator().run();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
   public void run() throws Exception {
+    //process(NetServer.class, "net_server.js", "basic_js.templ");
+    process(NetSocket.class, "net_socket.js", "basic_js.templ");
+  }
+
+  public void process(Class c, String outputFileName, String templateName) throws Exception {
     JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     DiagnosticCollector<JavaFileObject> diagnostics =
       new DiagnosticCollector<>();
     StandardJavaFileManager fm = compiler.getStandardFileManager(diagnostics, null, null);
 
-    String className = NetServer.class.getCanonicalName();
+    String className = c.getCanonicalName();
     String fileName = className.replace(".", "/") + ".java";
     System.out.println("filename of source is: " + fileName);
     InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
@@ -89,7 +103,7 @@ public class LoadJavaModel {
       throw new IllegalStateException("Interface not processed. Does it have the VertxGen annotation?");
     }
 
-    String template = new String(Files.readAllBytes(Paths.get("src/main/resources/templates/basic_js.templ")));
+    String template = new String(Files.readAllBytes(Paths.get("src/main/resources/templates/" + templateName)));
 
     //MVEL preserves all whitespace therefore, so we can have readable templates we remove all line breaks
     //and replace all occurrences of "\n" with a line break
@@ -99,7 +113,12 @@ public class LoadJavaModel {
     String output = (String)TemplateRuntime.eval(template, processor.vars);
     System.out.println("OUTPUT:");
     System.out.println(output);
-
+    File genDir = new File("src/gen/javascript");
+    genDir.mkdirs();
+    File outFile = new File(genDir, outputFileName);
+    try (PrintStream outStream = new PrintStream(new FileOutputStream(outFile))) {
+      outStream.print(output);
+    }
   }
 
   class NullWriter extends Writer {
