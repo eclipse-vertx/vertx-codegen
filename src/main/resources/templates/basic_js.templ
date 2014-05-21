@@ -1,0 +1,103 @@
+@comment{
+  sub templates must be declared at the top
+}
+
+@declare{'fooTemplate'}
+ in foo!
+@end{}
+
+@declare{'convParam_int'}
+@{param.name}
+@end{}
+
+@declare{'convParam_double'}
+@{param.name}
+@end{}
+
+@declare{'convParam_java_lang_String'}
+@{param.name}
+@end{}
+
+@declare{'convParam_org_vertx_java_core_json_JsonObject'}
+new io.vertx.foo.JsonObject(JSON.stringify(@{param.name}))
+@end{}
+
+@declare{'convParam_Handler_org_vertx_java_core_json_JsonObject'}
+function(jVal) { @{param.name}(JSON.parse(ret.encode())) }
+@end{}
+
+@declare{'convParam_HandlerAsyncResult_org_vertx_java_core_net_NetServer'}
+function(ar) {\n
+  if (ar.succeeded()) {\n
+    @{param.name}(@{ifaceName}, null);\n
+  } else {\n
+@comment{ TODO - convert java exception! }
+    @{param.name}(null, ar.cause());\n
+  }\n
+}
+@end{}
+
+@declare{'convParam_HandlerAsyncResult_java_lang_Void'}
+function(ar) {\n
+  if (ar.succeeded()) {\n
+    @{param.name}(null, null);\n
+  } else {\n
+@comment{ TODO - convert java exception! }
+    @{param.name}(null, ar.cause());\n
+  }\n
+}
+@end{}
+
+@declare{'convParam_Handler_org_vertx_java_core_net_NetSocket'}
+function(jVal) { @{param.name}(new NetSocket(jVal) }
+@end{}
+
+@declare{'convReturn_org_vertx_java_core_json_JsonObject'}
+JSON.parse(ret.encode())
+@end{}
+
+@declare{'convReturn_java_lang_String'}
+ret
+@end{}
+
+@declare{'convReturn_int'}
+ret
+@end{}
+
+// Here is our generated JavaScript\n
+@code{ifaceName = helper.decapitaliseFirstLetter(ifaceSimpleName)}
+var @{ifaceName} = {};\n
+var j_@{ifaceName} = io.vertx.LookUpService.lookup("@{ifaceName}");\n\n
+@foreach{method : methods}
+@{ifaceName}.@{method.name} = function(@foreach{param: method.params}@{param.name}@end{", "}){\n
+@if{!method.fluent && !method.returnType.equals("void")}
+  var ret = j_@{ifaceName}.@{method.name}(
+@else{}
+  j_@{ifaceName}.@{method.name}(
+@end{}
+@foreach{param: method.params}
+@if{param.asyncResultHandlerParam}
+@code{convTemplate="convParam_HandlerAsyncResult_" + helper.convertDotsToUnderscore(param.genericHandlerType)}
+@else{param.handlerParam}
+@code{convTemplate="convParam_Handler_" + helper.convertDotsToUnderscore(param.genericHandlerType)}
+@else{}
+@code{convTemplate="convParam_" + helper.convertDotsToUnderscore(param.type)}
+@end{}
+@includeNamed{convTemplate}
+@end{", "});\n
+@if{!method.returnType.equals("void")}
+@if{method.fluent}
+  return @{ifaceName};\n
+@else{}
+@code{returnTemplate="convReturn_" + helper.convertDotsToUnderscore(method.returnType)}
+  return @includeNamed{returnTemplate};\n
+@end{}
+@end{}
+};\n\n
+@end{}
+module.exports = @{ifaceName};
+
+
+
+
+
