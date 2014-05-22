@@ -19,7 +19,7 @@ The constraints are
 
 ### Permitted types
 
-The following set P of types are permitted as parameters or return values to any API method:
+The following set `P` of types are permitted as parameters or return values to any API method:
 
 * `void`
 * any primitive type
