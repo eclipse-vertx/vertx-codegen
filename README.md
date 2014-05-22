@@ -49,7 +49,7 @@ output file (e.g. one .js file) should be created for each Java interface.
 The following variables are made available to templates:
 
 * `ifaceSimpleName` - the simple class name of the Java interface
-* `ifaceFQCN" - the fully qualified class name of the Java interface
+* `ifaceFQCN` - the fully qualified class name of the Java interface
 * `ifaceComment` - the class comment from the Java interface
 * `helper` - a helper class that of type `io.vertx.codegen.Helper` which contains useful methods for things such as
 converting CamelCase to underscores.
