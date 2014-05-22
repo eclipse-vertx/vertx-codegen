@@ -27,9 +27,13 @@ The following set `P` of types are permitted as parameters or return values to a
 * `java.lang.String`
 * `io.vertx.java.core.Buffer`
 * `byte[]`
-* `io.vertx.java.core.Handler<T>` where `T` is any of `P` with the exception of `io.vertx.java.core.Handler`
-* `io.vertx.java.core.Handler<io.vertx.java.core.AsyncResult<T>>` where `T` is any of `P` with the exception of `io.vertx.java.core.Handler`
 * any other user defined API type which is defined in its own interface and annotated with `@VertxGen`
+
+We also allow the following set `Q` of additional types for parameters or return values:
+
+* `io.vertx.java.core.Handler<T>` where `T` is any of `P`
+* `io.vertx.java.core.Handler<io.vertx.java.core.AsyncResult<T>>` where `T` is any of `P`
+
 
 ## Templates
 
