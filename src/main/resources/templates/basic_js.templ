@@ -67,11 +67,33 @@ ret
 ret
 @end{}
 
-// Here is our generated JavaScript\n
+// Here is our generated JavaScript module\n\n
+
+// Require stuff that we need\n
+@foreach{referencedType : referencedTypes}
+var @{helper.getSimpleName(referencedType)} = require('@{helper.convertCamelCaseToFileNameWithUnderscores(helper.getSimpleName(referencedType))}');\n
+@end{}
+\n
+
 @code{ifaceName = helper.decapitaliseFirstLetter(ifaceSimpleName)}
-var @{ifaceName} = {};\n
-var j_@{ifaceName} = io.vertx.LookUpService.lookup("@{ifaceName}");\n\n
+// The JavaScript object that represents the @{ifaceSimpleName}\n
+var @{ifaceName} = {};\n\n
+// The Java delegate\n
+var j_@{ifaceName};\n\n
+// Constructor\n\n
+/*\n
+@{ifaceComment}
+*/\n
+var @{ifaceSimpleName} = function(j_val) {\n
+  j_@{ifaceName} = j_val;\n
+};\n
+\n
+// The public functions\n
+// --------------------\n\n
 @foreach{method : methods}
+/*\n
+@{method.comment}
+*/\n
 @{ifaceName}.@{method.name} = function(@foreach{param: method.params}@{param.name}@end{", "}) {\n
 @if{!method.fluent && !method.returnType.equals("void")}
   var ret = j_@{ifaceName}.@{method.name}(
@@ -98,7 +120,10 @@ var j_@{ifaceName} = io.vertx.LookUpService.lookup("@{ifaceName}");\n\n
 @end{}
 };\n\n
 @end{}
-module.exports = @{ifaceName};
+// End public functions\n
+// --------------------\n\n
+// We export the Constructor function\n
+module.exports = @{ifaceSimpleName};
 
 
 

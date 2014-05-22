@@ -1,5 +1,21 @@
 package io.vertx.codegen;
 
+/*
+ * Copyright 2014 Red Hat, Inc.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Apache License v2.0 which accompanies this distribution.
+ *
+ * The Eclipse Public License is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * The Apache License v2.0 is available at
+ * http://www.opensource.org/licenses/apache2.0.php
+ *
+ * You may elect to redistribute this code under either of these licenses.
+ */
+
 import org.mvel2.templates.TemplateRuntime;
 import org.vertx.java.core.AsyncResult;
 import org.vertx.java.core.Handler;
@@ -7,8 +23,6 @@ import org.vertx.java.core.gen.Fluent;
 import org.vertx.java.core.gen.IndexGetter;
 import org.vertx.java.core.gen.IndexSetter;
 import org.vertx.java.core.gen.VertxGen;
-import org.vertx.java.core.json.DecodeException;
-import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.core.net.NetServer;
 import org.vertx.java.core.net.NetSocket;
 
@@ -20,6 +34,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.*;
 import java.io.*;
@@ -27,21 +42,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-/*
- * Copyright 2013 Red Hat, Inc.
- *
- * Red Hat licenses this file to you under the Apache License, version 2.0
- * (the "License"); you may not use this file except in compliance with the
- * License.  You may obtain a copy of the License at:
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations
- * under the License.
- *
+/**
+ * @author <a href="http://tfox.org">Tim Fox</a>
  */
 public class Generator {
 
@@ -54,11 +56,14 @@ public class Generator {
   }
 
   public void run() throws Exception {
-    //process(NetServer.class, "net_server.js", "basic_js.templ");
-    process(NetSocket.class, "net_socket.js", "basic_js.templ");
+    process(NetServer.class, "basic_js.templ");
+    process(NetSocket.class, "basic_js.templ");
   }
 
-  public void process(Class c, String outputFileName, String templateName) throws Exception {
+  public void process(Class c, String templateName) throws Exception {
+
+    String outputFileName = Helper.convertCamelCaseToFileNameWithUnderscores(c.getSimpleName()) + ".js";
+
     JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     DiagnosticCollector<JavaFileObject> diagnostics =
       new DiagnosticCollector<>();
@@ -110,7 +115,15 @@ public class Generator {
     //"\n" signifies we want an actual line break in the output
     template = template.replace("\n", "").replace("\\n", "\n");
 
-    String output = (String)TemplateRuntime.eval(template, processor.vars);
+    Map<String, Object> vars = new HashMap<>();
+    vars.put("ifaceSimpleName", processor.ifaceSimpleName);
+    vars.put("ifaceFQCN", processor.ifaceFQCN);
+    vars.put("ifaceComment", processor.ifaceComment);
+    vars.put("helper", new Helper());
+    vars.put("methods", processor.methods);
+    vars.put("referencedTypes", processor.referencedTypes);
+
+    String output = (String)TemplateRuntime.eval(template, vars);
     System.out.println("OUTPUT:");
     System.out.println(output);
     File genDir = new File("src/gen/javascript");
@@ -157,22 +170,25 @@ public class Generator {
       return SourceVersion.RELEASE_7;
     }
 
-    private ProcessingEnvironment env;
-    //private Elements elementUtils;
-    private Types typeUtils;
-    private boolean processed;
+    ProcessingEnvironment env;
+    Elements elementUtils;
+    Types typeUtils;
+    boolean processed;
+    List<MethodInfo> methods = new ArrayList<>();
+    List<String> referencedTypes = new ArrayList<>();
+    String ifaceSimpleName;
+    String ifaceFQCN;
+    String ifaceComment;
 
     @Override
     public void init(ProcessingEnvironment processingEnv) {
       this.env = processingEnv;
-      //elementUtils = env.getElementUtils();
+      elementUtils = env.getElementUtils();
       typeUtils = env.getTypeUtils();
-      System.out.println("Init called!");
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-      System.out.println("In process!!!");
       try {
         roundEnv.getRootElements().forEach(this::traverseElem);
       } catch (Exception e) {
@@ -182,30 +198,18 @@ public class Generator {
       return true;
     }
 
-
-    Map<String, Object> vars = new HashMap<>();
-    boolean gotInterface;
-    List<MethodInfo> methods = new ArrayList<>();
-    {
-      vars.put("helper", new Helper());
-      vars.put("methods", methods);
-    }
-
-
     private void traverseElem(Element elem) {
       ///System.out.println("Elem is " + elem);
      // System.out.println("Kind is " + elem.getKind());
-     // System.out.println("Got comment: " + elementUtils.getDocComment(elem));
-
 
       switch (elem.getKind()) {
         case INTERFACE:
-          if (gotInterface) {
+          if (ifaceFQCN != null) {
             throw new IllegalStateException("Can only have one interface per file");
           }
-          vars.put("ifaceSimpleName", elem.getSimpleName());
-          vars.put("ifaceFQCN", elem.asType().toString());
-          gotInterface = true;
+          ifaceFQCN = elem.asType().toString();
+          ifaceSimpleName = elem.getSimpleName().toString();
+          ifaceComment = elementUtils.getDocComment(elem);
           break;
         case METHOD:
           ExecutableElement execElem = (ExecutableElement)elem;
@@ -216,7 +220,7 @@ public class Generator {
           System.out.println("Fluent?:" + isFluent);
           List<? extends VariableElement> params = execElem.getParameters();
           System.out.println("params size is " + params.size());
-          List<MethodParam> mParams = new ArrayList<>();
+          List<ParamInfo> mParams = new ArrayList<>();
           for (VariableElement param: params) {
             System.out.println("param name " + param.getSimpleName());
             TypeMirror elemType = param.asType();
@@ -234,7 +238,8 @@ public class Generator {
               genericHandlerType = elemTypeString.substring(handlerTypeString.length(), elemTypeString.length() - 1);
               isHandlerParam = true;
             }
-            MethodParam mParam = new MethodParam(param.getSimpleName().toString(), param.asType().toString(),
+            checkAddReferencedType(genericHandlerType);
+            ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), param.asType().toString(),
                                                  isHandlerParam, isAsyncResultHandlerParam, genericHandlerType);
             mParams.add(mParam);
             System.out.println("param type is " + elemType);
@@ -244,13 +249,21 @@ public class Generator {
             System.out.println("isAsyncResultHandlerParam: " + isAsyncResultHandlerParam);
             System.out.println("genericHandlerType: " + genericHandlerType);
           }
-          MethodInfo methodInfo = new MethodInfo(execElem.getSimpleName().toString(), execElem.getReturnType().toString(),
-                 isFluent, isIndexGetter, isIndexSetter, mParams);
+          String returnType = execElem.getReturnType().toString();
+          checkAddReferencedType(returnType);
+          MethodInfo methodInfo = new MethodInfo(execElem.getSimpleName().toString(), returnType,
+                 isFluent, isIndexGetter, isIndexSetter, mParams, elementUtils.getDocComment(execElem));
           methods.add(methodInfo);
           break;
       }
 
       elem.getEnclosedElements().forEach(this::traverseElem);
+    }
+
+    private void checkAddReferencedType(String type) {
+      if (type != null && !type.startsWith("java.") && !type.equals(ifaceFQCN) && type.contains(".")) {
+        referencedTypes.add(type);
+      }
     }
 
     @Override
