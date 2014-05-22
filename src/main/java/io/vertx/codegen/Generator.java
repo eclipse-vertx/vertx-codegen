@@ -23,8 +23,6 @@ import org.vertx.java.core.gen.Fluent;
 import org.vertx.java.core.gen.IndexGetter;
 import org.vertx.java.core.gen.IndexSetter;
 import org.vertx.java.core.gen.VertxGen;
-import org.vertx.java.core.net.NetServer;
-import org.vertx.java.core.net.NetSocket;
 
 import javax.annotation.processing.Completion;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -32,12 +30,11 @@ import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.*;
 import java.io.*;
+import java.lang.annotation.Annotation;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -56,22 +53,14 @@ public class Generator {
   }
 
   public void run() throws Exception {
-    process(NetServer.class, "basic_js.templ");
-    process(NetSocket.class, "basic_js.templ");
+    //process(NetServer.class, "js.templ");
+    //process(NetSocket.class, "js.templ");
+    process("src/gentarget/com/foo/APIClass.java", "api_class.js", "js.templ");
   }
 
-  public void process(Class c, String templateName) throws Exception {
-
-    String outputFileName = Helper.convertCamelCaseToFileNameWithUnderscores(c.getSimpleName()) + ".js";
-
-    JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-    DiagnosticCollector<JavaFileObject> diagnostics =
-      new DiagnosticCollector<>();
-    StandardJavaFileManager fm = compiler.getStandardFileManager(diagnostics, null, null);
-
+  public void processFromClasspath(Class c, String outputFileName, String templateName) throws Exception {
     String className = c.getCanonicalName();
     String fileName = className.replace(".", "/") + ".java";
-    System.out.println("filename of source is: " + fileName);
     InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
     if (is == null) {
       throw new IllegalStateException("Can't find file on classpath: " + fileName);
@@ -81,21 +70,24 @@ public class Generator {
     try (Scanner scanner = new Scanner(is, "UTF-8").useDelimiter("\\A")) {
       source = scanner.next();
     }
-    System.out.println("source is: " + source);
     // Now copy it to a file (this is clunky but not sure how to get around it)
     String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + fileName;
     File f = new File(tmpFileName);
     File parent = f.getParentFile();
-    System.out.println("Parent file is " + parent);
     boolean ok = parent.mkdirs();
-    System.out.println("parent mkdirs returned: " + ok);
-    System.out.println("tmp file name is: " + tmpFileName);
     try (PrintStream out = new PrintStream(new FileOutputStream(tmpFileName))) {
       out.print(source);
     }
-    Iterable<? extends JavaFileObject> iter = fm.getJavaFileObjects(tmpFileName);
+    process(tmpFileName, outputFileName, templateName);
+  }
+
+  public void process(String sourceFileName, String outputFileName, String templateName) throws Exception {
+    JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+    DiagnosticCollector<JavaFileObject> diagnostics =
+      new DiagnosticCollector<>();
+    StandardJavaFileManager fm = compiler.getStandardFileManager(diagnostics, null, null);
+    Iterable<? extends JavaFileObject> iter = fm.getJavaFileObjects(sourceFileName);
     JavaFileObject fo = iter.iterator().next();
-    System.out.println("JavaFileObject is: " + fo);
     Writer out = new NullWriter();
     List<JavaFileObject> fileObjects = Collections.singletonList(fo);
     JavaCompiler.CompilationTask task = compiler.getTask(out, fm, diagnostics, null, null, fileObjects);
@@ -107,13 +99,14 @@ public class Generator {
     if (!processor.processed) {
       throw new IllegalStateException("Interface not processed. Does it have the VertxGen annotation?");
     }
-
     String template = new String(Files.readAllBytes(Paths.get("src/main/resources/templates/" + templateName)));
 
-    //MVEL preserves all whitespace therefore, so we can have readable templates we remove all line breaks
-    //and replace all occurrences of "\n" with a line break
-    //"\n" signifies we want an actual line break in the output
-    template = template.replace("\n", "").replace("\\n", "\n");
+    // MVEL preserves all whitespace therefore, so we can have readable templates we remove all line breaks
+    // and replace all occurrences of "\n" with a line break
+    // "\n" signifies we want an actual line break in the output
+    // We use actual tab characters in the template so we can see indentation, but we strip these out
+    // before parsing - so much sure you configure your IDE to use tabs as spaces for .templ files
+    template = template.replace("\n", "").replace("\\n", "\n").replace("\t", "");
 
     Map<String, Object> vars = new HashMap<>();
     vars.put("ifaceSimpleName", processor.ifaceSimpleName);
@@ -124,8 +117,6 @@ public class Generator {
     vars.put("referencedTypes", processor.referencedTypes);
 
     String output = (String)TemplateRuntime.eval(template, vars);
-    System.out.println("OUTPUT:");
-    System.out.println(output);
     File genDir = new File("src/gen/javascript");
     genDir.mkdirs();
     File outFile = new File(genDir, outputFileName);
@@ -134,8 +125,18 @@ public class Generator {
     }
   }
 
-  class NullWriter extends Writer {
 
+  private void checkType(String type) {
+    if (!Helper.isBasicType(type)) {
+      if (type.startsWith("java.") || type.startsWith("javax.")) {
+        throw new IllegalStateException("Invalid type " + type + " in return type or parameter of API method");
+      } else {
+        //TODO - test user defined and generic types
+      }
+    }
+  }
+
+  class NullWriter extends Writer {
     @Override
     public void write(char[] cbuf, int off, int len) throws IOException {
     }
@@ -149,9 +150,7 @@ public class Generator {
     }
   }
 
-
   class MyProcessor implements Processor {
-
 
     @Override
     public Set<String> getSupportedOptions() {
@@ -167,7 +166,7 @@ public class Generator {
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
-      return SourceVersion.RELEASE_7;
+      return SourceVersion.RELEASE_8;
     }
 
     ProcessingEnvironment env;
@@ -175,7 +174,7 @@ public class Generator {
     Types typeUtils;
     boolean processed;
     List<MethodInfo> methods = new ArrayList<>();
-    List<String> referencedTypes = new ArrayList<>();
+    Set<String> referencedTypes = new HashSet<>();
     String ifaceSimpleName;
     String ifaceFQCN;
     String ifaceComment;
@@ -189,19 +188,12 @@ public class Generator {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-      try {
-        roundEnv.getRootElements().forEach(this::traverseElem);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+      roundEnv.getRootElements().forEach(this::traverseElem);
       processed = true;
       return true;
     }
 
     private void traverseElem(Element elem) {
-      ///System.out.println("Elem is " + elem);
-     // System.out.println("Kind is " + elem.getKind());
-
       switch (elem.getKind()) {
         case INTERFACE:
           if (ifaceFQCN != null) {
@@ -213,43 +205,33 @@ public class Generator {
           break;
         case METHOD:
           ExecutableElement execElem = (ExecutableElement)elem;
-          System.out.println("Method is " + execElem.getSimpleName());
           boolean isFluent = execElem.getAnnotation(Fluent.class) != null;
           boolean isIndexGetter = execElem.getAnnotation(IndexGetter.class) != null;
           boolean isIndexSetter = execElem.getAnnotation(IndexSetter.class) != null;
-          System.out.println("Fluent?:" + isFluent);
           List<? extends VariableElement> params = execElem.getParameters();
-          System.out.println("params size is " + params.size());
           List<ParamInfo> mParams = new ArrayList<>();
           for (VariableElement param: params) {
-            System.out.println("param name " + param.getSimpleName());
-            TypeMirror elemType = param.asType();
-            String handlerTypeString = Handler.class.getCanonicalName() + "<";
-            String asyncResultHandlerTypeString = handlerTypeString + AsyncResult.class.getCanonicalName() + "<";
-            String elemTypeString = elemType.toString();
-            String genericHandlerType = null;
-            boolean isHandlerParam = false;
-            boolean isAsyncResultHandlerParam = false;
-            if (elemTypeString.startsWith(asyncResultHandlerTypeString)) {
-              genericHandlerType = elemTypeString.substring(asyncResultHandlerTypeString.length(), elemTypeString.length() - 2);
-              isHandlerParam = true;
-              isAsyncResultHandlerParam = true;
-            } else if (elemTypeString.startsWith(handlerTypeString)) {
-              genericHandlerType = elemTypeString.substring(handlerTypeString.length(), elemTypeString.length() - 1);
-              isHandlerParam = true;
+            String paramType = param.asType().toString();
+            checkType(paramType);
+            String nonGenericType = Helper.getNonGenericType(paramType);
+            if (nonGenericType.equals(Handler.class.getCanonicalName())) {
+              String genericType = Helper.getGenericType(paramType);
+              if (genericType != null) {
+                if (Helper.getNonGenericType(genericType).equals(AsyncResult.class.getCanonicalName())) {
+                  genericType = Helper.getGenericType(genericType);
+                  if (genericType != null) {
+                    checkAddReferencedType(genericType);
+                  }
+                } else {
+                  checkAddReferencedType(genericType);
+                }
+              }
             }
-            checkAddReferencedType(genericHandlerType);
-            ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), param.asType().toString(),
-                                                 isHandlerParam, isAsyncResultHandlerParam, genericHandlerType);
+            ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), param.asType().toString());
             mParams.add(mParam);
-            System.out.println("param type is " + elemType);
-            TypeKind typeKind = elemType.getKind();
-            System.out.println("type kind is " + typeKind);
-            System.out.println("isHandlerParam: " + isHandlerParam);
-            System.out.println("isAsyncResultHandlerParam: " + isAsyncResultHandlerParam);
-            System.out.println("genericHandlerType: " + genericHandlerType);
           }
           String returnType = execElem.getReturnType().toString();
+          checkType(returnType);
           checkAddReferencedType(returnType);
           MethodInfo methodInfo = new MethodInfo(execElem.getSimpleName().toString(), returnType,
                  isFluent, isIndexGetter, isIndexSetter, mParams, elementUtils.getDocComment(execElem));

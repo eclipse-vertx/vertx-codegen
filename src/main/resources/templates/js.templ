@@ -1,0 +1,110 @@
+@declare{'genMethodCall'}
+j_@{ifaceName}.@{method.name}(
+	@foreach{param: method.params}
+	@includeNamed{'convParam'}
+	@end{", "})
+@end{}
+
+@declare{'convParam'}
+	@if{param.type.startsWith('org.vertx.java.core.Handler<')}
+		@code{genericType = helper.getGenericType(param.type)}
+		@if{genericType.startsWith('org.vertx.java.core.AsyncResult<')}
+			@code{genericType = helper.getGenericType(genericType)}
+			@if{genericType.equals('java.lang.Void')}
+function(ar) { if (ar.succeeded()) { @{param.name}(null, null) } else { @{param.name}(null, ar.cause()); }}
+			@else{helper.isBasicType(genericType)}
+function(ar) { if (ar.succeeded()) { @{param.name}(@includeNamed{'convReturn'; templ='arVal'; returnType=genericType}, null) } else { @{param.name}(null, ar.cause()); }}
+			@else{}
+function(ar) { if (ar.succeeded()) { @{param.name}(new @{helper.getSimpleName(genericType)}(ar.result())), null) } else { @{param.name}(null, ar.cause()); }}
+			@end{}
+		@else{genericType.equals('java.lang.Void')}
+@{param.name}
+		@else{helper.isBasicType(genericType)}
+function(jVal) { @{param.name}(@includeNamed{'convReturn'; templ='basicVal'; returnType=genericType})) }
+		@else{}
+function(jVal) { @{param.name}(new @{helper.getSimpleName(genericType)}(jVal)) }
+		@end{}
+	@else{param.type.equals('org.vertx.java.core.json.JsonObject')}
+new io.vertx.foo.JsonObject(JSON.stringify(@{param.name}))
+	@else{helper.isBasicType(param.type)}
+@{param.name}
+	@else{}
+@{param.name}._jdel()
+	@end{}
+@end{}
+
+@declare{'basicVal'}
+jVal
+@end{}
+
+@declare{'arVal'}
+ar.result()
+@end{}
+
+@declare{'convReturn'}
+	@if{returnType.equals('java.lang.String')}
+new SillyString(@includeNamed{templ})
+	@else{}
+@includeNamed{templ}
+	@end{}
+@end{}
+
+
+// Here is our generated JavaScript module\n\n
+
+// Require stuff that we need\n
+@foreach{referencedType : referencedTypes}
+var @{helper.getSimpleName(referencedType)} = require('@{helper.convertCamelCaseToFileNameWithUnderscores(helper.getSimpleName(referencedType))}');\n
+@end{}
+\n
+
+@code{ifaceName = helper.decapitaliseFirstLetter(ifaceSimpleName)}
+// The JavaScript object that represents the @{ifaceSimpleName}\n
+var @{ifaceName} = {};\n\n
+// The Java delegate\n
+var j_@{ifaceName};\n\n
+// Constructor\n\n
+@if{ifaceComment != null}
+/*\n
+@{ifaceComment}
+*/\n
+@end{}
+var @{ifaceSimpleName} = function(j_val) {\n
+  j_@{ifaceName} = j_val;\n
+};\n
+\n
+// The public functions\n
+// --------------------\n\n
+@foreach{method : methods}
+@if{method.comment != null}
+/*\n
+@{method.comment}
+*/\n
+@end{}
+@{ifaceName}.@{method.name} = function(@foreach{param: method.params}@{param.name}@end{", "}) {\n
+
+@if{!method.returnType.equals("void")}
+	@if{method.fluent}
+  return @{ifaceName};\n
+	@else{}
+  return @includeNamed{'convReturn'; templ='genMethodCall'; returnType=method.returnType};\n
+	@end{}
+@else{}
+  @includeNamed{'genMethodCall'};\n
+@end{}
+
+};\n\n
+@end{}
+// Get a reference to the underlying Java delegate\n
+@{ifaceName}._jdel = function() {\n
+  return j_@{ifaceName};\n
+}\n\n
+// End public functions\n
+// --------------------\n\n
+// We export the Constructor function\n
+module.exports = @{ifaceSimpleName};
+
+
+
+
+

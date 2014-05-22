@@ -28,10 +28,6 @@ public class Helper {
     }
   }
 
-  public static String convertDotsToUnderscore(String str) {
-    return str.replace(".", "_");
-  }
-
   public static String convertCamelCaseToFileNameWithUnderscores(String str) {
     StringBuilder sb = new StringBuilder();
     boolean lastLowerCase = false;
@@ -55,8 +51,55 @@ public class Helper {
     return type.substring(type.lastIndexOf('.') + 1);
   }
 
+  public static String getGenericType(String type) {
+    int pos = type.indexOf("<");
+    if (pos >= 0) {
+      String genericType = type.substring(pos + 1, type.lastIndexOf(">"));
+      return genericType;
+    } else {
+      return null;
+    }
+  }
+
+  public static String getNonGenericType(String type) {
+    int pos = type.indexOf("<");
+    if (pos >= 0) {
+      String nonGenericType = type.substring(0, pos);
+      return nonGenericType;
+    } else {
+      return type;
+    }
+  }
+
+  public static boolean isBasicType(String type) {
+    switch (type) {
+      case "void":
+      case "byte":
+      case "short":
+      case "int":
+      case "long":
+      case "float":
+      case "double":
+      case "boolean":
+      case "char":
+      case "java.lang.String":
+      case "byte[]":
+      case "java.lang.Byte":
+      case "java.lang.Short":
+      case "java.lang.Integer":
+      case "java.lang.Long":
+      case "java.lang.Float":
+      case "java.lang.Double":
+      case "java.lang.Boolean":
+      case "java.lang.Character":
+        return true;
+      default:
+        return false;
+    }
+  }
+
   public static void main(String[] args) {
-    System.out.println(Helper.convertCamelCaseToFileNameWithUnderscores("CamelCase"));
-    System.out.println(Helper.convertCamelCaseToFileNameWithUnderscores("NetSocket"));
+    //System.out.println(Helper.convertCamelCaseToFileNameWithUnderscores("CamelCase"));
+    //System.out.println(Helper.convertCamelCaseToFileNameWithUnderscores("NetSocket"));
   }
 }

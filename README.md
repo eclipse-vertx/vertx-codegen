@@ -25,7 +25,6 @@ The following set `P` of types are permitted as parameters or return values to a
 * any primitive type
 * any boxed primitive type
 * `java.lang.String`
-* `io.vertx.java.core.Buffer`
 * `byte[]`
 * any other user defined API type which is defined in its own interface and annotated with `@VertxGen`
 
@@ -65,15 +64,12 @@ The `MethodInfo` object has the following fields:
 * `getter`. `true` if the method is an index getter.
 * `setter`. `true` if the method is an index setter.
 * `comments`. Method comment.
-* `params`. List of `ParamInfo` objects representing the paramaters of the method.
+* `params`. List of `ParamInfo` objects representing the parameters of the method.
 
 The `ParamInfo` object has the following fields:
 
 * `name`. The name of the parameter
-* `type`. The fully qualified type of the paramater
-* `handlerParam`. `true` if the parameter is of type `io.vertx.java.core.Handler<T>`
-* `asyncResultHandlerParam`. `true` if the parameter is of type `io.vertx.java.core.Handler<io.vertx.java.core.AsyncResult<T>>`
-* `genericHandlerType`. The type `T` if `asyncResultHandlerParam` is `true`.
+* `type`. The fully qualified type of the parameter
 
 ## TODO
 
@@ -82,6 +78,10 @@ The `ParamInfo` object has the following fields:
 * Create some test Java interfaces which exercise all the different types of methods and interfaces that can be used
 * Create a simple set of tests per language that we generate which tests the different types of methods to ensure
 they return correct values etc
+* Parse comments into params, return etc
+* Allow output files to go into different directories depending on package
+* Recurse directories to find source files.
+
 
 
 

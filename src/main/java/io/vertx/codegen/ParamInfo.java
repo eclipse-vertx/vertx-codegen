@@ -22,16 +22,16 @@ package io.vertx.codegen;
 public class ParamInfo {
   final String name;
   final String type;
-  final boolean handlerParam;
-  final boolean asyncResultHandlerParam;
-  final String genericHandlerType;
+  //final boolean handlerParam;
+  //final boolean asyncResultHandlerParam;
+  //final String genericHandlerType;
 
-  public ParamInfo(String name, String type, boolean handlerParam, boolean asyncResultHandlerParam, String genericHandlerType) {
+  public ParamInfo(String name, String type) { //boolean handlerParam, boolean asyncResultHandlerParam, String genericHandlerType) {
     this.name = name;
     this.type = type;
-    this.asyncResultHandlerParam = asyncResultHandlerParam;
-    this.handlerParam = handlerParam;
-    this.genericHandlerType = genericHandlerType;
+    //this.asyncResultHandlerParam = asyncResultHandlerParam;
+    //this.handlerParam = handlerParam;
+    //this.genericHandlerType = genericHandlerType;
   }
 
   public String getName() {
@@ -42,16 +42,16 @@ public class ParamInfo {
     return type;
   }
 
-  public boolean isHandlerParam() {
-    return handlerParam;
-  }
-
-  public boolean isAsyncResultHandlerParam() {
-    return asyncResultHandlerParam;
-  }
-
-  public String getGenericHandlerType() {
-    return genericHandlerType;
-  }
+//  public boolean isHandlerParam() {
+//    return handlerParam;
+//  }
+//
+//  public boolean isAsyncResultHandlerParam() {
+//    return asyncResultHandlerParam;
+//  }
+//
+//  public String getGenericHandlerType() {
+//    return genericHandlerType;
+//  }
 
 }
