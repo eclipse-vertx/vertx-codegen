@@ -6,26 +6,28 @@ j_@{ifaceName}.@{method.name}(
 @end{}
 
 @declare{'convParam'}
-	@if{param.type.startsWith('org.vertx.java.core.Handler<')}
+	@if{param.type.startsWith('io.vertx.core.Handler<')}
 		@code{genericType = helper.getGenericType(param.type)}
-		@if{genericType.startsWith('org.vertx.java.core.AsyncResult<')}
+		@if{genericType.startsWith('io.vertx.core.AsyncResult<')}
 			@code{genericType = helper.getGenericType(genericType)}
 			@if{genericType.equals('java.lang.Void')}
 function(ar) { if (ar.succeeded()) { @{param.name}(null, null) } else { @{param.name}(null, ar.cause()); }}
 			@else{helper.isBasicType(genericType)}
 function(ar) { if (ar.succeeded()) { @{param.name}(@includeNamed{'convReturn'; templ='arVal'; returnType=genericType}, null) } else { @{param.name}(null, ar.cause()); }}
 			@else{}
-function(ar) { if (ar.succeeded()) { @{param.name}(new @{helper.getSimpleName(genericType)}(ar.result())), null) } else { @{param.name}(null, ar.cause()); }}
+function(ar) { if (ar.succeeded()) { @{param.name}(new @{helper.getSimpleName(genericType)}(ar.result()), null) } else { @{param.name}(null, ar.cause()); }}
 			@end{}
 		@else{genericType.equals('java.lang.Void')}
 @{param.name}
 		@else{helper.isBasicType(genericType)}
-function(jVal) { @{param.name}(@includeNamed{'convReturn'; templ='basicVal'; returnType=genericType})) }
+function(jVal) { @{param.name}(@includeNamed{'convReturn'; templ='basicVal'; returnType=genericType})}
 		@else{}
-function(jVal) { @{param.name}(new @{helper.getSimpleName(genericType)}(jVal)) }
+function(jVal) { @{param.name}(new @{helper.getSimpleName(genericType)}(jVal))}
 		@end{}
-	@else{param.type.equals('org.vertx.java.core.json.JsonObject')}
+	@else{param.type.equals('io.vertx.core.json.JsonObject')}
 new io.vertx.foo.JsonObject(JSON.stringify(@{param.name}))
+  @else{param.type.equals('io.vertx.core.net.NetServerOptions')}
+new io.vertx.core.net.NetServerOptions(new io.vertx.foo.JsonObject(JSON.stringify(@{param.name})))
 	@else{helper.isBasicType(param.type)}
 @{param.name}
 	@else{}
@@ -43,9 +45,11 @@ ar.result()
 
 @declare{'convReturn'}
 	@if{returnType.equals('java.lang.String')}
-new SillyString(@includeNamed{templ})
-	@else{}
 @includeNamed{templ}
+	@else{helper.isBasicType(returnType)}
+@includeNamed{templ}
+  @else{}
+new @{helper.getSimpleName(returnType)}(@includeNamed{templ})
 	@end{}
 @end{}
 
@@ -71,28 +75,50 @@ var j_@{ifaceName};\n\n
 @end{}
 var @{ifaceSimpleName} = function(j_val) {\n
   j_@{ifaceName} = j_val;\n
+@foreach{superType: superTypes}
+  @{helper.getSimpleName(helper.getNonGenericType(superType))}.call(this, j_val);\n
+@end{}
 };\n
 \n
 // The public functions\n
 // --------------------\n\n
-@foreach{method : methods}
+@foreach{method : squashedMethods}
 @if{method.comment != null}
 /*\n
 @{method.comment}
 */\n
 @end{}
-@{ifaceName}.@{method.name} = function(@foreach{param: method.params}@{param.name}@end{", "}) {\n
-
+@{ifaceName}.@{method.name} = function(@foreach{param0: method.params}@{param0.name}@end{", "}) {\n
+@if{method.squashed}
+  switch (arguments.length) {\n
+@foreach{method: methodsByName.get(method.name)}
+    case @{method.params.size()}:\n
+	@if{!method.returnType.equals("void")}
+		@if{method.fluent}
+      @includeNamed{'genMethodCall'};\n
+      return @{ifaceName};\n
+		@else{}
+      return @includeNamed{'convReturn'; templ='genMethodCall'; returnType=method.returnType};\n
+		@end{}
+	@else{}
+      @includeNamed{'genMethodCall'};\n
+      return;\n
+	@end{}
+@end{}
+    default: throw "Invalid arguments"\n
+  }\n
+@else{}
 @if{!method.returnType.equals("void")}
 	@if{method.fluent}
+  @includeNamed{'genMethodCall'};\n
   return @{ifaceName};\n
 	@else{}
-  return @includeNamed{'convReturn'; templ='genMethodCall'; returnType=method.returnType};\n
+	  return @includeNamed{'convReturn'; templ='genMethodCall'; returnType=method.returnType};\n
 	@end{}
 @else{}
-  @includeNamed{'genMethodCall'};\n
+	  @includeNamed{'genMethodCall'};\n
 @end{}
-
+@end{}
 };\n\n
 @end{}
 // Get a reference to the underlying Java delegate\n

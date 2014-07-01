@@ -16,11 +16,19 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 public class Helper {
   public static String decapitaliseFirstLetter(String str) {
+    if (str == null) {
+      new Exception().printStackTrace();
+    }
+    System.out.println(str);
     if (str.length() == 0) {
       return str;
     } else {
@@ -101,5 +109,11 @@ public class Helper {
   public static void main(String[] args) {
     //System.out.println(Helper.convertCamelCaseToFileNameWithUnderscores("CamelCase"));
     //System.out.println(Helper.convertCamelCaseToFileNameWithUnderscores("NetSocket"));
+  }
+
+  public static List<?> reverse(List<?> list) {
+    List<?> copied = new ArrayList<>(list);
+    Collections.reverse(copied);
+    return copied;
   }
 }

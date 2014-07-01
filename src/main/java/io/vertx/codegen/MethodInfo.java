@@ -16,6 +16,7 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,8 +29,9 @@ public class MethodInfo {
   final boolean fluent;
   final boolean indexGetter;
   final boolean indexSetter;
-  final List<ParamInfo> params;
+  List<ParamInfo> params;
   final String comment;
+  boolean squashed;
 
   public MethodInfo(String name, String returnType, boolean fluent, boolean indexGetter, boolean indexSetter,
                     List<ParamInfo> params, String comment) {
@@ -38,8 +40,8 @@ public class MethodInfo {
     this.fluent = fluent;
     this.indexGetter = indexGetter;
     this.indexSetter = indexSetter;
-    this.params = params;
     this.comment = comment;
+    addParams(params);
   }
 
   public String getName() {
@@ -68,5 +70,48 @@ public class MethodInfo {
 
   public String getComment() {
     return comment;
+  }
+
+  public boolean isSquashed() {
+    return squashed;
+  }
+
+  public void setSquashed(boolean squashed) {
+    this.squashed = squashed;
+  }
+
+  public void addParams(List<ParamInfo> params) {
+    if (params == null) {
+      throw new NullPointerException("params");
+    }
+    boolean isAppendBuffer = name.equals("appendBuffer");
+
+    //if (isAppendBuffer)
+
+    //System.out.println("Method is " + this.getName());
+    if (this.params == null) {
+      this.params = new ArrayList<>();
+    } else {
+      squashed = true;
+    }
+    int mandatoryNum = Math.min(this.params.size(), params.size());
+    if (isAppendBuffer) {
+      System.out.println("Adding " + params.size() + " to existing " + this.params.size());
+      System.out.println("madatory num is " + mandatoryNum);
+    }
+
+    for (ParamInfo param: params) {
+      if (!this.params.contains(param)) {
+        this.params.add(param);
+      }
+    }
+    int pos = 0;
+    for (ParamInfo param: this.params) {
+      param.setMandatory(pos < mandatoryNum);
+      pos++;
+    }
+    if (isAppendBuffer) {
+      System.out.println("Now has " + this.params.size() + " params");
+    }
   }
 }

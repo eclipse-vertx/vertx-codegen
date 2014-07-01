@@ -16,13 +16,9 @@ package com.foo;
  * You may elect to redistribute this code under either of these licenses.
  */
 
-import org.vertx.java.core.AsyncResult;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.buffer.Buffer;
-import org.vertx.java.core.gen.Fluent;
-import org.vertx.java.core.gen.IndexGetter;
-import org.vertx.java.core.gen.IndexSetter;
-import org.vertx.java.core.gen.VertxGen;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.gen.VertxGen;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>

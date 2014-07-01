@@ -22,16 +22,13 @@ package io.vertx.codegen;
 public class ParamInfo {
   final String name;
   final String type;
-  //final boolean handlerParam;
-  //final boolean asyncResultHandlerParam;
-  //final String genericHandlerType;
+  boolean mandatory;
+  boolean options;
 
-  public ParamInfo(String name, String type) { //boolean handlerParam, boolean asyncResultHandlerParam, String genericHandlerType) {
+  public ParamInfo(String name, String type, boolean options) { //boolean handlerParam, boolean asyncResultHandlerParam, String genericHandlerType) {
     this.name = name;
     this.type = type;
-    //this.asyncResultHandlerParam = asyncResultHandlerParam;
-    //this.handlerParam = handlerParam;
-    //this.genericHandlerType = genericHandlerType;
+    this.options = options;
   }
 
   public String getName() {
@@ -42,16 +39,36 @@ public class ParamInfo {
     return type;
   }
 
-//  public boolean isHandlerParam() {
-//    return handlerParam;
-//  }
-//
-//  public boolean isAsyncResultHandlerParam() {
-//    return asyncResultHandlerParam;
-//  }
-//
-//  public String getGenericHandlerType() {
-//    return genericHandlerType;
-//  }
 
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof  ParamInfo)) {
+      return false;
+    }
+    ParamInfo pother = (ParamInfo)other;
+    return this.name.equals(pother.name) && this.type.equals(pother.type);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = name.hashCode();
+    result = 31 * result + type.hashCode();
+    return result;
+  }
+
+  public boolean isMandatory() {
+    return mandatory;
+  }
+
+  public void setMandatory(boolean mandatory) {
+    this.mandatory = mandatory;
+  }
+
+  public boolean isOptions() {
+    return options;
+  }
+
+  public void setOptions(boolean options) {
+    this.options = options;
+  }
 }
