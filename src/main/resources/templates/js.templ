@@ -25,9 +25,9 @@ function(jVal) { @{param.name}(@includeNamed{'convReturn'; templ='basicVal'; ret
 function(jVal) { @{param.name}(new @{helper.getSimpleName(genericType)}(jVal))}
 		@end{}
 	@else{param.type.equals('io.vertx.core.json.JsonObject')}
-new io.vertx.foo.JsonObject(JSON.stringify(@{param.name}))
+new io.vertx.core.json.JsonObject(JSON.stringify(@{param.name}))
   @else{param.type.equals('io.vertx.core.net.NetServerOptions')}
-new io.vertx.core.net.NetServerOptions(new io.vertx.foo.JsonObject(JSON.stringify(@{param.name})))
+new io.vertx.core.net.NetServerOptions(new io.vertx.core.json.JsonObject(JSON.stringify(@{param.name})))
 	@else{helper.isBasicType(param.type)}
 @{param.name}
 	@else{}
@@ -58,10 +58,11 @@ new @{helper.getSimpleName(returnType)}(@includeNamed{templ})
 
 // Require stuff that we need\n
 @foreach{referencedType : referencedTypes}
-var @{helper.getSimpleName(referencedType)} = require('@{helper.convertCamelCaseToFileNameWithUnderscores(helper.getSimpleName(referencedType))}');\n
+var @{helper.getSimpleName(referencedType)} = require('./@{helper.convertCamelCaseToFileNameWithUnderscores(helper.getSimpleName(referencedType))}');\n
 @end{}
-\n
-
+\n\n
+var io = Packages.io;
+\n\n
 @code{ifaceName = helper.decapitaliseFirstLetter(ifaceSimpleName)}
 // The JavaScript object that represents the @{ifaceSimpleName}\n
 var @{ifaceName} = {};\n\n
@@ -78,55 +79,53 @@ var @{ifaceSimpleName} = function(j_val) {\n
 @foreach{superType: superTypes}
   @{helper.getSimpleName(helper.getNonGenericType(superType))}.call(this, j_val);\n
 @end{}
-};\n
 \n
-// The public functions\n
-// --------------------\n\n
 @foreach{method : squashedMethods}
 @if{method.comment != null}
-/*\n
-@{method.comment}
-*/\n
+  /*\n
+  @{method.comment}
+  */\n
 @end{}
-@{ifaceName}.@{method.name} = function(@foreach{param0: method.params}@{param0.name}@end{", "}) {\n
+  this.@{method.name} = function(@foreach{param0: method.params}@{param0.name}@end{", "}) {\n
 @if{method.squashed}
-  switch (arguments.length) {\n
+    switch (arguments.length) {\n
 @foreach{method: methodsByName.get(method.name)}
-    case @{method.params.size()}:\n
+      case @{method.params.size()}:\n
 	@if{!method.returnType.equals("void")}
 		@if{method.fluent}
-      @includeNamed{'genMethodCall'};\n
-      return @{ifaceName};\n
+        @includeNamed{'genMethodCall'};\n
+        return @{ifaceName};\n
 		@else{}
-      return @includeNamed{'convReturn'; templ='genMethodCall'; returnType=method.returnType};\n
+        return @includeNamed{'convReturn'; templ='genMethodCall'; returnType=method.returnType};\n
 		@end{}
 	@else{}
-      @includeNamed{'genMethodCall'};\n
-      return;\n
+        @includeNamed{'genMethodCall'};\n
+        return;\n
 	@end{}
 @end{}
-    default: throw "Invalid arguments"\n
-  }\n
+      default: throw "Invalid arguments"\n
+    }\n
 @else{}
 @if{!method.returnType.equals("void")}
 	@if{method.fluent}
-  @includeNamed{'genMethodCall'};\n
-  return @{ifaceName};\n
+    @includeNamed{'genMethodCall'};\n
+    return @{ifaceName};\n
 	@else{}
-	  return @includeNamed{'convReturn'; templ='genMethodCall'; returnType=method.returnType};\n
+    return @includeNamed{'convReturn'; templ='genMethodCall'; returnType=method.returnType};\n
 	@end{}
 @else{}
 	  @includeNamed{'genMethodCall'};\n
 @end{}
 @end{}
-};\n\n
+  };\n\n
 @end{}
 // Get a reference to the underlying Java delegate\n
-@{ifaceName}._jdel = function() {\n
-  return j_@{ifaceName};\n
-}\n\n
-// End public functions\n
-// --------------------\n\n
+  this._jdel = function() {\n
+    return j_@{ifaceName};\n
+  }\n\n
+};\n
+\n
+
 // We export the Constructor function\n
 module.exports = @{ifaceSimpleName};
 
