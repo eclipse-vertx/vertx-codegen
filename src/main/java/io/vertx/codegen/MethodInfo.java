@@ -84,21 +84,12 @@ public class MethodInfo {
     if (params == null) {
       throw new NullPointerException("params");
     }
-    boolean isAppendBuffer = name.equals("appendBuffer");
-
-    //if (isAppendBuffer)
-
-    //System.out.println("Method is " + this.getName());
     if (this.params == null) {
       this.params = new ArrayList<>();
     } else {
       squashed = true;
     }
     int mandatoryNum = Math.min(this.params.size(), params.size());
-    if (isAppendBuffer) {
-      System.out.println("Adding " + params.size() + " to existing " + this.params.size());
-      System.out.println("madatory num is " + mandatoryNum);
-    }
 
     for (ParamInfo param: params) {
       if (!this.params.contains(param)) {
@@ -109,9 +100,6 @@ public class MethodInfo {
     for (ParamInfo param: this.params) {
       param.setMandatory(pos < mandatoryNum);
       pos++;
-    }
-    if (isAppendBuffer) {
-      System.out.println("Now has " + this.params.size() + " params");
     }
   }
 }

@@ -140,7 +140,7 @@ public class Generator {
     if (processor.ifaceSimpleName == null) {
       throw new IllegalStateException("@VertxGen should only be used with interfaces");
     }
-    String template = new String(Files.readAllBytes(Paths.get("src/main/resources/templates/" + templateName)));
+    String template = new String(Files.readAllBytes(Paths.get(templateName)));
 
     // MVEL preserves all whitespace therefore, so we can have readable templates we remove all line breaks
     // and replace all occurrences of "\n" with a line break
@@ -164,9 +164,10 @@ public class Generator {
     vars.put("methodsByName", processor.methodMap);
 
     String output = (String)TemplateRuntime.eval(template, vars);
-    File genDir = new File("src/gen/javascript");
-    genDir.mkdirs();
-    File outFile = new File(genDir, outputFileName);
+    File outFile = new File(outputFileName);
+    if (!outFile.getParentFile().exists()) {
+      outFile.getParentFile().mkdirs();
+    }
     try (PrintStream outStream = new PrintStream(new FileOutputStream(outFile))) {
       outStream.print(output);
     }
@@ -180,7 +181,6 @@ public class Generator {
 
 
   private void checkType(String type) {
-    System.out.println("checking type: " + type);
     if (!Helper.isBasicType(type)) {
       if (type.startsWith("java.") || type.startsWith("javax.")) {
         throw new IllegalStateException("Invalid type " + type + " in return type or parameter of API method");
@@ -263,14 +263,12 @@ public class Generator {
           if (ifaceFQCN != null) {
             throw new IllegalStateException("Can only have one interface or class per file");
           }
-          System.out.println(elem.getClass());
           ifaceFQCN = elem.asType().toString();
           ifaceSimpleName = elem.getSimpleName().toString();
           ifaceComment = elementUtils.getDocComment(elem);
           TypeMirror tm = elem.asType();
           List<? extends TypeMirror> st = typeUtils.directSupertypes(tm);
           for (TypeMirror tmSuper: st) {
-            System.out.println("super:" + tmSuper);
             Element superElement = typeUtils.asElement(tmSuper);
             if (superElement.getAnnotation(VertxGen.class) != null) {
               superTypes.add(Helper.getNonGenericType(tmSuper.toString()));
@@ -380,7 +378,6 @@ public class Generator {
           }
         }
         boolean option = param.getAnnotation(Options.class) != null;
-        System.out.println(param + " is option " + option + " type " + param.asType());
 
         ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), param.asType().toString(), option);
         mParams.add(mParam);
@@ -389,7 +386,6 @@ public class Generator {
     }
 
     private void checkAddReferencedType(String type) {
-      System.out.println("checking add type: " + type);
       if (type != null && !type.startsWith("java.") && !type.equals(ifaceFQCN) && type.contains(".")) {
         referencedTypes.add(type);
         if (type.equals("io.vertx.core.Handler")) {
