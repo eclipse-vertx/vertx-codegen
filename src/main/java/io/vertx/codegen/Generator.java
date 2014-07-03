@@ -18,19 +18,12 @@ package io.vertx.codegen;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.gen.Fluent;
 import io.vertx.core.gen.GenIgnore;
 import io.vertx.core.gen.IndexGetter;
 import io.vertx.core.gen.IndexSetter;
 import io.vertx.core.gen.Options;
 import io.vertx.core.gen.VertxGen;
-import io.vertx.core.net.NetServer;
-import io.vertx.core.net.NetSocket;
-import io.vertx.core.net.SocketAddress;
-import io.vertx.core.streams.ReadStream;
-import io.vertx.core.streams.WriteStream;
 import org.mvel2.templates.TemplateRuntime;
 
 import javax.annotation.processing.Completion;
@@ -71,30 +64,23 @@ import java.util.Set;
 
 
 /**
+ *
+ * TODO tests -
+ *
+ * test with some test interfaces
+ * test with interfaces that fail validation:
+ *
+ *   1. illegal types
+ *   2. not interfaces
+ *   3. overloaded methods with params in different sequence
+ *   4. inner interface
+ *   5. default methods
+ *   6. static methods
+ *
  * @author <a href="http://tfox.org">Tim Fox</a>
+ *
  */
 public class Generator {
-
-  public static void main(String[] args) {
-    try {
-      new Generator().run();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  public void run() throws Exception {
-    //process(NetServer.class, "js.templ");
-    //process(NetSocket.class, "js.templ");
-    //process("src/gentarget/com/foo/APIClass.java", "api_class.js", "js.templ");
-    processFromClasspath(Vertx.class, "vertx.js", "js.templ");
-    processFromClasspath(NetServer.class, "net_server.js", "js.templ");
-    processFromClasspath(NetSocket.class, "net_socket.js", "js.templ");
-    processFromClasspath(ReadStream.class, "read_stream.js", "js.templ");
-    processFromClasspath(WriteStream.class, "write_stream.js", "js.templ");
-    processFromClasspath(Buffer.class, "buffer.js", "js.templ");
-    processFromClasspath(SocketAddress.class, "socket_address.js", "js.templ");
-  }
 
   public void processFromClasspath(Class c, String outputFileName, String templateName) throws Exception {
     String className = c.getCanonicalName();
@@ -121,8 +107,7 @@ public class Generator {
 
   public void process(String sourceFileName, String outputFileName, String templateName) throws Exception {
     JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-    DiagnosticCollector<JavaFileObject> diagnostics =
-      new DiagnosticCollector<>();
+    DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
     StandardJavaFileManager fm = compiler.getStandardFileManager(diagnostics, null, null);
     Iterable<? extends JavaFileObject> iter = fm.getJavaFileObjects(sourceFileName);
     JavaFileObject fo = iter.iterator().next();
@@ -149,13 +134,14 @@ public class Generator {
     // before parsing - so much sure you configure your IDE to use tabs as spaces for .templ files
     template = template.replace("\n", "").replace("\\n", "\n").replace("\t", "");
 
+    // TODO - make sure there are no overloaded methods with same number of parameters or constructors
+
     Map<String, Object> vars = new HashMap<>();
     vars.put("ifaceSimpleName", processor.ifaceSimpleName);
     vars.put("ifaceFQCN", processor.ifaceFQCN);
     vars.put("ifaceComment", processor.ifaceComment);
     vars.put("helper", new Helper());
     vars.put("methods", processor.methods);
-    vars.put("constructors", processor.constructors);
     processor.referencedTypes.addAll(processor.superTypes);
     vars.put("referencedTypes", processor.referencedTypes);
     vars.put("superTypes", processor.superTypes);
@@ -228,7 +214,7 @@ public class Generator {
     Types typeUtils;
     boolean processed;
     List<MethodInfo> methods = new ArrayList<>();
-    List<ConstructorInfo> constructors = new ArrayList<>();
+    List<MethodInfo> staticMethods = new ArrayList<>();
     Set<String> referencedTypes = new HashSet<>();
     String ifaceSimpleName;
     String ifaceFQCN;
@@ -239,7 +225,6 @@ public class Generator {
 
     // Methods where all overloaded methods with same name are squashed into a single method with all parameters
     Map<String, MethodInfo> squashedMethods = new HashMap();
-
 
     @Override
     public void init(ProcessingEnvironment processingEnv) {
@@ -276,27 +261,6 @@ public class Generator {
           }
           break;
         }
-        case CONSTRUCTOR:
-        {
-          ExecutableElement execElem = (ExecutableElement)elem;
-          boolean isIgnore = execElem.getAnnotation(GenIgnore.class) != null;
-          if (isIgnore) {
-            break;
-          }
-          Set<Modifier> mods = execElem.getModifiers();
-          if (!mods.contains(Modifier.PUBLIC)) {
-            break;
-          }
-          List<ParamInfo> mParams = getParams(execElem);
-          String returnType = execElem.getReturnType().toString();
-          checkType(returnType);
-          if (!Helper.getNonGenericType(returnType).equals(Handler.class.getName())) {
-            checkAddReferencedType(Helper.getNonGenericType(returnType));
-          }
-          ConstructorInfo constructorInfo = new ConstructorInfo(mParams, elementUtils.getDocComment(execElem));
-          constructors.add(constructorInfo);
-          break;
-        }
         case METHOD:
         {
           ExecutableElement execElem = (ExecutableElement)elem;
@@ -308,6 +272,7 @@ public class Generator {
           if (!mods.contains(Modifier.PUBLIC)) {
             break;
           }
+          boolean isStatic = mods.contains(Modifier.STATIC);
           boolean isFluent = execElem.getAnnotation(Fluent.class) != null;
           boolean isIndexGetter = execElem.getAnnotation(IndexGetter.class) != null;
           boolean isIndexSetter = execElem.getAnnotation(IndexSetter.class) != null;
@@ -339,13 +304,13 @@ public class Generator {
             }
           }
           MethodInfo methodInfo = new MethodInfo(methodName, returnType,
-                 isFluent, isIndexGetter, isIndexSetter, mParams, elementUtils.getDocComment(execElem));
+                 isFluent, isIndexGetter, isIndexSetter, mParams, elementUtils.getDocComment(execElem), isStatic);
           meths.add(methodInfo);
           methods.add(methodInfo);
           MethodInfo squashed = squashedMethods.get(methodName);
           if (squashed == null) {
             squashed = new MethodInfo(methodName, returnType,
-              isFluent, isIndexGetter, isIndexSetter, mParams, elementUtils.getDocComment(execElem));
+              isFluent, isIndexGetter, isIndexSetter, mParams, elementUtils.getDocComment(execElem), isStatic);
             squashedMethods.put(methodName, squashed);
           } else {
             squashed.addParams(mParams);

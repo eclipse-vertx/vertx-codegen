@@ -31,16 +31,18 @@ public class MethodInfo {
   final boolean indexSetter;
   List<ParamInfo> params;
   final String comment;
+  final boolean staticMethod;
   boolean squashed;
 
   public MethodInfo(String name, String returnType, boolean fluent, boolean indexGetter, boolean indexSetter,
-                    List<ParamInfo> params, String comment) {
+                    List<ParamInfo> params, String comment, boolean staticMethod) {
     this.name = name;
     this.returnType = returnType;
     this.fluent = fluent;
     this.indexGetter = indexGetter;
     this.indexSetter = indexSetter;
     this.comment = comment;
+    this.staticMethod = staticMethod;
     addParams(params);
   }
 
@@ -80,6 +82,10 @@ public class MethodInfo {
     this.squashed = squashed;
   }
 
+  public boolean isStaticMethod() {
+    return staticMethod;
+  }
+
   public void addParams(List<ParamInfo> params) {
     if (params == null) {
       throw new NullPointerException("params");
@@ -102,4 +108,6 @@ public class MethodInfo {
       pos++;
     }
   }
+
+
 }
