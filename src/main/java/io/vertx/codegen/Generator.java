@@ -22,7 +22,6 @@ import io.vertx.core.gen.Fluent;
 import io.vertx.core.gen.GenIgnore;
 import io.vertx.core.gen.IndexGetter;
 import io.vertx.core.gen.IndexSetter;
-import io.vertx.core.gen.Options;
 import io.vertx.core.gen.VertxGen;
 import org.mvel2.templates.TemplateRuntime;
 
@@ -83,6 +82,7 @@ import java.util.Set;
 public class Generator {
 
   public void processFromClasspath(Class c, String outputFileName, String templateName) throws Exception {
+    System.out.println("Processing class " + c);
     String className = c.getCanonicalName();
     String fileName = className.replace(".", "/") + ".java";
     InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
@@ -167,13 +167,24 @@ public class Generator {
 
 
   private void checkType(String type) {
-    if (!Helper.isBasicType(type)) {
-      if (type.startsWith("java.") || type.startsWith("javax.")) {
-        throw new IllegalStateException("Invalid type " + type + " in return type or parameter of API method");
-      } else {
-        //TODO - test user defined and generic types
-      }
+
+    if (Helper.isBasicType(type)) {
+      return;
     }
+
+    String nonGenericType = Helper.getNonGenericType(type);
+    String genericType = Helper.getGenericType(type);
+
+    if ((nonGenericType.equals("java.util.List") || nonGenericType.equals("java.util.Set")) && Helper.isBasicType(genericType)) {
+      return;
+    }
+
+    if (type.startsWith("java.") || type.startsWith("javax.")) {
+      throw new IllegalStateException("Invalid type " + type + " in return type or parameter of API method");
+    }
+
+    // TODO proper type checking
+
   }
 
   class NullWriter extends Writer {
@@ -342,7 +353,9 @@ public class Generator {
             }
           }
         }
-        boolean option = param.getAnnotation(Options.class) != null;
+
+        boolean option = param.asType().toString().endsWith("Options");
+        System.out.println("param is " + param.getSimpleName() + " class is " + param.asType() + " option? " + option);
 
         ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), param.asType().toString(), option);
         mParams.add(mParam);

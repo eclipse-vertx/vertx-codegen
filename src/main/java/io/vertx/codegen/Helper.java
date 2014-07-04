@@ -91,7 +91,6 @@ public class Helper {
       case "boolean":
       case "char":
       case "java.lang.String":
-      case "byte[]":
       case "java.lang.Byte":
       case "java.lang.Short":
       case "java.lang.Integer":
@@ -116,4 +115,6 @@ public class Helper {
     Collections.reverse(copied);
     return copied;
   }
+
+  public static List<String>
 }
