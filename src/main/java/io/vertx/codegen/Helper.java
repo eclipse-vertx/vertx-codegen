@@ -99,6 +99,7 @@ public class Helper {
       case "java.lang.Double":
       case "java.lang.Boolean":
       case "java.lang.Character":
+      case "java.lang.Object":
         return true;
       default:
         return false;
@@ -116,5 +117,4 @@ public class Helper {
     return copied;
   }
 
-  public static List<String>
 }

@@ -29,18 +29,20 @@ public class MethodInfo {
   final boolean fluent;
   final boolean indexGetter;
   final boolean indexSetter;
+  final boolean cacheReturn;
   List<ParamInfo> params;
   final String comment;
   final boolean staticMethod;
   boolean squashed;
 
   public MethodInfo(String name, String returnType, boolean fluent, boolean indexGetter, boolean indexSetter,
-                    List<ParamInfo> params, String comment, boolean staticMethod) {
+                    boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod) {
     this.name = name;
     this.returnType = returnType;
     this.fluent = fluent;
     this.indexGetter = indexGetter;
     this.indexSetter = indexSetter;
+    this.cacheReturn = cacheReturn;
     this.comment = comment;
     this.staticMethod = staticMethod;
     addParams(params);
@@ -64,6 +66,10 @@ public class MethodInfo {
 
   public boolean isIndexSetter() {
     return indexSetter;
+  }
+
+  public boolean isCacheReturn() {
+    return cacheReturn;
   }
 
   public List<ParamInfo> getParams() {

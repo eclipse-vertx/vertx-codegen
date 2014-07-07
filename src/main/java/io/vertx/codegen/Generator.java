@@ -18,11 +18,14 @@ package io.vertx.codegen;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.gen.CacheReturn;
 import io.vertx.core.gen.Fluent;
 import io.vertx.core.gen.GenIgnore;
 import io.vertx.core.gen.IndexGetter;
 import io.vertx.core.gen.IndexSetter;
 import io.vertx.core.gen.VertxGen;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.impl.LoggerFactory;
 import org.mvel2.templates.TemplateRuntime;
 
 import javax.annotation.processing.Completion;
@@ -50,6 +53,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.Writer;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -81,11 +86,17 @@ import java.util.Set;
  */
 public class Generator {
 
-  public void processFromClasspath(Class c, String outputFileName, String templateName) throws Exception {
-    System.out.println("Processing class " + c);
+  private static final Logger log = LoggerFactory.getLogger(Generator.class);
+
+
+  private MyProcessor processor = new MyProcessor();
+
+  public void generateModel(Class c) throws Exception {
+    log.info("Generating model for class " + c);
     String className = c.getCanonicalName();
     String fileName = className.replace(".", "/") + ".java";
     InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
+    dumpClasspath(getClass().getClassLoader());
     if (is == null) {
       throw new IllegalStateException("Can't find file on classpath: " + fileName);
     }
@@ -102,10 +113,23 @@ public class Generator {
     try (PrintStream out = new PrintStream(new FileOutputStream(tmpFileName))) {
       out.print(source);
     }
-    process(tmpFileName, outputFileName, templateName);
+    generateModel(tmpFileName);
   }
 
-  public void process(String sourceFileName, String outputFileName, String templateName) throws Exception {
+  private void dumpClasspath(ClassLoader cl) {
+    if (cl instanceof URLClassLoader) {
+      URLClassLoader urlc = (URLClassLoader)cl;
+      URL[] urls = urlc.getURLs();
+      System.out.println("Dumping urls:");
+      for (URL url: urls) {
+        System.out.println(url);
+      }
+    } else {
+      System.out.println("Not URLClassloader!");
+    }
+  }
+
+  private void generateModel(String sourceFileName) throws Exception {
     JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
     StandardJavaFileManager fm = compiler.getStandardFileManager(diagnostics, null, null);
@@ -114,7 +138,6 @@ public class Generator {
     Writer out = new NullWriter();
     List<JavaFileObject> fileObjects = Collections.singletonList(fo);
     JavaCompiler.CompilationTask task = compiler.getTask(out, fm, diagnostics, null, null, fileObjects);
-    MyProcessor processor = new MyProcessor();
     List<Processor> processors = Collections.<Processor>singletonList(processor);
     task.setProcessors(processors);
     task.call();
@@ -125,6 +148,9 @@ public class Generator {
     if (processor.ifaceSimpleName == null) {
       throw new IllegalStateException("@VertxGen should only be used with interfaces");
     }
+  }
+
+  public void applyTemplate(String outputFileName, String templateName) throws Exception {
     String template = new String(Files.readAllBytes(Paths.get(templateName)));
 
     // MVEL preserves all whitespace therefore, so we can have readable templates we remove all line breaks
@@ -142,7 +168,11 @@ public class Generator {
     vars.put("ifaceComment", processor.ifaceComment);
     vars.put("helper", new Helper());
     vars.put("methods", processor.methods);
+    for (String rtype: processor.referencedTypes) {
+      System.out.println("rtype:" + rtype);
+    }
     processor.referencedTypes.addAll(processor.superTypes);
+    processor.referencedTypes.remove(processor.ifaceFQCN); // don't reference yourself
     vars.put("referencedTypes", processor.referencedTypes);
     vars.put("superTypes", processor.superTypes);
     vars.put("squashedMethods", processor.squashedMethods.values());
@@ -225,7 +255,6 @@ public class Generator {
     Types typeUtils;
     boolean processed;
     List<MethodInfo> methods = new ArrayList<>();
-    List<MethodInfo> staticMethods = new ArrayList<>();
     Set<String> referencedTypes = new HashSet<>();
     String ifaceSimpleName;
     String ifaceFQCN;
@@ -285,6 +314,7 @@ public class Generator {
           }
           boolean isStatic = mods.contains(Modifier.STATIC);
           boolean isFluent = execElem.getAnnotation(Fluent.class) != null;
+          boolean isCacheReturn = execElem.getAnnotation(CacheReturn.class) != null;
           boolean isIndexGetter = execElem.getAnnotation(IndexGetter.class) != null;
           boolean isIndexSetter = execElem.getAnnotation(IndexSetter.class) != null;
           List<ParamInfo> mParams = getParams(execElem);
@@ -315,13 +345,13 @@ public class Generator {
             }
           }
           MethodInfo methodInfo = new MethodInfo(methodName, returnType,
-                 isFluent, isIndexGetter, isIndexSetter, mParams, elementUtils.getDocComment(execElem), isStatic);
+                 isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic);
           meths.add(methodInfo);
           methods.add(methodInfo);
           MethodInfo squashed = squashedMethods.get(methodName);
           if (squashed == null) {
             squashed = new MethodInfo(methodName, returnType,
-              isFluent, isIndexGetter, isIndexSetter, mParams, elementUtils.getDocComment(execElem), isStatic);
+              isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic);
             squashedMethods.put(methodName, squashed);
           } else {
             squashed.addParams(mParams);
@@ -346,17 +376,15 @@ public class Generator {
             if (Helper.getNonGenericType(genericType).equals(AsyncResult.class.getCanonicalName())) {
               genericType = Helper.getGenericType(genericType);
               if (genericType != null) {
-                checkAddReferencedType(genericType);
+                checkAddReferencedType(Helper.getNonGenericType(genericType));
               }
             } else {
-              checkAddReferencedType(genericType);
+              checkAddReferencedType(Helper.getNonGenericType(genericType));
             }
           }
         }
 
         boolean option = param.asType().toString().endsWith("Options");
-        System.out.println("param is " + param.getSimpleName() + " class is " + param.asType() + " option? " + option);
-
         ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), param.asType().toString(), option);
         mParams.add(mParam);
       }
@@ -365,10 +393,10 @@ public class Generator {
 
     private void checkAddReferencedType(String type) {
       if (type != null && !type.startsWith("java.") && !type.equals(ifaceFQCN) && type.contains(".")) {
-        referencedTypes.add(type);
-        if (type.equals("io.vertx.core.Handler")) {
-          new Exception().printStackTrace();
+        if (type.startsWith("? extends ")) {
+          type = type.substring(10, type.length());
         }
+        referencedTypes.add(type);
       }
     }
 
