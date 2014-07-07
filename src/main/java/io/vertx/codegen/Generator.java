@@ -96,7 +96,7 @@ public class Generator {
     String className = c.getCanonicalName();
     String fileName = className.replace(".", "/") + ".java";
     InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
-    dumpClasspath(getClass().getClassLoader());
+    //dumpClasspath(Thread.currentThread().getContextClassLoader());
     if (is == null) {
       throw new IllegalStateException("Can't find file on classpath: " + fileName);
     }
@@ -140,13 +140,23 @@ public class Generator {
     JavaCompiler.CompilationTask task = compiler.getTask(out, fm, diagnostics, null, null, fileObjects);
     List<Processor> processors = Collections.<Processor>singletonList(processor);
     task.setProcessors(processors);
-    task.call();
-
+    try {
+      task.call();
+    } catch (RuntimeException e) {
+      if (e.getCause() != null && e.getCause() instanceof RuntimeException) {
+        throw (RuntimeException)e.getCause();
+      } else {
+        throw e;
+      }
+    }
     if (!processor.processed) {
-      throw new IllegalStateException("Interface not processed. Does it have the VertxGen annotation?");
+      throw new IllegalArgumentException("Interface not processed. Does it have the VertxGen annotation?");
     }
     if (processor.ifaceSimpleName == null) {
-      throw new IllegalStateException("@VertxGen should only be used with interfaces");
+      throw new IllegalArgumentException("@VertxGen should only be used with interfaces");
+    }
+    if (processor.methods.isEmpty()) {
+      throw new IllegalArgumentException("Interface does not contain any methods to generate for");
     }
   }
 
@@ -210,7 +220,7 @@ public class Generator {
     }
 
     if (type.startsWith("java.") || type.startsWith("javax.")) {
-      throw new IllegalStateException("Invalid type " + type + " in return type or parameter of API method");
+      throw new IllegalArgumentException("Invalid type " + type + " in return type or parameter of API method");
     }
 
     // TODO proper type checking
@@ -264,7 +274,7 @@ public class Generator {
     Map<String, List<MethodInfo>> methodMap = new HashMap<>();
 
     // Methods where all overloaded methods with same name are squashed into a single method with all parameters
-    Map<String, MethodInfo> squashedMethods = new HashMap();
+    Map<String, MethodInfo> squashedMethods = new HashMap<>();
 
     @Override
     public void init(ProcessingEnvironment processingEnv) {
@@ -282,11 +292,9 @@ public class Generator {
 
     private void traverseElem(Element elem) {
       switch (elem.getKind()) {
-        case INTERFACE:
-        case CLASS:
-        {
+        case INTERFACE: {
           if (ifaceFQCN != null) {
-            throw new IllegalStateException("Can only have one interface or class per file");
+            throw new IllegalArgumentException("Can only have one interface per file");
           }
           ifaceFQCN = elem.asType().toString();
           ifaceSimpleName = elem.getSimpleName().toString();
@@ -301,8 +309,7 @@ public class Generator {
           }
           break;
         }
-        case METHOD:
-        {
+        case METHOD: {
           ExecutableElement execElem = (ExecutableElement)elem;
           boolean isIgnore = execElem.getAnnotation(GenIgnore.class) != null;
           if (isIgnore) {
@@ -335,7 +342,7 @@ public class Generator {
               for (ParamInfo param: meth.params) {
                 if (pos < mParams.size()) {
                   if (!mParams.get(pos).equals(param)) {
-                    throw new IllegalStateException("Overloaded method " + methodName + " has versions with different sequences of parameters");
+                    throw new IllegalArgumentException("Overloaded method " + methodName + " has versions with different sequences of parameters");
                   }
                 } else {
                   break;
