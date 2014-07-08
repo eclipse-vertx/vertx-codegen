@@ -108,11 +108,6 @@ public class MethodInfo {
         this.params.add(param);
       }
     }
-    int pos = 0;
-    for (ParamInfo param: this.params) {
-      param.setMandatory(pos < mandatoryNum);
-      pos++;
-    }
   }
 
 

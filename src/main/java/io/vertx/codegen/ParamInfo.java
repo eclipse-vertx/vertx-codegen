@@ -22,10 +22,9 @@ package io.vertx.codegen;
 public class ParamInfo {
   final String name;
   final String type;
-  boolean mandatory;
   boolean options;
 
-  public ParamInfo(String name, String type, boolean options) { //boolean handlerParam, boolean asyncResultHandlerParam, String genericHandlerType) {
+  public ParamInfo(String name, String type, boolean options) {
     this.name = name;
     this.type = type;
     this.options = options;
@@ -54,14 +53,6 @@ public class ParamInfo {
     int result = name.hashCode();
     result = 31 * result + type.hashCode();
     return result;
-  }
-
-  public boolean isMandatory() {
-    return mandatory;
-  }
-
-  public void setMandatory(boolean mandatory) {
-    this.mandatory = mandatory;
   }
 
   public boolean isOptions() {

@@ -23,6 +23,7 @@ import io.vertx.core.gen.Fluent;
 import io.vertx.core.gen.GenIgnore;
 import io.vertx.core.gen.IndexGetter;
 import io.vertx.core.gen.IndexSetter;
+import io.vertx.core.gen.Options;
 import io.vertx.core.gen.VertxGen;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
@@ -61,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -68,18 +70,6 @@ import java.util.Set;
 
 
 /**
- *
- * TODO tests -
- *
- * test with some test interfaces
- * test with interfaces that fail validation:
- *
- *   1. illegal types
- *   2. not interfaces
- *   3. overloaded methods with params in different sequence
- *   4. inner interface
- *   5. default methods
- *   6. static methods
  *
  * @author <a href="http://tfox.org">Tim Fox</a>
  *
@@ -91,7 +81,23 @@ public class Generator {
 
   private MyProcessor processor = new MyProcessor();
 
+  private List<MethodInfo> methods = new ArrayList<>();
+  private Set<String> referencedTypes = new HashSet<>();
+  private String ifaceSimpleName;
+  private String ifaceFQCN;
+  private String ifaceComment;
+  private List<String> superTypes = new ArrayList<>();
+  // The methods, grouped by name
+  private Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
+
+  // Methods where all overloaded methods with same name are squashed into a single method with all parameters
+  private Map<String, MethodInfo> squashedMethods = new LinkedHashMap<>();
+  private boolean processed;
+
   public void generateModel(Class c) throws Exception {
+    if (processed) {
+      throw new IllegalStateException("Already processed");
+    }
     log.info("Generating model for class " + c);
     String className = c.getCanonicalName();
     String fileName = className.replace(".", "/") + ".java";
@@ -149,15 +155,18 @@ public class Generator {
         throw e;
       }
     }
-    if (!processor.processed) {
+    if (!processed) {
       throw new IllegalArgumentException("Interface not processed. Does it have the VertxGen annotation?");
     }
-    if (processor.ifaceSimpleName == null) {
+    if (ifaceSimpleName == null) {
       throw new IllegalArgumentException("@VertxGen should only be used with interfaces");
     }
-    if (processor.methods.isEmpty()) {
+    if (methods.isEmpty()) {
       throw new IllegalArgumentException("Interface does not contain any methods to generate for");
     }
+    referencedTypes.addAll(superTypes);
+    referencedTypes.remove(ifaceFQCN); // don't reference yourself
+    sortMethodMap(methodMap);
   }
 
   public void applyTemplate(String outputFileName, String templateName) throws Exception {
@@ -173,21 +182,15 @@ public class Generator {
     // TODO - make sure there are no overloaded methods with same number of parameters or constructors
 
     Map<String, Object> vars = new HashMap<>();
-    vars.put("ifaceSimpleName", processor.ifaceSimpleName);
-    vars.put("ifaceFQCN", processor.ifaceFQCN);
-    vars.put("ifaceComment", processor.ifaceComment);
+    vars.put("ifaceSimpleName", ifaceSimpleName);
+    vars.put("ifaceFQCN", ifaceFQCN);
+    vars.put("ifaceComment", ifaceComment);
     vars.put("helper", new Helper());
-    vars.put("methods", processor.methods);
-    for (String rtype: processor.referencedTypes) {
-      System.out.println("rtype:" + rtype);
-    }
-    processor.referencedTypes.addAll(processor.superTypes);
-    processor.referencedTypes.remove(processor.ifaceFQCN); // don't reference yourself
-    vars.put("referencedTypes", processor.referencedTypes);
-    vars.put("superTypes", processor.superTypes);
-    vars.put("squashedMethods", processor.squashedMethods.values());
-    sortMethodMap(processor.methodMap);
-    vars.put("methodsByName", processor.methodMap);
+    vars.put("methods", methods);
+    vars.put("referencedTypes", referencedTypes);
+    vars.put("superTypes", superTypes);
+    vars.put("squashedMethods", squashedMethods.values());
+    vars.put("methodsByName", methodMap);
 
     String output = (String)TemplateRuntime.eval(template, vars);
     File outFile = new File(outputFileName);
@@ -205,26 +208,172 @@ public class Generator {
     }
   }
 
+  private void checkParamType(String type) {
 
-  private void checkType(String type) {
+    // Basic types, int, long, String etc
+    System.out.println("Checking param type: " + type);
+    if (Helper.isBasicType(type)) {
+      return;
+    }
+    // Also can use Object as a param type (e.g. for EventBus)
+    if (Object.class.getName().equals(type)) {
+      return;
+    }
+    // Can also have a Handler<T> legally as param if T = basic type or VertxGen type
+    String nonGenericType = Helper.getNonGenericType(type);
+    String genericType = Helper.getGenericType(type);
+    if (isLegalHandlerType(nonGenericType, genericType)) {
+      return;
+    }
+    // Can also have a Handler<AsyncResult<T>> legally as param, if T = basic type or VertxGen type
+    if (isLegalHandlerAsyncResultType(nonGenericType, genericType)) {
+      return;
+    }
+    // Another user defined interface with the @VertxGen annotation is OK
+    if (isVertxGenInterface(type)) {
+      return;
+    }
+    // Can also specify option classes (which aren't VertxGen)
+    if (isOptionType(type)) {
+      return;
+    }
+    throw new IllegalArgumentException("type " + type + " is not legal for use for a parameter in code generation");
+  }
 
+  private void checkReturnType(String type) {
+
+    // Basic types, int, long, String etc
+    System.out.println("Checking return type: " + type);
     if (Helper.isBasicType(type)) {
       return;
     }
 
+    // List<T> and Set<T> are also legal for returns if T = basic type
     String nonGenericType = Helper.getNonGenericType(type);
     String genericType = Helper.getGenericType(type);
-
-    if ((nonGenericType.equals("java.util.List") || nonGenericType.equals("java.util.Set")) && Helper.isBasicType(genericType)) {
+    if (isLegalListOrSet(nonGenericType, genericType)) {
       return;
     }
 
-    if (type.startsWith("java.") || type.startsWith("javax.")) {
-      throw new IllegalArgumentException("Invalid type " + type + " in return type or parameter of API method");
+    // Can also return a Handler<T> legally, if T = basic type, or VertxGen type
+    if (isLegalHandlerType(nonGenericType, genericType)) {
+      return;
     }
+    // Another user defined interface with the @VertxGen annotation is OK
+    if (isVertxGenInterface(type)) {
+      return;
+    }
+    throw new IllegalArgumentException("type " + type + " is not legal for use for a return type in code generation");
+  }
 
-    // TODO proper type checking
+  private boolean isOptionType(String type) {
+    if (Helper.isBasicType(type)) {
+      return false;
+    }
+    try {
+      Class clazz = Class.forName(Helper.getNonGenericType(type));
+      return clazz.getAnnotation(Options.class) != null;
+    } catch (Exception e) {
+      throw new IllegalStateException(e.getMessage());
+    }
+  }
 
+  private boolean isLegalListOrSet(String nonGenericType, String genericType) {
+    boolean isLegal = ((nonGenericType.startsWith(List.class.getName()) || nonGenericType.startsWith(Set.class.getName())) &&
+                                                  (Helper.isBasicType(genericType) || isVertxGenInterface(genericType)));
+    return isLegal;
+  }
+
+  private boolean isCacheReturnType(String type) {
+    if (Helper.isBasicType(type)) {
+      return false;
+    }
+    try {
+      Class clazz = Class.forName(Helper.getNonGenericType(type));
+      return clazz.getAnnotation(CacheReturn.class) != null;
+    } catch (Exception e) {
+      throw new IllegalStateException(e.getMessage());
+    }
+  }
+
+  private boolean isFluentType(String type) {
+    if (Helper.isBasicType(type)) {
+      return false;
+    }
+    try {
+      Class clazz = Class.forName(Helper.getNonGenericType(type));
+      return clazz.getAnnotation(Fluent.class) != null;
+    } catch (Exception e) {
+      throw new IllegalStateException(e.getMessage());
+    }
+  }
+
+  private boolean isVertxGenInterface(String type) {
+    if (Helper.isBasicType(type)) {
+      return false;
+    }
+    try {
+      Class clazz = Class.forName(Helper.getNonGenericType(type));
+      boolean isVertxGen = clazz.getAnnotation(VertxGen.class) != null;
+      if (isVertxGen) {
+        referencedTypes.add(type);
+      }
+      return isVertxGen;
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new IllegalStateException(e);
+    }
+  }
+
+  private boolean isLegalHandlerType(String nonGenericType, String genericType) {
+    if (nonGenericType.equals(Handler.class.getName()) &&
+                              (Helper.isBasicType(genericType) || isVertxGenInterface(genericType)
+                               || isLegalListOrSet(genericType, Helper.getGenericType(genericType)))) {
+      return true;
+    }
+    return false;
+  }
+
+  private boolean isLegalHandlerAsyncResultType(String nonGenericType, String genericType) {
+    if (nonGenericType.equals(Handler.class.getName()) && genericType.startsWith(AsyncResult.class.getName())) {
+      String genericType2 = Helper.getGenericType(genericType);
+      if (Helper.isBasicType(genericType2) || isVertxGenInterface(genericType2) || isLegalListOrSet(genericType2, Helper.getGenericType(genericType2))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public List<MethodInfo> getMethods() {
+    return methods;
+  }
+
+  public Set<String> getReferencedTypes() {
+    return referencedTypes;
+  }
+
+  public String getIfaceSimpleName() {
+    return ifaceSimpleName;
+  }
+
+  public String getIfaceFQCN() {
+    return ifaceFQCN;
+  }
+
+  public String getIfaceComment() {
+    return ifaceComment;
+  }
+
+  public List<String> getSuperTypes() {
+    return superTypes;
+  }
+
+  public Map<String, MethodInfo> getSquashedMethods() {
+    return squashedMethods;
+  }
+
+  public Map<String, List<MethodInfo>> getMethodMap() {
+    return methodMap;
   }
 
   class NullWriter extends Writer {
@@ -263,18 +412,6 @@ public class Generator {
     ProcessingEnvironment env;
     Elements elementUtils;
     Types typeUtils;
-    boolean processed;
-    List<MethodInfo> methods = new ArrayList<>();
-    Set<String> referencedTypes = new HashSet<>();
-    String ifaceSimpleName;
-    String ifaceFQCN;
-    String ifaceComment;
-    List<String> superTypes = new ArrayList<>();
-    // The methods, grouped by name
-    Map<String, List<MethodInfo>> methodMap = new HashMap<>();
-
-    // Methods where all overloaded methods with same name are squashed into a single method with all parameters
-    Map<String, MethodInfo> squashedMethods = new HashMap<>();
 
     @Override
     public void init(ProcessingEnvironment processingEnv) {
@@ -303,8 +440,12 @@ public class Generator {
           List<? extends TypeMirror> st = typeUtils.directSupertypes(tm);
           for (TypeMirror tmSuper: st) {
             Element superElement = typeUtils.asElement(tmSuper);
-            if (superElement.getAnnotation(VertxGen.class) != null) {
-              superTypes.add(Helper.getNonGenericType(tmSuper.toString()));
+            if (!tmSuper.toString().equals(Object.class.getName())) {
+              if (superElement.getAnnotation(VertxGen.class) != null) {
+                superTypes.add(Helper.getNonGenericType(tmSuper.toString()));
+              } else {
+                throw new IllegalArgumentException("Supertypes of interfaces must be marked as @VertxGen too");
+              }
             }
           }
           break;
@@ -319,6 +460,9 @@ public class Generator {
           if (!mods.contains(Modifier.PUBLIC)) {
             break;
           }
+          if (mods.contains(Modifier.DEFAULT)) {
+            break;
+          }
           boolean isStatic = mods.contains(Modifier.STATIC);
           boolean isFluent = execElem.getAnnotation(Fluent.class) != null;
           boolean isCacheReturn = execElem.getAnnotation(CacheReturn.class) != null;
@@ -326,10 +470,15 @@ public class Generator {
           boolean isIndexSetter = execElem.getAnnotation(IndexSetter.class) != null;
           List<ParamInfo> mParams = getParams(execElem);
           String returnType = execElem.getReturnType().toString();
-          checkType(returnType);
-          if (!Helper.getNonGenericType(returnType).equals(Handler.class.getName())) {
-            checkAddReferencedType(Helper.getNonGenericType(returnType));
+          if (returnType.equals("void")) {
+            if (isCacheReturn) {
+              throw new IllegalArgumentException("void method can't be marked with @CacheReturn");
+            }
           }
+          if (isFluent && !returnType.equals(ifaceFQCN)) {
+            throw new IllegalArgumentException("Methods marked with @Fluent must return the type of the interface being generated");
+          }
+          checkReturnType(returnType);
           String methodName = execElem.getSimpleName().toString();
           List<MethodInfo> meths = methodMap.get(methodName);
           if (meths == null) {
@@ -375,36 +524,12 @@ public class Generator {
       List<ParamInfo> mParams = new ArrayList<>();
       for (VariableElement param: params) {
         String paramType = param.asType().toString();
-        checkType(paramType);
-        String nonGenericType = Helper.getNonGenericType(paramType);
-        if (nonGenericType.equals(Handler.class.getCanonicalName())) {
-          String genericType = Helper.getGenericType(paramType);
-          if (genericType != null) {
-            if (Helper.getNonGenericType(genericType).equals(AsyncResult.class.getCanonicalName())) {
-              genericType = Helper.getGenericType(genericType);
-              if (genericType != null) {
-                checkAddReferencedType(Helper.getNonGenericType(genericType));
-              }
-            } else {
-              checkAddReferencedType(Helper.getNonGenericType(genericType));
-            }
-          }
-        }
-
-        boolean option = param.asType().toString().endsWith("Options");
+        checkParamType(paramType);
+        boolean option = isOptionType(paramType);
         ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), param.asType().toString(), option);
         mParams.add(mParam);
       }
       return mParams;
-    }
-
-    private void checkAddReferencedType(String type) {
-      if (type != null && !type.startsWith("java.") && !type.equals(ifaceFQCN) && type.contains(".")) {
-        if (type.startsWith("? extends ")) {
-          type = type.substring(10, type.length());
-        }
-        referencedTypes.add(type);
-      }
     }
 
     @Override
