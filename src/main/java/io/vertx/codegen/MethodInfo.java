@@ -101,8 +101,6 @@ public class MethodInfo {
     } else {
       squashed = true;
     }
-    int mandatoryNum = Math.min(this.params.size(), params.size());
-
     for (ParamInfo param: params) {
       if (!this.params.contains(param)) {
         this.params.add(param);

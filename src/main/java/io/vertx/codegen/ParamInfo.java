@@ -20,6 +20,7 @@ package io.vertx.codegen;
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 public class ParamInfo {
+
   final String name;
   final String type;
   boolean options;
@@ -38,6 +39,9 @@ public class ParamInfo {
     return type;
   }
 
+  public boolean isOptions() {
+    return options;
+  }
 
   @Override
   public boolean equals(Object other) {
@@ -55,11 +59,4 @@ public class ParamInfo {
     return result;
   }
 
-  public boolean isOptions() {
-    return options;
-  }
-
-  public void setOptions(boolean options) {
-    this.options = options;
-  }
 }

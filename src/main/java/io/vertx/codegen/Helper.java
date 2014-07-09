@@ -16,9 +16,7 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import io.vertx.core.gen.VertxGen;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -105,15 +103,33 @@ public class Helper {
     }
   }
 
-  public static void main(String[] args) {
-    //System.out.println(Helper.convertCamelCaseToFileNameWithUnderscores("CamelCase"));
-    //System.out.println(Helper.convertCamelCaseToFileNameWithUnderscores("NetSocket"));
+  public static boolean isVertxGenType(String type) {
+    try {
+      Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(type);
+      return clazz.getAnnotation(VertxGen.class) != null;
+    } catch (ClassNotFoundException e) {
+      return false;
+    }
   }
 
-  public static List<?> reverse(List<?> list) {
-    List<?> copied = new ArrayList<>(list);
-    Collections.reverse(copied);
-    return copied;
+  public static String indentString(String str, String indent) {
+    StringBuilder sb = new StringBuilder(indent);
+    for (int i = 0; i < str.length(); i++) {
+      char ch = str.charAt(i);
+      sb.append(ch);
+      if (ch == '\n' && i != str.length() - 1) {
+        sb.append(indent);
+      }
+    }
+    return sb.toString();
+  }
+
+  public static String ind(int spaces) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < spaces; i++) {
+      sb.append(' ');
+    }
+    return sb.toString();
   }
 
 }

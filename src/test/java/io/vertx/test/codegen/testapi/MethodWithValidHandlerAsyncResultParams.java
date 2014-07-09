@@ -22,5 +22,6 @@ public interface MethodWithValidHandlerAsyncResultParams {
                                Handler<AsyncResult<List<Boolean>>> listBooleanHandler, Handler<AsyncResult<List<Character>>> listCharHandler, Handler<AsyncResult<List<String>>> listStrHandler,
                                Handler<AsyncResult<Set<Byte>>> setByteHandler, Handler<AsyncResult<Set<Short>>> setShortHandler, Handler<AsyncResult<Set<Integer>>> setIntHandler,
                                Handler<AsyncResult<Set<Long>>> setLongHandler, Handler<AsyncResult<Set<Float>>> setFloatHandler, Handler<AsyncResult<Set<Double>>> setDoubleHandler,
-                               Handler<AsyncResult<Set<Boolean>>> setBooleanHandler, Handler<AsyncResult<Set<Character>>> setCharHandler, Handler<AsyncResult<Set<String>>> setStrHandler);
+                               Handler<AsyncResult<Set<Boolean>>> setBooleanHandler, Handler<AsyncResult<Set<Character>>> setCharHandler, Handler<AsyncResult<Set<String>>> setStrHandler,
+                               Handler<AsyncResult<Void>> voidHandler);
 }

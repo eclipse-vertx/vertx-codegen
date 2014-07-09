@@ -21,5 +21,6 @@ public interface MethodWithValidHandlerParams {
                                Handler<List<Boolean>> listBooleanHandler, Handler<List<Character>> listCharHandler, Handler<List<String>> listStrHandler,
                                Handler<Set<Byte>> setByteHandler, Handler<Set<Short>> setShortHandler, Handler<Set<Integer>> setIntHandler,
                                Handler<Set<Long>> setLongHandler, Handler<Set<Float>> setFloatHandler, Handler<Set<Double>> setDoubleHandler,
-                               Handler<Set<Boolean>> setBooleanHandler, Handler<Set<Character>> setCharHandler, Handler<Set<String>> setStrHandler);
+                               Handler<Set<Boolean>> setBooleanHandler, Handler<Set<Character>> setCharHandler, Handler<Set<String>> setStrHandler,
+                               Handler<Void> voidHandler, Handler<Throwable> throwableHandler);
 }

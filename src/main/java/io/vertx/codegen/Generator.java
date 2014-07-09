@@ -68,7 +68,6 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-
 /**
  *
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -78,9 +77,7 @@ public class Generator {
 
   private static final Logger log = LoggerFactory.getLogger(Generator.class);
 
-
   private MyProcessor processor = new MyProcessor();
-
   private List<MethodInfo> methods = new ArrayList<>();
   private Set<String> referencedTypes = new HashSet<>();
   private String ifaceSimpleName;
@@ -94,6 +91,33 @@ public class Generator {
   private Map<String, MethodInfo> squashedMethods = new LinkedHashMap<>();
   private boolean processed;
 
+
+  public void validatePackage(String packageName) throws Exception {
+
+    List<Class<?>> classes = ClassEnumerator.getClassesForPackage("io.vertx.core", packName -> {
+     // System.out.println("Checking: " + packName);
+      boolean contains = !packName.contains("impl");
+      //System.out.println("COntains: " + contains);
+      return contains;
+    });
+
+    List<Class<?>> generableClasses = new ArrayList<>();
+    for (Class<?> clazz: classes) {
+      //System.out.println("Got class: " + clazz);
+      if (clazz.isInterface() && clazz.getAnnotation(VertxGen.class) != null) {
+        generableClasses.add(clazz);
+      }
+    }
+    for (Class<?> clazz: generableClasses) {
+      //System.out.println("Got class: " + clazz);
+      new Generator().generateModel(clazz);
+    }
+
+
+  }
+
+
+
   public void generateModel(Class c) throws Exception {
     if (processed) {
       throw new IllegalStateException("Already processed");
@@ -102,9 +126,8 @@ public class Generator {
     String className = c.getCanonicalName();
     String fileName = className.replace(".", "/") + ".java";
     InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
-    //dumpClasspath(Thread.currentThread().getContextClassLoader());
     if (is == null) {
-      throw new IllegalStateException("Can't find file on classpath: " + fileName);
+      throw new IllegalStateException("Can't find source on classpath: " + fileName);
     }
     // Load the source
     String source;
@@ -115,24 +138,11 @@ public class Generator {
     String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + fileName;
     File f = new File(tmpFileName);
     File parent = f.getParentFile();
-    boolean ok = parent.mkdirs();
+    parent.mkdirs();
     try (PrintStream out = new PrintStream(new FileOutputStream(tmpFileName))) {
       out.print(source);
     }
     generateModel(tmpFileName);
-  }
-
-  private void dumpClasspath(ClassLoader cl) {
-    if (cl instanceof URLClassLoader) {
-      URLClassLoader urlc = (URLClassLoader)cl;
-      URL[] urls = urlc.getURLs();
-      System.out.println("Dumping urls:");
-      for (URL url: urls) {
-        System.out.println(url);
-      }
-    } else {
-      System.out.println("Not URLClassloader!");
-    }
   }
 
   private void generateModel(String sourceFileName) throws Exception {
@@ -156,15 +166,11 @@ public class Generator {
       }
     }
     if (!processed) {
-      throw new IllegalArgumentException("Interface not processed. Does it have the VertxGen annotation?");
+      throw new IllegalArgumentException(sourceFileName + " not processed. Does it have the VertxGen annotation?");
     }
-    if (ifaceSimpleName == null) {
-      throw new IllegalArgumentException("@VertxGen should only be used with interfaces");
+    if (methods.isEmpty() && superTypes.isEmpty()) {
+      throw new IllegalArgumentException("Interface " + ifaceFQCN + " does not contain any methods for generation");
     }
-    if (methods.isEmpty()) {
-      throw new IllegalArgumentException("Interface does not contain any methods to generate for");
-    }
-    referencedTypes.addAll(superTypes);
     referencedTypes.remove(ifaceFQCN); // don't reference yourself
     sortMethodMap(methodMap);
   }
@@ -178,8 +184,6 @@ public class Generator {
     // We use actual tab characters in the template so we can see indentation, but we strip these out
     // before parsing - so much sure you configure your IDE to use tabs as spaces for .templ files
     template = template.replace("\n", "").replace("\\n", "\n").replace("\t", "");
-
-    // TODO - make sure there are no overloaded methods with same number of parameters or constructors
 
     Map<String, Object> vars = new HashMap<>();
     vars.put("ifaceSimpleName", ifaceSimpleName);
@@ -202,6 +206,20 @@ public class Generator {
     }
   }
 
+  private void dumpClasspath(ClassLoader cl) {
+    if (cl instanceof URLClassLoader) {
+      URLClassLoader urlc = (URLClassLoader)cl;
+      URL[] urls = urlc.getURLs();
+      System.out.println("Dumping urls:");
+      for (URL url: urls) {
+        System.out.println(url);
+      }
+    } else {
+      System.out.println("Not URLClassloader!");
+    }
+  }
+
+
   private void sortMethodMap(Map<String, List<MethodInfo>> map) {
     for (List<MethodInfo> list: map.values()) {
       list.sort((meth1, meth2) -> meth1.params.size() - meth2.params.size());
@@ -211,7 +229,6 @@ public class Generator {
   private void checkParamType(String type) {
 
     // Basic types, int, long, String etc
-    System.out.println("Checking param type: " + type);
     if (Helper.isBasicType(type)) {
       return;
     }
@@ -242,8 +259,9 @@ public class Generator {
 
   private void checkReturnType(String type) {
 
+    //System.out.println("Checking return type " + type);
+
     // Basic types, int, long, String etc
-    System.out.println("Checking return type: " + type);
     if (Helper.isBasicType(type)) {
       return;
     }
@@ -279,33 +297,8 @@ public class Generator {
   }
 
   private boolean isLegalListOrSet(String nonGenericType, String genericType) {
-    boolean isLegal = ((nonGenericType.startsWith(List.class.getName()) || nonGenericType.startsWith(Set.class.getName())) &&
+    return ((nonGenericType.startsWith(List.class.getName()) || nonGenericType.startsWith(Set.class.getName())) &&
                                                   (Helper.isBasicType(genericType) || isVertxGenInterface(genericType)));
-    return isLegal;
-  }
-
-  private boolean isCacheReturnType(String type) {
-    if (Helper.isBasicType(type)) {
-      return false;
-    }
-    try {
-      Class clazz = Class.forName(Helper.getNonGenericType(type));
-      return clazz.getAnnotation(CacheReturn.class) != null;
-    } catch (Exception e) {
-      throw new IllegalStateException(e.getMessage());
-    }
-  }
-
-  private boolean isFluentType(String type) {
-    if (Helper.isBasicType(type)) {
-      return false;
-    }
-    try {
-      Class clazz = Class.forName(Helper.getNonGenericType(type));
-      return clazz.getAnnotation(Fluent.class) != null;
-    } catch (Exception e) {
-      throw new IllegalStateException(e.getMessage());
-    }
   }
 
   private boolean isVertxGenInterface(String type) {
@@ -320,15 +313,16 @@ public class Generator {
       }
       return isVertxGen;
     } catch (Exception e) {
-      e.printStackTrace();
-      throw new IllegalStateException(e);
+      return false;
     }
   }
 
   private boolean isLegalHandlerType(String nonGenericType, String genericType) {
     if (nonGenericType.equals(Handler.class.getName()) &&
                               (Helper.isBasicType(genericType) || isVertxGenInterface(genericType)
-                               || isLegalListOrSet(genericType, Helper.getGenericType(genericType)))) {
+                               || isLegalListOrSet(genericType, Helper.getGenericType(genericType))
+                               || genericType.equals(Void.class.getName())
+                               || genericType.equals(Throwable.class.getName()))) {
       return true;
     }
     return false;
@@ -337,7 +331,8 @@ public class Generator {
   private boolean isLegalHandlerAsyncResultType(String nonGenericType, String genericType) {
     if (nonGenericType.equals(Handler.class.getName()) && genericType.startsWith(AsyncResult.class.getName())) {
       String genericType2 = Helper.getGenericType(genericType);
-      if (Helper.isBasicType(genericType2) || isVertxGenInterface(genericType2) || isLegalListOrSet(genericType2, Helper.getGenericType(genericType2))) {
+      if (Helper.isBasicType(genericType2) || isVertxGenInterface(genericType2) || isLegalListOrSet(genericType2, Helper.getGenericType(genericType2))
+          || genericType2.equals(Void.class.getName())) {
         return true;
       }
     }
@@ -376,7 +371,7 @@ public class Generator {
     return methodMap;
   }
 
-  class NullWriter extends Writer {
+  private static class NullWriter extends Writer {
     @Override
     public void write(char[] cbuf, int off, int len) throws IOException {
     }
@@ -390,7 +385,7 @@ public class Generator {
     }
   }
 
-  class MyProcessor implements Processor {
+  private class MyProcessor implements Processor {
 
     @Override
     public Set<String> getSupportedOptions() {
@@ -409,9 +404,9 @@ public class Generator {
       return SourceVersion.RELEASE_8;
     }
 
-    ProcessingEnvironment env;
-    Elements elementUtils;
-    Types typeUtils;
+    private ProcessingEnvironment env;
+    private Elements elementUtils;
+    private Types typeUtils;
 
     @Override
     public void init(ProcessingEnvironment processingEnv) {
@@ -429,6 +424,9 @@ public class Generator {
 
     private void traverseElem(Element elem) {
       switch (elem.getKind()) {
+        case CLASS: {
+          throw new IllegalArgumentException("@VertxGen can only be used with interfaces in " + elem.asType().toString());
+        }
         case INTERFACE: {
           if (ifaceFQCN != null) {
             throw new IllegalArgumentException("Can only have one interface per file");
@@ -442,10 +440,9 @@ public class Generator {
             Element superElement = typeUtils.asElement(tmSuper);
             if (!tmSuper.toString().equals(Object.class.getName())) {
               if (superElement.getAnnotation(VertxGen.class) != null) {
-                superTypes.add(Helper.getNonGenericType(tmSuper.toString()));
-              } else {
-                throw new IllegalArgumentException("Supertypes of interfaces must be marked as @VertxGen too");
+                referencedTypes.add(Helper.getNonGenericType(tmSuper.toString()));
               }
+              superTypes.add(tmSuper.toString());
             }
           }
           break;
@@ -474,12 +471,19 @@ public class Generator {
             if (isCacheReturn) {
               throw new IllegalArgumentException("void method can't be marked with @CacheReturn");
             }
+            if (isFluent) {
+              throw new IllegalArgumentException("Methods marked with @Fluent must return a value");
+            }
           }
-          if (isFluent && !returnType.equals(ifaceFQCN)) {
-            throw new IllegalArgumentException("Methods marked with @Fluent must return the type of the interface being generated");
-          }
-          checkReturnType(returnType);
           String methodName = execElem.getSimpleName().toString();
+          // Only check the return type if not fluent, because generated code won't look it at anyway
+          if (!isFluent) {
+            // If it's the generic type of the interface (currently we only support a single generic type)
+            // then don't validate it, as we don't know what the real type is
+            if (!returnType.equals(Helper.getGenericType(ifaceFQCN))) {
+              checkReturnType(returnType);
+            }
+          }
           List<MethodInfo> meths = methodMap.get(methodName);
           if (meths == null) {
             meths = new ArrayList<>();
@@ -501,7 +505,7 @@ public class Generator {
             }
           }
           MethodInfo methodInfo = new MethodInfo(methodName, returnType,
-                 isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic);
+            isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic);
           meths.add(methodInfo);
           methods.add(methodInfo);
           MethodInfo squashed = squashedMethods.get(methodName);
