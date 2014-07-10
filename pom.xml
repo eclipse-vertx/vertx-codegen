@@ -4,6 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- This is temporary, until the MVEL release hits Maven Central -->
+    <repositories>
+        <repository>
+            <id>Codehaus repository</id>
+            <url>http://repository.codehaus.org</url>
+        </repository>
+    </repositories>
+
     <groupId>io.vertx</groupId>
     <artifactId>codegen</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -13,9 +21,9 @@
             <groupId>org.mvel</groupId>
             <artifactId>mvel2</artifactId>
             <version>2.2.0.Final</version>
-            <scope>system</scope>
-            <!-- Add the dependency locally for now as this release is not yet in Maven Central -->
-            <systemPath>${basedir}/local-libs/mvel2-2.2.0.Final.jar</systemPath>
+            <!--<scope>system</scope>-->
+            <!--&lt;!&ndash; Add the dependency locally for now as this release is not yet in Maven Central &ndash;&gt;-->
+            <!--<systemPath>${basedir}/local-libs/mvel2-2.2.0.Final.jar</systemPath>-->
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>

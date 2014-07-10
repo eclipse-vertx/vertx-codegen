@@ -23,10 +23,6 @@ import io.vertx.core.gen.VertxGen;
  */
 public class Helper {
   public static String decapitaliseFirstLetter(String str) {
-    if (str == null) {
-      new Exception().printStackTrace();
-    }
-    System.out.println(str);
     if (str.length() == 0) {
       return str;
     } else {

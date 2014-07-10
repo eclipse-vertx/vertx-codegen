@@ -87,6 +87,7 @@ public class Generator {
   private List<String> superTypes = new ArrayList<>();
   // The methods, grouped by name
   private Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
+  private Set<String> referencedOptionsTypes = new HashSet<>();
 
   // Methods where all overloaded methods with same name are squashed into a single method with all parameters
   private Map<String, MethodInfo> squashedMethods = new LinkedHashMap<>();
@@ -205,6 +206,7 @@ public class Generator {
     vars.put("superTypes", superTypes);
     vars.put("squashedMethods", squashedMethods.values());
     vars.put("methodsByName", methodMap);
+    vars.put("referencedOptionsTypes", referencedOptionsTypes);
 
     String output = (String)TemplateRuntime.eval(template, vars);
     File outFile = new File(outputFileName);
@@ -297,7 +299,11 @@ public class Generator {
     }
     try {
       Class clazz = Class.forName(Helper.getNonGenericType(type));
-      return clazz.getAnnotation(Options.class) != null;
+      boolean isOption = clazz.getAnnotation(Options.class) != null;
+      if (isOption) {
+        referencedOptionsTypes.add(type);
+      }
+      return isOption;
     } catch (Exception e) {
       throw new IllegalStateException(e.getMessage());
     }
@@ -376,6 +382,10 @@ public class Generator {
 
   public Map<String, List<MethodInfo>> getMethodMap() {
     return methodMap;
+  }
+
+  public Set<String> getReferencedOptionsTypes() {
+    return referencedOptionsTypes;
   }
 
   private static class NullWriter extends Writer {
