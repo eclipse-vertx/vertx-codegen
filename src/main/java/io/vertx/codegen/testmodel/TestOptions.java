@@ -1,7 +1,6 @@
 package io.vertx.codegen.testmodel;
 
-import io.vertx.core.gen.Options;
-import io.vertx.core.json.JsonObject;
+import io.vertx.codegen.annotations.Options;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>

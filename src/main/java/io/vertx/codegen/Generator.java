@@ -16,17 +16,13 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.gen.CacheReturn;
-import io.vertx.core.gen.Fluent;
-import io.vertx.core.gen.GenIgnore;
-import io.vertx.core.gen.IndexGetter;
-import io.vertx.core.gen.IndexSetter;
-import io.vertx.core.gen.Options;
-import io.vertx.core.gen.VertxGen;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.impl.LoggerFactory;
+import io.vertx.codegen.annotations.CacheReturn;
+import io.vertx.codegen.annotations.Fluent;
+import io.vertx.codegen.annotations.GenIgnore;
+import io.vertx.codegen.annotations.IndexGetter;
+import io.vertx.codegen.annotations.IndexSetter;
+import io.vertx.codegen.annotations.Options;
+import io.vertx.codegen.annotations.VertxGen;
 import org.mvel2.templates.TemplateRuntime;
 
 import javax.annotation.processing.Completion;
@@ -68,6 +64,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 /**
  *
@@ -76,7 +73,12 @@ import java.util.function.Function;
  */
 public class Generator {
 
-  private static final Logger log = LoggerFactory.getLogger(Generator.class);
+//  public static final String VERTX_ASYNC_RESULT = "io.vertx.core.AsyncResult";
+//  public static final String VERTX_HANDLER = "io.vertx.core.Handler";
+  public static final String VERTX_ASYNC_RESULT = "io.vertx.codegen.testmodel.AsyncResult";
+  public static final String VERTX_HANDLER = "io.vertx.codegen.testmodel.Handler";
+
+  private static final Logger log = Logger.getLogger(Generator.class.getName());
 
   private MyProcessor processor = new MyProcessor();
   private List<MethodInfo> methods = new ArrayList<>();
@@ -331,7 +333,7 @@ public class Generator {
   }
 
   private boolean isLegalHandlerType(String nonGenericType, String genericType) {
-    if (nonGenericType.equals(Handler.class.getName()) &&
+    if (nonGenericType.equals(VERTX_HANDLER) &&
                               (Helper.isBasicType(genericType) || isVertxGenInterface(genericType)
                                || isLegalListOrSet(genericType, Helper.getGenericType(genericType))
                                || genericType.equals(Void.class.getName())
@@ -342,7 +344,7 @@ public class Generator {
   }
 
   private boolean isLegalHandlerAsyncResultType(String nonGenericType, String genericType) {
-    if (nonGenericType.equals(Handler.class.getName()) && genericType.startsWith(AsyncResult.class.getName())) {
+    if (nonGenericType.equals(VERTX_HANDLER) && genericType.startsWith(VERTX_ASYNC_RESULT)) {
       String genericType2 = Helper.getGenericType(genericType);
       if (Helper.isBasicType(genericType2) || isVertxGenInterface(genericType2) || isLegalListOrSet(genericType2, Helper.getGenericType(genericType2))
           || genericType2.equals(Void.class.getName())) {

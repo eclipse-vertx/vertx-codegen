@@ -11,11 +11,15 @@ The constraints are
 * The API must be described as a set of Java interfaces, classes are not permitted
 * Default methods are not permitted
 * Nested interfaces are not permitted
-* All interfaces to have generation performed on them must be annotated with the `io.vertx.core.gen.VertxGen` annotation
-* Fluent methods (methods which return a reference to this) must be annotated with the `io.vertx.core.gen.Fluent` annotation
-* Options classes (classes which provide configuration options to methods) must be annotated with the `io.vertx.core.gen.Options` annotation
+* All interfaces to have generation performed on them must be annotated with the `io.vertx.codegen.annotations
+.VertxGen` annotation
+* Fluent methods (methods which return a reference to this) must be annotated with the `io.vertx.codegen.annotations
+.Fluent` annotation
+* Options classes (classes which provide configuration options to methods) must be annotated with the `io.vertx.codegen.annotations
+.Options` annotation
 * Options classes must provide a constructor which takes a single `io.vertx.core.json.JsonObject` parameter.
-* Methods where the return value must be cached in the API shim must be annotated with the `io.vertx.core.gen.CacheReturn` annotation
+* Methods where the return value must be cached in the API shim must be annotated with the `io.vertx.codegen.annotations
+.CacheReturn` annotation
 * Only certain types are allowed as parameter or return value types for any API methods (defined below).
 
 

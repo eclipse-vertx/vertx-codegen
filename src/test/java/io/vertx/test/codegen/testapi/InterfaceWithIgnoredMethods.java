@@ -1,7 +1,7 @@
 package io.vertx.test.codegen.testapi;
 
-import io.vertx.core.gen.GenIgnore;
-import io.vertx.core.gen.VertxGen;
+import io.vertx.codegen.annotations.GenIgnore;
+import io.vertx.codegen.annotations.VertxGen;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>

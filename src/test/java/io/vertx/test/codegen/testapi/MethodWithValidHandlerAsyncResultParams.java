@@ -1,8 +1,8 @@
 package io.vertx.test.codegen.testapi;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.gen.VertxGen;
+import io.vertx.codegen.testmodel.AsyncResult;
+import io.vertx.codegen.testmodel.Handler;
+import io.vertx.codegen.annotations.VertxGen;
 
 import java.util.List;
 import java.util.Set;

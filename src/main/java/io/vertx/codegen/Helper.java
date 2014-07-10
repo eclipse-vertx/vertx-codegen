@@ -16,7 +16,8 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
-import io.vertx.core.gen.VertxGen;
+import io.vertx.codegen.annotations
+.VertxGen;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
