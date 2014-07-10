@@ -1,6 +1,5 @@
 package io.vertx.test.codegen;
 
-import com.sun.xml.internal.bind.v2.TODO;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.ParamInfo;
@@ -938,9 +937,6 @@ public class GeneratorTest {
 //    gen.validatePackage("io.vertx.core", packageName -> packageName.contains("eventbus") && !packageName.contains("impl"));
 //  }
 
-  TODO tests for actually generating etc
-
-
 
   /*
   TODO
@@ -953,6 +949,8 @@ public class GeneratorTest {
   test that we CAN gen an empty interface IF it extends supertype
 
   better error messages - show interface and method
+
+  tests that actually generate stuff
    */
 
   private void checkMethod(MethodInfo meth, String name, String comment, String returnType, boolean cacheReturn,
