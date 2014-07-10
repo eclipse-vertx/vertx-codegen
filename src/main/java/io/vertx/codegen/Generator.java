@@ -67,6 +67,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  *
@@ -91,32 +92,41 @@ public class Generator {
   private Map<String, MethodInfo> squashedMethods = new LinkedHashMap<>();
   private boolean processed;
 
+  public void validatePackage(String packageName, Function<String, Boolean> packageMatcher) throws Exception {
+    genAndApply(packageName, packageMatcher, null, null, false);
+  }
 
-  public void validatePackage(String packageName) throws Exception {
+  public void genAndApply(String packageName, Function<String, Boolean> packageMatcher,
+                          Function<Class, String> outputFileFunction, String templateFileName) throws Exception {
+    genAndApply(packageName, packageMatcher, outputFileFunction, templateFileName, true);
+  }
 
-    List<Class<?>> classes = ClassEnumerator.getClassesForPackage("io.vertx.core", packName -> {
-     // System.out.println("Checking: " + packName);
-      boolean contains = !packName.contains("impl");
-      //System.out.println("COntains: " + contains);
-      return contains;
-    });
+  public void genAndApply(Class clazz, Function<Class, String> outputFileFunction, String templateFileName) throws Exception {
+    Generator gen = new Generator();
+    gen.generateModel(clazz);
+    gen.applyTemplate(outputFileFunction.apply(clazz), templateFileName);
+  }
+
+  private void genAndApply(String packageName, Function<String, Boolean> packageMatcher,
+                           Function<Class, String> outputFileFunction, String templateFileName,
+                           boolean apply) throws Exception {
+
+    List<Class<?>> classes = ClassEnumerator.getClassesForPackage(packageName, packageMatcher);
 
     List<Class<?>> generableClasses = new ArrayList<>();
     for (Class<?> clazz: classes) {
-      //System.out.println("Got class: " + clazz);
       if (clazz.isInterface() && clazz.getAnnotation(VertxGen.class) != null) {
         generableClasses.add(clazz);
       }
     }
     for (Class<?> clazz: generableClasses) {
-      //System.out.println("Got class: " + clazz);
-      new Generator().generateModel(clazz);
+      Generator gen = new Generator();
+      gen.generateModel(clazz);
+      if (apply) {
+        gen.applyTemplate(outputFileFunction.apply(clazz), templateFileName);
+      }
     }
-
-
   }
-
-
 
   public void generateModel(Class c) throws Exception {
     if (processed) {
@@ -203,6 +213,7 @@ public class Generator {
     }
     try (PrintStream outStream = new PrintStream(new FileOutputStream(outFile))) {
       outStream.print(output);
+      outStream.flush();
     }
   }
 
@@ -273,10 +284,6 @@ public class Generator {
       return;
     }
 
-    // Can also return a Handler<T> legally, if T = basic type, or VertxGen type
-    if (isLegalHandlerType(nonGenericType, genericType)) {
-      return;
-    }
     // Another user defined interface with the @VertxGen annotation is OK
     if (isVertxGenInterface(type)) {
       return;

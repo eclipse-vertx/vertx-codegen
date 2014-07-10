@@ -1,11 +1,14 @@
 package io.vertx.test.codegen;
 
+import com.sun.xml.internal.bind.v2.TODO;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.ParamInfo;
 import io.vertx.core.net.NetServerOptions;
 import io.vertx.test.codegen.testapi.CacheReturnMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.FluentMethodWithVoidReturn;
+import io.vertx.test.codegen.testapi.GenericInterface;
+import io.vertx.test.codegen.testapi.GenericMethod;
 import io.vertx.test.codegen.testapi.InterfaceWithCacheReturnMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithCommentedMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithDefaultMethod;
@@ -39,7 +42,6 @@ import io.vertx.test.codegen.testapi.MethodWithValidBasicParams;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidHandlerAsyncResultParams;
 import io.vertx.test.codegen.testapi.MethodWithValidHandlerParams;
-import io.vertx.test.codegen.testapi.MethodWithValidHandlerReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidListReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidSetReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenParams;
@@ -281,6 +283,16 @@ public class GeneratorTest {
   public void testGenerateMethodWithReturnAsyncResultHandler() throws Exception {
     try {
       gen.generateModel(MethodWithHandlerAsyncResultReturn.class);
+      fail("Should throw exception");
+    } catch (IllegalArgumentException e) {
+      // OK
+    }
+  }
+
+  @Test
+  public void testGenericMethod() throws Exception {
+    try {
+      gen.generateModel(GenericMethod.class);
       fail("Should throw exception");
     } catch (IllegalArgumentException e) {
       // OK
@@ -588,6 +600,31 @@ public class GeneratorTest {
   // Valid returns
 
   @Test
+  public void testGenericInterface() throws Exception {
+    gen.generateModel(GenericInterface.class);
+    assertEquals(GenericInterface.class.getName() + "<T>", gen.getIfaceFQCN());
+    assertEquals(GenericInterface.class.getSimpleName(), gen.getIfaceSimpleName());
+    assertTrue(gen.getReferencedTypes().isEmpty());
+    assertTrue(gen.getSuperTypes().isEmpty());
+    assertEquals(1, gen.getMethods().size());
+    String methodName = "foo";
+
+    Consumer<MethodInfo> checker = (method) -> {
+      checkMethod(method, methodName, null, "T", false, false, false, false, false, false, 1);
+      List<ParamInfo> params = method.getParams();
+      checkParam(params.get(0), "str", "java.lang.String", false);
+    };
+
+    MethodInfo method = gen.getMethods().get(0);
+    checker.accept(method);
+
+    assertEquals(1, gen.getSquashedMethods().size());
+    MethodInfo squashed = gen.getSquashedMethods().get(methodName);
+    assertNotNull(squashed);
+    checker.accept(squashed);
+  }
+
+  @Test
   public void testValidBasicReturn() throws Exception {
     gen.generateModel(MethodWithValidBasicReturn.class);
     assertEquals(MethodWithValidBasicReturn.class.getName(), gen.getIfaceFQCN());
@@ -617,34 +654,6 @@ public class GeneratorTest {
     };
     checker.accept(gen.getMethods());
     assertEquals(17, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
-  }
-
-  @Test
-  public void testValidHandlerReturn() throws Exception {
-    gen.generateModel(MethodWithValidHandlerReturn.class);
-    assertEquals(MethodWithValidHandlerReturn.class.getName(), gen.getIfaceFQCN());
-    assertEquals(MethodWithValidHandlerReturn.class.getSimpleName(), gen.getIfaceSimpleName());
-    assertEquals(2, gen.getReferencedTypes().size());
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1.class.getName()));
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2.class.getName()));
-    assertTrue(gen.getSuperTypes().isEmpty());
-    assertEquals(11, gen.getMethods().size());
-    Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "byteHandler", null, "io.vertx.core.Handler<java.lang.Byte>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(1), "shortHandler", null, "io.vertx.core.Handler<java.lang.Short>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(2), "intHandler", null, "io.vertx.core.Handler<java.lang.Integer>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(3), "longHandler", null, "io.vertx.core.Handler<java.lang.Long>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(4), "floatHandler", null, "io.vertx.core.Handler<java.lang.Float>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(5), "doubleHandler", null, "io.vertx.core.Handler<java.lang.Double>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(6), "booleanHandler", null, "io.vertx.core.Handler<java.lang.Boolean>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(7), "charHandler", null, "io.vertx.core.Handler<java.lang.Character>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(8), "stringHandler", null, "io.vertx.core.Handler<java.lang.String>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(9), "vertxGen1Handler", null, "io.vertx.core.Handler<" + VertxGenClass1.class.getName() + ">", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(10), "vertxGen2Handler", null, "io.vertx.core.Handler<" + VertxGenClass2.class.getName() + ">", false, false, false, false, false, false, 0);
-    };
-    checker.accept(gen.getMethods());
-    assertEquals(11, gen.getSquashedMethods().size());
     checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
@@ -914,9 +923,24 @@ public class GeneratorTest {
   }
 
   @Test
-  public void testValidateCorePackage() throws Exception {
-    gen.validatePackage("io.vertx.core");
+  public void testGenerateModelMoreThanOnce() throws Exception {
+    gen.generateModel(InterfaceWithCommentedMethods.class);
+    try {
+      gen.generateModel(InterfaceWithCommentedMethods.class);
+      fail("Should throw exception");
+    } catch (IllegalStateException e) {
+      // OK
+    }
   }
+
+//  @Test
+//  public void testValidateCorePackage() throws Exception {
+//    gen.validatePackage("io.vertx.core", packageName -> packageName.contains("eventbus") && !packageName.contains("impl"));
+//  }
+
+  TODO tests for actually generating etc
+
+
 
   /*
   TODO

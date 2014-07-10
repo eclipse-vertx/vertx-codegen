@@ -34,7 +34,7 @@ public class Helper {
     }
   }
 
-  public static String convertCamelCaseToFileNameWithUnderscores(String str) {
+  public static String convertCamelCaseToUnderscores(String str) {
     StringBuilder sb = new StringBuilder();
     boolean lastLowerCase = false;
     for (int i = 0; i < str.length(); i++) {
