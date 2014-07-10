@@ -1,5 +1,12 @@
 package io.vertx.codegen.testmodel;
 
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.VertxException;
+import io.vertx.core.impl.FutureResultImpl;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;

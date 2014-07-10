@@ -1,4 +1,4 @@
-package io.vertx.codegen.testmodel;
+package io.vertx.core.net;
 
 import io.vertx.codegen.annotations.Options;
 

@@ -1,4 +1,6 @@
-package io.vertx.codegen.testmodel;
+package io.vertx.core.impl;
+
+import io.vertx.core.AsyncResult;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>

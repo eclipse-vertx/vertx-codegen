@@ -1,6 +1,6 @@
 package io.vertx.test.codegen.testapi;
 
-import io.vertx.codegen.testmodel.Handler;
+import io.vertx.core.Handler;
 import io.vertx.codegen.annotations.VertxGen;
 
 /**
