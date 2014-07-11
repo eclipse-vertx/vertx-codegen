@@ -9,7 +9,7 @@ import io.vertx.test.codegen.testapi.FluentMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.GenericInterface;
 import io.vertx.test.codegen.testapi.GenericMethod;
 import io.vertx.test.codegen.testapi.InterfaceWithCacheReturnMethods;
-import io.vertx.test.codegen.testapi.InterfaceWithCommentedMethods;
+import io.vertx.test.codegen.testapi.InterfaceWithComments;
 import io.vertx.test.codegen.testapi.InterfaceWithDefaultMethod;
 import io.vertx.test.codegen.testapi.InterfaceWithFluentMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithIgnoredMethods;
@@ -903,10 +903,10 @@ public class GeneratorTest {
   }
 
   @Test
-  public void testComments() throws Exception {
-    gen.generateModel(InterfaceWithCommentedMethods.class);
-    assertEquals(InterfaceWithCommentedMethods.class.getName(), gen.getIfaceFQCN());
-    assertEquals(InterfaceWithCommentedMethods.class.getSimpleName(), gen.getIfaceSimpleName());
+  public void testMethodComments() throws Exception {
+    gen.generateModel(InterfaceWithComments.class);
+    assertEquals(InterfaceWithComments.class.getName(), gen.getIfaceFQCN());
+    assertEquals(InterfaceWithComments.class.getSimpleName(), gen.getIfaceSimpleName());
     assertTrue(gen.getReferencedTypes().isEmpty());
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(2, gen.getMethods().size());
@@ -922,10 +922,27 @@ public class GeneratorTest {
   }
 
   @Test
+  public void testInterfaceComments() throws Exception {
+    gen.generateModel(InterfaceWithComments.class);
+    assertEquals(InterfaceWithComments.class.getName(), gen.getIfaceFQCN());
+    assertEquals(InterfaceWithComments.class.getSimpleName(), gen.getIfaceSimpleName());
+    assertTrue(gen.getReferencedTypes().isEmpty());
+    assertTrue(gen.getSuperTypes().isEmpty());
+    String comment =
+      " Interface comment line 1\n" +
+      " Interface comment line 2\n" +
+      " Interface comment line 3\n\n" +
+      " @author <a href=\"http://tfox.org\">Tim Fox</a>\n" +
+      " @version 12.2\n" +
+      " @see io.vertx.codegen.testmodel.TestInterface\n";
+    assertEquals(comment, gen.getIfaceComment());
+  }
+
+  @Test
   public void testGenerateModelMoreThanOnce() throws Exception {
-    gen.generateModel(InterfaceWithCommentedMethods.class);
+    gen.generateModel(InterfaceWithComments.class);
     try {
-      gen.generateModel(InterfaceWithCommentedMethods.class);
+      gen.generateModel(InterfaceWithComments.class);
       fail("Should throw exception");
     } catch (IllegalStateException e) {
       // OK

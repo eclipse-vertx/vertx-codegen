@@ -128,4 +128,31 @@ public class Helper {
     return sb.toString();
   }
 
+  public static String getJavadocTag(String comment, String tagName) {
+    int pos = comment.indexOf(tagName);
+    int endPos = comment.indexOf("\n", pos);
+    String tag = comment.substring(pos + tagName.length() + 1, endPos);
+    System.out.println("tag is:" + tag + ":");
+    return tag;
+  }
+
+  public static String removeTags(String comment) {
+    // we remove everything from the first tag to the end of the comment -
+    // tags MUST be at the end of the comment
+    int pos = comment.indexOf('@');
+    if (pos == -1) {
+      return comment;
+    }
+    if (pos > 0) {
+      String beforePos = comment.substring(0, pos);
+      int prevReturn = beforePos.lastIndexOf('\n');
+      if (prevReturn != -1) {
+        pos = prevReturn;
+      } else {
+        pos = 0;
+      }
+    }
+    return comment.substring(0, pos);
+  }
+
 }

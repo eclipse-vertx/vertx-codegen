@@ -1,5 +1,8 @@
 package io.vertx.codegen;
 
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.impl.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -30,13 +33,12 @@ import java.util.jar.JarFile;
  * ****
  */
 public class ClassEnumerator {
-  private static void log(String msg) {
-    //System.out.println("ClassDiscovery: " + msg);
-  }
+
+  private static final Logger log = LoggerFactory.getLogger(Generator.class);
 
   private static Class<?> loadClass(String className) {
     try {
-      return Class.forName(className);
+      return Thread.currentThread().getContextClassLoader().loadClass(className);
     }
     catch (ClassNotFoundException e) {
       throw new RuntimeException("Unexpected ClassNotFoundException loading class '" + className + "'");
@@ -47,7 +49,7 @@ public class ClassEnumerator {
     if (!matcher.apply(directory.toString())) {
       return;
     }
-    log("Reading Directory '" + directory + "'");
+    log.debug("Reading Directory '" + directory + "'");
     // Get the list of the files contained in the package
     String[] files = directory.list();
     for (int i = 0; i < files.length; i++) {
@@ -58,7 +60,7 @@ public class ClassEnumerator {
         // removes the .class extension
         className = pkgname + '.' + fileName.substring(0, fileName.length() - 6);
       }
-      log("FileName '" + fileName + "'  =>  class '" + className + "'");
+      log.debug("FileName '" + fileName + "'  =>  class '" + className + "'");
       if (className != null) {
         classes.add(loadClass(className));
       }
@@ -73,7 +75,7 @@ public class ClassEnumerator {
     String relPath = pkgname.replace('.', '/');
     String resPath = resource.getPath();
     String jarPath = resPath.replaceFirst("[.]jar[!].*", ".jar").replaceFirst("file:", "");
-    log("Reading JAR file: '" + jarPath + "'");
+    log.debug("Reading JAR file: '" + jarPath + "'");
     JarFile jarFile;
     try {
       jarFile = new JarFile(jarPath);
@@ -89,7 +91,7 @@ public class ClassEnumerator {
         if (entryName.endsWith(".class") && entryName.startsWith(relPath) && entryName.length() > (relPath.length() + "/".length())) {
           className = entryName.replace('/', '.').replace('\\', '.').replace(".class", "");
         }
-        log("JarEntry '" + entryName + "'  =>  class '" + className + "'");
+        log.debug("JarEntry '" + entryName + "'  =>  class '" + className + "'");
         if (className != null) {
           classes.add(loadClass(className));
         }
@@ -107,7 +109,7 @@ public class ClassEnumerator {
     if (resource == null) {
       throw new RuntimeException("Unexpected problem: No resource for " + relPath);
     }
-    log("Package: '" + pkgname + "' becomes Resource: '" + resource.toString() + "'");
+    log.debug("Package: '" + pkgname + "' becomes Resource: '" + resource.toString() + "'");
 
     resource.getPath();
     if(resource.toString().startsWith("jar:")) {
