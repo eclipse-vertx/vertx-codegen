@@ -23,8 +23,6 @@ import io.vertx.codegen.annotations.IndexGetter;
 import io.vertx.codegen.annotations.IndexSetter;
 import io.vertx.codegen.annotations.Options;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 import org.mvel2.templates.TemplateRuntime;
 
 import javax.annotation.processing.Completion;
@@ -77,6 +75,8 @@ public class Generator {
 
   private static final String VERTX_ASYNC_RESULT = "io.vertx.core.AsyncResult";
   private static final String VERTX_HANDLER = "io.vertx.core.Handler";
+  private static final String JSON_OBJECT = "io.vertx.core.json.JsonObject";
+  private static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
 
   private MyProcessor processor = new MyProcessor();
   private List<MethodInfo> methods = new ArrayList<>();
@@ -361,7 +361,7 @@ public class Generator {
   }
 
   private boolean isJsonType(String type) {
-    return (type.equals(JsonObject.class.getName()) || type.equals(JsonArray.class.getName()));
+    return (type.equals(JSON_OBJECT) || type.equals(JSON_ARRAY));
   }
 
   private boolean isLegalHandlerType(Elements elementUtils, String nonGenericType, String genericType) {
