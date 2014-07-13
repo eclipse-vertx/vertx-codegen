@@ -23,6 +23,8 @@ import io.vertx.codegen.annotations.IndexGetter;
 import io.vertx.codegen.annotations.IndexSetter;
 import io.vertx.codegen.annotations.Options;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import org.mvel2.templates.TemplateRuntime;
 
 import javax.annotation.processing.Completion;
@@ -52,8 +54,6 @@ import java.io.PrintStream;
 import java.io.Writer;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -102,10 +102,10 @@ public class Generator {
     genAndApply(packageName, packageMatcher, outputFileFunction, templateFileName, true);
   }
 
-  public void genAndApply(Class clazz, Function<Class, String> outputFileFunction, String templateFileName) throws Exception {
+  public void genAndApply(Class clazz, Function<Class, String> outputFileFunction, String templateName) throws Exception {
     Generator gen = new Generator();
     gen.generateModel(clazz);
-    gen.applyTemplate(outputFileFunction.apply(clazz), templateFileName);
+    gen.applyTemplate(outputFileFunction.apply(clazz), templateName);
   }
 
   private void genAndApply(String packageName, Function<String, Boolean> packageMatcher,
@@ -187,13 +187,23 @@ public class Generator {
   }
 
   public void applyTemplate(String outputFileName, String templateName) throws Exception {
-    String template = new String(Files.readAllBytes(Paths.get(templateName)));
-
+    // Read the template file from the classpath
+    InputStream is = getClass().getClassLoader().getResourceAsStream(templateName);
+    if (is == null) {
+      throw new IllegalStateException("Can't find template file on classpath: " + templateName);
+    }
+    // Load the template
+    String template;
+    try (Scanner scanner = new Scanner(is, "UTF-8").useDelimiter("\\A")) {
+      template = scanner.next();
+    }
     // MVEL preserves all whitespace therefore, so we can have readable templates we remove all line breaks
     // and replace all occurrences of "\n" with a line break
     // "\n" signifies we want an actual line break in the output
     // We use actual tab characters in the template so we can see indentation, but we strip these out
-    // before parsing - so much sure you configure your IDE to use tabs as spaces for .templ files
+    // before parsing.
+    // So use tabs for indentation that YOU want to see in the template but won't be in the final output
+    // And use spaces for indentation that WILL be in the final output
     template = template.replace("\n", "").replace("\\n", "\n").replace("\t", "");
 
     Map<String, Object> vars = new HashMap<>();
@@ -254,6 +264,10 @@ public class Generator {
     if (Helper.isBasicType(type)) {
       return;
     }
+    // JsonObject or JsonArray
+    if (isJsonType(type)) {
+      return;
+    }
     // Also can use Object as a param type (e.g. for EventBus)
     if (Object.class.getName().equals(type)) {
       return;
@@ -285,6 +299,11 @@ public class Generator {
 
     // Basic types, int, long, String etc
     if (Helper.isBasicType(type)) {
+      return;
+    }
+
+    // JsonObject or JsonArray
+    if (isJsonType(type)) {
       return;
     }
 
@@ -341,9 +360,14 @@ public class Generator {
     }
   }
 
+  private boolean isJsonType(String type) {
+    return (type.equals(JsonObject.class.getName()) || type.equals(JsonArray.class.getName()));
+  }
+
   private boolean isLegalHandlerType(Elements elementUtils, String nonGenericType, String genericType) {
     if (nonGenericType.equals(VERTX_HANDLER) &&
-                              (Helper.isBasicType(genericType) || isVertxGenInterface(elementUtils, genericType)
+                              (Helper.isBasicType(genericType) || isVertxGenInterface(elementUtils, genericType) ||
+                               isJsonType(genericType)
                                || isLegalListOrSet(elementUtils, genericType, Helper.getGenericType(genericType))
                                || genericType.equals(Void.class.getName())
                                || genericType.equals(Throwable.class.getName()))) {
@@ -356,7 +380,7 @@ public class Generator {
     if (nonGenericType.equals(VERTX_HANDLER) && genericType.startsWith(VERTX_ASYNC_RESULT)) {
       String genericType2 = Helper.getGenericType(genericType);
       if (Helper.isBasicType(genericType2) || isVertxGenInterface(elementUtils, genericType2) || isLegalListOrSet(elementUtils, genericType2, Helper.getGenericType(genericType2))
-          || genericType2.equals(Void.class.getName())) {
+          || genericType2.equals(Void.class.getName()) || isJsonType(genericType2)) {
         return true;
       }
     }

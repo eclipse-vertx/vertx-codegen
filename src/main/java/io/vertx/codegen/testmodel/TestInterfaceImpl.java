@@ -311,4 +311,42 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
     refed.setString(foo);
     return refed;
   }
+
+  @Override
+  public JsonObject methodwithJsonObjectReturn() {
+    return new JsonObject().putString("cheese", "stilton");
+  }
+
+  @Override
+  public JsonArray methodWithJsonArrayReturn() {
+    return new JsonArray().add("socks").add("shoes");
+  }
+
+  @Override
+  public void methodWithJsonParams(JsonObject jsonObject, JsonArray jsonArray) {
+    System.out.println("Got jsonObject:" + jsonObject.toString());
+    System.out.println("Got jsonArray:" + jsonArray.toString());
+    assertNotNull(jsonObject);
+    assertNotNull(jsonArray);
+    assertEquals("lion", jsonObject.getString("cat"));
+    assertEquals("cheddar", jsonObject.getString("cheese"));
+    assertEquals("house", jsonArray.get(0));
+    assertEquals("spider", jsonArray.get(1));
+  }
+
+  @Override
+  public void methodWithHandlerJson(Handler<JsonObject> jsonObjectHandler, Handler<JsonArray> jsonArrayHandler) {
+    assertNotNull(jsonObjectHandler);
+    assertNotNull(jsonArrayHandler);
+    jsonObjectHandler.handle(new JsonObject().putString("cheese", "stilton"));
+    jsonArrayHandler.handle(new JsonArray().add("socks").add("shoes"));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultJson(Handler<AsyncResult<JsonObject>> jsonObjectHandler, Handler<AsyncResult<JsonArray>> jsonArrayHandler) {
+    assertNotNull(jsonObjectHandler);
+    assertNotNull(jsonArrayHandler);
+    jsonObjectHandler.handle(new FutureResultImpl<>(new JsonObject().putString("cheese", "stilton")));
+    jsonArrayHandler.handle(new FutureResultImpl<>(new JsonArray().add("socks").add("shoes")));
+  }
 }

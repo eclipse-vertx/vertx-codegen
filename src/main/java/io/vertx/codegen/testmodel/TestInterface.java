@@ -5,6 +5,8 @@ import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import java.util.List;
 import java.util.Set;
@@ -94,5 +96,15 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
 
   @CacheReturn
   RefedInterface1 methodWithCachedReturn(String foo);
+
+  JsonObject methodwithJsonObjectReturn();
+
+  JsonArray methodWithJsonArrayReturn();
+
+  void methodWithJsonParams(JsonObject jsonObject, JsonArray jsonArray);
+
+  void methodWithHandlerJson(Handler<JsonObject> jsonObjectHandler, Handler<JsonArray> jsonArrayHandler);
+
+  void methodWithHandlerAsyncResultJson(Handler<AsyncResult<JsonObject>> jsonObjectHandler, Handler<AsyncResult<JsonArray>> jsonArrayHandler);
 
 }

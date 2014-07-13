@@ -1,6 +1,13 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.*;
+import io.vertx.codegen.GenException;
+import io.vertx.codegen.Generator;
+import io.vertx.codegen.MethodInfo;
+import io.vertx.codegen.ParamInfo;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetServerOptions;
 import io.vertx.test.codegen.testapi.CacheReturnMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.FluentMethodWithVoidReturn;
@@ -37,8 +44,12 @@ import io.vertx.test.codegen.testapi.MethodWithSetParam;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicBoxedParams;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicParams;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicReturn;
+import io.vertx.test.codegen.testapi.MethodWithValidHandlerAsyncResultJSON;
 import io.vertx.test.codegen.testapi.MethodWithValidHandlerAsyncResultParams;
+import io.vertx.test.codegen.testapi.MethodWithValidHandlerJSON;
 import io.vertx.test.codegen.testapi.MethodWithValidHandlerParams;
+import io.vertx.test.codegen.testapi.MethodWithValidJSONParams;
+import io.vertx.test.codegen.testapi.MethodWithValidJSONReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidListReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidSetReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenParams;
@@ -938,6 +949,57 @@ public class GeneratorTest {
       " @version 12.2\n" +
       " @see io.vertx.codegen.testmodel.TestInterface\n";
     assertEquals(comment, gen.getIfaceComment());
+  }
+
+  @Test
+  public void testJsonParams() throws Exception {
+    gen.generateModel(MethodWithValidJSONParams.class);
+    assertEquals(MethodWithValidJSONParams.class.getName(), gen.getIfaceFQCN());
+    assertEquals(MethodWithValidJSONParams.class.getSimpleName(), gen.getIfaceSimpleName());
+    assertTrue(gen.getReferencedTypes().isEmpty());
+    assertTrue(gen.getSuperTypes().isEmpty());
+    assertEquals(1, gen.getMethods().size());
+    checkMethod(gen.getMethods().get(0), "methodWithJsonParams", null, "void", false, false, false, false, false, false, 2);
+    checkParam(gen.getMethods().get(0).getParams().get(0), "jsonObject", JsonObject.class.getName(), false);
+    checkParam(gen.getMethods().get(0).getParams().get(1), "jsonArray", JsonArray.class.getName(), false);
+  }
+
+  @Test
+  public void testJsonHandlers() throws Exception {
+    gen.generateModel(MethodWithValidHandlerJSON.class);
+    assertEquals(MethodWithValidHandlerJSON.class.getName(), gen.getIfaceFQCN());
+    assertEquals(MethodWithValidHandlerJSON.class.getSimpleName(), gen.getIfaceSimpleName());
+    assertTrue(gen.getReferencedTypes().isEmpty());
+    assertTrue(gen.getSuperTypes().isEmpty());
+    assertEquals(1, gen.getMethods().size());
+    checkMethod(gen.getMethods().get(0), "methodWithJsonHandlers", null, "void", false, false, false, false, false, false, 2);
+    checkParam(gen.getMethods().get(0).getParams().get(0), "jsonObjectHandler", Handler.class.getName() + "<" + JsonObject.class.getName() + ">", false);
+    checkParam(gen.getMethods().get(0).getParams().get(1), "jsonArrayHandler",Handler.class.getName() + "<" + JsonArray.class.getName() + ">", false);
+  }
+
+  @Test
+  public void testJsonAsyncResultHandlers() throws Exception {
+    gen.generateModel(MethodWithValidHandlerAsyncResultJSON.class);
+    assertEquals(MethodWithValidHandlerAsyncResultJSON.class.getName(), gen.getIfaceFQCN());
+    assertEquals(MethodWithValidHandlerAsyncResultJSON.class.getSimpleName(), gen.getIfaceSimpleName());
+    assertTrue(gen.getReferencedTypes().isEmpty());
+    assertTrue(gen.getSuperTypes().isEmpty());
+    assertEquals(1, gen.getMethods().size());
+    checkMethod(gen.getMethods().get(0), "methodwithJsonHandlersAsyncResult", null, "void", false, false, false, false, false, false, 2);
+    checkParam(gen.getMethods().get(0).getParams().get(0), "jsonObjectHandler", Handler.class.getName() + "<" + AsyncResult.class.getName() + "<" + JsonObject.class.getName() + ">>", false);
+    checkParam(gen.getMethods().get(0).getParams().get(1), "jsonArrayHandler",Handler.class.getName() + "<" + AsyncResult.class.getName() + "<" + JsonArray.class.getName() + ">>", false);
+  }
+
+  @Test
+  public void testJsonReturns() throws Exception {
+    gen.generateModel(MethodWithValidJSONReturn.class);
+    assertEquals(MethodWithValidJSONReturn.class.getName(), gen.getIfaceFQCN());
+    assertEquals(MethodWithValidJSONReturn.class.getSimpleName(), gen.getIfaceSimpleName());
+    assertTrue(gen.getReferencedTypes().isEmpty());
+    assertTrue(gen.getSuperTypes().isEmpty());
+    assertEquals(2, gen.getMethods().size());
+    checkMethod(gen.getMethods().get(0), "foo", null, JsonObject.class.getName(), false, false, false, false, false, false, 0);
+    checkMethod(gen.getMethods().get(1), "bar", null, JsonArray.class.getName(), false, false, false, false, false, false, 0);
   }
 
   @Test
