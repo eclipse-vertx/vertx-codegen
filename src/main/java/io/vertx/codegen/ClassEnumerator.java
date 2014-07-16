@@ -36,7 +36,7 @@ public class ClassEnumerator {
 
   private static Class<?> loadClass(String className) {
     try {
-      return Thread.currentThread().getContextClassLoader().loadClass(className);
+      return getClassLoader().loadClass(className);
     }
     catch (ClassNotFoundException e) {
       throw new RuntimeException("Unexpected ClassNotFoundException loading class '" + className + "'");
@@ -103,7 +103,7 @@ public class ClassEnumerator {
     String relPath = pkgname.replace('.', '/');
 
     // Get a File object for the package
-    URL resource = ClassLoader.getSystemClassLoader().getResource(relPath);
+    URL resource = getClassLoader().getResource(relPath);
     if (resource == null) {
       throw new RuntimeException("Unexpected problem: No resource for " + relPath);
     }
@@ -117,5 +117,10 @@ public class ClassEnumerator {
     }
 
     return classes;
+  }
+
+  private static ClassLoader getClassLoader() {
+    ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+    return tccl == null ? ClassEnumerator.class.getClassLoader() : tccl;
   }
 }

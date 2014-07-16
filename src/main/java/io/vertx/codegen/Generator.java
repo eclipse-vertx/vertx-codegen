@@ -32,6 +32,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -179,11 +180,6 @@ public class Generator {
     if (!processed) {
       throw new IllegalArgumentException(sourceFileName + " not processed. Does it have the VertxGen annotation?");
     }
-    if (methods.isEmpty() && superTypes.isEmpty()) {
-      throw new IllegalArgumentException("Interface " + ifaceFQCN + " does not contain any methods for generation");
-    }
-    referencedTypes.remove(ifaceFQCN); // don't reference yourself
-    sortMethodMap(methodMap);
   }
 
   public void applyTemplate(String outputFileName, String templateName) throws Exception {
@@ -352,7 +348,7 @@ public class Generator {
       TypeElement clazz = elementUtils.getTypeElement(Helper.getNonGenericType(type));
       boolean isVertxGen = clazz.getAnnotation(VertxGen.class) != null;
       if (isVertxGen) {
-        referencedTypes.add(type);
+        referencedTypes.add(Helper.getNonGenericType(type));
       }
       return isVertxGen;
     } catch (Exception e) {
@@ -584,6 +580,14 @@ public class Generator {
 
     for (Element enclosedElt : elem.getEnclosedElements()) {
       traverseElem(elementUtils, typeUtils, enclosedElt);
+    }
+    if (elem.getKind() == ElementKind.INTERFACE) {
+      // We're done
+      if (methods.isEmpty() && superTypes.isEmpty()) {
+        throw new IllegalArgumentException("Interface " + ifaceFQCN + " does not contain any methods for generation");
+      }
+      referencedTypes.remove(Helper.getNonGenericType(ifaceFQCN)); // don't reference yourself
+      sortMethodMap(methodMap);
     }
   }
 
