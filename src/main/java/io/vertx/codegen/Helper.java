@@ -54,6 +54,10 @@ public class Helper {
     return type.substring(type.lastIndexOf('.') + 1);
   }
 
+  public static String getPackageName(String type) {
+    return type.substring(0, type.lastIndexOf('.'));
+  }
+
   public static String getGenericType(String type) {
     int pos = type.indexOf("<");
     if (pos >= 0) {

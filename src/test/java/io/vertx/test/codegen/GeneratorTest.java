@@ -4,6 +4,7 @@ import io.vertx.codegen.GenException;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.ParamInfo;
+import io.vertx.codegen.TypeInfo;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
@@ -12,6 +13,9 @@ import io.vertx.core.net.NetServerOptions;
 import io.vertx.test.codegen.testapi.CacheReturnMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.FluentMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.GenericInterface;
+import io.vertx.test.codegen.testapi.InterfaceWithParameterizedArraySupertype;
+import io.vertx.test.codegen.testapi.InterfaceWithParameterizedGenericArraySupertype;
+import io.vertx.test.codegen.testapi.InterfaceWithParameterizedVariableSupertype;
 import io.vertx.test.codegen.testapi.GenericMethod;
 import io.vertx.test.codegen.testapi.InterfaceWithCacheReturnMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithComments;
@@ -22,6 +26,7 @@ import io.vertx.test.codegen.testapi.InterfaceWithIndexSetterGetterMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithNoMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithNoNotIgnoredMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithOverloadedMethods;
+import io.vertx.test.codegen.testapi.InterfaceWithParameterizedDeclaredSupertype;
 import io.vertx.test.codegen.testapi.InterfaceWithStaticMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithSupertypes;
 import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultReturn;
@@ -831,8 +836,8 @@ public class GeneratorTest {
     assertTrue(gen.getReferencedTypes().contains(VertxGenClass1.class.getName()));
     assertTrue(gen.getReferencedTypes().contains(VertxGenClass2.class.getName()));
     assertEquals(2, gen.getSuperTypes().size());
-    assertTrue(gen.getSuperTypes().contains(VertxGenClass1.class.getName()));
-    assertTrue(gen.getSuperTypes().contains(VertxGenClass2.class.getName()));
+    assertTrue(gen.getSuperTypes().contains(TypeInfo.create(VertxGenClass1.class)));
+    assertTrue(gen.getSuperTypes().contains(TypeInfo.create(VertxGenClass2.class)));
     assertEquals(1, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "quux", null, "void", false, false, false, false, false, false, 1);
@@ -840,6 +845,43 @@ public class GeneratorTest {
     checker.accept(gen.getMethods());
     assertEquals(1, gen.getSquashedMethods().size());
     checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
+  }
+
+  @Test
+  public void testParameterizedClassSuperType() throws Exception {
+    gen.generateModel(InterfaceWithParameterizedDeclaredSupertype.class);
+    assertEquals(InterfaceWithParameterizedDeclaredSupertype.class.getName(), gen.getIfaceFQCN());
+    assertEquals(InterfaceWithParameterizedDeclaredSupertype.class.getSimpleName(), gen.getIfaceSimpleName());
+    assertEquals(1, gen.getReferencedTypes().size());
+    assertTrue(gen.getReferencedTypes().contains(GenericInterface.class.getName()));
+    assertEquals(1, gen.getSuperTypes().size());
+    assertTrue(gen.getSuperTypes().contains(TypeInfo.create(InterfaceWithParameterizedDeclaredSupertype.class.getGenericInterfaces()[0])));
+  }
+
+  @Test
+  public void testParameterizedVariableSuperType() throws Exception {
+    gen.generateModel(InterfaceWithParameterizedVariableSupertype.class);
+    assertEquals(InterfaceWithParameterizedVariableSupertype.class.getName() + "<T>", gen.getIfaceFQCN());
+    assertEquals(InterfaceWithParameterizedVariableSupertype.class.getSimpleName(), gen.getIfaceSimpleName());
+    assertEquals(1, gen.getReferencedTypes().size());
+    assertTrue(gen.getReferencedTypes().contains(GenericInterface.class.getName()));
+    assertEquals(1, gen.getSuperTypes().size());
+    assertTrue(gen.getSuperTypes().contains(TypeInfo.create(InterfaceWithParameterizedVariableSupertype.class.getGenericInterfaces()[0])));
+  }
+
+  @Test
+  public void testParameterizedForbiddenSuperType() throws Exception {
+    Class<?>[] forbidenTypes = {
+        InterfaceWithParameterizedArraySupertype.class,
+        InterfaceWithParameterizedGenericArraySupertype.class
+    };
+    for (Class<?> forbidenType : forbidenTypes) {
+      try {
+        gen.generateModel(forbidenType);
+        fail();
+      } catch (GenException e) {
+      }
+    }
   }
 
   @Test

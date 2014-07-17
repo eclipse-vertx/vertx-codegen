@@ -37,6 +37,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -85,7 +86,7 @@ public class Generator {
   private String ifaceSimpleName;
   private String ifaceFQCN;
   private String ifaceComment;
-  private List<String> superTypes = new ArrayList<>();
+  private List<TypeInfo.Class> superTypes = new ArrayList<>();
   // The methods, grouped by name
   private Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
   private Set<String> referencedOptionsTypes = new HashSet<>();
@@ -403,7 +404,7 @@ public class Generator {
     return ifaceComment;
   }
 
-  public List<String> getSuperTypes() {
+  public List<TypeInfo.Class> getSuperTypes() {
     return superTypes;
   }
 
@@ -500,7 +501,11 @@ public class Generator {
             if (superElement.getAnnotation(VertxGen.class) != null) {
               referencedTypes.add(Helper.getNonGenericType(tmSuper.toString()));
             }
-            superTypes.add(tmSuper.toString());
+            try {
+              superTypes.add(TypeInfo.create(typeUtils, (DeclaredType) tmSuper));
+            } catch (IllegalArgumentException e) {
+              throw new GenException(elem, e.getMessage());
+            }
           }
         }
         break;
