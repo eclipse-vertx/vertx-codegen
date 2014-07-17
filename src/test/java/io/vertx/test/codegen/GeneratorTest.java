@@ -13,6 +13,7 @@ import io.vertx.core.net.NetServerOptions;
 import io.vertx.test.codegen.testapi.CacheReturnMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.FluentMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.GenericInterface;
+import io.vertx.test.codegen.testapi.GenericInterfaceWithUpperBound;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedArraySupertype;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedGenericArraySupertype;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedVariableSupertype;
@@ -634,6 +635,15 @@ public class GeneratorTest {
     checker.accept(gen.getMethods());
     assertEquals(2, gen.getSquashedMethods().size());
     checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
+  }
+
+  @Test
+  public void testGenericInterfaceWithUpperBound() throws Exception {
+    try {
+      gen.generateModel(GenericInterfaceWithUpperBound.class);
+      fail();
+    } catch (GenException e) {
+    }
   }
 
   @Test

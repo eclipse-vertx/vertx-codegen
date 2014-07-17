@@ -38,6 +38,8 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -493,7 +495,12 @@ public class Generator {
         ifaceFQCN = elem.asType().toString();
         ifaceSimpleName = elem.getSimpleName().toString();
         ifaceComment = elementUtils.getDocComment(elem);
-        TypeMirror tm = elem.asType();
+        DeclaredType tm = (DeclaredType) elem.asType();
+        List<? extends TypeMirror> typeArgs = tm.getTypeArguments();
+        for (TypeMirror typeArg : typeArgs) {
+          TypeVariable varTypeArg = (TypeVariable) typeArg;
+          checkInvariant(elem, varTypeArg);
+        }
         List<? extends TypeMirror> st = typeUtils.directSupertypes(tm);
         for (TypeMirror tmSuper: st) {
           Element superElement = typeUtils.asElement(tmSuper);
@@ -593,6 +600,13 @@ public class Generator {
       }
       referencedTypes.remove(Helper.getNonGenericType(ifaceFQCN)); // don't reference yourself
       sortMethodMap(methodMap);
+    }
+  }
+
+  private void checkInvariant(Element elem, TypeVariable typeVariable) {
+    TypeMirror upperBound = typeVariable.getUpperBound();
+    if (upperBound.getKind() != TypeKind.DECLARED || !upperBound.toString().equals(Object.class.getName())) {
+      throw new GenException(elem, "Type variable upper bounds not supported " + upperBound);
     }
   }
 
