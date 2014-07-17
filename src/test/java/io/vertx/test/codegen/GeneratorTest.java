@@ -618,22 +618,17 @@ public class GeneratorTest {
     assertEquals(GenericInterface.class.getSimpleName(), gen.getIfaceSimpleName());
     assertTrue(gen.getReferencedTypes().isEmpty());
     assertTrue(gen.getSuperTypes().isEmpty());
-    assertEquals(1, gen.getMethods().size());
-    String methodName = "foo";
+    assertEquals(2, gen.getMethods().size());
 
-    Consumer<MethodInfo> checker = (method) -> {
-      checkMethod(method, methodName, null, "T", false, false, false, false, false, false, 1);
-      List<ParamInfo> params = method.getParams();
+    Consumer<List<MethodInfo>> checker = (methods) -> {
+      checkMethod(methods.get(0), "foo", null, "T", false, false, false, false, false, false, 1);
+      List<ParamInfo> params = methods.get(0).getParams();
       checkParam(params.get(0), "str", "java.lang.String", false);
+      checkMethod(methods.get(1), "someGenericMethod", null, "io.vertx.test.codegen.testapi.GenericInterface<R>", false, false, false, false, false, false, 0);
     };
-
-    MethodInfo method = gen.getMethods().get(0);
-    checker.accept(method);
-
-    assertEquals(1, gen.getSquashedMethods().size());
-    MethodInfo squashed = gen.getSquashedMethods().get(methodName);
-    assertNotNull(squashed);
-    checker.accept(squashed);
+    checker.accept(gen.getMethods());
+    assertEquals(2, gen.getSquashedMethods().size());
+    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test

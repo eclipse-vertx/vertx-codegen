@@ -133,7 +133,6 @@ public class Helper {
     int pos = comment.indexOf(tagName);
     int endPos = comment.indexOf("\n", pos);
     String tag = comment.substring(pos + tagName.length() + 1, endPos);
-    System.out.println("tag is:" + tag + ":");
     return tag;
   }
 

@@ -9,4 +9,6 @@ import io.vertx.codegen.annotations.VertxGen;
 public interface GenericInterface<T> {
 
   T foo(String str);
+
+  <R> GenericInterface<R> someGenericMethod();
 }
