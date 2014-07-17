@@ -34,9 +34,10 @@ public class MethodInfo {
   final String comment;
   final boolean staticMethod;
   boolean squashed;
+  List<String> typeParams;
 
   public MethodInfo(String name, String returnType, boolean fluent, boolean indexGetter, boolean indexSetter,
-                    boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod) {
+                    boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod, List<String> typeParams) {
     this.name = name;
     this.returnType = returnType;
     this.fluent = fluent;
@@ -46,6 +47,7 @@ public class MethodInfo {
     this.comment = comment;
     this.staticMethod = staticMethod;
     addParams(params);
+    this.typeParams = typeParams;
   }
 
   public String getName() {
@@ -90,6 +92,10 @@ public class MethodInfo {
 
   public boolean isStaticMethod() {
     return staticMethod;
+  }
+
+  public List<String> getTypeParams() {
+    return typeParams;
   }
 
   public void addParams(List<ParamInfo> params) {

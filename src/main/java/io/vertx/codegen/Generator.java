@@ -36,6 +36,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
@@ -499,7 +500,9 @@ public class Generator {
         List<? extends TypeMirror> typeArgs = tm.getTypeArguments();
         for (TypeMirror typeArg : typeArgs) {
           TypeVariable varTypeArg = (TypeVariable) typeArg;
-          checkInvariant(elem, varTypeArg);
+          if (!isObjectBound(varTypeArg.getUpperBound())) {
+            throw new GenException(elem, "Type variable bounds not supported " + varTypeArg.getUpperBound());
+          }
         }
         List<? extends TypeMirror> st = typeUtils.directSupertypes(tm);
         for (TypeMirror tmSuper: st) {
@@ -535,6 +538,15 @@ public class Generator {
         boolean isCacheReturn = execElem.getAnnotation(CacheReturn.class) != null;
         boolean isIndexGetter = execElem.getAnnotation(IndexGetter.class) != null;
         boolean isIndexSetter = execElem.getAnnotation(IndexSetter.class) != null;
+        ArrayList<String> typeParams = new ArrayList<>();
+        for (TypeParameterElement typeParam : execElem.getTypeParameters()) {
+          for (TypeMirror bound : typeParam.getBounds()) {
+            if (!isObjectBound(bound)) {
+              throw new GenException(elem, "Type parameter bound not supported " + bound);
+            }
+          }
+          typeParams.add(typeParam.getSimpleName().toString());
+        }
         List<ParamInfo> mParams = getParams(elementUtils, execElem);
         String returnType = execElem.getReturnType().toString();
         if (returnType.equals("void")) {
@@ -575,13 +587,13 @@ public class Generator {
           }
         }
         MethodInfo methodInfo = new MethodInfo(methodName, returnType,
-            isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic);
+            isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic, typeParams);
         meths.add(methodInfo);
         methods.add(methodInfo);
         MethodInfo squashed = squashedMethods.get(methodName);
         if (squashed == null) {
           squashed = new MethodInfo(methodName, returnType,
-              isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic);
+              isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic, typeParams);
           squashedMethods.put(methodName, squashed);
         } else {
           squashed.addParams(mParams);
@@ -603,11 +615,8 @@ public class Generator {
     }
   }
 
-  private void checkInvariant(Element elem, TypeVariable typeVariable) {
-    TypeMirror upperBound = typeVariable.getUpperBound();
-    if (upperBound.getKind() != TypeKind.DECLARED || !upperBound.toString().equals(Object.class.getName())) {
-      throw new GenException(elem, "Type variable upper bounds not supported " + upperBound);
-    }
+  private boolean isObjectBound(TypeMirror bound) {
+    return bound.getKind() == TypeKind.DECLARED && bound.toString().equals(Object.class.getName());
   }
 
   private List<ParamInfo> getParams(Elements elementUtils, ExecutableElement execElem) {

@@ -47,6 +47,8 @@ import io.vertx.test.codegen.testapi.MethodWithObjectReturn;
 import io.vertx.test.codegen.testapi.MethodWithOptionsParam;
 import io.vertx.test.codegen.testapi.MethodWithSetNonBasicTypeReturn;
 import io.vertx.test.codegen.testapi.MethodWithSetParam;
+import io.vertx.test.codegen.testapi.MethodWithTypeParameter;
+import io.vertx.test.codegen.testapi.MethodWithTypeParameterUpperBound;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicBoxedParams;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicParams;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicReturn;
@@ -70,6 +72,7 @@ import io.vertx.test.codegen.testapi.VertxGenClass2;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -351,6 +354,16 @@ public class GeneratorTest {
     }
   }
 
+  @Test
+  public void testMethodWithTypeParameterUpperBound() throws Exception {
+    try {
+      gen.generateModel(MethodWithTypeParameterUpperBound.class);
+      fail("Should throw exception");
+    } catch (GenException e) {
+      // OK
+    }
+  }
+
   // Test valid stuff
   // ----------------
 
@@ -422,6 +435,14 @@ public class GeneratorTest {
     checker.accept(squashed);
   }
 
+  @Test
+  public void testValidTypeParam() throws Exception {
+    gen.generateModel(MethodWithTypeParameter.class);
+    assertEquals(1, gen.getMethods().size());
+    MethodInfo mi = gen.getMethods().get(0);
+    assertEquals("foo", mi.getName());
+    assertEquals(Arrays.asList("T"), mi.getTypeParams());
+  }
 
   @Test
   public void testValidHandlerParams() throws Exception {
