@@ -5,9 +5,8 @@ import io.vertx.codegen.annotations.VertxGen;
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
-@VertxGen
-public interface InterfaceWithSupertypes extends VertxGenClass1, VertxGenInterface1, VertxGenInterface2 {
+@VertxGen(concrete = false)
+public interface VertxGenInterface1 {
 
-  void quux(String str);
-
+  void foo(String str);
 }

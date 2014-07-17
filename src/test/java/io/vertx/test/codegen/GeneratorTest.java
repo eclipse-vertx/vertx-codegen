@@ -10,7 +10,9 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetServerOptions;
+import io.vertx.test.codegen.testapi.AbstractInterfaceExtendingConcreteInterface;
 import io.vertx.test.codegen.testapi.CacheReturnMethodWithVoidReturn;
+import io.vertx.test.codegen.testapi.ConcreteInterfaceExtendingTwoConcreteInterfaces;
 import io.vertx.test.codegen.testapi.FluentMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.GenericInterface;
 import io.vertx.test.codegen.testapi.GenericInterfaceWithUpperBound;
@@ -69,6 +71,8 @@ import io.vertx.test.codegen.testapi.NotInterface;
 import io.vertx.test.codegen.testapi.OverloadedMethodsInWrongOrder;
 import io.vertx.test.codegen.testapi.VertxGenClass1;
 import io.vertx.test.codegen.testapi.VertxGenClass2;
+import io.vertx.test.codegen.testapi.VertxGenInterface1;
+import io.vertx.test.codegen.testapi.VertxGenInterface2;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -358,6 +362,28 @@ public class GeneratorTest {
   public void testMethodWithTypeParameterUpperBound() throws Exception {
     try {
       gen.generateModel(MethodWithTypeParameterUpperBound.class);
+      fail("Should throw exception");
+    } catch (GenException e) {
+      // OK
+    }
+  }
+
+  // Invalid abstract/concrete interfaces
+
+  @Test
+  public void testAbstractInterfaceCannotExtendConcreteInterface() throws Exception {
+    try {
+      gen.generateModel(AbstractInterfaceExtendingConcreteInterface.class);
+      fail("Should throw exception");
+    } catch (GenException e) {
+      // OK
+    }
+  }
+
+  @Test
+  public void testConcreteInterfaceCannotExtendTwoConcreteInterfaces() throws Exception {
+    try {
+      gen.generateModel(ConcreteInterfaceExtendingTwoConcreteInterfaces.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
@@ -863,12 +889,19 @@ public class GeneratorTest {
     gen.generateModel(InterfaceWithSupertypes.class);
     assertEquals(InterfaceWithSupertypes.class.getName(), gen.getIfaceFQCN());
     assertEquals(InterfaceWithSupertypes.class.getSimpleName(), gen.getIfaceSimpleName());
-    assertEquals(2, gen.getReferencedTypes().size());
+    assertEquals(3, gen.getReferencedTypes().size());
     assertTrue(gen.getReferencedTypes().contains(VertxGenClass1.class.getName()));
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2.class.getName()));
-    assertEquals(2, gen.getSuperTypes().size());
+    assertTrue(gen.getReferencedTypes().contains(VertxGenInterface1.class.getName()));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenInterface2.class.getName()));
+    assertEquals(3, gen.getSuperTypes().size());
     assertTrue(gen.getSuperTypes().contains(TypeInfo.create(VertxGenClass1.class)));
-    assertTrue(gen.getSuperTypes().contains(TypeInfo.create(VertxGenClass2.class)));
+    assertTrue(gen.getSuperTypes().contains(TypeInfo.create(VertxGenInterface1.class)));
+    assertTrue(gen.getSuperTypes().contains(TypeInfo.create(VertxGenInterface2.class)));
+    assertEquals(1, gen.getSuperConcreteTypes().size());
+    assertTrue(gen.getSuperConcreteTypes().contains(TypeInfo.create(VertxGenClass1.class)));
+    assertEquals(2, gen.getSuperAbstractTypes().size());
+    assertTrue(gen.getSuperAbstractTypes().contains(TypeInfo.create(VertxGenInterface1.class)));
+    assertTrue(gen.getSuperAbstractTypes().contains(TypeInfo.create(VertxGenInterface2.class)));
     assertEquals(1, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "quux", null, "void", false, false, false, false, false, false, 1);

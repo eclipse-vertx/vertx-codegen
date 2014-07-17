@@ -86,10 +86,13 @@ public class Generator {
   private MyProcessor processor = new MyProcessor();
   private List<MethodInfo> methods = new ArrayList<>();
   private Set<String> referencedTypes = new HashSet<>();
+  private boolean concrete;
   private String ifaceSimpleName;
   private String ifaceFQCN;
   private String ifaceComment;
   private List<TypeInfo.Class> superTypes = new ArrayList<>();
+  private List<TypeInfo.Class> superConcreteTypes = new ArrayList<>();
+  private List<TypeInfo.Class> superAbstractTypes = new ArrayList<>();
   // The methods, grouped by name
   private Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
   private Set<String> referencedOptionsTypes = new HashSet<>();
@@ -207,6 +210,7 @@ public class Generator {
     template = template.replace("\n", "").replace("\\n", "\n").replace("\t", "");
 
     Map<String, Object> vars = new HashMap<>();
+    vars.put("concrete", concrete);
     vars.put("ifaceSimpleName", ifaceSimpleName);
     vars.put("ifaceFQCN", ifaceFQCN);
     vars.put("ifaceComment", ifaceComment);
@@ -214,6 +218,8 @@ public class Generator {
     vars.put("methods", methods);
     vars.put("referencedTypes", referencedTypes);
     vars.put("superTypes", superTypes);
+    vars.put("superConcreteTypes", superConcreteTypes);
+    vars.put("superAbstractTypes", superAbstractTypes);
     vars.put("squashedMethods", squashedMethods.values());
     vars.put("methodsByName", methodMap);
     vars.put("referencedOptionsTypes", referencedOptionsTypes);
@@ -411,6 +417,14 @@ public class Generator {
     return superTypes;
   }
 
+  public List<TypeInfo.Class> getSuperConcreteTypes() {
+    return superConcreteTypes;
+  }
+
+  public List<TypeInfo.Class> getSuperAbstractTypes() {
+    return superAbstractTypes;
+  }
+
   public Map<String, MethodInfo> getSquashedMethods() {
     return squashedMethods;
   }
@@ -496,6 +510,7 @@ public class Generator {
         ifaceFQCN = elem.asType().toString();
         ifaceSimpleName = elem.getSimpleName().toString();
         ifaceComment = elementUtils.getDocComment(elem);
+        concrete = elem.getAnnotation(VertxGen.class).concrete();
         DeclaredType tm = (DeclaredType) elem.asType();
         List<? extends TypeMirror> typeArgs = tm.getTypeArguments();
         for (TypeMirror typeArg : typeArgs) {
@@ -507,16 +522,25 @@ public class Generator {
         List<? extends TypeMirror> st = typeUtils.directSupertypes(tm);
         for (TypeMirror tmSuper: st) {
           Element superElement = typeUtils.asElement(tmSuper);
+          VertxGen superGen = superElement.getAnnotation(VertxGen.class);
           if (!tmSuper.toString().equals(Object.class.getName())) {
             if (superElement.getAnnotation(VertxGen.class) != null) {
               referencedTypes.add(Helper.getNonGenericType(tmSuper.toString()));
             }
             try {
-              superTypes.add(TypeInfo.create(typeUtils, (DeclaredType) tmSuper));
+              TypeInfo.Class superTypeInfo = TypeInfo.create(typeUtils, (DeclaredType) tmSuper);
+              (superGen != null && superGen.concrete() ? superConcreteTypes : superAbstractTypes).add(superTypeInfo);
+              superTypes.add(superTypeInfo);
             } catch (IllegalArgumentException e) {
               throw new GenException(elem, e.getMessage());
             }
           }
+        }
+        if (concrete && superConcreteTypes.size() > 1) {
+          throw new GenException(elem, "A concrete interface cannot extend more than two concrete interfaces");
+        }
+        if (!concrete && superConcreteTypes.size() > 0) {
+          throw new GenException(elem, "A abstract interface cannot extend more a concrete interface");
         }
         break;
       }
