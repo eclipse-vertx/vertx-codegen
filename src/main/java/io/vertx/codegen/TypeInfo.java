@@ -88,16 +88,27 @@ public abstract class TypeInfo {
     public String toString() {
       return name;
     }
+
+    @Override
+    public String toString(boolean qualified) {
+      return name;
+    }
   }
 
   public static class Class extends TypeInfo {
 
     final String fqcn;
+    final String simpleName;
     final List<TypeInfo> typeArguments;
 
     private Class(String fqcn, List<TypeInfo> typeArguments) {
       this.fqcn = fqcn;
+      this.simpleName = Helper.getSimpleName(fqcn);
       this.typeArguments = typeArguments;
+    }
+
+    public String getSimpleName() {
+      return simpleName;
     }
 
     @Override
@@ -111,17 +122,17 @@ public abstract class TypeInfo {
     }
 
     @Override
-    public String toString() {
+    public String toString(boolean qualified) {
       if (typeArguments.isEmpty()) {
-        return fqcn;
+        return qualified ? fqcn : simpleName;
       } else {
-        StringBuilder buf = new StringBuilder(fqcn).append('<');
+        StringBuilder buf = new StringBuilder(qualified ? fqcn : simpleName).append('<');
         for (int i = 0;i < typeArguments.size();i++) {
           TypeInfo typeArgument = typeArguments.get(i);
           if (i > 0) {
             buf.append(',');
           }
-          buf.append(typeArgument);
+          buf.append(typeArgument.toString(qualified));
         }
         buf.append('>');
         return buf.toString();
@@ -130,6 +141,22 @@ public abstract class TypeInfo {
   }
 
   public abstract boolean equals(Object obj);
-  public abstract String toString();
+
+  /**
+   * Renders the type name using fqcn.
+   *
+   * @return the representation of this type
+   */
+  public String toString() {
+    return toString(true);
+  }
+
+  /**
+   * Renders the type name.
+   *
+   * @param qualified true when class fqcn should be used, otherwise simple names will be used
+   * @return the representation of the type
+   */
+  public abstract String toString(boolean qualified);
 
 }
