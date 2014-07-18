@@ -79,10 +79,10 @@ public class Generator {
 
   private static final Logger log = Logger.getLogger(Generator.class.getName());
 
-  private static final String VERTX_ASYNC_RESULT = "io.vertx.core.AsyncResult";
-  private static final String VERTX_HANDLER = "io.vertx.core.Handler";
-  private static final String JSON_OBJECT = "io.vertx.core.json.JsonObject";
-  private static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
+  static final String VERTX_ASYNC_RESULT = "io.vertx.core.AsyncResult";
+  static final String VERTX_HANDLER = "io.vertx.core.Handler";
+  static final String JSON_OBJECT = "io.vertx.core.json.JsonObject";
+  static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
 
   private MyProcessor processor = new MyProcessor();
   private List<MethodInfo> methods = new ArrayList<>();
@@ -667,7 +667,7 @@ public class Generator {
       } catch (Exception e) {
         throw new GenException(param, e.getMessage());
       }
-      ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), type, option);
+      ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), type);
       mParams.add(mParam);
     }
     return mParams;

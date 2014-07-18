@@ -16,6 +16,7 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
+import io.vertx.codegen.annotations.Options;
 import io.vertx.codegen.annotations
 .VertxGen;
 
@@ -23,6 +24,25 @@ import io.vertx.codegen.annotations
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 public class Helper {
+
+  public static TypeKind getKind(AnnotationResolver annotations, String fqcn) {
+    if (annotations.get(Options.class) != null) {
+      return TypeKind.OPTIONS;
+    } else if (annotations.get(VertxGen.class) != null) {
+      return TypeKind.GEN;
+    } else if (fqcn.equals(Generator.VERTX_HANDLER)) {
+      return TypeKind.HANDLER;
+    } else if (fqcn.equals(Generator.VERTX_ASYNC_RESULT)) {
+      return TypeKind.ASYNC_RESULT;
+    } else if (fqcn.equals(Generator.JSON_ARRAY)) {
+      return TypeKind.JSON_ARRAY;
+    } else if (fqcn.equals(Generator.JSON_OBJECT)) {
+      return TypeKind.JSON_OBJECT;
+    } else {
+      return TypeKind.NONE;
+    }
+  }
+
   public static String decapitaliseFirstLetter(String str) {
     if (str.length() == 0) {
       return str;

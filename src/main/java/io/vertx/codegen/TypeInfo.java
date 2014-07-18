@@ -23,14 +23,17 @@ public abstract class TypeInfo {
 
   public static TypeInfo create(Type type) {
     if (type instanceof java.lang.Class) {
-      return new Class(type.getTypeName(), Collections.emptyList());
+      String fqcn = type.getTypeName();
+      return new Class(Helper.getKind(((java.lang.Class) type)::getAnnotation, fqcn), fqcn, Collections.emptyList());
     } else if (type instanceof ParameterizedType) {
       ParameterizedType parameterizedType = (ParameterizedType) type;
       List<TypeInfo> args = Arrays.asList(parameterizedType.getActualTypeArguments()).
           stream().
           map(TypeInfo::create).
           collect(Collectors.toList());
-      return new Class(parameterizedType.getRawType().getTypeName(), args);
+      java.lang.Class raw = (java.lang.Class) parameterizedType.getRawType();
+      String fqcn = raw.getName();
+      return new Class(Helper.getKind(raw::getAnnotation, fqcn), fqcn, args);
     } else if (type instanceof java.lang.reflect.TypeVariable) {
       return new Variable(((java.lang.reflect.TypeVariable)type).getName());
     } else {
@@ -103,7 +106,9 @@ public abstract class TypeInfo {
     } else {
       typeArguments = Collections.emptyList();
     }
-    return new Class(typeUtils.erasure(type).toString(), typeArguments);
+    String fqcn = typeUtils.erasure(type).toString();
+    TypeKind kind = Helper.getKind(annotationType -> type.asElement().getAnnotation(annotationType), fqcn);
+    return new Class(kind, fqcn, typeArguments);
   }
 
   public static class Primitive extends TypeInfo {
@@ -159,14 +164,20 @@ public abstract class TypeInfo {
 
   public static class Class extends TypeInfo {
 
+    final TypeKind kind;
     final String fqcn;
     final String simpleName;
     final List<TypeInfo> typeArguments;
 
-    public Class(String fqcn, List<TypeInfo> typeArguments) {
+    public Class(TypeKind kind, String fqcn, List<TypeInfo> typeArguments) {
+      this.kind = kind;
       this.fqcn = fqcn;
       this.simpleName = Helper.getSimpleName(fqcn);
       this.typeArguments = typeArguments;
+    }
+
+    public TypeKind getKind() {
+      return kind;
     }
 
     public String getSimpleName() {
@@ -209,6 +220,10 @@ public abstract class TypeInfo {
   }
 
   public abstract boolean equals(Object obj);
+
+  public int hashCode() {
+    return toString().hashCode();
+  }
 
   /**
    * Collect the import fqcn needed by this type.

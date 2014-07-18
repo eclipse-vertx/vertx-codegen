@@ -23,12 +23,10 @@ public class ParamInfo {
 
   final String name;
   final TypeInfo type;
-  boolean options;
 
-  public ParamInfo(String name, TypeInfo type, boolean options) {
+  public ParamInfo(String name, TypeInfo type) {
     this.name = name;
     this.type = type;
-    this.options = options;
   }
 
   public String getName() {
@@ -40,7 +38,7 @@ public class ParamInfo {
   }
 
   public boolean isOptions() {
-    return options;
+    return type instanceof TypeInfo.Class && ((TypeInfo.Class) type).getKind() == TypeKind.OPTIONS;
   }
 
   @Override
