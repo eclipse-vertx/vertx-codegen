@@ -177,7 +177,7 @@ public abstract class TypeInfo {
     }
 
     @Override
-    public void collectImports(Collection<String> imports) {
+    public void collectImports(Collection<TypeInfo.Class> imports) {
       raw.collectImports(imports);
       typeArguments.stream().forEach(a -> a.collectImports(imports));
     }
@@ -227,8 +227,8 @@ public abstract class TypeInfo {
     }
 
     @Override
-    public void collectImports(Collection<String> imports) {
-      imports.add(fqcn);
+    public void collectImports(Collection<TypeInfo.Class> imports) {
+      imports.add(this);
     }
 
     @Override
@@ -256,7 +256,7 @@ public abstract class TypeInfo {
    *
    * @param imports the imports
    */
-  public void collectImports(Collection<String> imports) {
+  public void collectImports(Collection<TypeInfo.Class> imports) {
   }
 
   /**

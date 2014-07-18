@@ -86,7 +86,7 @@ public class Generator {
 
   private MyProcessor processor = new MyProcessor();
   private List<MethodInfo> methods = new ArrayList<>();
-  private HashSet<String> importedTypes = new HashSet<>();
+  private HashSet<TypeInfo.Class> importedTypes = new HashSet<>();
   private Set<String> referencedTypes = new HashSet<>();
   private boolean concrete;
   private String ifaceSimpleName;
@@ -546,9 +546,9 @@ public class Generator {
         if (!concrete && superConcreteTypes.size() > 0) {
           throw new GenException(elem, "A abstract interface cannot extend more a concrete interface");
         }
-        for (Iterator<String> i = importedTypes.iterator();i.hasNext();) {
-          String type = i.next();
-          if (type.startsWith("java.lang.") || Helper.getPackageName(type).equals(Helper.getPackageName(ifaceFQCN))) {
+        for (Iterator<TypeInfo.Class> i = importedTypes.iterator();i.hasNext();) {
+          TypeInfo.Class type = i.next();
+          if (type.toString().startsWith("java.lang.") || Helper.getPackageName(type.toString()).equals(Helper.getPackageName(ifaceFQCN))) {
             i.remove();
           }
         }

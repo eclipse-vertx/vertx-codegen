@@ -115,7 +115,7 @@ public class MethodInfo {
     }
   }
 
-  public void collectImports(Collection<String> imports) {
+  public void collectImports(Collection<TypeInfo.Class> imports) {
     params.stream().map(ParamInfo::getType).forEach(a -> a.collectImports(imports));
   }
 }
