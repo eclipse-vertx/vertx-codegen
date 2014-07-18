@@ -17,6 +17,7 @@ package io.vertx.codegen;
  */
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -114,5 +115,7 @@ public class MethodInfo {
     }
   }
 
-
+  public void collectImports(Collection<String> imports) {
+    params.stream().map(ParamInfo::getType).forEach(a -> a.collectImports(imports));
+  }
 }

@@ -581,7 +581,7 @@ public class Generator {
           }
           typeParams.add(typeParam.getSimpleName().toString());
         }
-        List<ParamInfo> mParams = getParams(elementUtils, execElem);
+        List<ParamInfo> mParams = getParams(typeUtils, elementUtils, execElem);
         String returnType = execElem.getReturnType().toString();
         if (returnType.equals("void")) {
           if (isCacheReturn) {
@@ -624,6 +624,7 @@ public class Generator {
             isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic, typeParams);
         meths.add(methodInfo);
         methods.add(methodInfo);
+        methodInfo.collectImports(importedTypes);
         MethodInfo squashed = squashedMethods.get(methodName);
         if (squashed == null) {
           squashed = new MethodInfo(methodName, returnType,
@@ -653,14 +654,20 @@ public class Generator {
     return bound.getKind() == TypeKind.DECLARED && bound.toString().equals(Object.class.getName());
   }
 
-  private List<ParamInfo> getParams(Elements elementUtils, ExecutableElement execElem) {
+  private List<ParamInfo> getParams(Types typeUtils, Elements elementUtils, ExecutableElement execElem) {
     List<? extends VariableElement> params = execElem.getParameters();
     List<ParamInfo> mParams = new ArrayList<>();
     for (VariableElement param: params) {
       String paramType = param.asType().toString();
       checkParamType(elementUtils, execElem, paramType);
       boolean option = isOptionType(elementUtils, execElem, paramType);
-      ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), param.asType().toString(), option);
+      TypeInfo type;
+      try {
+        type = TypeInfo.create(typeUtils, param.asType());
+      } catch (Exception e) {
+        throw new GenException(param, e.getMessage());
+      }
+      ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), type, option);
       mParams.add(mParam);
     }
     return mParams;

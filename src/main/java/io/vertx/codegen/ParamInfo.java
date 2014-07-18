@@ -22,10 +22,10 @@ package io.vertx.codegen;
 public class ParamInfo {
 
   final String name;
-  final String type;
+  final TypeInfo type;
   boolean options;
 
-  public ParamInfo(String name, String type, boolean options) {
+  public ParamInfo(String name, TypeInfo type, boolean options) {
     this.name = name;
     this.type = type;
     this.options = options;
@@ -35,7 +35,7 @@ public class ParamInfo {
     return name;
   }
 
-  public String getType() {
+  public TypeInfo getType() {
     return type;
   }
 

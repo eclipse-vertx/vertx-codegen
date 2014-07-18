@@ -65,6 +65,9 @@ import io.vertx.test.codegen.testapi.MethodWithValidSetReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenParams;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidVoidReturn;
+import io.vertx.test.codegen.testapi.MethodWithWildcardLowerBoundTypeArg;
+import io.vertx.test.codegen.testapi.MethodWithWildcardTypeArg;
+import io.vertx.test.codegen.testapi.MethodWithWildcardUpperBoundTypeArg;
 import io.vertx.test.codegen.testapi.NestedInterface;
 import io.vertx.test.codegen.testapi.NoVertxGen;
 import io.vertx.test.codegen.testapi.NotInterface;
@@ -236,6 +239,26 @@ public class GeneratorTest {
   public void testGenerateMethodWithSetParam() throws Exception {
     try {
       gen.generateModel(MethodWithSetParam.class);
+      fail("Should throw exception");
+    } catch (GenException e) {
+      // OK
+    }
+  }
+
+  @Test
+  public void testGenerateMethodWithWildcardUpperBoundTypeArg() throws Exception {
+    try {
+      gen.generateModel(MethodWithWildcardUpperBoundTypeArg.class);
+      fail("Should throw exception");
+    } catch (GenException e) {
+      // OK
+    }
+  }
+
+  @Test
+  public void testGenerateMethodWithWildcardLowerBoundTypeArg() throws Exception {
+    try {
+      gen.generateModel(MethodWithWildcardLowerBoundTypeArg.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
@@ -468,6 +491,15 @@ public class GeneratorTest {
     MethodInfo mi = gen.getMethods().get(0);
     assertEquals("foo", mi.getName());
     assertEquals(Arrays.asList("T"), mi.getTypeParams());
+  }
+
+  @Test
+  public void testValidWildcardTypeArg() throws Exception {
+    gen.generateModel(MethodWithWildcardTypeArg.class);
+    assertEquals(1, gen.getMethods().size());
+    MethodInfo mi = gen.getMethods().get(0);
+    assertEquals("foo", mi.getName());
+    assertEquals(new TypeInfo.Class(GenericInterface.class.getName(), Arrays.asList(new TypeInfo.Wildcard())), mi.getParams().get(0).getType());
   }
 
   @Test
@@ -1153,7 +1185,7 @@ public class GeneratorTest {
 
   private void checkParam(ParamInfo param, String name, String type, boolean options) {
     assertEquals(name, param.getName());
-    assertEquals(type, param.getType());
+    assertEquals(type, param.getType().toString());
     assertEquals(options, param.isOptions());
   }
 

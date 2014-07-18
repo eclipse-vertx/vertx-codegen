@@ -3,6 +3,7 @@ package io.vertx.codegen;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Types;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -37,6 +38,54 @@ public abstract class TypeInfo {
     }
   }
 
+  public static TypeInfo create(Types typeUtils, TypeMirror type) {
+    switch (type.getKind()) {
+      case DECLARED:
+        return create(typeUtils, (DeclaredType) type);
+      case DOUBLE:
+      case LONG:
+      case FLOAT:
+      case CHAR:
+      case BYTE:
+      case SHORT:
+      case BOOLEAN:
+      case INT:
+        return new Primitive(type.toString());
+      case TYPEVAR:
+        return create(typeUtils, (TypeVariable) type);
+      case WILDCARD:
+        return create(typeUtils, (WildcardType) type);
+      default:
+        throw new IllegalArgumentException("Illegal type " + type + " of kind " + type.getKind());
+    }
+  }
+
+  public static Wildcard create(Types typeUtils, WildcardType type) {
+    if (type.getExtendsBound() != null) {
+      throw new IllegalArgumentException("Wildcard type cannot have an upper bound");
+    }
+    if (type.getSuperBound() != null) {
+      throw new IllegalArgumentException("Wildcard type cannot have a lower bound");
+    }
+    return new Wildcard();
+  }
+
+  /**
+   * Simple wildcard without bound support.
+   */
+  public static class Wildcard extends TypeInfo {
+
+    @Override
+    public boolean equals(Object obj) {
+      return obj instanceof Wildcard;
+    }
+
+    @Override
+    public String toString(boolean qualified) {
+      return "?";
+    }
+  }
+
   public static Variable create(Types typeUtils, TypeVariable type) {
     return new Variable(type.toString());
   }
@@ -47,17 +96,7 @@ public abstract class TypeInfo {
     if (typeArgs.size() > 0) {
       typeArguments = new ArrayList<>(typeArgs.size());
       for (TypeMirror typeArg : typeArgs) {
-        TypeInfo typeArgDesc;
-        switch (typeArg.getKind()) {
-          case DECLARED:
-            typeArgDesc = create(typeUtils, (DeclaredType) typeArg);
-            break;
-          case TYPEVAR:
-            typeArgDesc = create(typeUtils, (TypeVariable) typeArg);
-            break;
-          default:
-            throw new IllegalArgumentException("Unsupported type argument " + typeArg);
-        }
+        TypeInfo typeArgDesc = create(typeUtils, typeArg);
         // Need to check it is an interface type
         typeArguments.add(typeArgDesc);
       }
@@ -67,11 +106,33 @@ public abstract class TypeInfo {
     return new Class(typeUtils.erasure(type).toString(), typeArguments);
   }
 
+  public static class Primitive extends TypeInfo {
+
+    final String name;
+
+    public Primitive(String name) {
+      this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj instanceof Primitive) {
+        return name.equals(((Primitive) obj).name);
+      }
+      return false;
+    }
+
+    @Override
+    public String toString(boolean qualified) {
+      return name;
+    }
+  }
+
   public static class Variable extends TypeInfo {
 
     final String name;
 
-    private Variable(String name) {
+    public Variable(String name) {
       this.name = name;
     }
 
@@ -83,10 +144,6 @@ public abstract class TypeInfo {
       } else {
         return false;
       }
-    }
-
-    @Override
-    public void collectImports(Collection<String> imports) {
     }
 
     @Override
@@ -106,7 +163,7 @@ public abstract class TypeInfo {
     final String simpleName;
     final List<TypeInfo> typeArguments;
 
-    private Class(String fqcn, List<TypeInfo> typeArguments) {
+    public Class(String fqcn, List<TypeInfo> typeArguments) {
       this.fqcn = fqcn;
       this.simpleName = Helper.getSimpleName(fqcn);
       this.typeArguments = typeArguments;
@@ -158,7 +215,8 @@ public abstract class TypeInfo {
    *
    * @param imports the imports
    */
-  public abstract void collectImports(Collection<String> imports);
+  public void collectImports(Collection<String> imports) {
+  }
 
   /**
    * Renders the type name using fqcn.
