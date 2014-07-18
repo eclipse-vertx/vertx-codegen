@@ -8,6 +8,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -85,6 +86,10 @@ public abstract class TypeInfo {
     }
 
     @Override
+    public void collectImports(Collection<String> imports) {
+    }
+
+    @Override
     public String toString() {
       return name;
     }
@@ -109,6 +114,12 @@ public abstract class TypeInfo {
 
     public String getSimpleName() {
       return simpleName;
+    }
+
+    @Override
+    public void collectImports(Collection<String> imports) {
+      imports.add(fqcn);
+      typeArguments.stream().forEach(a -> a.collectImports(imports));
     }
 
     @Override
@@ -141,6 +152,13 @@ public abstract class TypeInfo {
   }
 
   public abstract boolean equals(Object obj);
+
+  /**
+   * Collect the import fqcn needed by this type.
+   *
+   * @param imports the imports
+   */
+  public abstract void collectImports(Collection<String> imports);
 
   /**
    * Renders the type name using fqcn.

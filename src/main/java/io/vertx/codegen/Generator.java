@@ -61,6 +61,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +86,7 @@ public class Generator {
 
   private MyProcessor processor = new MyProcessor();
   private List<MethodInfo> methods = new ArrayList<>();
+  private HashSet<String> importedTypes = new HashSet<>();
   private Set<String> referencedTypes = new HashSet<>();
   private boolean concrete;
   private String ifaceSimpleName;
@@ -210,6 +212,7 @@ public class Generator {
     template = template.replace("\n", "").replace("\\n", "\n").replace("\t", "");
 
     Map<String, Object> vars = new HashMap<>();
+    vars.put("importedTypes", importedTypes);
     vars.put("concrete", concrete);
     vars.put("ifaceSimpleName", ifaceSimpleName);
     vars.put("ifaceFQCN", ifaceFQCN);
@@ -529,6 +532,7 @@ public class Generator {
             }
             try {
               TypeInfo.Class superTypeInfo = TypeInfo.create(typeUtils, (DeclaredType) tmSuper);
+              superTypeInfo.collectImports(importedTypes);
               (superGen != null && superGen.concrete() ? superConcreteTypes : superAbstractTypes).add(superTypeInfo);
               superTypes.add(superTypeInfo);
             } catch (IllegalArgumentException e) {
@@ -541,6 +545,12 @@ public class Generator {
         }
         if (!concrete && superConcreteTypes.size() > 0) {
           throw new GenException(elem, "A abstract interface cannot extend more a concrete interface");
+        }
+        for (Iterator<String> i = importedTypes.iterator();i.hasNext();) {
+          String type = i.next();
+          if (type.startsWith("java.lang.") || Helper.getPackageName(type).equals(Helper.getPackageName(ifaceFQCN))) {
+            i.remove();
+          }
         }
         break;
       }
