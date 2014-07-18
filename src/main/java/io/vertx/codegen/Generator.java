@@ -92,9 +92,9 @@ public class Generator {
   private String ifaceSimpleName;
   private String ifaceFQCN;
   private String ifaceComment;
-  private List<TypeInfo.Class> superTypes = new ArrayList<>();
-  private List<TypeInfo.Class> superConcreteTypes = new ArrayList<>();
-  private List<TypeInfo.Class> superAbstractTypes = new ArrayList<>();
+  private List<TypeInfo> superTypes = new ArrayList<>();
+  private List<TypeInfo> superConcreteTypes = new ArrayList<>();
+  private List<TypeInfo> superAbstractTypes = new ArrayList<>();
   // The methods, grouped by name
   private Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
   private Set<String> referencedOptionsTypes = new HashSet<>();
@@ -416,15 +416,15 @@ public class Generator {
     return ifaceComment;
   }
 
-  public List<TypeInfo.Class> getSuperTypes() {
+  public List<TypeInfo> getSuperTypes() {
     return superTypes;
   }
 
-  public List<TypeInfo.Class> getSuperConcreteTypes() {
+  public List<TypeInfo> getSuperConcreteTypes() {
     return superConcreteTypes;
   }
 
-  public List<TypeInfo.Class> getSuperAbstractTypes() {
+  public List<TypeInfo> getSuperAbstractTypes() {
     return superAbstractTypes;
   }
 
@@ -531,7 +531,7 @@ public class Generator {
               referencedTypes.add(Helper.getNonGenericType(tmSuper.toString()));
             }
             try {
-              TypeInfo.Class superTypeInfo = TypeInfo.create(typeUtils, (DeclaredType) tmSuper);
+              TypeInfo superTypeInfo = TypeInfo.create(typeUtils, (DeclaredType) tmSuper);
               superTypeInfo.collectImports(importedTypes);
               (superGen != null && superGen.concrete() ? superConcreteTypes : superAbstractTypes).add(superTypeInfo);
               superTypes.add(superTypeInfo);

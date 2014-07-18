@@ -10,7 +10,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +23,7 @@ public abstract class TypeInfo {
   public static TypeInfo create(Type type) {
     if (type instanceof java.lang.Class) {
       String fqcn = type.getTypeName();
-      return new Class(Helper.getKind(((java.lang.Class) type)::getAnnotation, fqcn), fqcn, Collections.emptyList());
+      return new Class(Helper.getKind(((java.lang.Class) type)::getAnnotation, fqcn), fqcn);
     } else if (type instanceof ParameterizedType) {
       ParameterizedType parameterizedType = (ParameterizedType) type;
       List<TypeInfo> args = Arrays.asList(parameterizedType.getActualTypeArguments()).
@@ -33,7 +32,7 @@ public abstract class TypeInfo {
           collect(Collectors.toList());
       java.lang.Class raw = (java.lang.Class) parameterizedType.getRawType();
       String fqcn = raw.getName();
-      return new Class(Helper.getKind(raw::getAnnotation, fqcn), fqcn, args);
+      return new Parameterized(new Class(Helper.getKind(raw::getAnnotation, fqcn), fqcn), args);
     } else if (type instanceof java.lang.reflect.TypeVariable) {
       return new Variable(((java.lang.reflect.TypeVariable)type).getName());
     } else {
@@ -93,22 +92,23 @@ public abstract class TypeInfo {
     return new Variable(type.toString());
   }
 
-  public static Class create(Types typeUtils, DeclaredType type) {
+  public static TypeInfo create(Types typeUtils, DeclaredType type) {
+    String fqcn = typeUtils.erasure(type).toString();
+    TypeKind kind = Helper.getKind(annotationType -> type.asElement().getAnnotation(annotationType), fqcn);
+    Class raw = new Class(kind, fqcn);
     List<? extends TypeMirror> typeArgs = type.getTypeArguments();
-    List<TypeInfo> typeArguments;
     if (typeArgs.size() > 0) {
+      List<TypeInfo> typeArguments;
       typeArguments = new ArrayList<>(typeArgs.size());
       for (TypeMirror typeArg : typeArgs) {
         TypeInfo typeArgDesc = create(typeUtils, typeArg);
         // Need to check it is an interface type
         typeArguments.add(typeArgDesc);
       }
+      return new Parameterized(raw, typeArguments);
     } else {
-      typeArguments = Collections.emptyList();
+      return raw;
     }
-    String fqcn = typeUtils.erasure(type).toString();
-    TypeKind kind = Helper.getKind(annotationType -> type.asElement().getAnnotation(annotationType), fqcn);
-    return new Class(kind, fqcn, typeArguments);
   }
 
   public static class Primitive extends TypeInfo {
@@ -162,18 +162,60 @@ public abstract class TypeInfo {
     }
   }
 
+  public static class Parameterized extends TypeInfo {
+
+    final Class raw;
+    final List<TypeInfo> typeArguments;
+
+    public Parameterized(Class raw, List<TypeInfo> typeArguments) {
+      this.raw = raw;
+      this.typeArguments = typeArguments;
+    }
+
+    public Class getRaw() {
+      return raw;
+    }
+
+    @Override
+    public void collectImports(Collection<String> imports) {
+      raw.collectImports(imports);
+      typeArguments.stream().forEach(a -> a.collectImports(imports));
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj instanceof Parameterized) {
+        Parameterized that = (Parameterized) obj;
+        return raw.equals(that.raw) && typeArguments.equals(that.typeArguments);
+      }
+      return false;
+    }
+
+    @Override
+    public String toString(boolean qualified) {
+      StringBuilder buf = new StringBuilder(raw.toString(qualified)).append('<');
+      for (int i = 0;i < typeArguments.size();i++) {
+        TypeInfo typeArgument = typeArguments.get(i);
+        if (i > 0) {
+          buf.append(',');
+        }
+        buf.append(typeArgument.toString(qualified));
+      }
+      buf.append('>');
+      return buf.toString();
+    }
+  }
+
   public static class Class extends TypeInfo {
 
     final TypeKind kind;
     final String fqcn;
     final String simpleName;
-    final List<TypeInfo> typeArguments;
 
-    public Class(TypeKind kind, String fqcn, List<TypeInfo> typeArguments) {
+    public Class(TypeKind kind, String fqcn) {
       this.kind = kind;
       this.fqcn = fqcn;
       this.simpleName = Helper.getSimpleName(fqcn);
-      this.typeArguments = typeArguments;
     }
 
     public TypeKind getKind() {
@@ -187,35 +229,19 @@ public abstract class TypeInfo {
     @Override
     public void collectImports(Collection<String> imports) {
       imports.add(fqcn);
-      typeArguments.stream().forEach(a -> a.collectImports(imports));
     }
 
     @Override
     public boolean equals(Object obj) {
       if (obj instanceof Class) {
-        Class that = (Class) obj;
-        return fqcn.equals(that.fqcn) && typeArguments.equals(that.typeArguments);
-      } else {
-        return false;
+        return fqcn.equals(((Class) obj).fqcn);
       }
+      return false;
     }
 
     @Override
     public String toString(boolean qualified) {
-      if (typeArguments.isEmpty()) {
-        return qualified ? fqcn : simpleName;
-      } else {
-        StringBuilder buf = new StringBuilder(qualified ? fqcn : simpleName).append('<');
-        for (int i = 0;i < typeArguments.size();i++) {
-          TypeInfo typeArgument = typeArguments.get(i);
-          if (i > 0) {
-            buf.append(',');
-          }
-          buf.append(typeArgument.toString(qualified));
-        }
-        buf.append('>');
-        return buf.toString();
-      }
+      return qualified ? fqcn : simpleName;
     }
   }
 

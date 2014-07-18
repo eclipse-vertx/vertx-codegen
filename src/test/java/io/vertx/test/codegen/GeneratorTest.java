@@ -500,7 +500,7 @@ public class GeneratorTest {
     assertEquals(1, gen.getMethods().size());
     MethodInfo mi = gen.getMethods().get(0);
     assertEquals("foo", mi.getName());
-    assertEquals(new TypeInfo.Class(TypeKind.GEN, GenericInterface.class.getName(), Arrays.asList(new TypeInfo.Wildcard())), mi.getParams().get(0).getType());
+    assertEquals(new TypeInfo.Parameterized(new TypeInfo.Class(TypeKind.GEN, GenericInterface.class.getName()), Arrays.asList(new TypeInfo.Wildcard())), mi.getParams().get(0).getType());
   }
 
   @Test
@@ -1193,6 +1193,12 @@ public class GeneratorTest {
 
   private void checkClassParam(ParamInfo param, String name, String type, TypeKind kind) {
     checkParam(param, name, type);
-    assertEquals(kind, ((TypeInfo.Class) param.getType()).getKind());
+    TypeInfo.Class classType;
+    if (param.getType() instanceof TypeInfo.Class) {
+      classType = (TypeInfo.Class) param.getType();
+    } else {
+      classType = ((TypeInfo.Parameterized) param.getType()).getRaw();
+    }
+    assertEquals(kind, classType.getKind());
   }
 }
