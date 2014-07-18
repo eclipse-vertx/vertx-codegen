@@ -83,7 +83,7 @@ public abstract class TypeInfo {
     }
 
     @Override
-    public String toString(boolean qualified) {
+    public String format(boolean qualified) {
       return "?";
     }
   }
@@ -128,7 +128,7 @@ public abstract class TypeInfo {
     }
 
     @Override
-    public String toString(boolean qualified) {
+    public String format(boolean qualified) {
       return name;
     }
   }
@@ -157,7 +157,7 @@ public abstract class TypeInfo {
     }
 
     @Override
-    public String toString(boolean qualified) {
+    public String format(boolean qualified) {
       return name;
     }
   }
@@ -192,14 +192,14 @@ public abstract class TypeInfo {
     }
 
     @Override
-    public String toString(boolean qualified) {
-      StringBuilder buf = new StringBuilder(raw.toString(qualified)).append('<');
+    public String format(boolean qualified) {
+      StringBuilder buf = new StringBuilder(raw.format(qualified)).append('<');
       for (int i = 0;i < typeArguments.size();i++) {
         TypeInfo typeArgument = typeArguments.get(i);
         if (i > 0) {
           buf.append(',');
         }
-        buf.append(typeArgument.toString(qualified));
+        buf.append(typeArgument.format(qualified));
       }
       buf.append('>');
       return buf.toString();
@@ -240,7 +240,7 @@ public abstract class TypeInfo {
     }
 
     @Override
-    public String toString(boolean qualified) {
+    public String format(boolean qualified) {
       return qualified ? fqcn : simpleName;
     }
   }
@@ -260,12 +260,19 @@ public abstract class TypeInfo {
   }
 
   /**
+   * @return the type name
+   */
+  public String getName() {
+    return format(true);
+  }
+
+  /**
    * Renders the type name using fqcn.
    *
    * @return the representation of this type
    */
   public String toString() {
-    return toString(true);
+    return getName();
   }
 
   /**
@@ -274,6 +281,6 @@ public abstract class TypeInfo {
    * @param qualified true when class fqcn should be used, otherwise simple names will be used
    * @return the representation of the type
    */
-  public abstract String toString(boolean qualified);
+  public abstract String format(boolean qualified);
 
 }
