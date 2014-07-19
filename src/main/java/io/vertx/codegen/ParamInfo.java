@@ -22,25 +22,23 @@ package io.vertx.codegen;
 public class ParamInfo {
 
   final String name;
-  final String type;
-  boolean options;
+  final TypeInfo type;
 
-  public ParamInfo(String name, String type, boolean options) {
+  public ParamInfo(String name, TypeInfo type) {
     this.name = name;
     this.type = type;
-    this.options = options;
   }
 
   public String getName() {
     return name;
   }
 
-  public String getType() {
+  public TypeInfo getType() {
     return type;
   }
 
   public boolean isOptions() {
-    return options;
+    return type instanceof TypeInfo.Class && ((TypeInfo.Class) type).getKind() == TypeKind.OPTIONS;
   }
 
   @Override

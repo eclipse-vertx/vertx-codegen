@@ -2,12 +2,13 @@ package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.VertxGen;
 
+import java.util.List;
+
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @VertxGen
-public interface InterfaceWithSupertypes extends VertxGenClass1, VertxGenInterface1, VertxGenInterface2 {
+public interface MethodWithTypeParameterUpperBound {
 
-  void quux(String str);
-
+  <T extends String> T foo();
 }

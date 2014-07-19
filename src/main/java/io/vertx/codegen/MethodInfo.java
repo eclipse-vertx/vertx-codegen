@@ -17,6 +17,7 @@ package io.vertx.codegen;
  */
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -34,9 +35,10 @@ public class MethodInfo {
   final String comment;
   final boolean staticMethod;
   boolean squashed;
+  List<String> typeParams;
 
   public MethodInfo(String name, String returnType, boolean fluent, boolean indexGetter, boolean indexSetter,
-                    boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod) {
+                    boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod, List<String> typeParams) {
     this.name = name;
     this.returnType = returnType;
     this.fluent = fluent;
@@ -46,6 +48,7 @@ public class MethodInfo {
     this.comment = comment;
     this.staticMethod = staticMethod;
     addParams(params);
+    this.typeParams = typeParams;
   }
 
   public String getName() {
@@ -92,6 +95,10 @@ public class MethodInfo {
     return staticMethod;
   }
 
+  public List<String> getTypeParams() {
+    return typeParams;
+  }
+
   public void addParams(List<ParamInfo> params) {
     if (params == null) {
       throw new NullPointerException("params");
@@ -108,5 +115,7 @@ public class MethodInfo {
     }
   }
 
-
+  public void collectImports(Collection<TypeInfo.Class> imports) {
+    params.stream().map(ParamInfo::getType).forEach(a -> a.collectImports(imports));
+  }
 }

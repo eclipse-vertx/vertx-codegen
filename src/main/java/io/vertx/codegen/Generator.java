@@ -36,7 +36,11 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -57,6 +61,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,19 +79,23 @@ public class Generator {
 
   private static final Logger log = Logger.getLogger(Generator.class.getName());
 
-  private static final String VERTX_ASYNC_RESULT = "io.vertx.core.AsyncResult";
-  private static final String VERTX_HANDLER = "io.vertx.core.Handler";
-  private static final String JSON_OBJECT = "io.vertx.core.json.JsonObject";
-  private static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
-  private static final String VERTX = "io.vertx.core.Vertx";
+  public static final String VERTX_ASYNC_RESULT = "io.vertx.core.AsyncResult";
+  public static final String VERTX_HANDLER = "io.vertx.core.Handler";
+  public static final String JSON_OBJECT = "io.vertx.core.json.JsonObject";
+  public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
+  public static final String VERTX = "io.vertx.core.Vertx";
 
   private MyProcessor processor = new MyProcessor();
   private List<MethodInfo> methods = new ArrayList<>();
+  private HashSet<TypeInfo.Class> importedTypes = new HashSet<>();
   private Set<String> referencedTypes = new HashSet<>();
+  private boolean concrete;
   private String ifaceSimpleName;
   private String ifaceFQCN;
   private String ifaceComment;
-  private List<String> superTypes = new ArrayList<>();
+  private List<TypeInfo> superTypes = new ArrayList<>();
+  private List<TypeInfo> superConcreteTypes = new ArrayList<>();
+  private List<TypeInfo> superAbstractTypes = new ArrayList<>();
   // The methods, grouped by name
   private Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
   private Set<String> referencedOptionsTypes = new HashSet<>();
@@ -204,6 +213,8 @@ public class Generator {
     template = template.replace("\n", "").replace("\\n", "\n").replace("\t", "");
 
     Map<String, Object> vars = new HashMap<>();
+    vars.put("importedTypes", importedTypes);
+    vars.put("concrete", concrete);
     vars.put("ifaceSimpleName", ifaceSimpleName);
     vars.put("ifaceFQCN", ifaceFQCN);
     vars.put("ifaceComment", ifaceComment);
@@ -211,6 +222,8 @@ public class Generator {
     vars.put("methods", methods);
     vars.put("referencedTypes", referencedTypes);
     vars.put("superTypes", superTypes);
+    vars.put("superConcreteTypes", superConcreteTypes);
+    vars.put("superAbstractTypes", superAbstractTypes);
     vars.put("squashedMethods", squashedMethods.values());
     vars.put("methodsByName", methodMap);
     vars.put("referencedOptionsTypes", referencedOptionsTypes);
@@ -404,8 +417,16 @@ public class Generator {
     return ifaceComment;
   }
 
-  public List<String> getSuperTypes() {
+  public List<TypeInfo> getSuperTypes() {
     return superTypes;
+  }
+
+  public List<TypeInfo> getSuperConcreteTypes() {
+    return superConcreteTypes;
+  }
+
+  public List<TypeInfo> getSuperAbstractTypes() {
+    return superAbstractTypes;
   }
 
   public Map<String, MethodInfo> getSquashedMethods() {
@@ -493,15 +514,43 @@ public class Generator {
         ifaceFQCN = elem.asType().toString();
         ifaceSimpleName = elem.getSimpleName().toString();
         ifaceComment = elementUtils.getDocComment(elem);
-        TypeMirror tm = elem.asType();
+        concrete = elem.getAnnotation(VertxGen.class).concrete();
+        DeclaredType tm = (DeclaredType) elem.asType();
+        List<? extends TypeMirror> typeArgs = tm.getTypeArguments();
+        for (TypeMirror typeArg : typeArgs) {
+          TypeVariable varTypeArg = (TypeVariable) typeArg;
+          if (!isObjectBound(varTypeArg.getUpperBound())) {
+            throw new GenException(elem, "Type variable bounds not supported " + varTypeArg.getUpperBound());
+          }
+        }
         List<? extends TypeMirror> st = typeUtils.directSupertypes(tm);
         for (TypeMirror tmSuper: st) {
           Element superElement = typeUtils.asElement(tmSuper);
+          VertxGen superGen = superElement.getAnnotation(VertxGen.class);
           if (!tmSuper.toString().equals(Object.class.getName())) {
             if (superElement.getAnnotation(VertxGen.class) != null) {
               referencedTypes.add(Helper.getNonGenericType(tmSuper.toString()));
             }
-            superTypes.add(tmSuper.toString());
+            try {
+              TypeInfo superTypeInfo = TypeInfo.create(typeUtils, (DeclaredType) tmSuper);
+              superTypeInfo.collectImports(importedTypes);
+              (superGen != null && superGen.concrete() ? superConcreteTypes : superAbstractTypes).add(superTypeInfo);
+              superTypes.add(superTypeInfo);
+            } catch (IllegalArgumentException e) {
+              throw new GenException(elem, e.getMessage());
+            }
+          }
+        }
+        if (concrete && superConcreteTypes.size() > 1) {
+          throw new GenException(elem, "A concrete interface cannot extend more than two concrete interfaces");
+        }
+        if (!concrete && superConcreteTypes.size() > 0) {
+          throw new GenException(elem, "A abstract interface cannot extend more a concrete interface");
+        }
+        for (Iterator<TypeInfo.Class> i = importedTypes.iterator();i.hasNext();) {
+          TypeInfo.Class type = i.next();
+          if (type.toString().startsWith("java.lang.") || Helper.getPackageName(type.toString()).equals(Helper.getPackageName(ifaceFQCN))) {
+            i.remove();
           }
         }
         break;
@@ -524,7 +573,16 @@ public class Generator {
         boolean isCacheReturn = execElem.getAnnotation(CacheReturn.class) != null;
         boolean isIndexGetter = execElem.getAnnotation(IndexGetter.class) != null;
         boolean isIndexSetter = execElem.getAnnotation(IndexSetter.class) != null;
-        List<ParamInfo> mParams = getParams(elementUtils, execElem);
+        ArrayList<String> typeParams = new ArrayList<>();
+        for (TypeParameterElement typeParam : execElem.getTypeParameters()) {
+          for (TypeMirror bound : typeParam.getBounds()) {
+            if (!isObjectBound(bound)) {
+              throw new GenException(elem, "Type parameter bound not supported " + bound);
+            }
+          }
+          typeParams.add(typeParam.getSimpleName().toString());
+        }
+        List<ParamInfo> mParams = getParams(typeUtils, elementUtils, execElem);
         String returnType = execElem.getReturnType().toString();
         if (returnType.equals("void")) {
           if (isCacheReturn) {
@@ -564,13 +622,14 @@ public class Generator {
           }
         }
         MethodInfo methodInfo = new MethodInfo(methodName, returnType,
-            isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic);
+            isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic, typeParams);
         meths.add(methodInfo);
         methods.add(methodInfo);
+        methodInfo.collectImports(importedTypes);
         MethodInfo squashed = squashedMethods.get(methodName);
         if (squashed == null) {
           squashed = new MethodInfo(methodName, returnType,
-              isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic);
+              isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic, typeParams);
           squashedMethods.put(methodName, squashed);
         } else {
           squashed.addParams(mParams);
@@ -592,14 +651,24 @@ public class Generator {
     }
   }
 
-  private List<ParamInfo> getParams(Elements elementUtils, ExecutableElement execElem) {
+  private boolean isObjectBound(TypeMirror bound) {
+    return bound.getKind() == TypeKind.DECLARED && bound.toString().equals(Object.class.getName());
+  }
+
+  private List<ParamInfo> getParams(Types typeUtils, Elements elementUtils, ExecutableElement execElem) {
     List<? extends VariableElement> params = execElem.getParameters();
     List<ParamInfo> mParams = new ArrayList<>();
     for (VariableElement param: params) {
       String paramType = param.asType().toString();
       checkParamType(elementUtils, execElem, paramType);
       boolean option = isOptionType(elementUtils, execElem, paramType);
-      ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), param.asType().toString(), option);
+      TypeInfo type;
+      try {
+        type = TypeInfo.create(typeUtils, param.asType());
+      } catch (Exception e) {
+        throw new GenException(param, e.getMessage());
+      }
+      ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), type);
       mParams.add(mParam);
     }
     return mParams;
