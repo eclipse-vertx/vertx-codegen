@@ -30,6 +30,8 @@ We define the following set `B` of basic types:
 * any primitive type
 * any boxed primitive type
 * `java.lang.String`
+* `io.vertx.core.json.JsonObject`
+* `io.vertx.core.json.JsonArray`
 
 We define `V` as the set of user defined API types which are defined in its own interface and annotated with `@VertxGen`
 
