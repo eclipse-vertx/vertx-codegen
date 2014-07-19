@@ -78,6 +78,7 @@ public class Generator {
   private static final String VERTX_HANDLER = "io.vertx.core.Handler";
   private static final String JSON_OBJECT = "io.vertx.core.json.JsonObject";
   private static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
+  private static final String VERTX = "io.vertx.core.Vertx";
 
   private MyProcessor processor = new MyProcessor();
   private List<MethodInfo> methods = new ArrayList<>();
@@ -347,7 +348,7 @@ public class Generator {
     try {
       TypeElement clazz = elementUtils.getTypeElement(Helper.getNonGenericType(type));
       boolean isVertxGen = clazz.getAnnotation(VertxGen.class) != null;
-      if (isVertxGen) {
+      if (isVertxGen && !type.equals(VERTX)) {
         referencedTypes.add(Helper.getNonGenericType(type));
       }
       return isVertxGen;
