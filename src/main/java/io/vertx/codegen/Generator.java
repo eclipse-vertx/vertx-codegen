@@ -644,7 +644,7 @@ public class Generator {
     if (elem.getKind() == ElementKind.INTERFACE) {
       // We're done
       if (methods.isEmpty() && superTypes.isEmpty()) {
-        throw new IllegalArgumentException("Interface " + ifaceFQCN + " does not contain any methods for generation");
+        throw new GenException(elem, "Interface " + ifaceFQCN + " does not contain any methods for generation");
       }
       referencedTypes.remove(Helper.getNonGenericType(ifaceFQCN)); // don't reference yourself
       sortMethodMap(methodMap);

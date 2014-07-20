@@ -137,7 +137,7 @@ public class GeneratorTest {
     try {
       gen.generateModel(InterfaceWithNoMethods.class);
       fail("Should throw exception");
-    } catch (IllegalArgumentException e) {
+    } catch (GenException e) {
       // OK
     }
   }
@@ -147,7 +147,7 @@ public class GeneratorTest {
     try {
       gen.generateModel(InterfaceWithNoNotIgnoredMethods.class);
       fail("Should throw exception");
-    } catch (IllegalArgumentException e) {
+    } catch (GenException e) {
       // OK
     }
   }
@@ -157,7 +157,7 @@ public class GeneratorTest {
     try {
       gen.generateModel(InterfaceWithDefaultMethod.class);
       fail("Should throw exception");
-    } catch (IllegalArgumentException e) {
+    } catch (GenException e) {
       // OK
     }
   }
