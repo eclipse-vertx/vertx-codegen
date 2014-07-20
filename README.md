@@ -11,15 +11,11 @@ The constraints are
 * The API must be described as a set of Java interfaces, classes are not permitted
 * Default methods are not permitted
 * Nested interfaces are not permitted
-* All interfaces to have generation performed on them must be annotated with the `io.vertx.codegen.annotations
-.VertxGen` annotation
-* Fluent methods (methods which return a reference to this) must be annotated with the `io.vertx.codegen.annotations
-.Fluent` annotation
-* Options classes (classes which provide configuration options to methods) must be annotated with the `io.vertx.codegen.annotations
-.Options` annotation
+* All interfaces to have generation performed on them must be annotated with the `io.vertx.codegen.annotations.VertxGen` annotation
+* Fluent methods (methods which return a reference to this) must be annotated with the `io.vertx.codegen.annotations.Fluent` annotation
+* Options classes (classes which provide configuration options to methods) must be annotated with the `io.vertx.codegen.annotations.Options` annotation
 * Options classes must provide a constructor which takes a single `io.vertx.core.json.JsonObject` parameter.
-* Methods where the return value must be cached in the API shim must be annotated with the `io.vertx.codegen.annotations
-.CacheReturn` annotation
+* Methods where the return value must be cached in the API shim must be annotated with the `io.vertx.codegen.annotations.CacheReturn` annotation
 * Only certain types are allowed as parameter or return value types for any API methods (defined below).
 
 
@@ -95,7 +91,17 @@ You may add static factory methods in your interfaces, e.g.
 
 ### Super interfaces
 
-Interfaces can extend other interfaces with also have the `@VertxGen` annotation.
+Interfaces can extend other interfaces which also have the `@VertxGen` annotation.
+
+### *Concrete*/*abstract* interfaces
+
+Interfaces annotated with `@VertxGen` can either be *concrete* or *abstract*, such information is important
+for languages not supporting multiple class inheritance like Groovy:
+
+- interfaces annotated with `@VertxGen(concrete = false)` are meant to be extended by *concrete* interfaces and
+can inherit from *abstract* interfaces only.
+- interfaces annotated with `@VertxGen` or `@VertxGen(concrete = true)` are implemented directly by Vertx
+and can inherit at most one other *concrete* interface and any *abstract* interface
 
 ### Ignoring methods
 
@@ -117,16 +123,38 @@ The following variables are made available to templates:
 * `ifaceSimpleName` - the simple name of the Java interface
 * `ifaceFQCN` - the fully qualified class name of the Java interface
 * `ifaceComment` - the class comment from the Java interface
+* `concrete` - true when the interface is implemented by vert.x useful to decide the generation of a class or interface in the API shim
 * `helper` - a helper class that of type `io.vertx.codegen.Helper` which contains useful methods for things such as
 converting CamelCase to underscores.
 * `methods` - a list of `MethodInfo` objects describing each method in the interface.
 * `referencedTypes` - a list of strings representing the set of user defined types (also annotated with `VertxGen`) which
 are referenced from the current interface
-* `superTypes` - a list of strings representing the set of user defined types which the current interface extends from
+* `superTypes` - a list of `TypeInfo` representing the set of user defined types which the current interface extends from
+* `concreteSuperTypes` - subset of `superTypes` which are *concrete*
+* `abstractSuperTypes` - subset of `superTypes` which are *abstract*
 * `squashedMethods` - this is a list of methods where all methods of the same name (i.e. overloaded methods) are squashed
 into a single method.
 * `methodMap` - this is a Map<String, MethodInfo> - which allows you to look up all methods with a given name
+* `importedTypes`- this is a `Set<TypeInfo>` containing the types used by this class
 
+The `TypeInfo` represents a Java type:
+
+* `name`. Generates a string of a form suitable for representing this type in source code using qualified names, for instance `io.vertx.core.Handler<io.vertx.core.buffer.Buffer>`
+* `simpleName`. Generates a string of a form suitable for representing this type in source code using simple names, for instance `Handler<Buffer>`
+* `toString`. Same as `name`
+* `collectImports(Collection<TypeInfo.Class> imports)`. Collect all imports required by this type
+
+
+The `TypeInfo.Class` is a subclass of `TypeInfo` representing a Java class:
+
+* `kind`. An enum providing more information about the type
+    * `GEN` a generated type annotated with @VertxGen
+    * `OPTIONS` an option type annotated with @Options
+    * `HANDLER` the `io.vertx.core.Handler` type
+    * `ASYNC_RESULT` the `io.vertx.core.AsyncResult` type
+    * `JSON_OBJECT` the `io.vertx.core.json.JsonObject` type
+    * `JSON_ARRAY`  the `io.vertx.core.json.JsonArray` type
+    * `NONE` none of the above
 
 The `MethodInfo` object has the following fields:
 
@@ -138,11 +166,12 @@ The `MethodInfo` object has the following fields:
 * `comment`. Method comment.
 * `params`. List of `ParamInfo` objects representing the parameters of the method.
 * `staticMethod`. `true` if it's a static method.
+* `typeParams`. The list of the type parameters declared by the method
 
 The `ParamInfo` object has the following fields:
 
 * `name`. The name of the parameter
-* `type`. The fully qualified type of the parameter
+* `type`. The type of the parameter as a `TypeInfo`
 * `options`. `true` If the parameter is an options type.
 
 
