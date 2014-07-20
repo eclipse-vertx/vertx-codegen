@@ -222,10 +222,6 @@ public abstract class TypeInfo {
       return kind;
     }
 
-    public String getSimpleName() {
-      return simpleName;
-    }
-
     @Override
     public void collectImports(Collection<TypeInfo.Class> imports) {
       imports.add(this);
@@ -260,16 +256,21 @@ public abstract class TypeInfo {
   }
 
   /**
-   * @return the type name
+   * @return the declaration suitable for source code represented using qualified names, for instance
+   * <code>io.vertx.core.Handler&lt;io.vertx.core.buffer.Buffer&gt;</code>
    */
   public String getName() {
     return format(true);
   }
 
   /**
-   * Renders the type name using fqcn.
-   *
-   * @return the representation of this type
+   * @return the declaration suitable for source code represented using unqualified names, for instance
+   * <code>Handler&lt;Buffer&gt;</code>
+   */
+  public String getSimpleName() { return format(false); }
+
+  /**
+   * @return the @{link #getName} value of this type
    */
   public String toString() {
     return getName();
@@ -281,6 +282,6 @@ public abstract class TypeInfo {
    * @param qualified true when class fqcn should be used, otherwise simple names will be used
    * @return the representation of the type
    */
-  public abstract String format(boolean qualified);
+  abstract String format(boolean qualified);
 
 }

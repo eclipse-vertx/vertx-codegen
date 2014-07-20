@@ -94,8 +94,8 @@ public class Generator {
   private String ifaceFQCN;
   private String ifaceComment;
   private List<TypeInfo> superTypes = new ArrayList<>();
-  private List<TypeInfo> superConcreteTypes = new ArrayList<>();
-  private List<TypeInfo> superAbstractTypes = new ArrayList<>();
+  private List<TypeInfo> concreteSuperTypes = new ArrayList<>();
+  private List<TypeInfo> abstractSuperTypes = new ArrayList<>();
   // The methods, grouped by name
   private Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
   private Set<String> referencedOptionsTypes = new HashSet<>();
@@ -222,8 +222,8 @@ public class Generator {
     vars.put("methods", methods);
     vars.put("referencedTypes", referencedTypes);
     vars.put("superTypes", superTypes);
-    vars.put("superConcreteTypes", superConcreteTypes);
-    vars.put("superAbstractTypes", superAbstractTypes);
+    vars.put("concreteSuperTypes", concreteSuperTypes);
+    vars.put("abstractSuperTypes", abstractSuperTypes);
     vars.put("squashedMethods", squashedMethods.values());
     vars.put("methodsByName", methodMap);
     vars.put("referencedOptionsTypes", referencedOptionsTypes);
@@ -421,12 +421,12 @@ public class Generator {
     return superTypes;
   }
 
-  public List<TypeInfo> getSuperConcreteTypes() {
-    return superConcreteTypes;
+  public List<TypeInfo> getConcreteSuperTypes() {
+    return concreteSuperTypes;
   }
 
-  public List<TypeInfo> getSuperAbstractTypes() {
-    return superAbstractTypes;
+  public List<TypeInfo> getAbstractSuperTypes() {
+    return abstractSuperTypes;
   }
 
   public Map<String, MethodInfo> getSquashedMethods() {
@@ -534,22 +534,22 @@ public class Generator {
             try {
               TypeInfo superTypeInfo = TypeInfo.create(typeUtils, (DeclaredType) tmSuper);
               superTypeInfo.collectImports(importedTypes);
-              (superGen != null && superGen.concrete() ? superConcreteTypes : superAbstractTypes).add(superTypeInfo);
+              (superGen != null && superGen.concrete() ? concreteSuperTypes : abstractSuperTypes).add(superTypeInfo);
               superTypes.add(superTypeInfo);
             } catch (IllegalArgumentException e) {
               throw new GenException(elem, e.getMessage());
             }
           }
         }
-        if (concrete && superConcreteTypes.size() > 1) {
+        if (concrete && concreteSuperTypes.size() > 1) {
           throw new GenException(elem, "A concrete interface cannot extend more than two concrete interfaces");
         }
-        if (!concrete && superConcreteTypes.size() > 0) {
+        if (!concrete && concreteSuperTypes.size() > 0) {
           throw new GenException(elem, "A abstract interface cannot extend more a concrete interface");
         }
         for (Iterator<TypeInfo.Class> i = importedTypes.iterator();i.hasNext();) {
           TypeInfo.Class type = i.next();
-          if (type.toString().startsWith("java.lang.") || Helper.getPackageName(type.toString()).equals(Helper.getPackageName(ifaceFQCN))) {
+          if (Helper.getPackageName(type.toString()).equals(Helper.getPackageName(ifaceFQCN))) {
             i.remove();
           }
         }
