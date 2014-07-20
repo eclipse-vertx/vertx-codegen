@@ -42,6 +42,8 @@ public abstract class TypeInfo {
 
   public static TypeInfo create(Types typeUtils, TypeMirror type) {
     switch (type.getKind()) {
+      case VOID:
+        return VOID;
       case DECLARED:
         return create(typeUtils, (DeclaredType) type);
       case DOUBLE:
@@ -240,6 +242,17 @@ public abstract class TypeInfo {
       return qualified ? fqcn : simpleName;
     }
   }
+
+  public static TypeInfo VOID = new TypeInfo() {
+    @Override
+    public boolean equals(Object obj) {
+      return obj == this;
+    }
+    @Override
+    public String format(boolean qualified) {
+      return "void";
+    }
+  };
 
   public abstract boolean equals(Object obj);
 

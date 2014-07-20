@@ -26,7 +26,7 @@ import java.util.List;
 public class MethodInfo {
 
   final String name;
-  final String returnType;
+  final TypeInfo returnType;
   final boolean fluent;
   final boolean indexGetter;
   final boolean indexSetter;
@@ -37,7 +37,7 @@ public class MethodInfo {
   boolean squashed;
   List<String> typeParams;
 
-  public MethodInfo(String name, String returnType, boolean fluent, boolean indexGetter, boolean indexSetter,
+  public MethodInfo(String name, TypeInfo returnType, boolean fluent, boolean indexGetter, boolean indexSetter,
                     boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod, List<String> typeParams) {
     this.name = name;
     this.returnType = returnType;
@@ -55,7 +55,7 @@ public class MethodInfo {
     return name;
   }
 
-  public String getReturnType() {
+  public TypeInfo getReturnType() {
     return returnType;
   }
 

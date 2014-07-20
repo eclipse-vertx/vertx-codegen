@@ -1176,7 +1176,7 @@ public class GeneratorTest {
 
     assertEquals(name, meth.getName());
     assertEquals(comment, meth.getComment());
-    assertEquals(returnType, meth.getReturnType());
+    assertEquals(returnType, meth.getReturnType().toString());
     assertEquals(cacheReturn, meth.isCacheReturn());
     assertEquals(fluent, meth.isFluent());
     assertEquals(indexGetter, meth.isIndexGetter());

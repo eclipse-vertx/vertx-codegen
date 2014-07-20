@@ -583,8 +583,9 @@ public class Generator {
           typeParams.add(typeParam.getSimpleName().toString());
         }
         List<ParamInfo> mParams = getParams(typeUtils, elementUtils, execElem);
-        String returnType = execElem.getReturnType().toString();
-        if (returnType.equals("void")) {
+        TypeInfo returnType = TypeInfo.create(typeUtils, execElem.getReturnType());
+        returnType.collectImports(importedTypes);
+        if (returnType.toString().equals("void")) {
           if (isCacheReturn) {
             throw new GenException(elem, "void method can't be marked with @CacheReturn");
           }
@@ -597,8 +598,8 @@ public class Generator {
         if (!isFluent) {
           // If it's the generic type of the interface (currently we only support a single generic type)
           // then don't validate it, as we don't know what the real type is
-          if (!returnType.equals(Helper.getGenericType(ifaceFQCN))) {
-            checkReturnType(elementUtils, elem, returnType);
+          if (!returnType.toString().equals(Helper.getGenericType(ifaceFQCN))) {
+            checkReturnType(elementUtils, elem, returnType.toString());
           }
         }
         List<MethodInfo> meths = methodMap.get(methodName);
