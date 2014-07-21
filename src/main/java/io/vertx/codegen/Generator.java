@@ -535,8 +535,10 @@ public class Generator {
             try {
               TypeInfo superTypeInfo = TypeInfo.create(typeUtils, (DeclaredType) tmSuper);
               superTypeInfo.collectImports(importedTypes);
-              (superGen != null && superGen.concrete() ? concreteSuperTypes : abstractSuperTypes).add(superTypeInfo);
-              superTypes.add(superTypeInfo);
+              if (superGen != null) {
+                (superGen.concrete() ? concreteSuperTypes : abstractSuperTypes).add(superTypeInfo);
+                superTypes.add(superTypeInfo);
+              }
             } catch (IllegalArgumentException e) {
               throw new GenException(elem, e.getMessage());
             }

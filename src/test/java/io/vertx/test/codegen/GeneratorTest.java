@@ -17,6 +17,7 @@ import io.vertx.test.codegen.testapi.ConcreteInterfaceWithTwoConcreteSuperInterf
 import io.vertx.test.codegen.testapi.FluentMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.GenericInterface;
 import io.vertx.test.codegen.testapi.GenericInterfaceWithUpperBound;
+import io.vertx.test.codegen.testapi.InterfaceWithNonGenSuperType;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedArraySupertype;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedGenericArraySupertype;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedVariableSupertype;
@@ -966,6 +967,22 @@ public class GeneratorTest {
     assertTrue(gen.getReferencedTypes().contains(GenericInterface.class.getName()));
     assertEquals(1, gen.getSuperTypes().size());
     assertTrue(gen.getSuperTypes().contains(TypeInfo.create(InterfaceWithParameterizedVariableSupertype.class.getGenericInterfaces()[0])));
+  }
+
+  @Test
+  public void testNonGenSuperType() throws Exception {
+    gen.generateModel(InterfaceWithNonGenSuperType.class);
+    assertEquals(InterfaceWithNonGenSuperType.class.getName(), gen.getIfaceFQCN());
+    assertEquals(InterfaceWithNonGenSuperType.class.getSimpleName(), gen.getIfaceSimpleName());
+    assertEquals(0, gen.getReferencedTypes().size());
+    assertEquals(0, gen.getSuperTypes().size());
+    assertEquals(1, gen.getMethods().size());
+    Consumer<List<MethodInfo>> checker = (methods) -> {
+      checkMethod(methods.get(0), "foo", null, "void", false, false, false, false, false, false, 1);
+    };
+    checker.accept(gen.getMethods());
+    assertEquals(1, gen.getSquashedMethods().size());
+    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test
