@@ -12,6 +12,9 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetServerOptions;
+import io.vertx.test.codegen.testapi.MethodWithSameSignatureInheritedFromDistinctInterfaces;
+import io.vertx.test.codegen.testapi.SameSignatureMethod1;
+import io.vertx.test.codegen.testapi.SameSignatureMethod2;
 import io.vertx.test.codegen.testapi.AbstractInterfaceWithConcreteSuperInterface;
 import io.vertx.test.codegen.testapi.CacheReturnMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.ConcreteInterfaceWithTwoConcreteSuperInterfaces;
@@ -1101,6 +1104,18 @@ public class GeneratorTest {
     checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
     checkClassParam(gen.getMethods().get(2).getParams().get(0), "handler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.String>>", TypeKind.HANDLER);
     checkClassParam(gen.getMethods().get(3).getParams().get(0), "handler", "io.vertx.core.Handler<java.lang.String>", TypeKind.HANDLER);
+  }
+
+  @Test
+  public void testMethodWithSameSignatureInheritedFromDistinctInterfaces() throws Exception {
+    gen = new Generator().generateModel(MethodWithSameSignatureInheritedFromDistinctInterfaces.class, SameSignatureMethod1.class, SameSignatureMethod2.class);
+    assertEquals(1, gen.getMethods().size());
+    Consumer<List<MethodInfo>> checker = (methods) -> {
+      checkMethod(methods.get(0), "foo", null, "T", false, false, false, false, false, false, 0);
+    };
+    checker.accept(gen.getMethods());
+    assertEquals(1, gen.getSquashedMethods().size());
+    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test

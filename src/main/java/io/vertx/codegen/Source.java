@@ -416,8 +416,8 @@ public class Source {
 
     if (elem.getKind() == ElementKind.INTERFACE) {
 
-      // Collect methods
-      collectMethods(elementUtils, typeUtils, null, elem, new ArrayList<>());
+      // Traverse methods
+      traverseMethods(elementUtils, typeUtils, null, elem);
 
       // We're done
       if (methods.isEmpty() && superTypes.isEmpty()) {
@@ -428,18 +428,12 @@ public class Source {
     }
   }
 
-  private void collectMethods(Elements elementUtils, Types typeUtils, DeclaredType declaredType,
-                              Element currentElt, ArrayList<ExecutableElement> methodElts) {
+  private void traverseMethods(Elements elementUtils, Types typeUtils, DeclaredType declaredType,
+                               Element currentElt) {
     out:
     for (Element currentEnclosedElt : currentElt.getEnclosedElements()) {
       if (currentEnclosedElt.getKind() == ElementKind.METHOD) {
         ExecutableElement currentMethodElt = (ExecutableElement) currentEnclosedElt;
-        for (ExecutableElement methodElt : methodElts) {
-          if (elementUtils.overrides(methodElt, currentMethodElt, (TypeElement) currentElt)) {
-            break out;
-          }
-        }
-        methodElts.add(currentMethodElt);
         addMethod(elementUtils, typeUtils, declaredType, currentMethodElt);
       }
     }
@@ -447,8 +441,12 @@ public class Source {
     resolveAbstractSuperTypes(elementUtils, typeUtils, currentElt.asType(), new HashSet<>(), resolvedTypes);
     for (DeclaredType superType : resolvedTypes) {
       TypeElement superTypeElt = (TypeElement) superType.asElement();
-      Element otherElt = generator.sources.get(superTypeElt.getQualifiedName().toString());
-      collectMethods(elementUtils, typeUtils, superType, otherElt, methodElts);
+      String superTypeName = superTypeElt.getQualifiedName().toString();
+      Element otherElt = generator.sources.get(superTypeName);
+      if (otherElt == null) {
+        throw new GenException(currentElt, "Could not resolve type " + superTypeName);
+      }
+      traverseMethods(elementUtils, typeUtils, superType, otherElt);
     }
   }
 
@@ -524,6 +522,10 @@ public class Source {
       meths = new ArrayList<>();
       methodMap.put(methodInfo.getName(), meths);
     } else {
+      // Check if we already have the signature
+      if (methods.stream().filter(meth -> meth.hasSameSignature(methodInfo)).count() > 0) {
+        return;
+      }
       // Overloaded methods must have same parameter at each position in the param list
       for (MethodInfo meth: meths) {
         int pos = 0;
