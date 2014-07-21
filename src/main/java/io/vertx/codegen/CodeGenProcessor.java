@@ -49,8 +49,8 @@ public class CodeGenProcessor extends AbstractProcessor {
           String pkgName = elementUtils.getPackageOf(genElt).getQualifiedName().toString();
           if (!pkgName.contains("impl")) {
             try {
-              Generator generator = new Generator();
-              generator.traverseElem(elementUtils, typeUtils, genElt);
+              Source source = new Source(genElt);
+              source.traverse(elementUtils, typeUtils);
               if (nameTemplate != null && templateFileName != null) {
                 Map<String, Object> vars = new HashMap<>();
                 vars.put("helper", new Helper());
@@ -58,7 +58,7 @@ public class CodeGenProcessor extends AbstractProcessor {
                 vars.put("typeSimpleName", genElt.getSimpleName());
                 vars.put("typeFQN", genElt.toString());
                 String target = TemplateRuntime.eval(nameTemplate, vars).toString();
-                generator.applyTemplate(target, templateFileName);
+                source.applyTemplate(target, templateFileName);
                 log.info("Generated model for class " + genElt);
               } else {
                 log.info("Validated model for class " + genElt);
