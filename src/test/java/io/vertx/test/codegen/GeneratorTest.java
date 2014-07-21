@@ -18,6 +18,7 @@ import io.vertx.test.codegen.testapi.ConcreteInterfaceWithTwoConcreteSuperInterf
 import io.vertx.test.codegen.testapi.FluentMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.GenericInterface;
 import io.vertx.test.codegen.testapi.GenericInterfaceWithUpperBound;
+import io.vertx.test.codegen.testapi.InterfaceWithMethodOverride;
 import io.vertx.test.codegen.testapi.InterfaceWithNonGenSuperType;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedArraySupertype;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedGenericArraySupertype;
@@ -920,7 +921,7 @@ public class GeneratorTest {
 
   @Test
   public void testSupertypes() throws Exception {
-    Source gen = new Generator().generateModel(InterfaceWithSupertypes.class);
+    Source gen = new Generator().generateModel(InterfaceWithSupertypes.class, VertxGenInterface1.class, VertxGenInterface2.class);
     assertEquals(InterfaceWithSupertypes.class.getName(), gen.getIfaceFQCN());
     assertEquals(InterfaceWithSupertypes.class.getSimpleName(), gen.getIfaceSimpleName());
     assertEquals(3, gen.getReferencedTypes().size());
@@ -1066,6 +1067,21 @@ public class GeneratorTest {
     checker.accept(gen.getMethods());
     assertEquals(2, gen.getSquashedMethods().size());
     checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
+  }
+
+  @Test
+  public void testMethodOverride() throws Exception {
+    gen = new Generator().generateModel(InterfaceWithMethodOverride.class, VertxGenInterface1.class, VertxGenInterface2.class);
+    assertEquals(2, gen.getMethods().size());
+    Consumer<List<MethodInfo>> checker = (methods) -> {
+      checkMethod(methods.get(0), "bar", null, "void", false, false, false, false, false, false, 1);
+      checkMethod(methods.get(1), "juu", null, "void", false, false, false, false, false, false, 1);
+    };
+    checker.accept(gen.getMethods());
+    assertEquals(2, gen.getSquashedMethods().size());
+    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
+    checkClassParam(gen.getMethods().get(0).getParams().get(0), "str", String.class.getName(), TypeKind.NONE);
+    checkClassParam(gen.getMethods().get(1).getParams().get(0), "str_renamed", String.class.getName(), TypeKind.NONE);
   }
 
   @Test

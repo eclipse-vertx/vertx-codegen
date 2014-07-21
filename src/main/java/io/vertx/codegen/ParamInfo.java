@@ -57,4 +57,8 @@ public class ParamInfo {
     return result;
   }
 
+  @Override
+  public String toString() {
+    return type + " " + name;
+  }
 }

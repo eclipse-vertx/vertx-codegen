@@ -13,10 +13,12 @@ import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -31,6 +33,7 @@ public class CodeGenProcessor extends AbstractProcessor {
   private Types typeUtils;
   private String templateFileName;
   private String nameTemplate;
+  private Generator generator;
 
   @Override
   public synchronized void init(ProcessingEnvironment env) {
@@ -39,41 +42,45 @@ public class CodeGenProcessor extends AbstractProcessor {
     nameTemplate = env.getOptions().get("nameTemplate");
     elementUtils = env.getElementUtils();
     typeUtils = env.getTypeUtils();
+    generator = new Generator();
   }
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     if (!roundEnv.errorRaised()) {
       if (!roundEnv.processingOver()) {
-        for (Element genElt : roundEnv.getElementsAnnotatedWith(VertxGen.class)) {
-          String pkgName = elementUtils.getPackageOf(genElt).getQualifiedName().toString();
-          if (!pkgName.contains("impl")) {
-            try {
-              Source source = new Source(genElt);
-              source.traverse(elementUtils, typeUtils);
-              if (nameTemplate != null && templateFileName != null) {
-                Map<String, Object> vars = new HashMap<>();
-                vars.put("helper", new Helper());
-                vars.put("fileSeparator", File.separator);
-                vars.put("typeSimpleName", genElt.getSimpleName());
-                vars.put("typeFQN", genElt.toString());
-                String target = TemplateRuntime.eval(nameTemplate, vars).toString();
-                source.applyTemplate(target, templateFileName);
-                log.info("Generated model for class " + genElt);
-              } else {
-                log.info("Validated model for class " + genElt);
-              }
-            } catch (GenException e) {
-              String msg = "Could not generate model for class " + e.element + ": " + e.msg;
-              log.log(Level.SEVERE, msg, e);
-              processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, e.element);
-              break;
-            } catch (Exception e) {
-              String msg = "Could not generate element " + genElt;
-              log.log(Level.SEVERE, msg, e);
-              processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, genElt);
-              break;
+        Generator generator = new Generator();
+        List<? extends Element> elements = roundEnv.
+            getElementsAnnotatedWith(VertxGen.class).
+            stream().
+            filter(elt -> !elementUtils.getPackageOf(elt).getQualifiedName().toString().contains("impl")).
+            collect(Collectors.toList());
+        generator.addSources(elements);
+        for (Element genElt : elements) {
+          try {
+            Source source = generator.resolve(elementUtils, typeUtils, genElt.toString());
+            if (nameTemplate != null && templateFileName != null) {
+              Map<String, Object> vars = new HashMap<>();
+              vars.put("helper", new Helper());
+              vars.put("fileSeparator", File.separator);
+              vars.put("typeSimpleName", genElt.getSimpleName());
+              vars.put("typeFQN", genElt.toString());
+              String target = TemplateRuntime.eval(nameTemplate, vars).toString();
+              source.applyTemplate(target, templateFileName);
+              log.info("Generated model for class " + genElt);
+            } else {
+              log.info("Validated model for class " + genElt);
             }
+          } catch (GenException e) {
+            String msg = "Could not generate model for class " + e.element + ": " + e.msg;
+            log.log(Level.SEVERE, msg, e);
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, e.element);
+            break;
+          } catch (Exception e) {
+            String msg = "Could not generate element " + genElt;
+            log.log(Level.SEVERE, msg, e);
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, genElt);
+            break;
           }
         }
       }

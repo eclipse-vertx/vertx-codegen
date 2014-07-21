@@ -68,7 +68,9 @@ public class Source {
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
   public static final String VERTX = "io.vertx.core.Vertx";
 
+  final Generator generator;
   final Element elem;
+  boolean processed = false;
   List<MethodInfo> methods = new ArrayList<>();
   HashSet<TypeInfo.Class> importedTypes = new HashSet<>();
   Set<String> referencedTypes = new HashSet<>();
@@ -86,7 +88,8 @@ public class Source {
   // Methods where all overloaded methods with same name are squashed into a single method with all parameters
   Map<String, MethodInfo> squashedMethods = new LinkedHashMap<>();
 
-  public Source(Element elem) {
+  public Source(Generator generator, Element elem) {
+    this.generator = generator;
     this.elem = elem;
   }
 
@@ -339,8 +342,11 @@ public class Source {
     return false;
   }
 
-  Source traverse(Elements elementUtils, Types typeUtils) {
-    traverseElem(elementUtils, typeUtils, elem);
+  Source process(Elements elementUtils, Types typeUtils) {
+    if (!processed) {
+      traverseElem(elementUtils, typeUtils, elem);
+      processed = true;
+    }
     return this;
   }
 
@@ -446,39 +452,10 @@ public class Source {
             checkReturnType(elementUtils, elem, returnType.toString());
           }
         }
-        List<MethodInfo> meths = methodMap.get(methodName);
-        if (meths == null) {
-          meths = new ArrayList<>();
-          methodMap.put(methodName, meths);
-        } else {
-          // Overloaded methods must have same parameter at each position in the param list
-          for (MethodInfo meth: meths) {
-            int pos = 0;
-            for (ParamInfo param: meth.params) {
-              if (pos < mParams.size()) {
-                if (!mParams.get(pos).equals(param)) {
-                  throw new GenException(elem, "Overloaded method " + methodName + " has versions with different sequences of parameters");
-                }
-              } else {
-                break;
-              }
-              pos++;
-            }
-          }
-        }
+
         MethodInfo methodInfo = new MethodInfo(methodName, returnType,
             isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic, typeParams);
-        meths.add(methodInfo);
-        methods.add(methodInfo);
-        methodInfo.collectImports(importedTypes);
-        MethodInfo squashed = squashedMethods.get(methodName);
-        if (squashed == null) {
-          squashed = new MethodInfo(methodName, returnType,
-              isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic, typeParams);
-          squashedMethods.put(methodName, squashed);
-        } else {
-          squashed.addParams(mParams);
-        }
+        addMethod(methodInfo);
         break;
       }
     }
@@ -490,11 +467,10 @@ public class Source {
 
       LinkedList<DeclaredType> resolvedTypes = new LinkedList<>();
       resolveAbstractSuperTypes(elementUtils, typeUtils, elem.asType(), new HashSet<>(), resolvedTypes);
-      for (DeclaredType abstractSuperType : resolvedTypes) {
-        Element elt = abstractSuperType.asElement();
-        for (Element enclosedElt : elt.getEnclosedElements()) {
-          traverseElem(elementUtils, typeUtils, enclosedElt);
-        }
+      for (DeclaredType superTypeMirror : resolvedTypes) {
+        TypeElement superTypeElt = (TypeElement) superTypeMirror.asElement();
+        Source superType = generator.resolve(elementUtils, typeUtils, superTypeElt.getQualifiedName().toString());
+        mergeSuperType(superType);
       }
 
       // We're done
@@ -503,6 +479,51 @@ public class Source {
       }
       referencedTypes.remove(Helper.getNonGenericType(ifaceFQCN)); // don't reference yourself
       sortMethodMap(methodMap);
+    }
+  }
+
+  private void addMethod(MethodInfo method) {
+    List<MethodInfo> meths = methodMap.get(method.getName());
+    if (meths == null) {
+      meths = new ArrayList<>();
+      methodMap.put(method.getName(), meths);
+    } else {
+      // Overloaded methods must have same parameter at each position in the param list
+      for (MethodInfo meth: meths) {
+        int pos = 0;
+        for (ParamInfo param: meth.params) {
+          if (pos < method.params.size()) {
+            if (!method.params.get(pos).equals(param)) {
+              throw new GenException(elem, "Overloaded method " + method.name + " has versions with different sequences of parameters");
+            }
+          } else {
+            break;
+          }
+          pos++;
+        }
+      }
+    }
+    meths.add(method);
+    methods.add(method);
+    method.collectImports(importedTypes);
+    MethodInfo squashed = squashedMethods.get(method.name);
+    if (squashed == null) {
+      squashed = new MethodInfo(method.name, method.returnType,
+          method.fluent, method.indexGetter, method.indexSetter, method.cacheReturn, method.params, method.comment, method.staticMethod, method.typeParams);
+      squashedMethods.put(method.name, squashed);
+    } else {
+      squashed.addParams(method.params);
+    }
+  }
+
+  private void mergeSuperType(Source superType) {
+    for (MethodInfo superTypeMethod : superType.methods) {
+      for (MethodInfo method : methods) {
+        if (superTypeMethod.hasSameSignature(method)) {
+          return;
+        }
+      }
+      addMethod(superTypeMethod);
     }
   }
 

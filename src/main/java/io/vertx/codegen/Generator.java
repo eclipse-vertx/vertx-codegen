@@ -17,7 +17,6 @@ package io.vertx.codegen;
  */
 
 import io.vertx.codegen.annotations.VertxGen;
-import org.mvel2.templates.TemplateRuntime;
 
 import javax.annotation.processing.Completion;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -45,6 +44,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +52,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -67,6 +68,22 @@ public class Generator {
   public static final String JSON_OBJECT = "io.vertx.core.json.JsonObject";
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
   public static final String VERTX = "io.vertx.core.Vertx";
+
+  private HashMap<String, Source> sources = new HashMap<>();
+
+  void addSources(Iterable<? extends Element> elements) {
+    elements.forEach(element -> sources.put(Helper.getNonGenericType(element.asType().toString()), new Source(Generator.this, element)));
+  }
+
+  Source resolve(Elements elementUtils, Types typeUtils, String fqcn) {
+    Source source = sources.get(fqcn);
+    if (source == null) {
+      throw new IllegalArgumentException("Source for " + fqcn + " not found");
+    } else {
+      source.process(elementUtils, typeUtils);
+      return source;
+    }
+  }
 
   public void validatePackage(String packageName, Function<String, Boolean> packageMatcher) throws Exception {
     genAndApply(packageName, packageMatcher, null, null, false);
@@ -104,40 +121,51 @@ public class Generator {
     }
   }
 
-  public Source generateModel(Class c) throws Exception {
+  public Source generateModel(Class c, Class... rest) throws Exception {
     log.info("Generating model for class " + c);
+    ArrayList<Class> types = new ArrayList<>();
+    types.add(c);
+    Collections.addAll(types, rest);
+    ArrayList<File> tmpFiles = new ArrayList<>();
+    for (Class type : types) {
+      String className = type.getCanonicalName();
+      String fileName = className.replace(".", "/") + ".java";
+      InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
+      if (is == null) {
+        throw new IllegalStateException("Can't find source on classpath: " + fileName);
+      }
+      // Load the source
+      String source;
+      try (Scanner scanner = new Scanner(is, "UTF-8").useDelimiter("\\A")) {
+        source = scanner.next();
+      }
+      // Now copy it to a file (this is clunky but not sure how to get around it)
+      String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + fileName;
+      File f = new File(tmpFileName);
+      File parent = f.getParentFile();
+      parent.mkdirs();
+      try (PrintStream out = new PrintStream(new FileOutputStream(tmpFileName))) {
+        out.print(source);
+      }
+      tmpFiles.add(f);
+    }
     String className = c.getCanonicalName();
-    String fileName = className.replace(".", "/") + ".java";
-    InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
-    if (is == null) {
-      throw new IllegalStateException("Can't find source on classpath: " + fileName);
+    generateModel(className, tmpFiles.toArray(new File[tmpFiles.size()]));
+    Source gen = sources.get(className);
+    if (gen == null) {
+      throw new IllegalArgumentException(className + " not processed. Does it have the VertxGen annotation?");
     }
-    // Load the source
-    String source;
-    try (Scanner scanner = new Scanner(is, "UTF-8").useDelimiter("\\A")) {
-      source = scanner.next();
-    }
-    // Now copy it to a file (this is clunky but not sure how to get around it)
-    String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + fileName;
-    File f = new File(tmpFileName);
-    File parent = f.getParentFile();
-    parent.mkdirs();
-    try (PrintStream out = new PrintStream(new FileOutputStream(tmpFileName))) {
-      out.print(source);
-    }
-    return generateModel(tmpFileName);
+    return gen;
   }
 
-  private Source generateModel(String sourceFileName) throws Exception {
+  private void generateModel(String type, File... sourceFiles) throws Exception {
     JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
     StandardJavaFileManager fm = compiler.getStandardFileManager(diagnostics, null, null);
-    Iterable<? extends JavaFileObject> iter = fm.getJavaFileObjects(sourceFileName);
-    JavaFileObject fo = iter.iterator().next();
+    Iterable<? extends JavaFileObject> fileObjects = fm.getJavaFileObjects(sourceFiles);
     Writer out = new NullWriter();
-    List<JavaFileObject> fileObjects = Collections.singletonList(fo);
     JavaCompiler.CompilationTask task = compiler.getTask(out, fm, diagnostics, null, null, fileObjects);
-    MyProcessor processor = new MyProcessor();
+    MyProcessor processor = new MyProcessor(type);
     List<Processor> processors = Collections.<Processor>singletonList(processor);
     task.setProcessors(processors);
     try {
@@ -149,10 +177,6 @@ public class Generator {
         throw e;
       }
     }
-    if (processor.processed == null) {
-      throw new IllegalArgumentException(sourceFileName + " not processed. Does it have the VertxGen annotation?");
-    }
-    return processor.processed;
   }
 
   private void dumpClasspath(ClassLoader cl) {
@@ -208,10 +232,14 @@ public class Generator {
       return SourceVersion.RELEASE_8;
     }
 
+    private String type;
     private ProcessingEnvironment env;
     private Elements elementUtils;
     private Types typeUtils;
-    private Source processed;
+
+    private MyProcessor(String type) {
+      this.type = type;
+    }
 
     @Override
     public void init(ProcessingEnvironment processingEnv) {
@@ -223,11 +251,8 @@ public class Generator {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
       if (!roundEnv.processingOver()) {
-        processed = roundEnv.getRootElements().
-            stream().
-            map(elem -> new Source(elem).traverse(elementUtils, typeUtils)).
-            findFirst().
-            get();
+        addSources(roundEnv.getElementsAnnotatedWith(VertxGen.class));
+        Generator.this.resolve(elementUtils, typeUtils, type);
       }
       return true;
     }

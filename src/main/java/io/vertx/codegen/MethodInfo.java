@@ -118,4 +118,16 @@ public class MethodInfo {
   public void collectImports(Collection<TypeInfo.Class> imports) {
     params.stream().map(ParamInfo::getType).forEach(a -> a.collectImports(imports));
   }
+
+  public boolean hasSameSignature(MethodInfo other) {
+    if (name.equals(other.name) && params.size() == other.params.size()) {
+      for (int i = 0;i < params.size();i++) {
+        if (!params.get(i).type.equals(other.params.get(i).type)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  }
 }
