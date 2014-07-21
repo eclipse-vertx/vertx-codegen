@@ -11,9 +11,9 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetServerOptions;
-import io.vertx.test.codegen.testapi.AbstractInterfaceExtendingConcreteInterface;
+import io.vertx.test.codegen.testapi.AbstractInterfaceWithConcreteSuperInterface;
 import io.vertx.test.codegen.testapi.CacheReturnMethodWithVoidReturn;
-import io.vertx.test.codegen.testapi.ConcreteInterfaceExtendingTwoConcreteInterfaces;
+import io.vertx.test.codegen.testapi.ConcreteInterfaceWithTwoConcreteSuperInterfaces;
 import io.vertx.test.codegen.testapi.FluentMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.GenericInterface;
 import io.vertx.test.codegen.testapi.GenericInterfaceWithUpperBound;
@@ -397,7 +397,7 @@ public class GeneratorTest {
   @Test
   public void testAbstractInterfaceCannotExtendConcreteInterface() throws Exception {
     try {
-      gen.generateModel(AbstractInterfaceExtendingConcreteInterface.class);
+      gen.generateModel(AbstractInterfaceWithConcreteSuperInterface.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
@@ -407,7 +407,7 @@ public class GeneratorTest {
   @Test
   public void testConcreteInterfaceCannotExtendTwoConcreteInterfaces() throws Exception {
     try {
-      gen.generateModel(ConcreteInterfaceExtendingTwoConcreteInterfaces.class);
+      gen.generateModel(ConcreteInterfaceWithTwoConcreteSuperInterfaces.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK

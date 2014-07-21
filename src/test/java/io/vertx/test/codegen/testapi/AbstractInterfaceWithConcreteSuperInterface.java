@@ -5,6 +5,7 @@ import io.vertx.codegen.annotations.VertxGen;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@VertxGen
-public interface ConcreteInterfaceExtendingTwoConcreteInterfaces extends VertxGenClass1, VertxGenClass2 {
+@VertxGen(concrete = false)
+public interface AbstractInterfaceWithConcreteSuperInterface extends VertxGenClass1 {
+  void foo(String str);
 }
