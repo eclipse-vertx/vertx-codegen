@@ -935,12 +935,14 @@ public class GeneratorTest {
     assertEquals(2, gen.getAbstractSuperTypes().size());
     assertTrue(gen.getAbstractSuperTypes().contains(TypeInfo.create(VertxGenInterface1.class)));
     assertTrue(gen.getAbstractSuperTypes().contains(TypeInfo.create(VertxGenInterface2.class)));
-    assertEquals(1, gen.getMethods().size());
+    assertEquals(3, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "quux", null, "void", false, false, false, false, false, false, 1);
+      checkMethod(methods.get(1), "bar", null, "void", false, false, false, false, false, false, 1);
+      checkMethod(methods.get(2), "juu", null, "void", false, false, false, false, false, false, 1);
     };
     checker.accept(gen.getMethods());
-    assertEquals(1, gen.getSquashedMethods().size());
+    assertEquals(3, gen.getSquashedMethods().size());
     checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 

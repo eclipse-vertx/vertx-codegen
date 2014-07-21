@@ -63,6 +63,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -643,12 +644,38 @@ public class Generator {
       traverseElem(elementUtils, typeUtils, enclosedElt);
     }
     if (elem.getKind() == ElementKind.INTERFACE) {
+
+      LinkedList<DeclaredType> resolvedTypes = new LinkedList<>();
+      resolveAbstractSuperTypes(elementUtils, typeUtils, elem.asType(), new HashSet<>(), resolvedTypes);
+      for (DeclaredType abstractSuperType : resolvedTypes) {
+        Element elt = abstractSuperType.asElement();
+        for (Element enclosedElt : elt.getEnclosedElements()) {
+          traverseElem(elementUtils, typeUtils, enclosedElt);
+        }
+      }
+
       // We're done
       if (methods.isEmpty() && superTypes.isEmpty()) {
         throw new GenException(elem, "Interface " + ifaceFQCN + " does not contain any methods for generation");
       }
       referencedTypes.remove(Helper.getNonGenericType(ifaceFQCN)); // don't reference yourself
       sortMethodMap(methodMap);
+    }
+  }
+
+  private void resolveAbstractSuperTypes(Elements elementUtils, Types typeUtils, TypeMirror type, HashSet<String> knownTypes, LinkedList<DeclaredType> resolvedTypes) {
+    for (TypeMirror superType : typeUtils.directSupertypes(type)) {
+      DeclaredType declaredSuperType = (DeclaredType) superType;
+      String superTypeFQCN = declaredSuperType.toString();
+      if (!knownTypes.contains(superTypeFQCN)) {
+        Element superTypeElement = declaredSuperType.asElement();
+        VertxGen gen = superTypeElement.getAnnotation(VertxGen.class);
+        if (gen != null && !gen.concrete()) {
+          knownTypes.add(superTypeFQCN);
+          resolvedTypes.add(declaredSuperType);
+        }
+        resolveAbstractSuperTypes(elementUtils, typeUtils, superType, knownTypes, resolvedTypes);
+      }
     }
   }
 

@@ -8,5 +8,5 @@ import io.vertx.codegen.annotations.VertxGen;
 @VertxGen(concrete = false)
 public interface VertxGenInterface2 {
 
-  void foo(String str);
+  void juu(String str);
 }
