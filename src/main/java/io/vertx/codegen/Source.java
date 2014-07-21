@@ -69,7 +69,7 @@ public class Source {
   public static final String VERTX = "io.vertx.core.Vertx";
 
   final Generator generator;
-  final Element elem;
+  final TypeElement modelElt;
   boolean processed = false;
   List<MethodInfo> methods = new ArrayList<>();
   HashSet<TypeInfo.Class> importedTypes = new HashSet<>();
@@ -88,9 +88,9 @@ public class Source {
   // Methods where all overloaded methods with same name are squashed into a single method with all parameters
   Map<String, MethodInfo> squashedMethods = new LinkedHashMap<>();
 
-  public Source(Generator generator, Element elem) {
+  public Source(Generator generator, TypeElement modelElt) {
     this.generator = generator;
-    this.elem = elem;
+    this.modelElt = modelElt;
   }
 
   public List<MethodInfo> getMethods() {
@@ -344,7 +344,7 @@ public class Source {
 
   Source process(Elements elementUtils, Types typeUtils) {
     if (!processed) {
-      traverseElem(elementUtils, typeUtils, elem);
+      traverseElem(elementUtils, typeUtils, modelElt);
       processed = true;
     }
     return this;
@@ -380,7 +380,7 @@ public class Source {
               referencedTypes.add(Helper.getNonGenericType(tmSuper.toString()));
             }
             try {
-              TypeInfo superTypeInfo = TypeInfo.create(typeUtils, (DeclaredType) tmSuper);
+              TypeInfo superTypeInfo = TypeInfo.create(typeUtils, null, (DeclaredType) tmSuper);
               superTypeInfo.collectImports(importedTypes);
               if (superGen != null) {
                 (superGen.concrete() ? concreteSuperTypes : abstractSuperTypes).add(superTypeInfo);
@@ -405,73 +405,19 @@ public class Source {
         }
         break;
       }
-      case METHOD: {
-        ExecutableElement execElem = (ExecutableElement)elem;
-        boolean isIgnore = execElem.getAnnotation(GenIgnore.class) != null;
-        if (isIgnore) {
-          break;
-        }
-        Set<Modifier> mods = execElem.getModifiers();
-        if (!mods.contains(Modifier.PUBLIC)) {
-          break;
-        }
-        if (mods.contains(Modifier.DEFAULT)) {
-          break;
-        }
-        boolean isStatic = mods.contains(Modifier.STATIC);
-        boolean isFluent = execElem.getAnnotation(Fluent.class) != null;
-        boolean isCacheReturn = execElem.getAnnotation(CacheReturn.class) != null;
-        boolean isIndexGetter = execElem.getAnnotation(IndexGetter.class) != null;
-        boolean isIndexSetter = execElem.getAnnotation(IndexSetter.class) != null;
-        ArrayList<String> typeParams = new ArrayList<>();
-        for (TypeParameterElement typeParam : execElem.getTypeParameters()) {
-          for (TypeMirror bound : typeParam.getBounds()) {
-            if (!isObjectBound(bound)) {
-              throw new GenException(elem, "Type parameter bound not supported " + bound);
-            }
-          }
-          typeParams.add(typeParam.getSimpleName().toString());
-        }
-        List<ParamInfo> mParams = getParams(typeUtils, elementUtils, execElem);
-        TypeInfo returnType = TypeInfo.create(typeUtils, execElem.getReturnType());
-        returnType.collectImports(importedTypes);
-        if (returnType.toString().equals("void")) {
-          if (isCacheReturn) {
-            throw new GenException(elem, "void method can't be marked with @CacheReturn");
-          }
-          if (isFluent) {
-            throw new GenException(elem, "Methods marked with @Fluent must return a value");
-          }
-        }
-        String methodName = execElem.getSimpleName().toString();
-        // Only check the return type if not fluent, because generated code won't look it at anyway
-        if (!isFluent) {
-          // If it's the generic type of the interface (currently we only support a single generic type)
-          // then don't validate it, as we don't know what the real type is
-          if (!returnType.toString().equals(Helper.getGenericType(ifaceFQCN))) {
-            checkReturnType(elementUtils, elem, returnType.toString());
-          }
-        }
+    }
 
-        MethodInfo methodInfo = new MethodInfo(methodName, returnType,
-            isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic, typeParams);
-        addMethod(methodInfo);
-        break;
+    // Traverse nested elements that are not methods (like nested interfaces)
+    for (Element enclosedElt : elem.getEnclosedElements()) {
+      if (enclosedElt.getKind() != ElementKind.METHOD) {
+        traverseElem(elementUtils, typeUtils, enclosedElt);
       }
     }
 
-    for (Element enclosedElt : elem.getEnclosedElements()) {
-      traverseElem(elementUtils, typeUtils, enclosedElt);
-    }
     if (elem.getKind() == ElementKind.INTERFACE) {
 
-      LinkedList<DeclaredType> resolvedTypes = new LinkedList<>();
-      resolveAbstractSuperTypes(elementUtils, typeUtils, elem.asType(), new HashSet<>(), resolvedTypes);
-      for (DeclaredType superTypeMirror : resolvedTypes) {
-        TypeElement superTypeElt = (TypeElement) superTypeMirror.asElement();
-        Source superType = generator.resolve(elementUtils, typeUtils, superTypeElt.getQualifiedName().toString());
-        mergeSuperType(superType);
-      }
+      // Collect methods
+      collectMethods(elementUtils, typeUtils, null, elem, new ArrayList<>());
 
       // We're done
       if (methods.isEmpty() && superTypes.isEmpty()) {
@@ -482,52 +428,32 @@ public class Source {
     }
   }
 
-  private void addMethod(MethodInfo method) {
-    List<MethodInfo> meths = methodMap.get(method.getName());
-    if (meths == null) {
-      meths = new ArrayList<>();
-      methodMap.put(method.getName(), meths);
-    } else {
-      // Overloaded methods must have same parameter at each position in the param list
-      for (MethodInfo meth: meths) {
-        int pos = 0;
-        for (ParamInfo param: meth.params) {
-          if (pos < method.params.size()) {
-            if (!method.params.get(pos).equals(param)) {
-              throw new GenException(elem, "Overloaded method " + method.name + " has versions with different sequences of parameters");
-            }
-          } else {
-            break;
+  private void collectMethods(Elements elementUtils, Types typeUtils, DeclaredType declaredType,
+                              Element currentElt, ArrayList<ExecutableElement> methodElts) {
+    out:
+    for (Element currentEnclosedElt : currentElt.getEnclosedElements()) {
+      if (currentEnclosedElt.getKind() == ElementKind.METHOD) {
+        ExecutableElement currentMethodElt = (ExecutableElement) currentEnclosedElt;
+        for (ExecutableElement methodElt : methodElts) {
+          if (elementUtils.overrides(methodElt, currentMethodElt, (TypeElement) currentElt)) {
+            break out;
           }
-          pos++;
         }
+        methodElts.add(currentMethodElt);
+        addMethod(elementUtils, typeUtils, declaredType, currentMethodElt);
       }
     }
-    meths.add(method);
-    methods.add(method);
-    method.collectImports(importedTypes);
-    MethodInfo squashed = squashedMethods.get(method.name);
-    if (squashed == null) {
-      squashed = new MethodInfo(method.name, method.returnType,
-          method.fluent, method.indexGetter, method.indexSetter, method.cacheReturn, method.params, method.comment, method.staticMethod, method.typeParams);
-      squashedMethods.put(method.name, squashed);
-    } else {
-      squashed.addParams(method.params);
+    LinkedList<DeclaredType> resolvedTypes = new LinkedList<>();
+    resolveAbstractSuperTypes(elementUtils, typeUtils, currentElt.asType(), new HashSet<>(), resolvedTypes);
+    for (DeclaredType superType : resolvedTypes) {
+      TypeElement superTypeElt = (TypeElement) superType.asElement();
+      Element otherElt = generator.sources.get(superTypeElt.getQualifiedName().toString());
+      collectMethods(elementUtils, typeUtils, superType, otherElt, methodElts);
     }
   }
 
-  private void mergeSuperType(Source superType) {
-    for (MethodInfo superTypeMethod : superType.methods) {
-      for (MethodInfo method : methods) {
-        if (superTypeMethod.hasSameSignature(method)) {
-          return;
-        }
-      }
-      addMethod(superTypeMethod);
-    }
-  }
-
-  private void resolveAbstractSuperTypes(Elements elementUtils, Types typeUtils, TypeMirror type, HashSet<String> knownTypes, LinkedList<DeclaredType> resolvedTypes) {
+  private static void resolveAbstractSuperTypes(Elements elementUtils, Types typeUtils,
+                                                TypeMirror type, HashSet<String> knownTypes, LinkedList<DeclaredType> resolvedTypes) {
     for (TypeMirror superType : typeUtils.directSupertypes(type)) {
       DeclaredType declaredSuperType = (DeclaredType) superType;
       String superTypeFQCN = declaredSuperType.toString();
@@ -543,23 +469,104 @@ public class Source {
     }
   }
 
+  private void addMethod(Elements elementUtils,  Types typeUtils,
+                         DeclaredType containing, ExecutableElement execElem) {
+    boolean isIgnore = execElem.getAnnotation(GenIgnore.class) != null;
+    if (isIgnore) {
+      return;
+    }
+    Set<Modifier> mods = execElem.getModifiers();
+    if (!mods.contains(Modifier.PUBLIC)) {
+      return;
+    }
+    if (mods.contains(Modifier.DEFAULT)) {
+      return;
+    }
+    boolean isStatic = mods.contains(Modifier.STATIC);
+    boolean isFluent = execElem.getAnnotation(Fluent.class) != null;
+    boolean isCacheReturn = execElem.getAnnotation(CacheReturn.class) != null;
+    boolean isIndexGetter = execElem.getAnnotation(IndexGetter.class) != null;
+    boolean isIndexSetter = execElem.getAnnotation(IndexSetter.class) != null;
+    ArrayList<String> typeParams = new ArrayList<>();
+    for (TypeParameterElement typeParam : execElem.getTypeParameters()) {
+      for (TypeMirror bound : typeParam.getBounds()) {
+        if (!isObjectBound(bound)) {
+          throw new GenException(execElem, "Type parameter bound not supported " + bound);
+        }
+      }
+      typeParams.add(typeParam.getSimpleName().toString());
+    }
+    List<ParamInfo> mParams = getParams(typeUtils, elementUtils, containing, execElem);
+    TypeInfo returnType = TypeInfo.create(typeUtils, containing, execElem.getReturnType());
+    returnType.collectImports(importedTypes);
+    if (returnType.toString().equals("void")) {
+      if (isCacheReturn) {
+        throw new GenException(execElem, "void method can't be marked with @CacheReturn");
+      }
+      if (isFluent) {
+        throw new GenException(execElem, "Methods marked with @Fluent must return a value");
+      }
+    }
+    String methodName = execElem.getSimpleName().toString();
+    // Only check the return type if not fluent, because generated code won't look it at anyway
+    if (!isFluent) {
+      // If it's the generic type of the interface (currently we only support a single generic type)
+      // then don't validate it, as we don't know what the real type is
+      if (!returnType.toString().equals(Helper.getGenericType(ifaceFQCN))) {
+        checkReturnType(elementUtils, execElem, returnType.toString());
+      }
+    }
+
+    MethodInfo methodInfo = new MethodInfo(methodName, returnType,
+        isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic, typeParams);
+    List<MethodInfo> meths = methodMap.get(methodInfo.getName());
+    if (meths == null) {
+      meths = new ArrayList<>();
+      methodMap.put(methodInfo.getName(), meths);
+    } else {
+      // Overloaded methods must have same parameter at each position in the param list
+      for (MethodInfo meth: meths) {
+        int pos = 0;
+        for (ParamInfo param: meth.params) {
+          if (pos < methodInfo.params.size()) {
+            if (!methodInfo.params.get(pos).equals(param)) {
+              throw new GenException(this.modelElt, "Overloaded method " + methodInfo.name + " has versions with different sequences of parameters");
+            }
+          } else {
+            break;
+          }
+          pos++;
+        }
+      }
+    }
+    meths.add(methodInfo);
+    methods.add(methodInfo);
+    methodInfo.collectImports(importedTypes);
+    MethodInfo squashed = squashedMethods.get(methodInfo.name);
+    if (squashed == null) {
+      squashed = new MethodInfo(methodInfo.name, methodInfo.returnType,
+          methodInfo.fluent, methodInfo.indexGetter, methodInfo.indexSetter, methodInfo.cacheReturn, methodInfo.params, methodInfo.comment, methodInfo.staticMethod, methodInfo.typeParams);
+      squashedMethods.put(methodInfo.name, squashed);
+    } else {
+      squashed.addParams(methodInfo.params);
+    }
+  }
+
   private boolean isObjectBound(TypeMirror bound) {
     return bound.getKind() == TypeKind.DECLARED && bound.toString().equals(Object.class.getName());
   }
 
-  private List<ParamInfo> getParams(Types typeUtils, Elements elementUtils, ExecutableElement execElem) {
+  private List<ParamInfo> getParams(Types typeUtils, Elements elementUtils, DeclaredType containing, ExecutableElement execElem) {
     List<? extends VariableElement> params = execElem.getParameters();
     List<ParamInfo> mParams = new ArrayList<>();
     for (VariableElement param: params) {
-      String paramType = param.asType().toString();
-      checkParamType(elementUtils, execElem, paramType);
-      boolean option = isOptionType(elementUtils, execElem, paramType);
       TypeInfo type;
       try {
-        type = TypeInfo.create(typeUtils, param.asType());
+        type = TypeInfo.create(typeUtils, containing, param.asType());
       } catch (Exception e) {
         throw new GenException(param, e.getMessage());
       }
+      checkParamType(elementUtils, execElem, type.getName());
       ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), type);
       mParams.add(mParam);
     }

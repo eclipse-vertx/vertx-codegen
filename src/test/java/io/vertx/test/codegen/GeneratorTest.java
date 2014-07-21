@@ -16,8 +16,10 @@ import io.vertx.test.codegen.testapi.AbstractInterfaceWithConcreteSuperInterface
 import io.vertx.test.codegen.testapi.CacheReturnMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.ConcreteInterfaceWithTwoConcreteSuperInterfaces;
 import io.vertx.test.codegen.testapi.FluentMethodWithVoidReturn;
+import io.vertx.test.codegen.testapi.GenericAbstractInterface;
 import io.vertx.test.codegen.testapi.GenericInterface;
 import io.vertx.test.codegen.testapi.GenericInterfaceWithUpperBound;
+import io.vertx.test.codegen.testapi.InterfaceWithMethodHavingGenericOverride;
 import io.vertx.test.codegen.testapi.InterfaceWithMethodOverride;
 import io.vertx.test.codegen.testapi.InterfaceWithNonGenSuperType;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedArraySupertype;
@@ -1082,6 +1084,23 @@ public class GeneratorTest {
     checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
     checkClassParam(gen.getMethods().get(0).getParams().get(0), "str", String.class.getName(), TypeKind.NONE);
     checkClassParam(gen.getMethods().get(1).getParams().get(0), "str_renamed", String.class.getName(), TypeKind.NONE);
+  }
+
+  @Test
+  public void testInterfaceWithMethodHavingGenericOverride() throws Exception {
+    gen = new Generator().generateModel(InterfaceWithMethodHavingGenericOverride.class, GenericAbstractInterface.class);
+    assertEquals(4, gen.getMethods().size());
+    Consumer<List<MethodInfo>> checker = (methods) -> {
+      checkMethod(methods.get(0), "foo", null, "java.lang.String", false, false, false, false, false, false, 0);
+      checkMethod(methods.get(1), "bar", null, "java.util.List<java.lang.String>", false, false, false, false, false, false, 0);
+      checkMethod(methods.get(2), "juu", null, "void", false, false, false, false, false, false, 1);
+      checkMethod(methods.get(3), "daa", null, "void", false, false, false, false, false, false, 1);
+    };
+    checker.accept(gen.getMethods());
+    assertEquals(4, gen.getSquashedMethods().size());
+    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
+    checkClassParam(gen.getMethods().get(2).getParams().get(0), "handler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.String>>", TypeKind.HANDLER);
+    checkClassParam(gen.getMethods().get(3).getParams().get(0), "handler", "io.vertx.core.Handler<java.lang.String>", TypeKind.HANDLER);
   }
 
   @Test

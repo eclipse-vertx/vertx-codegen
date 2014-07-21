@@ -69,17 +69,19 @@ public class Generator {
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
   public static final String VERTX = "io.vertx.core.Vertx";
 
-  private HashMap<String, Source> sources = new HashMap<>();
+  HashMap<String, TypeElement> sources = new HashMap<>();
 
   void addSources(Iterable<? extends Element> elements) {
-    elements.forEach(element -> sources.put(Helper.getNonGenericType(element.asType().toString()), new Source(Generator.this, element)));
+    elements.forEach(element -> sources.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
   }
 
   Source resolve(Elements elementUtils, Types typeUtils, String fqcn) {
-    Source source = sources.get(fqcn);
-    if (source == null) {
+
+    TypeElement element = sources.get(fqcn);
+    if (element == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
+      Source source = new Source(this, element);
       source.process(elementUtils, typeUtils);
       return source;
     }
@@ -150,15 +152,14 @@ public class Generator {
       tmpFiles.add(f);
     }
     String className = c.getCanonicalName();
-    generateModel(className, tmpFiles.toArray(new File[tmpFiles.size()]));
-    Source gen = sources.get(className);
+    Source gen = generateModel(className, tmpFiles.toArray(new File[tmpFiles.size()]));
     if (gen == null) {
       throw new IllegalArgumentException(className + " not processed. Does it have the VertxGen annotation?");
     }
     return gen;
   }
 
-  private void generateModel(String type, File... sourceFiles) throws Exception {
+  private Source generateModel(String type, File... sourceFiles) throws Exception {
     JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
     StandardJavaFileManager fm = compiler.getStandardFileManager(diagnostics, null, null);
@@ -177,6 +178,7 @@ public class Generator {
         throw e;
       }
     }
+    return processor.source;
   }
 
   private void dumpClasspath(ClassLoader cl) {
@@ -236,6 +238,7 @@ public class Generator {
     private ProcessingEnvironment env;
     private Elements elementUtils;
     private Types typeUtils;
+    private Source source;
 
     private MyProcessor(String type) {
       this.type = type;
@@ -252,7 +255,7 @@ public class Generator {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
       if (!roundEnv.processingOver()) {
         addSources(roundEnv.getElementsAnnotatedWith(VertxGen.class));
-        Generator.this.resolve(elementUtils, typeUtils, type);
+        source = Generator.this.resolve(elementUtils, typeUtils, type);
       }
       return true;
     }

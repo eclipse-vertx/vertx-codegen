@@ -40,12 +40,12 @@ public abstract class TypeInfo {
     }
   }
 
-  public static TypeInfo create(Types typeUtils, TypeMirror type) {
+  public static TypeInfo create(Types typeUtils, DeclaredType containing, TypeMirror type) {
     switch (type.getKind()) {
       case VOID:
         return VOID;
       case DECLARED:
-        return create(typeUtils, (DeclaredType) type);
+        return create(typeUtils, containing, (DeclaredType) type);
       case DOUBLE:
       case LONG:
       case FLOAT:
@@ -56,7 +56,16 @@ public abstract class TypeInfo {
       case INT:
         return new Primitive(type.toString());
       case TYPEVAR:
-        return create(typeUtils, (TypeVariable) type);
+        if (containing != null) {
+          try {
+            type = typeUtils.asMemberOf(containing, ((TypeVariable) type).asElement());
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+          return create(typeUtils, null, type);
+        } else {
+          return create(typeUtils, (TypeVariable) type);
+        }
       case WILDCARD:
         return create(typeUtils, (WildcardType) type);
       default:
@@ -94,7 +103,7 @@ public abstract class TypeInfo {
     return new Variable(type.toString());
   }
 
-  public static TypeInfo create(Types typeUtils, DeclaredType type) {
+  public static TypeInfo create(Types typeUtils, DeclaredType containing, DeclaredType type) {
     String fqcn = typeUtils.erasure(type).toString();
     TypeKind kind = Helper.getKind(annotationType -> type.asElement().getAnnotation(annotationType), fqcn);
     Class raw = new Class(kind, fqcn);
@@ -103,7 +112,7 @@ public abstract class TypeInfo {
       List<TypeInfo> typeArguments;
       typeArguments = new ArrayList<>(typeArgs.size());
       for (TypeMirror typeArg : typeArgs) {
-        TypeInfo typeArgDesc = create(typeUtils, typeArg);
+        TypeInfo typeArgDesc = create(typeUtils, containing, typeArg);
         // Need to check it is an interface type
         typeArguments.add(typeArgDesc);
       }
