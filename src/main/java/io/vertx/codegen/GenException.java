@@ -11,6 +11,7 @@ public class GenException extends RuntimeException {
   final String msg;
 
   public GenException(Element element, String msg) {
+    super(msg);
     this.element = element;
     this.msg = msg;
   }
