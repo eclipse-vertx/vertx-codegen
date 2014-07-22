@@ -3,8 +3,8 @@ package io.vertx.test.codegen;
 import io.vertx.codegen.GenException;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.MethodInfo;
+import io.vertx.codegen.Model;
 import io.vertx.codegen.ParamInfo;
-import io.vertx.codegen.Source;
 import io.vertx.codegen.TypeInfo;
 import io.vertx.codegen.TypeKind;
 import io.vertx.core.AsyncResult;
@@ -99,7 +99,7 @@ import static org.junit.Assert.*;
  */
 public class GeneratorTest {
 
-  private Source gen;
+  private Model gen;
 
   public GeneratorTest() {
   }
@@ -926,7 +926,7 @@ public class GeneratorTest {
 
   @Test
   public void testSupertypes() throws Exception {
-    Source gen = new Generator().generateModel(InterfaceWithSupertypes.class, VertxGenInterface1.class, VertxGenInterface2.class);
+    Model gen = new Generator().generateModel(InterfaceWithSupertypes.class, VertxGenInterface1.class, VertxGenInterface2.class);
     assertEquals(InterfaceWithSupertypes.class.getName(), gen.getIfaceFQCN());
     assertEquals(InterfaceWithSupertypes.class.getSimpleName(), gen.getIfaceSimpleName());
     assertEquals(3, gen.getReferencedTypes().size());

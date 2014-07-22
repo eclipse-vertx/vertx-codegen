@@ -52,7 +52,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -75,15 +74,15 @@ public class Generator {
     elements.forEach(element -> sources.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
   }
 
-  Source resolve(Elements elementUtils, Types typeUtils, String fqcn) {
+  Model resolve(Elements elementUtils, Types typeUtils, String fqcn) {
 
     TypeElement element = sources.get(fqcn);
     if (element == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
-      Source source = new Source(this, element);
-      source.process(elementUtils, typeUtils);
-      return source;
+      Model model = new Model(this, element);
+      model.process(elementUtils, typeUtils);
+      return model;
     }
   }
 
@@ -98,8 +97,8 @@ public class Generator {
 
   public void genAndApply(Class clazz, Function<Class, String> outputFileFunction, String templateName) throws Exception {
     Generator gen = new Generator();
-    Source source = gen.generateModel(clazz);
-    source.applyTemplate(outputFileFunction.apply(clazz), templateName);
+    Model model = gen.generateModel(clazz);
+    model.applyTemplate(outputFileFunction.apply(clazz), templateName);
   }
 
   private void genAndApply(String packageName, Function<String, Boolean> packageMatcher,
@@ -116,14 +115,14 @@ public class Generator {
     }
     for (Class<?> clazz: generableClasses) {
       Generator gen = new Generator();
-      Source source = gen.generateModel(clazz, generableClasses.toArray(new Class[generableClasses.size()]));
+      Model model = gen.generateModel(clazz, generableClasses.toArray(new Class[generableClasses.size()]));
       if (apply) {
-        source.applyTemplate(outputFileFunction.apply(clazz), templateFileName);
+        model.applyTemplate(outputFileFunction.apply(clazz), templateFileName);
       }
     }
   }
 
-  public Source generateModel(Class c, Class... rest) throws Exception {
+  public Model generateModel(Class c, Class... rest) throws Exception {
     log.info("Generating model for class " + c);
     ArrayList<Class> types = new ArrayList<>();
     types.add(c);
@@ -152,14 +151,14 @@ public class Generator {
       tmpFiles.add(f);
     }
     String className = c.getCanonicalName();
-    Source gen = generateModel(className, tmpFiles.toArray(new File[tmpFiles.size()]));
+    Model gen = generateModel(className, tmpFiles.toArray(new File[tmpFiles.size()]));
     if (gen == null) {
       throw new IllegalArgumentException(className + " not processed. Does it have the VertxGen annotation?");
     }
     return gen;
   }
 
-  private Source generateModel(String type, File... sourceFiles) throws Exception {
+  private Model generateModel(String type, File... sourceFiles) throws Exception {
     JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
     StandardJavaFileManager fm = compiler.getStandardFileManager(diagnostics, null, null);
@@ -178,7 +177,7 @@ public class Generator {
         throw e;
       }
     }
-    return processor.source;
+    return processor.model;
   }
 
   private void dumpClasspath(ClassLoader cl) {
@@ -238,7 +237,7 @@ public class Generator {
     private ProcessingEnvironment env;
     private Elements elementUtils;
     private Types typeUtils;
-    private Source source;
+    private Model model;
 
     private MyProcessor(String type) {
       this.type = type;
@@ -255,7 +254,7 @@ public class Generator {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
       if (!roundEnv.processingOver()) {
         addSources(roundEnv.getElementsAnnotatedWith(VertxGen.class));
-        source = Generator.this.resolve(elementUtils, typeUtils, type);
+        model = Generator.this.resolve(elementUtils, typeUtils, type);
       }
       return true;
     }

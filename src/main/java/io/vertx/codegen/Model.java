@@ -60,7 +60,7 @@ import java.util.Set;
  *
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
-public class Source {
+public class Model {
 
   public static final String VERTX_ASYNC_RESULT = "io.vertx.core.AsyncResult";
   public static final String VERTX_HANDLER = "io.vertx.core.Handler";
@@ -88,7 +88,7 @@ public class Source {
   // Methods where all overloaded methods with same name are squashed into a single method with all parameters
   Map<String, MethodInfo> squashedMethods = new LinkedHashMap<>();
 
-  public Source(Generator generator, TypeElement modelElt) {
+  public Model(Generator generator, TypeElement modelElt) {
     this.generator = generator;
     this.modelElt = modelElt;
   }
@@ -342,7 +342,7 @@ public class Source {
     return false;
   }
 
-  Source process(Elements elementUtils, Types typeUtils) {
+  Model process(Elements elementUtils, Types typeUtils) {
     if (!processed) {
       traverseElem(elementUtils, typeUtils, modelElt);
       processed = true;
