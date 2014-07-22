@@ -43,7 +43,7 @@ public abstract class TypeInfo {
   public static TypeInfo create(Types typeUtils, DeclaredType containing, TypeMirror type) {
     switch (type.getKind()) {
       case VOID:
-        return VOID;
+        return Void.INSTANCE;
       case DECLARED:
         return create(typeUtils, containing, (DeclaredType) type);
       case DOUBLE:
@@ -252,16 +252,18 @@ public abstract class TypeInfo {
     }
   }
 
-  public static TypeInfo VOID = new TypeInfo() {
+  public static class Void extends TypeInfo {
+    public static TypeInfo INSTANCE = new Void() {};
+    private Void() {}
     @Override
     public boolean equals(Object obj) {
-      return obj == this;
+      return obj instanceof Void;
     }
     @Override
     public String format(boolean qualified) {
       return "void";
     }
-  };
+  }
 
   public abstract boolean equals(Object obj);
 
