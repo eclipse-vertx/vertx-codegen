@@ -116,7 +116,7 @@ public class Generator {
     }
     for (Class<?> clazz: generableClasses) {
       Generator gen = new Generator();
-      Source source = gen.generateModel(clazz);
+      Source source = gen.generateModel(clazz, generableClasses.toArray(new Class[generableClasses.size()]));
       if (apply) {
         source.applyTemplate(outputFileFunction.apply(clazz), templateFileName);
       }
