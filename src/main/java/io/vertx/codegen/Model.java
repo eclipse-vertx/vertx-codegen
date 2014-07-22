@@ -449,11 +449,11 @@ public class Model {
     for (DeclaredType superType : resolvedTypes) {
       TypeElement superTypeElt = (TypeElement) superType.asElement();
       String superTypeName = superTypeElt.getQualifiedName().toString();
-      Element otherElt = generator.sources.get(superTypeName);
-      if (otherElt == null) {
-        throw new GenException(currentElt, "Could not resolve type " + superTypeName);
+      if (generator.sources.containsKey(superTypeName)) {
+        // Use the one from the sources
+        superTypeElt = generator.sources.get(superTypeName);
       }
-      traverseMethods(elementUtils, typeUtils, superType, otherElt);
+      traverseMethods(elementUtils, typeUtils, superType, superTypeElt);
     }
   }
 
