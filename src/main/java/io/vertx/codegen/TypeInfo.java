@@ -222,15 +222,21 @@ public abstract class TypeInfo {
     final TypeKind kind;
     final String fqcn;
     final String simpleName;
+    final String packageName;
 
     public Class(TypeKind kind, String fqcn) {
       this.kind = kind;
       this.fqcn = fqcn;
       this.simpleName = Helper.getSimpleName(fqcn);
+      this.packageName = Helper.getPackageName(fqcn);
     }
 
     public TypeKind getKind() {
       return kind;
+    }
+
+    public String getPackageName() {
+      return packageName;
     }
 
     @Override
