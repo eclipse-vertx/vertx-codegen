@@ -122,6 +122,7 @@ The following variables are made available to templates:
 
 * `ifaceSimpleName` - the simple name of the Java interface
 * `ifaceFQCN` - the fully qualified class name of the Java interface
+* `ifacePackage` - the name of the Java package the Java interface belongs to
 * `ifaceComment` - the class comment from the Java interface
 * `concrete` - true when the interface is implemented by vert.x useful to decide the generation of a class or interface in the API shim
 * `helper` - a helper class that of type `io.vertx.codegen.Helper` which contains useful methods for things such as

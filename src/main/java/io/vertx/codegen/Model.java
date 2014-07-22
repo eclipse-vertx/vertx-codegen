@@ -77,6 +77,7 @@ public class Model {
   boolean concrete;
   String ifaceSimpleName;
   String ifaceFQCN;
+  String ifacePackage;
   String ifaceComment;
   List<TypeInfo> superTypes = new ArrayList<>();
   List<TypeInfo> concreteSuperTypes = new ArrayList<>();
@@ -107,6 +108,10 @@ public class Model {
 
   public String getIfaceFQCN() {
     return ifaceFQCN;
+  }
+
+  public String getIfacePackage() {
+    return ifacePackage;
   }
 
   public String getIfaceComment() {
@@ -160,6 +165,7 @@ public class Model {
     Map<String, Object> vars = new HashMap<>();
     vars.put("importedTypes", importedTypes);
     vars.put("concrete", concrete);
+    vars.put("ifacePackage", ifacePackage);
     vars.put("ifaceSimpleName", ifaceSimpleName);
     vars.put("ifaceFQCN", ifaceFQCN);
     vars.put("ifaceComment", ifaceComment);
@@ -361,6 +367,7 @@ public class Model {
         }
         ifaceFQCN = elem.asType().toString();
         ifaceSimpleName = elem.getSimpleName().toString();
+        ifacePackage = elementUtils.getPackageOf(elem).toString();
         ifaceComment = elementUtils.getDocComment(elem);
         concrete = elem.getAnnotation(VertxGen.class).concrete();
         DeclaredType tm = (DeclaredType) elem.asType();
