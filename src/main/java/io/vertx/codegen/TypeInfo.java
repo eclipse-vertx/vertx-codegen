@@ -210,6 +210,10 @@ public abstract class TypeInfo {
       return raw;
     }
 
+    public List<TypeInfo> getTypeArguments() {
+      return typeArguments;
+    }
+
     @Override
     public TypeKind getKind() {
       return raw.getKind();
