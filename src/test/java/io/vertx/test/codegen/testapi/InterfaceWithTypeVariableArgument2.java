@@ -5,6 +5,7 @@ import io.vertx.codegen.annotations.VertxGen;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@VertxGen
-public interface MethodWithSameSignatureInheritedFromDistinctInterfaces<U> extends SameSignatureMethod1<U>, SameSignatureMethod2<U> {
+@VertxGen(concrete = false)
+public interface InterfaceWithTypeVariableArgument2<T> extends InterfaceWithTypeVariableArgument1<T> {
+  T foo();
 }

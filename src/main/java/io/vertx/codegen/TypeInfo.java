@@ -47,12 +47,12 @@ public abstract class TypeInfo {
     }
   }
 
-  public static TypeInfo create(Types typeUtils, DeclaredType containing, TypeMirror type) {
+  public static TypeInfo create(Types typeUtils, Iterable<DeclaredType> resolvingTypes, TypeMirror type) {
     switch (type.getKind()) {
       case VOID:
         return Void.INSTANCE;
       case DECLARED:
-        return create(typeUtils, containing, (DeclaredType) type);
+        return create(typeUtils, resolvingTypes, (DeclaredType) type);
       case DOUBLE:
       case LONG:
       case FLOAT:
@@ -63,21 +63,37 @@ public abstract class TypeInfo {
       case INT:
         return new Primitive(type.toString());
       case TYPEVAR:
-        if (containing != null) {
-          try {
-            type = typeUtils.asMemberOf(containing, ((TypeVariable) type).asElement());
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-          return create(typeUtils, null, type);
+        TypeMirror resolved = resolveTypeVariable(typeUtils, resolvingTypes, (TypeVariable) type);
+        if (resolved instanceof TypeVariable) {
+          return create(typeUtils, (TypeVariable) resolved);
         } else {
-          return create(typeUtils, (TypeVariable) type);
+          return create(typeUtils, resolvingTypes, resolved);
         }
       case WILDCARD:
         return create(typeUtils, (WildcardType) type);
       default:
         throw new IllegalArgumentException("Illegal type " + type + " of kind " + type.getKind());
     }
+  }
+
+  private static TypeMirror resolveTypeVariable(Types typeUtils, Iterable<DeclaredType> resolvingTypes, TypeVariable type) {
+    for (DeclaredType d : resolvingTypes) {
+      TypeMirror tm;
+      try {
+        tm = typeUtils.asMemberOf(d, type.asElement());
+      } catch (java.lang.IllegalArgumentException ignore) {
+        ignore.printStackTrace();
+        continue;
+      }
+      if (!typeUtils.isSameType(tm, type)) {
+        if (tm instanceof TypeVariable) {
+          type = (TypeVariable) tm;
+        } else {
+          return tm;
+        }
+      }
+    }
+    return type;
   }
 
   public static Wildcard create(Types typeUtils, WildcardType type) {
@@ -110,7 +126,7 @@ public abstract class TypeInfo {
     return new Variable(type.toString());
   }
 
-  public static TypeInfo create(Types typeUtils, DeclaredType containing, DeclaredType type) {
+  public static TypeInfo create(Types typeUtils, Iterable<DeclaredType> resolvingTypes, DeclaredType type) {
     String fqcn = typeUtils.erasure(type).toString();
     TypeKind kind = Helper.getKind(annotationType -> type.asElement().getAnnotation(annotationType), fqcn);
     Class raw = new Class(kind, fqcn);
@@ -119,7 +135,7 @@ public abstract class TypeInfo {
       List<TypeInfo> typeArguments;
       typeArguments = new ArrayList<>(typeArgs.size());
       for (TypeMirror typeArg : typeArgs) {
-        TypeInfo typeArgDesc = create(typeUtils, containing, typeArg);
+        TypeInfo typeArgDesc = create(typeUtils, resolvingTypes, typeArg);
         // Need to check it is an interface type
         typeArguments.add(typeArgDesc);
       }

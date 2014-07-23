@@ -45,6 +45,7 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -387,7 +388,7 @@ public class Model {
               referencedTypes.add(Helper.getNonGenericType(tmSuper.toString()));
             }
             try {
-              TypeInfo superTypeInfo = TypeInfo.create(typeUtils, null, (DeclaredType) tmSuper);
+              TypeInfo superTypeInfo = TypeInfo.create(typeUtils, Collections.emptyList(), (DeclaredType) tmSuper);
               superTypeInfo.collectImports(importedTypes);
               if (superGen != null) {
                 (superGen.concrete() ? concreteSuperTypes : abstractSuperTypes).add(superTypeInfo);
@@ -424,7 +425,7 @@ public class Model {
     if (elem.getKind() == ElementKind.INTERFACE) {
 
       // Traverse methods
-      traverseMethods(elementUtils, typeUtils, null, elem);
+      traverseMethods(elementUtils, typeUtils, new LinkedList<>(), elem);
 
       // We're done
       if (methods.isEmpty() && superTypes.isEmpty()) {
@@ -435,13 +436,13 @@ public class Model {
     }
   }
 
-  private void traverseMethods(Elements elementUtils, Types typeUtils, DeclaredType declaredType,
+  private void traverseMethods(Elements elementUtils, Types typeUtils, LinkedList<DeclaredType> resolvingTypes,
                                Element currentElt) {
     out:
     for (Element currentEnclosedElt : currentElt.getEnclosedElements()) {
       if (currentEnclosedElt.getKind() == ElementKind.METHOD) {
         ExecutableElement currentMethodElt = (ExecutableElement) currentEnclosedElt;
-        addMethod(elementUtils, typeUtils, declaredType, currentMethodElt);
+        addMethod(elementUtils, typeUtils, resolvingTypes, currentMethodElt);
       }
     }
     LinkedList<DeclaredType> resolvedTypes = new LinkedList<>();
@@ -453,7 +454,9 @@ public class Model {
         // Use the one from the sources
         superTypeElt = generator.sources.get(superTypeName);
       }
-      traverseMethods(elementUtils, typeUtils, superType, superTypeElt);
+      resolvingTypes.addFirst(superType);
+      traverseMethods(elementUtils, typeUtils, resolvingTypes, superTypeElt);
+      resolvingTypes.removeFirst();
     }
   }
 
@@ -474,8 +477,8 @@ public class Model {
     }
   }
 
-  private void addMethod(Elements elementUtils,  Types typeUtils,
-                         DeclaredType containing, ExecutableElement execElem) {
+  private void addMethod(Elements elementUtils, Types typeUtils,
+                         LinkedList<DeclaredType> resolvingTypes, ExecutableElement execElem) {
     boolean isIgnore = execElem.getAnnotation(GenIgnore.class) != null;
     if (isIgnore) {
       return;
@@ -501,8 +504,12 @@ public class Model {
       }
       typeParams.add(typeParam.getSimpleName().toString());
     }
-    List<ParamInfo> mParams = getParams(typeUtils, elementUtils, containing, execElem);
-    TypeInfo returnType = TypeInfo.create(typeUtils, containing, execElem.getReturnType());
+    List<ParamInfo> mParams = getParams(typeUtils, elementUtils, resolvingTypes, execElem);
+
+
+
+    //
+    TypeInfo returnType = TypeInfo.create(typeUtils, resolvingTypes, execElem.getReturnType());
     returnType.collectImports(importedTypes);
     if (returnType.toString().equals("void")) {
       if (isCacheReturn) {
@@ -565,13 +572,13 @@ public class Model {
     return bound.getKind() == TypeKind.DECLARED && bound.toString().equals(Object.class.getName());
   }
 
-  private List<ParamInfo> getParams(Types typeUtils, Elements elementUtils, DeclaredType containing, ExecutableElement execElem) {
+  private List<ParamInfo> getParams(Types typeUtils, Elements elementUtils, LinkedList<DeclaredType> resolvingTypes, ExecutableElement execElem) {
     List<? extends VariableElement> params = execElem.getParameters();
     List<ParamInfo> mParams = new ArrayList<>();
     for (VariableElement param: params) {
       TypeInfo type;
       try {
-        type = TypeInfo.create(typeUtils, containing, param.asType());
+        type = TypeInfo.create(typeUtils, resolvingTypes, param.asType());
       } catch (Exception e) {
         throw new GenException(param, e.getMessage());
       }
