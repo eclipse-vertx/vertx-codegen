@@ -307,6 +307,10 @@ public abstract class TypeInfo {
   public void collectImports(Collection<TypeInfo.Class> imports) {
   }
 
+  public TypeKind getKind() {
+    return TypeKind.NONE;
+  }
+
   /**
    * @return the declaration suitable for source code represented using qualified names, for instance
    * <code>io.vertx.core.Handler&lt;io.vertx.core.buffer.Buffer&gt;</code>
