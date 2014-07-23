@@ -21,9 +21,16 @@ import java.util.stream.Collectors;
 public abstract class TypeInfo {
 
   public static TypeInfo create(Type type) {
-    if (type instanceof java.lang.Class) {
+    if (type == void.class) {
+      return Void.INSTANCE;
+    } else if (type instanceof java.lang.Class) {
       String fqcn = type.getTypeName();
-      return new Class(Helper.getKind(((java.lang.Class) type)::getAnnotation, fqcn), fqcn);
+      java.lang.Class classType = (java.lang.Class) type;
+      if (classType.isPrimitive()) {
+        return new Primitive(classType.getName());
+      } else {
+        return new Class(Helper.getKind(classType::getAnnotation, fqcn), fqcn);
+      }
     } else if (type instanceof ParameterizedType) {
       ParameterizedType parameterizedType = (ParameterizedType) type;
       List<TypeInfo> args = Arrays.asList(parameterizedType.getActualTypeArguments()).
@@ -215,6 +222,14 @@ public abstract class TypeInfo {
       buf.append('>');
       return buf.toString();
     }
+
+    @Override
+    public TypeInfo renamePackage(String oldPackageName, String newPackageName) {
+      return new Parameterized(
+          raw.renamePackage(oldPackageName, newPackageName),
+          typeArguments.stream().map(typeArgument -> typeArgument.renamePackage(oldPackageName, newPackageName)).
+              collect(Collectors.toList()));
+    }
   }
 
   public static class Class extends TypeInfo {
@@ -242,6 +257,13 @@ public abstract class TypeInfo {
     @Override
     public void collectImports(Collection<TypeInfo.Class> imports) {
       imports.add(this);
+    }
+
+    @Override
+    public TypeInfo.Class renamePackage(String oldPackageName, String newPackageName) {
+      return packageName.startsWith(oldPackageName) ?
+          new Class(kind, newPackageName + fqcn.substring(oldPackageName.length())) :
+          this;
     }
 
     @Override
@@ -291,6 +313,10 @@ public abstract class TypeInfo {
    */
   public String getName() {
     return format(true);
+  }
+
+  public TypeInfo renamePackage(String oldPackageName, String newPackageName) {
+    return this;
   }
 
   /**
