@@ -195,6 +195,11 @@ public abstract class TypeInfo {
     }
 
     @Override
+    public TypeKind getKind() {
+      return raw.getKind();
+    }
+
+    @Override
     public void collectImports(Collection<TypeInfo.Class> imports) {
       raw.collectImports(imports);
       typeArguments.stream().forEach(a -> a.collectImports(imports));

@@ -3,6 +3,9 @@ package io.vertx.test.codegen;
 import static org.junit.Assert.*;
 
 import io.vertx.codegen.TypeInfo;
+import io.vertx.codegen.TypeKind;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.test.codegen.testapi.GenericInterface;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedDeclaredSupertype;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedVariableSupertype;
@@ -68,5 +71,19 @@ public class TypeInfoTest {
     assertEquals("java.lang.Runnable", info.getName());
     assertEquals("Runnable", info.getSimpleName());
     assertEquals("foo.bar.Runnable", info.renamePackage("java.lang", "foo.bar").getName());
+  }
+
+  @Test
+  public void testHandler() {
+    abstract class Container implements Handler<AsyncResult<String>>  {}
+    TypeInfo.Parameterized info = (TypeInfo.Parameterized) TypeInfo.create(Container.class.getGenericInterfaces()[0]);
+    assertEquals(TypeKind.HANDLER, info.getKind());
+  }
+
+  @Test
+  public void testAsyncResult() {
+    abstract class Container implements AsyncResult<String>  {}
+    TypeInfo.Parameterized info = (TypeInfo.Parameterized) TypeInfo.create(Container.class.getGenericInterfaces()[0]);
+    assertEquals(TypeKind.ASYNC_RESULT, info.getKind());
   }
 }
