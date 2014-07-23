@@ -96,6 +96,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
+import static io.vertx.test.codegen.Utils.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -1083,7 +1085,9 @@ public class GeneratorTest {
     assertEquals(2, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "bar", null, "void", false, false, false, false, false, false, 1);
+      assertEquals(set(TypeInfo.create(InterfaceWithMethodOverride.class), TypeInfo.create(VertxGenInterface1.class)), methods.get(0).getOwnerTypes());
       checkMethod(methods.get(1), "juu", null, "void", false, false, false, false, false, false, 1);
+      assertEquals(set(TypeInfo.create(InterfaceWithMethodOverride.class), TypeInfo.create(VertxGenInterface2.class)), methods.get(1).getOwnerTypes());
     };
     checker.accept(gen.getMethods());
     assertEquals(2, gen.getSquashedMethods().size());
@@ -1115,6 +1119,7 @@ public class GeneratorTest {
     assertEquals(1, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "foo", null, "io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument3", false, false, false, false, false, false, 0);
+      assertEquals(set(TypeInfo.create(InterfaceWithTypeVariableArgument2.class), TypeInfo.create(InterfaceWithTypeVariableArgument1.class)), methods.get(0).getOwnerTypes());
     };
     checker.accept(gen.getMethods());
     assertEquals(1, gen.getSquashedMethods().size());
@@ -1127,6 +1132,7 @@ public class GeneratorTest {
     assertEquals(1, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "foo", null, "U", false, false, false, false, false, false, 0);
+      assertEquals(set(TypeInfo.create(SameSignatureMethod1.class), TypeInfo.create(SameSignatureMethod2.class)), methods.get(0).getOwnerTypes());
     };
     checker.accept(gen.getMethods());
     assertEquals(1, gen.getSquashedMethods().size());

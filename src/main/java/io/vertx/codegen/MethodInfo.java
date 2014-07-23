@@ -18,7 +18,9 @@ package io.vertx.codegen;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -36,8 +38,9 @@ public class MethodInfo {
   final boolean staticMethod;
   boolean squashed;
   List<String> typeParams;
+  LinkedHashSet<TypeInfo.Class> ownerTypes;
 
-  public MethodInfo(String name, TypeInfo returnType, boolean fluent, boolean indexGetter, boolean indexSetter,
+  public MethodInfo(LinkedHashSet<TypeInfo.Class> ownerTypes, String name, TypeInfo returnType, boolean fluent, boolean indexGetter, boolean indexSetter,
                     boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod, List<String> typeParams) {
     this.name = name;
     this.returnType = returnType;
@@ -49,6 +52,7 @@ public class MethodInfo {
     this.staticMethod = staticMethod;
     addParams(params);
     this.typeParams = typeParams;
+    this.ownerTypes = ownerTypes;
   }
 
   public String getName() {
@@ -57,6 +61,10 @@ public class MethodInfo {
 
   public TypeInfo getReturnType() {
     return returnType;
+  }
+
+  public Set<TypeInfo.Class> getOwnerTypes() {
+    return ownerTypes;
   }
 
   public boolean isFluent() {

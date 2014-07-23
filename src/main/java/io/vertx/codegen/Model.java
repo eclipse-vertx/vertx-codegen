@@ -50,11 +50,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A processed source.
@@ -529,7 +532,14 @@ public class Model {
       }
     }
 
-    MethodInfo methodInfo = new MethodInfo(methodName, returnType,
+    LinkedHashSet<TypeInfo.Class> ownerTypes = new LinkedHashSet<>();
+    TypeInfo ownerType = TypeInfo.create(typeUtils, Collections.emptyList(), execElem.getEnclosingElement().asType());
+    if (ownerType instanceof TypeInfo.Parameterized) {
+      ownerTypes.add(((TypeInfo.Parameterized) ownerType).getRaw());
+    } else {
+      ownerTypes.add((TypeInfo.Class) ownerType);
+    }
+    MethodInfo methodInfo = new MethodInfo(ownerTypes, methodName, returnType,
         isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic, typeParams);
     List<MethodInfo> meths = methodMap.get(methodInfo.getName());
     if (meths == null) {
@@ -537,7 +547,10 @@ public class Model {
       methodMap.put(methodInfo.getName(), meths);
     } else {
       // Check if we already have the signature
-      if (methods.stream().filter(meth -> meth.hasSameSignature(methodInfo)).count() > 0) {
+      List<MethodInfo> sameSignatureMethods = methods.stream().filter(meth -> meth.hasSameSignature(methodInfo)).collect(Collectors.toList());
+      if (sameSignatureMethods.size() > 0) {
+        sameSignatureMethods.forEach(m -> m.ownerTypes.addAll(methodInfo.ownerTypes));
+        squashedMethods.get(methodInfo.name).ownerTypes.addAll(methodInfo.ownerTypes);
         return;
       }
       // Overloaded methods must have same parameter at each position in the param list
@@ -560,11 +573,12 @@ public class Model {
     methodInfo.collectImports(importedTypes);
     MethodInfo squashed = squashedMethods.get(methodInfo.name);
     if (squashed == null) {
-      squashed = new MethodInfo(methodInfo.name, methodInfo.returnType,
+      squashed = new MethodInfo(new LinkedHashSet<>(methodInfo.ownerTypes), methodInfo.name, methodInfo.returnType,
           methodInfo.fluent, methodInfo.indexGetter, methodInfo.indexSetter, methodInfo.cacheReturn, methodInfo.params, methodInfo.comment, methodInfo.staticMethod, methodInfo.typeParams);
       squashedMethods.put(methodInfo.name, squashed);
     } else {
       squashed.addParams(methodInfo.params);
+      squashed.ownerTypes.addAll(methodInfo.ownerTypes);
     }
   }
 
