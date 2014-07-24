@@ -20,6 +20,9 @@ import io.vertx.codegen.annotations.Options;
 import io.vertx.codegen.annotations
 .VertxGen;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
@@ -29,7 +32,7 @@ public class Helper {
     if (annotations.get(Options.class) != null) {
       return TypeKind.OPTIONS;
     } else if (annotations.get(VertxGen.class) != null) {
-      return TypeKind.GEN;
+      return TypeKind.API;
     } else if (fqcn.equals(Generator.VERTX_HANDLER)) {
       return TypeKind.HANDLER;
     } else if (fqcn.equals(Generator.VERTX_ASYNC_RESULT)) {
@@ -38,8 +41,29 @@ public class Helper {
       return TypeKind.JSON_ARRAY;
     } else if (fqcn.equals(Generator.JSON_OBJECT)) {
       return TypeKind.JSON_OBJECT;
+    } else if (fqcn.equals(Object.class.getName())) {
+      return TypeKind.OBJECT;
+    } else if (fqcn.equals(String.class.getName())) {
+      return TypeKind.STRING;
+    } else if (fqcn.equals(List.class.getName())) {
+      return TypeKind.LIST;
+    } else if (fqcn.equals(Set.class.getName())) {
+      return TypeKind.SET;
+    } else if (fqcn.equals(Throwable.class.getName())) {
+      return TypeKind.THROWABLE;
+    } else if (fqcn.equals(Void.class.getName())) {
+      return TypeKind.VOID;
+    } else if (fqcn.equals(Integer.class.getName()) ||
+        fqcn.equals(Long.class.getName()) ||
+        fqcn.equals(Boolean.class.getName()) ||
+        fqcn.equals(Double.class.getName()) ||
+        fqcn.equals(Float.class.getName()) ||
+        fqcn.equals(Short.class.getName()) ||
+        fqcn.equals(Character.class.getName()) ||
+        fqcn.equals(Byte.class.getName())) {
+      return TypeKind.BOXED_PRIMITIVE;
     } else {
-      return TypeKind.NONE;
+      return TypeKind.OTHER;
     }
   }
 

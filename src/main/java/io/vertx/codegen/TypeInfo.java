@@ -162,6 +162,11 @@ public abstract class TypeInfo {
     }
 
     @Override
+    public TypeKind getKind() {
+      return TypeKind.PRIMITIVE;
+    }
+
+    @Override
     public String format(boolean qualified) {
       return name;
     }
@@ -333,7 +338,7 @@ public abstract class TypeInfo {
   }
 
   public TypeKind getKind() {
-    return TypeKind.NONE;
+    return TypeKind.OTHER;
   }
 
   /**

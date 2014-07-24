@@ -5,16 +5,39 @@ package io.vertx.codegen;
  */
 public enum TypeKind {
 
-  // Not of a specific kind
-  NONE,
+  // Basic types
+  STRING(true),
+  BOXED_PRIMITIVE(true),
+  PRIMITIVE(true),
+  JSON_OBJECT(true),
+  JSON_ARRAY(true),
 
-  // Annotated with @VertxGen
-  GEN,
+  // Various stuff
+  THROWABLE(false),  // java.lang.Throwable
+  VOID(false),       // java.lang.Void
+  LIST(false),       // java.util.List
+  SET(false),        // java.util.Set
+  OBJECT(false),     // java.lang.Object
 
-  // Annotated with @Option
-  OPTIONS,
+  // API types
+  API(false),
 
-  // Vert.x special types
-  HANDLER, ASYNC_RESULT, JSON_OBJECT, JSON_ARRAY
+  // Options
+  OPTIONS(false),
 
+  // Handler
+  HANDLER(false),
+
+  // AsyncResult
+  ASYNC_RESULT(false),
+
+  // Anything else
+  OTHER(false);
+
+  // True when basic
+  boolean basic;
+
+  TypeKind(boolean basic) {
+    this.basic = basic;
+  }
 }

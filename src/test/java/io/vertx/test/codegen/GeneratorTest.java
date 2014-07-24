@@ -452,7 +452,7 @@ public class GeneratorTest {
       checkParam(params.get(5), "d", "double");
       checkParam(params.get(6), "bool", "boolean");
       checkParam(params.get(7), "ch", "char");
-      checkClassParam(params.get(8), "str", "java.lang.String", TypeKind.NONE);
+      checkClassParam(params.get(8), "str", "java.lang.String", TypeKind.STRING);
     };
 
     MethodInfo method = gen.getMethods().get(0);
@@ -477,15 +477,15 @@ public class GeneratorTest {
     Consumer<MethodInfo> checker = (method) -> {
       checkMethod(method, methodName, null, "void", false, false, false, false, false, false, 9);
       List<ParamInfo> params = method.getParams();
-      checkClassParam(params.get(0), "b", "java.lang.Byte", TypeKind.NONE);
-      checkClassParam(params.get(1), "s", "java.lang.Short", TypeKind.NONE);
-      checkClassParam(params.get(2), "i", "java.lang.Integer", TypeKind.NONE);
-      checkClassParam(params.get(3), "l", "java.lang.Long", TypeKind.NONE);
-      checkClassParam(params.get(4), "f", "java.lang.Float", TypeKind.NONE);
-      checkClassParam(params.get(5), "d", "java.lang.Double", TypeKind.NONE);
-      checkClassParam(params.get(6), "bool", "java.lang.Boolean", TypeKind.NONE);
-      checkClassParam(params.get(7), "ch", "java.lang.Character", TypeKind.NONE);
-      checkClassParam(params.get(8), "str", "java.lang.String", TypeKind.NONE);
+      checkClassParam(params.get(0), "b", "java.lang.Byte", TypeKind.BOXED_PRIMITIVE);
+      checkClassParam(params.get(1), "s", "java.lang.Short", TypeKind.BOXED_PRIMITIVE);
+      checkClassParam(params.get(2), "i", "java.lang.Integer", TypeKind.BOXED_PRIMITIVE);
+      checkClassParam(params.get(3), "l", "java.lang.Long", TypeKind.BOXED_PRIMITIVE);
+      checkClassParam(params.get(4), "f", "java.lang.Float", TypeKind.BOXED_PRIMITIVE);
+      checkClassParam(params.get(5), "d", "java.lang.Double", TypeKind.BOXED_PRIMITIVE);
+      checkClassParam(params.get(6), "bool", "java.lang.Boolean", TypeKind.BOXED_PRIMITIVE);
+      checkClassParam(params.get(7), "ch", "java.lang.Character", TypeKind.BOXED_PRIMITIVE);
+      checkClassParam(params.get(8), "str", "java.lang.String", TypeKind.STRING);
     };
 
     MethodInfo method = gen.getMethods().get(0);
@@ -512,7 +512,7 @@ public class GeneratorTest {
     assertEquals(1, gen.getMethods().size());
     MethodInfo mi = gen.getMethods().get(0);
     assertEquals("foo", mi.getName());
-    assertEquals(new TypeInfo.Parameterized(new TypeInfo.Class(TypeKind.GEN, GenericInterface.class.getName()), Arrays.asList(new TypeInfo.Wildcard())), mi.getParams().get(0).getType());
+    assertEquals(new TypeInfo.Parameterized(new TypeInfo.Class(TypeKind.API, GenericInterface.class.getName()), Arrays.asList(new TypeInfo.Wildcard())), mi.getParams().get(0).getType());
   }
 
   @Test
@@ -643,9 +643,9 @@ public class GeneratorTest {
     Consumer<MethodInfo> checker = (method) -> {
       checkMethod(method, methodName, null, "void", false, false, false, false, false, false, 3);
       List<ParamInfo> params = method.getParams();
-      checkClassParam(params.get(0), "str", "java.lang.String", TypeKind.NONE);
-      checkClassParam(params.get(1), "myParam1", VertxGenClass1.class.getName(), TypeKind.GEN);
-      checkClassParam(params.get(2), "myParam2", VertxGenClass2.class.getName(), TypeKind.GEN);
+      checkClassParam(params.get(0), "str", "java.lang.String", TypeKind.STRING);
+      checkClassParam(params.get(1), "myParam1", VertxGenClass1.class.getName(), TypeKind.API);
+      checkClassParam(params.get(2), "myParam2", VertxGenClass2.class.getName(), TypeKind.API);
     };
 
     MethodInfo method = gen.getMethods().get(0);
@@ -670,7 +670,7 @@ public class GeneratorTest {
     Consumer<MethodInfo> checker = (method) -> {
       checkMethod(method, methodName, null, "void", false, false, false, false, false, false, 1);
       List<ParamInfo> params = method.getParams();
-      checkClassParam(params.get(0), "obj", "java.lang.Object", TypeKind.NONE);
+      checkClassParam(params.get(0), "obj", "java.lang.Object", TypeKind.OBJECT);
     };
 
     MethodInfo method = gen.getMethods().get(0);
@@ -721,7 +721,7 @@ public class GeneratorTest {
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "foo", null, "T", false, false, false, false, false, false, 1);
       List<ParamInfo> params = methods.get(0).getParams();
-      checkClassParam(params.get(0), "str", "java.lang.String", TypeKind.NONE);
+      checkClassParam(params.get(0), "str", "java.lang.String", TypeKind.STRING);
       checkMethod(methods.get(1), "someGenericMethod", null, "io.vertx.test.codegen.testapi.GenericInterface<R>", false, false, false, false, false, false, 0);
     };
     checker.accept(gen.getMethods());
@@ -1022,31 +1022,31 @@ public class GeneratorTest {
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(5, gen.getMethods().size());
     checkMethod(gen.getMethods().get(0), "foo", null, "void", false, false, false, false, false, false, 1);
-    checkClassParam(gen.getMethods().get(0).getParams().get(0), "str", String.class.getName(), TypeKind.NONE);
+    checkClassParam(gen.getMethods().get(0).getParams().get(0), "str", String.class.getName(), TypeKind.STRING);
     checkMethod(gen.getMethods().get(1), "foo", null, "void", false, false, false, false, false, false, 2);
-    checkClassParam(gen.getMethods().get(1).getParams().get(0), "str", String.class.getName(), TypeKind.NONE);
+    checkClassParam(gen.getMethods().get(1).getParams().get(0), "str", String.class.getName(), TypeKind.STRING);
     checkParam(gen.getMethods().get(1).getParams().get(1), "time", "long");
     checkMethod(gen.getMethods().get(2), "foo", null, "void", false, false, false, false, false, false, 3);
-    checkClassParam(gen.getMethods().get(2).getParams().get(0), "str", String.class.getName(), TypeKind.NONE);
+    checkClassParam(gen.getMethods().get(2).getParams().get(0), "str", String.class.getName(), TypeKind.STRING);
     checkParam(gen.getMethods().get(2).getParams().get(1), "time", "long");
     checkClassParam(gen.getMethods().get(2).getParams().get(2), "handler", "io.vertx.core.Handler<" + VertxGenClass1.class.getName() + ">", TypeKind.HANDLER);
     checkMethod(gen.getMethods().get(3), "bar", null, "void", false, false, false, false, false, false, 1);
-    checkClassParam(gen.getMethods().get(3).getParams().get(0), "obj1", VertxGenClass2.class.getName(), TypeKind.GEN);
+    checkClassParam(gen.getMethods().get(3).getParams().get(0), "obj1", VertxGenClass2.class.getName(), TypeKind.API);
     checkMethod(gen.getMethods().get(4), "bar", null, "void", false, false, false, false, false, false, 2);
-    checkClassParam(gen.getMethods().get(4).getParams().get(0), "obj1", VertxGenClass2.class.getName(), TypeKind.GEN);
-    checkClassParam(gen.getMethods().get(4).getParams().get(1), "str", String.class.getName(), TypeKind.NONE);
+    checkClassParam(gen.getMethods().get(4).getParams().get(0), "obj1", VertxGenClass2.class.getName(), TypeKind.API);
+    checkClassParam(gen.getMethods().get(4).getParams().get(1), "str", String.class.getName(), TypeKind.STRING);
 
     assertEquals(2, gen.getSquashedMethods().size());
     MethodInfo squashed1 = gen.getSquashedMethods().get("foo");
     checkMethod(squashed1, "foo", null, "void", false, false, false, false, false, true, 3);
-    checkClassParam(squashed1.getParams().get(0), "str", String.class.getName(), TypeKind.NONE);
+    checkClassParam(squashed1.getParams().get(0), "str", String.class.getName(), TypeKind.STRING);
     checkParam(squashed1.getParams().get(1), "time", "long");
     checkClassParam(squashed1.getParams().get(2), "handler", "io.vertx.core.Handler<" + VertxGenClass1.class.getName() + ">", TypeKind.HANDLER);
 
     MethodInfo squashed2 = gen.getSquashedMethods().get("bar");
     checkMethod(squashed2, "bar", null, "void", false, false, false, false, false, true, 2);
-    checkClassParam(squashed2.getParams().get(0), "obj1", VertxGenClass2.class.getName(), TypeKind.GEN);
-    checkClassParam(squashed2.getParams().get(1), "str", String.class.getName(), TypeKind.NONE);
+    checkClassParam(squashed2.getParams().get(0), "obj1", VertxGenClass2.class.getName(), TypeKind.API);
+    checkClassParam(squashed2.getParams().get(1), "str", String.class.getName(), TypeKind.STRING);
 
     assertEquals(2, gen.getMethodMap().size());
     List<MethodInfo> meths1 = gen.getMethodMap().get("foo");
@@ -1092,8 +1092,8 @@ public class GeneratorTest {
     checker.accept(gen.getMethods());
     assertEquals(2, gen.getSquashedMethods().size());
     checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
-    checkClassParam(gen.getMethods().get(0).getParams().get(0), "str", String.class.getName(), TypeKind.NONE);
-    checkClassParam(gen.getMethods().get(1).getParams().get(0), "str_renamed", String.class.getName(), TypeKind.NONE);
+    checkClassParam(gen.getMethods().get(0).getParams().get(0), "str", String.class.getName(), TypeKind.STRING);
+    checkClassParam(gen.getMethods().get(1).getParams().get(0), "str_renamed", String.class.getName(), TypeKind.STRING);
   }
 
   @Test
