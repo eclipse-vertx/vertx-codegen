@@ -55,7 +55,8 @@ public class CodeGenProcessor extends AbstractProcessor {
         // Check options
         roundEnv.getElementsAnnotatedWith(Options.class).forEach(element -> {
           try {
-            generator.checkOption(elementUtils, element);
+            // Disabled until Vert.x has all options correct (VertxOptions cannot be migrated at the moment)
+            // generator.checkOption(elementUtils, element);
           } catch (GenException e) {
             String msg = e.msg;
             log.log(Level.SEVERE, msg, e);
