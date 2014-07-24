@@ -8,6 +8,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.element.*;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@SupportedAnnotationTypes({"io.vertx.codegen.annotations.VertxGen"})
+@SupportedAnnotationTypes({"io.vertx.codegen.annotations.VertxGen","io.vertx.codegen.annotations.Options"})
 @javax.annotation.processing.SupportedOptions({"templateFileName", "nameTemplate"})
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)
 public class CodeGenProcessor extends AbstractProcessor {
@@ -50,6 +51,19 @@ public class CodeGenProcessor extends AbstractProcessor {
     if (!roundEnv.errorRaised()) {
       if (!roundEnv.processingOver()) {
         Generator generator = new Generator();
+
+        // Check options
+        roundEnv.getElementsAnnotatedWith(Options.class).forEach(element -> {
+          try {
+            generator.checkOption(elementUtils, element);
+          } catch (GenException e) {
+            String msg = e.msg;
+            log.log(Level.SEVERE, msg, e);
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, e.element);
+          }
+        });
+
+        // Generate source code
         List<? extends Element> elements = roundEnv.
             getElementsAnnotatedWith(VertxGen.class).
             stream().

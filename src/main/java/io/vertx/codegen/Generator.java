@@ -16,6 +16,7 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
+import io.vertx.codegen.annotations.Options;
 import io.vertx.codegen.annotations.VertxGen;
 
 import javax.annotation.processing.Completion;
@@ -25,8 +26,12 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.*;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.DiagnosticCollector;
@@ -122,60 +127,20 @@ public class Generator {
     }
   }
 
+  public void checkOptions(Class option) throws Exception {
+    new MyProcessor().run(Collections.singletonList(option));
+  }
+
   public Model generateModel(Class c, Class... rest) throws Exception {
     log.info("Generating model for class " + c);
     ArrayList<Class> types = new ArrayList<>();
     types.add(c);
     Collections.addAll(types, rest);
-    ArrayList<File> tmpFiles = new ArrayList<>();
-    for (Class type : types) {
-      String className = type.getCanonicalName();
-      String fileName = className.replace(".", "/") + ".java";
-      InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
-      if (is == null) {
-        throw new IllegalStateException("Can't find source on classpath: " + fileName);
-      }
-      // Load the source
-      String source;
-      try (Scanner scanner = new Scanner(is, "UTF-8").useDelimiter("\\A")) {
-        source = scanner.next();
-      }
-      // Now copy it to a file (this is clunky but not sure how to get around it)
-      String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + fileName;
-      File f = new File(tmpFileName);
-      File parent = f.getParentFile();
-      parent.mkdirs();
-      try (PrintStream out = new PrintStream(new FileOutputStream(tmpFileName))) {
-        out.print(source);
-      }
-      tmpFiles.add(f);
-    }
     String className = c.getCanonicalName();
-    Model gen = generateModel(className, tmpFiles.toArray(new File[tmpFiles.size()]));
-    if (gen == null) {
+    MyProcessor processor = new MyProcessor(className);
+    processor.run(types);
+    if (processor.model == null) {
       throw new IllegalArgumentException(className + " not processed. Does it have the VertxGen annotation?");
-    }
-    return gen;
-  }
-
-  private Model generateModel(String type, File... sourceFiles) throws Exception {
-    JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-    DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-    StandardJavaFileManager fm = compiler.getStandardFileManager(diagnostics, null, null);
-    Iterable<? extends JavaFileObject> fileObjects = fm.getJavaFileObjects(sourceFiles);
-    Writer out = new NullWriter();
-    JavaCompiler.CompilationTask task = compiler.getTask(out, fm, diagnostics, null, null, fileObjects);
-    MyProcessor processor = new MyProcessor(type);
-    List<Processor> processors = Collections.<Processor>singletonList(processor);
-    task.setProcessors(processors);
-    try {
-      task.call();
-    } catch (RuntimeException e) {
-      if (e.getCause() != null && e.getCause() instanceof RuntimeException) {
-        throw (RuntimeException)e.getCause();
-      } else {
-        throw e;
-      }
     }
     return processor.model;
   }
@@ -225,6 +190,7 @@ public class Generator {
     public Set<String> getSupportedAnnotationTypes() {
       HashSet<String> set = new HashSet<>();
       set.add(VertxGen.class.getCanonicalName());
+      set.add(Options.class.getCanonicalName());
       return set;
     }
 
@@ -243,6 +209,9 @@ public class Generator {
       this.type = type;
     }
 
+    private MyProcessor() {
+    }
+
     @Override
     public void init(ProcessingEnvironment processingEnv) {
       this.env = processingEnv;
@@ -253,8 +222,14 @@ public class Generator {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
       if (!roundEnv.processingOver()) {
+        // Check options
+        roundEnv.getElementsAnnotatedWith(Options.class).forEach(element -> {
+          checkOption(elementUtils, element);
+        });
         addSources(roundEnv.getElementsAnnotatedWith(VertxGen.class));
-        model = Generator.this.resolve(elementUtils, typeUtils, type);
+        if (type != null) {
+          model = Generator.this.resolve(elementUtils, typeUtils, type);
+        }
       }
       return true;
     }
@@ -263,5 +238,68 @@ public class Generator {
     public Iterable<? extends Completion> getCompletions(Element element, AnnotationMirror annotation, ExecutableElement member, String userText) {
       return Collections.emptyList();
     }
+
+    public void run(List<Class> types) throws Exception {
+      ArrayList<File> tmpFiles = new ArrayList<>();
+      for (Class type : types) {
+        String className = type.getCanonicalName();
+        String fileName = className.replace(".", "/") + ".java";
+        InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
+        if (is == null) {
+          throw new IllegalStateException("Can't find source on classpath: " + fileName);
+        }
+        // Load the source
+        String source;
+        try (Scanner scanner = new Scanner(is, "UTF-8").useDelimiter("\\A")) {
+          source = scanner.next();
+        }
+        // Now copy it to a file (this is clunky but not sure how to get around it)
+        String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + fileName;
+        File f = new File(tmpFileName);
+        File parent = f.getParentFile();
+        parent.mkdirs();
+        try (PrintStream out = new PrintStream(new FileOutputStream(tmpFileName))) {
+          out.print(source);
+        }
+        tmpFiles.add(f);
+      }
+      run(tmpFiles.toArray(new File[tmpFiles.size()]));
+    }
+
+    public void run(File... sourceFiles) throws Exception {
+      JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+      DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+      StandardJavaFileManager fm = compiler.getStandardFileManager(diagnostics, null, null);
+      Iterable<? extends JavaFileObject> fileObjects = fm.getJavaFileObjects(sourceFiles);
+      Writer out = new NullWriter();
+      JavaCompiler.CompilationTask task = compiler.getTask(out, fm, diagnostics, null, null, fileObjects);
+      List<Processor> processors = Collections.<Processor>singletonList(this);
+      task.setProcessors(processors);
+      try {
+        task.call();
+      } catch (RuntimeException e) {
+        if (e.getCause() != null && e.getCause() instanceof RuntimeException) {
+          throw (RuntimeException)e.getCause();
+        } else {
+          throw e;
+        }
+      }
+    }
+  }
+
+  public void checkOption(Elements elementUtils, Element optionElt) {
+    for (Element memberElt : elementUtils.getAllMembers((TypeElement) optionElt)) {
+      if (memberElt.getKind() == ElementKind.CONSTRUCTOR) {
+        ExecutableElement ctorElt = (ExecutableElement) memberElt;
+        if (ctorElt.getParameters().size() == 1) {
+          VariableElement v = ctorElt.getParameters().get(0);
+          TypeMirror type = v.asType();
+          if (type.getKind() == TypeKind.DECLARED && type.toString().equals(JSON_OBJECT)) {
+            return;
+          }
+        }
+      }
+    }
+    throw new GenException(optionElt, "Options " + optionElt + " class does not have a JsonObject constructor");
   }
 }
