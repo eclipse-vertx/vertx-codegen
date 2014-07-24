@@ -288,18 +288,20 @@ public class Generator {
   }
 
   public void checkOption(Elements elementUtils, Element optionElt) {
-    for (Element memberElt : elementUtils.getAllMembers((TypeElement) optionElt)) {
-      if (memberElt.getKind() == ElementKind.CONSTRUCTOR) {
-        ExecutableElement ctorElt = (ExecutableElement) memberElt;
-        if (ctorElt.getParameters().size() == 1) {
-          VariableElement v = ctorElt.getParameters().get(0);
-          TypeMirror type = v.asType();
-          if (type.getKind() == TypeKind.DECLARED && type.toString().equals(JSON_OBJECT)) {
-            return;
+    if (optionElt.getKind() == ElementKind.CLASS) {
+      for (Element memberElt : elementUtils.getAllMembers((TypeElement) optionElt)) {
+        if (memberElt.getKind() == ElementKind.CONSTRUCTOR) {
+          ExecutableElement ctorElt = (ExecutableElement) memberElt;
+          if (ctorElt.getParameters().size() == 1) {
+            VariableElement v = ctorElt.getParameters().get(0);
+            TypeMirror type = v.asType();
+            if (type.getKind() == TypeKind.DECLARED && type.toString().equals(JSON_OBJECT)) {
+              return;
+            }
           }
         }
       }
+      throw new GenException(optionElt, "Options " + optionElt + " class does not have a JsonObject constructor");
     }
-    throw new GenException(optionElt, "Options " + optionElt + " class does not have a JsonObject constructor");
   }
 }
