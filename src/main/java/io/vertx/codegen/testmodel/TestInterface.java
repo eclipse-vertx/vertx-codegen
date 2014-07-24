@@ -43,6 +43,30 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
   void methodWithHandlerAsyncResultListAndSet(Handler<AsyncResult<List<String>>> listStringHandler, Handler<AsyncResult<List<Integer>>> listIntHandler,
                                               Handler<AsyncResult<Set<String>>> setStringHandler, Handler<AsyncResult<Set<Integer>>> setIntHandler);
 
+  void methodWithHandlerListVertxGen(Handler<List<RefedInterface1>> listHandler);
+
+  void methodWithHandlerSetVertxGen(Handler<Set<RefedInterface1>> listHandler);
+
+  void methodWithHandlerListJsonObject(Handler<List<JsonObject>> listHandler);
+
+  void methodWithHandlerSetJsonObject(Handler<Set<JsonObject>> listHandler);
+
+  void methodWithHandlerListJsonArray(Handler<List<JsonArray>> listHandler);
+
+  void methodWithHandlerSetJsonArray(Handler<Set<JsonArray>> listHandler);
+
+  void methodWithHandlerAsyncResultListVertxGen(Handler<AsyncResult<List<RefedInterface1>>> listHandler);
+
+  void methodWithHandlerAsyncResultSetVertxGen(Handler<AsyncResult<Set<RefedInterface1>>> listHandler);
+
+  void methodWithHandlerAsyncResultListJsonObject(Handler<AsyncResult<List<JsonObject>>> listHandler);
+
+  void methodWithHandlerAsyncResultSetJsonObject(Handler<AsyncResult<Set<JsonObject>>> listHandler);
+
+  void methodWithHandlerAsyncResultListJsonArray(Handler<AsyncResult<List<JsonArray>>> listHandler);
+
+  void methodWithHandlerAsyncResultSetJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler);
+
   void methodWithHandlerUserTypes(Handler<RefedInterface1> handler);
 
   void methodWithHandlerAsyncResultUserTypes(Handler<AsyncResult<RefedInterface1>> handler);

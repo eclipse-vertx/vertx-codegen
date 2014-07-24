@@ -1,7 +1,9 @@
 package io.vertx.test.codegen.testapi;
 
-import io.vertx.core.Handler;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import java.util.List;
 import java.util.Set;
@@ -19,8 +21,10 @@ public interface MethodWithValidHandlerParams {
                                Handler<List<Byte>> listByteHandler, Handler<List<Short>> listShortHandler, Handler<List<Integer>> listIntHandler,
                                Handler<List<Long>> listLongHandler, Handler<List<Float>> listFloatHandler, Handler<List<Double>> listDoubleHandler,
                                Handler<List<Boolean>> listBooleanHandler, Handler<List<Character>> listCharHandler, Handler<List<String>> listStrHandler,
+                               Handler<List<VertxGenClass1>> listVertxGenHandler, Handler<List<JsonObject>> listJsonObjectHandler, Handler<List<JsonArray>> listJsonArrayHandler,
                                Handler<Set<Byte>> setByteHandler, Handler<Set<Short>> setShortHandler, Handler<Set<Integer>> setIntHandler,
                                Handler<Set<Long>> setLongHandler, Handler<Set<Float>> setFloatHandler, Handler<Set<Double>> setDoubleHandler,
                                Handler<Set<Boolean>> setBooleanHandler, Handler<Set<Character>> setCharHandler, Handler<Set<String>> setStrHandler,
+                               Handler<Set<VertxGenClass1>> setVertxGenHandler, Handler<Set<JsonObject>> setJsonObjectHandler, Handler<Set<JsonArray>> setJsonArrayHandler,
                                Handler<Void> voidHandler, Handler<Throwable> throwableHandler);
 }

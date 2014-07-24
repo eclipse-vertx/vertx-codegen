@@ -528,7 +528,7 @@ public class GeneratorTest {
     String methodName = "methodWithHandlerParams";
 
     Consumer<MethodInfo> checker = (method) -> {
-      checkMethod(method, methodName, null, "void", false, false, false, false, false, false, 31);
+      checkMethod(method, methodName, null, "void", false, false, false, false, false, false, 37);
       List<ParamInfo> params = method.getParams();
       checkClassParam(params.get(0), "byteHandler", "io.vertx.core.Handler<java.lang.Byte>", TypeKind.HANDLER);
       checkClassParam(params.get(1), "shortHandler", "io.vertx.core.Handler<java.lang.Short>", TypeKind.HANDLER);
@@ -550,17 +550,23 @@ public class GeneratorTest {
       checkClassParam(params.get(17), "listBooleanHandler", "io.vertx.core.Handler<java.util.List<java.lang.Boolean>>", TypeKind.HANDLER);
       checkClassParam(params.get(18), "listCharHandler", "io.vertx.core.Handler<java.util.List<java.lang.Character>>", TypeKind.HANDLER);
       checkClassParam(params.get(19), "listStrHandler", "io.vertx.core.Handler<java.util.List<java.lang.String>>", TypeKind.HANDLER);
-      checkClassParam(params.get(20), "setByteHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Byte>>", TypeKind.HANDLER);
-      checkClassParam(params.get(21), "setShortHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Short>>", TypeKind.HANDLER);
-      checkClassParam(params.get(22), "setIntHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Integer>>", TypeKind.HANDLER);
-      checkClassParam(params.get(23), "setLongHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Long>>", TypeKind.HANDLER);
-      checkClassParam(params.get(24), "setFloatHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Float>>", TypeKind.HANDLER);
-      checkClassParam(params.get(25), "setDoubleHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Double>>", TypeKind.HANDLER);
-      checkClassParam(params.get(26), "setBooleanHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Boolean>>", TypeKind.HANDLER);
-      checkClassParam(params.get(27), "setCharHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Character>>", TypeKind.HANDLER);
-      checkClassParam(params.get(28), "setStrHandler", "io.vertx.core.Handler<java.util.Set<java.lang.String>>", TypeKind.HANDLER);
-      checkClassParam(params.get(29), "voidHandler", "io.vertx.core.Handler<java.lang.Void>", TypeKind.HANDLER);
-      checkClassParam(params.get(30), "throwableHandler", "io.vertx.core.Handler<java.lang.Throwable>", TypeKind.HANDLER);
+      checkClassParam(params.get(20), "listVertxGenHandler", "io.vertx.core.Handler<java.util.List<" + VertxGenClass1.class.getName() + ">>", TypeKind.HANDLER);
+      checkClassParam(params.get(21), "listJsonObjectHandler", "io.vertx.core.Handler<java.util.List<" + JsonObject.class.getName() + ">>", TypeKind.HANDLER);
+      checkClassParam(params.get(22), "listJsonArrayHandler", "io.vertx.core.Handler<java.util.List<" + JsonArray.class.getName() + ">>", TypeKind.HANDLER);
+      checkClassParam(params.get(23), "setByteHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Byte>>", TypeKind.HANDLER);
+      checkClassParam(params.get(24), "setShortHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Short>>", TypeKind.HANDLER);
+      checkClassParam(params.get(25), "setIntHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Integer>>", TypeKind.HANDLER);
+      checkClassParam(params.get(26), "setLongHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Long>>", TypeKind.HANDLER);
+      checkClassParam(params.get(27), "setFloatHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Float>>", TypeKind.HANDLER);
+      checkClassParam(params.get(28), "setDoubleHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Double>>", TypeKind.HANDLER);
+      checkClassParam(params.get(29), "setBooleanHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Boolean>>", TypeKind.HANDLER);
+      checkClassParam(params.get(30), "setCharHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Character>>", TypeKind.HANDLER);
+      checkClassParam(params.get(31), "setStrHandler", "io.vertx.core.Handler<java.util.Set<java.lang.String>>", TypeKind.HANDLER);
+      checkClassParam(params.get(32), "setVertxGenHandler", "io.vertx.core.Handler<java.util.Set<" + VertxGenClass1.class.getName() + ">>", TypeKind.HANDLER);
+      checkClassParam(params.get(33), "setJsonObjectHandler", "io.vertx.core.Handler<java.util.Set<" + JsonObject.class.getName() + ">>", TypeKind.HANDLER);
+      checkClassParam(params.get(34), "setJsonArrayHandler", "io.vertx.core.Handler<java.util.Set<" + JsonArray.class.getName() + ">>", TypeKind.HANDLER);
+      checkClassParam(params.get(35), "voidHandler", "io.vertx.core.Handler<java.lang.Void>", TypeKind.HANDLER);
+      checkClassParam(params.get(36), "throwableHandler", "io.vertx.core.Handler<java.lang.Throwable>", TypeKind.HANDLER);
     };
 
     MethodInfo method = gen.getMethods().get(0);
@@ -585,7 +591,7 @@ public class GeneratorTest {
     String methodName = "methodWithHandlerParams";
 
     Consumer<MethodInfo> checker = (method) -> {
-      checkMethod(method, methodName, null, "void", false, false, false, false, false, false, 30);
+      checkMethod(method, methodName, null, "void", false, false, false, false, false, false, 36);
       List<ParamInfo> params = method.getParams();
       checkClassParam(params.get(0), "byteHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Byte>>", TypeKind.HANDLER);
       checkClassParam(params.get(1), "shortHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Short>>", TypeKind.HANDLER);
@@ -607,16 +613,22 @@ public class GeneratorTest {
       checkClassParam(params.get(17), "listBooleanHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.List<java.lang.Boolean>>>", TypeKind.HANDLER);
       checkClassParam(params.get(18), "listCharHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.List<java.lang.Character>>>", TypeKind.HANDLER);
       checkClassParam(params.get(19), "listStrHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.List<java.lang.String>>>", TypeKind.HANDLER);
-      checkClassParam(params.get(20), "setByteHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.Byte>>>", TypeKind.HANDLER);
-      checkClassParam(params.get(21), "setShortHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.Short>>>", TypeKind.HANDLER);
-      checkClassParam(params.get(22), "setIntHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.Integer>>>", TypeKind.HANDLER);
-      checkClassParam(params.get(23), "setLongHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.Long>>>", TypeKind.HANDLER);
-      checkClassParam(params.get(24), "setFloatHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.Float>>>", TypeKind.HANDLER);
-      checkClassParam(params.get(25), "setDoubleHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.Double>>>", TypeKind.HANDLER);
-      checkClassParam(params.get(26), "setBooleanHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.Boolean>>>", TypeKind.HANDLER);
-      checkClassParam(params.get(27), "setCharHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.Character>>>", TypeKind.HANDLER);
-      checkClassParam(params.get(28), "setStrHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.String>>>", TypeKind.HANDLER);
-      checkClassParam(params.get(29), "voidHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Void>>", TypeKind.HANDLER);
+      checkClassParam(params.get(20), "listVertxGenHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.List<" + VertxGenClass1.class.getName() + ">>>", TypeKind.HANDLER);
+      checkClassParam(params.get(21), "listJsonObjectHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.List<" + JsonObject.class.getName() + ">>>", TypeKind.HANDLER);
+      checkClassParam(params.get(22), "listJsonArrayHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.List<" + JsonArray.class.getName() + ">>>", TypeKind.HANDLER);
+      checkClassParam(params.get(23), "setByteHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.Byte>>>", TypeKind.HANDLER);
+      checkClassParam(params.get(24), "setShortHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.Short>>>", TypeKind.HANDLER);
+      checkClassParam(params.get(25), "setIntHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.Integer>>>", TypeKind.HANDLER);
+      checkClassParam(params.get(26), "setLongHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.Long>>>", TypeKind.HANDLER);
+      checkClassParam(params.get(27), "setFloatHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.Float>>>", TypeKind.HANDLER);
+      checkClassParam(params.get(28), "setDoubleHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.Double>>>", TypeKind.HANDLER);
+      checkClassParam(params.get(29), "setBooleanHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.Boolean>>>", TypeKind.HANDLER);
+      checkClassParam(params.get(30), "setCharHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.Character>>>", TypeKind.HANDLER);
+      checkClassParam(params.get(31), "setStrHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<java.lang.String>>>", TypeKind.HANDLER);
+      checkClassParam(params.get(32), "setVertxGenHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<" + VertxGenClass1.class.getName() + ">>>", TypeKind.HANDLER);
+      checkClassParam(params.get(33), "setJsonObjectHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<" + JsonObject.class.getName() + ">>>", TypeKind.HANDLER);
+      checkClassParam(params.get(34), "setJsonArrayHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<" + JsonArray.class.getName() + ">>>", TypeKind.HANDLER);
+      checkClassParam(params.get(35), "voidHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Void>>", TypeKind.HANDLER);
     };
 
     MethodInfo method = gen.getMethods().get(0);

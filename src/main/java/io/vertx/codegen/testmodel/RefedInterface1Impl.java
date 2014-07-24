@@ -13,7 +13,8 @@ public class RefedInterface1Impl implements RefedInterface1 {
   }
 
   @Override
-  public void setString(String str) {
+  public RefedInterface1 setString(String str) {
     this.str = str;
+    return this;
   }
 }

@@ -153,6 +153,78 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
+  public void methodWithHandlerListVertxGen(Handler<List<RefedInterface1>> listHandler) {
+    List<RefedInterface1> list = Arrays.asList(new RefedInterface1Impl().setString("foo"), new RefedInterface1Impl().setString("bar"));
+    listHandler.handle(list);
+  }
+
+  @Override
+  public void methodWithHandlerSetVertxGen(Handler<Set<RefedInterface1>> setHandler) {
+    Set<RefedInterface1> list = new LinkedHashSet<>(Arrays.asList(new RefedInterface1Impl().setString("foo"), new RefedInterface1Impl().setString("bar")));
+    setHandler.handle(list);
+  }
+
+  @Override
+  public void methodWithHandlerListJsonObject(Handler<List<JsonObject>> listHandler) {
+    List<JsonObject> list = Arrays.asList(new JsonObject().putString("cheese", "stilton"), new JsonObject().putString("socks", "tartan"));
+    listHandler.handle(list);
+  }
+
+  @Override
+  public void methodWithHandlerSetJsonObject(Handler<Set<JsonObject>> setHandler) {
+    Set<JsonObject> set = new LinkedHashSet<>(Arrays.asList(new JsonObject().putString("cheese", "stilton"), new JsonObject().putString("socks", "tartan")));
+    setHandler.handle(set);
+  }
+
+  @Override
+  public void methodWithHandlerListJsonArray(Handler<List<JsonArray>> listHandler) {
+    List<JsonArray> list = Arrays.asList(new JsonArray().add("green").add("blue"), new JsonArray().add("yellow").add("purple"));
+    listHandler.handle(list);
+  }
+
+  @Override
+  public void methodWithHandlerSetJsonArray(Handler<Set<JsonArray>> listHandler) {
+    Set<JsonArray> set = new LinkedHashSet<>(Arrays.asList(new JsonArray().add("green").add("blue"), new JsonArray().add("yellow").add("purple")));
+    listHandler.handle(set);
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultListVertxGen(Handler<AsyncResult<List<RefedInterface1>>> listHandler) {
+    List<RefedInterface1> list = Arrays.asList(new RefedInterface1Impl().setString("foo"), new RefedInterface1Impl().setString("bar"));
+    listHandler.handle(new FutureResultImpl<>(list));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultSetVertxGen(Handler<AsyncResult<Set<RefedInterface1>>> setHandler) {
+    Set<RefedInterface1> list = new LinkedHashSet<>(Arrays.asList(new RefedInterface1Impl().setString("foo"), new RefedInterface1Impl().setString("bar")));
+    setHandler.handle(new FutureResultImpl<>(list));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultListJsonObject(Handler<AsyncResult<List<JsonObject>>> listHandler) {
+    List<JsonObject> list = Arrays.asList(new JsonObject().putString("cheese", "stilton"), new JsonObject().putString("socks", "tartan"));
+    listHandler.handle(new FutureResultImpl<>(list));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultSetJsonObject(Handler<AsyncResult<Set<JsonObject>>> setHandler) {
+    Set<JsonObject> set = new LinkedHashSet<>(Arrays.asList(new JsonObject().putString("cheese", "stilton"), new JsonObject().putString("socks", "tartan")));
+    setHandler.handle(new FutureResultImpl<>(set));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultListJsonArray(Handler<AsyncResult<List<JsonArray>>> listHandler) {
+    List<JsonArray> list = Arrays.asList(new JsonArray().add("green").add("blue"), new JsonArray().add("yellow").add("purple"));
+    listHandler.handle(new FutureResultImpl<>(list));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultSetJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler) {
+    Set<JsonArray> set = new LinkedHashSet<>(Arrays.asList(new JsonArray().add("green").add("blue"), new JsonArray().add("yellow").add("purple")));
+    listHandler.handle(new FutureResultImpl<>(set));
+  }
+
+  @Override
   public void methodWithHandlerUserTypes(Handler<RefedInterface1> handler) {
     RefedInterface1 refed = new RefedInterface1Impl();
     refed.setString("echidnas");

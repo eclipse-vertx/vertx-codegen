@@ -236,13 +236,12 @@ public class Model {
     if (Object.class.getName().equals(type)) {
       return;
     }
-    // Can also have a Handler<T> legally as param if T = basic type or VertxGen type
+    // Check legal handlers
     String nonGenericType = Helper.getNonGenericType(type);
     String genericType = Helper.getGenericType(type);
     if (isLegalHandlerType(elementUtils, nonGenericType, genericType)) {
       return;
     }
-    // Can also have a Handler<AsyncResult<T>> legally as param, if T = basic type or VertxGen type
     if (isLegalHandlerAsyncResultType(elementUtils, nonGenericType, genericType)) {
       return;
     }
@@ -305,7 +304,8 @@ public class Model {
 
   private boolean isLegalListOrSet(Elements elementUtils, String nonGenericType, String genericType) {
     return ((nonGenericType.startsWith(List.class.getName()) || nonGenericType.startsWith(Set.class.getName())) &&
-                                                  (Helper.isBasicType(genericType) || isVertxGenInterface(elementUtils, genericType)));
+                                                  (Helper.isBasicType(genericType) || isVertxGenInterface(elementUtils, genericType) ||
+                                                   JSON_OBJECT.equals(genericType) || JSON_ARRAY.equals(genericType)));
   }
 
   private boolean isVertxGenInterface(Elements elementUtils, String type) {

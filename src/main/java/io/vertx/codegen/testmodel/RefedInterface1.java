@@ -11,5 +11,5 @@ public interface RefedInterface1 {
 
   String getString();
 
-  void setString(String str);
+  RefedInterface1 setString(String str);
 }
