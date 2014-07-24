@@ -337,6 +337,13 @@ public abstract class TypeInfo {
   public void collectImports(Collection<TypeInfo.Class> imports) {
   }
 
+  /**
+   * @return the raw type of this type
+   */
+  public TypeInfo getRaw() {
+    return this;
+  }
+
   public TypeKind getKind() {
     return TypeKind.OTHER;
   }
