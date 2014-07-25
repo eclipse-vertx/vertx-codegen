@@ -26,8 +26,8 @@ We define the following set `B` of basic types:
 * any primitive type
 * any boxed primitive type
 * `java.lang.String`
-* `io.vertx.core.json.JsonObject`
-* `io.vertx.core.json.JsonArray`
+
+We define `J` as the set of types `io.vertx.core.json.JsonObject` and `io.vertx.core.json.JsonArray`
 
 We define `V` as the set of user defined API types which are defined in its own interface and annotated with `@VertxGen`
 
@@ -36,15 +36,18 @@ The following set `P` of types are permitted as parameters to any API method:
 * the set `B`
 * `java.lang.Object`
 * the set `V`
+* the set `J`
 * any options class annotated with `@Options`
 * `io.vertx.java.core.Handler<io.vertx.java.core.AsyncResult<HA>>` where `HA` contains
     * the set `B`
     * the set `V`
+    * the set `J`
     * `java.lang.Void`
     * `java.lang.Throwable`
     * type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
         * the set `B`
         * the set `V`
+        * the set `J`
 * `io.vertx.java.core.Handler<H>` where `H` contains
     * the set `HA`
     * `java.lang.Throwable`
@@ -54,6 +57,7 @@ The following set `R` of types are permitted as return types from any API method
 * void
 * the set `B`
 * the set `V`
+* the set `J`
 * type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
     * the set `B`
     * the set `V`
