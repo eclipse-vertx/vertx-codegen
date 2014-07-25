@@ -211,6 +211,11 @@ public abstract class TypeInfo {
       this.typeArguments = typeArguments;
     }
 
+    @Override
+    public TypeInfo getErased() {
+      return getRaw();
+    }
+
     public Class getRaw() {
       return raw;
     }
@@ -340,7 +345,7 @@ public abstract class TypeInfo {
   /**
    * @return the raw type of this type
    */
-  public TypeInfo getRaw() {
+  public TypeInfo getErased() {
     return this;
   }
 

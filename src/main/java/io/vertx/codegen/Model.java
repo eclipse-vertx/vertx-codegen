@@ -21,7 +21,6 @@ import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.IndexGetter;
 import io.vertx.codegen.annotations.IndexSetter;
-import io.vertx.codegen.annotations.Options;
 import io.vertx.codegen.annotations.VertxGen;
 import org.mvel2.templates.TemplateRuntime;
 
@@ -222,130 +221,109 @@ public class Model {
     }
   }
 
-  private void checkParamType(Elements elementUtils, Element elem, String type) {
+  private void checkParamType(Element elem, TypeInfo typeInfo) {
 
     // Basic types, int, long, String etc
-    if (Helper.isBasicType(type)) {
-      return;
-    }
     // JsonObject or JsonArray
-    if (isJsonType(type)) {
-      return;
-    }
     // Also can use Object as a param type (e.g. for EventBus)
-    if (Object.class.getName().equals(type)) {
+    if (typeInfo.getKind().basic || typeInfo.getKind().json || typeInfo.getKind() == io.vertx.codegen.TypeKind.OBJECT) {
       return;
     }
     // Check legal handlers
-    String nonGenericType = Helper.getNonGenericType(type);
-    String genericType = Helper.getGenericType(type);
-    if (isLegalHandlerType(elementUtils, nonGenericType, genericType)) {
+    if (isLegalHandlerType(typeInfo)) {
       return;
     }
-    if (isLegalHandlerAsyncResultType(elementUtils, nonGenericType, genericType)) {
+    if (isLegalHandlerAsyncResultType(typeInfo)) {
       return;
     }
     // Another user defined interface with the @VertxGen annotation is OK
-    if (isVertxGenInterface(elementUtils, type)) {
+    if (isVertxGenInterface(typeInfo)) {
       return;
     }
     // Can also specify option classes (which aren't VertxGen)
-    if (isOptionType(elementUtils, elem, type)) {
+    if (isOptionType(typeInfo)) {
       return;
     }
-    throw new GenException(elem, "type " + type + " is not legal for use for a parameter in code generation");
+    throw new GenException(elem, "type " + typeInfo + " is not legal for use for a parameter in code generation");
   }
 
-  private void checkReturnType(Elements elementUtils, Element elem, String type) {
-
-    //System.out.println("Checking return type " + type);
-
+  private void checkReturnType(Element elem, TypeInfo type) {
     // Basic types, int, long, String etc
-    if (Helper.isBasicType(type)) {
-      return;
-    }
-
     // JsonObject or JsonArray
-    if (isJsonType(type)) {
+    // void
+    if (type.getKind().basic || type instanceof TypeInfo.Void || type.getKind().json) {
       return;
     }
 
     // List<T> and Set<T> are also legal for returns if T = basic type
-    String nonGenericType = Helper.getNonGenericType(type);
-    String genericType = Helper.getGenericType(type);
-    if (isLegalListOrSet(elementUtils, nonGenericType, genericType)) {
-      return;
+    if (type.getErased().getName().equals(List.class.getName()) || type.getErased().getName().equals(Set.class.getName())) {
+      TypeInfo argument = ((TypeInfo.Parameterized) type).getTypeArguments().get(0);
+      if (argument.getKind().basic || argument.getKind().json) {
+        return;
+      } else if (argument.getKind() == io.vertx.codegen.TypeKind.API) {
+        isVertxGenInterface(argument);
+        return;
+      }
     }
 
     // Another user defined interface with the @VertxGen annotation is OK
-    if (isVertxGenInterface(elementUtils, type)) {
+    if (type.getKind() == io.vertx.codegen.TypeKind.API) {
+      isVertxGenInterface(type);
       return;
     }
     throw new GenException(elem, "type " + type + " is not legal for use for a return type in code generation");
   }
 
-  private boolean isOptionType(Elements elementUtils, Element elem, String type) {
-    if (Helper.isBasicType(type)) {
-      return false;
-    }
-    try {
-      TypeElement clazz = elementUtils.getTypeElement(Helper.getNonGenericType(type));
-      boolean isOption = clazz.getAnnotation(Options.class) != null;
-      if (isOption) {
-        referencedOptionsTypes.add(type);
-      }
-      return isOption;
-    } catch (Exception e) {
-      GenException genEx = new GenException(elem, e.getMessage());
-      genEx.initCause(e);
-      throw genEx;
-    }
-  }
-
-  private boolean isLegalListOrSet(Elements elementUtils, String nonGenericType, String genericType) {
-    return ((nonGenericType.startsWith(List.class.getName()) || nonGenericType.startsWith(Set.class.getName())) &&
-                                                  (Helper.isBasicType(genericType) || isVertxGenInterface(elementUtils, genericType) ||
-                                                   JSON_OBJECT.equals(genericType) || JSON_ARRAY.equals(genericType)));
-  }
-
-  private boolean isVertxGenInterface(Elements elementUtils, String type) {
-    if (Helper.isBasicType(type)) {
-      return false;
-    }
-    try {
-      TypeElement clazz = elementUtils.getTypeElement(Helper.getNonGenericType(type));
-      boolean isVertxGen = clazz.getAnnotation(VertxGen.class) != null;
-      if (isVertxGen && !type.equals(VERTX)) {
-        referencedTypes.add(Helper.getNonGenericType(type));
-      }
-      return isVertxGen;
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
-  private boolean isJsonType(String type) {
-    return (type.equals(JSON_OBJECT) || type.equals(JSON_ARRAY));
-  }
-
-  private boolean isLegalHandlerType(Elements elementUtils, String nonGenericType, String genericType) {
-    if (nonGenericType.equals(VERTX_HANDLER) &&
-                              (Helper.isBasicType(genericType) || isVertxGenInterface(elementUtils, genericType) ||
-                               isJsonType(genericType)
-                               || isLegalListOrSet(elementUtils, genericType, Helper.getGenericType(genericType))
-                               || genericType.equals(Void.class.getName())
-                               || genericType.equals(Throwable.class.getName()))) {
+  private boolean isOptionType(TypeInfo type) {
+    if (type.getKind() == io.vertx.codegen.TypeKind.OPTIONS) {
+      referencedOptionsTypes.add(type.getName());
       return true;
     }
     return false;
   }
 
-  private boolean isLegalHandlerAsyncResultType(Elements elementUtils, String nonGenericType, String genericType) {
-    if (nonGenericType.equals(VERTX_HANDLER) && genericType.startsWith(VERTX_ASYNC_RESULT)) {
-      String genericType2 = Helper.getGenericType(genericType);
-      if (Helper.isBasicType(genericType2) || isVertxGenInterface(elementUtils, genericType2) || isLegalListOrSet(elementUtils, genericType2, Helper.getGenericType(genericType2))
-          || genericType2.equals(Void.class.getName()) || isJsonType(genericType2)) {
+  private boolean isLegalListOrSet(TypeInfo type) {
+    if (type.getErased().getName().equals(List.class.getName()) || type.getErased().getName().equals(Set.class.getName())) {
+      TypeInfo elementType = ((TypeInfo.Parameterized) type).getTypeArguments().get(0);
+      if (elementType.getKind().basic || elementType.getKind().json || isVertxGenInterface(elementType)) {
         return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isVertxGenInterface(TypeInfo type) {
+    if (type.getKind() == io.vertx.codegen.TypeKind.API) {
+      String name = type.getErased().getName();
+      if (!name.equals(VERTX)) {
+        referencedTypes.add(name);
+      }
+      return true;
+    }
+    return false;
+  }
+
+  private boolean isLegalHandlerType(TypeInfo type) {
+    if (type.getErased().getKind() == io.vertx.codegen.TypeKind.HANDLER) {
+      TypeInfo eventType = ((TypeInfo.Parameterized) type).getTypeArguments().get(0);
+      if (eventType.getKind().json || eventType.getKind().basic || isVertxGenInterface(eventType) ||
+          isLegalListOrSet(eventType) || eventType.getKind() == io.vertx.codegen.TypeKind.VOID ||
+          eventType.getKind() == io.vertx.codegen.TypeKind.THROWABLE) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isLegalHandlerAsyncResultType(TypeInfo type) {
+    if (type.getErased().getKind() == io.vertx.codegen.TypeKind.HANDLER) {
+      TypeInfo eventType = ((TypeInfo.Parameterized) type).getTypeArguments().get(0);
+      if (eventType.getErased().getKind() == io.vertx.codegen.TypeKind.ASYNC_RESULT) {
+        TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getTypeArguments().get(0);
+        if (resultType.getKind().json || resultType.getKind().basic || isVertxGenInterface(resultType) ||
+            isLegalListOrSet(resultType) || resultType.getKind() == io.vertx.codegen.TypeKind.VOID) {
+          return true;
+        }
       }
     }
     return false;
@@ -527,7 +505,7 @@ public class Model {
       // If it's the generic type of the interface (currently we only support a single generic type)
       // then don't validate it, as we don't know what the real type is
       if (!returnType.toString().equals(Helper.getGenericType(ifaceFQCN))) {
-        checkReturnType(elementUtils, execElem, returnType.toString());
+        checkReturnType(execElem, returnType);
       }
     }
 
@@ -595,7 +573,7 @@ public class Model {
       } catch (Exception e) {
         throw new GenException(param, e.getMessage());
       }
-      checkParamType(elementUtils, execElem, type.getName());
+      checkParamType(execElem, type);
       ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), type);
       mParams.add(mParam);
     }
