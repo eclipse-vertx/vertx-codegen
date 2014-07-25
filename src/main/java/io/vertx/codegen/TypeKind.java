@@ -6,38 +6,42 @@ package io.vertx.codegen;
 public enum TypeKind {
 
   // Basic types
-  STRING(true),
-  BOXED_PRIMITIVE(true),
-  PRIMITIVE(true),
-  JSON_OBJECT(true),
-  JSON_ARRAY(true),
+  STRING(true, false),
+  BOXED_PRIMITIVE(true, false),
+  PRIMITIVE(true, false),
+
+  // Json types
+  JSON_OBJECT(false, true),
+  JSON_ARRAY(false, true),
 
   // Various stuff
-  THROWABLE(false),  // java.lang.Throwable
-  VOID(false),       // java.lang.Void
-  LIST(false),       // java.util.List
-  SET(false),        // java.util.Set
-  OBJECT(false),     // java.lang.Object
+  THROWABLE(false, false),  // java.lang.Throwable
+  VOID(false, false),       // java.lang.Void
+  LIST(false, false),       // java.util.List
+  SET(false, false),        // java.util.Set
+  OBJECT(false, false),     // java.lang.Object
 
   // API types
-  API(false),
+  API(false, false),
 
   // Options
-  OPTIONS(false),
+  OPTIONS(false, false),
 
   // Handler
-  HANDLER(false),
+  HANDLER(false, false),
 
   // AsyncResult
-  ASYNC_RESULT(false),
+  ASYNC_RESULT(false, false),
 
   // Anything else
-  OTHER(false);
+  OTHER(false, false);
 
   // True when basic
-  boolean basic;
+  public final boolean basic;
+  public final boolean json;
 
-  TypeKind(boolean basic) {
+  TypeKind(boolean basic, boolean json) {
     this.basic = basic;
+    this.json = json;
   }
 }
