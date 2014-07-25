@@ -33,13 +33,13 @@ public class Helper {
       return TypeKind.OPTIONS;
     } else if (annotations.get(VertxGen.class) != null) {
       return TypeKind.API;
-    } else if (fqcn.equals(Generator.VERTX_HANDLER)) {
+    } else if (fqcn.equals(Model.VERTX_HANDLER)) {
       return TypeKind.HANDLER;
-    } else if (fqcn.equals(Generator.VERTX_ASYNC_RESULT)) {
+    } else if (fqcn.equals(Model.VERTX_ASYNC_RESULT)) {
       return TypeKind.ASYNC_RESULT;
-    } else if (fqcn.equals(Generator.JSON_ARRAY)) {
+    } else if (fqcn.equals(Model.JSON_ARRAY)) {
       return TypeKind.JSON_ARRAY;
-    } else if (fqcn.equals(Generator.JSON_OBJECT)) {
+    } else if (fqcn.equals(Model.JSON_OBJECT)) {
       return TypeKind.JSON_OBJECT;
     } else if (fqcn.equals(Object.class.getName())) {
       return TypeKind.OBJECT;

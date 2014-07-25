@@ -67,12 +67,6 @@ public class Generator {
 
   private static final Logger log = Logger.getLogger(Generator.class.getName());
 
-  public static final String VERTX_ASYNC_RESULT = "io.vertx.core.AsyncResult";
-  public static final String VERTX_HANDLER = "io.vertx.core.Handler";
-  public static final String JSON_OBJECT = "io.vertx.core.json.JsonObject";
-  public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
-  public static final String VERTX = "io.vertx.core.Vertx";
-
   HashMap<String, TypeElement> sources = new HashMap<>();
 
   void addSources(Iterable<? extends Element> elements) {
@@ -295,7 +289,7 @@ public class Generator {
           if (ctorElt.getParameters().size() == 1) {
             VariableElement v = ctorElt.getParameters().get(0);
             TypeMirror type = v.asType();
-            if (type.getKind() == TypeKind.DECLARED && type.toString().equals(JSON_OBJECT)) {
+            if (type.getKind() == TypeKind.DECLARED && type.toString().equals(Model.JSON_OBJECT)) {
               return;
             }
           }
