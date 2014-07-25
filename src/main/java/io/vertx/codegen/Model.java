@@ -418,7 +418,6 @@ public class Model {
 
   private void traverseMethods(Elements elementUtils, Types typeUtils, LinkedList<DeclaredType> resolvingTypes,
                                Element currentElt) {
-    out:
     for (Element currentEnclosedElt : currentElt.getEnclosedElements()) {
       if (currentEnclosedElt.getKind() == ElementKind.METHOD) {
         ExecutableElement currentMethodElt = (ExecutableElement) currentEnclosedElt;
