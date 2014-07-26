@@ -181,6 +181,11 @@ public class Model {
     vars.put("methodsByName", methodMap);
     vars.put("referencedOptionsTypes", referencedOptionsTypes);
 
+    // Useful for testing the type kind, allows to do type.kind == API instead of type.kind.name() == "API"
+    for (io.vertx.codegen.TypeKind typeKind : io.vertx.codegen.TypeKind.values()) {
+      vars.put(typeKind.name(), typeKind);
+    }
+
     ClassLoader now = Thread.currentThread().getContextClassLoader();
     String output;
     try {
