@@ -6,46 +6,51 @@ package io.vertx.codegen;
 public enum TypeKind {
 
   // Basic types
-  STRING(true, false),
-  BOXED_PRIMITIVE(true, false),
-  PRIMITIVE(true, false),
+  STRING(true, false, false),
+  BOXED_PRIMITIVE(true, false, false),
+  PRIMITIVE(true, false, false),
 
   // Json types
-  JSON_OBJECT(false, true),
-  JSON_ARRAY(false, true),
+  JSON_OBJECT(false, true, false),
+  JSON_ARRAY(false, true, false),
 
   // Various stuff
-  THROWABLE(false, false),  // java.lang.Throwable
-  VOID(false, false),       // java.lang.Void
-  LIST(false, false),       // java.util.List
-  SET(false, false),        // java.util.Set
-  OBJECT(false, false),     // java.lang.Object
+  THROWABLE(false, false, false),  // java.lang.Throwable
+  VOID(false, false, false),       // java.lang.Void
+  OBJECT(false, false, false),     // java.lang.Object
+
+  // Collection types
+  LIST(false, false, true),        // java.util.List
+  SET(false, false, true),         // java.util.Set
 
   // API types
-  API(false, false),
+  API(false, false, false),
 
   // Options
-  OPTIONS(false, false),
+  OPTIONS(false, false, false),
 
   // Handler
-  HANDLER(false, false),
+  HANDLER(false, false, false),
 
   // AsyncResult
-  ASYNC_RESULT(false, false),
+  ASYNC_RESULT(false, false, false),
 
   // Variable (i.e. type paramater)
-  VARIABLE(false, false),
+  VARIABLE(false, false, false),
 
   // Anything else
-  OTHER(false, false);
+  OTHER(false, false, false);
 
   // True when basic
   public final boolean basic;
   // True when json
   public final boolean json;
+  // True when a java collection type
+  public final boolean collection;
 
-  TypeKind(boolean basic, boolean json) {
+  TypeKind(boolean basic, boolean json, boolean collection) {
     this.basic = basic;
     this.json = json;
+    this.collection = collection;
   }
 }
