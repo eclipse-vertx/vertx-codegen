@@ -372,6 +372,45 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
+  public <U> void methodWithGenericParams(String type, U u, Handler<U> handler, Handler<AsyncResult<U>> asyncResultHandler) {
+    switch (type) {
+      case "String": {
+        assertEquals("foo", u);
+        handler.handle((U)"handlerFoo");
+        asyncResultHandler.handle(new FutureResultImpl<U>((U)"asyncResultHandlerFoo"));
+        break;
+      }
+      case "Ref": {
+        assertEquals("foo", u);
+        RefedInterface1 ref = new RefedInterface1Impl();
+        ref.setString("bar");
+        handler.handle((U)ref);
+        asyncResultHandler.handle(new FutureResultImpl<U>((U)ref));
+        break;
+      }
+      case "JsonObject": {
+        JsonObject jsonObject = (JsonObject)u;
+        assertEquals("hello", jsonObject.getString("foo"));
+        assertEquals(123, jsonObject.getInteger("bar").intValue());
+        handler.handle((U)jsonObject);
+        asyncResultHandler.handle(new FutureResultImpl<U>((U)jsonObject));
+        break;
+      }
+      case "JsonArray": {
+        JsonArray jsonArray = (JsonArray)u;
+        assertEquals(3, jsonArray.size());
+        assertEquals("foo", jsonArray.get(0));
+        assertEquals("bar", jsonArray.get(1));
+        assertEquals("wib", jsonArray.get(2));
+        handler.handle((U) jsonArray);
+        asyncResultHandler.handle(new FutureResultImpl<U>((U) jsonArray));
+        break;
+      }
+    }
+
+  }
+
+  @Override
   public TestInterface fluentMethod(String str) {
     assertEquals("bar", str);
     return this;

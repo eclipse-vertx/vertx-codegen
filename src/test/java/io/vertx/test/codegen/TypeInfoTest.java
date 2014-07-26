@@ -1,7 +1,5 @@
 package io.vertx.test.codegen;
 
-import static org.junit.Assert.*;
-
 import io.vertx.codegen.TypeInfo;
 import io.vertx.codegen.TypeKind;
 import io.vertx.codegen.annotations.Options;
@@ -18,6 +16,8 @@ import org.junit.Test;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
+
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -57,7 +57,7 @@ public class TypeInfoTest {
 
   @Test
   public void testTypeVariable() throws Exception {
-    Method m = GenericInterface.class.getDeclaredMethod("foo", String.class);
+    Method m = GenericInterface.class.getMethods()[0];
     TypeInfo.Variable info = (TypeInfo.Variable) TypeInfo.create(m.getGenericReturnType());
     assertEquals("T", info.getName());
     assertEquals("T", info.getSimpleName());

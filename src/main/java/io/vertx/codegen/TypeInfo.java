@@ -199,6 +199,12 @@ public abstract class TypeInfo {
     public String format(boolean qualified) {
       return name;
     }
+
+    @Override
+    public TypeKind getKind() {
+      return TypeKind.VARIABLE;
+    }
+
   }
 
   public static class Parameterized extends TypeInfo {

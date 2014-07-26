@@ -33,11 +33,15 @@ public enum TypeKind {
   // AsyncResult
   ASYNC_RESULT(false, false),
 
+  // Variable (i.e. type paramater)
+  VARIABLE(false, false),
+
   // Anything else
   OTHER(false, false);
 
   // True when basic
   public final boolean basic;
+  // True when json
   public final boolean json;
 
   TypeKind(boolean basic, boolean json) {

@@ -70,26 +70,26 @@ public class Model {
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
   public static final String VERTX = "io.vertx.core.Vertx";
 
-  final Generator generator;
-  final TypeElement modelElt;
-  boolean processed = false;
-  List<MethodInfo> methods = new ArrayList<>();
-  HashSet<TypeInfo.Class> importedTypes = new HashSet<>();
-  Set<String> referencedTypes = new HashSet<>();
-  boolean concrete;
-  String ifaceSimpleName;
-  String ifaceFQCN;
-  String ifacePackageName;
-  String ifaceComment;
-  List<TypeInfo> superTypes = new ArrayList<>();
-  List<TypeInfo> concreteSuperTypes = new ArrayList<>();
-  List<TypeInfo> abstractSuperTypes = new ArrayList<>();
+  private final Generator generator;
+  private final TypeElement modelElt;
+  private boolean processed = false;
+  private List<MethodInfo> methods = new ArrayList<>();
+  private HashSet<TypeInfo.Class> importedTypes = new HashSet<>();
+  private Set<String> referencedTypes = new HashSet<>();
+  private boolean concrete;
+  private String ifaceSimpleName;
+  private String ifaceFQCN;
+  private String ifacePackageName;
+  private String ifaceComment;
+  private List<TypeInfo> superTypes = new ArrayList<>();
+  private List<TypeInfo> concreteSuperTypes = new ArrayList<>();
+  private List<TypeInfo> abstractSuperTypes = new ArrayList<>();
   // The methods, grouped by name
-  Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
-  Set<String> referencedOptionsTypes = new HashSet<>();
+  private Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
+  private Set<String> referencedOptionsTypes = new HashSet<>();
 
   // Methods where all overloaded methods with same name are squashed into a single method with all parameters
-  Map<String, MethodInfo> squashedMethods = new LinkedHashMap<>();
+  private Map<String, MethodInfo> squashedMethods = new LinkedHashMap<>();
 
   public Model(Generator generator, TypeElement modelElt) {
     this.generator = generator;
@@ -244,6 +244,10 @@ public class Model {
     if (isOptionType(typeInfo)) {
       return;
     }
+    // We also allow type parameters for param types
+    if (isVariableType(typeInfo)) {
+      return;
+    }
     throw new GenException(elem, "type " + typeInfo + " is not legal for use for a parameter in code generation");
   }
 
@@ -260,18 +264,26 @@ public class Model {
       TypeInfo argument = ((TypeInfo.Parameterized) type).getTypeArguments().get(0);
       if (argument.getKind().basic || argument.getKind().json) {
         return;
-      } else if (argument.getKind() == io.vertx.codegen.TypeKind.API) {
-        isVertxGenInterface(argument);
+      } else if (isVertxGenInterface(argument)) {
         return;
       }
     }
 
     // Another user defined interface with the @VertxGen annotation is OK
-    if (type.getKind() == io.vertx.codegen.TypeKind.API) {
-      isVertxGenInterface(type);
+    if (isVertxGenInterface(type)) {
       return;
     }
+
+    // Variable type is ok
+    if (isVariableType(type)) {
+      return;
+    }
+
     throw new GenException(elem, "type " + type + " is not legal for use for a return type in code generation");
+  }
+
+  private boolean isVariableType(TypeInfo type) {
+    return type instanceof TypeInfo.Variable;
   }
 
   private boolean isOptionType(TypeInfo type) {
@@ -308,7 +320,7 @@ public class Model {
       TypeInfo eventType = ((TypeInfo.Parameterized) type).getTypeArguments().get(0);
       if (eventType.getKind().json || eventType.getKind().basic || isVertxGenInterface(eventType) ||
           isLegalListOrSet(eventType) || eventType.getKind() == io.vertx.codegen.TypeKind.VOID ||
-          eventType.getKind() == io.vertx.codegen.TypeKind.THROWABLE) {
+          eventType.getKind() == io.vertx.codegen.TypeKind.THROWABLE || isVariableType(eventType)) {
         return true;
       }
     }
@@ -321,7 +333,8 @@ public class Model {
       if (eventType.getErased().getKind() == io.vertx.codegen.TypeKind.ASYNC_RESULT) {
         TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getTypeArguments().get(0);
         if (resultType.getKind().json || resultType.getKind().basic || isVertxGenInterface(resultType) ||
-            isLegalListOrSet(resultType) || resultType.getKind() == io.vertx.codegen.TypeKind.VOID) {
+            isLegalListOrSet(resultType) || resultType.getKind() == io.vertx.codegen.TypeKind.VOID ||
+            isVariableType(resultType)) {
           return true;
         }
       }
@@ -483,11 +496,8 @@ public class Model {
       }
       typeParams.add(typeParam.getSimpleName().toString());
     }
-    List<ParamInfo> mParams = getParams(typeUtils, elementUtils, resolvingTypes, execElem);
+    List<ParamInfo> mParams = getParams(typeUtils, resolvingTypes, execElem);
 
-
-
-    //
     TypeInfo returnType = TypeInfo.create(typeUtils, resolvingTypes, execElem.getReturnType());
     returnType.collectImports(importedTypes);
     if (returnType.toString().equals("void")) {
@@ -499,13 +509,10 @@ public class Model {
       }
     }
     String methodName = execElem.getSimpleName().toString();
+
     // Only check the return type if not fluent, because generated code won't look it at anyway
     if (!isFluent) {
-      // If it's the generic type of the interface (currently we only support a single generic type)
-      // then don't validate it, as we don't know what the real type is
-      if (!returnType.toString().equals(Helper.getGenericType(ifaceFQCN))) {
-        checkReturnType(execElem, returnType);
-      }
+      checkReturnType(execElem, returnType);
     }
 
     LinkedHashSet<TypeInfo.Class> ownerTypes = new LinkedHashSet<>();
@@ -562,7 +569,7 @@ public class Model {
     return bound.getKind() == TypeKind.DECLARED && bound.toString().equals(Object.class.getName());
   }
 
-  private List<ParamInfo> getParams(Types typeUtils, Elements elementUtils, LinkedList<DeclaredType> resolvingTypes, ExecutableElement execElem) {
+  private List<ParamInfo> getParams(Types typeUtils, LinkedList<DeclaredType> resolvingTypes, ExecutableElement execElem) {
     List<? extends VariableElement> params = execElem.getParameters();
     List<ParamInfo> mParams = new ArrayList<>();
     for (VariableElement param: params) {

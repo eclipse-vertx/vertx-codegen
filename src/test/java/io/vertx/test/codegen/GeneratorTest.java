@@ -12,12 +12,6 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetServerOptions;
-import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument1;
-import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument2;
-import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument3;
-import io.vertx.test.codegen.testapi.MethodWithSameSignatureInheritedFromDistinctInterfaces;
-import io.vertx.test.codegen.testapi.SameSignatureMethod1;
-import io.vertx.test.codegen.testapi.SameSignatureMethod2;
 import io.vertx.test.codegen.testapi.AbstractInterfaceWithConcreteSuperInterface;
 import io.vertx.test.codegen.testapi.CacheReturnMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.ConcreteInterfaceWithTwoConcreteSuperInterfaces;
@@ -25,25 +19,27 @@ import io.vertx.test.codegen.testapi.FluentMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.GenericAbstractInterface;
 import io.vertx.test.codegen.testapi.GenericInterface;
 import io.vertx.test.codegen.testapi.GenericInterfaceWithUpperBound;
-import io.vertx.test.codegen.testapi.InterfaceWithMethodHavingGenericOverride;
-import io.vertx.test.codegen.testapi.InterfaceWithMethodOverride;
-import io.vertx.test.codegen.testapi.InterfaceWithNonGenSuperType;
-import io.vertx.test.codegen.testapi.InterfaceWithParameterizedArraySupertype;
-import io.vertx.test.codegen.testapi.InterfaceWithParameterizedGenericArraySupertype;
-import io.vertx.test.codegen.testapi.InterfaceWithParameterizedVariableSupertype;
-import io.vertx.test.codegen.testapi.GenericMethod;
 import io.vertx.test.codegen.testapi.InterfaceWithCacheReturnMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithComments;
 import io.vertx.test.codegen.testapi.InterfaceWithDefaultMethod;
 import io.vertx.test.codegen.testapi.InterfaceWithFluentMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithIgnoredMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithIndexSetterGetterMethods;
+import io.vertx.test.codegen.testapi.InterfaceWithMethodHavingGenericOverride;
+import io.vertx.test.codegen.testapi.InterfaceWithMethodOverride;
 import io.vertx.test.codegen.testapi.InterfaceWithNoMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithNoNotIgnoredMethods;
+import io.vertx.test.codegen.testapi.InterfaceWithNonGenSuperType;
 import io.vertx.test.codegen.testapi.InterfaceWithOverloadedMethods;
+import io.vertx.test.codegen.testapi.InterfaceWithParameterizedArraySupertype;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedDeclaredSupertype;
+import io.vertx.test.codegen.testapi.InterfaceWithParameterizedGenericArraySupertype;
+import io.vertx.test.codegen.testapi.InterfaceWithParameterizedVariableSupertype;
 import io.vertx.test.codegen.testapi.InterfaceWithStaticMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithSupertypes;
+import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument1;
+import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument2;
+import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument3;
 import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerNonVertxGenReturn;
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectInHandler;
@@ -59,6 +55,7 @@ import io.vertx.test.codegen.testapi.MethodWithNotVertxGenObjectReturn;
 import io.vertx.test.codegen.testapi.MethodWithObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithObjectReturn;
 import io.vertx.test.codegen.testapi.MethodWithOptionsParam;
+import io.vertx.test.codegen.testapi.MethodWithSameSignatureInheritedFromDistinctInterfaces;
 import io.vertx.test.codegen.testapi.MethodWithSetNonBasicTypeReturn;
 import io.vertx.test.codegen.testapi.MethodWithSetParam;
 import io.vertx.test.codegen.testapi.MethodWithTypeParameter;
@@ -84,6 +81,8 @@ import io.vertx.test.codegen.testapi.NestedInterface;
 import io.vertx.test.codegen.testapi.NoVertxGen;
 import io.vertx.test.codegen.testapi.NotInterface;
 import io.vertx.test.codegen.testapi.OverloadedMethodsInWrongOrder;
+import io.vertx.test.codegen.testapi.SameSignatureMethod1;
+import io.vertx.test.codegen.testapi.SameSignatureMethod2;
 import io.vertx.test.codegen.testapi.VertxGenClass1;
 import io.vertx.test.codegen.testapi.VertxGenClass2;
 import io.vertx.test.codegen.testapi.VertxGenInterface1;
@@ -95,9 +94,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static org.junit.Assert.*;
 import static io.vertx.test.codegen.Utils.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -349,17 +347,6 @@ public class GeneratorTest {
       // OK
     }
   }
-
-  @Test
-  public void testGenericMethod() throws Exception {
-    try {
-      gen = new Generator().generateModel(GenericMethod.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
-  }
-
 
   // Invalid methods
 
@@ -731,15 +718,22 @@ public class GeneratorTest {
     assertEquals(2, gen.getMethods().size());
 
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "foo", null, "T", false, false, false, false, false, false, 1);
+      checkMethod(methods.get(0), "methodWithClassTypeParam", null, "T", false, false, false, false, false, false, 3);
       List<ParamInfo> params = methods.get(0).getParams();
-      checkClassParam(params.get(0), "str", "java.lang.String", TypeKind.STRING);
-      checkMethod(methods.get(1), "someGenericMethod", null, "io.vertx.test.codegen.testapi.GenericInterface<R>", false, false, false, false, false, false, 0);
+      checkClassParam(params.get(0), "t", "T", TypeKind.VARIABLE);
+      checkClassParam(params.get(1), "handler", "io.vertx.core.Handler<T>", TypeKind.HANDLER);
+      checkClassParam(params.get(2), "asyncResultHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<T>>", TypeKind.HANDLER);
+      checkMethod(methods.get(1), "someGenericMethod", null, "io.vertx.test.codegen.testapi.GenericInterface<R>", false, false, false, false, false, false, 3);
+      params = methods.get(1).getParams();
+      checkClassParam(params.get(0), "r", "R", TypeKind.VARIABLE);
+      checkClassParam(params.get(1), "handler", "io.vertx.core.Handler<R>", TypeKind.HANDLER);
+      checkClassParam(params.get(2), "asyncResultHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<R>>", TypeKind.HANDLER);
     };
     checker.accept(gen.getMethods());
     assertEquals(2, gen.getSquashedMethods().size());
     checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
+
 
   @Test
   public void testGenericInterfaceWithUpperBound() throws Exception {
@@ -1298,12 +1292,12 @@ public class GeneratorTest {
 
   private void checkClassParam(ParamInfo param, String name, String type, TypeKind kind) {
     checkParam(param, name, type);
-    TypeInfo.Class classType;
-    if (param.getType() instanceof TypeInfo.Class) {
-      classType = (TypeInfo.Class) param.getType();
+    TypeInfo paramType;
+    if (param.getType() instanceof TypeInfo.Parameterized) {
+      paramType = ((TypeInfo.Parameterized) param.getType()).getRaw();
     } else {
-      classType = ((TypeInfo.Parameterized) param.getType()).getRaw();
+      paramType = param.getType();
     }
-    assertEquals(kind, classType.getKind());
+    assertEquals(kind, paramType.getKind());
   }
 }
