@@ -35,9 +35,6 @@ public enum TypeKind {
   // AsyncResult
   ASYNC_RESULT(false, false, false),
 
-  // Variable (i.e. type paramater)
-  VARIABLE(false, false, false),
-
   // Anything else
   OTHER(false, false, false);
 

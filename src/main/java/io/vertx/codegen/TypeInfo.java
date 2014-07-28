@@ -207,7 +207,7 @@ public abstract class TypeInfo {
 
     @Override
     public TypeKind getKind() {
-      return TypeKind.VARIABLE;
+      return TypeKind.OBJECT;
     }
 
   }

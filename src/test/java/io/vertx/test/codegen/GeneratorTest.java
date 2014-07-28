@@ -720,12 +720,14 @@ public class GeneratorTest {
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "methodWithClassTypeParam", null, "T", false, false, false, false, false, false, 3);
       List<ParamInfo> params = methods.get(0).getParams();
-      checkClassParam(params.get(0), "t", "T", TypeKind.VARIABLE);
+      checkClassParam(params.get(0), "t", "T", TypeKind.OBJECT);
+      assertTrue(params.get(0).getType() instanceof TypeInfo.Variable);
       checkClassParam(params.get(1), "handler", "io.vertx.core.Handler<T>", TypeKind.HANDLER);
       checkClassParam(params.get(2), "asyncResultHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<T>>", TypeKind.HANDLER);
       checkMethod(methods.get(1), "someGenericMethod", null, "io.vertx.test.codegen.testapi.GenericInterface<R>", false, false, false, false, false, false, 3);
       params = methods.get(1).getParams();
-      checkClassParam(params.get(0), "r", "R", TypeKind.VARIABLE);
+      checkClassParam(params.get(0), "r", "R", TypeKind.OBJECT);
+      assertTrue(params.get(0).getType() instanceof TypeInfo.Variable);
       checkClassParam(params.get(1), "handler", "io.vertx.core.Handler<R>", TypeKind.HANDLER);
       checkClassParam(params.get(2), "asyncResultHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<R>>", TypeKind.HANDLER);
     };
