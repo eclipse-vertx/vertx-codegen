@@ -191,6 +191,11 @@ public abstract class TypeInfo {
     }
 
     @Override
+    public TypeInfo getErased() {
+      return new Class(TypeKind.OBJECT, java.lang.Object.class.getName());
+    }
+
+    @Override
     public String toString() {
       return name;
     }
@@ -219,7 +224,7 @@ public abstract class TypeInfo {
 
     @Override
     public TypeInfo getErased() {
-      return getRaw();
+      return new Parameterized(raw, typeArguments.stream().map(TypeInfo::getErased).collect(Collectors.toList()));
     }
 
     public Class getRaw() {

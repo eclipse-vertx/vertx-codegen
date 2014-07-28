@@ -265,12 +265,15 @@ public class Model {
     }
 
     // List<T> and Set<T> are also legal for returns if T = basic type
-    if (type.getErased().getName().equals(List.class.getName()) || type.getErased().getName().equals(Set.class.getName())) {
-      TypeInfo argument = ((TypeInfo.Parameterized) type).getTypeArguments().get(0);
-      if (argument.getKind().basic || argument.getKind().json) {
-        return;
-      } else if (isVertxGenInterface(argument)) {
-        return;
+    if (type instanceof TypeInfo.Parameterized) {
+      TypeInfo raw = ((TypeInfo.Parameterized) type).getRaw();
+      if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
+        TypeInfo argument = ((TypeInfo.Parameterized) type).getTypeArguments().get(0);
+        if (argument.getKind().basic || argument.getKind().json) {
+          return;
+        } else if (isVertxGenInterface(argument)) {
+          return;
+        }
       }
     }
 
@@ -300,10 +303,13 @@ public class Model {
   }
 
   private boolean isLegalListOrSet(TypeInfo type) {
-    if (type.getErased().getName().equals(List.class.getName()) || type.getErased().getName().equals(Set.class.getName())) {
-      TypeInfo elementType = ((TypeInfo.Parameterized) type).getTypeArguments().get(0);
-      if (elementType.getKind().basic || elementType.getKind().json || isVertxGenInterface(elementType)) {
-        return true;
+    if (type instanceof TypeInfo.Parameterized) {
+      TypeInfo raw = ((TypeInfo.Parameterized) type).getRaw();
+      if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
+        TypeInfo elementType = ((TypeInfo.Parameterized) type).getTypeArguments().get(0);
+        if (elementType.getKind().basic || elementType.getKind().json || isVertxGenInterface(elementType)) {
+          return true;
+        }
       }
     }
     return false;
@@ -429,7 +435,13 @@ public class Model {
       if (methods.isEmpty() && superTypes.isEmpty()) {
         throw new GenException(elem, "Interface " + ifaceFQCN + " does not contain any methods for generation");
       }
-      referencedTypes.remove(Helper.getNonGenericType(ifaceFQCN)); // don't reference yourself
+      // don't reference yourself
+      for (Iterator<String> i = referencedTypes.iterator();i.hasNext();) {
+        String next = i.next();
+        if (Helper.getNonGenericType(next).equals(Helper.getNonGenericType(ifaceFQCN))) {
+          i.remove();
+        }
+      }
       sortMethodMap(methodMap);
     }
   }

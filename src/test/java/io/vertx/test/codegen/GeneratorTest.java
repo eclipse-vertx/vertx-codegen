@@ -713,7 +713,7 @@ public class GeneratorTest {
     gen = new Generator().generateModel(GenericInterface.class);
     assertEquals(GenericInterface.class.getName() + "<T>", gen.getIfaceFQCN());
     assertEquals(GenericInterface.class.getSimpleName(), gen.getIfaceSimpleName());
-    assertTrue(gen.getReferencedTypes().isEmpty());
+    assertTrue("Was expecting " + gen.getReferencedTypes() + " to be empty", gen.getReferencedTypes().isEmpty());
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(2, gen.getMethods().size());
 

@@ -133,4 +133,13 @@ public class TypeInfoTest {
   @Test
   public void testBoxedPrimitiveKind() {
   }
+
+  @Test
+  public void testGetErased() {
+    abstract class Container<M> implements AsyncResult<List<M>>  {}
+    abstract class Expected implements AsyncResult<List<Object>>  {}
+    TypeInfo.Parameterized info = (TypeInfo.Parameterized) TypeInfo.create(Container.class.getGenericInterfaces()[0]);
+    TypeInfo.Parameterized expected = (TypeInfo.Parameterized) TypeInfo.create(Expected.class.getGenericInterfaces()[0]);
+    assertEquals(expected, info.getErased());
+  }
 }
