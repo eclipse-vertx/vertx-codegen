@@ -268,7 +268,7 @@ public class Model {
     if (type instanceof TypeInfo.Parameterized) {
       TypeInfo raw = ((TypeInfo.Parameterized) type).getRaw();
       if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
-        TypeInfo argument = ((TypeInfo.Parameterized) type).getTypeArguments().get(0);
+        TypeInfo argument = ((TypeInfo.Parameterized) type).getArgs().get(0);
         if (argument.getKind().basic || argument.getKind().json) {
           return;
         } else if (isVertxGenInterface(argument)) {
@@ -306,7 +306,7 @@ public class Model {
     if (type instanceof TypeInfo.Parameterized) {
       TypeInfo raw = ((TypeInfo.Parameterized) type).getRaw();
       if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
-        TypeInfo elementType = ((TypeInfo.Parameterized) type).getTypeArguments().get(0);
+        TypeInfo elementType = ((TypeInfo.Parameterized) type).getArgs().get(0);
         if (elementType.getKind().basic || elementType.getKind().json || isVertxGenInterface(elementType)) {
           return true;
         }
@@ -328,7 +328,7 @@ public class Model {
 
   private boolean isLegalHandlerType(TypeInfo type) {
     if (type.getErased().getKind() == io.vertx.codegen.TypeKind.HANDLER) {
-      TypeInfo eventType = ((TypeInfo.Parameterized) type).getTypeArguments().get(0);
+      TypeInfo eventType = ((TypeInfo.Parameterized) type).getArgs().get(0);
       if (eventType.getKind().json || eventType.getKind().basic || isVertxGenInterface(eventType) ||
           isLegalListOrSet(eventType) || eventType.getKind() == io.vertx.codegen.TypeKind.VOID ||
           eventType.getKind() == io.vertx.codegen.TypeKind.THROWABLE || isVariableType(eventType)) {
@@ -340,9 +340,9 @@ public class Model {
 
   private boolean isLegalHandlerAsyncResultType(TypeInfo type) {
     if (type.getErased().getKind() == io.vertx.codegen.TypeKind.HANDLER) {
-      TypeInfo eventType = ((TypeInfo.Parameterized) type).getTypeArguments().get(0);
+      TypeInfo eventType = ((TypeInfo.Parameterized) type).getArgs().get(0);
       if (eventType.getErased().getKind() == io.vertx.codegen.TypeKind.ASYNC_RESULT) {
-        TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getTypeArguments().get(0);
+        TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getArgs().get(0);
         if (resultType.getKind().json || resultType.getKind().basic || isVertxGenInterface(resultType) ||
             isLegalListOrSet(resultType) || resultType.getKind() == io.vertx.codegen.TypeKind.VOID ||
             isVariableType(resultType)) {

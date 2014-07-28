@@ -215,24 +215,29 @@ public abstract class TypeInfo {
   public static class Parameterized extends TypeInfo {
 
     final Class raw;
-    final List<TypeInfo> typeArguments;
+    final List<TypeInfo> args;
 
-    public Parameterized(Class raw, List<TypeInfo> typeArguments) {
+    public Parameterized(Class raw, List<TypeInfo> args) {
       this.raw = raw;
-      this.typeArguments = typeArguments;
+      this.args = args;
     }
 
     @Override
     public TypeInfo getErased() {
-      return new Parameterized(raw, typeArguments.stream().map(TypeInfo::getErased).collect(Collectors.toList()));
+      return new Parameterized(raw, args.stream().map(TypeInfo::getErased).collect(Collectors.toList()));
     }
 
     public Class getRaw() {
       return raw;
     }
 
+    // To remove : when fully migrated
     public List<TypeInfo> getTypeArguments() {
-      return typeArguments;
+      return args;
+    }
+
+    public List<TypeInfo> getArgs() {
+      return args;
     }
 
     @Override
@@ -243,14 +248,14 @@ public abstract class TypeInfo {
     @Override
     public void collectImports(Collection<TypeInfo.Class> imports) {
       raw.collectImports(imports);
-      typeArguments.stream().forEach(a -> a.collectImports(imports));
+      args.stream().forEach(a -> a.collectImports(imports));
     }
 
     @Override
     public boolean equals(Object obj) {
       if (obj instanceof Parameterized) {
         Parameterized that = (Parameterized) obj;
-        return raw.equals(that.raw) && typeArguments.equals(that.typeArguments);
+        return raw.equals(that.raw) && args.equals(that.args);
       }
       return false;
     }
@@ -258,8 +263,8 @@ public abstract class TypeInfo {
     @Override
     public String format(boolean qualified) {
       StringBuilder buf = new StringBuilder(raw.format(qualified)).append('<');
-      for (int i = 0;i < typeArguments.size();i++) {
-        TypeInfo typeArgument = typeArguments.get(i);
+      for (int i = 0;i < args.size();i++) {
+        TypeInfo typeArgument = args.get(i);
         if (i > 0) {
           buf.append(',');
         }
@@ -273,7 +278,7 @@ public abstract class TypeInfo {
     public TypeInfo renamePackage(String oldPackageName, String newPackageName) {
       return new Parameterized(
           raw.renamePackage(oldPackageName, newPackageName),
-          typeArguments.stream().map(typeArgument -> typeArgument.renamePackage(oldPackageName, newPackageName)).
+          args.stream().map(typeArgument -> typeArgument.renamePackage(oldPackageName, newPackageName)).
               collect(Collectors.toList()));
     }
   }

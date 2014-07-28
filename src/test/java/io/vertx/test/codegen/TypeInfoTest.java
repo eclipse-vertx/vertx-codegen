@@ -86,9 +86,9 @@ public class TypeInfoTest {
     abstract class Container implements AsyncResult<List<String>>  {}
     TypeInfo.Parameterized info = (TypeInfo.Parameterized) TypeInfo.create(Container.class.getGenericInterfaces()[0]);
     assertEquals(TypeKind.ASYNC_RESULT, info.getKind());
-    TypeInfo.Parameterized a = (TypeInfo.Parameterized) info.getTypeArguments().get(0);
+    TypeInfo.Parameterized a = (TypeInfo.Parameterized) info.getArgs().get(0);
     assertEquals(TypeKind.LIST, a.getKind());
-    TypeInfo.Class b = (TypeInfo.Class) a.getTypeArguments().get(0);
+    TypeInfo.Class b = (TypeInfo.Class) a.getArgs().get(0);
     assertEquals(TypeKind.STRING, b.getKind());
   }
 
