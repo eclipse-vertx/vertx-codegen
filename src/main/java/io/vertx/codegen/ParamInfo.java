@@ -38,7 +38,7 @@ public class ParamInfo {
   }
 
   public boolean isOptions() {
-    return type instanceof TypeInfo.Class && ((TypeInfo.Class) type).getKind() == TypeKind.OPTIONS;
+    return type instanceof TypeInfo.Class && ((TypeInfo.Class) type).getKind() == ClassKind.OPTIONS;
   }
 
   @Override

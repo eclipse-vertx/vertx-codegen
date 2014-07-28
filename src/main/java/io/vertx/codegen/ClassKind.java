@@ -3,7 +3,7 @@ package io.vertx.codegen;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public enum TypeKind {
+public enum ClassKind {
 
   // Basic types
   STRING(true, false, false),
@@ -45,7 +45,7 @@ public enum TypeKind {
   // True when a java collection type
   public final boolean collection;
 
-  TypeKind(boolean basic, boolean json, boolean collection) {
+  ClassKind(boolean basic, boolean json, boolean collection) {
     this.basic = basic;
     this.json = json;
     this.collection = collection;

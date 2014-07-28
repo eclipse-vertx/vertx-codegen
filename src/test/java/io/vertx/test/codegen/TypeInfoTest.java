@@ -1,7 +1,7 @@
 package io.vertx.test.codegen;
 
+import io.vertx.codegen.ClassKind;
 import io.vertx.codegen.TypeInfo;
-import io.vertx.codegen.TypeKind;
 import io.vertx.codegen.annotations.Options;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
@@ -85,11 +85,11 @@ public class TypeInfoTest {
   public void testComposeKinds() {
     abstract class Container implements AsyncResult<List<String>>  {}
     TypeInfo.Parameterized info = (TypeInfo.Parameterized) TypeInfo.create(Container.class.getGenericInterfaces()[0]);
-    assertEquals(TypeKind.ASYNC_RESULT, info.getKind());
+    assertEquals(ClassKind.ASYNC_RESULT, info.getKind());
     TypeInfo.Parameterized a = (TypeInfo.Parameterized) info.getArgs().get(0);
-    assertEquals(TypeKind.LIST, a.getKind());
+    assertEquals(ClassKind.LIST, a.getKind());
     TypeInfo.Class b = (TypeInfo.Class) a.getArgs().get(0);
-    assertEquals(TypeKind.STRING, b.getKind());
+    assertEquals(ClassKind.STRING, b.getKind());
   }
 
   @Test
@@ -99,35 +99,35 @@ public class TypeInfoTest {
     @Options class OptionsObject {}
     class Other {}
 
-    assertEquals(TypeKind.OTHER, TypeInfo.create(Other.class).getKind());
-    assertEquals(TypeKind.OPTIONS, TypeInfo.create(OptionsObject.class).getKind());
-    assertEquals(TypeKind.API, TypeInfo.create(ApiObject.class).getKind());
-    assertEquals(TypeKind.HANDLER, TypeInfo.create(Handler.class).getKind());
-    assertEquals(TypeKind.ASYNC_RESULT, TypeInfo.create(AsyncResult.class).getKind());
-    assertEquals(TypeKind.VOID, TypeInfo.create(Void.class).getKind());
-    assertEquals(TypeKind.JSON_ARRAY, TypeInfo.create(JsonArray.class).getKind());
-    assertEquals(TypeKind.JSON_OBJECT, TypeInfo.create(JsonObject.class).getKind());
-    assertEquals(TypeKind.OBJECT, TypeInfo.create(Object.class).getKind());
-    assertEquals(TypeKind.STRING, TypeInfo.create(String.class).getKind());
-    assertEquals(TypeKind.LIST, TypeInfo.create(List.class).getKind());
-    assertEquals(TypeKind.SET, TypeInfo.create(Set.class).getKind());
-    assertEquals(TypeKind.THROWABLE, TypeInfo.create(Throwable.class).getKind());
-    assertEquals(TypeKind.PRIMITIVE, TypeInfo.create(boolean.class).getKind());
-    assertEquals(TypeKind.PRIMITIVE, TypeInfo.create(int.class).getKind());
-    assertEquals(TypeKind.PRIMITIVE, TypeInfo.create(long.class).getKind());
-    assertEquals(TypeKind.PRIMITIVE, TypeInfo.create(double.class).getKind());
-    assertEquals(TypeKind.PRIMITIVE, TypeInfo.create(float.class).getKind());
-    assertEquals(TypeKind.PRIMITIVE, TypeInfo.create(byte.class).getKind());
-    assertEquals(TypeKind.PRIMITIVE, TypeInfo.create(short.class).getKind());
-    assertEquals(TypeKind.PRIMITIVE, TypeInfo.create(char.class).getKind());
-    assertEquals(TypeKind.BOXED_PRIMITIVE, TypeInfo.create(Boolean.class).getKind());
-    assertEquals(TypeKind.BOXED_PRIMITIVE, TypeInfo.create(Integer.class).getKind());
-    assertEquals(TypeKind.BOXED_PRIMITIVE, TypeInfo.create(Long.class).getKind());
-    assertEquals(TypeKind.BOXED_PRIMITIVE, TypeInfo.create(Double.class).getKind());
-    assertEquals(TypeKind.BOXED_PRIMITIVE, TypeInfo.create(Float.class).getKind());
-    assertEquals(TypeKind.BOXED_PRIMITIVE, TypeInfo.create(Byte.class).getKind());
-    assertEquals(TypeKind.BOXED_PRIMITIVE, TypeInfo.create(Short.class).getKind());
-    assertEquals(TypeKind.BOXED_PRIMITIVE, TypeInfo.create(Character.class).getKind());
+    assertEquals(ClassKind.OTHER, TypeInfo.create(Other.class).getKind());
+    assertEquals(ClassKind.OPTIONS, TypeInfo.create(OptionsObject.class).getKind());
+    assertEquals(ClassKind.API, TypeInfo.create(ApiObject.class).getKind());
+    assertEquals(ClassKind.HANDLER, TypeInfo.create(Handler.class).getKind());
+    assertEquals(ClassKind.ASYNC_RESULT, TypeInfo.create(AsyncResult.class).getKind());
+    assertEquals(ClassKind.VOID, TypeInfo.create(Void.class).getKind());
+    assertEquals(ClassKind.JSON_ARRAY, TypeInfo.create(JsonArray.class).getKind());
+    assertEquals(ClassKind.JSON_OBJECT, TypeInfo.create(JsonObject.class).getKind());
+    assertEquals(ClassKind.OBJECT, TypeInfo.create(Object.class).getKind());
+    assertEquals(ClassKind.STRING, TypeInfo.create(String.class).getKind());
+    assertEquals(ClassKind.LIST, TypeInfo.create(List.class).getKind());
+    assertEquals(ClassKind.SET, TypeInfo.create(Set.class).getKind());
+    assertEquals(ClassKind.THROWABLE, TypeInfo.create(Throwable.class).getKind());
+    assertEquals(ClassKind.PRIMITIVE, TypeInfo.create(boolean.class).getKind());
+    assertEquals(ClassKind.PRIMITIVE, TypeInfo.create(int.class).getKind());
+    assertEquals(ClassKind.PRIMITIVE, TypeInfo.create(long.class).getKind());
+    assertEquals(ClassKind.PRIMITIVE, TypeInfo.create(double.class).getKind());
+    assertEquals(ClassKind.PRIMITIVE, TypeInfo.create(float.class).getKind());
+    assertEquals(ClassKind.PRIMITIVE, TypeInfo.create(byte.class).getKind());
+    assertEquals(ClassKind.PRIMITIVE, TypeInfo.create(short.class).getKind());
+    assertEquals(ClassKind.PRIMITIVE, TypeInfo.create(char.class).getKind());
+    assertEquals(ClassKind.BOXED_PRIMITIVE, TypeInfo.create(Boolean.class).getKind());
+    assertEquals(ClassKind.BOXED_PRIMITIVE, TypeInfo.create(Integer.class).getKind());
+    assertEquals(ClassKind.BOXED_PRIMITIVE, TypeInfo.create(Long.class).getKind());
+    assertEquals(ClassKind.BOXED_PRIMITIVE, TypeInfo.create(Double.class).getKind());
+    assertEquals(ClassKind.BOXED_PRIMITIVE, TypeInfo.create(Float.class).getKind());
+    assertEquals(ClassKind.BOXED_PRIMITIVE, TypeInfo.create(Byte.class).getKind());
+    assertEquals(ClassKind.BOXED_PRIMITIVE, TypeInfo.create(Short.class).getKind());
+    assertEquals(ClassKind.BOXED_PRIMITIVE, TypeInfo.create(Character.class).getKind());
   }
 
   @Test

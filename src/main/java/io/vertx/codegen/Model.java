@@ -182,8 +182,8 @@ public class Model {
     vars.put("referencedOptionsTypes", referencedOptionsTypes);
 
     // Useful for testing the type kind, allows to do type.kind == API instead of type.kind.name() == "API"
-    for (io.vertx.codegen.TypeKind typeKind : io.vertx.codegen.TypeKind.values()) {
-      vars.put(typeKind.name(), typeKind);
+    for (ClassKind classKind : ClassKind.values()) {
+      vars.put(classKind.name(), classKind);
     }
 
     ClassLoader now = Thread.currentThread().getContextClassLoader();
@@ -231,7 +231,7 @@ public class Model {
     // Basic types, int, long, String etc
     // JsonObject or JsonArray
     // Also can use Object as a param type (e.g. for EventBus)
-    if (typeInfo.getKind().basic || typeInfo.getKind().json || typeInfo.getKind() == io.vertx.codegen.TypeKind.OBJECT) {
+    if (typeInfo.getKind().basic || typeInfo.getKind().json || typeInfo.getKind() == ClassKind.OBJECT) {
       return;
     }
     // Check legal handlers
@@ -295,7 +295,7 @@ public class Model {
   }
 
   private boolean isOptionType(TypeInfo type) {
-    if (type.getKind() == io.vertx.codegen.TypeKind.OPTIONS) {
+    if (type.getKind() == ClassKind.OPTIONS) {
       referencedOptionsTypes.add(type.getName());
       return true;
     }
@@ -316,7 +316,7 @@ public class Model {
   }
 
   private boolean isVertxGenInterface(TypeInfo type) {
-    if (type.getKind() == io.vertx.codegen.TypeKind.API) {
+    if (type.getKind() == ClassKind.API) {
       String name = type.getErased().getName();
       if (!name.equals(VERTX)) {
         referencedTypes.add(name);
@@ -327,11 +327,11 @@ public class Model {
   }
 
   private boolean isLegalHandlerType(TypeInfo type) {
-    if (type.getErased().getKind() == io.vertx.codegen.TypeKind.HANDLER) {
+    if (type.getErased().getKind() == ClassKind.HANDLER) {
       TypeInfo eventType = ((TypeInfo.Parameterized) type).getArgs().get(0);
       if (eventType.getKind().json || eventType.getKind().basic || isVertxGenInterface(eventType) ||
-          isLegalListOrSet(eventType) || eventType.getKind() == io.vertx.codegen.TypeKind.VOID ||
-          eventType.getKind() == io.vertx.codegen.TypeKind.THROWABLE || isVariableType(eventType)) {
+          isLegalListOrSet(eventType) || eventType.getKind() == ClassKind.VOID ||
+          eventType.getKind() == ClassKind.THROWABLE || isVariableType(eventType)) {
         return true;
       }
     }
@@ -339,12 +339,12 @@ public class Model {
   }
 
   private boolean isLegalHandlerAsyncResultType(TypeInfo type) {
-    if (type.getErased().getKind() == io.vertx.codegen.TypeKind.HANDLER) {
+    if (type.getErased().getKind() == ClassKind.HANDLER) {
       TypeInfo eventType = ((TypeInfo.Parameterized) type).getArgs().get(0);
-      if (eventType.getErased().getKind() == io.vertx.codegen.TypeKind.ASYNC_RESULT) {
+      if (eventType.getErased().getKind() == ClassKind.ASYNC_RESULT) {
         TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getArgs().get(0);
         if (resultType.getKind().json || resultType.getKind().basic || isVertxGenInterface(resultType) ||
-            isLegalListOrSet(resultType) || resultType.getKind() == io.vertx.codegen.TypeKind.VOID ||
+            isLegalListOrSet(resultType) || resultType.getKind() == ClassKind.VOID ||
             isVariableType(resultType)) {
           return true;
         }

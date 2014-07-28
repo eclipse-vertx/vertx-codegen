@@ -28,31 +28,31 @@ import java.util.Set;
  */
 public class Helper {
 
-  public static TypeKind getKind(AnnotationResolver annotations, String fqcn) {
+  public static ClassKind getKind(AnnotationResolver annotations, String fqcn) {
     if (annotations.get(Options.class) != null) {
-      return TypeKind.OPTIONS;
+      return ClassKind.OPTIONS;
     } else if (annotations.get(VertxGen.class) != null) {
-      return TypeKind.API;
+      return ClassKind.API;
     } else if (fqcn.equals(Model.VERTX_HANDLER)) {
-      return TypeKind.HANDLER;
+      return ClassKind.HANDLER;
     } else if (fqcn.equals(Model.VERTX_ASYNC_RESULT)) {
-      return TypeKind.ASYNC_RESULT;
+      return ClassKind.ASYNC_RESULT;
     } else if (fqcn.equals(Model.JSON_ARRAY)) {
-      return TypeKind.JSON_ARRAY;
+      return ClassKind.JSON_ARRAY;
     } else if (fqcn.equals(Model.JSON_OBJECT)) {
-      return TypeKind.JSON_OBJECT;
+      return ClassKind.JSON_OBJECT;
     } else if (fqcn.equals(Object.class.getName())) {
-      return TypeKind.OBJECT;
+      return ClassKind.OBJECT;
     } else if (fqcn.equals(String.class.getName())) {
-      return TypeKind.STRING;
+      return ClassKind.STRING;
     } else if (fqcn.equals(List.class.getName())) {
-      return TypeKind.LIST;
+      return ClassKind.LIST;
     } else if (fqcn.equals(Set.class.getName())) {
-      return TypeKind.SET;
+      return ClassKind.SET;
     } else if (fqcn.equals(Throwable.class.getName())) {
-      return TypeKind.THROWABLE;
+      return ClassKind.THROWABLE;
     } else if (fqcn.equals(Void.class.getName())) {
-      return TypeKind.VOID;
+      return ClassKind.VOID;
     } else if (fqcn.equals(Integer.class.getName()) ||
         fqcn.equals(Long.class.getName()) ||
         fqcn.equals(Boolean.class.getName()) ||
@@ -61,9 +61,9 @@ public class Helper {
         fqcn.equals(Short.class.getName()) ||
         fqcn.equals(Character.class.getName()) ||
         fqcn.equals(Byte.class.getName())) {
-      return TypeKind.BOXED_PRIMITIVE;
+      return ClassKind.BOXED_PRIMITIVE;
     } else {
-      return TypeKind.OTHER;
+      return ClassKind.OTHER;
     }
   }
 

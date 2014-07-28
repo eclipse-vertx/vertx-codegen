@@ -128,7 +128,7 @@ public abstract class TypeInfo {
 
   public static TypeInfo create(Types typeUtils, Iterable<DeclaredType> resolvingTypes, DeclaredType type) {
     String fqcn = typeUtils.erasure(type).toString();
-    TypeKind kind = Helper.getKind(annotationType -> type.asElement().getAnnotation(annotationType), fqcn);
+    ClassKind kind = Helper.getKind(annotationType -> type.asElement().getAnnotation(annotationType), fqcn);
     Class raw = new Class(kind, fqcn);
     List<? extends TypeMirror> typeArgs = type.getTypeArguments();
     if (typeArgs.size() > 0) {
@@ -162,8 +162,8 @@ public abstract class TypeInfo {
     }
 
     @Override
-    public TypeKind getKind() {
-      return TypeKind.PRIMITIVE;
+    public ClassKind getKind() {
+      return ClassKind.PRIMITIVE;
     }
 
     @Override
@@ -192,7 +192,7 @@ public abstract class TypeInfo {
 
     @Override
     public TypeInfo getErased() {
-      return new Class(TypeKind.OBJECT, java.lang.Object.class.getName());
+      return new Class(ClassKind.OBJECT, java.lang.Object.class.getName());
     }
 
     @Override
@@ -206,8 +206,8 @@ public abstract class TypeInfo {
     }
 
     @Override
-    public TypeKind getKind() {
-      return TypeKind.OBJECT;
+    public ClassKind getKind() {
+      return ClassKind.OBJECT;
     }
 
   }
@@ -241,7 +241,7 @@ public abstract class TypeInfo {
     }
 
     @Override
-    public TypeKind getKind() {
+    public ClassKind getKind() {
       return raw.getKind();
     }
 
@@ -285,19 +285,19 @@ public abstract class TypeInfo {
 
   public static class Class extends TypeInfo {
 
-    final TypeKind kind;
+    final ClassKind kind;
     final String fqcn;
     final String simpleName;
     final String packageName;
 
-    public Class(TypeKind kind, String fqcn) {
+    public Class(ClassKind kind, String fqcn) {
       this.kind = kind;
       this.fqcn = fqcn;
       this.simpleName = Helper.getSimpleName(fqcn);
       this.packageName = Helper.getPackageName(fqcn);
     }
 
-    public TypeKind getKind() {
+    public ClassKind getKind() {
       return kind;
     }
 
@@ -365,8 +365,11 @@ public abstract class TypeInfo {
     return this;
   }
 
-  public TypeKind getKind() {
-    return TypeKind.OTHER;
+  /**
+   * @return the class kind this type resolves to
+   */
+  public ClassKind getKind() {
+    return ClassKind.OTHER;
   }
 
   /**
