@@ -22,6 +22,9 @@ import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.IndexGetter;
 import io.vertx.codegen.annotations.IndexSetter;
 import io.vertx.codegen.annotations.VertxGen;
+import org.mvel2.integration.impl.MapVariableResolverFactory;
+import org.mvel2.templates.CompiledTemplate;
+import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRuntime;
 
 import javax.lang.model.element.Element;
@@ -69,6 +72,10 @@ public class Model {
   public static final String JSON_OBJECT = "io.vertx.core.json.JsonObject";
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
   public static final String VERTX = "io.vertx.core.Vertx";
+
+  // Global trivial compiled template cache
+  private static String templateName;
+  private static CompiledTemplate compiled;
 
   private final Generator generator;
   private final TypeElement modelElt;
@@ -145,24 +152,45 @@ public class Model {
   }
 
   public void applyTemplate(String outputFileName, String templateName) throws Exception {
-    // Read the template file from the classpath
-    InputStream is = getClass().getClassLoader().getResourceAsStream(templateName);
-    if (is == null) {
-      throw new IllegalStateException("Can't find template file on classpath: " + templateName);
+
+    ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
+
+    //
+    if (!templateName.equals(this.templateName)) {
+      compiled = null;
     }
-    // Load the template
-    String template;
-    try (Scanner scanner = new Scanner(is, "UTF-8").useDelimiter("\\A")) {
-      template = scanner.next();
+    if (compiled == null) {
+      // Read the template file from the classpath
+      InputStream is = getClass().getClassLoader().getResourceAsStream(templateName);
+      if (is == null) {
+        throw new IllegalStateException("Can't find template file on classpath: " + templateName);
+      }
+      // Load the template
+      String template;
+      try (Scanner scanner = new Scanner(is, "UTF-8").useDelimiter("\\A")) {
+        template = scanner.next();
+      }
+      // MVEL preserves all whitespace therefore, so we can have readable templates we remove all line breaks
+      // and replace all occurrences of "\n" with a line break
+      // "\n" signifies we want an actual line break in the output
+      // We use actual tab characters in the template so we can see indentation, but we strip these out
+      // before parsing.
+      // So use tabs for indentation that YOU want to see in the template but won't be in the final output
+      // And use spaces for indentation that WILL be in the final output
+      template = template.replace("\n", "").replace("\\n", "\n").replace("\t", "");
+
+      // Be sure to have mvel classloader as parent during evaluation as it will need mvel classes
+      // when generating code
+      Thread.currentThread().setContextClassLoader(TemplateRuntime.class.getClassLoader());
+      CompiledTemplate compiled;
+      try {
+        compiled = TemplateCompiler.compileTemplate(template);
+      } finally {
+        Thread.currentThread().setContextClassLoader(currentCL);
+      }
+      Model.compiled = compiled;
+      Model.templateName = templateName;
     }
-    // MVEL preserves all whitespace therefore, so we can have readable templates we remove all line breaks
-    // and replace all occurrences of "\n" with a line break
-    // "\n" signifies we want an actual line break in the output
-    // We use actual tab characters in the template so we can see indentation, but we strip these out
-    // before parsing.
-    // So use tabs for indentation that YOU want to see in the template but won't be in the final output
-    // And use spaces for indentation that WILL be in the final output
-    template = template.replace("\n", "").replace("\\n", "\n").replace("\t", "");
 
     Map<String, Object> vars = new HashMap<>();
     vars.put("importedTypes", importedTypes);
@@ -186,15 +214,14 @@ public class Model {
       vars.put(classKind.name(), classKind);
     }
 
-    ClassLoader now = Thread.currentThread().getContextClassLoader();
     String output;
     try {
       // Be sure to have mvel classloader as parent during evaluation as it will need mvel classes
       // when generating code
       Thread.currentThread().setContextClassLoader(TemplateRuntime.class.getClassLoader());
-      output = (String) TemplateRuntime.eval(template, vars);
+      output = (String) TemplateRuntime.execute(compiled, null, new MapVariableResolverFactory(vars));
     } finally {
-      Thread.currentThread().setContextClassLoader(now);
+      Thread.currentThread().setContextClassLoader(currentCL);
     }
     File outFile = new File(outputFileName);
     if (!outFile.getParentFile().exists()) {
