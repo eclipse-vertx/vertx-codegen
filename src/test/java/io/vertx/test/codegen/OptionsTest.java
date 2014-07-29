@@ -2,9 +2,9 @@ package io.vertx.test.codegen;
 
 import io.vertx.codegen.GenException;
 import io.vertx.codegen.Generator;
-import io.vertx.test.codegen.testapi.OptionsInterface;
-import io.vertx.test.codegen.testapi.OptionsWithJsonConstructor;
-import io.vertx.test.codegen.testapi.OptionsWithNoJsonConstructor;
+import io.vertx.test.codegen.testapi.OptionsClass;
+import io.vertx.test.codegen.testapi.OptionsWithFactoryMethod;
+import io.vertx.test.codegen.testapi.OptionsWithNoFactoryMethod;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -15,21 +15,26 @@ import static org.junit.Assert.*;
 public class OptionsTest {
 
   @Test
-  public void testOptionsWithNoJsonConstructor() throws Exception {
+  public void testOptionsWithNoFactoryMethod() throws Exception {
     try {
-      new Generator().checkOptions(OptionsWithNoJsonConstructor.class);
+      new Generator().checkOptions(OptionsWithNoFactoryMethod.class);
       fail();
     } catch (GenException e) {
     }
   }
 
   @Test
-  public void testOptionsWithJsonConstructor() throws Exception {
-    new Generator().checkOptions(OptionsWithJsonConstructor.class);
+  public void testOptionsWithFactoryMethod() throws Exception {
+    new Generator().checkOptions(OptionsWithFactoryMethod.class);
   }
 
   @Test
-  public void testOptionsInterface() throws Exception {
-    new Generator().checkOptions(OptionsInterface.class);
+  public void testOptionsClass() throws Exception {
+    try {
+      new Generator().checkOptions(OptionsClass.class);
+      fail();
+    } catch (GenException e) {
+    }
   }
+
 }

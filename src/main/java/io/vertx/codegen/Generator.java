@@ -28,10 +28,8 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.*;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.DiagnosticCollector;
@@ -282,20 +280,21 @@ public class Generator {
   }
 
   public void checkOption(Elements elementUtils, Element optionElt) {
-    if (optionElt.getKind() == ElementKind.CLASS) {
+    if (optionElt.getKind() == ElementKind.INTERFACE) {
       for (Element memberElt : elementUtils.getAllMembers((TypeElement) optionElt)) {
-        if (memberElt.getKind() == ElementKind.CONSTRUCTOR) {
-          ExecutableElement ctorElt = (ExecutableElement) memberElt;
-          if (ctorElt.getParameters().size() == 1) {
-            VariableElement v = ctorElt.getParameters().get(0);
-            TypeMirror type = v.asType();
-            if (type.getKind() == TypeKind.DECLARED && type.toString().equals(Model.JSON_OBJECT)) {
+        if (memberElt.getKind() == ElementKind.METHOD) {
+          if (memberElt.getSimpleName().toString().equals("optionsFromJson")) {
+            if (memberElt.getModifiers().contains(Modifier.STATIC)) {
+              // TODO should probably also test that the method returns the right options type and
+              // takes JsonObject as a parameter
               return;
             }
           }
         }
       }
-      throw new GenException(optionElt, "Options " + optionElt + " class does not have a JsonObject constructor");
+      throw new GenException(optionElt, "Options " + optionElt + " class does not have a static factory method called optionsFromJson");
+    } else {
+      throw new GenException(optionElt, "Options " + optionElt + " must be an interface not a class");
     }
   }
 }
