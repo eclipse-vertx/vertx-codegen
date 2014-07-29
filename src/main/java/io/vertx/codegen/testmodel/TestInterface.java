@@ -109,7 +109,11 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
 
   T methodWithGenericReturn(boolean obj);
 
-  <U> void methodWithGenericParams(String type, U u, Handler<U> handler, Handler<AsyncResult<U>> asyncResultHandler);
+  <U> void methodWithGenericParam(String type, U u);
+
+  <U> void methodWithGenericHandler(String type, Handler<U> handler);
+
+  <U> void methodWithGenericHandlerAsyncResult(String type, Handler<AsyncResult<U>> asyncResultHandler);
 
   @Fluent
   TestInterface fluentMethod(String str);

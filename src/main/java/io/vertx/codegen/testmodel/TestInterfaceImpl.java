@@ -372,28 +372,22 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
-  public <U> void methodWithGenericParams(String type, U u, Handler<U> handler, Handler<AsyncResult<U>> asyncResultHandler) {
+  public <U> void methodWithGenericParam(String type, U u) {
     switch (type) {
       case "String": {
         assertEquals("foo", u);
-        handler.handle((U)"handlerFoo");
-        asyncResultHandler.handle(new FutureResultImpl<U>((U)"asyncResultHandlerFoo"));
         break;
       }
       case "Ref": {
-        assertEquals("foo", u);
-        RefedInterface1 ref = new RefedInterface1Impl();
-        ref.setString("bar");
-        handler.handle((U)ref);
-        asyncResultHandler.handle(new FutureResultImpl<U>((U)ref));
+        assertTrue(u instanceof RefedInterface1);
+        RefedInterface1 expected = (RefedInterface1) u;
+        assertEquals("foo", expected.getString());
         break;
       }
       case "JsonObject": {
         JsonObject jsonObject = (JsonObject)u;
         assertEquals("hello", jsonObject.getString("foo"));
         assertEquals(123, jsonObject.getInteger("bar").intValue());
-        handler.handle((U)jsonObject);
-        asyncResultHandler.handle(new FutureResultImpl<U>((U)jsonObject));
         break;
       }
       case "JsonArray": {
@@ -402,12 +396,71 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
         assertEquals("foo", jsonArray.get(0));
         assertEquals("bar", jsonArray.get(1));
         assertEquals("wib", jsonArray.get(2));
+        break;
+      }
+    }
+  }
+
+  @Override
+  public <U> void methodWithGenericHandler(String type, Handler<U> handler) {
+    switch (type) {
+      case "String": {
+        handler.handle((U)"handlerFoo");
+        break;
+      }
+      case "Ref": {
+        RefedInterface1 ref = new RefedInterface1Impl();
+        ref.setString("bar");
+        handler.handle((U)ref);
+        break;
+      }
+      case "JsonObject": {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.putString("foo", "hello");
+        jsonObject.putNumber("bar", 123);
+        handler.handle((U)jsonObject);
+        break;
+      }
+      case "JsonArray": {
+        JsonArray jsonArray = new JsonArray();
+        jsonArray.add("foo");
+        jsonArray.add("bar");
+        jsonArray.add("wib");
         handler.handle((U) jsonArray);
+        break;
+      }
+    }
+  }
+
+  @Override
+  public <U> void methodWithGenericHandlerAsyncResult(String type, Handler<AsyncResult<U>> asyncResultHandler) {
+    switch (type) {
+      case "String": {
+        asyncResultHandler.handle(new FutureResultImpl<U>((U)"asyncResultHandlerFoo"));
+        break;
+      }
+      case "Ref": {
+        RefedInterface1 ref = new RefedInterface1Impl();
+        ref.setString("bar");
+        asyncResultHandler.handle(new FutureResultImpl<U>((U)ref));
+        break;
+      }
+      case "JsonObject": {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.putString("foo", "hello");
+        jsonObject.putNumber("bar", 123);
+        asyncResultHandler.handle(new FutureResultImpl<U>((U)jsonObject));
+        break;
+      }
+      case "JsonArray": {
+        JsonArray jsonArray = new JsonArray();
+        jsonArray.add("foo");
+        jsonArray.add("bar");
+        jsonArray.add("wib");
         asyncResultHandler.handle(new FutureResultImpl<U>((U) jsonArray));
         break;
       }
     }
-
   }
 
   @Override
