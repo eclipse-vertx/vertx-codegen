@@ -7,8 +7,9 @@ import io.vertx.core.json.JsonObject;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @Options
-public class NetServerOptions {
+public interface NetServerOptions {
 
-  public NetServerOptions(JsonObject json) {
+  static NetServerOptions optionsFromJson(JsonObject json) {
+    throw new UnsupportedOperationException();
   }
 }
