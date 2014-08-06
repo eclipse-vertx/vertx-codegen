@@ -28,10 +28,9 @@ import java.util.Set;
 public class MethodInfo {
 
   final String name;
+  final MethodKind kind;
   final TypeInfo returnType;
   final boolean fluent;
-  final boolean indexGetter;
-  final boolean indexSetter;
   final boolean cacheReturn;
   List<ParamInfo> params;
   final String comment;
@@ -40,13 +39,12 @@ public class MethodInfo {
   List<String> typeParams;
   LinkedHashSet<TypeInfo.Class> ownerTypes;
 
-  public MethodInfo(LinkedHashSet<TypeInfo.Class> ownerTypes, String name, TypeInfo returnType, boolean fluent, boolean indexGetter, boolean indexSetter,
+  public MethodInfo(LinkedHashSet<TypeInfo.Class> ownerTypes, String name, MethodKind kind, TypeInfo returnType, boolean fluent,
                     boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod, List<String> typeParams) {
+    this.kind = kind;
     this.name = name;
     this.returnType = returnType;
     this.fluent = fluent;
-    this.indexGetter = indexGetter;
-    this.indexSetter = indexSetter;
     this.cacheReturn = cacheReturn;
     this.comment = comment;
     this.staticMethod = staticMethod;
@@ -57,6 +55,10 @@ public class MethodInfo {
 
   public String getName() {
     return name;
+  }
+
+  public MethodKind getKind() {
+    return kind;
   }
 
   public TypeInfo getReturnType() {
@@ -72,11 +74,11 @@ public class MethodInfo {
   }
 
   public boolean isIndexGetter() {
-    return indexGetter;
+    return kind == MethodKind.INDEX_GETTER;
   }
 
   public boolean isIndexSetter() {
-    return indexSetter;
+    return kind == MethodKind.INDEX_SETTER;
   }
 
   public boolean isCacheReturn() {
@@ -137,5 +139,31 @@ public class MethodInfo {
       return true;
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    if (typeParams.size() > 0) {
+      for (int i = 0;i < typeParams.size();i++) {
+        sb.append(i > 0 ? ", " : "<");
+        sb.append(typeParams.get(i));
+      }
+      sb.append("> ");
+    }
+    sb.append(returnType.getName());
+    sb.append(' ');
+    sb.append(name);
+    sb.append('(');
+    if (params.size() > 0) {
+      for (int i = 0;i < params.size();i++) {
+        if (i > 0) {
+          sb.append(", ");
+        }
+        sb.append(params.get(i).getType().getName()).append(" ").append(params.get(i).type.getName());
+      }
+    }
+    sb.append(')');
+    return sb.toString();
   }
 }

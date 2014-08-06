@@ -4,6 +4,7 @@ import io.vertx.codegen.ClassKind;
 import io.vertx.codegen.GenException;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.MethodInfo;
+import io.vertx.codegen.MethodKind;
 import io.vertx.codegen.Model;
 import io.vertx.codegen.ParamInfo;
 import io.vertx.codegen.TypeInfo;
@@ -40,14 +41,18 @@ import io.vertx.test.codegen.testapi.InterfaceWithSupertypes;
 import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument1;
 import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument2;
 import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument3;
+import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultParam;
 import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerNonVertxGenReturn;
+import io.vertx.test.codegen.testapi.MethodWithHandlerParam;
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectInHandler;
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectInHandlerAsyncResult;
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectReturn;
 import io.vertx.test.codegen.testapi.MethodWithListNonBasicTypeReturn;
 import io.vertx.test.codegen.testapi.MethodWithListParam;
+import io.vertx.test.codegen.testapi.MethodWithNoIntIndexGetter;
+import io.vertx.test.codegen.testapi.MethodWithNoIntIndexSetter;
 import io.vertx.test.codegen.testapi.MethodWithNotVertxGenObjectInHandler;
 import io.vertx.test.codegen.testapi.MethodWithNotVertxGenObjectInHandlerAsyncResult;
 import io.vertx.test.codegen.testapi.MethodWithNotVertxGenObjectParam;
@@ -391,6 +396,26 @@ public class GeneratorTest {
     }
   }
 
+  @Test
+  public void testMethodWithNoIntIndexGetter() throws Exception {
+    try {
+      gen = new Generator().generateModel(MethodWithNoIntIndexGetter.class);
+      fail("Should throw exception");
+    } catch (GenException e) {
+      // OK
+    }
+  }
+
+  @Test
+  public void testMethodWithNoIntIndexSetter() throws Exception {
+    try {
+      gen = new Generator().generateModel(MethodWithNoIntIndexSetter.class);
+      fail("Should throw exception");
+    } catch (GenException e) {
+      // OK
+    }
+  }
+
   // Invalid abstract/concrete interfaces
 
   @Test
@@ -429,7 +454,7 @@ public class GeneratorTest {
     String methodName = "methodWithBasicParams";
 
     Consumer<MethodInfo> checker = (method) -> {
-      checkMethod(method, methodName, null, "void", false, false, false, false, false, false, 9);
+      checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, false, 9);
       List<ParamInfo> params = method.getParams();
       checkParam(params.get(0), "b", "byte");
       checkParam(params.get(1), "s", "short");
@@ -462,7 +487,7 @@ public class GeneratorTest {
     String methodName = "methodWithBasicParams";
 
     Consumer<MethodInfo> checker = (method) -> {
-      checkMethod(method, methodName, null, "void", false, false, false, false, false, false, 9);
+      checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, false, 9);
       List<ParamInfo> params = method.getParams();
       checkClassParam(params.get(0), "b", "java.lang.Byte", ClassKind.BOXED_PRIMITIVE);
       checkClassParam(params.get(1), "s", "java.lang.Short", ClassKind.BOXED_PRIMITIVE);
@@ -515,7 +540,7 @@ public class GeneratorTest {
     String methodName = "methodWithHandlerParams";
 
     Consumer<MethodInfo> checker = (method) -> {
-      checkMethod(method, methodName, null, "void", false, false, false, false, false, false, 37);
+      checkMethod(method, methodName, null, MethodKind.HANDLER, "void", false, false, false, false, 37);
       List<ParamInfo> params = method.getParams();
       checkClassParam(params.get(0), "byteHandler", "io.vertx.core.Handler<java.lang.Byte>", ClassKind.HANDLER);
       checkClassParam(params.get(1), "shortHandler", "io.vertx.core.Handler<java.lang.Short>", ClassKind.HANDLER);
@@ -578,7 +603,7 @@ public class GeneratorTest {
     String methodName = "methodWithHandlerParams";
 
     Consumer<MethodInfo> checker = (method) -> {
-      checkMethod(method, methodName, null, "void", false, false, false, false, false, false, 36);
+      checkMethod(method, methodName, null, MethodKind.FUTURE, "void", false, false, false, false, 36);
       List<ParamInfo> params = method.getParams();
       checkClassParam(params.get(0), "byteHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Byte>>", ClassKind.HANDLER);
       checkClassParam(params.get(1), "shortHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Short>>", ClassKind.HANDLER);
@@ -640,7 +665,7 @@ public class GeneratorTest {
     String methodName = "methodWithVertxGenParams";
 
     Consumer<MethodInfo> checker = (method) -> {
-      checkMethod(method, methodName, null, "void", false, false, false, false, false, false, 3);
+      checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, false, 3);
       List<ParamInfo> params = method.getParams();
       checkClassParam(params.get(0), "str", "java.lang.String", ClassKind.STRING);
       checkClassParam(params.get(1), "myParam1", VertxGenClass1.class.getName(), ClassKind.API);
@@ -667,7 +692,7 @@ public class GeneratorTest {
     String methodName = "methodWithObjectParam";
 
     Consumer<MethodInfo> checker = (method) -> {
-      checkMethod(method, methodName, null, "void", false, false, false, false, false, false, 1);
+      checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, false, 1);
       List<ParamInfo> params = method.getParams();
       checkClassParam(params.get(0), "obj", "java.lang.Object", ClassKind.OBJECT);
     };
@@ -692,7 +717,7 @@ public class GeneratorTest {
     String methodName = "methodWithOptionsParam";
 
     Consumer<MethodInfo> checker = (method) -> {
-      checkMethod(method, methodName, null, "void", false, false, false, false, false, false, 1);
+      checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, false, 1);
       List<ParamInfo> params = method.getParams();
       checkClassParam(params.get(0), "options", NetServerOptions.class.getName(), ClassKind.OPTIONS);
     };
@@ -718,13 +743,13 @@ public class GeneratorTest {
     assertEquals(2, gen.getMethods().size());
 
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "methodWithClassTypeParam", null, "T", false, false, false, false, false, false, 3);
+      checkMethod(methods.get(0), "methodWithClassTypeParam", null, MethodKind.OTHER, "T", false, false, false, false, 3);
       List<ParamInfo> params = methods.get(0).getParams();
       checkClassParam(params.get(0), "t", "T", ClassKind.OBJECT);
       assertTrue(params.get(0).getType() instanceof TypeInfo.Variable);
       checkClassParam(params.get(1), "handler", "io.vertx.core.Handler<T>", ClassKind.HANDLER);
       checkClassParam(params.get(2), "asyncResultHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<T>>", ClassKind.HANDLER);
-      checkMethod(methods.get(1), "someGenericMethod", null, "io.vertx.test.codegen.testapi.GenericInterface<R>", false, false, false, false, false, false, 3);
+      checkMethod(methods.get(1), "someGenericMethod", null, MethodKind.OTHER, "io.vertx.test.codegen.testapi.GenericInterface<R>", false, false, false, false, 3);
       params = methods.get(1).getParams();
       checkClassParam(params.get(0), "r", "R", ClassKind.OBJECT);
       assertTrue(params.get(0).getType() instanceof TypeInfo.Variable);
@@ -755,24 +780,24 @@ public class GeneratorTest {
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(17, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "methodWithByteReturn", null, "byte", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(1), "methodWithShortReturn", null, "short", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(2), "methodWithIntReturn", null, "int", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(3), "methodWithLongReturn", null, "long", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(4), "methodWithFloatReturn", null, "float", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(5), "methodWithDoubleReturn", null, "double", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(6), "methodWithBooleanReturn", null, "boolean", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(7), "methodWithCharReturn", null, "char", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(8), "methodWithStringReturn", null, "java.lang.String", false, false, false, false, false, false, 0);
+      checkMethod(methods.get(0), "methodWithByteReturn", null, MethodKind.OTHER, "byte", false, false, false, false, 0);
+      checkMethod(methods.get(1), "methodWithShortReturn", null, MethodKind.OTHER, "short", false, false, false, false, 0);
+      checkMethod(methods.get(2), "methodWithIntReturn", null, MethodKind.OTHER, "int", false, false, false, false, 0);
+      checkMethod(methods.get(3), "methodWithLongReturn", null, MethodKind.OTHER, "long", false, false, false, false, 0);
+      checkMethod(methods.get(4), "methodWithFloatReturn", null, MethodKind.OTHER, "float", false, false, false, false, 0);
+      checkMethod(methods.get(5), "methodWithDoubleReturn", null, MethodKind.OTHER, "double", false, false, false, false, 0);
+      checkMethod(methods.get(6), "methodWithBooleanReturn", null, MethodKind.OTHER, "boolean", false, false, false, false, 0);
+      checkMethod(methods.get(7), "methodWithCharReturn", null, MethodKind.OTHER, "char", false, false, false, false, 0);
+      checkMethod(methods.get(8), "methodWithStringReturn", null, MethodKind.OTHER, "java.lang.String", false, false, false, false, 0);
 
-      checkMethod(methods.get(9), "methodWithByteObjectReturn", null, "java.lang.Byte", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(10), "methodWithShortObjectReturn", null, "java.lang.Short", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(11), "methodWithIntObjectReturn", null, "java.lang.Integer", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(12), "methodWithLongObjectReturn", null, "java.lang.Long", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(13), "methodWithFloatObjectReturn", null, "java.lang.Float", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(14), "methodWithDoubleObjectReturn", null, "java.lang.Double", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(15), "methodWithBooleanObjectReturn", null, "java.lang.Boolean", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(16), "methodWithCharObjectReturn", null, "java.lang.Character", false, false, false, false, false, false, 0);
+      checkMethod(methods.get(9), "methodWithByteObjectReturn", null, MethodKind.OTHER, "java.lang.Byte", false, false, false, false, 0);
+      checkMethod(methods.get(10), "methodWithShortObjectReturn", null, MethodKind.OTHER, "java.lang.Short", false, false, false, false, 0);
+      checkMethod(methods.get(11), "methodWithIntObjectReturn", null, MethodKind.OTHER, "java.lang.Integer", false, false, false, false, 0);
+      checkMethod(methods.get(12), "methodWithLongObjectReturn", null, MethodKind.OTHER, "java.lang.Long", false, false, false, false, 0);
+      checkMethod(methods.get(13), "methodWithFloatObjectReturn", null, MethodKind.OTHER, "java.lang.Float", false, false, false, false, 0);
+      checkMethod(methods.get(14), "methodWithDoubleObjectReturn", null, MethodKind.OTHER, "java.lang.Double", false, false, false, false, 0);
+      checkMethod(methods.get(15), "methodWithBooleanObjectReturn", null, MethodKind.OTHER, "java.lang.Boolean", false, false, false, false, 0);
+      checkMethod(methods.get(16), "methodWithCharObjectReturn", null, MethodKind.OTHER, "java.lang.Character", false, false, false, false, 0);
     };
     checker.accept(gen.getMethods());
     assertEquals(17, gen.getSquashedMethods().size());
@@ -788,9 +813,9 @@ public class GeneratorTest {
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(1, gen.getMethods().size());
     String methodName = "methodWithVoidReturn";
-    checkMethod(gen.getMethods().get(0), methodName, null, "void", false, false, false, false, false, false, 0);
+    checkMethod(gen.getMethods().get(0), methodName, null, MethodKind.OTHER, "void", false, false, false, false, 0);
     assertEquals(1, gen.getSquashedMethods().size());
-    checkMethod(gen.getSquashedMethods().get(methodName), methodName, null, "void", false, false, false, false, false, false, 0);
+    checkMethod(gen.getSquashedMethods().get(methodName), methodName, null, MethodKind.OTHER, "void", false, false, false, false, 0);
   }
 
   @Test
@@ -804,17 +829,17 @@ public class GeneratorTest {
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(11, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "byteList", null, "java.util.List<java.lang.Byte>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(1), "shortList", null, "java.util.List<java.lang.Short>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(2), "intList", null, "java.util.List<java.lang.Integer>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(3), "longList", null, "java.util.List<java.lang.Long>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(4), "floatList", null, "java.util.List<java.lang.Float>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(5), "doubleList", null, "java.util.List<java.lang.Double>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(6), "booleanList", null, "java.util.List<java.lang.Boolean>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(7), "charList", null, "java.util.List<java.lang.Character>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(8), "stringList", null, "java.util.List<java.lang.String>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(9), "vertxGen1List", null, "java.util.List<" + VertxGenClass1.class.getName() + ">", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(10), "vertxGen2List", null, "java.util.List<" + VertxGenClass2.class.getName() + ">", false, false, false, false, false, false, 0);
+      checkMethod(methods.get(0), "byteList", null, MethodKind.OTHER, "java.util.List<java.lang.Byte>", false, false, false, false, 0);
+      checkMethod(methods.get(1), "shortList", null, MethodKind.OTHER, "java.util.List<java.lang.Short>", false, false, false, false, 0);
+      checkMethod(methods.get(2), "intList", null, MethodKind.OTHER, "java.util.List<java.lang.Integer>", false, false, false, false, 0);
+      checkMethod(methods.get(3), "longList", null, MethodKind.OTHER, "java.util.List<java.lang.Long>", false, false, false, false, 0);
+      checkMethod(methods.get(4), "floatList", null, MethodKind.OTHER, "java.util.List<java.lang.Float>", false, false, false, false, 0);
+      checkMethod(methods.get(5), "doubleList", null, MethodKind.OTHER, "java.util.List<java.lang.Double>", false, false, false, false, 0);
+      checkMethod(methods.get(6), "booleanList", null, MethodKind.OTHER, "java.util.List<java.lang.Boolean>", false, false, false, false, 0);
+      checkMethod(methods.get(7), "charList", null, MethodKind.OTHER, "java.util.List<java.lang.Character>", false, false, false, false, 0);
+      checkMethod(methods.get(8), "stringList", null, MethodKind.OTHER, "java.util.List<java.lang.String>", false, false, false, false, 0);
+      checkMethod(methods.get(9), "vertxGen1List", null, MethodKind.OTHER, "java.util.List<" + VertxGenClass1.class.getName() + ">", false, false, false, false, 0);
+      checkMethod(methods.get(10), "vertxGen2List", null, MethodKind.OTHER, "java.util.List<" + VertxGenClass2.class.getName() + ">", false, false, false, false, 0);
     };
     checker.accept(gen.getMethods());
     assertEquals(11, gen.getSquashedMethods().size());
@@ -832,17 +857,17 @@ public class GeneratorTest {
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(11, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "byteSet", null, "java.util.Set<java.lang.Byte>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(1), "shortSet", null, "java.util.Set<java.lang.Short>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(2), "intSet", null, "java.util.Set<java.lang.Integer>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(3), "longSet", null, "java.util.Set<java.lang.Long>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(4), "floatSet", null, "java.util.Set<java.lang.Float>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(5), "doubleSet", null, "java.util.Set<java.lang.Double>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(6), "booleanSet", null, "java.util.Set<java.lang.Boolean>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(7), "charSet", null, "java.util.Set<java.lang.Character>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(8), "stringSet", null, "java.util.Set<java.lang.String>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(9), "vertxGen1Set", null, "java.util.Set<" + VertxGenClass1.class.getName() + ">", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(10), "vertxGen2Set", null, "java.util.Set<" + VertxGenClass2.class.getName() + ">", false, false, false, false, false, false, 0);
+      checkMethod(methods.get(0), "byteSet", null, MethodKind.OTHER, "java.util.Set<java.lang.Byte>", false, false, false, false, 0);
+      checkMethod(methods.get(1), "shortSet", null, MethodKind.OTHER, "java.util.Set<java.lang.Short>", false, false, false, false, 0);
+      checkMethod(methods.get(2), "intSet", null, MethodKind.OTHER, "java.util.Set<java.lang.Integer>", false, false, false, false, 0);
+      checkMethod(methods.get(3), "longSet", null, MethodKind.OTHER, "java.util.Set<java.lang.Long>", false, false, false, false, 0);
+      checkMethod(methods.get(4), "floatSet", null, MethodKind.OTHER, "java.util.Set<java.lang.Float>", false, false, false, false, 0);
+      checkMethod(methods.get(5), "doubleSet", null, MethodKind.OTHER, "java.util.Set<java.lang.Double>", false, false, false, false, 0);
+      checkMethod(methods.get(6), "booleanSet", null, MethodKind.OTHER, "java.util.Set<java.lang.Boolean>", false, false, false, false, 0);
+      checkMethod(methods.get(7), "charSet", null, MethodKind.OTHER, "java.util.Set<java.lang.Character>", false, false, false, false, 0);
+      checkMethod(methods.get(8), "stringSet", null, MethodKind.OTHER, "java.util.Set<java.lang.String>", false, false, false, false, 0);
+      checkMethod(methods.get(9), "vertxGen1Set", null, MethodKind.OTHER, "java.util.Set<" + VertxGenClass1.class.getName() + ">", false, false, false, false, 0);
+      checkMethod(methods.get(10), "vertxGen2Set", null, MethodKind.OTHER, "java.util.Set<" + VertxGenClass2.class.getName() + ">", false, false, false, false, 0);
     };
     checker.accept(gen.getMethods());
     assertEquals(11, gen.getSquashedMethods().size());
@@ -860,8 +885,8 @@ public class GeneratorTest {
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(2, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "methodWithVertxGen1Return", null, VertxGenClass1.class.getName(), false, false, false, false, false, false, 0);
-      checkMethod(methods.get(1), "methodWithVertxGen2Return", null, VertxGenClass2.class.getName(), false, false, false, false, false, false, 0);
+      checkMethod(methods.get(0), "methodWithVertxGen1Return", null, MethodKind.OTHER, VertxGenClass1.class.getName(), false, false, false, false, 0);
+      checkMethod(methods.get(1), "methodWithVertxGen2Return", null, MethodKind.OTHER, VertxGenClass2.class.getName(), false, false, false, false, 0);
     };
     checker.accept(gen.getMethods());
     assertEquals(2, gen.getSquashedMethods().size());
@@ -877,8 +902,8 @@ public class GeneratorTest {
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(2, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "foo", null, "void", false, false, false, false, false, false, 1);
-      checkMethod(methods.get(1), "bar", null, "void", false, false, false, false, false, false, 1);
+      checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "void", false, false, false, false, 1);
+      checkMethod(methods.get(1), "bar", null, MethodKind.OTHER, "void", false, false, false, false, 1);
     };
     checker.accept(gen.getMethods());
     assertEquals(2, gen.getSquashedMethods().size());
@@ -894,8 +919,8 @@ public class GeneratorTest {
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(2, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "foo", null, InterfaceWithFluentMethods.class.getName(), false, true, false, false, false, false, 1);
-      checkMethod(methods.get(1), "bar", null, InterfaceWithFluentMethods.class.getName(), false, true, false, false, false, false, 1);
+      checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, InterfaceWithFluentMethods.class.getName(), false, true, false, false, 1);
+      checkMethod(methods.get(1), "bar", null, MethodKind.OTHER, InterfaceWithFluentMethods.class.getName(), false, true, false, false, 1);
     };
     checker.accept(gen.getMethods());
     assertEquals(2, gen.getSquashedMethods().size());
@@ -912,8 +937,8 @@ public class GeneratorTest {
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(2, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "foo", null, String.class.getName(), true, false, false, false, false, false, 1);
-      checkMethod(methods.get(1), "bar", null, VertxGenClass1.class.getName(), true, false, false, false, false, false, 1);
+      checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, String.class.getName(), true, false, false, false, 1);
+      checkMethod(methods.get(1), "bar", null, MethodKind.OTHER, VertxGenClass1.class.getName(), true, false, false, false, 1);
     };
     checker.accept(gen.getMethods());
     assertEquals(2, gen.getSquashedMethods().size());
@@ -929,8 +954,8 @@ public class GeneratorTest {
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(2, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "getAt", null, "byte", false, false, true, false, false, false, 1);
-      checkMethod(methods.get(1), "setAt", null, "void", false, false, false, true, false, false, 2);
+      checkMethod(methods.get(0), "getAt", null, MethodKind.INDEX_GETTER, "byte", false, false, false, false, 1);
+      checkMethod(methods.get(1), "setAt", null, MethodKind.INDEX_SETTER, "void", false, false, false, false, 2);
     };
     checker.accept(gen.getMethods());
     assertEquals(2, gen.getSquashedMethods().size());
@@ -957,9 +982,9 @@ public class GeneratorTest {
     assertTrue(gen.getAbstractSuperTypes().contains(TypeInfo.create(VertxGenInterface2.class)));
     assertEquals(3, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "quux", null, "void", false, false, false, false, false, false, 1);
-      checkMethod(methods.get(1), "bar", null, "void", false, false, false, false, false, false, 1);
-      checkMethod(methods.get(2), "juu", null, "void", false, false, false, false, false, false, 1);
+      checkMethod(methods.get(0), "quux", null, MethodKind.OTHER, "void", false, false, false, false, 1);
+      checkMethod(methods.get(1), "bar", null, MethodKind.OTHER, "void", false, false, false, false, 1);
+      checkMethod(methods.get(2), "juu", null, MethodKind.OTHER, "void", false, false, false, false, 1);
     };
     checker.accept(gen.getMethods());
     assertEquals(3, gen.getSquashedMethods().size());
@@ -997,7 +1022,7 @@ public class GeneratorTest {
     assertEquals(0, gen.getSuperTypes().size());
     assertEquals(1, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "foo", null, "void", false, false, false, false, false, false, 1);
+      checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "void", false, false, false, false, 1);
     };
     checker.accept(gen.getMethods());
     assertEquals(1, gen.getSquashedMethods().size());
@@ -1029,30 +1054,30 @@ public class GeneratorTest {
     assertTrue(gen.getReferencedTypes().contains(VertxGenClass2.class.getName()));
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(5, gen.getMethods().size());
-    checkMethod(gen.getMethods().get(0), "foo", null, "void", false, false, false, false, false, false, 1);
+    checkMethod(gen.getMethods().get(0), "foo", null, MethodKind.OTHER, "void", false, false, false, false, 1);
     checkClassParam(gen.getMethods().get(0).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
-    checkMethod(gen.getMethods().get(1), "foo", null, "void", false, false, false, false, false, false, 2);
+    checkMethod(gen.getMethods().get(1), "foo", null, MethodKind.OTHER, "void", false, false, false, false, 2);
     checkClassParam(gen.getMethods().get(1).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
     checkParam(gen.getMethods().get(1).getParams().get(1), "time", "long");
-    checkMethod(gen.getMethods().get(2), "foo", null, "void", false, false, false, false, false, false, 3);
+    checkMethod(gen.getMethods().get(2), "foo", null, MethodKind.HANDLER, "void", false, false, false, false, 3);
     checkClassParam(gen.getMethods().get(2).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
     checkParam(gen.getMethods().get(2).getParams().get(1), "time", "long");
     checkClassParam(gen.getMethods().get(2).getParams().get(2), "handler", "io.vertx.core.Handler<" + VertxGenClass1.class.getName() + ">", ClassKind.HANDLER);
-    checkMethod(gen.getMethods().get(3), "bar", null, "void", false, false, false, false, false, false, 1);
+    checkMethod(gen.getMethods().get(3), "bar", null, MethodKind.OTHER, "void", false, false, false, false, 1);
     checkClassParam(gen.getMethods().get(3).getParams().get(0), "obj1", VertxGenClass2.class.getName(), ClassKind.API);
-    checkMethod(gen.getMethods().get(4), "bar", null, "void", false, false, false, false, false, false, 2);
+    checkMethod(gen.getMethods().get(4), "bar", null, MethodKind.OTHER, "void", false, false, false, false, 2);
     checkClassParam(gen.getMethods().get(4).getParams().get(0), "obj1", VertxGenClass2.class.getName(), ClassKind.API);
     checkClassParam(gen.getMethods().get(4).getParams().get(1), "str", String.class.getName(), ClassKind.STRING);
 
     assertEquals(2, gen.getSquashedMethods().size());
     MethodInfo squashed1 = gen.getSquashedMethods().get("foo");
-    checkMethod(squashed1, "foo", null, "void", false, false, false, false, false, true, 3);
+    checkMethod(squashed1, "foo", null, MethodKind.OTHER, "void", false, false, false, true, 3);
     checkClassParam(squashed1.getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
     checkParam(squashed1.getParams().get(1), "time", "long");
     checkClassParam(squashed1.getParams().get(2), "handler", "io.vertx.core.Handler<" + VertxGenClass1.class.getName() + ">", ClassKind.HANDLER);
 
     MethodInfo squashed2 = gen.getSquashedMethods().get("bar");
-    checkMethod(squashed2, "bar", null, "void", false, false, false, false, false, true, 2);
+    checkMethod(squashed2, "bar", null, MethodKind.OTHER, "void", false, false, false, true, 2);
     checkClassParam(squashed2.getParams().get(0), "obj1", VertxGenClass2.class.getName(), ClassKind.API);
     checkClassParam(squashed2.getParams().get(1), "str", String.class.getName(), ClassKind.STRING);
 
@@ -1079,8 +1104,8 @@ public class GeneratorTest {
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(2, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "foo", null, VertxGenClass1.class.getName(), false, false, false, false, true, false, 1);
-      checkMethod(methods.get(1), "bar", null, VertxGenClass2.class.getName(), false, false, false, false, true, false, 1);
+      checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, VertxGenClass1.class.getName(), false, false, true, false, 1);
+      checkMethod(methods.get(1), "bar", null, MethodKind.OTHER, VertxGenClass2.class.getName(), false, false, true, false, 1);
     };
     checker.accept(gen.getMethods());
     assertEquals(2, gen.getSquashedMethods().size());
@@ -1092,9 +1117,9 @@ public class GeneratorTest {
     gen = new Generator().generateModel(InterfaceWithMethodOverride.class, VertxGenInterface1.class, VertxGenInterface2.class);
     assertEquals(2, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "bar", null, "void", false, false, false, false, false, false, 1);
+      checkMethod(methods.get(0), "bar", null, MethodKind.OTHER, "void", false, false, false, false, 1);
       assertEquals(set(TypeInfo.create(InterfaceWithMethodOverride.class), TypeInfo.create(VertxGenInterface1.class)), methods.get(0).getOwnerTypes());
-      checkMethod(methods.get(1), "juu", null, "void", false, false, false, false, false, false, 1);
+      checkMethod(methods.get(1), "juu", null, MethodKind.OTHER, "void", false, false, false, false, 1);
       assertEquals(set(TypeInfo.create(InterfaceWithMethodOverride.class), TypeInfo.create(VertxGenInterface2.class)), methods.get(1).getOwnerTypes());
     };
     checker.accept(gen.getMethods());
@@ -1109,10 +1134,10 @@ public class GeneratorTest {
     gen = new Generator().generateModel(InterfaceWithMethodHavingGenericOverride.class, GenericAbstractInterface.class);
     assertEquals(4, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "foo", null, "java.lang.String", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(1), "bar", null, "java.util.List<java.lang.String>", false, false, false, false, false, false, 0);
-      checkMethod(methods.get(2), "juu", null, "void", false, false, false, false, false, false, 1);
-      checkMethod(methods.get(3), "daa", null, "void", false, false, false, false, false, false, 1);
+      checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "java.lang.String", false, false, false, false, 0);
+      checkMethod(methods.get(1), "bar", null, MethodKind.OTHER, "java.util.List<java.lang.String>", false, false, false, false, 0);
+      checkMethod(methods.get(2), "juu", null, MethodKind.FUTURE, "void", false, false, false, false, 1);
+      checkMethod(methods.get(3), "daa", null, MethodKind.HANDLER, "void", false, false, false, false, 1);
     };
     checker.accept(gen.getMethods());
     assertEquals(4, gen.getSquashedMethods().size());
@@ -1126,7 +1151,7 @@ public class GeneratorTest {
     gen = new Generator().generateModel(InterfaceWithTypeVariableArgument3.class, InterfaceWithTypeVariableArgument2.class, InterfaceWithTypeVariableArgument1.class);
     assertEquals(1, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "foo", null, "io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument3", false, false, false, false, false, false, 0);
+      checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument3", false, false, false, false, 0);
       assertEquals(set(TypeInfo.create(InterfaceWithTypeVariableArgument2.class), TypeInfo.create(InterfaceWithTypeVariableArgument1.class)), methods.get(0).getOwnerTypes());
     };
     checker.accept(gen.getMethods());
@@ -1139,7 +1164,7 @@ public class GeneratorTest {
     gen = new Generator().generateModel(MethodWithSameSignatureInheritedFromDistinctInterfaces.class, SameSignatureMethod1.class, SameSignatureMethod2.class);
     assertEquals(1, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "foo", null, "U", false, false, false, false, false, false, 0);
+      checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "U", false, false, false, false, 0);
       assertEquals(set(TypeInfo.create(SameSignatureMethod1.class), TypeInfo.create(SameSignatureMethod2.class)), methods.get(0).getOwnerTypes());
     };
     checker.accept(gen.getMethods());
@@ -1158,8 +1183,8 @@ public class GeneratorTest {
     String comment1 = " Comment 1 line 1\n Comment 1 line 2\n";
     String comment2 = " Comment 2 line 1\n Comment 2 line 2\n";
     Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "foo", comment1, "void", false, false, false, false, false, false, 1);
-      checkMethod(methods.get(1), "bar", comment2, "void", false, false, false, false, false, false, 1);
+      checkMethod(methods.get(0), "foo", comment1, MethodKind.OTHER, "void", false, false, false, false, 1);
+      checkMethod(methods.get(1), "bar", comment2, MethodKind.OTHER, "void", false, false, false, false, 1);
     };
     checker.accept(gen.getMethods());
     assertEquals(2, gen.getSquashedMethods().size());
@@ -1191,7 +1216,7 @@ public class GeneratorTest {
     assertTrue(gen.getReferencedTypes().isEmpty());
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(1, gen.getMethods().size());
-    checkMethod(gen.getMethods().get(0), "methodWithJsonParams", null, "void", false, false, false, false, false, false, 2);
+    checkMethod(gen.getMethods().get(0), "methodWithJsonParams", null, MethodKind.OTHER, "void", false, false, false, false, 2);
     checkClassParam(gen.getMethods().get(0).getParams().get(0), "jsonObject", JsonObject.class.getName(), ClassKind.JSON_OBJECT);
     checkClassParam(gen.getMethods().get(0).getParams().get(1), "jsonArray", JsonArray.class.getName(), ClassKind.JSON_ARRAY);
   }
@@ -1204,7 +1229,7 @@ public class GeneratorTest {
     assertTrue(gen.getReferencedTypes().isEmpty());
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(1, gen.getMethods().size());
-    checkMethod(gen.getMethods().get(0), "methodWithJsonHandlers", null, "void", false, false, false, false, false, false, 2);
+    checkMethod(gen.getMethods().get(0), "methodWithJsonHandlers", null, MethodKind.HANDLER, "void", false, false, false, false, 2);
     checkClassParam(gen.getMethods().get(0).getParams().get(0), "jsonObjectHandler", Handler.class.getName() + "<" + JsonObject.class.getName() + ">", ClassKind.HANDLER);
     checkClassParam(gen.getMethods().get(0).getParams().get(1), "jsonArrayHandler", Handler.class.getName() + "<" + JsonArray.class.getName() + ">", ClassKind.HANDLER);
   }
@@ -1217,7 +1242,7 @@ public class GeneratorTest {
     assertTrue(gen.getReferencedTypes().isEmpty());
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(1, gen.getMethods().size());
-    checkMethod(gen.getMethods().get(0), "methodwithJsonHandlersAsyncResult", null, "void", false, false, false, false, false, false, 2);
+    checkMethod(gen.getMethods().get(0), "methodwithJsonHandlersAsyncResult", null, MethodKind.FUTURE, "void", false, false, false, false, 2);
     checkClassParam(gen.getMethods().get(0).getParams().get(0), "jsonObjectHandler", Handler.class.getName() + "<" + AsyncResult.class.getName() + "<" + JsonObject.class.getName() + ">>", ClassKind.HANDLER);
     checkClassParam(gen.getMethods().get(0).getParams().get(1), "jsonArrayHandler", Handler.class.getName() + "<" + AsyncResult.class.getName() + "<" + JsonArray.class.getName() + ">>", ClassKind.HANDLER);
   }
@@ -1230,8 +1255,34 @@ public class GeneratorTest {
     assertTrue(gen.getReferencedTypes().isEmpty());
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(2, gen.getMethods().size());
-    checkMethod(gen.getMethods().get(0), "foo", null, JsonObject.class.getName(), false, false, false, false, false, false, 0);
-    checkMethod(gen.getMethods().get(1), "bar", null, JsonArray.class.getName(), false, false, false, false, false, false, 0);
+    checkMethod(gen.getMethods().get(0), "foo", null, MethodKind.OTHER, JsonObject.class.getName(), false, false, false, false, 0);
+    checkMethod(gen.getMethods().get(1), "bar", null, MethodKind.OTHER, JsonArray.class.getName(), false, false, false, false, 0);
+  }
+
+  @Test
+  public void testMethodHandlerParam() throws Exception {
+    gen = new Generator().generateModel(MethodWithHandlerParam.class);
+    checkMethod(gen.getMethods().get(0), "foo_1", null, MethodKind.HANDLER, "void", false, false, false, false, 1);
+    checkMethod(gen.getMethods().get(1), "foo_2", null, MethodKind.HANDLER, "void", false, false, false, false, 2);
+    checkMethod(gen.getMethods().get(2), "foo_3", null, MethodKind.HANDLER, "void", false, false, false, false, 2);
+    checkMethod(gen.getMethods().get(3), "foo_4", null, MethodKind.HANDLER, MethodWithHandlerParam.class.getName(), false, true, false, false, 1);
+    checkMethod(gen.getMethods().get(4), "foo_5", null, MethodKind.HANDLER, MethodWithHandlerParam.class.getName(), false, true, false, false, 2);
+    checkMethod(gen.getMethods().get(5), "foo_6", null, MethodKind.HANDLER, MethodWithHandlerParam.class.getName(), false, true, false, false, 2);
+    checkMethod(gen.getMethods().get(6), "foo_7", null, MethodKind.OTHER, String.class.getName(), false, false, false, false, 1);
+    checkMethod(gen.getMethods().get(7), "foo_8", null, MethodKind.OTHER, "void", false, false, false, false, 2);
+  }
+
+  @Test
+  public void testMethodHandlerAsyncResultParam() throws Exception {
+    gen = new Generator().generateModel(MethodWithHandlerAsyncResultParam.class);
+    checkMethod(gen.getMethods().get(0), "foo_1", null, MethodKind.FUTURE, "void", false, false, false, false, 1);
+    checkMethod(gen.getMethods().get(1), "foo_2", null, MethodKind.FUTURE, "void", false, false, false, false, 2);
+    checkMethod(gen.getMethods().get(2), "foo_3", null, MethodKind.FUTURE, "void", false, false, false, false, 2);
+    checkMethod(gen.getMethods().get(3), "foo_4", null, MethodKind.FUTURE, MethodWithHandlerAsyncResultParam.class.getName(), false, true, false, false, 1);
+    checkMethod(gen.getMethods().get(4), "foo_5", null, MethodKind.FUTURE, MethodWithHandlerAsyncResultParam.class.getName(), false, true, false, false, 2);
+    checkMethod(gen.getMethods().get(5), "foo_6", null, MethodKind.FUTURE, MethodWithHandlerAsyncResultParam.class.getName(), false, true, false, false, 2);
+    checkMethod(gen.getMethods().get(6), "foo_7", null, MethodKind.OTHER, String.class.getName(), false, false, false, false, 1);
+    checkMethod(gen.getMethods().get(7), "foo_8", null, MethodKind.OTHER, "void", false, false, false, false, 2);
   }
 
 /*
@@ -1271,17 +1322,16 @@ public class GeneratorTest {
   tests that actually generate stuff
    */
 
-  private void checkMethod(MethodInfo meth, String name, String comment, String returnType, boolean cacheReturn,
-                           boolean fluent, boolean indexGetter, boolean indexSetter, boolean staticMethod,
+  private void checkMethod(MethodInfo meth, String name, String comment, MethodKind kind, String returnType, boolean cacheReturn,
+                           boolean fluent, boolean staticMethod,
                            boolean squashed, int numParams) {
 
     assertEquals(name, meth.getName());
     assertEquals(comment, meth.getComment());
+    assertEquals(kind, meth.getKind());
     assertEquals(returnType, meth.getReturnType().toString());
     assertEquals(cacheReturn, meth.isCacheReturn());
     assertEquals(fluent, meth.isFluent());
-    assertEquals(indexGetter, meth.isIndexGetter());
-    assertEquals(indexSetter, meth.isIndexSetter());
     assertEquals(staticMethod, meth.isStaticMethod());
     assertEquals(squashed, meth.isSquashed());
     assertEquals(numParams, meth.getParams().size());

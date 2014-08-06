@@ -209,9 +209,14 @@ public class Model {
     vars.put("methodsByName", methodMap);
     vars.put("referencedOptionsTypes", referencedOptionsTypes);
 
-    // Useful for testing the type kind, allows to do type.kind == CLASS_API instead of type.kind.name() == "API"
+    // Useful for testing the type class kind, allows to do type.kind == CLASS_API instead of type.kind.name() == "API"
     for (ClassKind classKind : ClassKind.values()) {
       vars.put("CLASS_" + classKind.name(), classKind);
+    }
+
+    // Useful for testing the method kind, allows to do method.kind == METHOD_HANDLER instead of method.kind.name() == "HANDLER"
+    for (MethodKind methodKind : MethodKind.values()) {
+      vars.put("METHOD_" + methodKind.name(), methodKind);
     }
 
     String output;
@@ -529,8 +534,6 @@ public class Model {
     boolean isStatic = mods.contains(Modifier.STATIC);
     boolean isFluent = execElem.getAnnotation(Fluent.class) != null;
     boolean isCacheReturn = execElem.getAnnotation(CacheReturn.class) != null;
-    boolean isIndexGetter = execElem.getAnnotation(IndexGetter.class) != null;
-    boolean isIndexSetter = execElem.getAnnotation(IndexSetter.class) != null;
     ArrayList<String> typeParams = new ArrayList<>();
     for (TypeParameterElement typeParam : execElem.getTypeParameters()) {
       for (TypeMirror bound : typeParam.getBounds()) {
@@ -566,8 +569,37 @@ public class Model {
     } else {
       ownerTypes.add((TypeInfo.Class) ownerType);
     }
-    MethodInfo methodInfo = new MethodInfo(ownerTypes, methodName, returnType,
-        isFluent, isIndexGetter, isIndexSetter, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic, typeParams);
+
+    // Determine method kind + validate
+    MethodKind kind = MethodKind.OTHER;
+    if (execElem.getAnnotation(IndexGetter.class) != null) {
+      if (!mParams.stream().anyMatch(param -> param.type.getName().equals("int"))) {
+        throw new GenException(execElem, "No int arg found in index getter method");
+      }
+      kind = MethodKind.INDEX_GETTER;
+    } else if (execElem.getAnnotation(IndexSetter.class) != null) {
+      if (!mParams.stream().anyMatch(param -> param.type.getName().equals("int"))) {
+        throw new GenException(execElem, "No int arg found in index setter method");
+      }
+      kind = MethodKind.INDEX_SETTER;
+    } else {
+      int lastParamIndex = mParams.size() - 1;
+      if (lastParamIndex >= 0 && (returnType instanceof TypeInfo.Void || isFluent)) {
+        TypeInfo lastParamType = mParams.get(lastParamIndex).type;
+        if (lastParamType.getKind() == ClassKind.HANDLER) {
+          TypeInfo typeArg = ((TypeInfo.Parameterized) lastParamType).getTypeArguments().get(0);
+          if (typeArg.getKind() == ClassKind.ASYNC_RESULT) {
+            kind = MethodKind.FUTURE;
+          } else {
+            kind = MethodKind.HANDLER;
+          }
+        }
+      }
+    }
+
+    //
+    MethodInfo methodInfo = new MethodInfo(ownerTypes, methodName, kind, returnType,
+        isFluent, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic, typeParams);
     List<MethodInfo> meths = methodMap.get(methodInfo.getName());
     if (meths == null) {
       meths = new ArrayList<>();
@@ -600,8 +632,8 @@ public class Model {
     methodInfo.collectImports(importedTypes);
     MethodInfo squashed = squashedMethods.get(methodInfo.name);
     if (squashed == null) {
-      squashed = new MethodInfo(new LinkedHashSet<>(methodInfo.ownerTypes), methodInfo.name, methodInfo.returnType,
-          methodInfo.fluent, methodInfo.indexGetter, methodInfo.indexSetter, methodInfo.cacheReturn, methodInfo.params, methodInfo.comment, methodInfo.staticMethod, methodInfo.typeParams);
+      squashed = new MethodInfo(new LinkedHashSet<>(methodInfo.ownerTypes), methodInfo.name, methodInfo.kind, methodInfo.returnType,
+          methodInfo.fluent, methodInfo.cacheReturn, methodInfo.params, methodInfo.comment, methodInfo.staticMethod, methodInfo.typeParams);
       squashedMethods.put(methodInfo.name, squashed);
     } else {
       squashed.addParams(methodInfo.params);
