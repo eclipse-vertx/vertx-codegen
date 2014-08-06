@@ -1,9 +1,9 @@
 package io.vertx.codegen.testmodel;
 
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.VertxException;
-import io.vertx.core.impl.FutureResultImpl;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -69,25 +69,25 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
                                                      Handler<AsyncResult<String>> stringHandler) {
     if (sendFailure) {
       Exception e = new Exception("foobar!");
-      byteHandler.handle(new FutureResultImpl<>(e));
-      shortHandler.handle(new FutureResultImpl<>(e));
-      intHandler.handle(new FutureResultImpl<>(e));
-      longHandler.handle(new FutureResultImpl<>(e));
-      floatHandler.handle(new FutureResultImpl<>(e));
-      doubleHandler.handle(new FutureResultImpl<>(e));
-      booleanHandler.handle(new FutureResultImpl<>(e));
-      charHandler.handle(new FutureResultImpl<>(e));
-      stringHandler.handle(new FutureResultImpl<>(e));    
+      byteHandler.handle(Future.completedFuture(e));
+      shortHandler.handle(Future.completedFuture(e));
+      intHandler.handle(Future.completedFuture(e));
+      longHandler.handle(Future.completedFuture(e));
+      floatHandler.handle(Future.completedFuture(e));
+      doubleHandler.handle(Future.completedFuture(e));
+      booleanHandler.handle(Future.completedFuture(e));
+      charHandler.handle(Future.completedFuture(e));
+      stringHandler.handle(Future.completedFuture(e));    
     } else {
-      byteHandler.handle(new FutureResultImpl<>((byte) 123));
-      shortHandler.handle(new FutureResultImpl<>((short) 12345));
-      intHandler.handle(new FutureResultImpl<>(1234567));
-      longHandler.handle(new FutureResultImpl<>(1265615234l));
-      floatHandler.handle(new FutureResultImpl<>(12.345f));
-      doubleHandler.handle(new FutureResultImpl<>(12.34566d));
-      booleanHandler.handle(new FutureResultImpl<>(true));
-      charHandler.handle(new FutureResultImpl<>('X'));
-      stringHandler.handle(new FutureResultImpl<>("quux!"));
+      byteHandler.handle(Future.completedFuture((byte) 123));
+      shortHandler.handle(Future.completedFuture((short) 12345));
+      intHandler.handle(Future.completedFuture(1234567));
+      longHandler.handle(Future.completedFuture(1265615234l));
+      floatHandler.handle(Future.completedFuture(12.345f));
+      doubleHandler.handle(Future.completedFuture(12.34566d));
+      booleanHandler.handle(Future.completedFuture(true));
+      charHandler.handle(Future.completedFuture('X'));
+      stringHandler.handle(Future.completedFuture("quux!"));
     }
   }
 
@@ -146,10 +146,10 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
     List<Integer> listInt = Arrays.asList(5, 12, 100);
     Set<String> setString = new LinkedHashSet<>( Arrays.asList("foo", "bar", "wibble"));
     Set<Integer> setInt = new LinkedHashSet<>(Arrays.asList(5, 12, 100));
-    listStringHandler.handle(new FutureResultImpl<>(listString));
-    listIntHandler.handle(new FutureResultImpl<>(listInt));
-    setStringHandler.handle(new FutureResultImpl<>(setString));
-    setIntHandler.handle(new FutureResultImpl<>(setInt));
+    listStringHandler.handle(Future.completedFuture(listString));
+    listIntHandler.handle(Future.completedFuture(listInt));
+    setStringHandler.handle(Future.completedFuture(setString));
+    setIntHandler.handle(Future.completedFuture(setInt));
   }
 
   @Override
@@ -191,37 +191,37 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   @Override
   public void methodWithHandlerAsyncResultListVertxGen(Handler<AsyncResult<List<RefedInterface1>>> listHandler) {
     List<RefedInterface1> list = Arrays.asList(new RefedInterface1Impl().setString("foo"), new RefedInterface1Impl().setString("bar"));
-    listHandler.handle(new FutureResultImpl<>(list));
+    listHandler.handle(Future.completedFuture(list));
   }
 
   @Override
   public void methodWithHandlerAsyncResultSetVertxGen(Handler<AsyncResult<Set<RefedInterface1>>> setHandler) {
     Set<RefedInterface1> list = new LinkedHashSet<>(Arrays.asList(new RefedInterface1Impl().setString("foo"), new RefedInterface1Impl().setString("bar")));
-    setHandler.handle(new FutureResultImpl<>(list));
+    setHandler.handle(Future.completedFuture(list));
   }
 
   @Override
   public void methodWithHandlerAsyncResultListJsonObject(Handler<AsyncResult<List<JsonObject>>> listHandler) {
     List<JsonObject> list = Arrays.asList(new JsonObject().putString("cheese", "stilton"), new JsonObject().putString("socks", "tartan"));
-    listHandler.handle(new FutureResultImpl<>(list));
+    listHandler.handle(Future.completedFuture(list));
   }
 
   @Override
   public void methodWithHandlerAsyncResultSetJsonObject(Handler<AsyncResult<Set<JsonObject>>> setHandler) {
     Set<JsonObject> set = new LinkedHashSet<>(Arrays.asList(new JsonObject().putString("cheese", "stilton"), new JsonObject().putString("socks", "tartan")));
-    setHandler.handle(new FutureResultImpl<>(set));
+    setHandler.handle(Future.completedFuture(set));
   }
 
   @Override
   public void methodWithHandlerAsyncResultListJsonArray(Handler<AsyncResult<List<JsonArray>>> listHandler) {
     List<JsonArray> list = Arrays.asList(new JsonArray().add("green").add("blue"), new JsonArray().add("yellow").add("purple"));
-    listHandler.handle(new FutureResultImpl<>(list));
+    listHandler.handle(Future.completedFuture(list));
   }
 
   @Override
   public void methodWithHandlerAsyncResultSetJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler) {
     Set<JsonArray> set = new LinkedHashSet<>(Arrays.asList(new JsonArray().add("green").add("blue"), new JsonArray().add("yellow").add("purple")));
-    listHandler.handle(new FutureResultImpl<>(set));
+    listHandler.handle(Future.completedFuture(set));
   }
 
   @Override
@@ -235,7 +235,7 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   public void methodWithHandlerAsyncResultUserTypes(Handler<AsyncResult<RefedInterface1>> handler) {
     RefedInterface1 refed = new RefedInterface1Impl();
     refed.setString("cheetahs");
-    handler.handle(new FutureResultImpl<>(refed));
+    handler.handle(Future.completedFuture(refed));
   }
 
   @Override
@@ -246,9 +246,9 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   @Override
   public void methodWithHandlerAsyncResultVoid(boolean sendFailure, Handler<AsyncResult<Void>> handler) {
     if (sendFailure) {
-      handler.handle(new FutureResultImpl<>(new VertxException("foo!")));
+      handler.handle(Future.completedFuture(new VertxException("foo!")));
     } else {
-      handler.handle(new FutureResultImpl<>((Void) null));
+      handler.handle(Future.completedFuture((Void) null));
     }
   }
 
@@ -436,20 +436,20 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   public <U> void methodWithGenericHandlerAsyncResult(String type, Handler<AsyncResult<U>> asyncResultHandler) {
     switch (type) {
       case "String": {
-        asyncResultHandler.handle(new FutureResultImpl<U>((U)"asyncResultHandlerFoo"));
+        asyncResultHandler.handle(Future.completedFuture((U)"asyncResultHandlerFoo"));
         break;
       }
       case "Ref": {
         RefedInterface1 ref = new RefedInterface1Impl();
         ref.setString("bar");
-        asyncResultHandler.handle(new FutureResultImpl<U>((U)ref));
+        asyncResultHandler.handle(Future.completedFuture((U)ref));
         break;
       }
       case "JsonObject": {
         JsonObject jsonObject = new JsonObject();
         jsonObject.putString("foo", "hello");
         jsonObject.putNumber("bar", 123);
-        asyncResultHandler.handle(new FutureResultImpl<U>((U)jsonObject));
+        asyncResultHandler.handle(Future.completedFuture((U)jsonObject));
         break;
       }
       case "JsonArray": {
@@ -457,7 +457,7 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
         jsonArray.add("foo");
         jsonArray.add("bar");
         jsonArray.add("wib");
-        asyncResultHandler.handle(new FutureResultImpl<U>((U) jsonArray));
+        asyncResultHandler.handle(Future.completedFuture((U) jsonArray));
         break;
       }
     }
@@ -510,7 +510,7 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   public void methodWithHandlerAsyncResultJson(Handler<AsyncResult<JsonObject>> jsonObjectHandler, Handler<AsyncResult<JsonArray>> jsonArrayHandler) {
     assertNotNull(jsonObjectHandler);
     assertNotNull(jsonArrayHandler);
-    jsonObjectHandler.handle(new FutureResultImpl<>(new JsonObject().putString("cheese", "stilton")));
-    jsonArrayHandler.handle(new FutureResultImpl<>(new JsonArray().add("socks").add("shoes")));
+    jsonObjectHandler.handle(Future.completedFuture(new JsonObject().putString("cheese", "stilton")));
+    jsonArrayHandler.handle(Future.completedFuture(new JsonArray().add("socks").add("shoes")));
   }
 }
