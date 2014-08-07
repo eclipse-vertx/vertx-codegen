@@ -27,9 +27,15 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
                                    Handler<Long> longHandler, Handler<Float> floatHandler, Handler<Double> doubleHandler,
                                    Handler<Boolean> booleanHandler, Handler<Character> charHandler, Handler<String> stringHandler);
 
-  void methodWithHandlerAsyncResultBasicTypes(boolean sendFailure, Handler<AsyncResult<Byte>> byteHandler, Handler<AsyncResult<Short>> shortHandler, Handler<AsyncResult<Integer>> intHandler,
-                                              Handler<AsyncResult<Long>> longHandler, Handler<AsyncResult<Float>> floatHandler, Handler<AsyncResult<Double>> doubleHandler,
-                                              Handler<AsyncResult<Boolean>> booleanHandler, Handler<AsyncResult<Character>> charHandler, Handler<AsyncResult<String>> stringHandler);
+  void methodWithHandlerAsyncResultByte(boolean sendFailure, Handler<AsyncResult<Byte>> handler);
+  void methodWithHandlerAsyncResultShort(boolean sendFailure, Handler<AsyncResult<Short>> handler);
+  void methodWithHandlerAsyncResultInteger(boolean sendFailure, Handler<AsyncResult<Integer>> handler);
+  void methodWithHandlerAsyncResultLong(boolean sendFailure, Handler<AsyncResult<Long>> handler);
+  void methodWithHandlerAsyncResultFloat(boolean sendFailure, Handler<AsyncResult<Float>> handler);
+  void methodWithHandlerAsyncResultDouble(boolean sendFailure, Handler<AsyncResult<Double>> handler);
+  void methodWithHandlerAsyncResultBoolean(boolean sendFailure, Handler<AsyncResult<Boolean>> handler);
+  void methodWithHandlerAsyncResultCharacter(boolean sendFailure, Handler<AsyncResult<Character>> handler);
+  void methodWithHandlerAsyncResultString(boolean sendFailure, Handler<AsyncResult<String>> handler);
 
   void methodWithUserTypes(RefedInterface1 refed);
 
@@ -40,8 +46,10 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
   void methodWithHandlerListAndSet(Handler<List<String>> listStringHandler, Handler<List<Integer>> listIntHandler,
                                    Handler<Set<String>> setStringHandler, Handler<Set<Integer>> setIntHandler);
 
-  void methodWithHandlerAsyncResultListAndSet(Handler<AsyncResult<List<String>>> listStringHandler, Handler<AsyncResult<List<Integer>>> listIntHandler,
-                                              Handler<AsyncResult<Set<String>>> setStringHandler, Handler<AsyncResult<Set<Integer>>> setIntHandler);
+  void methodWithHandlerAsyncResultListString(Handler<AsyncResult<List<String>>> handler);
+  void methodWithHandlerAsyncResultListInteger(Handler<AsyncResult<List<Integer>>> handler);
+  void methodWithHandlerAsyncResultSetString(Handler<AsyncResult<Set<String>>> handler);
+  void methodWithHandlerAsyncResultSetInteger(Handler<AsyncResult<Set<Integer>>> handler);
 
   void methodWithHandlerListVertxGen(Handler<List<RefedInterface1>> listHandler);
 
@@ -135,6 +143,7 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
 
   void methodWithHandlerJson(Handler<JsonObject> jsonObjectHandler, Handler<JsonArray> jsonArrayHandler);
 
-  void methodWithHandlerAsyncResultJson(Handler<AsyncResult<JsonObject>> jsonObjectHandler, Handler<AsyncResult<JsonArray>> jsonArrayHandler);
+  void methodWithHandlerAsyncResultJsonObject(Handler<AsyncResult<JsonObject>> handler);
+  void methodWithHandlerAsyncResultJsonArray(Handler<AsyncResult<JsonArray>> handler);
 
 }

@@ -62,32 +62,92 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
-  public void methodWithHandlerAsyncResultBasicTypes(boolean sendFailure, Handler<AsyncResult<Byte>> byteHandler, Handler<AsyncResult<Short>> shortHandler,
-                                                     Handler<AsyncResult<Integer>> intHandler, Handler<AsyncResult<Long>> longHandler,
-                                                     Handler<AsyncResult<Float>> floatHandler, Handler<AsyncResult<Double>> doubleHandler,
-                                                     Handler<AsyncResult<Boolean>> booleanHandler, Handler<AsyncResult<Character>> charHandler,
-                                                     Handler<AsyncResult<String>> stringHandler) {
+  public void methodWithHandlerAsyncResultByte(boolean sendFailure, Handler<AsyncResult<Byte>> handler) {
     if (sendFailure) {
       Exception e = new Exception("foobar!");
-      byteHandler.handle(Future.completedFuture(e));
-      shortHandler.handle(Future.completedFuture(e));
-      intHandler.handle(Future.completedFuture(e));
-      longHandler.handle(Future.completedFuture(e));
-      floatHandler.handle(Future.completedFuture(e));
-      doubleHandler.handle(Future.completedFuture(e));
-      booleanHandler.handle(Future.completedFuture(e));
-      charHandler.handle(Future.completedFuture(e));
-      stringHandler.handle(Future.completedFuture(e));    
+      handler.handle(Future.completedFuture(e));
     } else {
-      byteHandler.handle(Future.completedFuture((byte) 123));
-      shortHandler.handle(Future.completedFuture((short) 12345));
-      intHandler.handle(Future.completedFuture(1234567));
-      longHandler.handle(Future.completedFuture(1265615234l));
-      floatHandler.handle(Future.completedFuture(12.345f));
-      doubleHandler.handle(Future.completedFuture(12.34566d));
-      booleanHandler.handle(Future.completedFuture(true));
-      charHandler.handle(Future.completedFuture('X'));
-      stringHandler.handle(Future.completedFuture("quux!"));
+      handler.handle(Future.completedFuture((byte) 123));
+    }
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultShort(boolean sendFailure, Handler<AsyncResult<Short>> handler) {
+    if (sendFailure) {
+      Exception e = new Exception("foobar!");
+      handler.handle(Future.completedFuture(e));
+    } else {
+      handler.handle(Future.completedFuture((short) 12345));
+    }
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultInteger(boolean sendFailure, Handler<AsyncResult<Integer>> handler) {
+    if (sendFailure) {
+      Exception e = new Exception("foobar!");
+      handler.handle(Future.completedFuture(e));
+    } else {
+      handler.handle(Future.completedFuture(1234567));
+    }
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultLong(boolean sendFailure, Handler<AsyncResult<Long>> handler) {
+    if (sendFailure) {
+      Exception e = new Exception("foobar!");
+      handler.handle(Future.completedFuture(e));
+    } else {
+      handler.handle(Future.completedFuture(1265615234l));
+    }
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultFloat(boolean sendFailure, Handler<AsyncResult<Float>> handler) {
+    if (sendFailure) {
+      Exception e = new Exception("foobar!");
+      handler.handle(Future.completedFuture(e));
+    } else {
+      handler.handle(Future.completedFuture(12.345f));
+    }
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultDouble(boolean sendFailure, Handler<AsyncResult<Double>> handler) {
+    if (sendFailure) {
+      Exception e = new Exception("foobar!");
+      handler.handle(Future.completedFuture(e));
+    } else {
+      handler.handle(Future.completedFuture(12.34566d));
+    }
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultBoolean(boolean sendFailure, Handler<AsyncResult<Boolean>> handler) {
+    if (sendFailure) {
+      Exception e = new Exception("foobar!");
+      handler.handle(Future.completedFuture(e));
+    } else {
+      handler.handle(Future.completedFuture(true));
+    }
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultCharacter(boolean sendFailure, Handler<AsyncResult<Character>> handler) {
+    if (sendFailure) {
+      Exception e = new Exception("foobar!");
+      handler.handle(Future.completedFuture(e));
+    } else {
+      handler.handle(Future.completedFuture('X'));
+    }
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultString(boolean sendFailure, Handler<AsyncResult<String>> handler) {
+    if (sendFailure) {
+      Exception e = new Exception("foobar!");
+      handler.handle(Future.completedFuture(e));
+    } else {
+      handler.handle(Future.completedFuture("quux!"));
     }
   }
 
@@ -140,16 +200,27 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
-  public void methodWithHandlerAsyncResultListAndSet(Handler<AsyncResult<List<String>>> listStringHandler, Handler<AsyncResult<List<Integer>>> listIntHandler,
-                                                     Handler<AsyncResult<Set<String>>> setStringHandler, Handler<AsyncResult<Set<Integer>>> setIntHandler) {
+  public void methodWithHandlerAsyncResultListString(Handler<AsyncResult<List<String>>> handler) {
     List<String> listString = Arrays.asList("foo", "bar", "wibble");
+    handler.handle(Future.completedFuture(listString));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultListInteger(Handler<AsyncResult<List<Integer>>> handler) {
     List<Integer> listInt = Arrays.asList(5, 12, 100);
+    handler.handle(Future.completedFuture(listInt));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultSetString(Handler<AsyncResult<Set<String>>> handler) {
     Set<String> setString = new LinkedHashSet<>( Arrays.asList("foo", "bar", "wibble"));
+    handler.handle(Future.completedFuture(setString));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultSetInteger(Handler<AsyncResult<Set<Integer>>> handler) {
     Set<Integer> setInt = new LinkedHashSet<>(Arrays.asList(5, 12, 100));
-    listStringHandler.handle(Future.completedFuture(listString));
-    listIntHandler.handle(Future.completedFuture(listInt));
-    setStringHandler.handle(Future.completedFuture(setString));
-    setIntHandler.handle(Future.completedFuture(setInt));
+    handler.handle(Future.completedFuture(setInt));
   }
 
   @Override
@@ -507,10 +578,14 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
-  public void methodWithHandlerAsyncResultJson(Handler<AsyncResult<JsonObject>> jsonObjectHandler, Handler<AsyncResult<JsonArray>> jsonArrayHandler) {
-    assertNotNull(jsonObjectHandler);
-    assertNotNull(jsonArrayHandler);
-    jsonObjectHandler.handle(Future.completedFuture(new JsonObject().putString("cheese", "stilton")));
-    jsonArrayHandler.handle(Future.completedFuture(new JsonArray().add("socks").add("shoes")));
+  public void methodWithHandlerAsyncResultJsonObject(Handler<AsyncResult<JsonObject>> handler) {
+    assertNotNull(handler);
+    handler.handle(Future.completedFuture(new JsonObject().putString("cheese", "stilton")));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultJsonArray(Handler<AsyncResult<JsonArray>> handler) {
+    assertNotNull(handler);
+    handler.handle(Future.completedFuture(new JsonArray().add("socks").add("shoes")));
   }
 }
