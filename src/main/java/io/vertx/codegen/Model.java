@@ -209,9 +209,9 @@ public class Model {
     vars.put("methodsByName", methodMap);
     vars.put("referencedOptionsTypes", referencedOptionsTypes);
 
-    // Useful for testing the type kind, allows to do type.kind == API instead of type.kind.name() == "API"
+    // Useful for testing the type kind, allows to do type.kind == CLASS_API instead of type.kind.name() == "API"
     for (ClassKind classKind : ClassKind.values()) {
-      vars.put(classKind.name(), classKind);
+      vars.put("CLASS_" + classKind.name(), classKind);
     }
 
     String output;
