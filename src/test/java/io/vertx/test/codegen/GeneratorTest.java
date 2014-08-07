@@ -1285,6 +1285,11 @@ public class GeneratorTest {
     checkMethod(gen.getMethods().get(7), "foo_8", null, MethodKind.OTHER, "void", false, false, false, false, 2);
   }
 
+  @Test
+  public void testMethodHandlerAsyncResultParamOverload() throws Exception {
+
+  }
+
 /*
   @Test
   public void testGenerateModelMoreThanOnce() throws Exception {

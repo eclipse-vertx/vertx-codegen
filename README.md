@@ -153,17 +153,27 @@ The `TypeInfo` represents a Java type:
 The `TypeInfo.Class` is a subclass of `TypeInfo` representing a Java class:
 
 * `kind`. An enum providing more information about the type
-    * `GEN` a generated type annotated with @VertxGen
-    * `OPTIONS` an option type annotated with @Options
-    * `HANDLER` the `io.vertx.core.Handler` type
-    * `ASYNC_RESULT` the `io.vertx.core.AsyncResult` type
-    * `JSON_OBJECT` the `io.vertx.core.json.JsonObject` type
-    * `JSON_ARRAY`  the `io.vertx.core.json.JsonArray` type
-    * `NONE` none of the above
+    * `STRING`, `BOXED_PRIMITIVE`, `PRIMITIVE`: basic types
+    * `JSON_OBJECT`, `JSON_ARRAY`: io.vertx.core.json.JsonObject and io.vertx.core.json.JsonArray
+    * `THROWABLE`: java.lang.Throwable
+    * `VOID`: java.lang.Void
+    * `OBJECT`: java.lang.Object
+    * `LIST`, `SET`: corresponding java collections
+    * `API`: a type annotated with @VertxGen
+    * `OPTIONS`: a type annotations with @Options
+    * `HANDLER`: io.vertx.core.Handler
+    * `ASYNC_RESULT`: io.vertx.core.AsyncResult
+    * `OTHER`: anything else
 
 The `MethodInfo` object has the following fields:
 
 * `name`. The name of the method
+* `kind`. The method kind
+    * `HANDLER`: last parameter type is `io.vertx.core.Handler<T>` and a `void` or _fluent_ return
+    * `FUTURE`: last parameter type is `io.vertx.core.Handler<io.vertx.core.AsyncResult<T>>` and a `void` or _fluent_ return
+    * `INDEX_GETTER`: an index getter
+    * `INDEX_SETTER`: an index setter
+    * `OTHER`: anything else
 * `returnType`. The fully qualified return type (or `void`) of the method
 * `fluent`. `true` if the method is fluent (i.e. returns a reference to the interface itself for chaining calls)
 * `cacheReturn`. `true` if the generated API method should cache return value
