@@ -8,6 +8,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -187,6 +188,11 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
+  public void methodWithNullOptionsParam(TestOptions options) {
+    assertNull(options);
+  }
+
+  @Override
   public void methodWithHandlerListAndSet(Handler<List<String>> listStringHandler, Handler<List<Integer>> listIntHandler,
                                           Handler<Set<String>> setStringHandler, Handler<Set<Integer>> setIntHandler) {
     List<String> listString = Arrays.asList("foo", "bar", "wibble");
@@ -242,8 +248,20 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
+  public void methodWithHandlerListNullJsonObject(Handler<List<JsonObject>> listHandler) {
+    List<JsonObject> list = Collections.singletonList(null);
+    listHandler.handle(list);
+  }
+
+  @Override
   public void methodWithHandlerSetJsonObject(Handler<Set<JsonObject>> setHandler) {
     Set<JsonObject> set = new LinkedHashSet<>(Arrays.asList(new JsonObject().putString("cheese", "stilton"), new JsonObject().putString("socks", "tartan")));
+    setHandler.handle(set);
+  }
+
+  @Override
+  public void methodWithHandlerSetNullJsonObject(Handler<Set<JsonObject>> setHandler) {
+    Set<JsonObject> set = Collections.singleton(null);
     setHandler.handle(set);
   }
 
@@ -254,8 +272,20 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
+  public void methodWithHandlerListNullJsonArray(Handler<List<JsonArray>> listHandler) {
+    List<JsonArray> list = Collections.singletonList(null);
+    listHandler.handle(list);
+  }
+
+  @Override
   public void methodWithHandlerSetJsonArray(Handler<Set<JsonArray>> listHandler) {
     Set<JsonArray> set = new LinkedHashSet<>(Arrays.asList(new JsonArray().add("green").add("blue"), new JsonArray().add("yellow").add("purple")));
+    listHandler.handle(set);
+  }
+
+  @Override
+  public void methodWithHandlerSetNullJsonArray(Handler<Set<JsonArray>> listHandler) {
+    Set<JsonArray> set = Collections.singleton(null);
     listHandler.handle(set);
   }
 
@@ -278,8 +308,20 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
+  public void methodWithHandlerAsyncResultListNullJsonObject(Handler<AsyncResult<List<JsonObject>>> listHandler) {
+    List<JsonObject> list = Collections.singletonList(null);
+    listHandler.handle(Future.completedFuture(list));
+  }
+
+  @Override
   public void methodWithHandlerAsyncResultSetJsonObject(Handler<AsyncResult<Set<JsonObject>>> setHandler) {
     Set<JsonObject> set = new LinkedHashSet<>(Arrays.asList(new JsonObject().putString("cheese", "stilton"), new JsonObject().putString("socks", "tartan")));
+    setHandler.handle(Future.completedFuture(set));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultSetNullJsonObject(Handler<AsyncResult<Set<JsonObject>>> setHandler) {
+    Set<JsonObject> set = Collections.singleton(null);
     setHandler.handle(Future.completedFuture(set));
   }
 
@@ -290,8 +332,20 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
+  public void methodWithHandlerAsyncResultListNullJsonArray(Handler<AsyncResult<List<JsonArray>>> listHandler) {
+    List<JsonArray> list = Collections.singletonList(null);
+    listHandler.handle(Future.completedFuture(list));
+  }
+
+  @Override
   public void methodWithHandlerAsyncResultSetJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler) {
     Set<JsonArray> set = new LinkedHashSet<>(Arrays.asList(new JsonArray().add("green").add("blue"), new JsonArray().add("yellow").add("purple")));
+    listHandler.handle(Future.completedFuture(set));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultSetNullJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler) {
+    Set<JsonArray> set = Collections.singleton(null);
     listHandler.handle(Future.completedFuture(set));
   }
 
@@ -553,20 +607,34 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
+  public JsonObject methodWithNullJsonObjectReturn() {
+    return null;
+  }
+
+  @Override
   public JsonArray methodWithJsonArrayReturn() {
     return new JsonArray().add("socks").add("shoes");
   }
 
   @Override
+  public JsonArray methodWithNullJsonArrayReturn() {
+    return null;
+  }
+
+  @Override
   public void methodWithJsonParams(JsonObject jsonObject, JsonArray jsonArray) {
-    System.out.println("Got jsonObject:" + jsonObject.toString());
-    System.out.println("Got jsonArray:" + jsonArray.toString());
     assertNotNull(jsonObject);
     assertNotNull(jsonArray);
     assertEquals("lion", jsonObject.getString("cat"));
     assertEquals("cheddar", jsonObject.getString("cheese"));
     assertEquals("house", jsonArray.get(0));
     assertEquals("spider", jsonArray.get(1));
+  }
+
+  @Override
+  public void methodWithNullJsonParams(JsonObject jsonObject, JsonArray jsonArray) {
+    assertNull(jsonObject);
+    assertNull(jsonArray);
   }
 
   @Override
@@ -578,14 +646,34 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
+  public void methodWithHandlerNullJson(Handler<JsonObject> jsonObjectHandler, Handler<JsonArray> jsonArrayHandler) {
+    assertNotNull(jsonObjectHandler);
+    assertNotNull(jsonArrayHandler);
+    jsonObjectHandler.handle(null);
+    jsonArrayHandler.handle(null);
+  }
+
+  @Override
   public void methodWithHandlerAsyncResultJsonObject(Handler<AsyncResult<JsonObject>> handler) {
     assertNotNull(handler);
     handler.handle(Future.completedFuture(new JsonObject().putString("cheese", "stilton")));
   }
 
   @Override
+  public void methodWithHandlerAsyncResultNullJsonObject(Handler<AsyncResult<JsonObject>> handler) {
+    assertNotNull(handler);
+    handler.handle(Future.completedFuture(null));
+  }
+
+  @Override
   public void methodWithHandlerAsyncResultJsonArray(Handler<AsyncResult<JsonArray>> handler) {
     assertNotNull(handler);
     handler.handle(Future.completedFuture(new JsonArray().add("socks").add("shoes")));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultNullJsonArray(Handler<AsyncResult<JsonArray>> handler) {
+    assertNotNull(handler);
+    handler.handle(Future.completedFuture(null));
   }
 }
