@@ -153,7 +153,7 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
   @CacheReturn
   RefedInterface1 methodWithCachedReturn(String foo);
 
-  JsonObject methodwithJsonObjectReturn();
+  JsonObject methodWithJsonObjectReturn();
 
   JsonObject methodWithNullJsonObjectReturn();
 

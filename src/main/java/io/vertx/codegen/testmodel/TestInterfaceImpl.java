@@ -602,7 +602,7 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
-  public JsonObject methodwithJsonObjectReturn() {
+  public JsonObject methodWithJsonObjectReturn() {
     return new JsonObject().putString("cheese", "stilton");
   }
 
