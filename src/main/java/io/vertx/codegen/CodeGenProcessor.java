@@ -68,7 +68,7 @@ public class CodeGenProcessor extends AbstractProcessor {
             getElementsAnnotatedWith(VertxGen.class).
             stream().
             filter(elt -> !elementUtils.getPackageOf(elt).getQualifiedName().toString().contains("impl")).
-            collect(Collectors.toList());
+            collect(Collectors.<Element>toList());
         generator.addSources(elements);
         for (Element genElt : elements) {
           try {
