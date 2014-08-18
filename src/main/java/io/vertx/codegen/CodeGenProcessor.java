@@ -115,8 +115,7 @@ public class CodeGenProcessor extends AbstractProcessor {
               vars.put("helper", new Helper());
               vars.put("options", processingEnv.getOptions());
               vars.put("fileSeparator", File.separator);
-              vars.put("typeSimpleName", genElt.getSimpleName());
-              vars.put("typeFQN", genElt.toString());
+              vars.put("type", model.getType().getRaw());
               for (CodeGenerator codeGenerator : codeGenerators) {
                 String relativeName = TemplateRuntime.eval(codeGenerator.nameTemplate, vars).toString();
                 File target = new File(outputDirectory, relativeName);

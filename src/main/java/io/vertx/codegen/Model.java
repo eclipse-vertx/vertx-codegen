@@ -70,6 +70,7 @@ public class Model {
   private HashSet<TypeInfo.Class> importedTypes = new HashSet<>();
   private Set<TypeInfo.Class> referencedTypes = new HashSet<>();
   private boolean concrete;
+  private TypeInfo type;
   private String ifaceSimpleName;
   private String ifaceFQCN;
   private String ifacePackageName;
@@ -119,6 +120,10 @@ public class Model {
 
   public String getIfaceComment() {
     return ifaceComment;
+  }
+
+  public TypeInfo getType() {
+    return type;
   }
 
   public List<TypeInfo> getSuperTypes() {
@@ -308,6 +313,7 @@ public class Model {
         if (ifaceFQCN != null) {
           throw new GenException(elem, "Can only have one interface per file");
         }
+        type = TypeInfo.create(elementUtils, typeUtils, Collections.emptyList(), elem.asType());
         ifaceFQCN = elem.asType().toString();
         ifaceSimpleName = elem.getSimpleName().toString();
         ifacePackageName = elementUtils.getPackageOf(elem).toString();
@@ -328,8 +334,7 @@ public class Model {
           if (!tmSuper.toString().equals(Object.class.getName())) {
             if (superElement.getAnnotation(VertxGen.class) != null) {
               try {
-                TypeInfo bilto = TypeInfo.create(elementUtils, typeUtils, Collections.emptyList(), tmSuper);
-                TypeInfo.Class superType = bilto.getRaw();
+                TypeInfo.Class superType = TypeInfo.create(elementUtils, typeUtils, Collections.emptyList(), tmSuper).getRaw();
                 referencedTypes.add(superType);
               } catch (Exception e) {
                 throw new GenException(elem, e.getMessage());
