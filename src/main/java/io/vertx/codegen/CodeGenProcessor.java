@@ -113,6 +113,7 @@ public class CodeGenProcessor extends AbstractProcessor {
             if (outputDirectory != null) {
               Map<String, Object> vars = new HashMap<>();
               vars.put("helper", new Helper());
+              vars.put("options", processingEnv.getOptions());
               vars.put("fileSeparator", File.separator);
               vars.put("typeSimpleName", genElt.getSimpleName());
               vars.put("typeFQN", genElt.toString());
