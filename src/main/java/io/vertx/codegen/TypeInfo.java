@@ -1,9 +1,13 @@
 package io.vertx.codegen;
 
+import io.vertx.codegen.annotations.GenModule;
+
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -29,7 +33,29 @@ public abstract class TypeInfo {
       if (classType.isPrimitive()) {
         return new Primitive(classType.getName());
       } else {
-        return new Class(Helper.getKind(classType::getAnnotation, fqcn), fqcn);
+        Package pkg = classType.getPackage();
+        ModuleInfo module = null;
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(classType.getClassLoader());
+        try {
+          while (pkg != null) {
+            GenModule annotation = pkg.getAnnotation(GenModule.class);
+            if (annotation != null) {
+              module = new ModuleInfo(pkg.getName(), annotation.name());
+              break;
+            } else {
+              int pos = pkg.getName().lastIndexOf('.');
+              if (pos == -1) {
+                break;
+              } else {
+                pkg = Package.getPackage(pkg.getName().substring(0, pos));
+              }
+            }
+          }
+        } finally {
+          Thread.currentThread().setContextClassLoader(loader);
+        }
+        return new Class(Helper.getKind(classType::getAnnotation, fqcn), fqcn, module);
       }
     } else if (type instanceof ParameterizedType) {
       ParameterizedType parameterizedType = (ParameterizedType) type;
@@ -38,8 +64,7 @@ public abstract class TypeInfo {
           map(TypeInfo::create).
           collect(Collectors.toList());
       java.lang.Class raw = (java.lang.Class) parameterizedType.getRawType();
-      String fqcn = raw.getName();
-      return new Parameterized(new Class(Helper.getKind(raw::getAnnotation, fqcn), fqcn), args);
+      return new Parameterized((Class) create(raw), args);
     } else if (type instanceof java.lang.reflect.TypeVariable) {
       return new Variable(((java.lang.reflect.TypeVariable)type).getName());
     } else {
@@ -47,12 +72,12 @@ public abstract class TypeInfo {
     }
   }
 
-  public static TypeInfo create(Types typeUtils, Iterable<DeclaredType> resolvingTypes, TypeMirror type) {
+  public static TypeInfo create(Elements elementUtils, Types typeUtils, Iterable<DeclaredType> resolvingTypes, TypeMirror type) {
     switch (type.getKind()) {
       case VOID:
         return Void.INSTANCE;
       case DECLARED:
-        return create(typeUtils, resolvingTypes, (DeclaredType) type);
+        return create(elementUtils, typeUtils, resolvingTypes, (DeclaredType) type);
       case DOUBLE:
       case LONG:
       case FLOAT:
@@ -67,7 +92,7 @@ public abstract class TypeInfo {
         if (resolved instanceof TypeVariable) {
           return create(typeUtils, (TypeVariable) resolved);
         } else {
-          return create(typeUtils, resolvingTypes, resolved);
+          return create(elementUtils, typeUtils, resolvingTypes, resolved);
         }
       case WILDCARD:
         return create(typeUtils, (WildcardType) type);
@@ -126,16 +151,32 @@ public abstract class TypeInfo {
     return new Variable(type.toString());
   }
 
-  public static TypeInfo create(Types typeUtils, Iterable<DeclaredType> resolvingTypes, DeclaredType type) {
+  public static TypeInfo create(Elements elementUtils, Types typeUtils, Iterable<DeclaredType> resolvingTypes, DeclaredType type) {
+    ModuleInfo module = null;
+    PackageElement pkgElt = elementUtils.getPackageOf(type.asElement());
+    while (pkgElt != null) {
+      GenModule annotation = pkgElt.getAnnotation(GenModule.class);
+      if (annotation != null) {
+        module = new ModuleInfo(pkgElt.getQualifiedName().toString(), annotation.name());
+        break;
+      }
+      String pkgQN = pkgElt.getQualifiedName().toString();
+      int pos = pkgQN.lastIndexOf('.');
+      if (pos == -1) {
+        break;
+      } else {
+        pkgElt = elementUtils.getPackageElement(pkgQN.substring(0, pos));
+      }
+    }
     String fqcn = typeUtils.erasure(type).toString();
     ClassKind kind = Helper.getKind(annotationType -> type.asElement().getAnnotation(annotationType), fqcn);
-    Class raw = new Class(kind, fqcn);
+    Class raw = new Class(kind, fqcn, module);
     List<? extends TypeMirror> typeArgs = type.getTypeArguments();
     if (typeArgs.size() > 0) {
       List<TypeInfo> typeArguments;
       typeArguments = new ArrayList<>(typeArgs.size());
       for (TypeMirror typeArg : typeArgs) {
-        TypeInfo typeArgDesc = create(typeUtils, resolvingTypes, typeArg);
+        TypeInfo typeArgDesc = create(elementUtils, typeUtils, resolvingTypes, typeArg);
         // Need to check it is an interface type
         typeArguments.add(typeArgDesc);
       }
@@ -192,7 +233,7 @@ public abstract class TypeInfo {
 
     @Override
     public TypeInfo getErased() {
-      return new Class(ClassKind.OBJECT, java.lang.Object.class.getName());
+      return new Class(ClassKind.OBJECT, java.lang.Object.class.getName(), null);
     }
 
     @Override
@@ -231,11 +272,9 @@ public abstract class TypeInfo {
       return raw;
     }
 
-    // To remove : when fully migrated
-    public List<TypeInfo> getTypeArguments() {
-      return args;
-    }
-
+    /**
+     * @return the type arguments
+     */
     public List<TypeInfo> getArgs() {
       return args;
     }
@@ -289,12 +328,21 @@ public abstract class TypeInfo {
     final String fqcn;
     final String simpleName;
     final String packageName;
+    final ModuleInfo module;
 
-    public Class(ClassKind kind, String fqcn) {
+    public Class(ClassKind kind, String fqcn, ModuleInfo module) {
       this.kind = kind;
       this.fqcn = fqcn;
       this.simpleName = Helper.getSimpleName(fqcn);
       this.packageName = Helper.getPackageName(fqcn);
+      this.module = module;
+    }
+
+    /**
+     * @return the optional module name only present for {@link io.vertx.codegen.annotations.VertxGen} annotated types.
+     */
+    public String getModuleName() {
+      return module != null ? module.getName() : null;
     }
 
     public ClassKind getKind() {
@@ -306,6 +354,11 @@ public abstract class TypeInfo {
     }
 
     @Override
+    public Class getRaw() {
+      return this;
+    }
+
+    @Override
     public void collectImports(Collection<TypeInfo.Class> imports) {
       imports.add(this);
     }
@@ -313,7 +366,7 @@ public abstract class TypeInfo {
     @Override
     public TypeInfo.Class renamePackage(String oldPackageName, String newPackageName) {
       return packageName.startsWith(oldPackageName) ?
-          new Class(kind, newPackageName + fqcn.substring(oldPackageName.length())) :
+          new Class(kind, newPackageName + fqcn.substring(oldPackageName.length()), null) :
           this;
     }
 
@@ -359,10 +412,17 @@ public abstract class TypeInfo {
   }
 
   /**
-   * @return the raw type of this type
+   * @return the erased type of this type
    */
   public TypeInfo getErased() {
     return this;
+  }
+
+  /**
+   * @return the corresponding raw type or null
+   */
+  public TypeInfo.Class getRaw() {
+    return null;
   }
 
   /**

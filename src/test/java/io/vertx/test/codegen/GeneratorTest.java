@@ -107,6 +107,12 @@ import static org.junit.Assert.*;
  */
 public class GeneratorTest {
 
+  static final TypeInfo.Class GenericInterfaceInfo = (TypeInfo.Class) TypeInfo.create(GenericInterface.class);
+  static final TypeInfo.Class VertxGenClass1Info = (TypeInfo.Class) TypeInfo.create(VertxGenClass1.class);
+  static final TypeInfo.Class VertxGenClass2Info = (TypeInfo.Class) TypeInfo.create(VertxGenClass2.class);
+  static final TypeInfo.Class VertxGenInterface1Info = (TypeInfo.Class) TypeInfo.create(VertxGenInterface1.class);
+  static final TypeInfo.Class VertxGenInterface2Info = (TypeInfo.Class) TypeInfo.create(VertxGenInterface2.class);
+
   private Model gen;
 
   public GeneratorTest() {
@@ -524,7 +530,7 @@ public class GeneratorTest {
     assertEquals(1, gen.getMethods().size());
     MethodInfo mi = gen.getMethods().get(0);
     assertEquals("foo", mi.getName());
-    assertEquals(new TypeInfo.Parameterized(new TypeInfo.Class(ClassKind.API, GenericInterface.class.getName()), Arrays.asList(new TypeInfo.Wildcard())), mi.getParams().get(0).getType());
+    assertEquals(new TypeInfo.Parameterized(new TypeInfo.Class(ClassKind.API, GenericInterface.class.getName(), null), Arrays.asList(new TypeInfo.Wildcard())), mi.getParams().get(0).getType());
   }
 
   @Test
@@ -533,8 +539,8 @@ public class GeneratorTest {
     assertEquals(MethodWithValidHandlerParams.class.getName(), gen.getIfaceFQCN());
     assertEquals(MethodWithValidHandlerParams.class.getSimpleName(), gen.getIfaceSimpleName());
     assertEquals(2, gen.getReferencedTypes().size());
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1.class.getName()));
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2.class.getName()));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1Info));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2Info));
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(1, gen.getMethods().size());
     String methodName = "methodWithHandlerParams";
@@ -551,7 +557,7 @@ public class GeneratorTest {
       checkClassParam(params.get(6), "booleanHandler", "io.vertx.core.Handler<java.lang.Boolean>", ClassKind.HANDLER);
       checkClassParam(params.get(7), "charHandler", "io.vertx.core.Handler<java.lang.Character>", ClassKind.HANDLER);
       checkClassParam(params.get(8), "strHandler", "io.vertx.core.Handler<java.lang.String>", ClassKind.HANDLER);
-      checkClassParam(params.get(9), "gen1Handler", "io.vertx.core.Handler<" + VertxGenClass1.class.getName() + ">", ClassKind.HANDLER);
+      checkClassParam(params.get(9), "gen1Handler", "io.vertx.core.Handler<" + VertxGenClass1Info + ">", ClassKind.HANDLER);
       checkClassParam(params.get(10), "gen2Handler", "io.vertx.core.Handler<" + VertxGenClass2.class.getName() + ">", ClassKind.HANDLER);
       checkClassParam(params.get(11), "listByteHandler", "io.vertx.core.Handler<java.util.List<java.lang.Byte>>", ClassKind.HANDLER);
       checkClassParam(params.get(12), "listShortHandler", "io.vertx.core.Handler<java.util.List<java.lang.Short>>", ClassKind.HANDLER);
@@ -562,7 +568,7 @@ public class GeneratorTest {
       checkClassParam(params.get(17), "listBooleanHandler", "io.vertx.core.Handler<java.util.List<java.lang.Boolean>>", ClassKind.HANDLER);
       checkClassParam(params.get(18), "listCharHandler", "io.vertx.core.Handler<java.util.List<java.lang.Character>>", ClassKind.HANDLER);
       checkClassParam(params.get(19), "listStrHandler", "io.vertx.core.Handler<java.util.List<java.lang.String>>", ClassKind.HANDLER);
-      checkClassParam(params.get(20), "listVertxGenHandler", "io.vertx.core.Handler<java.util.List<" + VertxGenClass1.class.getName() + ">>", ClassKind.HANDLER);
+      checkClassParam(params.get(20), "listVertxGenHandler", "io.vertx.core.Handler<java.util.List<" + VertxGenClass1Info + ">>", ClassKind.HANDLER);
       checkClassParam(params.get(21), "listJsonObjectHandler", "io.vertx.core.Handler<java.util.List<" + JsonObject.class.getName() + ">>", ClassKind.HANDLER);
       checkClassParam(params.get(22), "listJsonArrayHandler", "io.vertx.core.Handler<java.util.List<" + JsonArray.class.getName() + ">>", ClassKind.HANDLER);
       checkClassParam(params.get(23), "setByteHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Byte>>", ClassKind.HANDLER);
@@ -574,7 +580,7 @@ public class GeneratorTest {
       checkClassParam(params.get(29), "setBooleanHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Boolean>>", ClassKind.HANDLER);
       checkClassParam(params.get(30), "setCharHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Character>>", ClassKind.HANDLER);
       checkClassParam(params.get(31), "setStrHandler", "io.vertx.core.Handler<java.util.Set<java.lang.String>>", ClassKind.HANDLER);
-      checkClassParam(params.get(32), "setVertxGenHandler", "io.vertx.core.Handler<java.util.Set<" + VertxGenClass1.class.getName() + ">>", ClassKind.HANDLER);
+      checkClassParam(params.get(32), "setVertxGenHandler", "io.vertx.core.Handler<java.util.Set<" + VertxGenClass1Info + ">>", ClassKind.HANDLER);
       checkClassParam(params.get(33), "setJsonObjectHandler", "io.vertx.core.Handler<java.util.Set<" + JsonObject.class.getName() + ">>", ClassKind.HANDLER);
       checkClassParam(params.get(34), "setJsonArrayHandler", "io.vertx.core.Handler<java.util.Set<" + JsonArray.class.getName() + ">>", ClassKind.HANDLER);
       checkClassParam(params.get(35), "voidHandler", "io.vertx.core.Handler<java.lang.Void>", ClassKind.HANDLER);
@@ -596,8 +602,8 @@ public class GeneratorTest {
     assertEquals(MethodWithValidHandlerAsyncResultParams.class.getName(), gen.getIfaceFQCN());
     assertEquals(MethodWithValidHandlerAsyncResultParams.class.getSimpleName(), gen.getIfaceSimpleName());
     assertEquals(2, gen.getReferencedTypes().size());
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1.class.getName()));
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2.class.getName()));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1Info));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2Info));
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(1, gen.getMethods().size());
     String methodName = "methodWithHandlerParams";
@@ -658,8 +664,8 @@ public class GeneratorTest {
     assertEquals(MethodWithValidVertxGenParams.class.getName(), gen.getIfaceFQCN());
     assertEquals(MethodWithValidVertxGenParams.class.getSimpleName(), gen.getIfaceSimpleName());
     assertEquals(2, gen.getReferencedTypes().size());
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1.class.getName()));
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2.class.getName()));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1Info));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2Info));
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(1, gen.getMethods().size());
     String methodName = "methodWithVertxGenParams";
@@ -824,8 +830,8 @@ public class GeneratorTest {
     assertEquals(MethodWithValidListReturn.class.getName(), gen.getIfaceFQCN());
     assertEquals(MethodWithValidListReturn.class.getSimpleName(), gen.getIfaceSimpleName());
     assertEquals(2, gen.getReferencedTypes().size());
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1.class.getName()));
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2.class.getName()));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1Info));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2Info));
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(11, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
@@ -838,22 +844,22 @@ public class GeneratorTest {
       checkMethod(methods.get(6), "booleanList", null, MethodKind.OTHER, "java.util.List<java.lang.Boolean>", false, false, false, false, 0);
       checkMethod(methods.get(7), "charList", null, MethodKind.OTHER, "java.util.List<java.lang.Character>", false, false, false, false, 0);
       checkMethod(methods.get(8), "stringList", null, MethodKind.OTHER, "java.util.List<java.lang.String>", false, false, false, false, 0);
-      checkMethod(methods.get(9), "vertxGen1List", null, MethodKind.OTHER, "java.util.List<" + VertxGenClass1.class.getName() + ">", false, false, false, false, 0);
+      checkMethod(methods.get(9), "vertxGen1List", null, MethodKind.OTHER, "java.util.List<" + VertxGenClass1Info + ">", false, false, false, false, 0);
       checkMethod(methods.get(10), "vertxGen2List", null, MethodKind.OTHER, "java.util.List<" + VertxGenClass2.class.getName() + ">", false, false, false, false, 0);
     };
     checker.accept(gen.getMethods());
     assertEquals(11, gen.getSquashedMethods().size());
     checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
-
+  
   @Test
   public void testValidSetReturn() throws Exception {
     gen = new Generator().generateModel(MethodWithValidSetReturn.class);
     assertEquals(MethodWithValidSetReturn.class.getName(), gen.getIfaceFQCN());
     assertEquals(MethodWithValidSetReturn.class.getSimpleName(), gen.getIfaceSimpleName());
     assertEquals(2, gen.getReferencedTypes().size());
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1.class.getName()));
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2.class.getName()));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1Info));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2Info));
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(11, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
@@ -880,8 +886,8 @@ public class GeneratorTest {
     assertEquals(MethodWithValidVertxGenReturn.class.getName(), gen.getIfaceFQCN());
     assertEquals(MethodWithValidVertxGenReturn.class.getSimpleName(), gen.getIfaceSimpleName());
     assertEquals(2, gen.getReferencedTypes().size());
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1.class.getName()));
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2.class.getName()));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1Info));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2Info));
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(2, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
@@ -933,7 +939,7 @@ public class GeneratorTest {
     assertEquals(InterfaceWithCacheReturnMethods.class.getName(), gen.getIfaceFQCN());
     assertEquals(InterfaceWithCacheReturnMethods.class.getSimpleName(), gen.getIfaceSimpleName());
     assertEquals(1, gen.getReferencedTypes().size());
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1.class.getName()));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1Info));
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(2, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
@@ -968,9 +974,9 @@ public class GeneratorTest {
     assertEquals(InterfaceWithSupertypes.class.getName(), gen.getIfaceFQCN());
     assertEquals(InterfaceWithSupertypes.class.getSimpleName(), gen.getIfaceSimpleName());
     assertEquals(3, gen.getReferencedTypes().size());
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1.class.getName()));
-    assertTrue(gen.getReferencedTypes().contains(VertxGenInterface1.class.getName()));
-    assertTrue(gen.getReferencedTypes().contains(VertxGenInterface2.class.getName()));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1Info));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenInterface1Info));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenInterface2Info));
     assertEquals(3, gen.getSuperTypes().size());
     assertTrue(gen.getSuperTypes().contains(TypeInfo.create(VertxGenClass1.class)));
     assertTrue(gen.getSuperTypes().contains(TypeInfo.create(VertxGenInterface1.class)));
@@ -997,7 +1003,7 @@ public class GeneratorTest {
     assertEquals(InterfaceWithParameterizedDeclaredSupertype.class.getName(), gen.getIfaceFQCN());
     assertEquals(InterfaceWithParameterizedDeclaredSupertype.class.getSimpleName(), gen.getIfaceSimpleName());
     assertEquals(1, gen.getReferencedTypes().size());
-    assertTrue(gen.getReferencedTypes().contains(GenericInterface.class.getName()));
+    assertTrue(gen.getReferencedTypes().contains(GenericInterfaceInfo));
     assertEquals(1, gen.getSuperTypes().size());
     assertTrue(gen.getSuperTypes().contains(TypeInfo.create(InterfaceWithParameterizedDeclaredSupertype.class.getGenericInterfaces()[0])));
   }
@@ -1008,7 +1014,7 @@ public class GeneratorTest {
     assertEquals(InterfaceWithParameterizedVariableSupertype.class.getName() + "<T>", gen.getIfaceFQCN());
     assertEquals(InterfaceWithParameterizedVariableSupertype.class.getSimpleName(), gen.getIfaceSimpleName());
     assertEquals(1, gen.getReferencedTypes().size());
-    assertTrue(gen.getReferencedTypes().contains(GenericInterface.class.getName()));
+    assertTrue(gen.getReferencedTypes().contains(GenericInterfaceInfo));
     assertEquals(1, gen.getSuperTypes().size());
     assertTrue(gen.getSuperTypes().contains(TypeInfo.create(InterfaceWithParameterizedVariableSupertype.class.getGenericInterfaces()[0])));
   }
@@ -1050,8 +1056,8 @@ public class GeneratorTest {
     assertEquals(InterfaceWithOverloadedMethods.class.getName(), gen.getIfaceFQCN());
     assertEquals(InterfaceWithOverloadedMethods.class.getSimpleName(), gen.getIfaceSimpleName());
     assertEquals(2, gen.getReferencedTypes().size());
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1.class.getName()));
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2.class.getName()));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1Info));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2Info));
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(5, gen.getMethods().size());
     checkMethod(gen.getMethods().get(0), "foo", null, MethodKind.OTHER, "void", false, false, false, false, 1);
@@ -1062,7 +1068,7 @@ public class GeneratorTest {
     checkMethod(gen.getMethods().get(2), "foo", null, MethodKind.HANDLER, "void", false, false, false, false, 3);
     checkClassParam(gen.getMethods().get(2).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
     checkParam(gen.getMethods().get(2).getParams().get(1), "time", "long");
-    checkClassParam(gen.getMethods().get(2).getParams().get(2), "handler", "io.vertx.core.Handler<" + VertxGenClass1.class.getName() + ">", ClassKind.HANDLER);
+    checkClassParam(gen.getMethods().get(2).getParams().get(2), "handler", "io.vertx.core.Handler<" + VertxGenClass1Info + ">", ClassKind.HANDLER);
     checkMethod(gen.getMethods().get(3), "bar", null, MethodKind.OTHER, "void", false, false, false, false, 1);
     checkClassParam(gen.getMethods().get(3).getParams().get(0), "obj1", VertxGenClass2.class.getName(), ClassKind.API);
     checkMethod(gen.getMethods().get(4), "bar", null, MethodKind.OTHER, "void", false, false, false, false, 2);
@@ -1074,7 +1080,7 @@ public class GeneratorTest {
     checkMethod(squashed1, "foo", null, MethodKind.OTHER, "void", false, false, false, true, 3);
     checkClassParam(squashed1.getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
     checkParam(squashed1.getParams().get(1), "time", "long");
-    checkClassParam(squashed1.getParams().get(2), "handler", "io.vertx.core.Handler<" + VertxGenClass1.class.getName() + ">", ClassKind.HANDLER);
+    checkClassParam(squashed1.getParams().get(2), "handler", "io.vertx.core.Handler<" + VertxGenClass1Info + ">", ClassKind.HANDLER);
 
     MethodInfo squashed2 = gen.getSquashedMethods().get("bar");
     checkMethod(squashed2, "bar", null, MethodKind.OTHER, "void", false, false, false, true, 2);
@@ -1099,8 +1105,8 @@ public class GeneratorTest {
     assertEquals(InterfaceWithStaticMethods.class.getName(), gen.getIfaceFQCN());
     assertEquals(InterfaceWithStaticMethods.class.getSimpleName(), gen.getIfaceSimpleName());
     assertEquals(2, gen.getReferencedTypes().size());
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1.class.getName()));
-    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2.class.getName()));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass1Info));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenClass2Info));
     assertTrue(gen.getSuperTypes().isEmpty());
     assertEquals(2, gen.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {

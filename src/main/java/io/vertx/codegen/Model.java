@@ -68,7 +68,7 @@ public class Model {
   private boolean processed = false;
   private List<MethodInfo> methods = new ArrayList<>();
   private HashSet<TypeInfo.Class> importedTypes = new HashSet<>();
-  private Set<String> referencedTypes = new HashSet<>();
+  private Set<TypeInfo.Class> referencedTypes = new HashSet<>();
   private boolean concrete;
   private String ifaceSimpleName;
   private String ifaceFQCN;
@@ -101,7 +101,7 @@ public class Model {
     return concrete;
   }
 
-  public Set<String> getReferencedTypes() {
+  public Set<TypeInfo.Class> getReferencedTypes() {
     return referencedTypes;
   }
 
@@ -256,9 +256,8 @@ public class Model {
 
   private boolean isVertxGenInterface(TypeInfo type) {
     if (type.getKind() == ClassKind.API) {
-      String name = type.getErased().getName();
-      if (!name.equals(VERTX)) {
-        referencedTypes.add(name);
+      if (!type.getName().equals(VERTX)) {
+        referencedTypes.add(type.getRaw());
       }
       return true;
     }
@@ -328,10 +327,16 @@ public class Model {
           VertxGen superGen = superElement.getAnnotation(VertxGen.class);
           if (!tmSuper.toString().equals(Object.class.getName())) {
             if (superElement.getAnnotation(VertxGen.class) != null) {
-              referencedTypes.add(Helper.getNonGenericType(tmSuper.toString()));
+              try {
+                TypeInfo bilto = TypeInfo.create(elementUtils, typeUtils, Collections.emptyList(), tmSuper);
+                TypeInfo.Class superType = bilto.getRaw();
+                referencedTypes.add(superType);
+              } catch (Exception e) {
+                throw new GenException(elem, e.getMessage());
+              }
             }
             try {
-              TypeInfo superTypeInfo = TypeInfo.create(typeUtils, Collections.emptyList(), (DeclaredType) tmSuper);
+              TypeInfo superTypeInfo = TypeInfo.create(elementUtils, typeUtils, Collections.emptyList(), (DeclaredType) tmSuper);
               superTypeInfo.collectImports(importedTypes);
               if (superGen != null) {
                 (superGen.concrete() ? concreteSuperTypes : abstractSuperTypes).add(superTypeInfo);
@@ -375,9 +380,9 @@ public class Model {
         throw new GenException(elem, "Interface " + ifaceFQCN + " does not contain any methods for generation");
       }
       // don't reference yourself
-      for (Iterator<String> i = referencedTypes.iterator();i.hasNext();) {
-        String next = i.next();
-        if (Helper.getNonGenericType(next).equals(Helper.getNonGenericType(ifaceFQCN))) {
+      for (Iterator<TypeInfo.Class> i = referencedTypes.iterator();i.hasNext();) {
+        TypeInfo.Class next = i.next();
+        if (next.getName().equals(Helper.getNonGenericType(ifaceFQCN))) {
           i.remove();
         }
       }
@@ -450,9 +455,9 @@ public class Model {
       }
       typeParams.add(typeParam.getSimpleName().toString());
     }
-    List<ParamInfo> mParams = getParams(typeUtils, resolvingTypes, execElem);
+    List<ParamInfo> mParams = getParams(elementUtils, typeUtils, resolvingTypes, execElem);
 
-    TypeInfo returnType = TypeInfo.create(typeUtils, resolvingTypes, execElem.getReturnType());
+    TypeInfo returnType = TypeInfo.create(elementUtils, typeUtils, resolvingTypes, execElem.getReturnType());
     returnType.collectImports(importedTypes);
     if (returnType.toString().equals("void")) {
       if (isCacheReturn) {
@@ -470,7 +475,7 @@ public class Model {
     }
 
     LinkedHashSet<TypeInfo.Class> ownerTypes = new LinkedHashSet<>();
-    TypeInfo ownerType = TypeInfo.create(typeUtils, Collections.emptyList(), execElem.getEnclosingElement().asType());
+    TypeInfo ownerType = TypeInfo.create(elementUtils, typeUtils, Collections.emptyList(), execElem.getEnclosingElement().asType());
     if (ownerType instanceof TypeInfo.Parameterized) {
       ownerTypes.add(((TypeInfo.Parameterized) ownerType).getRaw());
     } else {
@@ -494,7 +499,7 @@ public class Model {
       if (lastParamIndex >= 0 && (returnType instanceof TypeInfo.Void || isFluent)) {
         TypeInfo lastParamType = mParams.get(lastParamIndex).type;
         if (lastParamType.getKind() == ClassKind.HANDLER) {
-          TypeInfo typeArg = ((TypeInfo.Parameterized) lastParamType).getTypeArguments().get(0);
+          TypeInfo typeArg = ((TypeInfo.Parameterized) lastParamType).getArgs().get(0);
           if (typeArg.getKind() == ClassKind.ASYNC_RESULT) {
             kind = MethodKind.FUTURE;
           } else {
@@ -552,13 +557,13 @@ public class Model {
     return bound.getKind() == TypeKind.DECLARED && bound.toString().equals(Object.class.getName());
   }
 
-  private List<ParamInfo> getParams(Types typeUtils, LinkedList<DeclaredType> resolvingTypes, ExecutableElement execElem) {
+  private List<ParamInfo> getParams(Elements elementUtils, Types typeUtils, LinkedList<DeclaredType> resolvingTypes, ExecutableElement execElem) {
     List<? extends VariableElement> params = execElem.getParameters();
     List<ParamInfo> mParams = new ArrayList<>();
     for (VariableElement param: params) {
       TypeInfo type;
       try {
-        type = TypeInfo.create(typeUtils, resolvingTypes, param.asType());
+        type = TypeInfo.create(elementUtils, typeUtils, resolvingTypes, param.asType());
       } catch (Exception e) {
         throw new GenException(param, e.getMessage());
       }
