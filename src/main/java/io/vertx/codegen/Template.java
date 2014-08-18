@@ -20,6 +20,7 @@ class Template {
 
   private final String name;
   private final CompiledTemplate compiled;
+  private final HashMap<String, String> options;
 
   Template(String name) {
     // Read the template file from the classpath
@@ -29,11 +30,18 @@ class Template {
     }
     this.name = name;
     this.compiled = loadCompiled(name, source);
+    this.options = new HashMap<>();
   }
 
   Template(String name, InputStream source) {
     this.name = name;
     this.compiled = loadCompiled(name, source);
+    this.options = new HashMap<>();
+  }
+
+  public void setOptions(Map<String, String> options) {
+    this.options.clear();
+    this.options.putAll(options);
   }
 
   private static CompiledTemplate loadCompiled(String name, InputStream source) {
@@ -97,6 +105,9 @@ class Template {
     for (MethodKind methodKind : MethodKind.values()) {
       vars.put("METHOD_" + methodKind.name(), methodKind);
     }
+
+    // Options
+    vars.put("options", options);
 
     ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
     String output;

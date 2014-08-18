@@ -63,9 +63,6 @@ public class Model {
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
   public static final String VERTX = "io.vertx.core.Vertx";
 
-  // Global trivial compiled template cache
-  private static Template template;
-
   private final Generator generator;
   private final TypeElement modelElt;
   private boolean processed = false;
@@ -146,16 +143,6 @@ public class Model {
 
   public Set<String> getReferencedOptionsTypes() {
     return referencedOptionsTypes;
-  }
-
-  public void applyTemplate(String outputFileName, String templateName) throws Exception {
-    if (template != null && !templateName.equals(template.getName())) {
-      template = null;
-    }
-    if (template == null) {
-      Model.template = new Template(templateName);
-    }
-    Model.template.apply(this, outputFileName);
   }
 
   private void dumpClasspath(ClassLoader cl) {

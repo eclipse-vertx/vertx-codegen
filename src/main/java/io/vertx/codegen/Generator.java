@@ -66,6 +66,9 @@ public class Generator {
   private static final Logger log = Logger.getLogger(Generator.class.getName());
 
   HashMap<String, TypeElement> sources = new HashMap<>();
+  HashMap<String, String> options = new HashMap<>();
+  Template template; // Global trivial compiled template cache
+
 
   void addSources(Iterable<? extends Element> elements) {
     elements.forEach(element -> sources.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
@@ -83,6 +86,10 @@ public class Generator {
     }
   }
 
+  public void setOption(String name, String value) {
+    options.put(name, value);
+  }
+
   public void validatePackage(String packageName, Function<String, Boolean> packageMatcher) throws Exception {
     genAndApply(packageName, packageMatcher, null, null, false);
   }
@@ -93,10 +100,21 @@ public class Generator {
   }
 
   public void genAndApply(Class clazz, Function<Class, String> outputFileFunction, String templateName) throws Exception {
-    Generator gen = new Generator();
-    Model model = gen.generateModel(clazz);
-    model.applyTemplate(outputFileFunction.apply(clazz), templateName);
+    Model model = generateModel(clazz);
+    applyTemplate(model, outputFileFunction.apply(clazz), templateName);
   }
+
+  private void applyTemplate(Model model, String outputFileName, String templateName) throws Exception {
+    if (template != null && !templateName.equals(template.getName())) {
+      template = null;
+    }
+    if (template == null) {
+      template = new Template(templateName);
+      template.setOptions(options);
+    }
+    template.apply(model, outputFileName);
+  }
+
 
   private void genAndApply(String packageName, Function<String, Boolean> packageMatcher,
                            Function<Class, String> outputFileFunction, String templateFileName,
@@ -114,7 +132,7 @@ public class Generator {
       Generator gen = new Generator();
       Model model = gen.generateModel(clazz, generableClasses.toArray(new Class[generableClasses.size()]));
       if (apply) {
-        model.applyTemplate(outputFileFunction.apply(clazz), templateFileName);
+        applyTemplate(model, outputFileFunction.apply(clazz), templateFileName);
       }
     }
   }

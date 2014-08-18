@@ -59,7 +59,9 @@ public class CodeGenProcessor extends AbstractProcessor {
           String name = obj.getString("name");
           String templateFileName = obj.getString("templateFileName");
           String nameTemplate = obj.getString("nameTemplate");
-          codeGenerators.add(new CodeGenerator(nameTemplate, new Template(templateFileName)));
+          Template compiledTemplate = new Template(templateFileName);
+          compiledTemplate.setOptions(env.getOptions());
+          codeGenerators.add(new CodeGenerator(nameTemplate, compiledTemplate));
           log.info("Loaded " + name + " code generator");
         } catch (Exception e) {
           String msg = "Could not load code generator " + descriptor;
