@@ -5,6 +5,12 @@ package io.vertx.core.json;
  */
 public class JsonObject {
 
+  public JsonObject(String str) {
+  }
+
+  public JsonObject() {
+  }
+
   public String getString(String name) { throw new UnsupportedOperationException(); }
   public String getString(String name, String def) { throw new UnsupportedOperationException(); }
   public JsonObject putString(String fieldName, String value) { throw new UnsupportedOperationException(); }

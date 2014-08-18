@@ -1,6 +1,7 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.*;
+import io.vertx.core.json.JsonObject;
 import org.mvel2.templates.TemplateRuntime;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -8,14 +9,19 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.element.*;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,25 +31,54 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @SupportedAnnotationTypes({"io.vertx.codegen.annotations.VertxGen","io.vertx.codegen.annotations.Options"})
-@javax.annotation.processing.SupportedOptions({"templateFileName", "nameTemplate"})
+@javax.annotation.processing.SupportedOptions({"outputDirectory"})
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)
 public class CodeGenProcessor extends AbstractProcessor {
 
   private static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
   private Elements elementUtils;
   private Types typeUtils;
-  private String templateFileName;
-  private String nameTemplate;
-  private Generator generator;
+  private File outputDirectory;
+  private List<CodeGenerator> codeGenerators;
 
   @Override
   public synchronized void init(ProcessingEnvironment env) {
     super.init(env);
-    templateFileName = env.getOptions().get("templateFileName");
-    nameTemplate = env.getOptions().get("nameTemplate");
+    codeGenerators = new ArrayList<>();
+    Enumeration<URL> descriptors = Collections.emptyEnumeration();
+    try {
+      descriptors = CodeGenProcessor.class.getClassLoader().getResources("codegen.json");
+    } catch (IOException ignore) {
+      env.getMessager().printMessage(Diagnostic.Kind.WARNING, "Could not load code generator descriptors");
+    }
+    while (descriptors.hasMoreElements()) {
+        URL descriptor = descriptors.nextElement();
+        try (Scanner scanner = new Scanner(descriptor.openStream(), "UTF-8").useDelimiter("\\A")) {
+          String s = scanner.next();
+          JsonObject obj = new JsonObject(s);
+          String name = obj.getString("name");
+          String templateFileName = obj.getString("templateFileName");
+          String nameTemplate = obj.getString("nameTemplate");
+          codeGenerators.add(new CodeGenerator(nameTemplate, new Template(templateFileName)));
+          log.info("Loaded " + name + " code generator");
+        } catch (Exception e) {
+          String msg = "Could not load code generator " + descriptor;
+          log.log(Level.SEVERE, msg, e);
+          env.getMessager().printMessage(Diagnostic.Kind.ERROR, msg);
+        }
+      }
     elementUtils = env.getElementUtils();
     typeUtils = env.getTypeUtils();
-    generator = new Generator();
+    String outputDirectoryOption = env.getOptions().get("outputDirectory");
+    if (outputDirectoryOption != null) {
+      outputDirectory = new File(outputDirectoryOption);
+      if (!outputDirectory.exists()) {
+        env.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " does not exist");
+      }
+      if (!outputDirectory.isDirectory()) {
+        env.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " is not a directory");
+      }
+    }
   }
 
   @Override
@@ -73,15 +108,18 @@ public class CodeGenProcessor extends AbstractProcessor {
         for (Element genElt : elements) {
           try {
             Model model = generator.resolve(elementUtils, typeUtils, genElt.toString());
-            if (nameTemplate != null && templateFileName != null) {
+            if (outputDirectory != null) {
               Map<String, Object> vars = new HashMap<>();
               vars.put("helper", new Helper());
               vars.put("fileSeparator", File.separator);
               vars.put("typeSimpleName", genElt.getSimpleName());
               vars.put("typeFQN", genElt.toString());
-              String target = TemplateRuntime.eval(nameTemplate, vars).toString();
-              model.applyTemplate(target, templateFileName);
-              log.info("Generated model for class " + genElt);
+              for (CodeGenerator codeGenerator : codeGenerators) {
+                String relativeName = TemplateRuntime.eval(codeGenerator.nameTemplate, vars).toString();
+                File target = new File(outputDirectory, relativeName);
+                codeGenerator.modelTemplate.apply(model, target);
+                log.info("Generated model for class " + genElt + ": " + relativeName);
+              }
             } else {
               log.info("Validated model for class " + genElt);
             }
@@ -100,5 +138,14 @@ public class CodeGenProcessor extends AbstractProcessor {
       }
     }
     return true;
+  }
+
+  static class CodeGenerator {
+    final String nameTemplate;
+    final Template modelTemplate;
+    CodeGenerator(String nameTemplate, Template modelTemplate) {
+      this.nameTemplate = nameTemplate;
+      this.modelTemplate = modelTemplate;
+    }
   }
 }

@@ -2,6 +2,53 @@
 
 This projects contains tools which allow idiomatic other language API shims to be generated from Java APIs.
 
+## API generator
+
+A code generator consist of an MVEL template declared in a `codegen.json` descriptor:
+
+~~~~
+{
+  "name": "Groovy",
+  "nameTemplate": "groovy/@{typeFQN.replace('io.vertx', 'io.vertx.groovy').replace('.', '/')}.groovy",
+  "templateFileName": "vertx-groovy/template/groovy.templ"
+}
+~~~~
+
+## Processor configuration
+
+By default the processor will only validate the source API against the Codegen rules and will not perform code
+generation. Code generation will occur when the processor `outputDirectory` option is configured:
+
+~~~~
+<pluginManagement>
+  <plugins>
+    <!-- Configure the execution of the compiler to execute the codegen processor -->
+    <plugin>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>3.1</version>
+      <configuration>
+        <source>1.8</source>
+        <target>1.8</target>
+        <encoding>${project.build.sourceEncoding}</encoding>
+      </configuration>
+      <executions>
+        <execution>
+          <id>default-compile</id>
+          <configuration>
+            <annotationProcessors>
+              <annotationProcessor>io.vertx.codegen.CodeGenProcessor</annotationProcessor>
+            </annotationProcessors>
+            <compilerArgs>
+              <arg>-AoutputDirectory=${project.basedir}/src/main</arg>
+            </compilerArgs>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
+  </plugins>
+</pluginManagement>
+~~~~
+
 ## API constraints
 
 In order for code generation to work effectively, certain constraints are put on the Java interfaces.
