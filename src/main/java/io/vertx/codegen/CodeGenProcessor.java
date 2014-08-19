@@ -12,8 +12,10 @@ import javax.lang.model.element.*;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -118,8 +120,17 @@ public class CodeGenProcessor extends AbstractProcessor {
               vars.put("type", model.getType().getRaw());
               for (CodeGenerator codeGenerator : codeGenerators) {
                 String relativeName = TemplateRuntime.eval(codeGenerator.nameTemplate, vars).toString();
-                File target = new File(outputDirectory, relativeName);
-                codeGenerator.modelTemplate.apply(model, target);
+                if (relativeName.endsWith(".java")) {
+                  // Special handling for .java
+                  JavaFileObject target = processingEnv.getFiler().createSourceFile(relativeName.substring(0, relativeName.length() - ".java".length()));
+                  String output = codeGenerator.modelTemplate.render(model);
+                  try (Writer writer = target.openWriter()) {
+                    writer.append(output);
+                  }
+                } else {
+                  File target = new File(outputDirectory, relativeName);
+                  codeGenerator.modelTemplate.apply(model, target);
+                }
                 log.info("Generated model for class " + genElt + ": " + relativeName);
               }
             } else {

@@ -79,6 +79,17 @@ class Template {
   }
 
   void apply(Model model, File outputFile) throws Exception {
+    String output = render(model);
+    if (!outputFile.getParentFile().exists()) {
+      outputFile.getParentFile().mkdirs();
+    }
+    try (PrintStream outStream = new PrintStream(new FileOutputStream(outputFile))) {
+      outStream.print(output);
+      outStream.flush();
+    }
+  }
+
+  String render(Model model) {
     Map<String, Object> vars = new HashMap<>();
     vars.put("importedTypes", model.getImportedTypes());
     vars.put("concrete", model.isConcrete());
@@ -119,12 +130,6 @@ class Template {
     } finally {
       Thread.currentThread().setContextClassLoader(currentCL);
     }
-    if (!outputFile.getParentFile().exists()) {
-      outputFile.getParentFile().mkdirs();
-    }
-    try (PrintStream outStream = new PrintStream(new FileOutputStream(outputFile))) {
-      outStream.print(output);
-      outStream.flush();
-    }
+    return output;
   }
 }
