@@ -14,6 +14,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,63 +73,117 @@ public abstract class TypeInfo {
     }
   }
 
-  public static TypeInfo create(Elements elementUtils, Types typeUtils, Iterable<DeclaredType> resolvingTypes, TypeMirror type) {
-    switch (type.getKind()) {
-      case VOID:
-        return Void.INSTANCE;
-      case DECLARED:
-        return create(elementUtils, typeUtils, resolvingTypes, (DeclaredType) type);
-      case DOUBLE:
-      case LONG:
-      case FLOAT:
-      case CHAR:
-      case BYTE:
-      case SHORT:
-      case BOOLEAN:
-      case INT:
-        return new Primitive(type.toString());
-      case TYPEVAR:
-        TypeMirror resolved = resolveTypeVariable(typeUtils, resolvingTypes, (TypeVariable) type);
-        if (resolved instanceof TypeVariable) {
-          return create(typeUtils, (TypeVariable) resolved);
-        } else {
-          return create(elementUtils, typeUtils, resolvingTypes, resolved);
-        }
-      case WILDCARD:
-        return create(typeUtils, (WildcardType) type);
-      default:
-        throw new IllegalArgumentException("Illegal type " + type + " of kind " + type.getKind());
-    }
-  }
+  public static class Factory {
 
-  private static TypeMirror resolveTypeVariable(Types typeUtils, Iterable<DeclaredType> resolvingTypes, TypeVariable type) {
-    for (DeclaredType d : resolvingTypes) {
-      TypeMirror tm;
-      try {
-        tm = typeUtils.asMemberOf(d, type.asElement());
-      } catch (java.lang.IllegalArgumentException ignore) {
-        ignore.printStackTrace();
-        continue;
-      }
-      if (!typeUtils.isSameType(tm, type)) {
-        if (tm instanceof TypeVariable) {
-          type = (TypeVariable) tm;
-        } else {
-          return tm;
-        }
+    final Elements elementUtils;
+    final Types typeUtils;
+
+    public Factory(Elements elementUtils, Types typeUtils) {
+      this.elementUtils = elementUtils;
+      this.typeUtils = typeUtils;
+    }
+
+    public TypeInfo create(TypeMirror type) {
+      return create(Collections.emptyList(), type);
+    }
+
+    public TypeInfo create(Iterable<DeclaredType> resolvingTypes, TypeMirror type) {
+      switch (type.getKind()) {
+        case VOID:
+          return Void.INSTANCE;
+        case DECLARED:
+          return create(resolvingTypes, (DeclaredType) type);
+        case DOUBLE:
+        case LONG:
+        case FLOAT:
+        case CHAR:
+        case BYTE:
+        case SHORT:
+        case BOOLEAN:
+        case INT:
+          return new Primitive(type.toString());
+        case TYPEVAR:
+          TypeMirror resolved = resolveTypeVariable(resolvingTypes, (TypeVariable) type);
+          if (resolved instanceof TypeVariable) {
+            return create((TypeVariable) resolved);
+          } else {
+            return create(resolvingTypes, resolved);
+          }
+        case WILDCARD:
+          return create((WildcardType) type);
+        default:
+          throw new IllegalArgumentException("Illegal type " + type + " of kind " + type.getKind());
       }
     }
-    return type;
-  }
 
-  public static Wildcard create(Types typeUtils, WildcardType type) {
-    if (type.getExtendsBound() != null) {
-      throw new IllegalArgumentException("Wildcard type cannot have an upper bound");
+    public Wildcard create(WildcardType type) {
+      if (type.getExtendsBound() != null) {
+        throw new IllegalArgumentException("Wildcard type cannot have an upper bound");
+      }
+      if (type.getSuperBound() != null) {
+        throw new IllegalArgumentException("Wildcard type cannot have a lower bound");
+      }
+      return new Wildcard();
     }
-    if (type.getSuperBound() != null) {
-      throw new IllegalArgumentException("Wildcard type cannot have a lower bound");
+
+    public TypeInfo create(Iterable<DeclaredType> resolvingTypes, DeclaredType type) {
+      ModuleInfo module = null;
+      PackageElement pkgElt = elementUtils.getPackageOf(type.asElement());
+      while (pkgElt != null) {
+        GenModule annotation = pkgElt.getAnnotation(GenModule.class);
+        if (annotation != null) {
+          module = new ModuleInfo(pkgElt.getQualifiedName().toString(), annotation.name());
+          break;
+        }
+        String pkgQN = pkgElt.getQualifiedName().toString();
+        int pos = pkgQN.lastIndexOf('.');
+        if (pos == -1) {
+          break;
+        } else {
+          pkgElt = elementUtils.getPackageElement(pkgQN.substring(0, pos));
+        }
+      }
+      String fqcn = typeUtils.erasure(type).toString();
+      ClassKind kind = Helper.getKind(annotationType -> type.asElement().getAnnotation(annotationType), fqcn);
+      Class raw = new Class(kind, fqcn, module);
+      List<? extends TypeMirror> typeArgs = type.getTypeArguments();
+      if (typeArgs.size() > 0) {
+        List<TypeInfo> typeArguments;
+        typeArguments = new ArrayList<>(typeArgs.size());
+        for (TypeMirror typeArg : typeArgs) {
+          TypeInfo typeArgDesc = create(resolvingTypes, typeArg);
+          // Need to check it is an interface type
+          typeArguments.add(typeArgDesc);
+        }
+        return new Parameterized(raw, typeArguments);
+      } else {
+        return raw;
+      }
     }
-    return new Wildcard();
+
+    public Variable create(TypeVariable type) {
+      return new Variable(type.toString());
+    }
+
+    private TypeMirror resolveTypeVariable(Iterable<DeclaredType> resolvingTypes, TypeVariable type) {
+      for (DeclaredType d : resolvingTypes) {
+        TypeMirror tm;
+        try {
+          tm = typeUtils.asMemberOf(d, type.asElement());
+        } catch (IllegalArgumentException ignore) {
+          ignore.printStackTrace();
+          continue;
+        }
+        if (!typeUtils.isSameType(tm, type)) {
+          if (tm instanceof TypeVariable) {
+            type = (TypeVariable) tm;
+          } else {
+            return tm;
+          }
+        }
+      }
+      return type;
+    }
   }
 
   /**
@@ -144,45 +199,6 @@ public abstract class TypeInfo {
     @Override
     public String format(boolean qualified) {
       return "?";
-    }
-  }
-
-  public static Variable create(Types typeUtils, TypeVariable type) {
-    return new Variable(type.toString());
-  }
-
-  public static TypeInfo create(Elements elementUtils, Types typeUtils, Iterable<DeclaredType> resolvingTypes, DeclaredType type) {
-    ModuleInfo module = null;
-    PackageElement pkgElt = elementUtils.getPackageOf(type.asElement());
-    while (pkgElt != null) {
-      GenModule annotation = pkgElt.getAnnotation(GenModule.class);
-      if (annotation != null) {
-        module = new ModuleInfo(pkgElt.getQualifiedName().toString(), annotation.name());
-        break;
-      }
-      String pkgQN = pkgElt.getQualifiedName().toString();
-      int pos = pkgQN.lastIndexOf('.');
-      if (pos == -1) {
-        break;
-      } else {
-        pkgElt = elementUtils.getPackageElement(pkgQN.substring(0, pos));
-      }
-    }
-    String fqcn = typeUtils.erasure(type).toString();
-    ClassKind kind = Helper.getKind(annotationType -> type.asElement().getAnnotation(annotationType), fqcn);
-    Class raw = new Class(kind, fqcn, module);
-    List<? extends TypeMirror> typeArgs = type.getTypeArguments();
-    if (typeArgs.size() > 0) {
-      List<TypeInfo> typeArguments;
-      typeArguments = new ArrayList<>(typeArgs.size());
-      for (TypeMirror typeArg : typeArgs) {
-        TypeInfo typeArgDesc = create(elementUtils, typeUtils, resolvingTypes, typeArg);
-        // Need to check it is an interface type
-        typeArguments.add(typeArgDesc);
-      }
-      return new Parameterized(raw, typeArguments);
-    } else {
-      return raw;
     }
   }
 

@@ -36,10 +36,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -63,8 +60,11 @@ public class Model {
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
   public static final String VERTX = "io.vertx.core.Vertx";
 
+  private final TypeInfo.Factory typeFactory;
   private final Generator generator;
   private final TypeElement modelElt;
+  private final Elements elementUtils;
+  private final Types typeUtils;
   private boolean processed = false;
   private List<MethodInfo> methods = new ArrayList<>();
   private HashSet<TypeInfo.Class> importedTypes = new HashSet<>();
@@ -85,9 +85,12 @@ public class Model {
   // Methods where all overloaded methods with same name are squashed into a single method with all parameters
   private Map<String, MethodInfo> squashedMethods = new LinkedHashMap<>();
 
-  public Model(Generator generator, TypeElement modelElt) {
+  public Model(Generator generator, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
     this.generator = generator;
+    this.elementUtils = elementUtils;
+    this.typeUtils = typeUtils;
     this.modelElt = modelElt;
+    this.typeFactory = new TypeInfo.Factory(elementUtils, typeUtils);
   }
 
   public List<MethodInfo> getMethods() {
@@ -149,20 +152,6 @@ public class Model {
   public Set<String> getReferencedOptionsTypes() {
     return referencedOptionsTypes;
   }
-
-  private void dumpClasspath(ClassLoader cl) {
-    if (cl instanceof URLClassLoader) {
-      URLClassLoader urlc = (URLClassLoader)cl;
-      URL[] urls = urlc.getURLs();
-      System.out.println("Dumping urls:");
-      for (URL url: urls) {
-        System.out.println(url);
-      }
-    } else {
-      System.out.println("Not URLClassloader!");
-    }
-  }
-
 
   private void sortMethodMap(Map<String, List<MethodInfo>> map) {
     for (List<MethodInfo> list: map.values()) {
@@ -296,15 +285,15 @@ public class Model {
     return false;
   }
 
-  Model process(Elements elementUtils, Types typeUtils) {
+  Model process() {
     if (!processed) {
-      traverseElem(elementUtils, typeUtils, modelElt);
+      traverseElem(modelElt);
       processed = true;
     }
     return this;
   }
 
-  private void traverseElem(Elements elementUtils, Types typeUtils, Element elem) {
+  private void traverseElem(Element elem) {
     switch (elem.getKind()) {
       case CLASS: {
         throw new GenException(elem, "@VertxGen can only be used with interfaces in " + elem.asType().toString());
@@ -313,7 +302,7 @@ public class Model {
         if (ifaceFQCN != null) {
           throw new GenException(elem, "Can only have one interface per file");
         }
-        type = TypeInfo.create(elementUtils, typeUtils, Collections.emptyList(), elem.asType());
+        type = typeFactory.create(elem.asType());
         ifaceFQCN = elem.asType().toString();
         ifaceSimpleName = elem.getSimpleName().toString();
         ifacePackageName = elementUtils.getPackageOf(elem).toString();
@@ -334,14 +323,14 @@ public class Model {
           if (!tmSuper.toString().equals(Object.class.getName())) {
             if (superElement.getAnnotation(VertxGen.class) != null) {
               try {
-                TypeInfo.Class superType = TypeInfo.create(elementUtils, typeUtils, Collections.emptyList(), tmSuper).getRaw();
+                TypeInfo.Class superType = typeFactory.create(tmSuper).getRaw();
                 referencedTypes.add(superType);
               } catch (Exception e) {
                 throw new GenException(elem, e.getMessage());
               }
             }
             try {
-              TypeInfo superTypeInfo = TypeInfo.create(elementUtils, typeUtils, Collections.emptyList(), (DeclaredType) tmSuper);
+              TypeInfo superTypeInfo = typeFactory.create(tmSuper);
               superTypeInfo.collectImports(importedTypes);
               if (superGen != null) {
                 (superGen.concrete() ? concreteSuperTypes : abstractSuperTypes).add(superTypeInfo);
@@ -371,14 +360,14 @@ public class Model {
     // Traverse nested elements that are not methods (like nested interfaces)
     for (Element enclosedElt : elem.getEnclosedElements()) {
       if (enclosedElt.getKind() != ElementKind.METHOD) {
-        traverseElem(elementUtils, typeUtils, enclosedElt);
+        traverseElem(enclosedElt);
       }
     }
 
     if (elem.getKind() == ElementKind.INTERFACE) {
 
       // Traverse methods
-      traverseMethods(elementUtils, typeUtils, new LinkedList<>(), elem);
+      traverseMethods(new LinkedList<>(), elem);
 
       // We're done
       if (methods.isEmpty() && superTypes.isEmpty()) {
@@ -395,16 +384,15 @@ public class Model {
     }
   }
 
-  private void traverseMethods(Elements elementUtils, Types typeUtils, LinkedList<DeclaredType> resolvingTypes,
-                               Element currentElt) {
+  private void traverseMethods(LinkedList<DeclaredType> resolvingTypes, Element currentElt) {
     for (Element currentEnclosedElt : currentElt.getEnclosedElements()) {
       if (currentEnclosedElt.getKind() == ElementKind.METHOD) {
         ExecutableElement currentMethodElt = (ExecutableElement) currentEnclosedElt;
-        addMethod(elementUtils, typeUtils, resolvingTypes, currentMethodElt);
+        addMethod(resolvingTypes, currentMethodElt);
       }
     }
     LinkedList<DeclaredType> resolvedTypes = new LinkedList<>();
-    resolveAbstractSuperTypes(elementUtils, typeUtils, currentElt.asType(), new HashSet<>(), resolvedTypes);
+    resolveAbstractSuperTypes(currentElt.asType(), new HashSet<>(), resolvedTypes);
     for (DeclaredType superType : resolvedTypes) {
       TypeElement superTypeElt = (TypeElement) superType.asElement();
       String superTypeName = superTypeElt.getQualifiedName().toString();
@@ -413,13 +401,12 @@ public class Model {
         superTypeElt = generator.sources.get(superTypeName);
       }
       resolvingTypes.addFirst(superType);
-      traverseMethods(elementUtils, typeUtils, resolvingTypes, superTypeElt);
+      traverseMethods(resolvingTypes, superTypeElt);
       resolvingTypes.removeFirst();
     }
   }
 
-  private static void resolveAbstractSuperTypes(Elements elementUtils, Types typeUtils,
-                                                TypeMirror type, HashSet<String> knownTypes, LinkedList<DeclaredType> resolvedTypes) {
+  private void resolveAbstractSuperTypes(TypeMirror type, HashSet<String> knownTypes, LinkedList<DeclaredType> resolvedTypes) {
     for (TypeMirror superType : typeUtils.directSupertypes(type)) {
       DeclaredType declaredSuperType = (DeclaredType) superType;
       String superTypeFQCN = declaredSuperType.toString();
@@ -430,13 +417,12 @@ public class Model {
           knownTypes.add(superTypeFQCN);
           resolvedTypes.add(declaredSuperType);
         }
-        resolveAbstractSuperTypes(elementUtils, typeUtils, superType, knownTypes, resolvedTypes);
+        resolveAbstractSuperTypes(superType, knownTypes, resolvedTypes);
       }
     }
   }
 
-  private void addMethod(Elements elementUtils, Types typeUtils,
-                         LinkedList<DeclaredType> resolvingTypes, ExecutableElement execElem) {
+  private void addMethod(LinkedList<DeclaredType> resolvingTypes, ExecutableElement execElem) {
     boolean isIgnore = execElem.getAnnotation(GenIgnore.class) != null;
     if (isIgnore) {
       return;
@@ -460,9 +446,9 @@ public class Model {
       }
       typeParams.add(typeParam.getSimpleName().toString());
     }
-    List<ParamInfo> mParams = getParams(elementUtils, typeUtils, resolvingTypes, execElem);
+    List<ParamInfo> mParams = getParams(resolvingTypes, execElem);
 
-    TypeInfo returnType = TypeInfo.create(elementUtils, typeUtils, resolvingTypes, execElem.getReturnType());
+    TypeInfo returnType = typeFactory.create(resolvingTypes, execElem.getReturnType());
     returnType.collectImports(importedTypes);
     if (returnType.toString().equals("void")) {
       if (isCacheReturn) {
@@ -480,7 +466,7 @@ public class Model {
     }
 
     LinkedHashSet<TypeInfo.Class> ownerTypes = new LinkedHashSet<>();
-    TypeInfo ownerType = TypeInfo.create(elementUtils, typeUtils, Collections.emptyList(), execElem.getEnclosingElement().asType());
+    TypeInfo ownerType = typeFactory.create(execElem.getEnclosingElement().asType());
     if (ownerType instanceof TypeInfo.Parameterized) {
       ownerTypes.add(((TypeInfo.Parameterized) ownerType).getRaw());
     } else {
@@ -562,13 +548,13 @@ public class Model {
     return bound.getKind() == TypeKind.DECLARED && bound.toString().equals(Object.class.getName());
   }
 
-  private List<ParamInfo> getParams(Elements elementUtils, Types typeUtils, LinkedList<DeclaredType> resolvingTypes, ExecutableElement execElem) {
+  private List<ParamInfo> getParams(LinkedList<DeclaredType> resolvingTypes, ExecutableElement execElem) {
     List<? extends VariableElement> params = execElem.getParameters();
     List<ParamInfo> mParams = new ArrayList<>();
     for (VariableElement param: params) {
       TypeInfo type;
       try {
-        type = TypeInfo.create(elementUtils, typeUtils, resolvingTypes, param.asType());
+        type = typeFactory.create(resolvingTypes, param.asType());
       } catch (Exception e) {
         throw new GenException(param, e.getMessage());
       }

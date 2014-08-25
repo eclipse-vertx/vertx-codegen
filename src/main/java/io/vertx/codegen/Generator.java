@@ -80,8 +80,8 @@ public class Generator {
     if (element == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
-      Model model = new Model(this, element);
-      model.process(elementUtils, typeUtils);
+      Model model = new Model(this, elementUtils, typeUtils, element);
+      model.process();
       return model;
     }
   }
