@@ -14,6 +14,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.stream.Collectors;
@@ -50,12 +51,17 @@ public class CodeGen {
   public Iterable<Model> getModels() {
     ArrayList<Model> models = new ArrayList<>();
     getModuleModels().forEach(models::add);
+    getPackageModels().forEach(models::add);
     getClassModels().forEach(models::add);
     return models;
   }
 
   public Iterable<ClassModel> getClassModels() {
     return models.keySet().stream().map(this::getClassModel).collect(Collectors.toList());
+  }
+
+  public Collection<PackageModel> getPackageModels() {
+    return models.keySet().stream().map(fqn -> fqn.substring(0, fqn.lastIndexOf('.'))).distinct().map(PackageModel::new).collect(Collectors.toList());
   }
 
   public Iterable<ModuleModel> getModuleModels() {
@@ -66,6 +72,10 @@ public class CodeGen {
     PackageElement element = modules.get(fqcn);
     GenModule annotation = element.getAnnotation(GenModule.class);
     return new ModuleModel(element, new ModuleInfo(fqcn, annotation.name()));
+  }
+
+  public PackageModel getPackageModel(String fqn) {
+    return getPackageModels().stream().filter(pkg -> pkg.getFqn().equals(fqn)).findFirst().orElse(null);
   }
 
   public ClassModel getClassModel(String fqcn) {

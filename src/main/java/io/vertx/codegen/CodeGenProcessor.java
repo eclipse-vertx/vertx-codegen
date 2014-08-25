@@ -56,7 +56,7 @@ public class CodeGenProcessor extends AbstractProcessor {
           String s = scanner.next();
           JsonObject obj = new JsonObject(s);
           String name = obj.getString("name");
-          for (String kind : Arrays.asList("class", "module")) {
+          for (String kind : Arrays.asList("class", "package", "module")) {
             String templateFileName = obj.getString(kind + "TemplateFileName");
             String nameTemplate = obj.getString(kind + "NameTemplate");
             if (templateFileName != null && nameTemplate != null) {

@@ -116,6 +116,14 @@ public class Generator {
     }
   }
 
+  public PackageModel generatePackage(Class clazz) throws Exception {
+    URL url = clazz.getClassLoader().getResource(clazz.getName().replace('.', '/') + ".java");
+    File f = new File(url.toURI());
+    MyProcessor<PackageModel> processor = new MyProcessor<>(codegen -> codegen.getPackageModel(clazz.getPackage().getName()));
+    processor.run(f);
+    return processor.result;
+  }
+
   public ModuleModel generateModule(ClassLoader loader, String packageFqn) throws Exception {
     URL url = loader.getResource(packageFqn.replace('.', '/') + "/package-info.java");
     File f = new File(url.toURI());
