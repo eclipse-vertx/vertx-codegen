@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -55,11 +56,15 @@ public class CodeGenProcessor extends AbstractProcessor {
           String s = scanner.next();
           JsonObject obj = new JsonObject(s);
           String name = obj.getString("name");
-          String templateFileName = obj.getString("templateFileName");
-          String nameTemplate = obj.getString("nameTemplate");
-          Template compiledTemplate = new Template(templateFileName);
-          compiledTemplate.setOptions(env.getOptions());
-          codeGenerators.add(new CodeGenerator(nameTemplate, compiledTemplate));
+          for (String kind : Arrays.asList("class", "module")) {
+            String templateFileName = obj.getString(kind + "TemplateFileName");
+            String nameTemplate = obj.getString(kind + "NameTemplate");
+            if (templateFileName != null && nameTemplate != null) {
+              Template compiledTemplate = new Template(templateFileName);
+              compiledTemplate.setOptions(env.getOptions());
+              codeGenerators.add(new CodeGenerator(kind, nameTemplate, compiledTemplate));
+            }
+          }
           log.info("Loaded " + name + " code generator");
         } catch (Exception e) {
           String msg = "Could not load code generator " + descriptor;
@@ -105,32 +110,34 @@ public class CodeGenProcessor extends AbstractProcessor {
               vars.put("helper", new Helper());
               vars.put("options", processingEnv.getOptions());
               vars.put("fileSeparator", File.separator);
-              vars.put("type", model.getType().getRaw());
+              vars.put("type", model.getFqn());
               for (CodeGenerator codeGenerator : codeGenerators) {
-                String relativeName = TemplateRuntime.eval(codeGenerator.nameTemplate, vars).toString();
-                if (relativeName.endsWith(".java")) {
-                  // Special handling for .java
-                  JavaFileObject target = processingEnv.getFiler().createSourceFile(relativeName.substring(0, relativeName.length() - ".java".length()));
-                  String output = codeGenerator.modelTemplate.render(model);
-                  try (Writer writer = target.openWriter()) {
-                    writer.append(output);
+                if (codeGenerator.kind.equals(model.getKind())) {
+                  String relativeName = TemplateRuntime.eval(codeGenerator.nameTemplate, vars).toString();
+                  if (relativeName.endsWith(".java")) {
+                    // Special handling for .java
+                    JavaFileObject target = processingEnv.getFiler().createSourceFile(relativeName.substring(0, relativeName.length() - ".java".length()));
+                    String output = codeGenerator.transformTemplate.render(model);
+                    try (Writer writer = target.openWriter()) {
+                      writer.append(output);
+                    }
+                  } else {
+                    File target = new File(outputDirectory, relativeName);
+                    codeGenerator.transformTemplate.apply(model, target);
                   }
-                } else {
-                  File target = new File(outputDirectory, relativeName);
-                  codeGenerator.modelTemplate.apply(model, target);
+                  log.info("Generated model " + model.getFqn() + ": " + relativeName);
                 }
-                log.info("Generated model for class " + model.getIfaceFQCN() + ": " + relativeName);
               }
             } else {
-              log.info("Validated model for class " + model.getIfaceFQCN());
+              log.info("Validated model " + model.getFqn());
             }
           } catch (GenException e) {
-            String msg = "Could not generate model for class " + e.element + ": " + e.msg;
+            String msg = "Could not generate model for " + e.element + ": " + e.msg;
             log.log(Level.SEVERE, msg, e);
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, e.element);
             break;
           } catch (Exception e) {
-            String msg = "Could not generate element " + model.getIfaceFQCN();
+            String msg = "Could not generate element " + model.getFqn();
             log.log(Level.SEVERE, msg, e);
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, model.getElement());
             break;
@@ -142,11 +149,13 @@ public class CodeGenProcessor extends AbstractProcessor {
   }
 
   static class CodeGenerator {
+    final String kind;
     final String nameTemplate;
-    final Template modelTemplate;
-    CodeGenerator(String nameTemplate, Template modelTemplate) {
+    final Template transformTemplate;
+    CodeGenerator(String kind, String nameTemplate, Template transformTemplate) {
+      this.kind = kind;
       this.nameTemplate = nameTemplate;
-      this.modelTemplate = modelTemplate;
+      this.transformTemplate = transformTemplate;
     }
   }
 }

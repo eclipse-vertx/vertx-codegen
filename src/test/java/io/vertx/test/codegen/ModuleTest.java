@@ -1,7 +1,7 @@
 package io.vertx.test.codegen;
 
 import io.vertx.codegen.Generator;
-import io.vertx.codegen.ModuleInfo;
+import io.vertx.codegen.ModuleModel;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -13,7 +13,7 @@ public class ModuleTest {
 
   @Test
   public void testModule() throws Exception {
-    ModuleInfo module = new Generator().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule");
+    ModuleModel module = new Generator().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule");
     assertNotNull(module);
     assertEquals("io.vertx.test.codegen.testmodule", module.getFqn());
     assertEquals("mymodule", module.getName());

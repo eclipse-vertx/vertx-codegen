@@ -79,11 +79,11 @@ public class Generator {
   }
 
   public void genAndApply(Class clazz, Function<Class, String> outputFileFunction, String templateName) throws Exception {
-    Model model = generateModel(clazz);
+    ClassModel model = generateModel(clazz);
     applyTemplate(model, outputFileFunction.apply(clazz), templateName);
   }
 
-  private void applyTemplate(Model model, String outputFileName, String templateName) throws Exception {
+  private void applyTemplate(ClassModel model, String outputFileName, String templateName) throws Exception {
     if (template != null && !templateName.equals(template.getName())) {
       template = null;
     }
@@ -109,17 +109,17 @@ public class Generator {
     }
     for (Class<?> clazz: generableClasses) {
       Generator gen = new Generator();
-      Model model = gen.generateModel(clazz, generableClasses.toArray(new Class[generableClasses.size()]));
+      ClassModel model = gen.generateModel(clazz, generableClasses.toArray(new Class[generableClasses.size()]));
       if (apply) {
         applyTemplate(model, outputFileFunction.apply(clazz), templateFileName);
       }
     }
   }
 
-  public ModuleInfo generateModule(ClassLoader loader, String packageFqn) throws Exception {
+  public ModuleModel generateModule(ClassLoader loader, String packageFqn) throws Exception {
     URL url = loader.getResource(packageFqn.replace('.', '/') + "/package-info.java");
     File f = new File(url.toURI());
-    MyProcessor<ModuleInfo> processor = new MyProcessor<>(codegen -> codegen.getModule(packageFqn));
+    MyProcessor<ModuleModel> processor = new MyProcessor<>(codegen -> codegen.getModuleModel(packageFqn));
     processor.run(f);
     return processor.result;
   }
@@ -139,13 +139,13 @@ public class Generator {
     }
   }
 
-  public Model generateModel(Class c, Class... rest) throws Exception {
+  public ClassModel generateModel(Class c, Class... rest) throws Exception {
     log.info("Generating model for class " + c);
     ArrayList<Class> types = new ArrayList<>();
     types.add(c);
     Collections.addAll(types, rest);
     String className = c.getCanonicalName();
-    MyProcessor<Model> processor = new MyProcessor<>(codegen -> codegen.getModel(className));
+    MyProcessor<ClassModel> processor = new MyProcessor<>(codegen -> codegen.getClassModel(className));
     processor.run(types);
     if (processor.result == null) {
       throw new IllegalArgumentException(className + " not processed. Does it have the VertxGen annotation?");

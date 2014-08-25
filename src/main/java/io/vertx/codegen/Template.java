@@ -90,32 +90,7 @@ class Template {
   }
 
   String render(Model model) {
-    Map<String, Object> vars = new HashMap<>();
-    vars.put("importedTypes", model.getImportedTypes());
-    vars.put("concrete", model.isConcrete());
-    vars.put("ifacePackageName", model.getIfacePackageName());
-    vars.put("ifaceSimpleName", model.getIfaceSimpleName());
-    vars.put("ifaceFQCN", model.getIfaceFQCN());
-    vars.put("ifaceComment", model.getIfaceComment());
-    vars.put("helper", new Helper());
-    vars.put("methods", model.getMethods());
-    vars.put("referencedTypes", model.getReferencedTypes());
-    vars.put("superTypes", model.getSuperTypes());
-    vars.put("concreteSuperTypes", model.getConcreteSuperTypes());
-    vars.put("abstractSuperTypes", model.getAbstractSuperTypes());
-    vars.put("squashedMethods", model.getSquashedMethods().values());
-    vars.put("methodsByName", model.getMethodMap());
-    vars.put("referencedOptionsTypes", model.getReferencedOptionsTypes());
-
-    // Useful for testing the type class kind, allows to do type.kind == CLASS_API instead of type.kind.name() == "API"
-    for (ClassKind classKind : ClassKind.values()) {
-      vars.put("CLASS_" + classKind.name(), classKind);
-    }
-
-    // Useful for testing the method kind, allows to do method.kind == METHOD_HANDLER instead of method.kind.name() == "HANDLER"
-    for (MethodKind methodKind : MethodKind.values()) {
-      vars.put("METHOD_" + methodKind.name(), methodKind);
-    }
+    Map<String, Object> vars = model.getVars();
 
     // Options
     vars.put("options", options);
