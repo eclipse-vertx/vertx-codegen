@@ -61,7 +61,7 @@ public class Model {
   public static final String VERTX = "io.vertx.core.Vertx";
 
   private final TypeInfo.Factory typeFactory;
-  private final Generator generator;
+  private final Map<String, TypeElement> sources;
   private final TypeElement modelElt;
   private final Elements elementUtils;
   private final Types typeUtils;
@@ -85,12 +85,16 @@ public class Model {
   // Methods where all overloaded methods with same name are squashed into a single method with all parameters
   private Map<String, MethodInfo> squashedMethods = new LinkedHashMap<>();
 
-  public Model(Generator generator, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
-    this.generator = generator;
+  public Model(Map<String, TypeElement> sources, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
+    this.sources = sources;
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
     this.modelElt = modelElt;
     this.typeFactory = new TypeInfo.Factory(elementUtils, typeUtils);
+  }
+
+  public TypeElement getElement() {
+    return modelElt;
   }
 
   public List<MethodInfo> getMethods() {
@@ -396,9 +400,9 @@ public class Model {
     for (DeclaredType superType : resolvedTypes) {
       TypeElement superTypeElt = (TypeElement) superType.asElement();
       String superTypeName = superTypeElt.getQualifiedName().toString();
-      if (generator.sources.containsKey(superTypeName)) {
+      if (sources.containsKey(superTypeName)) {
         // Use the one from the sources
-        superTypeElt = generator.sources.get(superTypeName);
+        superTypeElt = sources.get(superTypeName);
       }
       resolvingTypes.addFirst(superType);
       traverseMethods(resolvingTypes, superTypeElt);

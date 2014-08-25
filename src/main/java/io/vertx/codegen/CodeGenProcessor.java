@@ -9,8 +9,6 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.element.*;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.File;
@@ -27,7 +25,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -38,8 +35,6 @@ import java.util.stream.Collectors;
 public class CodeGenProcessor extends AbstractProcessor {
 
   private static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
-  private Elements elementUtils;
-  private Types typeUtils;
   private File outputDirectory;
   private List<CodeGenerator> codeGenerators;
 
@@ -71,8 +66,6 @@ public class CodeGenProcessor extends AbstractProcessor {
           env.getMessager().printMessage(Diagnostic.Kind.ERROR, msg);
         }
       }
-    elementUtils = env.getElementUtils();
-    typeUtils = env.getTypeUtils();
     String outputDirectoryOption = env.getOptions().get("outputDirectory");
     if (outputDirectoryOption != null) {
       outputDirectory = new File(outputDirectoryOption);
@@ -89,12 +82,13 @@ public class CodeGenProcessor extends AbstractProcessor {
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     if (!roundEnv.errorRaised()) {
       if (!roundEnv.processingOver()) {
-        Generator generator = new Generator();
+
+        CodeGen codegen = new CodeGen(processingEnv, roundEnv);
 
         // Check options
         roundEnv.getElementsAnnotatedWith(Options.class).forEach(element -> {
           try {
-            generator.checkOption(elementUtils, element);
+            codegen.validateOption(element);
           } catch (GenException e) {
             String msg = e.msg;
             log.log(Level.SEVERE, msg, e);
@@ -103,15 +97,8 @@ public class CodeGenProcessor extends AbstractProcessor {
         });
 
         // Generate source code
-        List<? extends Element> elements = roundEnv.
-            getElementsAnnotatedWith(VertxGen.class).
-            stream().
-            filter(elt -> !elementUtils.getPackageOf(elt).getQualifiedName().toString().contains("impl")).
-            collect(Collectors.<Element>toList());
-        generator.addSources(elements);
-        for (Element genElt : elements) {
+        for (Model model : codegen.getModels()) {
           try {
-            Model model = generator.resolve(elementUtils, typeUtils, genElt.toString());
             if (outputDirectory != null) {
               Map<String, Object> vars = new HashMap<>();
               vars.put("helper", new Helper());
@@ -131,10 +118,10 @@ public class CodeGenProcessor extends AbstractProcessor {
                   File target = new File(outputDirectory, relativeName);
                   codeGenerator.modelTemplate.apply(model, target);
                 }
-                log.info("Generated model for class " + genElt + ": " + relativeName);
+                log.info("Generated model for class " + model.getIfaceFQCN() + ": " + relativeName);
               }
             } else {
-              log.info("Validated model for class " + genElt);
+              log.info("Validated model for class " + model.getIfaceFQCN());
             }
           } catch (GenException e) {
             String msg = "Could not generate model for class " + e.element + ": " + e.msg;
@@ -142,9 +129,9 @@ public class CodeGenProcessor extends AbstractProcessor {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, e.element);
             break;
           } catch (Exception e) {
-            String msg = "Could not generate element " + genElt;
+            String msg = "Could not generate element " + model.getIfaceFQCN();
             log.log(Level.SEVERE, msg, e);
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, genElt);
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, model.getElement());
             break;
           }
         }

@@ -26,12 +26,8 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
@@ -65,26 +61,8 @@ public class Generator {
 
   private static final Logger log = Logger.getLogger(Generator.class.getName());
 
-  HashMap<String, TypeElement> sources = new HashMap<>();
-  HashMap<String, String> options = new HashMap<>();
   Template template; // Global trivial compiled template cache
-
-
-  void addSources(Iterable<? extends Element> elements) {
-    elements.forEach(element -> sources.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
-  }
-
-  Model resolve(Elements elementUtils, Types typeUtils, String fqcn) {
-
-    TypeElement element = sources.get(fqcn);
-    if (element == null) {
-      throw new IllegalArgumentException("Source for " + fqcn + " not found");
-    } else {
-      Model model = new Model(this, elementUtils, typeUtils, element);
-      model.process();
-      return model;
-    }
-  }
+  HashMap<String, String> options = new HashMap<>();
 
   public void setOption(String name, String value) {
     options.put(name, value);
@@ -211,8 +189,6 @@ public class Generator {
 
     private String type;
     private ProcessingEnvironment env;
-    private Elements elementUtils;
-    private Types typeUtils;
     private Model model;
 
     private MyProcessor(String type) {
@@ -225,20 +201,19 @@ public class Generator {
     @Override
     public void init(ProcessingEnvironment processingEnv) {
       this.env = processingEnv;
-      elementUtils = env.getElementUtils();
-      typeUtils = env.getTypeUtils();
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
       if (!roundEnv.processingOver()) {
+        CodeGen codegen = new CodeGen(env, roundEnv);
+
         // Check options
         roundEnv.getElementsAnnotatedWith(Options.class).forEach(element -> {
-          checkOption(elementUtils, element);
+          codegen.validateOption(element);
         });
-        addSources(roundEnv.getElementsAnnotatedWith(VertxGen.class));
         if (type != null) {
-          model = Generator.this.resolve(elementUtils, typeUtils, type);
+          model = codegen.getModel(type);
         }
       }
       return true;
@@ -294,25 +269,6 @@ public class Generator {
           throw e;
         }
       }
-    }
-  }
-
-  public void checkOption(Elements elementUtils, Element optionElt) {
-    if (optionElt.getKind() == ElementKind.INTERFACE) {
-      for (Element memberElt : elementUtils.getAllMembers((TypeElement) optionElt)) {
-        if (memberElt.getKind() == ElementKind.METHOD) {
-          if (memberElt.getSimpleName().toString().equals("optionsFromJson")) {
-            if (memberElt.getModifiers().contains(Modifier.STATIC)) {
-              // TODO should probably also test that the method returns the right options type and
-              // takes JsonObject as a parameter
-              return;
-            }
-          }
-        }
-      }
-      throw new GenException(optionElt, "Options " + optionElt + " class does not have a static factory method called optionsFromJson");
-    } else {
-      throw new GenException(optionElt, "Options " + optionElt + " must be an interface not a class");
     }
   }
 }
