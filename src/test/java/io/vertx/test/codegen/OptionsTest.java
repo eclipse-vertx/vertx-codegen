@@ -17,7 +17,7 @@ public class OptionsTest {
   @Test
   public void testOptionsWithNoFactoryMethod() throws Exception {
     try {
-      new Generator().checkOptions(OptionsWithNoFactoryMethod.class);
+      new Generator().validateOption(OptionsWithNoFactoryMethod.class);
       fail();
     } catch (GenException e) {
     }
@@ -25,13 +25,13 @@ public class OptionsTest {
 
   @Test
   public void testOptionsWithFactoryMethod() throws Exception {
-    new Generator().checkOptions(OptionsWithFactoryMethod.class);
+    new Generator().validateOption(OptionsWithFactoryMethod.class);
   }
 
   @Test
   public void testOptionsClass() throws Exception {
     try {
-      new Generator().checkOptions(OptionsClass.class);
+      new Generator().validateOption(OptionsClass.class);
       fail();
     } catch (GenException e) {
     }

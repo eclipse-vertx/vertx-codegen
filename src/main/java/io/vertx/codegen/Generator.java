@@ -16,6 +16,7 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
+import io.vertx.codegen.annotations.GenModule;
 import io.vertx.codegen.annotations.Options;
 import io.vertx.codegen.annotations.VertxGen;
 
@@ -115,8 +116,27 @@ public class Generator {
     }
   }
 
-  public void checkOptions(Class option) throws Exception {
-    new MyProcessor().run(Collections.singletonList(option));
+  public ModuleInfo generateModule(ClassLoader loader, String packageFqn) throws Exception {
+    URL url = loader.getResource(packageFqn.replace('.', '/') + "/package-info.java");
+    File f = new File(url.toURI());
+    MyProcessor<ModuleInfo> processor = new MyProcessor<>(codegen -> codegen.getModule(packageFqn));
+    processor.run(f);
+    return processor.result;
+  }
+
+  public void validateOption(Class option) throws Exception {
+    MyProcessor<Exception> processor = new MyProcessor<>(codegen -> {
+      try {
+        codegen.validateOption(option.getName());
+        return null;
+      } catch (Exception e) {
+        return e;
+      }
+    });
+    processor.run(Collections.singletonList(option));
+    if (processor.result != null) {
+      throw processor.result;
+    }
   }
 
   public Model generateModel(Class c, Class... rest) throws Exception {
@@ -125,12 +145,12 @@ public class Generator {
     types.add(c);
     Collections.addAll(types, rest);
     String className = c.getCanonicalName();
-    MyProcessor processor = new MyProcessor(className);
+    MyProcessor<Model> processor = new MyProcessor<>(codegen -> codegen.getModel(className));
     processor.run(types);
-    if (processor.model == null) {
+    if (processor.result == null) {
       throw new IllegalArgumentException(className + " not processed. Does it have the VertxGen annotation?");
     }
-    return processor.model;
+    return processor.result;
   }
 
   private void dumpClasspath(ClassLoader cl) {
@@ -167,7 +187,7 @@ public class Generator {
     }
   }
 
-  private class MyProcessor implements Processor {
+  private class MyProcessor<R> implements Processor {
 
     @Override
     public Set<String> getSupportedOptions() {
@@ -179,6 +199,7 @@ public class Generator {
       HashSet<String> set = new HashSet<>();
       set.add(VertxGen.class.getCanonicalName());
       set.add(Options.class.getCanonicalName());
+      set.add(GenModule.class.getCanonicalName());
       return set;
     }
 
@@ -187,15 +208,12 @@ public class Generator {
       return SourceVersion.RELEASE_8;
     }
 
-    private String type;
     private ProcessingEnvironment env;
-    private Model model;
+    private final Function<CodeGen, R> f;
+    private R result;
 
-    private MyProcessor(String type) {
-      this.type = type;
-    }
-
-    private MyProcessor() {
+    private MyProcessor(Function<CodeGen, R> f) {
+      this.f = f;
     }
 
     @Override
@@ -207,14 +225,7 @@ public class Generator {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
       if (!roundEnv.processingOver()) {
         CodeGen codegen = new CodeGen(env, roundEnv);
-
-        // Check options
-        roundEnv.getElementsAnnotatedWith(Options.class).forEach(element -> {
-          codegen.validateOption(element);
-        });
-        if (type != null) {
-          model = codegen.getModel(type);
-        }
+        result = f.apply(codegen);
       }
       return true;
     }

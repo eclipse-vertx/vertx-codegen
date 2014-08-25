@@ -29,7 +29,8 @@ import java.util.logging.Logger;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@SupportedAnnotationTypes({"io.vertx.codegen.annotations.VertxGen","io.vertx.codegen.annotations.Options"})
+@SupportedAnnotationTypes({"io.vertx.codegen.annotations.VertxGen","io.vertx.codegen.annotations.Options",
+  "io.vertx.codegen.annotations.GenModule"})
 @javax.annotation.processing.SupportedOptions({"outputDirectory"})
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)
 public class CodeGenProcessor extends AbstractProcessor {
