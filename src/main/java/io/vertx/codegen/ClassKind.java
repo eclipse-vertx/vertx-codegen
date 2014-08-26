@@ -1,5 +1,8 @@
 package io.vertx.codegen;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
@@ -49,5 +52,16 @@ public enum ClassKind {
     this.basic = basic;
     this.json = json;
     this.collection = collection;
+  }
+
+  /**
+   * Useful for testing the type class kind, allows to do type.kind == CLASS_API instead of type.kind.name() == "API"
+   */
+  public static Map<String, ClassKind> vars() {
+    HashMap<String, ClassKind> vars = new HashMap<>();
+    for (ClassKind classKind : ClassKind.values()) {
+      vars.put("CLASS_" + classKind.name(), classKind);
+    }
+    return vars;
   }
 }

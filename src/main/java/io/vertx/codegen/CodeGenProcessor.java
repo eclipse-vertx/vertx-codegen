@@ -20,12 +20,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -56,13 +58,14 @@ public class CodeGenProcessor extends AbstractProcessor {
           String s = scanner.next();
           JsonObject obj = new JsonObject(s);
           String name = obj.getString("name");
-          for (String kind : Arrays.asList("class", "package", "module")) {
-            String templateFileName = obj.getString(kind + "TemplateFileName");
-            String nameTemplate = obj.getString(kind + "NameTemplate");
-            if (templateFileName != null && nameTemplate != null) {
+          for (String modelKind : Arrays.asList("options", "class", "package", "module")) {
+            JsonObject model = obj.getObject(modelKind);
+            if (model != null) {
+              String templateFileName = model.getString("templateFileName");
+              String nameTemplate = model.getString("nameTemplate");
               Template compiledTemplate = new Template(templateFileName);
               compiledTemplate.setOptions(env.getOptions());
-              codeGenerators.add(new CodeGenerator(kind, nameTemplate, compiledTemplate));
+              codeGenerators.add(new CodeGenerator(modelKind, nameTemplate, compiledTemplate));
             }
           }
           log.info("Loaded " + name + " code generator");
@@ -103,8 +106,9 @@ public class CodeGenProcessor extends AbstractProcessor {
         });
 
         // Generate source code
-        for (Model model : codegen.getModels()) {
+        codegen.getModels().forEach(entry -> {
           try {
+            Model model = entry.getValue();
             if (outputDirectory != null) {
               Map<String, Object> vars = new HashMap<>();
               vars.put("helper", new Helper());
@@ -135,14 +139,12 @@ public class CodeGenProcessor extends AbstractProcessor {
             String msg = "Could not generate model for " + e.element + ": " + e.msg;
             log.log(Level.SEVERE, msg, e);
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, e.element);
-            break;
           } catch (Exception e) {
-            String msg = "Could not generate element " + model.getFqn();
+            String msg = "Could not generate element for " + entry.getKey() + ": " + e.getMessage();
             log.log(Level.SEVERE, msg, e);
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, model.getElement());
-            break;
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, entry.getKey());
           }
-        }
+        });
       }
     }
     return true;

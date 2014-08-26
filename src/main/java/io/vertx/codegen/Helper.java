@@ -67,6 +67,45 @@ public class Helper {
     }
   }
 
+  /**
+   * Normalize a property name:<br/>
+   *
+   * <ul>
+   *   <li>the first char will always be a lower case</li>
+   *   <li>if the first char is an upper case, any following upper case char will be lower cased unless it is followed
+   *   by a lower case char</li>
+   * </ul>
+   *
+   * For instance:
+   * <ul>
+   *   <li>foo -> foo</li>
+   *   <li>Foo -> foo</li>
+   *   <li>URL -> url</li>
+   *   <li>URLFactory -> urlFactory</li>
+   * </ul>
+   *
+   * @param propertyName the property name
+   * @return the normalized property name
+   */
+  public static String normalizePropertyName(String propertyName) {
+    if (Character.isUpperCase(propertyName.charAt(0))) {
+      StringBuilder buffer = new StringBuilder(propertyName);
+      int index = 0;
+      while (true) {
+        buffer.setCharAt(index, Character.toLowerCase(buffer.charAt(index++)));
+        if (index < buffer.length() && Character.isUpperCase(buffer.charAt(index))) {
+          if (index + 1 < buffer.length() && Character.isLowerCase(buffer.charAt(index + 1))) {
+            break;
+          }
+        } else {
+          break;
+        }
+      }
+      propertyName = buffer.toString();
+    }
+    return propertyName;
+  }
+
   public static String decapitaliseFirstLetter(String str) {
     if (str.length() == 0) {
       return str;

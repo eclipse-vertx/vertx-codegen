@@ -300,12 +300,14 @@ public class ClassModel implements Model {
     return false;
   }
 
-  ClassModel process() {
+  boolean process() {
     if (!processed) {
       traverseElem(modelElt);
       processed = true;
+      return true;
+    } else {
+      return false;
     }
-    return this;
   }
 
   private void traverseElem(Element elem) {
@@ -599,14 +601,8 @@ public class ClassModel implements Model {
     vars.put("squashedMethods", getSquashedMethods().values());
     vars.put("methodsByName", getMethodMap());
     vars.put("referencedOptionsTypes", getReferencedOptionsTypes());
-    // Useful for testing the type class kind, allows to do type.kind == CLASS_API instead of type.kind.name() == "API"
-    for (ClassKind classKind : ClassKind.values()) {
-      vars.put("CLASS_" + classKind.name(), classKind);
-    }
-    // Useful for testing the method kind, allows to do method.kind == METHOD_HANDLER instead of method.kind.name() == "HANDLER"
-    for (MethodKind methodKind : MethodKind.values()) {
-      vars.put("METHOD_" + methodKind.name(), methodKind);
-    }
+    vars.putAll(ClassKind.vars());
+    vars.putAll(MethodKind.vars());
     return vars;
   }
 }

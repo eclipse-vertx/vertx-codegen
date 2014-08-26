@@ -1,5 +1,8 @@
 package io.vertx.codegen;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
@@ -22,6 +25,16 @@ public enum MethodKind {
 
   INDEX_SETTER,
 
-  OTHER
+  OTHER;
 
+  /**
+   * Useful for testing the method kind, allows to do method.kind == METHOD_HANDLER instead of method.kind.name() == "HANDLER"
+   */
+  public static Map<String, MethodKind> vars() {
+    HashMap<String, MethodKind> vars = new HashMap<>();
+    for (MethodKind classKind : MethodKind.values()) {
+      vars.put("METHOD_" + classKind.name(), classKind);
+    }
+    return vars;
+  }
 }

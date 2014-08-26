@@ -132,6 +132,12 @@ public class Generator {
     return processor.result;
   }
 
+  public OptionsModel generateOptions(Class option) throws Exception {
+    MyProcessor<OptionsModel> processor = new MyProcessor<>(codegen -> codegen.getOptionsModel(option.getName()));
+    processor.run(Collections.singletonList(option));
+    return processor.result;
+  }
+
   public void validateOption(Class option) throws Exception {
     MyProcessor<Exception> processor = new MyProcessor<>(codegen -> {
       try {

@@ -13,11 +13,11 @@ import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -25,47 +25,77 @@ import java.util.stream.Collectors;
 public class CodeGen {
 
   private final HashMap<String, TypeElement> options = new HashMap<>();
-  private final HashMap<String, TypeElement> models = new HashMap<>();
+  private final HashMap<String, TypeElement> classes = new HashMap<>();
   private final HashMap<String, PackageElement> modules = new HashMap<>();
   private final Elements elementUtils;
   private final Types typeUtils;
-  private final RoundEnvironment round;
 
   public CodeGen(ProcessingEnvironment env, RoundEnvironment round) {
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
-    this.round = round;
     round.getElementsAnnotatedWith(Options.class).
         stream().
         forEach(element -> options.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
     round.getElementsAnnotatedWith(VertxGen.class).
           stream().
           filter(elt -> !elementUtils.getPackageOf(elt).getQualifiedName().toString().contains("impl")).
-          forEach(element -> models.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
+          forEach(element -> classes.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
     round.getElementsAnnotatedWith(GenModule.class).
           stream().
           map(element -> (PackageElement)element).
           forEach(element -> modules.put(element.getQualifiedName().toString(), element));
   }
 
-  public Iterable<Model> getModels() {
-    ArrayList<Model> models = new ArrayList<>();
-    getModuleModels().forEach(models::add);
-    getPackageModels().forEach(models::add);
-    getClassModels().forEach(models::add);
-    return models;
+  public Stream<Map.Entry<? extends Element, ? extends Model>> getModels() {
+    return Stream.concat(getOptionsModels(),
+        Stream.concat(getModuleModels(),
+            Stream.concat(getPackageModels(),
+                getClassModels())));
   }
 
-  public Iterable<ClassModel> getClassModels() {
-    return models.keySet().stream().map(this::getClassModel).collect(Collectors.toList());
+  private static class ModelEntry<E extends Element, M extends Model> implements Map.Entry<E, M> {
+    private final E key;
+    private final Supplier<M> supplier;
+    private M value;
+
+    private ModelEntry(E key, Supplier<M> supplier) {
+      this.key = key;
+      this.supplier = supplier;
+    }
+
+    @Override
+    public E getKey() {
+      return key;
+    }
+
+    @Override
+    public M getValue() {
+      if (value == null) {
+        value = supplier.get();
+      }
+      return value;
+    }
+
+    @Override
+    public M setValue(M value) {
+      throw new UnsupportedOperationException();
+    }
   }
 
-  public Collection<PackageModel> getPackageModels() {
-    return models.keySet().stream().map(fqn -> fqn.substring(0, fqn.lastIndexOf('.'))).distinct().map(PackageModel::new).collect(Collectors.toList());
+  public Stream<Map.Entry<TypeElement, ClassModel>> getClassModels() {
+    return classes.entrySet().stream().map(entry -> new ModelEntry<>(entry.getValue(), () -> getClassModel(entry.getKey())));
   }
 
-  public Iterable<ModuleModel> getModuleModels() {
-    return modules.keySet().stream().map(this::getModuleModel).collect(Collectors.toList());
+  public Stream<Map.Entry<PackageElement, PackageModel>> getPackageModels() {
+    return classes.values().stream().map(elementUtils::getPackageOf).distinct().map(element -> new ModelEntry<>(element, () -> new PackageModel(element.getQualifiedName().toString())));
+  }
+
+  public Stream<Map.Entry<PackageElement, ModuleModel>> getModuleModels() {
+    return modules.entrySet().stream().map(entry -> new ModelEntry<>(entry.getValue(), () -> getModuleModel(entry.getKey())));
+  }
+
+  public Stream<Map.Entry<TypeElement, OptionsModel>> getOptionsModels() {
+    return options.entrySet().stream().map(element -> new ModelEntry<>(element.getValue(), () -> getOptionsModel(element.getKey())));
   }
 
   public ModuleModel getModuleModel(String fqcn) {
@@ -75,15 +105,26 @@ public class CodeGen {
   }
 
   public PackageModel getPackageModel(String fqn) {
-    return getPackageModels().stream().filter(pkg -> pkg.getFqn().equals(fqn)).findFirst().orElse(null);
+    return getPackageModels().filter(pkg -> pkg.getValue().getFqn().equals(fqn)).findFirst().map(Map.Entry::getValue).orElse(null);
   }
 
   public ClassModel getClassModel(String fqcn) {
-    TypeElement element = models.get(fqcn);
+    TypeElement element = classes.get(fqcn);
     if (element == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
-      ClassModel model = new ClassModel(models, elementUtils, typeUtils, element);
+      ClassModel model = new ClassModel(classes, elementUtils, typeUtils, element);
+      model.process();
+      return model;
+    }
+  }
+
+  public OptionsModel getOptionsModel(String fqcn) {
+    TypeElement element = options.get(fqcn);
+    if (element == null) {
+      throw new IllegalArgumentException("Source for " + fqcn + " not found");
+    } else {
+      OptionsModel model = new OptionsModel(elementUtils, typeUtils, element);
       model.process();
       return model;
     }
