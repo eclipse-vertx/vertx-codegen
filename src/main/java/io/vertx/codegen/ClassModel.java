@@ -585,6 +585,7 @@ public class ClassModel implements Model {
     Map<String, Object> vars = new HashMap<>();
     vars.put("importedTypes", getImportedTypes());
     vars.put("concrete", isConcrete());
+    vars.put("type", getType());
     vars.put("ifacePackageName", getIfacePackageName());
     vars.put("ifaceSimpleName", getIfaceSimpleName());
     vars.put("ifaceFQCN", getIfaceFQCN());
