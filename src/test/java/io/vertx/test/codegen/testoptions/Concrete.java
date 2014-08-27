@@ -6,17 +6,14 @@ import io.vertx.core.json.JsonObject;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@Options
-public interface SetterWithInvalidReturnType {
+@Options(concrete = true)
+public interface Concrete {
 
-  public static SetterWithInvalidReturnType options() {
+  public static Concrete options() {
     throw new UnsupportedOperationException();
   }
 
-  public static SetterWithInvalidReturnType optionsFromJson(JsonObject obj) {
+  public static Concrete optionsFromJson(JsonObject obj) {
     throw new UnsupportedOperationException();
   }
-
-  String setString(String locale);
-
 }

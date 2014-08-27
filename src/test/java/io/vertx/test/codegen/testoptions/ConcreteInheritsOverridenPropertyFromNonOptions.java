@@ -1,0 +1,22 @@
+package io.vertx.test.codegen.testoptions;
+
+import io.vertx.codegen.annotations.Options;
+import io.vertx.core.json.JsonObject;
+
+/**
+ * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
+ */
+@Options
+public interface ConcreteInheritsOverridenPropertyFromNonOptions extends NonOptionsWithProperty<ConcreteInheritsOverridenPropertyFromNonOptions> {
+
+  public static ConcreteInheritsOverridenPropertyFromNonOptions options() {
+    throw new UnsupportedOperationException();
+  }
+
+  public static ConcreteInheritsOverridenPropertyFromNonOptions optionsFromJson(JsonObject obj) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  ConcreteInheritsOverridenPropertyFromNonOptions setNonOptionsProperty(String value);
+}

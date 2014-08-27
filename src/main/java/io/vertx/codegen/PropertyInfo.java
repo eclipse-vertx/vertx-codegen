@@ -5,14 +5,20 @@ package io.vertx.codegen;
  */
 public class PropertyInfo {
 
+  final boolean declared;
   final String name;
   final TypeInfo type;
   final boolean array;
 
-  public PropertyInfo(String name, TypeInfo type, boolean array) {
+  public PropertyInfo(boolean declared, String name, TypeInfo type, boolean array) {
+    this.declared = declared;
     this.name = name;
     this.type = type;
     this.array = array;
+  }
+
+  public boolean isDeclared() {
+    return declared;
   }
 
   public String getName() {
