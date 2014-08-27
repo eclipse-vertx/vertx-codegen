@@ -1,6 +1,5 @@
 package io.vertx.codegen;
 
-import io.vertx.codegen.annotations.*;
 import io.vertx.core.json.JsonObject;
 import org.mvel2.templates.TemplateRuntime;
 
@@ -91,17 +90,6 @@ public class CodeGenProcessor extends AbstractProcessor {
       if (!roundEnv.processingOver()) {
 
         CodeGen codegen = new CodeGen(processingEnv, roundEnv);
-
-        // Check options
-        roundEnv.getElementsAnnotatedWith(Options.class).forEach(element -> {
-          try {
-            codegen.validateOption(element);
-          } catch (GenException e) {
-            String msg = e.msg;
-            log.log(Level.SEVERE, msg, e);
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, e.element);
-          }
-        });
 
         // Generate source code
         codegen.getModels().forEach(entry -> {
