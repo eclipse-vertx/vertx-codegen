@@ -2,13 +2,18 @@ package io.vertx.codegen;
 
 import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.mvel2.templates.CompiledTemplate;
+import org.mvel2.templates.SimpleTemplateRegistry;
 import org.mvel2.templates.TemplateCompiler;
+import org.mvel2.templates.TemplateError;
+import org.mvel2.templates.TemplateRegistry;
 import org.mvel2.templates.TemplateRuntime;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -16,27 +21,26 @@ import java.util.Scanner;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-class Template {
+public class Template {
 
+  private final URI baseUri;
   private final String name;
   private final CompiledTemplate compiled;
-  private final HashMap<String, String> options;
+  private final HashMap<String, String> options = new HashMap<>();
 
-  Template(String name) {
-    // Read the template file from the classpath
-    InputStream source = getClass().getClassLoader().getResourceAsStream(name);
-    if (source == null) {
-      throw new IllegalStateException("Can't find template file on classpath: " + name);
+  public Template(URL url) {
+    String file = url.getFile();
+    this.name = file.substring(file.lastIndexOf('/') + 1);
+    try {
+      this.baseUri = url.toURI();
+      this.compiled = loadCompiled(url.openStream());
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Cannot load template file: " + name, e);
     }
-    this.name = name;
-    this.compiled = loadCompiled(name, source);
-    this.options = new HashMap<>();
   }
 
-  Template(String name, InputStream source) {
-    this.name = name;
-    this.compiled = loadCompiled(name, source);
-    this.options = new HashMap<>();
+  public Template(String name) {
+    this(resolveURL(name));
   }
 
   public void setOptions(Map<String, String> options) {
@@ -44,7 +48,7 @@ class Template {
     this.options.putAll(options);
   }
 
-  private static CompiledTemplate loadCompiled(String name, InputStream source) {
+  public static CompiledTemplate loadCompiled(InputStream source) {
     // Load the template
     String template;
     try (Scanner scanner = new Scanner(source, "UTF-8").useDelimiter("\\A")) {
@@ -70,15 +74,24 @@ class Template {
     }
   }
 
-  String getName() {
+  private static URL resolveURL(String name) {
+    // Read the template file from the classpath
+    URL url = Template.class.getClassLoader().getResource(name);
+    if (url == null) {
+      throw new IllegalArgumentException("Can't find template file on classpath: " + name);
+    }
+    return url;
+  }
+
+  public String getName() {
     return name;
   }
 
-  void apply(Model model, String outputFileName) throws Exception {
+  public void apply(Model model, String outputFileName) throws Exception {
     apply(model, new File(outputFileName));
   }
 
-  void apply(Model model, File outputFile) throws Exception {
+  public void apply(Model model, File outputFile) throws Exception {
     String output = render(model);
     if (!outputFile.getParentFile().exists()) {
       outputFile.getParentFile().mkdirs();
@@ -89,22 +102,41 @@ class Template {
     }
   }
 
-  String render(Model model) {
+  public String render(Model model) {
     Map<String, Object> vars = model.getVars();
 
     // Options
     vars.put("options", options);
 
+    TemplateRegistry registry = new SimpleTemplateRegistry() {
+      @Override
+      public CompiledTemplate getNamedTemplate(String name) {
+        try {
+          return super.getNamedTemplate(name);
+        } catch (TemplateError err) {
+          // Load error try to resolve from base uri
+          try {
+            URL url = baseUri.resolve(name).toURL();
+            InputStream in = url.openStream();
+            CompiledTemplate compiledTemplate = loadCompiled(in);
+            addNamedTemplate(name, compiledTemplate);
+            return compiledTemplate;
+          } catch (Exception ex) {
+            throw new TemplateError("Could not load template", ex);
+          }
+        }
+      }
+    };
+
     ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
-    String output;
     try {
       // Be sure to have mvel classloader as parent during evaluation as it will need mvel classes
       // when generating code
       Thread.currentThread().setContextClassLoader(TemplateRuntime.class.getClassLoader());
-      output = (String) TemplateRuntime.execute(compiled, null, new MapVariableResolverFactory(vars));
+      TemplateRuntime runtime = new TemplateRuntime(compiled.getTemplate(), registry, compiled.getRoot(), ".");
+      return (String) runtime.execute(new StringBuilder(), null, new MapVariableResolverFactory(vars));
     } finally {
       Thread.currentThread().setContextClassLoader(currentCL);
     }
-    return output;
   }
 }
