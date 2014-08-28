@@ -69,6 +69,17 @@ public class MethodInfo {
     return ownerTypes;
   }
 
+  /**
+   * Return true if the provided type is the sole owner of this method, i.e this method
+   * is only declared by the provided type.
+   *
+   * @param owner the tested type
+   * @return true when this method is owned by the <code>owner</code> argument
+   */
+  public boolean isOwnedBy(TypeInfo.Class owner) {
+    return ownerTypes.contains(owner) && ownerTypes.size() == 1;
+  }
+
   public boolean isFluent() {
     return fluent;
   }
