@@ -19,4 +19,9 @@ public interface InterfaceWithOverloadedMethods {
 
   void bar(VertxGenClass2 obj1, String str);
 
+  void juu(String str);
+
+  void juu(String str, long time);
+
+  <T> void juu(String str, long time, Handler<T> handler);
 }

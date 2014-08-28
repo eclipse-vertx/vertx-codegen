@@ -85,7 +85,8 @@ import io.vertx.test.codegen.testapi.MethodWithWildcardUpperBoundTypeArg;
 import io.vertx.test.codegen.testapi.NestedInterface;
 import io.vertx.test.codegen.testapi.NoVertxGen;
 import io.vertx.test.codegen.testapi.NotInterface;
-import io.vertx.test.codegen.testapi.OverloadedMethodsInWrongOrder;
+import io.vertx.test.codegen.testapi.OverloadedMethodsInWrongParameterOrder;
+import io.vertx.test.codegen.testapi.OverloadedMethodsInWrongTypeParameterOrder;
 import io.vertx.test.codegen.testapi.SameSignatureMethod1;
 import io.vertx.test.codegen.testapi.SameSignatureMethod2;
 import io.vertx.test.codegen.testapi.VertxGenClass1;
@@ -96,11 +97,13 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
 import static io.vertx.test.codegen.Utils.*;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -363,9 +366,19 @@ public class GeneratorTest {
 
 
   @Test
-  public void testOverloadedMethodsInWrongOrder() throws Exception {
+  public void testOverloadedMethodsInWrongParameterOrder() throws Exception {
     try {
-      gen = new Generator().generateModel(OverloadedMethodsInWrongOrder.class);
+      gen = new Generator().generateModel(OverloadedMethodsInWrongParameterOrder.class);
+      fail("Should throw exception");
+    } catch (GenException e) {
+      // OK
+    }
+  }
+
+  @Test
+  public void testOverloadedMethodsInWrongTypeParameterOrder() throws Exception {
+    try {
+      gen = new Generator().generateModel(OverloadedMethodsInWrongTypeParameterOrder.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
@@ -1062,7 +1075,7 @@ public class GeneratorTest {
     assertTrue(gen.getReferencedTypes().contains(VertxGenClass1Info));
     assertTrue(gen.getReferencedTypes().contains(VertxGenClass2Info));
     assertTrue(gen.getSuperTypes().isEmpty());
-    assertEquals(5, gen.getMethods().size());
+    assertEquals(8, gen.getMethods().size());
     checkMethod(gen.getMethods().get(0), "foo", null, MethodKind.OTHER, "void", false, false, false, false, 1);
     checkClassParam(gen.getMethods().get(0).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
     checkMethod(gen.getMethods().get(1), "foo", null, MethodKind.OTHER, "void", false, false, false, false, 2);
@@ -1077,20 +1090,38 @@ public class GeneratorTest {
     checkMethod(gen.getMethods().get(4), "bar", null, MethodKind.OTHER, "void", false, false, false, false, 2);
     checkClassParam(gen.getMethods().get(4).getParams().get(0), "obj1", VertxGenClass2.class.getName(), ClassKind.API);
     checkClassParam(gen.getMethods().get(4).getParams().get(1), "str", String.class.getName(), ClassKind.STRING);
+    checkMethod(gen.getMethods().get(5), "juu", null, MethodKind.OTHER, "void", false, false, false, false, 1);
+    checkClassParam(gen.getMethods().get(0).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
+    checkMethod(gen.getMethods().get(6), "juu", null, MethodKind.OTHER, "void", false, false, false, false, 2);
+    checkClassParam(gen.getMethods().get(6).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
+    checkParam(gen.getMethods().get(6).getParams().get(1), "time", "long");
+    checkMethod(gen.getMethods().get(7), "juu", null, MethodKind.HANDLER, "void", false, false, false, false, 3);
+    checkClassParam(gen.getMethods().get(7).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
+    checkParam(gen.getMethods().get(7).getParams().get(1), "time", "long");
+    checkClassParam(gen.getMethods().get(7).getParams().get(2), "handler", "io.vertx.core.Handler<T>", ClassKind.HANDLER);
 
-    assertEquals(2, gen.getSquashedMethods().size());
+    assertEquals(3, gen.getSquashedMethods().size());
     MethodInfo squashed1 = gen.getSquashedMethods().get("foo");
+    assertEquals(Collections.<String>emptyList(), squashed1.getTypeParams());
     checkMethod(squashed1, "foo", null, MethodKind.OTHER, "void", false, false, false, true, 3);
     checkClassParam(squashed1.getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
     checkParam(squashed1.getParams().get(1), "time", "long");
     checkClassParam(squashed1.getParams().get(2), "handler", "io.vertx.core.Handler<" + VertxGenClass1Info + ">", ClassKind.HANDLER);
 
     MethodInfo squashed2 = gen.getSquashedMethods().get("bar");
+    assertEquals(Collections.<String>emptyList(), squashed2.getTypeParams());
     checkMethod(squashed2, "bar", null, MethodKind.OTHER, "void", false, false, false, true, 2);
     checkClassParam(squashed2.getParams().get(0), "obj1", VertxGenClass2.class.getName(), ClassKind.API);
     checkClassParam(squashed2.getParams().get(1), "str", String.class.getName(), ClassKind.STRING);
 
-    assertEquals(2, gen.getMethodMap().size());
+    MethodInfo squashed3 = gen.getSquashedMethods().get("juu");
+    assertEquals(Collections.singletonList("T"), squashed3.getTypeParams());
+    checkMethod(squashed3, "juu", null, MethodKind.OTHER, "void", false, false, false, true, 3);
+    checkClassParam(squashed3.getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
+    checkParam(squashed3.getParams().get(1), "time", "long");
+    checkClassParam(squashed3.getParams().get(2), "handler", "io.vertx.core.Handler<T>", ClassKind.HANDLER);
+
+    assertEquals(3, gen.getMethodMap().size());
     List<MethodInfo> meths1 = gen.getMethodMap().get("foo");
     assertEquals(3, meths1.size());
     assertSame(gen.getMethods().get(0), meths1.get(0));

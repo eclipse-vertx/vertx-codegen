@@ -6,9 +6,9 @@ import io.vertx.codegen.annotations.VertxGen;
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @VertxGen
-public interface OverloadedMethodsInWrongOrder {
+public interface OverloadedMethodsInWrongTypeParameterOrder {
 
-  void foo(String str, int i, double d);
+  <A, B, C> void foo(A a, B b, C c);
 
-  void foo(String str, double d);
+  <A, C, B> void foo(A a, B b, C c, String s);
 }

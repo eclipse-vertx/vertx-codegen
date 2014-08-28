@@ -485,7 +485,7 @@ public class ClassModel implements Model {
     LinkedHashSet<TypeInfo.Class> ownerTypes = new LinkedHashSet<>();
     TypeInfo ownerType = typeFactory.create(execElem.getEnclosingElement().asType());
     if (ownerType instanceof TypeInfo.Parameterized) {
-      ownerTypes.add(((TypeInfo.Parameterized) ownerType).getRaw());
+      ownerTypes.add(ownerType.getRaw());
     } else {
       ownerTypes.add((TypeInfo.Class) ownerType);
     }
@@ -520,10 +520,10 @@ public class ClassModel implements Model {
     //
     MethodInfo methodInfo = new MethodInfo(ownerTypes, methodName, kind, returnType,
         isFluent, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic, typeParams);
-    List<MethodInfo> meths = methodMap.get(methodInfo.getName());
-    if (meths == null) {
-      meths = new ArrayList<>();
-      methodMap.put(methodInfo.getName(), meths);
+    List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
+    if (methodsByName == null) {
+      methodsByName = new ArrayList<>();
+      methodMap.put(methodInfo.getName(), methodsByName);
     } else {
       // Check if we already have the signature
       List<MethodInfo> sameSignatureMethods = methods.stream().filter(meth -> meth.hasSameSignature(methodInfo)).collect(Collectors.toList());
@@ -533,7 +533,7 @@ public class ClassModel implements Model {
         return;
       }
       // Overloaded methods must have same parameter at each position in the param list
-      for (MethodInfo meth: meths) {
+      for (MethodInfo meth: methodsByName) {
         int pos = 0;
         for (ParamInfo param: meth.params) {
           if (pos < methodInfo.params.size()) {
@@ -547,7 +547,9 @@ public class ClassModel implements Model {
         }
       }
     }
-    meths.add(methodInfo);
+
+
+    methodsByName.add(methodInfo);
     methods.add(methodInfo);
     methodInfo.collectImports(importedTypes);
     MethodInfo squashed = squashedMethods.get(methodInfo.name);
@@ -556,7 +558,12 @@ public class ClassModel implements Model {
           methodInfo.fluent, methodInfo.cacheReturn, methodInfo.params, methodInfo.comment, methodInfo.staticMethod, methodInfo.typeParams);
       squashedMethods.put(methodInfo.name, squashed);
     } else {
-      squashed.addParams(methodInfo.params);
+      squashed.mergeParams(methodInfo.params);
+      try {
+        squashed.mergeTypeParams(methodInfo.typeParams);
+      } catch (IllegalArgumentException e) {
+        throw new GenException(this.modelElt, "Overloaded method " + methodInfo.name + " has versions with different sequences of type parameters");
+      }
       squashed.ownerTypes.addAll(methodInfo.ownerTypes);
     }
   }

@@ -48,7 +48,7 @@ public class MethodInfo {
     this.cacheReturn = cacheReturn;
     this.comment = comment;
     this.staticMethod = staticMethod;
-    addParams(params);
+    mergeParams(params);
     this.typeParams = typeParams;
     this.ownerTypes = ownerTypes;
   }
@@ -120,7 +120,18 @@ public class MethodInfo {
     return typeParams;
   }
 
-  public void addParams(List<ParamInfo> params) {
+  public void mergeTypeParams(List<String> mergedTypeParams) throws IllegalArgumentException {
+    int l = Math.min(typeParams.size(), mergedTypeParams.size());
+    if (typeParams.subList(0, l).equals(mergedTypeParams.subList(0, l))) {
+      if (mergedTypeParams.size() > typeParams.size()) {
+        typeParams.addAll(mergedTypeParams.subList(typeParams.size(), mergedTypeParams.size()));
+      }
+    } else {
+      throw new IllegalArgumentException("Merged type params " + mergedTypeParams + " don't match the existing ones " + typeParams);
+    }
+  }
+
+  public void mergeParams(List<ParamInfo> params) {
     if (params == null) {
       throw new NullPointerException("params");
     }
