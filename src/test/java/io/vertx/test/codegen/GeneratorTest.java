@@ -531,6 +531,9 @@ public class GeneratorTest {
     MethodInfo mi = gen.getMethods().get(0);
     assertEquals("foo", mi.getName());
     assertEquals(new TypeInfo.Parameterized(new TypeInfo.Class(ClassKind.API, GenericInterface.class.getName(), null), Arrays.asList(new TypeInfo.Wildcard())), mi.getParams().get(0).getType());
+    TypeInfo.Parameterized genericType = (TypeInfo.Parameterized) mi.getParams().get(0).getType();
+    TypeInfo.Wildcard wildcard = (TypeInfo.Wildcard) genericType.getArgs().get(0);
+    assertEquals(ClassKind.OBJECT, wildcard.getKind());
   }
 
   @Test

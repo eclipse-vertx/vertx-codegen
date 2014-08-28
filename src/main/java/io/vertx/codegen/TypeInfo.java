@@ -200,6 +200,11 @@ public abstract class TypeInfo {
     public String format(boolean qualified) {
       return "?";
     }
+
+    @Override
+    public ClassKind getKind() {
+      return ClassKind.OBJECT;
+    }
   }
 
   public static class Primitive extends TypeInfo {
