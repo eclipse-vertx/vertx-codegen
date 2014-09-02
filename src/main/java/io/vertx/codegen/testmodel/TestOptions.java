@@ -19,13 +19,13 @@ public interface TestOptions {
 
   String getFoo();
 
-  void setFoo(String foo);
+  TestOptions setFoo(String foo);
 
   int getBar();
 
-  void setBar(int bar);
+  TestOptions setBar(int bar);
 
   double getWibble();
 
-  void setWibble(double wibble);
+  TestOptions setWibble(double wibble);
 }

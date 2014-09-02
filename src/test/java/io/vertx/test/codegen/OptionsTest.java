@@ -100,8 +100,8 @@ public class OptionsTest {
     OptionsModel model = new Generator().generateOptions(SetterWithNonFluentReturnType.class);
     assertNotNull(model);
     assertEquals(2, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("string"), "string", TypeInfo.create(String.class), true, false);
-    assertProperty(model.getPropertyMap().get("primitiveBoolean"), "primitiveBoolean", TypeInfo.create(Integer.class), true, false);
+    assertProperty(model.getPropertyMap().get("string"), "string", TypeInfo.create(String.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("primitiveBoolean"), "primitiveBoolean", TypeInfo.create(Integer.class), true, false, false);
   }
 
   @Test
@@ -109,13 +109,13 @@ public class OptionsTest {
     OptionsModel model = new Generator().generateOptions(BasicSetters.class);
     assertNotNull(model);
     assertEquals(7, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("string"), "string", TypeInfo.create(String.class), true, false);
-    assertProperty(model.getPropertyMap().get("boxedInteger"), "boxedInteger", TypeInfo.create(Integer.class), true, false);
-    assertProperty(model.getPropertyMap().get("primitiveInteger"), "primitiveInteger", TypeInfo.create(int.class), true, false);
-    assertProperty(model.getPropertyMap().get("boxedBoolean"), "boxedBoolean", TypeInfo.create(Boolean.class), true, false);
-    assertProperty(model.getPropertyMap().get("primitiveBoolean"), "primitiveBoolean", TypeInfo.create(boolean.class), true, false);
-    assertProperty(model.getPropertyMap().get("boxedLong"), "boxedLong", TypeInfo.create(Long.class), true, false);
-    assertProperty(model.getPropertyMap().get("primitiveLong"), "primitiveLong", TypeInfo.create(long.class), true, false);
+    assertProperty(model.getPropertyMap().get("string"), "string", TypeInfo.create(String.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("boxedInteger"), "boxedInteger", TypeInfo.create(Integer.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("primitiveInteger"), "primitiveInteger", TypeInfo.create(int.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("boxedBoolean"), "boxedBoolean", TypeInfo.create(Boolean.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("primitiveBoolean"), "primitiveBoolean", TypeInfo.create(boolean.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("boxedLong"), "boxedLong", TypeInfo.create(Long.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("primitiveLong"), "primitiveLong", TypeInfo.create(long.class), true, false, false);
   }
 
   @Test
@@ -123,9 +123,9 @@ public class OptionsTest {
     OptionsModel model = new Generator().generateOptions(SetterNormalizationRules.class);
     assertNotNull(model);
     assertEquals(3, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("ha"), "ha", TypeInfo.create(boolean.class), true, false);
-    assertProperty(model.getPropertyMap().get("haGroup"), "haGroup", TypeInfo.create(boolean.class), true, false);
-    assertProperty(model.getPropertyMap().get("group"), "group", TypeInfo.create(boolean.class), true, false);
+    assertProperty(model.getPropertyMap().get("ha"), "ha", TypeInfo.create(boolean.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("haGroup"), "haGroup", TypeInfo.create(boolean.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("group"), "group", TypeInfo.create(boolean.class), true, false, false);
   }
 
   @Test
@@ -133,11 +133,11 @@ public class OptionsTest {
     OptionsModel model = new Generator().generateOptions(ListBasicSetters.class);
     assertNotNull(model);
     assertEquals(5, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("extraClassPath"), "extraClassPath", TypeInfo.create(String.class), true, true);
-    assertProperty(model.getPropertyMap().get("strings"), "strings", TypeInfo.create(String.class), true, true);
-    assertProperty(model.getPropertyMap().get("boxedIntegers"), "boxedIntegers", TypeInfo.create(Integer.class), true, true);
-    assertProperty(model.getPropertyMap().get("boxedBooleans"), "boxedBooleans", TypeInfo.create(Boolean.class), true, true);
-    assertProperty(model.getPropertyMap().get("boxedLongs"), "boxedLongs", TypeInfo.create(Long.class), true, true);
+    assertProperty(model.getPropertyMap().get("extraClassPath"), "extraClassPath", TypeInfo.create(String.class), true, true, false);
+    assertProperty(model.getPropertyMap().get("strings"), "strings", TypeInfo.create(String.class), true, true, false);
+    assertProperty(model.getPropertyMap().get("boxedIntegers"), "boxedIntegers", TypeInfo.create(Integer.class), true, true, false);
+    assertProperty(model.getPropertyMap().get("boxedBooleans"), "boxedBooleans", TypeInfo.create(Boolean.class), true, true, false);
+    assertProperty(model.getPropertyMap().get("boxedLongs"), "boxedLongs", TypeInfo.create(Long.class), true, true, false);
   }
 
   @Test
@@ -152,7 +152,7 @@ public class OptionsTest {
     OptionsModel model = new Generator().generateOptions(ApiSetter.class);
     assertNotNull(model);
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("apiObject"), "apiObject", TypeInfo.create(ApiObject.class), true, false);
+    assertProperty(model.getPropertyMap().get("apiObject"), "apiObject", TypeInfo.create(ApiObject.class), true, false, false);
   }
 
   @Test
@@ -160,7 +160,7 @@ public class OptionsTest {
     OptionsModel model = new Generator().generateOptions(JsonObjectSetter.class);
     assertNotNull(model);
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("jsonObject"), "jsonObject", TypeInfo.create(JsonObject.class), true, false);
+    assertProperty(model.getPropertyMap().get("jsonObject"), "jsonObject", TypeInfo.create(JsonObject.class), true, false, false);
   }
 
   @Test
@@ -168,13 +168,13 @@ public class OptionsTest {
     OptionsModel model = new Generator().generateOptions(BasicAdders.class);
     assertNotNull(model);
     assertEquals(7, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("strings"), "strings", TypeInfo.create(String.class), true, true);
-    assertProperty(model.getPropertyMap().get("boxedIntegers"), "boxedIntegers", TypeInfo.create(Integer.class), true, true);
-    assertProperty(model.getPropertyMap().get("primitiveIntegers"), "primitiveIntegers", TypeInfo.create(int.class), true, true);
-    assertProperty(model.getPropertyMap().get("boxedBooleans"), "boxedBooleans", TypeInfo.create(Boolean.class), true, true);
-    assertProperty(model.getPropertyMap().get("primitiveBooleans"), "primitiveBooleans", TypeInfo.create(boolean.class), true, true);
-    assertProperty(model.getPropertyMap().get("boxedLongs"), "boxedLongs", TypeInfo.create(Long.class), true, true);
-    assertProperty(model.getPropertyMap().get("primitiveLongs"), "primitiveLongs", TypeInfo.create(long.class), true, true);
+    assertProperty(model.getPropertyMap().get("strings"), "strings", TypeInfo.create(String.class), true, true, true);
+    assertProperty(model.getPropertyMap().get("boxedIntegers"), "boxedIntegers", TypeInfo.create(Integer.class), true, true, true);
+    assertProperty(model.getPropertyMap().get("primitiveIntegers"), "primitiveIntegers", TypeInfo.create(int.class), true, true, true);
+    assertProperty(model.getPropertyMap().get("boxedBooleans"), "boxedBooleans", TypeInfo.create(Boolean.class), true, true, true);
+    assertProperty(model.getPropertyMap().get("primitiveBooleans"), "primitiveBooleans", TypeInfo.create(boolean.class), true, true, true);
+    assertProperty(model.getPropertyMap().get("boxedLongs"), "boxedLongs", TypeInfo.create(Long.class), true, true, true);
+    assertProperty(model.getPropertyMap().get("primitiveLongs"), "primitiveLongs", TypeInfo.create(long.class), true, true, true);
   }
 
   @Test
@@ -182,9 +182,9 @@ public class OptionsTest {
     OptionsModel model = new Generator().generateOptions(AdderNormalizationRules.class);
     assertNotNull(model);
     assertEquals(3, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("urls"), "urls", TypeInfo.create(boolean.class), true, true);
-    assertProperty(model.getPropertyMap().get("urlLocators"), "urlLocators", TypeInfo.create(boolean.class), true, true);
-    assertProperty(model.getPropertyMap().get("locators"), "locators", TypeInfo.create(boolean.class), true, true);
+    assertProperty(model.getPropertyMap().get("urls"), "urls", TypeInfo.create(boolean.class), true, true, true);
+    assertProperty(model.getPropertyMap().get("urlLocators"), "urlLocators", TypeInfo.create(boolean.class), true, true, true);
+    assertProperty(model.getPropertyMap().get("locators"), "locators", TypeInfo.create(boolean.class), true, true, true);
   }
 
   @Test
@@ -192,7 +192,7 @@ public class OptionsTest {
     OptionsModel model = new Generator().generateOptions(ApiAdder.class);
     assertNotNull(model);
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("apiObjects"), "apiObjects", TypeInfo.create(ApiObject.class), true, true);
+    assertProperty(model.getPropertyMap().get("apiObjects"), "apiObjects", TypeInfo.create(ApiObject.class), true, true, true);
   }
 
   @Test
@@ -200,7 +200,7 @@ public class OptionsTest {
     OptionsModel model = new Generator().generateOptions(JsonObjectAdder.class);
     assertNotNull(model);
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("jsonObjects"), "jsonObjects", TypeInfo.create(JsonObject.class), true, true);
+    assertProperty(model.getPropertyMap().get("jsonObjects"), "jsonObjects", TypeInfo.create(JsonObject.class), true, true, true);
   }
 
   @Test
@@ -208,7 +208,7 @@ public class OptionsTest {
     OptionsModel model = new Generator().generateOptions(SetterWithNestedOptions.class);
     assertNotNull(model);
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("nested"), "nested", TypeInfo.create(Empty.class), true, false);
+    assertProperty(model.getPropertyMap().get("nested"), "nested", TypeInfo.create(Empty.class), true, false, false);
   }
 
   @Test
@@ -216,7 +216,7 @@ public class OptionsTest {
     OptionsModel model = new Generator().generateOptions(AdderWithNestedOptions.class);
     assertNotNull(model);
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("nesteds"), "nesteds", TypeInfo.create(Empty.class), true, true);
+    assertProperty(model.getPropertyMap().get("nesteds"), "nesteds", TypeInfo.create(Empty.class), true, true, true);
   }
 
   @Test
@@ -267,7 +267,7 @@ public class OptionsTest {
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("nonOptionsProperty"), "nonOptionsProperty", TypeInfo.create(String.class), true, false);
+    assertProperty(model.getPropertyMap().get("nonOptionsProperty"), "nonOptionsProperty", TypeInfo.create(String.class), true, false, false);
     assertEquals(Collections.<TypeInfo.Class>emptySet(), model.getSuperTypes());
   }
 
@@ -277,7 +277,7 @@ public class OptionsTest {
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("nonOptionsProperty"), "nonOptionsProperty", TypeInfo.create(String.class), false, false);
+    assertProperty(model.getPropertyMap().get("nonOptionsProperty"), "nonOptionsProperty", TypeInfo.create(String.class), false, false, false);
   }
 
   @Test
@@ -286,7 +286,7 @@ public class OptionsTest {
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("nonOptionsProperty"), "nonOptionsProperty", TypeInfo.create(String.class), false, false);
+    assertProperty(model.getPropertyMap().get("nonOptionsProperty"), "nonOptionsProperty", TypeInfo.create(String.class), false, false, false);
   }
 
   @Test
@@ -295,7 +295,7 @@ public class OptionsTest {
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("nonOptionsProperty"), "nonOptionsProperty", TypeInfo.create(String.class), true, false);
+    assertProperty(model.getPropertyMap().get("nonOptionsProperty"), "nonOptionsProperty", TypeInfo.create(String.class), true, false, false);
     assertEquals(Collections.<TypeInfo.Class>emptySet(), model.getSuperTypes());
   }
 
@@ -336,12 +336,14 @@ public class OptionsTest {
     assertEquals(Collections.singleton((TypeInfo.Class) TypeInfo.create(Imported.class)), model.getImportedTypes());
   }
 
-  private static void assertProperty(PropertyInfo property, String expectedName, TypeInfo expectedType, boolean expectedDeclared, boolean expectedArray) {
+  private static void assertProperty(PropertyInfo property, String expectedName, TypeInfo expectedType,
+                                     boolean expectedDeclared, boolean expectedArray, boolean expectedAdder) {
     assertNotNull(property);
     assertEquals(expectedDeclared, property.isDeclared());
     assertEquals(expectedName, property.getName());
     assertEquals(expectedType, property.getType());
     assertEquals(expectedArray, property.isArray());
+    assertEquals(expectedAdder, property.isAdder());
   }
 
   private void assertInvalidOptions(Class<?> optionsClass) throws Exception {

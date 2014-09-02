@@ -201,6 +201,7 @@ public class OptionsModel implements Model {
           VariableElement parameterElt = parameters.get(0);
           TypeInfo type = typeFactory.create(parameterElt.asType());
           boolean array;
+          boolean adder;
           if ("add".equals(prefix)) {
             if (name.endsWith("s")) {
               throw new GenException(methodElt, "Option adder name must not terminate with 's' char");
@@ -208,7 +209,9 @@ public class OptionsModel implements Model {
               name += "s";
             }
             array = true;
+            adder = true;
           } else {
+            adder = false;
             if (type.getKind() == ClassKind.LIST) {
               type = ((TypeInfo.Parameterized) type).getArgs().get(0);
               array = true;
@@ -249,7 +252,7 @@ public class OptionsModel implements Model {
             declared = ownerElt.getAnnotation(Options.class) == null;
           }
 
-          PropertyInfo property = new PropertyInfo(declared, name, type, array);
+          PropertyInfo property = new PropertyInfo(declared, name, type, methodName, array, adder);
           if (propertyMap.containsKey(property.name)) {
             //
           }

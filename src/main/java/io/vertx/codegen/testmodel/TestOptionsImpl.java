@@ -24,23 +24,26 @@ public class TestOptionsImpl implements TestOptions {
     return foo;
   }
 
-  public void setFoo(String foo) {
+  public TestOptions setFoo(String foo) {
     this.foo = foo;
+    return this;
   }
 
   public int getBar() {
     return bar;
   }
 
-  public void setBar(int bar) {
+  public TestOptions setBar(int bar) {
     this.bar = bar;
+    return this;
   }
 
   public double getWibble() {
     return wibble;
   }
 
-  public void setWibble(double wibble) {
+  public TestOptions setWibble(double wibble) {
     this.wibble = wibble;
+    return this;
   }
 }
