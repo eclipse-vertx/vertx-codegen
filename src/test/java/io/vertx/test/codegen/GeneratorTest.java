@@ -87,6 +87,7 @@ import io.vertx.test.codegen.testapi.NoVertxGen;
 import io.vertx.test.codegen.testapi.NotInterface;
 import io.vertx.test.codegen.testapi.OverloadedMethodsInWrongParameterOrder;
 import io.vertx.test.codegen.testapi.OverloadedMethodsInWrongTypeParameterOrder;
+import io.vertx.test.codegen.testapi.OverloadedMethodsWithDifferentReturnType;
 import io.vertx.test.codegen.testapi.SameSignatureMethod1;
 import io.vertx.test.codegen.testapi.SameSignatureMethod2;
 import io.vertx.test.codegen.testapi.VertxGenClass1;
@@ -379,6 +380,16 @@ public class GeneratorTest {
   public void testOverloadedMethodsInWrongTypeParameterOrder() throws Exception {
     try {
       gen = new Generator().generateModel(OverloadedMethodsInWrongTypeParameterOrder.class);
+      fail("Should throw exception");
+    } catch (GenException e) {
+      // OK
+    }
+  }
+
+  @Test
+  public void testOverloadedMethodsWithDifferentReturnType() throws Exception {
+    try {
+      gen = new Generator().generateModel(OverloadedMethodsWithDifferentReturnType.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK

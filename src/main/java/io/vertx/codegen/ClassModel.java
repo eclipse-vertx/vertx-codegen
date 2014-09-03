@@ -532,8 +532,12 @@ public class ClassModel implements Model {
         squashedMethods.get(methodInfo.name).ownerTypes.addAll(methodInfo.ownerTypes);
         return;
       }
-      // Overloaded methods must have same parameter at each position in the param list
+      // Overloaded methods must have same parameter at each position in the param list and the same return type
       for (MethodInfo meth: methodsByName) {
+        if (!meth.returnType.equals(methodInfo.returnType)) {
+          throw new GenException(this.modelElt, "Overloaded method " + methodInfo.name + " must have the same return type "
+              + meth.returnType + " != " + methodInfo.returnType);
+        }
         int pos = 0;
         for (ParamInfo param: meth.params) {
           if (pos < methodInfo.params.size()) {
