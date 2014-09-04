@@ -29,16 +29,8 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
 import java.io.Writer;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -48,7 +40,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Logger;
@@ -120,7 +111,8 @@ public class Generator {
     URL url = clazz.getClassLoader().getResource(clazz.getName().replace('.', '/') + ".java");
     File f = new File(url.toURI());
     MyProcessor<PackageModel> processor = new MyProcessor<>(codegen -> codegen.getPackageModel(clazz.getPackage().getName()));
-    processor.run(f);
+    Compiler compiler = new Compiler(processor);
+    compiler.compile(f);
     return processor.result;
   }
 
@@ -128,13 +120,15 @@ public class Generator {
     URL url = loader.getResource(packageFqn.replace('.', '/') + "/package-info.java");
     File f = new File(url.toURI());
     MyProcessor<ModuleModel> processor = new MyProcessor<>(codegen -> codegen.getModuleModel(packageFqn));
-    processor.run(f);
+    Compiler compiler = new Compiler(processor);
+    compiler.compile(f);
     return processor.result;
   }
 
   public OptionsModel generateOptions(Class option) throws Exception {
     MyProcessor<OptionsModel> processor = new MyProcessor<>(codegen -> codegen.getOptionsModel(option.getName()));
-    processor.run(Collections.singletonList(option));
+    Compiler compiler = new Compiler(processor);
+    compiler.compile(Collections.singletonList(option));
     return processor.result;
   }
 
@@ -147,7 +141,8 @@ public class Generator {
         return e;
       }
     });
-    processor.run(Collections.singletonList(option));
+    Compiler compiler = new Compiler(processor);
+    compiler.compile(Collections.singletonList(option));
     if (processor.result != null) {
       throw processor.result;
     }
@@ -160,7 +155,8 @@ public class Generator {
     Collections.addAll(types, rest);
     String className = c.getCanonicalName();
     MyProcessor<ClassModel> processor = new MyProcessor<>(codegen -> codegen.getClassModel(className));
-    processor.run(types);
+    Compiler compiler = new Compiler(processor);
+    compiler.compile(types);
     if (processor.result == null) {
       throw new IllegalArgumentException(className + " not processed. Does it have the VertxGen annotation?");
     }
@@ -247,53 +243,6 @@ public class Generator {
     @Override
     public Iterable<? extends Completion> getCompletions(Element element, AnnotationMirror annotation, ExecutableElement member, String userText) {
       return Collections.emptyList();
-    }
-
-    public void run(List<Class> types) throws Exception {
-      ArrayList<File> tmpFiles = new ArrayList<>();
-      for (Class type : types) {
-        String className = type.getCanonicalName();
-        String fileName = className.replace(".", "/") + ".java";
-        InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
-        if (is == null) {
-          throw new IllegalStateException("Can't find source on classpath: " + fileName);
-        }
-        // Load the source
-        String source;
-        try (Scanner scanner = new Scanner(is, "UTF-8").useDelimiter("\\A")) {
-          source = scanner.next();
-        }
-        // Now copy it to a file (this is clunky but not sure how to get around it)
-        String tmpFileName = System.getProperty("java.io.tmpdir") + "/" + fileName;
-        File f = new File(tmpFileName);
-        File parent = f.getParentFile();
-        parent.mkdirs();
-        try (PrintStream out = new PrintStream(new FileOutputStream(tmpFileName))) {
-          out.print(source);
-        }
-        tmpFiles.add(f);
-      }
-      run(tmpFiles.toArray(new File[tmpFiles.size()]));
-    }
-
-    public void run(File... sourceFiles) throws Exception {
-      JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-      DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-      StandardJavaFileManager fm = compiler.getStandardFileManager(diagnostics, null, null);
-      Iterable<? extends JavaFileObject> fileObjects = fm.getJavaFileObjects(sourceFiles);
-      Writer out = new NullWriter();
-      JavaCompiler.CompilationTask task = compiler.getTask(out, fm, diagnostics, null, null, fileObjects);
-      List<Processor> processors = Collections.<Processor>singletonList(this);
-      task.setProcessors(processors);
-      try {
-        task.call();
-      } catch (RuntimeException e) {
-        if (e.getCause() != null && e.getCause() instanceof RuntimeException) {
-          throw (RuntimeException)e.getCause();
-        } else {
-          throw e;
-        }
-      }
     }
   }
 }

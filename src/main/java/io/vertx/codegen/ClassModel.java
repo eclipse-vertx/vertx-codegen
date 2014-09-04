@@ -36,7 +36,9 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -46,6 +48,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -82,6 +86,7 @@ public class ClassModel implements Model {
   // The methods, grouped by name
   private Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
   private Set<String> referencedOptionsTypes = new HashSet<>();
+  private List<TypeParamInfo> typeParams = new ArrayList<>();
 
   // Methods where all overloaded methods with same name are squashed into a single method with all parameters
   private Map<String, MethodInfo> squashedMethods = new LinkedHashMap<>();
@@ -166,6 +171,10 @@ public class ClassModel implements Model {
 
   public Set<String> getReferencedOptionsTypes() {
     return referencedOptionsTypes;
+  }
+
+  public List<TypeParamInfo> getTypeParams() {
+    return typeParams;
   }
 
   private void sortMethodMap(Map<String, List<MethodInfo>> map) {
@@ -303,10 +312,26 @@ public class ClassModel implements Model {
   boolean process() {
     if (!processed) {
       traverseElem(modelElt);
+      determineVariance();
       processed = true;
       return true;
     } else {
       return false;
+    }
+  }
+
+  private void determineVariance() {
+    List<? extends TypeParameterElement> typeParamElts = modelElt.getTypeParameters();
+    for (TypeParameterElement typeParamElt : typeParamElts) {
+      Set<Variance> variances = EnumSet.noneOf(Variance.class);
+      Logger foo = Logger.getLogger("FOO");
+      for (Variance variance : Variance.values()) {
+        if (Helper.checkVariance(typeParamElt, variance)) {
+          variances.add(variance);
+        }
+      }
+      foo.log(Level.INFO, "Vairance of " + modelElt + " " + typeParamElt + ": " + variances);
+      typeParams.add(new TypeParamInfo(typeParamElt.getSimpleName().toString(), variances));
     }
   }
 
@@ -612,6 +637,7 @@ public class ClassModel implements Model {
     vars.put("squashedMethods", getSquashedMethods().values());
     vars.put("methodsByName", getMethodMap());
     vars.put("referencedOptionsTypes", getReferencedOptionsTypes());
+    vars.put("typeParams", getTypeParams());
     vars.putAll(ClassKind.vars());
     vars.putAll(MethodKind.vars());
     return vars;
