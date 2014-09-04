@@ -53,6 +53,21 @@ public class MethodInfo {
     this.ownerTypes = ownerTypes;
   }
 
+  /**
+   * @return the associated property name when this method is a getter otherwise null is returned
+   */
+  public String getPropertyName() {
+    if (kind == MethodKind.GETTER) {
+      if (name.startsWith("is")) {
+        return Helper.normalizePropertyName(name.substring(2));
+      } else {
+        return Helper.normalizePropertyName(name.substring(3));
+      }
+    } else {
+      return null;
+    }
+  }
+
   public String getName() {
     return name;
   }
@@ -68,6 +83,8 @@ public class MethodInfo {
   public Set<TypeInfo.Class> getOwnerTypes() {
     return ownerTypes;
   }
+
+
 
   /**
    * Return true if the provided type is the sole owner of this method, i.e this method

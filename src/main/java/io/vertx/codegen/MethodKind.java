@@ -23,7 +23,6 @@ public enum MethodKind {
 
   /**
    * A method that is recognized as a property getter.
-   *
    */
   GETTER,
 
