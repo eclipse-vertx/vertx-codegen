@@ -488,11 +488,11 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
-  public T methodWithGenericReturn(boolean obj) {
+  public <U> U methodWithGenericReturn(boolean obj) {
     if (obj) {
-      return (T) (new JsonObject().putString("foo", "bar"));
+      return (U) (new JsonObject().putString("foo", "bar"));
     } else {
-      return (T) (new JsonArray().add("foo").add("bar"));
+      return (U) (new JsonArray().add("foo").add("bar"));
     }
   }
 
