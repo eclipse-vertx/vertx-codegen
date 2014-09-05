@@ -133,7 +133,7 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
 
   String overloadedMethod(String str, RefedInterface1 refed, long period, Handler<String> handler);
 
-  <U> U methodWithGenericReturn(boolean obj);
+  <U> U methodWithGenericReturn(String type);
 
   <U> void methodWithGenericParam(String type, U u);
 

@@ -14,11 +14,20 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 public class TestInterfaceImpl<T> implements TestInterface<T> {
+
+  private static <T> T assertInstanceOf(Class<T> expectedType, Object obj) {
+    if (expectedType.isInstance(obj)) {
+      return expectedType.cast(obj);
+    } else {
+      throw new AssertionError("Was expecting " + obj + " to be an instance of " + expectedType);
+    }
+  }
 
   @Override
   public void methodWithBasicParams(byte b, short s, int i, long l, float f, double d, boolean bool, char ch, String str) {
@@ -488,104 +497,70 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
-  public <U> U methodWithGenericReturn(boolean obj) {
-    if (obj) {
-      return (U) (new JsonObject().putString("foo", "bar"));
-    } else {
-      return (U) (new JsonArray().add("foo").add("bar"));
+  public <U> U methodWithGenericReturn(String type) {
+    switch (type) {
+      case "Boolean": {
+        return (U) Boolean.valueOf(true);
+      }
+      case "Byte": {
+        return (U) Byte.valueOf((byte)123);
+      }
+      case "Short": {
+        return (U) Short.valueOf((short)12345);
+      }
+      case "Integer": {
+        return (U) Integer.valueOf(1234567);
+      }
+      case "Long": {
+        return (U) Long.valueOf(1265615234);
+      }
+      case "Float": {
+        return (U) Float.valueOf(12.345f);
+      }
+      case "Double": {
+        return (U) Double.valueOf(12.34566d);
+      }
+      case "Character": {
+        return (U) Character.valueOf('x');
+      }
+      case "String": {
+        return (U) "foo";
+      }
+      case "Ref": {
+        return (U) new RefedInterface1Impl().setString("bar");
+      }
+      case "JsonObject": {
+        return (U) (new JsonObject().putString("foo", "hello").putNumber("bar", 123));
+      }
+      case "JsonObjectLong": {
+        // Some languages will convert to Long
+        return (U) (new JsonObject().putString("foo", "hello").putNumber("bar", 123L));
+      }
+      case "JsonArray": {
+        return (U) (new JsonArray().add("foo").add("bar").add("wib"));
+      }
+      default:
+        throw new AssertionError("Unexpected " + type);
     }
   }
 
   @Override
   public <U> void methodWithGenericParam(String type, U u) {
-    switch (type) {
-      case "String": {
-        assertEquals("foo", u);
-        break;
-      }
-      case "Ref": {
-        assertTrue(u instanceof RefedInterface1);
-        RefedInterface1 expected = (RefedInterface1) u;
-        assertEquals("foo", expected.getString());
-        break;
-      }
-      case "JsonObject": {
-        JsonObject jsonObject = (JsonObject)u;
-        assertEquals("hello", jsonObject.getString("foo"));
-        assertEquals(123, jsonObject.getInteger("bar").intValue());
-        break;
-      }
-      case "JsonArray": {
-        JsonArray jsonArray = (JsonArray)u;
-        assertEquals(3, jsonArray.size());
-        assertEquals("foo", jsonArray.get(0));
-        assertEquals("bar", jsonArray.get(1));
-        assertEquals("wib", jsonArray.get(2));
-        break;
-      }
-    }
+    Object expected = methodWithGenericReturn(type);
+    assertEquals(expected.getClass(), u.getClass());
+    assertEquals(expected, u);
   }
 
   @Override
   public <U> void methodWithGenericHandler(String type, Handler<U> handler) {
-    switch (type) {
-      case "String": {
-        handler.handle((U)"handlerFoo");
-        break;
-      }
-      case "Ref": {
-        RefedInterface1 ref = new RefedInterface1Impl();
-        ref.setString("bar");
-        handler.handle((U)ref);
-        break;
-      }
-      case "JsonObject": {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.putString("foo", "hello");
-        jsonObject.putNumber("bar", 123);
-        handler.handle((U)jsonObject);
-        break;
-      }
-      case "JsonArray": {
-        JsonArray jsonArray = new JsonArray();
-        jsonArray.add("foo");
-        jsonArray.add("bar");
-        jsonArray.add("wib");
-        handler.handle((U) jsonArray);
-        break;
-      }
-    }
+    U value = methodWithGenericReturn(type);
+    handler.handle(value);
   }
 
   @Override
   public <U> void methodWithGenericHandlerAsyncResult(String type, Handler<AsyncResult<U>> asyncResultHandler) {
-    switch (type) {
-      case "String": {
-        asyncResultHandler.handle(Future.completedFuture((U)"asyncResultHandlerFoo"));
-        break;
-      }
-      case "Ref": {
-        RefedInterface1 ref = new RefedInterface1Impl();
-        ref.setString("bar");
-        asyncResultHandler.handle(Future.completedFuture((U)ref));
-        break;
-      }
-      case "JsonObject": {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.putString("foo", "hello");
-        jsonObject.putNumber("bar", 123);
-        asyncResultHandler.handle(Future.completedFuture((U)jsonObject));
-        break;
-      }
-      case "JsonArray": {
-        JsonArray jsonArray = new JsonArray();
-        jsonArray.add("foo");
-        jsonArray.add("bar");
-        jsonArray.add("wib");
-        asyncResultHandler.handle(Future.completedFuture((U) jsonArray));
-        break;
-      }
-    }
+    U value = methodWithGenericReturn(type);
+    asyncResultHandler.handle(Future.completedFuture(value));
   }
 
   @Override
