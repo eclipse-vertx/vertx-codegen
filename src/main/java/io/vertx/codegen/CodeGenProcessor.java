@@ -1,6 +1,7 @@
 package io.vertx.codegen;
 
 import io.vertx.core.json.JsonObject;
+import org.mvel2.MVEL;
 import org.mvel2.templates.TemplateRuntime;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -12,6 +13,7 @@ import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
@@ -59,10 +61,11 @@ public class CodeGenProcessor extends AbstractProcessor {
             JsonObject model = obj.getObject(modelKind);
             if (model != null) {
               String templateFileName = model.getString("templateFileName");
-              String nameTemplate = model.getString("nameTemplate");
+              String fileName = model.getString("fileName");
+              Serializable fileNameExpression = MVEL.compileExpression(fileName);
               Template compiledTemplate = new Template(templateFileName);
               compiledTemplate.setOptions(env.getOptions());
-              codeGenerators.add(new CodeGenerator(modelKind, nameTemplate, compiledTemplate));
+              codeGenerators.add(new CodeGenerator(modelKind, fileNameExpression, compiledTemplate));
             }
           }
           log.info("Loaded " + name + " code generator");
@@ -104,19 +107,21 @@ public class CodeGenProcessor extends AbstractProcessor {
               vars.putAll(model.getVars());
               for (CodeGenerator codeGenerator : codeGenerators) {
                 if (codeGenerator.kind.equals(model.getKind())) {
-                  String relativeName = TemplateRuntime.eval(codeGenerator.nameTemplate, vars).toString();
-                  if (relativeName.endsWith(".java")) {
-                    // Special handling for .java
-                    JavaFileObject target = processingEnv.getFiler().createSourceFile(relativeName.substring(0, relativeName.length() - ".java".length()));
-                    String output = codeGenerator.transformTemplate.render(model);
-                    try (Writer writer = target.openWriter()) {
-                      writer.append(output);
+                  String relativeName = (String) MVEL.executeExpression(codeGenerator.fileNameExpression, vars);
+                  if (relativeName != null) {
+                    if (relativeName.endsWith(".java")) {
+                      // Special handling for .java
+                      JavaFileObject target = processingEnv.getFiler().createSourceFile(relativeName.substring(0, relativeName.length() - ".java".length()));
+                      String output = codeGenerator.transformTemplate.render(model);
+                      try (Writer writer = target.openWriter()) {
+                        writer.append(output);
+                      }
+                    } else {
+                      File target = new File(outputDirectory, relativeName);
+                      codeGenerator.transformTemplate.apply(model, target);
                     }
-                  } else {
-                    File target = new File(outputDirectory, relativeName);
-                    codeGenerator.transformTemplate.apply(model, target);
+                    log.info("Generated model " + model.getFqn() + ": " + relativeName);
                   }
-                  log.info("Generated model " + model.getFqn() + ": " + relativeName);
                 }
               }
             } else {
@@ -139,11 +144,11 @@ public class CodeGenProcessor extends AbstractProcessor {
 
   static class CodeGenerator {
     final String kind;
-    final String nameTemplate;
+    final Serializable fileNameExpression;
     final Template transformTemplate;
-    CodeGenerator(String kind, String nameTemplate, Template transformTemplate) {
+    CodeGenerator(String kind, Serializable fileNameExpression, Template transformTemplate) {
       this.kind = kind;
-      this.nameTemplate = nameTemplate;
+      this.fileNameExpression = fileNameExpression;
       this.transformTemplate = transformTemplate;
     }
   }
