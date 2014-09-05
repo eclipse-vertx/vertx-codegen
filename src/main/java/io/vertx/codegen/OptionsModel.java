@@ -182,13 +182,7 @@ public class OptionsModel implements Model {
 
   private void processMethod(ExecutableElement methodElt) {
     String methodName = methodElt.getSimpleName().toString();
-    if (methodName.startsWith("is") && methodName.length() > 2) {
-      List<? extends VariableElement> parameters = methodElt.getParameters();
-      if (parameters.size() > 0) {
-        throw new GenException(methodElt, "Invalid getter with arguments " + parameters);
-      }
-      return;
-    } else if (methodName.length() > 3) {
+    if (methodName.length() > 3) {
       String prefix = methodName.substring(0, 3);
       String name = Helper.normalizePropertyName(methodName.substring(3));
       List<? extends VariableElement> parameters = methodElt.getParameters();
@@ -196,7 +190,7 @@ public class OptionsModel implements Model {
         case "add":
         case "set": {
           if (parameters.size() != 1) {
-            throw new GenException(methodElt, "Setter with incorrect number of arguments " + parameters);
+            return;
           }
           VariableElement parameterElt = parameters.get(0);
           TypeInfo type = typeFactory.create(parameterElt.asType());
@@ -228,7 +222,7 @@ public class OptionsModel implements Model {
             case JSON_OBJECT:
               break;
             default:
-              throw new GenException(parameterElt, "Invalid adder/setter type " + type);
+              return;
           }
 
           boolean declared;
@@ -259,14 +253,7 @@ public class OptionsModel implements Model {
           propertyMap.put(property.name, property);
           return;
         }
-        case "get": {
-          if (parameters.size() > 0) {
-            throw new GenException(methodElt, "Invalid getter with arguments " + parameters);
-          }
-          return;
-        }
       }
     }
-    throw new GenException(methodElt, "Method " + methodElt + " not supported");
   }
 }

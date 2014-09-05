@@ -1,6 +1,5 @@
 package io.vertx.test.codegen.testoptions;
 
-import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.Options;
 import io.vertx.core.json.JsonObject;
 
@@ -20,7 +19,16 @@ public interface IgnoreMethods {
     throw new UnsupportedOperationException();
   }
 
-  @GenIgnore
-  Locale doSomething();
+  Locale ignoredMethod();
+
+  boolean getWithArgument(String s);
+
+  boolean isWithArgument(String s);
+
+  void setWithZeroArgument();
+
+  void setWithTwoArguments(String s1, String s2);
+
+  void setWithIgnoredArgument(Locale locale);
 
 }

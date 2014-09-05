@@ -39,10 +39,7 @@ import io.vertx.test.codegen.testoptions.ListBasicSetters;
 import io.vertx.test.codegen.testoptions.Parameterized;
 import io.vertx.test.codegen.testoptions.SetterNormalizationRules;
 import io.vertx.test.codegen.testoptions.SetterWithNonFluentReturnType;
-import io.vertx.test.codegen.testoptions.SetterWithInvalidType;
 import io.vertx.test.codegen.testoptions.SetterWithNestedOptions;
-import io.vertx.test.codegen.testoptions.SetterWithTwoArguments;
-import io.vertx.test.codegen.testoptions.SetterWithZeroArgument;
 import io.vertx.test.codegen.testoptions.imported.Imported;
 import org.junit.Test;
 
@@ -87,13 +84,6 @@ public class OptionsTest {
   @Test
   public void testParameterizedOptions() throws Exception {
     assertInvalidOptions(Parameterized.class);
-  }
-
-  @Test
-  public void testInvalidSetters() throws Exception {
-    assertInvalidOptions(SetterWithZeroArgument.class);
-    assertInvalidOptions(SetterWithTwoArguments.class);
-    assertInvalidOptions(SetterWithInvalidType.class);
   }
 
   public void testSetterWithNonFluentReturnType() throws Exception {
