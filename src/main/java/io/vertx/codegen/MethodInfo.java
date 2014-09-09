@@ -35,7 +35,7 @@ public class MethodInfo {
   List<ParamInfo> params;
   final String comment;
   final boolean staticMethod;
-  boolean squashed;
+  boolean overloaded;
   List<String> typeParams;
   LinkedHashSet<TypeInfo.Class> ownerTypes;
 
@@ -121,12 +121,12 @@ public class MethodInfo {
     return comment;
   }
 
-  public boolean isSquashed() {
-    return squashed;
+  public boolean isOverloaded() {
+    return overloaded;
   }
 
-  public void setSquashed(boolean squashed) {
-    this.squashed = squashed;
+  public void setOverloaded(boolean overloaded) {
+    this.overloaded = overloaded;
   }
 
   public boolean isStaticMethod() {
@@ -155,7 +155,7 @@ public class MethodInfo {
     if (this.params == null) {
       this.params = new ArrayList<>();
     } else {
-      squashed = true;
+      overloaded = true;
     }
     for (ParamInfo param: params) {
       if (!this.params.contains(param)) {

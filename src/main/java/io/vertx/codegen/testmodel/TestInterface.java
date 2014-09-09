@@ -127,9 +127,11 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
 
   Set<String> methodWithSetStringReturn();
 
+  String overloadedMethod(String str, Handler<String> handler);
+
   String overloadedMethod(String str, RefedInterface1 refed);
 
-  String overloadedMethod(String str, RefedInterface1 refed, long period);
+  String overloadedMethod(String str, RefedInterface1 refed, Handler<String> handler);
 
   String overloadedMethod(String str, RefedInterface1 refed, long period, Handler<String> handler);
 

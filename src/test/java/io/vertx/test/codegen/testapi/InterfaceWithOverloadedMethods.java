@@ -11,13 +11,13 @@ public interface InterfaceWithOverloadedMethods {
 
   void foo(String str);
 
-  void foo(String str, long time);
+  void foo(String str, Handler<VertxGenClass1> handler);
 
   void foo(String str, long time, Handler<VertxGenClass1> handler);
 
   void bar(VertxGenClass2 obj1);
 
-  void bar(VertxGenClass2 obj1, String str);
+  void bar(String obj1);
 
   void juu(String str);
 

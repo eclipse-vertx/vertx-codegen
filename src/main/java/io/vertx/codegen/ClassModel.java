@@ -36,7 +36,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -87,9 +86,6 @@ public class ClassModel implements Model {
   private Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
   private Set<String> referencedOptionsTypes = new HashSet<>();
   private List<TypeParamInfo> typeParams = new ArrayList<>();
-
-  // Methods where all overloaded methods with same name are squashed into a single method with all parameters
-  private Map<String, MethodInfo> squashedMethods = new LinkedHashMap<>();
 
   public ClassModel(Map<String, TypeElement> sources, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
     this.sources = sources;
@@ -159,10 +155,6 @@ public class ClassModel implements Model {
 
   public List<TypeInfo> getAbstractSuperTypes() {
     return abstractSuperTypes;
-  }
-
-  public Map<String, MethodInfo> getSquashedMethods() {
-    return squashedMethods;
   }
 
   public Map<String, List<MethodInfo>> getMethodMap() {
@@ -330,7 +322,7 @@ public class ClassModel implements Model {
           variances.add(variance);
         }
       }
-      foo.log(Level.INFO, "Vairance of " + modelElt + " " + typeParamElt + ": " + variances);
+      foo.log(Level.INFO, "Variance of " + modelElt + " " + typeParamElt + ": " + variances);
       typeParams.add(new TypeParamInfo(typeParamElt.getSimpleName().toString(), variances));
     }
   }
@@ -562,47 +554,20 @@ public class ClassModel implements Model {
       List<MethodInfo> sameSignatureMethods = methods.stream().filter(meth -> meth.hasSameSignature(methodInfo)).collect(Collectors.toList());
       if (sameSignatureMethods.size() > 0) {
         sameSignatureMethods.forEach(m -> m.ownerTypes.addAll(methodInfo.ownerTypes));
-        squashedMethods.get(methodInfo.name).ownerTypes.addAll(methodInfo.ownerTypes);
         return;
       }
-      // Overloaded methods must have same parameter at each position in the param list and the same return type
+      // Overloaded methods must have same return type
       for (MethodInfo meth: methodsByName) {
         if (!meth.returnType.equals(methodInfo.returnType)) {
           throw new GenException(this.modelElt, "Overloaded method " + methodInfo.name + " must have the same return type "
               + meth.returnType + " != " + methodInfo.returnType);
         }
-        int pos = 0;
-        for (ParamInfo param: meth.params) {
-          if (pos < methodInfo.params.size()) {
-            if (!methodInfo.params.get(pos).equals(param)) {
-              throw new GenException(this.modelElt, "Overloaded method " + methodInfo.name + " has versions with different sequences of parameters");
-            }
-          } else {
-            break;
-          }
-          pos++;
-        }
       }
     }
-
 
     methodsByName.add(methodInfo);
     methods.add(methodInfo);
     methodInfo.collectImports(importedTypes);
-    MethodInfo squashed = squashedMethods.get(methodInfo.name);
-    if (squashed == null) {
-      squashed = new MethodInfo(new LinkedHashSet<>(methodInfo.ownerTypes), methodInfo.name, methodInfo.kind, methodInfo.returnType,
-          methodInfo.fluent, methodInfo.cacheReturn, methodInfo.params, methodInfo.comment, methodInfo.staticMethod, methodInfo.typeParams);
-      squashedMethods.put(methodInfo.name, squashed);
-    } else {
-      squashed.mergeParams(methodInfo.params);
-      try {
-        squashed.mergeTypeParams(methodInfo.typeParams);
-      } catch (IllegalArgumentException e) {
-        throw new GenException(this.modelElt, "Overloaded method " + methodInfo.name + " has versions with different sequences of type parameters");
-      }
-      squashed.ownerTypes.addAll(methodInfo.ownerTypes);
-    }
   }
 
   private boolean isObjectBound(TypeMirror bound) {
@@ -642,7 +607,6 @@ public class ClassModel implements Model {
     vars.put("superTypes", getSuperTypes());
     vars.put("concreteSuperTypes", getConcreteSuperTypes());
     vars.put("abstractSuperTypes", getAbstractSuperTypes());
-    vars.put("squashedMethods", getSquashedMethods().values());
     vars.put("methodsByName", getMethodMap());
     vars.put("referencedOptionsTypes", getReferencedOptionsTypes());
     vars.put("typeParams", getTypeParams());

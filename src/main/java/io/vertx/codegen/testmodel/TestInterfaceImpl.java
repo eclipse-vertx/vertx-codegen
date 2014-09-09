@@ -461,21 +461,30 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
-  public String overloadedMethod(String str, RefedInterface1 refed, long period) {
-    assertEquals("cat", str);
-    assertEquals("dog", refed.getString());
-    assertEquals(12345l, period);
-    return "meth2";
-  }
-
-  @Override
   public String overloadedMethod(String str, RefedInterface1 refed, long period, Handler<String> handler) {
     assertEquals("cat", str);
     assertEquals("dog", refed.getString());
     assertEquals(12345l, period);
     assertNotNull(handler);
     handler.handle("giraffe");
+    return "meth2";
+  }
+
+  @Override
+  public String overloadedMethod(String str, Handler<String> handler) {
+    assertEquals("cat", str);
+    assertNotNull(handler);
+    handler.handle("giraffe");
     return "meth3";
+  }
+
+  @Override
+  public String overloadedMethod(String str, RefedInterface1 refed, Handler<String> handler) {
+    assertEquals("cat", str);
+    assertEquals("dog", refed.getString());
+    assertNotNull(handler);
+    handler.handle("giraffe");
+    return "meth4";
   }
 
   @Override

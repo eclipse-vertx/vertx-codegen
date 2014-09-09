@@ -86,8 +86,6 @@ import io.vertx.test.codegen.testapi.MethodWithWildcardUpperBoundTypeArg;
 import io.vertx.test.codegen.testapi.NestedInterface;
 import io.vertx.test.codegen.testapi.NoVertxGen;
 import io.vertx.test.codegen.testapi.NotInterface;
-import io.vertx.test.codegen.testapi.OverloadedMethodsInWrongParameterOrder;
-import io.vertx.test.codegen.testapi.OverloadedMethodsInWrongTypeParameterOrder;
 import io.vertx.test.codegen.testapi.OverloadedMethodsWithDifferentReturnType;
 import io.vertx.test.codegen.testapi.SameSignatureMethod1;
 import io.vertx.test.codegen.testapi.SameSignatureMethod2;
@@ -97,15 +95,12 @@ import io.vertx.test.codegen.testapi.VertxGenInterface1;
 import io.vertx.test.codegen.testapi.VertxGenInterface2;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
 import static io.vertx.test.codegen.Utils.*;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -366,27 +361,6 @@ public class GeneratorTest {
 
   // Invalid methods
 
-
-  @Test
-  public void testOverloadedMethodsInWrongParameterOrder() throws Exception {
-    try {
-      gen = new Generator().generateModel(OverloadedMethodsInWrongParameterOrder.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
-  }
-
-  @Test
-  public void testOverloadedMethodsInWrongTypeParameterOrder() throws Exception {
-    try {
-      gen = new Generator().generateModel(OverloadedMethodsInWrongTypeParameterOrder.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
-  }
-
   @Test
   public void testOverloadedMethodsWithDifferentReturnType() throws Exception {
     try {
@@ -500,11 +474,6 @@ public class GeneratorTest {
 
     MethodInfo method = gen.getMethods().get(0);
     checker.accept(method);
-
-    assertEquals(1, gen.getSquashedMethods().size());
-    MethodInfo squashed = gen.getSquashedMethods().get(methodName);
-    assertNotNull(squashed);
-    checker.accept(squashed);
   }
 
   @Test
@@ -533,11 +502,6 @@ public class GeneratorTest {
 
     MethodInfo method = gen.getMethods().get(0);
     checker.accept(method);
-
-    assertEquals(1, gen.getSquashedMethods().size());
-    MethodInfo squashed = gen.getSquashedMethods().get(methodName);
-    assertNotNull(squashed);
-    checker.accept(squashed);
   }
 
   @Test
@@ -617,11 +581,6 @@ public class GeneratorTest {
 
     MethodInfo method = gen.getMethods().get(0);
     checker.accept(method);
-
-    assertEquals(1, gen.getSquashedMethods().size());
-    MethodInfo squashed = gen.getSquashedMethods().get(methodName);
-    assertNotNull(squashed);
-    checker.accept(squashed);
   }
 
   @Test
@@ -679,11 +638,6 @@ public class GeneratorTest {
 
     MethodInfo method = gen.getMethods().get(0);
     checker.accept(method);
-
-    assertEquals(1, gen.getSquashedMethods().size());
-    MethodInfo squashed = gen.getSquashedMethods().get(methodName);
-    assertNotNull(squashed);
-    checker.accept(squashed);
   }
 
   @Test
@@ -708,11 +662,6 @@ public class GeneratorTest {
 
     MethodInfo method = gen.getMethods().get(0);
     checker.accept(method);
-
-    assertEquals(1, gen.getSquashedMethods().size());
-    MethodInfo squashed = gen.getSquashedMethods().get(methodName);
-    assertNotNull(squashed);
-    checker.accept(squashed);
   }
 
   @Test
@@ -733,11 +682,6 @@ public class GeneratorTest {
 
     MethodInfo method = gen.getMethods().get(0);
     checker.accept(method);
-
-    assertEquals(1, gen.getSquashedMethods().size());
-    MethodInfo squashed = gen.getSquashedMethods().get(methodName);
-    assertNotNull(squashed);
-    checker.accept(squashed);
   }
 
   @Test
@@ -758,11 +702,6 @@ public class GeneratorTest {
 
     MethodInfo method = gen.getMethods().get(0);
     checker.accept(method);
-
-    assertEquals(1, gen.getSquashedMethods().size());
-    MethodInfo squashed = gen.getSquashedMethods().get(methodName);
-    assertNotNull(squashed);
-    checker.accept(squashed);
   }
 
   // Valid returns
@@ -791,8 +730,6 @@ public class GeneratorTest {
       checkClassParam(params.get(2), "asyncResultHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<R>>", ClassKind.HANDLER);
     };
     checker.accept(gen.getMethods());
-    assertEquals(2, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
 
@@ -834,8 +771,6 @@ public class GeneratorTest {
       checkMethod(methods.get(16), "methodWithCharObjectReturn", null, MethodKind.OTHER, "java.lang.Character", false, false, false, false, 0);
     };
     checker.accept(gen.getMethods());
-    assertEquals(17, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test
@@ -848,8 +783,6 @@ public class GeneratorTest {
     assertEquals(1, gen.getMethods().size());
     String methodName = "methodWithVoidReturn";
     checkMethod(gen.getMethods().get(0), methodName, null, MethodKind.OTHER, "void", false, false, false, false, 0);
-    assertEquals(1, gen.getSquashedMethods().size());
-    checkMethod(gen.getSquashedMethods().get(methodName), methodName, null, MethodKind.OTHER, "void", false, false, false, false, 0);
   }
 
   @Test
@@ -876,8 +809,6 @@ public class GeneratorTest {
       checkMethod(methods.get(10), "vertxGen2List", null, MethodKind.OTHER, "java.util.List<" + VertxGenClass2.class.getName() + ">", false, false, false, false, 0);
     };
     checker.accept(gen.getMethods());
-    assertEquals(11, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
   
   @Test
@@ -904,8 +835,6 @@ public class GeneratorTest {
       checkMethod(methods.get(10), "vertxGen2Set", null, MethodKind.OTHER, "java.util.Set<" + VertxGenClass2.class.getName() + ">", false, false, false, false, 0);
     };
     checker.accept(gen.getMethods());
-    assertEquals(11, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test
@@ -923,8 +852,6 @@ public class GeneratorTest {
       checkMethod(methods.get(1), "methodWithVertxGen2Return", null, MethodKind.OTHER, VertxGenClass2.class.getName(), false, false, false, false, 0);
     };
     checker.accept(gen.getMethods());
-    assertEquals(2, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test
@@ -940,8 +867,6 @@ public class GeneratorTest {
       checkMethod(methods.get(1), "bar", null, MethodKind.OTHER, "void", false, false, false, false, 1);
     };
     checker.accept(gen.getMethods());
-    assertEquals(2, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test
@@ -993,8 +918,6 @@ public class GeneratorTest {
       assertEquals(null, methods.get(19).getPropertyName());
     };
     checker.accept(gen.getMethods());
-    assertEquals(20, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test
@@ -1010,8 +933,6 @@ public class GeneratorTest {
       checkMethod(methods.get(1), "bar", null, MethodKind.OTHER, InterfaceWithFluentMethods.class.getName(), false, true, false, false, 1);
     };
     checker.accept(gen.getMethods());
-    assertEquals(2, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test
@@ -1028,8 +949,6 @@ public class GeneratorTest {
       checkMethod(methods.get(1), "bar", null, MethodKind.OTHER, VertxGenClass1.class.getName(), true, false, false, false, 1);
     };
     checker.accept(gen.getMethods());
-    assertEquals(2, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test
@@ -1045,8 +964,6 @@ public class GeneratorTest {
       checkMethod(methods.get(1), "setAt", null, MethodKind.INDEX_SETTER, "void", false, false, false, false, 2);
     };
     checker.accept(gen.getMethods());
-    assertEquals(2, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test
@@ -1074,8 +991,6 @@ public class GeneratorTest {
       checkMethod(methods.get(2), "juu", null, MethodKind.OTHER, "void", false, false, false, false, 1);
     };
     checker.accept(gen.getMethods());
-    assertEquals(3, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test
@@ -1112,8 +1027,6 @@ public class GeneratorTest {
       checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "void", false, false, false, false, 1);
     };
     checker.accept(gen.getMethods());
-    assertEquals(1, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test
@@ -1143,18 +1056,19 @@ public class GeneratorTest {
     assertEquals(8, gen.getMethods().size());
     checkMethod(gen.getMethods().get(0), "foo", null, MethodKind.OTHER, "void", false, false, false, false, 1);
     checkClassParam(gen.getMethods().get(0).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
-    checkMethod(gen.getMethods().get(1), "foo", null, MethodKind.OTHER, "void", false, false, false, false, 2);
+
+    checkMethod(gen.getMethods().get(1), "foo", null, MethodKind.HANDLER, "void", false, false, false, false, 2);
     checkClassParam(gen.getMethods().get(1).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
-    checkParam(gen.getMethods().get(1).getParams().get(1), "time", "long");
+    checkClassParam(gen.getMethods().get(1).getParams().get(1), "handler", "io.vertx.core.Handler<" + VertxGenClass1Info + ">", ClassKind.HANDLER);
+
     checkMethod(gen.getMethods().get(2), "foo", null, MethodKind.HANDLER, "void", false, false, false, false, 3);
     checkClassParam(gen.getMethods().get(2).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
     checkParam(gen.getMethods().get(2).getParams().get(1), "time", "long");
     checkClassParam(gen.getMethods().get(2).getParams().get(2), "handler", "io.vertx.core.Handler<" + VertxGenClass1Info + ">", ClassKind.HANDLER);
     checkMethod(gen.getMethods().get(3), "bar", null, MethodKind.OTHER, "void", false, false, false, false, 1);
     checkClassParam(gen.getMethods().get(3).getParams().get(0), "obj1", VertxGenClass2.class.getName(), ClassKind.API);
-    checkMethod(gen.getMethods().get(4), "bar", null, MethodKind.OTHER, "void", false, false, false, false, 2);
-    checkClassParam(gen.getMethods().get(4).getParams().get(0), "obj1", VertxGenClass2.class.getName(), ClassKind.API);
-    checkClassParam(gen.getMethods().get(4).getParams().get(1), "str", String.class.getName(), ClassKind.STRING);
+    checkMethod(gen.getMethods().get(4), "bar", null, MethodKind.OTHER, "void", false, false, false, false, 1);
+    checkClassParam(gen.getMethods().get(4).getParams().get(0), "obj1", String.class.getName(), ClassKind.STRING);
     checkMethod(gen.getMethods().get(5), "juu", null, MethodKind.OTHER, "void", false, false, false, false, 1);
     checkClassParam(gen.getMethods().get(0).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
     checkMethod(gen.getMethods().get(6), "juu", null, MethodKind.OTHER, "void", false, false, false, false, 2);
@@ -1164,28 +1078,6 @@ public class GeneratorTest {
     checkClassParam(gen.getMethods().get(7).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
     checkParam(gen.getMethods().get(7).getParams().get(1), "time", "long");
     checkClassParam(gen.getMethods().get(7).getParams().get(2), "handler", "io.vertx.core.Handler<T>", ClassKind.HANDLER);
-
-    assertEquals(3, gen.getSquashedMethods().size());
-    MethodInfo squashed1 = gen.getSquashedMethods().get("foo");
-    assertEquals(Collections.<String>emptyList(), squashed1.getTypeParams());
-    checkMethod(squashed1, "foo", null, MethodKind.OTHER, "void", false, false, false, true, 3);
-    checkClassParam(squashed1.getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
-    checkParam(squashed1.getParams().get(1), "time", "long");
-    checkClassParam(squashed1.getParams().get(2), "handler", "io.vertx.core.Handler<" + VertxGenClass1Info + ">", ClassKind.HANDLER);
-
-    MethodInfo squashed2 = gen.getSquashedMethods().get("bar");
-    assertEquals(Collections.<String>emptyList(), squashed2.getTypeParams());
-    checkMethod(squashed2, "bar", null, MethodKind.OTHER, "void", false, false, false, true, 2);
-    checkClassParam(squashed2.getParams().get(0), "obj1", VertxGenClass2.class.getName(), ClassKind.API);
-    checkClassParam(squashed2.getParams().get(1), "str", String.class.getName(), ClassKind.STRING);
-
-    MethodInfo squashed3 = gen.getSquashedMethods().get("juu");
-    assertEquals(Collections.singletonList("T"), squashed3.getTypeParams());
-    checkMethod(squashed3, "juu", null, MethodKind.OTHER, "void", false, false, false, true, 3);
-    checkClassParam(squashed3.getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
-    checkParam(squashed3.getParams().get(1), "time", "long");
-    checkClassParam(squashed3.getParams().get(2), "handler", "io.vertx.core.Handler<T>", ClassKind.HANDLER);
-
     assertEquals(3, gen.getMethodMap().size());
     List<MethodInfo> meths1 = gen.getMethodMap().get("foo");
     assertEquals(3, meths1.size());
@@ -1213,8 +1105,6 @@ public class GeneratorTest {
       checkMethod(methods.get(1), "bar", null, MethodKind.OTHER, VertxGenClass2.class.getName(), false, false, true, false, 1);
     };
     checker.accept(gen.getMethods());
-    assertEquals(2, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test
@@ -1228,8 +1118,6 @@ public class GeneratorTest {
       assertEquals(set(TypeInfo.create(InterfaceWithMethodOverride.class), TypeInfo.create(VertxGenInterface2.class)), methods.get(1).getOwnerTypes());
     };
     checker.accept(gen.getMethods());
-    assertEquals(2, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
     checkClassParam(gen.getMethods().get(0).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
     checkClassParam(gen.getMethods().get(1).getParams().get(0), "str_renamed", String.class.getName(), ClassKind.STRING);
   }
@@ -1245,8 +1133,6 @@ public class GeneratorTest {
       checkMethod(methods.get(3), "daa", null, MethodKind.HANDLER, "void", false, false, false, false, 1);
     };
     checker.accept(gen.getMethods());
-    assertEquals(4, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
     checkClassParam(gen.getMethods().get(2).getParams().get(0), "handler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.String>>", ClassKind.HANDLER);
     checkClassParam(gen.getMethods().get(3).getParams().get(0), "handler", "io.vertx.core.Handler<java.lang.String>", ClassKind.HANDLER);
   }
@@ -1260,8 +1146,6 @@ public class GeneratorTest {
       assertEquals(set(TypeInfo.create(InterfaceWithTypeVariableArgument2.class), TypeInfo.create(InterfaceWithTypeVariableArgument1.class)), methods.get(0).getOwnerTypes());
     };
     checker.accept(gen.getMethods());
-    assertEquals(1, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test
@@ -1273,8 +1157,6 @@ public class GeneratorTest {
       assertEquals(set(TypeInfo.create(SameSignatureMethod1.class), TypeInfo.create(SameSignatureMethod2.class)), methods.get(0).getOwnerTypes());
     };
     checker.accept(gen.getMethods());
-    assertEquals(1, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test
@@ -1292,8 +1174,6 @@ public class GeneratorTest {
       checkMethod(methods.get(1), "bar", comment2, MethodKind.OTHER, "void", false, false, false, false, 1);
     };
     checker.accept(gen.getMethods());
-    assertEquals(2, gen.getSquashedMethods().size());
-    checker.accept(new ArrayList<>(gen.getSquashedMethods().values()));
   }
 
   @Test
@@ -1443,7 +1323,7 @@ public class GeneratorTest {
     assertEquals(cacheReturn, meth.isCacheReturn());
     assertEquals(fluent, meth.isFluent());
     assertEquals(staticMethod, meth.isStaticMethod());
-    assertEquals(squashed, meth.isSquashed());
+    assertEquals(squashed, meth.isOverloaded());
     assertEquals(numParams, meth.getParams().size());
   }
 
