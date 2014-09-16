@@ -1,5 +1,6 @@
 package io.vertx.codegen;
 
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.mvel2.MVEL;
 import org.mvel2.templates.TemplateRuntime;
@@ -57,18 +58,18 @@ public class CodeGenProcessor extends AbstractProcessor {
           String s = scanner.next();
           JsonObject obj = new JsonObject(s);
           String name = obj.getString("name");
-          for (String modelKind : Arrays.asList("options", "class", "package", "module")) {
-            JsonObject model = obj.getObject(modelKind);
-            if (model != null) {
-              String templateFileName = model.getString("templateFileName");
-              String fileName = model.getString("fileName");
-              Serializable fileNameExpression = MVEL.compileExpression(fileName);
-              Template compiledTemplate = new Template(templateFileName);
-              compiledTemplate.setOptions(env.getOptions());
-              codeGenerators.add(new CodeGenerator(modelKind, fileNameExpression, compiledTemplate));
-            }
+          JsonArray generatorsCfg = obj.getArray("generators");
+          for (Object o : generatorsCfg) {
+            JsonObject generator = (JsonObject) o;
+            String kind = generator.getString("kind");
+            String templateFileName = generator.getString("templateFileName");
+            String fileName = generator.getString("fileName");
+            Serializable fileNameExpression = MVEL.compileExpression(fileName);
+            Template compiledTemplate = new Template(templateFileName);
+            compiledTemplate.setOptions(env.getOptions());
+            codeGenerators.add(new CodeGenerator(kind, fileNameExpression, compiledTemplate));
+            log.info("Loaded " + name + " code generator");
           }
-          log.info("Loaded " + name + " code generator");
         } catch (Exception e) {
           String msg = "Could not load code generator " + descriptor;
           log.log(Level.SEVERE, msg, e);

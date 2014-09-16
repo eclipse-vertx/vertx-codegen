@@ -4,15 +4,28 @@ This projects contains tools which allow idiomatic other language API shims to b
 
 ## API generator
 
-A code generator consist of an MVEL template declared in a `codegen.json` descriptor:
+A code generator consist of an _MVEL_ template declared in a `codegen.json` descriptor:
 
 ~~~~
 {
   "name": "Groovy",
-  "nameTemplate": "groovy/@{typeFQN.replace('io.vertx', 'io.vertx.groovy').replace('.', '/')}.groovy",
-  "templateFileName": "vertx-groovy/template/groovy.templ"
+  "generators": [ {
+    "kind": "class",
+    "fileName": "'groovy/' + fqn.replace('io.vertx', 'io.vertx.groovy').replace('.', '/') + '.groovy'",
+    "templateFileName": "vertx-groovy/template/groovy.templ"
+  } ]
 }
 ~~~~
+
+- `fileName` is an _MVEL_ expression for the file name, returning null skips the generation.
+- `templateFileName` is the name of the _MVEL_ template to apply
+- `kind`: there are several kinds of generators for different use cases
+    - `class` : applied on each API classes
+    - `package` : applied on each Java package
+    - `module` : applied on each declared module, a module uniquely identifies an API
+    - `options`: applied on each option class
+
+There can be as many generators as you like.
 
 ## Processor configuration
 

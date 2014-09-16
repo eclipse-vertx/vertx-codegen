@@ -3,7 +3,7 @@ package io.vertx.core.json;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class JsonObject {
+public class JsonObject  {
 
   public JsonObject(String str) {
   }
@@ -19,5 +19,5 @@ public class JsonObject {
   public Integer getInteger(String fieldName) { throw new UnsupportedOperationException(); }
   public Integer getInteger(String fieldName, int def) { throw new UnsupportedOperationException(); }
   public Number getNumber(String fieldName, int def) { throw new UnsupportedOperationException(); }
-
+  public JsonArray getArray(String name) { throw new UnsupportedOperationException(); }
 }
