@@ -53,7 +53,7 @@ public class VarianceTest {
         TypeParameterElement typeParameterElt = (TypeParameterElement) elt;
         Set<Variance> variances = EnumSet.noneOf(Variance.class);
         for (Variance variance : Variance.values()) {
-          if (Helper.checkVariance(typeParameterElt, variance)) {
+          if (Helper.resolveSiteVariance(typeParameterElt, variance)) {
             variances.add(variance);
           }
         }

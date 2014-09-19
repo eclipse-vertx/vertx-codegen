@@ -254,13 +254,13 @@ public class Helper {
     return comment.substring(0, pos);
   }
 
-  public static boolean checkVariance(TypeParameterElement typeParam, Variance variance) {
+  public static boolean resolveSiteVariance(TypeParameterElement typeParam, Variance variance) {
 
-    return checkVariance(Collections.emptyMap(), typeParam, variance);
+    return resolveVariance(Collections.emptyMap(), typeParam, variance);
   }
 
 
-  public static boolean checkVariance(
+  private static boolean resolveVariance(
       Map<TypeParameterElement, Variance> wantMap,
       TypeParameterElement typeParam,
       Variance variance) {
@@ -279,7 +279,7 @@ public class Helper {
     //
     for (TypeMirror superInterface : genericElt.getInterfaces()) {
       if (superInterface.getKind() == TypeKind.DECLARED) {
-        Boolean checked = checkVariance(wantMap, typeVar, Variance.COVARIANT, superInterface, variance);
+        Boolean checked = resolveSiteVariance(wantMap, typeVar, Variance.COVARIANT, superInterface, variance);
         if (checked != null && !checked) {
           return checked;
         }
@@ -295,7 +295,7 @@ public class Helper {
 
             // Return type check
             TypeMirror returnType = methodElt.getReturnType();
-            Boolean checked = checkVariance(wantMap, typeVar, Variance.COVARIANT, returnType, variance);
+            Boolean checked = resolveSiteVariance(wantMap, typeVar, Variance.COVARIANT, returnType, variance);
             if (checked != null && !checked) {
               return checked;
             }
@@ -303,7 +303,7 @@ public class Helper {
             // Parameter type check
             for (VariableElement paramElt : methodElt.getParameters()) {
               TypeMirror paramType = paramElt.asType();
-              checked = checkVariance(wantMap, typeVar, Variance.CONTRAVARIANT, paramType, variance);
+              checked = resolveSiteVariance(wantMap, typeVar, Variance.CONTRAVARIANT, paramType, variance);
               if (checked != null && !checked) {
                 return checked;
               }
@@ -317,7 +317,7 @@ public class Helper {
     return true;
   }
 
-  private static Boolean checkVariance(
+  private static Boolean resolveSiteVariance(
       Map<TypeParameterElement, Variance> wantMap,
       TypeVariable typeParam,
       Variance position,
@@ -344,28 +344,28 @@ public class Helper {
         TypeParameterElement abc = typeParams.get(i);
         switch (position) {
           case COVARIANT:
-            if (checkVariance(wantMap, abc, Variance.COVARIANT)) {
-              Boolean checked = checkVariance(wantMap, typeParam, Variance.COVARIANT, typeArgs.get(i), variance);
+            if (resolveVariance(wantMap, abc, Variance.COVARIANT)) {
+              Boolean checked = resolveSiteVariance(wantMap, typeParam, Variance.COVARIANT, typeArgs.get(i), variance);
               if (checked != null && !checked) {
                 return false;
               }
             }
-            if (checkVariance(wantMap, abc, Variance.CONTRAVARIANT)) {
-              Boolean checked = checkVariance(wantMap, typeParam, Variance.CONTRAVARIANT, typeArgs.get(i), variance);
+            if (resolveVariance(wantMap, abc, Variance.CONTRAVARIANT)) {
+              Boolean checked = resolveSiteVariance(wantMap, typeParam, Variance.CONTRAVARIANT, typeArgs.get(i), variance);
               if (checked != null && !checked) {
                 return false;
               }
             }
             break;
           case CONTRAVARIANT:
-            if (checkVariance(wantMap, abc, Variance.COVARIANT)) {
-              Boolean checked = checkVariance(wantMap, typeParam, Variance.CONTRAVARIANT, typeArgs.get(i), variance);
+            if (resolveVariance(wantMap, abc, Variance.COVARIANT)) {
+              Boolean checked = resolveSiteVariance(wantMap, typeParam, Variance.CONTRAVARIANT, typeArgs.get(i), variance);
               if (checked != null && !checked) {
                 return false;
               }
             }
-            if (checkVariance(wantMap, abc, Variance.CONTRAVARIANT)) {
-              Boolean checked = checkVariance(wantMap, typeParam, Variance.COVARIANT, typeArgs.get(i), variance);
+            if (resolveVariance(wantMap, abc, Variance.CONTRAVARIANT)) {
+              Boolean checked = resolveSiteVariance(wantMap, typeParam, Variance.COVARIANT, typeArgs.get(i), variance);
               if (checked != null && !checked) {
                 return false;
               }

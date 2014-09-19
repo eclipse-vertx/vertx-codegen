@@ -1,6 +1,5 @@
 package io.vertx.codegen;
 
-import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -9,22 +8,22 @@ import java.util.Set;
 public class TypeParamInfo {
 
   private final String name;
-  private final Set<Variance> variances;
+  private final Set<Variance> siteVariances;
 
-  public TypeParamInfo(String name, Set<Variance> variances) {
+  public TypeParamInfo(String name, Set<Variance> siteVariances) {
     this.name = name;
-    this.variances = variances;
+    this.siteVariances = siteVariances;
   }
 
   public String getName() {
     return name;
   }
 
-  public boolean isCovariant() {
-    return variances.size() == 1 && variances.contains(Variance.COVARIANT);
+  public boolean isSiteCovariant() {
+    return siteVariances.size() == 1 && siteVariances.contains(Variance.COVARIANT);
   }
 
-  public boolean isContravariant() {
-    return variances.size() == 1 && variances.contains(Variance.CONTRAVARIANT);
+  public boolean isSiteContravariant() {
+    return siteVariances.size() == 1 && siteVariances.contains(Variance.CONTRAVARIANT);
   }
 }

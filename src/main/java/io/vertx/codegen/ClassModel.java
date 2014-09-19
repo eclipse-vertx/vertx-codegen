@@ -58,6 +58,8 @@ import java.util.stream.Collectors;
  */
 public class ClassModel implements Model {
 
+  private static final Logger logger = Logger.getLogger(ClassModel.class.getName());
+
   public static final String VERTX_ASYNC_RESULT = "io.vertx.core.AsyncResult";
   public static final String VERTX_HANDLER = "io.vertx.core.Handler";
   public static final String JSON_OBJECT = "io.vertx.core.json.JsonObject";
@@ -304,7 +306,7 @@ public class ClassModel implements Model {
   boolean process() {
     if (!processed) {
       traverseElem(modelElt);
-      determineVariance();
+      determineSiteDeclVariance();
       processed = true;
       return true;
     } else {
@@ -312,18 +314,17 @@ public class ClassModel implements Model {
     }
   }
 
-  private void determineVariance() {
+  private void determineSiteDeclVariance() {
     List<? extends TypeParameterElement> typeParamElts = modelElt.getTypeParameters();
     for (TypeParameterElement typeParamElt : typeParamElts) {
-      Set<Variance> variances = EnumSet.noneOf(Variance.class);
-      Logger foo = Logger.getLogger("FOO");
+      Set<Variance> siteVariance = EnumSet.noneOf(Variance.class);
       for (Variance variance : Variance.values()) {
-        if (Helper.checkVariance(typeParamElt, variance)) {
-          variances.add(variance);
+        if (Helper.resolveSiteVariance(typeParamElt, variance)) {
+          siteVariance.add(variance);
         }
       }
-      foo.log(Level.INFO, "Variance of " + modelElt + " " + typeParamElt + ": " + variances);
-      typeParams.add(new TypeParamInfo(typeParamElt.getSimpleName().toString(), variances));
+      logger.log(Level.FINE, "Site variances of " + modelElt + " " + typeParamElt + " : " + siteVariance);
+      typeParams.add(new TypeParamInfo(typeParamElt.getSimpleName().toString(), siteVariance));
     }
   }
 
