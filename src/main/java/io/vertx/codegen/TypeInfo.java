@@ -171,7 +171,6 @@ public abstract class TypeInfo {
         try {
           tm = typeUtils.asMemberOf(d, type.asElement());
         } catch (IllegalArgumentException ignore) {
-          ignore.printStackTrace();
           continue;
         }
         if (!typeUtils.isSameType(tm, type)) {
