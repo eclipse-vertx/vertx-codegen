@@ -127,22 +127,7 @@ public class Helper {
   }
 
   public static String convertCamelCaseToUnderscores(String str) {
-    StringBuilder sb = new StringBuilder();
-    boolean lastLowerCase = false;
-    for (int i = 0; i < str.length(); i++) {
-      char chr = str.charAt(i);
-      if (Character.isUpperCase(chr)) {
-        if (lastLowerCase) {
-          sb.append('_');
-        }
-        sb.append(Character.toLowerCase(chr));
-        lastLowerCase = false;
-      } else {
-        sb.append(chr);
-        lastLowerCase = true;
-      }
-    }
-    return sb.toString();
+    return str.replaceAll("([A-Z]+)([A-Z][a-z])", "$1_$2").replaceAll("([a-z\\d])([A-Z])", "$1_$2").toLowerCase();
   }
 
   public static String getSimpleName(String type) {
