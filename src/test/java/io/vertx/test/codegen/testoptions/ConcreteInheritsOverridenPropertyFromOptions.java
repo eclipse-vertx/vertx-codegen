@@ -7,16 +7,19 @@ import io.vertx.core.json.JsonObject;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @Options
-public interface ConcreteInheritsOverridenPropertyFromOptions extends OptionsWithProperty {
+public class ConcreteInheritsOverridenPropertyFromOptions implements OptionsWithProperty {
 
-  public static ConcreteInheritsOverridenPropertyFromOptions options() {
-    throw new UnsupportedOperationException();
+  public ConcreteInheritsOverridenPropertyFromOptions() {
   }
 
-  public static ConcreteInheritsOverridenPropertyFromOptions optionsFromJson(JsonObject obj) {
-    throw new UnsupportedOperationException();
+  public ConcreteInheritsOverridenPropertyFromOptions(ConcreteInheritsOverridenPropertyFromOptions other) {
+  }
+
+  public ConcreteInheritsOverridenPropertyFromOptions(JsonObject json) {
   }
 
   @Override
-  OptionsWithProperty setNonOptionsProperty(String value);
+  public OptionsWithProperty setNonOptionsProperty(String value) {
+    return this;
+  }
 }

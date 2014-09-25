@@ -6,14 +6,14 @@ import io.vertx.core.json.JsonObject;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@Options(concrete = false)
-public interface AbstractInheritsConcrete extends Concrete {
-
-  public static AbstractInheritsConcrete options() {
-    throw new UnsupportedOperationException();
+@Options
+public abstract class AbstractInheritsConcrete extends Concrete {
+  public AbstractInheritsConcrete() {
   }
 
-  public static AbstractInheritsConcrete optionsFromJson(JsonObject obj) {
-    throw new UnsupportedOperationException();
+  public AbstractInheritsConcrete(AbstractInheritsConcrete other) {
+  }
+
+  public AbstractInheritsConcrete(JsonObject json) {
   }
 }

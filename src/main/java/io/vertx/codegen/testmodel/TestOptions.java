@@ -7,25 +7,51 @@ import io.vertx.core.json.JsonObject;
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @Options
-public interface TestOptions {
+public class TestOptions {
 
-  static TestOptions options() {
-    return new TestOptionsImpl();
+  private String foo;
+  private int bar;
+  private double wibble;
+
+  public TestOptions() {
   }
 
-  static TestOptions optionsFromJson(JsonObject json) {
-    return new TestOptionsImpl(json);
+  public TestOptions(TestOptions other) {
+    this.foo = other.foo;
+    this.bar = other.bar;
+    this.wibble = other.wibble;
   }
 
-  String getFoo();
+  public TestOptions(JsonObject json) {
+    this.foo = json.getString("foo", null);
+    this.bar = json.getInteger("bar", 0);
+    this.wibble = (double)json.getNumber("wibble", 0);
+  }
 
-  TestOptions setFoo(String foo);
+  public String getFoo() {
+    return foo;
+  }
 
-  int getBar();
+  public TestOptions setFoo(String foo) {
+    this.foo = foo;
+    return this;
+  }
 
-  TestOptions setBar(int bar);
+  public int getBar() {
+    return bar;
+  }
 
-  double getWibble();
+  public TestOptions setBar(int bar) {
+    this.bar = bar;
+    return this;
+  }
 
-  TestOptions setWibble(double wibble);
+  public double getWibble() {
+    return wibble;
+  }
+
+  public TestOptions setWibble(double wibble) {
+    this.wibble = wibble;
+    return this;
+  }
 }

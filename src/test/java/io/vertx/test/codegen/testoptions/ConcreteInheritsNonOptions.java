@@ -7,13 +7,14 @@ import io.vertx.core.json.JsonObject;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @Options
-public interface ConcreteInheritsNonOptions extends NonOptions {
+public class ConcreteInheritsNonOptions implements NonOptions {
 
-  public static ConcreteInheritsNonOptions options() {
-    throw new UnsupportedOperationException();
+  public ConcreteInheritsNonOptions() {
   }
 
-  public static ConcreteInheritsNonOptions optionsFromJson(JsonObject obj) {
-    throw new UnsupportedOperationException();
+  public ConcreteInheritsNonOptions(ConcreteInheritsNonOptions other) {
+  }
+
+  public ConcreteInheritsNonOptions(JsonObject json) {
   }
 }

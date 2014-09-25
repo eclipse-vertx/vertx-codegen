@@ -9,14 +9,6 @@ import io.vertx.core.json.JsonObject;
 @Options
 public interface SetterWithNestedOptions {
 
-  public static SetterWithNestedOptions options() {
-    throw new UnsupportedOperationException();
-  }
-
-  public static SetterWithNestedOptions optionsFromJson(JsonObject obj) {
-    throw new UnsupportedOperationException();
-  }
-
   SetterWithNestedOptions setNested(Empty nested);
 
 }

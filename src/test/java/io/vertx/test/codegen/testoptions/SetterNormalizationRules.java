@@ -9,14 +9,6 @@ import io.vertx.core.json.JsonObject;
 @Options
 public interface SetterNormalizationRules {
 
-  public static SetterNormalizationRules options() {
-    throw new UnsupportedOperationException();
-  }
-
-  public static SetterNormalizationRules optionsFromJson(JsonObject obj) {
-    throw new UnsupportedOperationException();
-  }
-
   SetterNormalizationRules setGroup(boolean group);
   SetterNormalizationRules setHA(boolean ha);
   SetterNormalizationRules setHAGroup(boolean haGroup);

@@ -132,22 +132,6 @@ public class Generator {
     return processor.result;
   }
 
-  public void validateOption(Class option) throws Exception {
-    MyProcessor<Exception> processor = new MyProcessor<>(codegen -> {
-      try {
-        codegen.validateOption(option.getName());
-        return null;
-      } catch (Exception e) {
-        return e;
-      }
-    });
-    Compiler compiler = new Compiler(processor);
-    compiler.compile(Collections.singletonList(option));
-    if (processor.result != null) {
-      throw processor.result;
-    }
-  }
-
   public ClassModel generateModel(Class c, Class... rest) throws Exception {
     log.info("Generating model for class " + c);
     ArrayList<Class> types = new ArrayList<>();

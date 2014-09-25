@@ -6,7 +6,7 @@ import io.vertx.core.json.JsonObject;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@Options(concrete = true)
+@Options
 public interface Concrete2 {
 
   public static Concrete2 options() {

@@ -9,14 +9,6 @@ import io.vertx.core.json.JsonObject;
 @Options
 public interface JsonObjectSetter {
 
-  public static JsonObjectSetter options() {
-    throw new UnsupportedOperationException();
-  }
-
-  public static JsonObjectSetter optionsFromJson(JsonObject obj) {
-    throw new UnsupportedOperationException();
-  }
-
   JsonObjectSetter setJsonObject(JsonObject s);
 
 }

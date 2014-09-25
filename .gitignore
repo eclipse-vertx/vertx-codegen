@@ -1,6 +1,9 @@
 .DS_Store
 .gradle
 .idea
+*.iml
+*.ipr
+*.iws
 .classpath
 .project
 .settings

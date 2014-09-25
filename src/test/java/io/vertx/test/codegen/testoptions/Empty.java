@@ -7,13 +7,14 @@ import io.vertx.core.json.JsonObject;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @Options
-public interface Empty {
+public class Empty {
 
-  public static Empty options() {
-    throw new UnsupportedOperationException();
+  public Empty() {
   }
 
-  public static Empty optionsFromJson(JsonObject obj) {
-    throw new UnsupportedOperationException();
+  public Empty(Empty other) {
+  }
+
+  public Empty(JsonObject json) {
   }
 }

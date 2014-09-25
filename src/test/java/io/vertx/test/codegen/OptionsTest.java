@@ -6,9 +6,10 @@ import io.vertx.codegen.OptionsModel;
 import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.TypeInfo;
 import io.vertx.core.json.JsonObject;
-import io.vertx.test.codegen.testapi.OptionsClass;
-import io.vertx.test.codegen.testapi.OptionsWithFactoryMethod;
-import io.vertx.test.codegen.testapi.OptionsWithNoFactoryMethod;
+import io.vertx.test.codegen.testapi.OptionsInterface;
+import io.vertx.test.codegen.testapi.OptionsWithNoCopyConstructor;
+import io.vertx.test.codegen.testapi.OptionsWithNoDefaultConstructor;
+import io.vertx.test.codegen.testapi.OptionsWithNoJsonObjectConstructor;
 import io.vertx.test.codegen.testoptions.Abstract;
 import io.vertx.test.codegen.testoptions.AbstractInheritsAbstract;
 import io.vertx.test.codegen.testoptions.AbstractInheritsConcrete;
@@ -21,14 +22,13 @@ import io.vertx.test.codegen.testoptions.BasicAdders;
 import io.vertx.test.codegen.testoptions.BasicGetters;
 import io.vertx.test.codegen.testoptions.BasicSetters;
 import io.vertx.test.codegen.testoptions.Concrete;
-import io.vertx.test.codegen.testoptions.ConcreteInheritsOverridenPropertyFromOptions;
-import io.vertx.test.codegen.testoptions.ConcreteInheritsPropertyFromOptions;
 import io.vertx.test.codegen.testoptions.ConcreteInheritsAbstract;
 import io.vertx.test.codegen.testoptions.ConcreteInheritsConcrete;
-import io.vertx.test.codegen.testoptions.ConcreteInheritsConcreteTwice;
 import io.vertx.test.codegen.testoptions.ConcreteInheritsNonOptions;
 import io.vertx.test.codegen.testoptions.ConcreteInheritsOverridenPropertyFromNonOptions;
+import io.vertx.test.codegen.testoptions.ConcreteInheritsOverridenPropertyFromOptions;
 import io.vertx.test.codegen.testoptions.ConcreteInheritsPropertyFromNonOptions;
+import io.vertx.test.codegen.testoptions.ConcreteInheritsPropertyFromOptions;
 import io.vertx.test.codegen.testoptions.Empty;
 import io.vertx.test.codegen.testoptions.IgnoreMethods;
 import io.vertx.test.codegen.testoptions.ImportedNested;
@@ -38,8 +38,8 @@ import io.vertx.test.codegen.testoptions.JsonObjectSetter;
 import io.vertx.test.codegen.testoptions.ListBasicSetters;
 import io.vertx.test.codegen.testoptions.Parameterized;
 import io.vertx.test.codegen.testoptions.SetterNormalizationRules;
-import io.vertx.test.codegen.testoptions.SetterWithNonFluentReturnType;
 import io.vertx.test.codegen.testoptions.SetterWithNestedOptions;
+import io.vertx.test.codegen.testoptions.SetterWithNonFluentReturnType;
 import io.vertx.test.codegen.testoptions.imported.Imported;
 import org.junit.Test;
 
@@ -53,26 +53,24 @@ import static org.junit.Assert.*;
 public class OptionsTest {
 
   @Test
-  public void testOptionsWithNoFactoryMethod() throws Exception {
-    try {
-      new Generator().validateOption(OptionsWithNoFactoryMethod.class);
-      fail();
-    } catch (GenException e) {
-    }
+  public void testOptionsWithNoDefaultConstructor() throws Exception {
+    assertInvalidOptions(OptionsWithNoDefaultConstructor.class);
   }
 
   @Test
-  public void testOptionsWithFactoryMethod() throws Exception {
-    new Generator().validateOption(OptionsWithFactoryMethod.class);
+  public void testOptionsWithNoCopyConstructor() throws Exception {
+    assertInvalidOptions(OptionsWithNoCopyConstructor.class);
   }
 
   @Test
-  public void testOptionsClass() throws Exception {
-    try {
-      new Generator().validateOption(OptionsClass.class);
-      fail();
-    } catch (GenException e) {
-    }
+  public void testOptionsWithNoJsonObjectConstructor() throws Exception {
+    assertInvalidOptions(OptionsWithNoJsonObjectConstructor.class);
+  }
+
+  @Test
+  public void testOptionsInterface() throws Exception {
+    OptionsModel model = new Generator().generateOptions(OptionsInterface.class);
+    assertNotNull(model);
   }
 
   @Test
@@ -86,12 +84,13 @@ public class OptionsTest {
     assertInvalidOptions(Parameterized.class);
   }
 
+  @Test
   public void testSetterWithNonFluentReturnType() throws Exception {
     OptionsModel model = new Generator().generateOptions(SetterWithNonFluentReturnType.class);
     assertNotNull(model);
     assertEquals(2, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("string"), "string", TypeInfo.create(String.class), true, false, false);
-    assertProperty(model.getPropertyMap().get("primitiveBoolean"), "primitiveBoolean", TypeInfo.create(Integer.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("primitiveBoolean"), "primitiveBoolean", TypeInfo.create(boolean.class), true, false, false);
   }
 
   @Test
@@ -223,13 +222,8 @@ public class OptionsTest {
     assertTrue(model.isConcrete());
     assertEquals(0, model.getPropertyMap().size());
     assertEquals(Collections.singleton((TypeInfo.Class) TypeInfo.create(Concrete.class)), model.getSuperTypes());
-    assertEquals(Collections.singleton((TypeInfo.Class) TypeInfo.create(Concrete.class)), model.getConcreteSuperTypes());
+    assertEquals(TypeInfo.create(Concrete.class), model.getSuperType());
     assertEquals(Collections.<TypeInfo.Class>emptySet(), model.getAbstractSuperTypes());
-  }
-
-  @Test
-  public void testConcreteInheritsConcreteTwice() throws Exception {
-    assertInvalidOptions(ConcreteInheritsConcreteTwice.class);
   }
 
   @Test
@@ -240,7 +234,7 @@ public class OptionsTest {
     assertEquals(0, model.getPropertyMap().size());
     assertEquals(Collections.singleton((TypeInfo.Class) TypeInfo.create(Abstract.class)), model.getSuperTypes());
     assertEquals(Collections.singleton((TypeInfo.Class) TypeInfo.create(Abstract.class)), model.getAbstractSuperTypes());
-    assertEquals(Collections.<TypeInfo.Class>emptySet(), model.getConcreteSuperTypes());
+    assertNull(model.getSuperType());
   }
 
   @Test
@@ -291,7 +285,9 @@ public class OptionsTest {
 
   @Test
   public void testAbstractInheritsConcrete() throws Exception {
-    assertInvalidOptions(AbstractInheritsConcrete.class);
+    OptionsModel model = new Generator().generateOptions(Abstract.class);
+    assertNotNull(model);
+    assertTrue(model.isAbstract());
   }
 
   @Test
@@ -308,8 +304,6 @@ public class OptionsTest {
     assertFalse(model.isConcrete());
     assertEquals(0, model.getPropertyMap().size());
     assertEquals(Collections.singleton((TypeInfo.Class) TypeInfo.create(Abstract.class)), model.getSuperTypes());
-    assertEquals(Collections.singleton((TypeInfo.Class) TypeInfo.create(Abstract.class)), model.getAbstractSuperTypes());
-    assertEquals(Collections.<TypeInfo.Class>emptySet(), model.getConcreteSuperTypes());
   }
 
   @Test

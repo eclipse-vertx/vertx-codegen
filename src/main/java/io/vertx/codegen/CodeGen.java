@@ -7,15 +7,12 @@ import io.vertx.codegen.annotations.VertxGen;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -34,23 +31,23 @@ public class CodeGen {
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
     round.getElementsAnnotatedWith(Options.class).
-        stream().
-        forEach(element -> options.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
+      stream().
+      forEach(element -> options.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
     round.getElementsAnnotatedWith(VertxGen.class).
-          stream().
-          filter(elt -> !elementUtils.getPackageOf(elt).getQualifiedName().toString().contains("impl")).
-          forEach(element -> classes.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
+      stream().
+      filter(elt -> !elementUtils.getPackageOf(elt).getQualifiedName().toString().contains("impl")).
+      forEach(element -> classes.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
     round.getElementsAnnotatedWith(GenModule.class).
-          stream().
-          map(element -> (PackageElement)element).
-          forEach(element -> modules.put(element.getQualifiedName().toString(), element));
+      stream().
+      map(element -> (PackageElement) element).
+      forEach(element -> modules.put(element.getQualifiedName().toString(), element));
   }
 
   public Stream<Map.Entry<? extends Element, ? extends Model>> getModels() {
     return Stream.concat(getOptionsModels(),
-        Stream.concat(getModuleModels(),
-            Stream.concat(getPackageModels(),
-                getClassModels())));
+      Stream.concat(getModuleModels(),
+        Stream.concat(getPackageModels(),
+          getClassModels())));
   }
 
   private static class ModelEntry<E extends Element, M extends Model> implements Map.Entry<E, M> {
@@ -127,29 +124,6 @@ public class CodeGen {
       OptionsModel model = new OptionsModel(elementUtils, typeUtils, element);
       model.process();
       return model;
-    }
-  }
-
-  public void validateOption(String fqcn) {
-    validateOption(options.get(fqcn));
-  }
-
-  public void validateOption(Element optionElt) {
-    if (optionElt.getKind() == ElementKind.INTERFACE) {
-      for (Element memberElt : elementUtils.getAllMembers((TypeElement) optionElt)) {
-        if (memberElt.getKind() == ElementKind.METHOD) {
-          if (memberElt.getSimpleName().toString().equals("optionsFromJson")) {
-            if (memberElt.getModifiers().contains(Modifier.STATIC)) {
-              // TODO should probably also test that the method returns the right options type and
-              // takes JsonObject as a parameter
-              return;
-            }
-          }
-        }
-      }
-      throw new GenException(optionElt, "Options " + optionElt + " class does not have a static factory method called optionsFromJson");
-    } else {
-      throw new GenException(optionElt, "Options " + optionElt + " must be an interface not a class");
     }
   }
 }

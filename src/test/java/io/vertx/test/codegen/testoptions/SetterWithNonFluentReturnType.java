@@ -9,14 +9,6 @@ import io.vertx.core.json.JsonObject;
 @Options
 public interface SetterWithNonFluentReturnType {
 
-  public static SetterWithNonFluentReturnType options() {
-    throw new UnsupportedOperationException();
-  }
-
-  public static SetterWithNonFluentReturnType optionsFromJson(JsonObject obj) {
-    throw new UnsupportedOperationException();
-  }
-
   void setPrimitiveBoolean(boolean b);
   String setString(String locale);
 

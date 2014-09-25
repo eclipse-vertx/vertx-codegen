@@ -6,14 +6,15 @@ import io.vertx.core.json.JsonObject;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@Options(concrete = true)
-public interface Concrete {
+@Options
+public class Concrete {
 
-  public static Concrete options() {
-    throw new UnsupportedOperationException();
+  public Concrete() {
   }
 
-  public static Concrete optionsFromJson(JsonObject obj) {
-    throw new UnsupportedOperationException();
+  public Concrete(Concrete other) {
+  }
+
+  public Concrete(JsonObject json) {
   }
 }

@@ -1,7 +1,7 @@
 package io.vertx.codegen;
 
-import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.Options;
+import io.vertx.core.json.JsonObject;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -20,7 +20,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -35,7 +36,7 @@ public class OptionsModel implements Model {
   private boolean concrete;
   private final Map<String, PropertyInfo> propertyMap = new LinkedHashMap<>();
   private final Set<TypeInfo.Class> superTypes = new LinkedHashSet<>();
-  private final Set<TypeInfo.Class> concreteSuperTypes = new LinkedHashSet<>();
+  private TypeInfo.Class superType;
   private final Set<TypeInfo.Class> abstractSuperTypes = new LinkedHashSet<>();
   private final Set<TypeInfo.Class> importedTypes = new LinkedHashSet<>();
   private TypeInfo.Class type;
@@ -78,8 +79,8 @@ public class OptionsModel implements Model {
     return propertyMap;
   }
 
-  public Set<TypeInfo.Class> getConcreteSuperTypes() {
-    return concreteSuperTypes;
+  public TypeInfo.Class getSuperType() {
+    return superType;
   }
 
   public Set<TypeInfo.Class> getAbstractSuperTypes() {
@@ -98,7 +99,7 @@ public class OptionsModel implements Model {
     vars.put("properties", propertyMap.values());
     vars.put("importedTypes", importedTypes);
     vars.put("superTypes", superTypes);
-    vars.put("concreteSuperTypes", concreteSuperTypes);
+    vars.put("superType", superType);
     vars.put("abstractSuperTypes", abstractSuperTypes);
     vars.putAll(ClassKind.vars());
     vars.putAll(MethodKind.vars());
@@ -107,63 +108,64 @@ public class OptionsModel implements Model {
 
   boolean process() {
     if (!processed) {
-      if (modelElt.getKind() == ElementKind.INTERFACE) {
+      if (modelElt.getKind() == ElementKind.INTERFACE || modelElt.getKind() == ElementKind.CLASS) {
         traverse();
         processImportedTypes();
         processed = true;
         return true;
       } else {
-        throw new GenException(modelElt, "Options " + modelElt + " must be an interface not a class");
+        throw new GenException(modelElt, "Options " + modelElt + " must be an interface or a class");
       }
     }
     return false;
   }
 
   private void traverse() {
-    this.concrete = modelElt.getAnnotation(Options.class).concrete();
+    this.concrete = modelElt.getKind() == ElementKind.CLASS;
     try {
       this.type = (TypeInfo.Class) typeFactory.create(modelElt.asType());
     } catch (ClassCastException e) {
       throw new GenException(modelElt, "Options must be a plain java class with no type parameters");
     }
-    for (TypeMirror superTM : modelElt.getInterfaces()) {
-      if (((DeclaredType) superTM).asElement().getAnnotation(Options.class) != null) {
-        TypeInfo.Class superType = (TypeInfo.Class) typeFactory.create(superTM);
-        if (((DeclaredType) superTM).asElement().getAnnotation(Options.class).concrete()) {
-          if (!concrete) {
-            throw new GenException(modelElt, "Abstract options cannot inherit concrete options");
-          } else if (concreteSuperTypes.size() > 0) {
-            throw new GenException(modelElt, "Concrete options cannot inherit at most one concrete options");
-          }
-          concreteSuperTypes.add(superType);
-        } else {
-          abstractSuperTypes.add(superType);
-        }
-        superTypes.add(superType);
-      }
+
+    modelElt.getInterfaces().stream()
+      .filter(superTM -> superTM instanceof DeclaredType && ((DeclaredType) superTM).asElement().getAnnotation(Options.class) != null)
+      .map(e -> (TypeInfo.Class) typeFactory.create(e)).forEach(abstractSuperTypes::add);
+
+    superTypes.addAll(abstractSuperTypes);
+
+    TypeMirror superClass = modelElt.getSuperclass();
+    if (superClass instanceof DeclaredType && ((DeclaredType) superClass).asElement().getAnnotation(Options.class) != null) {
+      superType = (TypeInfo.Class) typeFactory.create(superClass);
+      superTypes.add(superType);
     }
-    boolean hasOptionsFromJson = false;
+
+    int result = 0;
     for (Element enclosedElt : elementUtils.getAllMembers(modelElt)) {
       switch (enclosedElt.getKind()) {
+        case CONSTRUCTOR:
+          ExecutableElement constrElt = (ExecutableElement) enclosedElt;
+          result |= processConstructor(constrElt);
+          break;
         case METHOD: {
           ExecutableElement methodElt = (ExecutableElement) enclosedElt;
-          Element ownerElt = methodElt.getEnclosingElement();
-          TypeElement objectElt = elementUtils.getTypeElement("java.lang.Object");
-          if (methodElt.getAnnotation(GenIgnore.class) == null && !ownerElt.equals(objectElt)) {
-            if (methodElt.getModifiers().contains(Modifier.STATIC)) {
-              if (methodElt.getSimpleName().toString().equals("optionsFromJson")) {
-                hasOptionsFromJson = true;
-              }
-            } else {
-              processMethod(methodElt);
-            }
-          }
+          processMethod(methodElt);
           break;
         }
       }
     }
-    if (concrete && !hasOptionsFromJson) {
-      throw new GenException(modelElt, "Options " + modelElt + " class does not have a static factory method called optionsFromJson");
+    boolean hasDefaultConstructor = (result & 2) == 2;
+    boolean hasCopyConstructor = (result & 4) == 4;
+    boolean hasJsonConstructor = (result & 8) == 8;
+
+    if (concrete && !hasDefaultConstructor) {
+      throw new GenException(modelElt, "Options " + modelElt + " class does not have a default constructor");
+    }
+    if (concrete && !hasCopyConstructor) {
+      throw new GenException(modelElt, "Options " + modelElt + " class does not have a constructor " + modelElt.getSimpleName() + "(" + modelElt.getSimpleName() + ") ");
+    }
+    if (concrete && !hasJsonConstructor) {
+      throw new GenException(modelElt, "Options " + modelElt + " class does not have a constructor " + modelElt.getSimpleName() + "(" + JsonObject.class.getSimpleName() + ")");
     }
   }
 
@@ -171,13 +173,40 @@ public class OptionsModel implements Model {
     for (PropertyInfo property : propertyMap.values()) {
       property.type.collectImports(importedTypes);
     }
-    importedTypes.addAll(superTypes.stream().collect(Collectors.toList()));
+    importedTypes.addAll(superTypes.stream().collect(toList()));
     for (Iterator<TypeInfo.Class> i = importedTypes.iterator();i.hasNext();) {
       TypeInfo.Class importedType = i.next();
       if (importedType.getPackageName().equals(type.getPackageName())) {
         i.remove();
       }
     }
+  }
+
+  private int processConstructor(ExecutableElement constrElt) {
+    if (constrElt.getModifiers().contains(Modifier.PUBLIC)) {
+      Element ownerElt = constrElt.getEnclosingElement();
+      if (ownerElt.equals(modelElt)) {
+        List<? extends VariableElement> parameters = constrElt.getParameters();
+        int size = parameters.size();
+        if (size == 0) {
+          return 2;
+        } else {
+          if (size == 1) {
+            TypeInfo ti = typeFactory.create(parameters.get(0).asType());
+            if (ti instanceof TypeInfo.Class) {
+              TypeInfo.Class cl = (TypeInfo.Class) ti;
+              if (cl.fqcn.equals(getFqn())) {
+                return 4;
+              } else if (cl.getKind() == ClassKind.JSON_OBJECT) {
+                return 8;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return 0;
   }
 
   private void processMethod(ExecutableElement methodElt) {

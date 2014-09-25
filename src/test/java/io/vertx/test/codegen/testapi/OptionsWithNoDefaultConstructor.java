@@ -7,9 +7,11 @@ import io.vertx.core.json.JsonObject;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @Options
-public interface OptionsWithFactoryMethod {
+public class OptionsWithNoDefaultConstructor {
 
-  static OptionsWithFactoryMethod optionsFromJson(JsonObject json) {
-    return null;
+  public OptionsWithNoDefaultConstructor(JsonObject json) {
+  }
+
+  public OptionsWithNoDefaultConstructor(OptionsWithNoDefaultConstructor other) {
   }
 }
