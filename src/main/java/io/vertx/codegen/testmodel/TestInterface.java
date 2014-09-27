@@ -57,6 +57,10 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
 
   void methodWithHandlerSetVertxGen(Handler<Set<RefedInterface1>> listHandler);
 
+  void methodWithHandlerListAbstractVertxGen(Handler<List<RefedInterface2>> listHandler);
+
+  void methodWithHandlerSetAbstractVertxGen(Handler<Set<RefedInterface2>> listHandler);
+
   void methodWithHandlerListJsonObject(Handler<List<JsonObject>> listHandler);
 
   void methodWithHandlerListNullJsonObject(Handler<List<JsonObject>> listHandler);
@@ -76,6 +80,10 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
   void methodWithHandlerAsyncResultListVertxGen(Handler<AsyncResult<List<RefedInterface1>>> listHandler);
 
   void methodWithHandlerAsyncResultSetVertxGen(Handler<AsyncResult<Set<RefedInterface1>>> listHandler);
+
+  void methodWithHandlerAsyncResultListAbstractVertxGen(Handler<AsyncResult<List<RefedInterface2>>> listHandler);
+
+  void methodWithHandlerAsyncResultSetAbstractVertxGen(Handler<AsyncResult<Set<RefedInterface2>>> listHandler);
 
   void methodWithHandlerAsyncResultListJsonObject(Handler<AsyncResult<List<JsonObject>>> listHandler);
 
@@ -122,6 +130,8 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
   String methodWithStringReturn();
 
   RefedInterface1 methodWithVertxGenReturn();
+
+  RefedInterface2 methodWithAbstractVertxGenReturn();
 
   List<String> methodWithListStringReturn();
 

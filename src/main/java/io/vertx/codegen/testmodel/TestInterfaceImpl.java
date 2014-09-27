@@ -251,6 +251,18 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
+  public void methodWithHandlerListAbstractVertxGen(Handler<List<RefedInterface2>> listHandler) {
+    List<RefedInterface2> list = Arrays.asList(new RefedInterface2Impl().setString("abstractfoo"), new RefedInterface2Impl().setString("abstractbar"));
+    listHandler.handle(list);
+  }
+
+  @Override
+  public void methodWithHandlerSetAbstractVertxGen(Handler<Set<RefedInterface2>> setHandler) {
+    Set<RefedInterface2> list = new LinkedHashSet<>(Arrays.asList(new RefedInterface2Impl().setString("abstractfoo"), new RefedInterface2Impl().setString("abstractbar")));
+    setHandler.handle(list);
+  }
+
+  @Override
   public void methodWithHandlerListJsonObject(Handler<List<JsonObject>> listHandler) {
     List<JsonObject> list = Arrays.asList(new JsonObject().putString("cheese", "stilton"), new JsonObject().putString("socks", "tartan"));
     listHandler.handle(list);
@@ -307,6 +319,18 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   @Override
   public void methodWithHandlerAsyncResultSetVertxGen(Handler<AsyncResult<Set<RefedInterface1>>> setHandler) {
     Set<RefedInterface1> list = new LinkedHashSet<>(Arrays.asList(new RefedInterface1Impl().setString("foo"), new RefedInterface1Impl().setString("bar")));
+    setHandler.handle(Future.completedFuture(list));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultListAbstractVertxGen(Handler<AsyncResult<List<RefedInterface2>>> listHandler) {
+    List<RefedInterface2> list = Arrays.asList(new RefedInterface2Impl().setString("abstractfoo"), new RefedInterface2Impl().setString("abstractbar"));
+    listHandler.handle(Future.completedFuture(list));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultSetAbstractVertxGen(Handler<AsyncResult<Set<RefedInterface2>>> setHandler) {
+    Set<RefedInterface2> list = new LinkedHashSet<>(Arrays.asList(new RefedInterface2Impl().setString("abstractfoo"), new RefedInterface2Impl().setString("abstractbar")));
     setHandler.handle(Future.completedFuture(list));
   }
 
@@ -440,6 +464,13 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   public RefedInterface1 methodWithVertxGenReturn() {
     RefedInterface1 refed = new RefedInterface1Impl();
     refed.setString("chaffinch");
+    return refed;
+  }
+
+  @Override
+  public RefedInterface2 methodWithAbstractVertxGenReturn() {
+    RefedInterface2 refed = new RefedInterface2Impl();
+    refed.setString("abstractchaffinch");
     return refed;
   }
 

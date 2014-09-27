@@ -1,17 +1,16 @@
 package io.vertx.codegen.testmodel;
 
 import io.vertx.codegen.annotations.Fluent;
-import io.vertx.codegen.annotations
-.VertxGen;
+import io.vertx.codegen.annotations.VertxGen;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
-@VertxGen
-public interface RefedInterface1 {
+@VertxGen(concrete = false)
+public interface RefedInterface2 {
 
   String getString();
 
   @Fluent
-  RefedInterface1 setString(String str);
+  RefedInterface2 setString(String str);
 }
