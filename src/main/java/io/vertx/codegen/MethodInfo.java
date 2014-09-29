@@ -16,7 +16,7 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
-import java.util.ArrayList;
+import javax.lang.model.element.ExecutableElement;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -27,6 +27,7 @@ import java.util.Set;
  */
 public class MethodInfo {
 
+  final ExecutableElement element; // Internally used
   final String name;
   final MethodKind kind;
   final TypeInfo returnType;
@@ -35,12 +36,14 @@ public class MethodInfo {
   List<ParamInfo> params;
   final String comment;
   final boolean staticMethod;
-  boolean overloaded;
   List<String> typeParams;
   LinkedHashSet<TypeInfo.Class> ownerTypes;
 
-  public MethodInfo(LinkedHashSet<TypeInfo.Class> ownerTypes, String name, MethodKind kind, TypeInfo returnType, boolean fluent,
+  public MethodInfo(ExecutableElement element, TypeInfo.Class ownerType, String name, MethodKind kind, TypeInfo returnType, boolean fluent,
                     boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod, List<String> typeParams) {
+
+
+    this.element = element;
     this.kind = kind;
     this.name = name;
     this.returnType = returnType;
@@ -48,9 +51,10 @@ public class MethodInfo {
     this.cacheReturn = cacheReturn;
     this.comment = comment;
     this.staticMethod = staticMethod;
-    mergeParams(params);
+    this.params = params;
     this.typeParams = typeParams;
-    this.ownerTypes = ownerTypes;
+    this.ownerTypes = new LinkedHashSet<>();
+    ownerTypes.add(ownerType);
   }
 
   /**
@@ -121,14 +125,6 @@ public class MethodInfo {
     return comment;
   }
 
-  public boolean isOverloaded() {
-    return overloaded;
-  }
-
-  public void setOverloaded(boolean overloaded) {
-    this.overloaded = overloaded;
-  }
-
   public boolean isStaticMethod() {
     return staticMethod;
   }
@@ -148,36 +144,8 @@ public class MethodInfo {
     }
   }
 
-  public void mergeParams(List<ParamInfo> params) {
-    if (params == null) {
-      throw new NullPointerException("params");
-    }
-    if (this.params == null) {
-      this.params = new ArrayList<>();
-    } else {
-      overloaded = true;
-    }
-    for (ParamInfo param: params) {
-      if (!this.params.contains(param)) {
-        this.params.add(param);
-      }
-    }
-  }
-
   public void collectImports(Collection<TypeInfo.Class> imports) {
     params.stream().map(ParamInfo::getType).forEach(a -> a.collectImports(imports));
-  }
-
-  public boolean hasSameSignature(MethodInfo other) {
-    if (name.equals(other.name) && params.size() == other.params.size()) {
-      for (int i = 0;i < params.size();i++) {
-        if (!params.get(i).type.equals(other.params.get(i).type)) {
-          return false;
-        }
-      }
-      return true;
-    }
-    return false;
   }
 
   @Override
