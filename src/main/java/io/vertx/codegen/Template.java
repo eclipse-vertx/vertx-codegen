@@ -23,7 +23,7 @@ import java.util.Scanner;
  */
 public class Template {
 
-  private final URI baseUri;
+  private final String baseURI;
   private final String name;
   private final CompiledTemplate compiled;
   private final HashMap<String, String> options = new HashMap<>();
@@ -32,7 +32,7 @@ public class Template {
     String file = url.getFile();
     this.name = file.substring(file.lastIndexOf('/') + 1);
     try {
-      this.baseUri = url.toURI();
+      this.baseURI = url.toURI().toString();
       this.compiled = loadCompiled(url.openStream());
     } catch (Exception e) {
       throw new IllegalArgumentException("Cannot load template file: " + name, e);
@@ -115,20 +115,14 @@ public class Template {
           return super.getNamedTemplate(name);
         } catch (TemplateError err) {
           // Load error try to resolve from base uri
-          URI uri;
           try {
-            uri = baseUri.resolve(name);
-          } catch (Exception ex) {
-            throw new TemplateError("Could not resolve template " + name, ex);
-          }
-          try {
-            URL url = uri.toURL();
+            URL url = new URL(new URL(baseURI), name);
             InputStream in = url.openStream();
             CompiledTemplate compiledTemplate = loadCompiled(in);
             addNamedTemplate(name, compiledTemplate);
             return compiledTemplate;
           } catch (Exception ex) {
-            throw new TemplateError("Could not load template " + name + " from " + uri, ex);
+            throw new TemplateError("Could not load template " + name + " from " + baseURI, ex);
           }
         }
       }
