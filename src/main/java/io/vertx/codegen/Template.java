@@ -115,14 +115,20 @@ public class Template {
           return super.getNamedTemplate(name);
         } catch (TemplateError err) {
           // Load error try to resolve from base uri
+          URI uri;
           try {
-            URL url = baseUri.resolve(name).toURL();
+            uri = baseUri.resolve(name);
+          } catch (Exception ex) {
+            throw new TemplateError("Could not resolve template " + name, ex);
+          }
+          try {
+            URL url = uri.toURL();
             InputStream in = url.openStream();
             CompiledTemplate compiledTemplate = loadCompiled(in);
             addNamedTemplate(name, compiledTemplate);
             return compiledTemplate;
           } catch (Exception ex) {
-            throw new TemplateError("Could not load template", ex);
+            throw new TemplateError("Could not load template " + name + " from " + uri, ex);
           }
         }
       }
