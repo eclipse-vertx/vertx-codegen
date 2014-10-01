@@ -27,7 +27,6 @@ import java.util.Set;
  */
 public class MethodInfo {
 
-  final ExecutableElement element; // Internally used
   final String name;
   final MethodKind kind;
   final TypeInfo returnType;
@@ -39,11 +38,10 @@ public class MethodInfo {
   List<String> typeParams;
   LinkedHashSet<TypeInfo.Class> ownerTypes;
 
-  public MethodInfo(ExecutableElement element, TypeInfo.Class ownerType, String name, MethodKind kind, TypeInfo returnType, boolean fluent,
+  public MethodInfo(Set<TypeInfo.Class> ownerTypes, String name, MethodKind kind, TypeInfo returnType, boolean fluent,
                     boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod, List<String> typeParams) {
 
 
-    this.element = element;
     this.kind = kind;
     this.name = name;
     this.returnType = returnType;
@@ -53,8 +51,7 @@ public class MethodInfo {
     this.staticMethod = staticMethod;
     this.params = params;
     this.typeParams = typeParams;
-    this.ownerTypes = new LinkedHashSet<>();
-    ownerTypes.add(ownerType);
+    this.ownerTypes = new LinkedHashSet<>(ownerTypes);
   }
 
   /**

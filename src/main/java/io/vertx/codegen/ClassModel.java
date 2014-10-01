@@ -41,6 +41,8 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -75,7 +77,7 @@ public class ClassModel implements Model {
   private final Elements elementUtils;
   private final Types typeUtils;
   private boolean processed = false;
-  private List<MethodInfo> methods = new ArrayList<>();
+  private LinkedHashMap<ExecutableElement, MethodInfo> methods = new LinkedHashMap<>();
   private HashSet<TypeInfo.Class> importedTypes = new HashSet<>();
   private Set<TypeInfo.Class> referencedTypes = new HashSet<>();
   private boolean concrete;
@@ -116,7 +118,7 @@ public class ClassModel implements Model {
   }
 
   public List<MethodInfo> getMethods() {
-    return methods;
+    return new ArrayList<>(methods.values());
   }
 
   public Set<TypeInfo.Class> getImportedTypes() {
@@ -452,12 +454,12 @@ public class ClassModel implements Model {
     TypeInfo.Class ownerType = typeFactory.create(declaringElt.asType()).getRaw();
 
     // Check we don't hide another method
-    for (MethodInfo method : methods) {
-      if (method.getName().equals(methodElt.getSimpleName().toString())) {
-        ExecutableType t1 = (ExecutableType) method.element.asType();
+    for (Map.Entry<ExecutableElement, MethodInfo> method : methods.entrySet()) {
+      if (method.getValue().getName().equals(methodElt.getSimpleName().toString())) {
+        ExecutableType t1 = (ExecutableType) method.getKey().asType();
         ExecutableType t2 = (ExecutableType) methodElt.asType();
         if (typeUtils.isSubsignature(t1, t2) && typeUtils.isSubsignature(t2, t1)) {
-          method.ownerTypes.add(ownerType);
+          method.getValue().ownerTypes.add(ownerType);
           return;
         }
       }
@@ -562,7 +564,7 @@ public class ClassModel implements Model {
     }
 
     //
-    MethodInfo methodInfo = new MethodInfo(methodElt, ownerType, methodName, kind, returnType,
+    MethodInfo methodInfo = new MethodInfo(Collections.singleton(ownerType), methodName, kind, returnType,
         isFluent, isCacheReturn, mParams, elementUtils.getDocComment(methodElt), isStatic, typeParams);
     List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
     if (methodsByName == null) {
@@ -579,7 +581,7 @@ public class ClassModel implements Model {
     }
 
     methodsByName.add(methodInfo);
-    methods.add(methodInfo);
+    methods.put(methodElt, methodInfo);
     methodInfo.collectImports(importedTypes);
   }
 
