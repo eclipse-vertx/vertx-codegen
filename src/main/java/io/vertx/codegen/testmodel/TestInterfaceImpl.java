@@ -9,8 +9,10 @@ import io.vertx.core.json.JsonObject;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -690,5 +692,15 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   public void methodWithHandlerAsyncResultNullJsonArray(Handler<AsyncResult<JsonArray>> handler) {
     assertNotNull(handler);
     handler.handle(Future.completedFuture(null));
+  }
+
+  @Override
+  public Map<String, String> methodWithMapReturn() {
+    return new HashMap<>();
+  }
+
+  @Override
+  public Map<String, String> methodWithNullMapReturn() {
+    return null;
   }
 }

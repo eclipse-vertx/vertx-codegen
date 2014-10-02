@@ -25,6 +25,7 @@ public enum ClassKind {
   // Collection types
   LIST(false, false, true),        // java.util.List
   SET(false, false, true),         // java.util.Set
+  MAP(false, false, true),
 
   // API types
   API(false, false, false),

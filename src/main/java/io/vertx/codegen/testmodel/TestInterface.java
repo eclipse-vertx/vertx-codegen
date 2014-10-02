@@ -9,6 +9,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -189,4 +190,7 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
 
   void methodWithHandlerAsyncResultNullJsonArray(Handler<AsyncResult<JsonArray>> handler);
 
+  Map<String, String> methodWithMapReturn();
+
+  Map<String, String> methodWithNullMapReturn();
 }

@@ -220,10 +220,17 @@ public class ClassModel implements Model {
     }
 
     // List<T> and Set<T> are also legal for returns if T = basic type
-    if (type instanceof TypeInfo.Parameterized) {
-      TypeInfo raw = ((TypeInfo.Parameterized) type).getRaw();
-      if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
-        TypeInfo argument = ((TypeInfo.Parameterized) type).getArgs().get(0);
+    // Map<K,V> is also legal for returns if K is a String and V is a basic type, json, or a @VertxGen interface
+    if (rawTypeIs(type, List.class, Set.class, Map.class)) {
+      TypeInfo argument = ((TypeInfo.Parameterized) type).getArgs().get(0);
+      if (type.getKind() != ClassKind.MAP) {
+        if (argument.getKind().basic || argument.getKind().json) {
+          return;
+        } else if (isVertxGenInterface(argument)) {
+          return;
+        }
+      } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
+        argument = ((TypeInfo.Parameterized) type).getArgs().get(1);
         if (argument.getKind().basic || argument.getKind().json) {
           return;
         } else if (isVertxGenInterface(argument)) {
@@ -610,5 +617,18 @@ public class ClassModel implements Model {
     vars.putAll(ClassKind.vars());
     vars.putAll(MethodKind.vars());
     return vars;
+  }
+
+  private static boolean rawTypeIs(TypeInfo type, Class<?>... classes) {
+    if (type instanceof TypeInfo.Parameterized) {
+      String rawClassName = type.getRaw().getName();
+      for (Class<?> c : classes) {
+        if (rawClassName.equals(c.getName())) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }

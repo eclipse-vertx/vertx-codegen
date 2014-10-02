@@ -4,6 +4,7 @@ import io.vertx.codegen.ClassKind;
 import io.vertx.codegen.ClassModel;
 import io.vertx.codegen.GenException;
 import io.vertx.codegen.Generator;
+import io.vertx.codegen.Helper;
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.MethodKind;
 import io.vertx.codegen.ParamInfo;
@@ -19,14 +20,6 @@ import io.vertx.test.codegen.testapi.ConcreteInterfaceWithTwoConcreteSuperInterf
 import io.vertx.test.codegen.testapi.DiamondMethod1;
 import io.vertx.test.codegen.testapi.DiamondMethod2;
 import io.vertx.test.codegen.testapi.DiamondMethod3;
-import io.vertx.test.codegen.testapi.MethodWithDiamond;
-import io.vertx.test.codegen.testapi.fluent.AbstractInterfaceWithFluentMethods;
-import io.vertx.test.codegen.testapi.fluent.ConcreteInterfaceWithFluentMethods;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodOverrideWithSuperType;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodWithGenericReturn;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodWithIllegalParameterizedReturn;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodWithIllegalReturn;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.GenericAbstractInterface;
 import io.vertx.test.codegen.testapi.GenericInterface;
 import io.vertx.test.codegen.testapi.GenericInterfaceWithUpperBound;
@@ -36,8 +29,6 @@ import io.vertx.test.codegen.testapi.InterfaceWithDefaultMethod;
 import io.vertx.test.codegen.testapi.InterfaceWithGetterMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithIgnoredMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithIndexSetterGetterMethods;
-import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromAbstract;
-import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromConcrete;
 import io.vertx.test.codegen.testapi.InterfaceWithMethodHavingGenericOverride;
 import io.vertx.test.codegen.testapi.InterfaceWithMethodOverride;
 import io.vertx.test.codegen.testapi.InterfaceWithNoMethods;
@@ -53,10 +44,12 @@ import io.vertx.test.codegen.testapi.InterfaceWithSupertypes;
 import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument1;
 import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument2;
 import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument3;
+import io.vertx.test.codegen.testapi.MethodWithDiamond;
 import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultParam;
 import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerNonVertxGenReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerParam;
+import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn;
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectInHandler;
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectInHandlerAsyncResult;
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectParam;
@@ -87,6 +80,7 @@ import io.vertx.test.codegen.testapi.MethodWithValidHandlerParams;
 import io.vertx.test.codegen.testapi.MethodWithValidJSONParams;
 import io.vertx.test.codegen.testapi.MethodWithValidJSONReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidListReturn;
+import io.vertx.test.codegen.testapi.MethodWithValidMapReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidSetReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenParams;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenReturn;
@@ -104,6 +98,15 @@ import io.vertx.test.codegen.testapi.VertxGenClass1;
 import io.vertx.test.codegen.testapi.VertxGenClass2;
 import io.vertx.test.codegen.testapi.VertxGenInterface1;
 import io.vertx.test.codegen.testapi.VertxGenInterface2;
+import io.vertx.test.codegen.testapi.fluent.AbstractInterfaceWithFluentMethods;
+import io.vertx.test.codegen.testapi.fluent.ConcreteInterfaceWithFluentMethods;
+import io.vertx.test.codegen.testapi.fluent.FluentMethodOverrideWithSuperType;
+import io.vertx.test.codegen.testapi.fluent.FluentMethodWithGenericReturn;
+import io.vertx.test.codegen.testapi.fluent.FluentMethodWithIllegalParameterizedReturn;
+import io.vertx.test.codegen.testapi.fluent.FluentMethodWithIllegalReturn;
+import io.vertx.test.codegen.testapi.fluent.FluentMethodWithVoidReturn;
+import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromAbstract;
+import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromConcrete;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -1368,6 +1371,29 @@ public class GeneratorTest {
   @Test
   public void testMethodHandlerAsyncResultParamOverload() throws Exception {
 
+  }
+
+  @Test
+  public void testMethodValidMapReturn() throws Exception {
+    ClassModel model = new Generator().generateModel(MethodWithValidMapReturn.class);
+
+    assertEquals(MethodWithValidMapReturn.class.getName(), model.getIfaceFQCN());
+    assertEquals(MethodWithValidMapReturn.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(2, model.getReferencedTypes().size());
+    assertTrue(model.getReferencedTypes().contains(VertxGenClass1Info));
+    assertTrue(model.getReferencedTypes().contains(VertxGenClass2Info));
+    assertTrue(model.getSuperTypes().isEmpty());
+    assertEquals(13, model.getMethods().size());
+  }
+
+  @Test
+  public void testMethodInvalidMapReturn() throws Exception {
+    try {
+      new Generator().generateModel(MethodWithInvalidMapReturn.class);
+      fail("Invalid Map return should fail");
+    } catch (GenException e) {
+      // pass
+    }
   }
 
 /*
