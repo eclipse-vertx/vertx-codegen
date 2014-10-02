@@ -63,6 +63,8 @@ public class ClassModel implements Model {
 
   private static final Logger logger = Logger.getLogger(ClassModel.class.getName());
 
+  public static final String VERTX_READ_STREAM = "io.vertx.core.streams.ReadStream";
+  public static final String VERTX_WRITE_STREAM = "io.vertx.core.streams.WriteStream";
   public static final String VERTX_ASYNC_RESULT = "io.vertx.core.AsyncResult";
   public static final String VERTX_HANDLER = "io.vertx.core.Handler";
   public static final String JSON_OBJECT = "io.vertx.core.json.JsonObject";

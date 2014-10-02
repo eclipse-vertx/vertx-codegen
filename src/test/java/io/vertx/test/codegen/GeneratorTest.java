@@ -117,6 +117,14 @@ import io.vertx.test.codegen.testapi.fluent.FluentMethodWithIllegalReturn;
 import io.vertx.test.codegen.testapi.fluent.FluentMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromAbstract;
 import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromConcrete;
+import io.vertx.test.codegen.testapi.streams.GenericInterfaceExtentingReadStream;
+import io.vertx.test.codegen.testapi.streams.GenericInterfaceExtentingReadStreamAndWriteStream;
+import io.vertx.test.codegen.testapi.streams.GenericInterfaceExtentingWriteStream;
+import io.vertx.test.codegen.testapi.streams.InterfaceExtentingReadStream;
+import io.vertx.test.codegen.testapi.streams.InterfaceExtentingReadStreamAndWriteStream;
+import io.vertx.test.codegen.testapi.streams.InterfaceExtentingWriteStream;
+import io.vertx.test.codegen.testapi.streams.InterfaceSubtypingReadStream;
+import io.vertx.test.codegen.testapi.streams.ReadStreamWithParameterizedTypeArg;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -1370,6 +1378,93 @@ public class GeneratorTest {
     } catch (GenException e) {
       // pass
     }
+  }
+
+  @Test
+  public void testInterfaceExtendingReadStream() throws Exception {
+    ClassModel model = new Generator().generateModel(InterfaceExtentingReadStream.class);
+    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
+    assertTrue(apiType.isReadStream());
+    assertEquals(TypeInfo.create(String.class), apiType.getReadStreamArg());
+    assertFalse(apiType.isWriteStream());
+    assertNull(apiType.getWriteStreamArg());
+  }
+
+  @Test
+  public void testGenericInterfaceExtendingReadStream() throws Exception {
+    ClassModel model = new Generator().generateModel(GenericInterfaceExtentingReadStream.class);
+    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType().getRaw();
+    assertTrue(apiType.isReadStream());
+    TypeInfo.Variable readStreamArg = (TypeInfo.Variable) apiType.getReadStreamArg();
+    assertEquals("U", readStreamArg.getName());
+    assertFalse(apiType.isWriteStream());
+    assertNull(apiType.getWriteStreamArg());
+  }
+
+  @Test
+  public void testInterfaceExtendingWriteStream() throws Exception {
+    ClassModel model = new Generator().generateModel(InterfaceExtentingWriteStream.class);
+    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
+    assertFalse(apiType.isReadStream());
+    assertNull(apiType.getReadStreamArg());
+    assertTrue(apiType.isWriteStream());
+    assertEquals(TypeInfo.create(String.class), apiType.getWriteStreamArg());
+  }
+
+  @Test
+  public void testGenericInterfaceExtendingWriteStream() throws Exception {
+    ClassModel model = new Generator().generateModel(GenericInterfaceExtentingWriteStream.class);
+    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType().getRaw();
+    assertFalse(apiType.isReadStream());
+    assertNull(apiType.getReadStreamArg());
+    assertTrue(apiType.isWriteStream());
+    TypeInfo.Variable writeStreamArg = (TypeInfo.Variable) apiType.getWriteStreamArg();
+    assertEquals("U", writeStreamArg.getName());
+  }
+
+  @Test
+  public void testInterfaceExtendingReadStreamAndWriteStream() throws Exception {
+    ClassModel model = new Generator().generateModel(InterfaceExtentingReadStreamAndWriteStream.class);
+    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
+    assertTrue(apiType.isReadStream());
+    assertEquals(TypeInfo.create(String.class), apiType.getReadStreamArg());
+    assertTrue(apiType.isWriteStream());
+    assertEquals(TypeInfo.create(String.class), apiType.getWriteStreamArg());
+  }
+
+  @Test
+  public void testGenericInterfaceExtendingReadStreamAndWriteStream() throws Exception {
+    ClassModel model = new Generator().generateModel(GenericInterfaceExtentingReadStreamAndWriteStream.class);
+    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType().getRaw();
+    assertTrue(apiType.isReadStream());
+    TypeInfo.Variable readStreamArg = (TypeInfo.Variable) apiType.getReadStreamArg();
+    assertEquals("U", readStreamArg.getName());
+    assertTrue(apiType.isWriteStream());
+    TypeInfo.Variable writeStreamArg = (TypeInfo.Variable) apiType.getWriteStreamArg();
+    assertEquals("U", writeStreamArg.getName());
+  }
+
+  @Test
+  public void testInterfaceSubtypingReadStream() throws Exception {
+    ClassModel model = new Generator().generateModel(InterfaceSubtypingReadStream.class);
+    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
+    assertTrue(apiType.isReadStream());
+    assertEquals(TypeInfo.create(String.class), apiType.getReadStreamArg());
+    assertFalse(apiType.isWriteStream());
+    assertNull(apiType.getWriteStreamArg());
+  }
+
+  @Test
+  public void testReadStreamWithParameterizedTypeArg() throws Exception {
+    ClassModel model = new Generator().generateModel(ReadStreamWithParameterizedTypeArg.class);
+    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType().getRaw();
+    assertTrue(apiType.isReadStream());
+    TypeInfo.Parameterized readStreamArg = (TypeInfo.Parameterized) apiType.getReadStreamArg();
+    assertEquals(TypeInfo.create(List.class), readStreamArg.getRaw());
+    assertEquals(1, readStreamArg.getArgs().size());
+    assertEquals("T", readStreamArg.getArgs().get(0).getName());
+    assertFalse(apiType.isWriteStream());
+    assertNull(apiType.getWriteStreamArg());
   }
 
 /*

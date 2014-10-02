@@ -453,4 +453,35 @@ public class Helper {
     }
     return null;
   }
+
+
+  /**
+   * Return the type of a type parameter element of a given type element when that type parameter
+   * element is parameterized by a sub type, directly or indirectly. When the type parameter cannot
+   * be resolve, null is returned.
+   *
+   * @param typeUtils the type utils
+   * @param subType the sub type for which the type parameter is parameterized
+   * @param typeParam the type parameter to resolve
+   * @return the type parameterizing the type parameter
+   */
+  public static TypeMirror resolveTypeParameter(Types typeUtils, DeclaredType subType, TypeParameterElement typeParam) {
+    TypeMirror erased = typeUtils.erasure(typeParam.getGenericElement().asType());
+    TypeMirror erasedSubType = typeUtils.erasure(subType);
+    if (typeUtils.isSameType(erased, erasedSubType)) {
+      return typeParam.asType();
+    } else if (typeUtils.isSubtype(erasedSubType, erased)) {
+      for (TypeMirror superType : typeUtils.directSupertypes(subType)) {
+        TypeMirror resolved = resolveTypeParameter(typeUtils, (DeclaredType) superType, typeParam);
+        if (resolved != null) {
+          if (resolved.getKind() == TypeKind.TYPEVAR) {
+            return typeUtils.asMemberOf(subType, ((TypeVariable) resolved).asElement());
+          } else {
+            return resolved;
+          }
+        }
+      }
+    }
+    return null;
+  }
 }

@@ -7,6 +7,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
@@ -59,7 +60,12 @@ public abstract class TypeInfo {
         } finally {
           Thread.currentThread().setContextClassLoader(loader);
         }
-        return new Class(Helper.getKind(classType::getAnnotation, fqcn), fqcn, module);
+        ClassKind kind = Helper.getKind(classType::getAnnotation, fqcn);
+        if (kind == ClassKind.API) {
+          return new Class.Api(fqcn, true, null, null, module);
+        } else {
+          return new Class(kind, fqcn, module);
+        }
       }
     } else if (type instanceof ParameterizedType) {
       ParameterizedType parameterizedType = (ParameterizedType) type;
@@ -151,7 +157,23 @@ public abstract class TypeInfo {
       Class raw;
       if (kind == ClassKind.API) {
         VertxGen genAnn = elt.getAnnotation(VertxGen.class);
-        raw = new Class.Gen(fqcn, module, genAnn.concrete());
+        TypeElement readStreamElt = elementUtils.getTypeElement(ClassModel.VERTX_READ_STREAM);
+        TypeMirror readStreamType = readStreamElt.asType();
+        TypeElement writeStreamElt = elementUtils.getTypeElement(ClassModel.VERTX_WRITE_STREAM);
+        TypeMirror writeStreamType = writeStreamElt.asType();
+        TypeMirror readStreamRawType = typeUtils.erasure(readStreamType);
+        TypeMirror writeStreamRawType = typeUtils.erasure(writeStreamType);
+        TypeInfo readStreamArg = null;
+        if (typeUtils.isSubtype(type, readStreamRawType)) {
+          TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, readStreamElt.getTypeParameters().get(0));
+          readStreamArg = create(resolved);
+        }
+        TypeInfo writeStreamArg = null;
+        if (typeUtils.isSubtype(type, writeStreamRawType)) {
+          TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, writeStreamElt.getTypeParameters().get(0));
+          writeStreamArg = create(resolved);
+        }
+        raw = new Class.Api(fqcn, genAnn.concrete(), readStreamArg, writeStreamArg, module);
       } else {
         raw = new Class(kind, fqcn, module);
       }
@@ -356,31 +378,6 @@ public abstract class TypeInfo {
       this.module = module;
     }
 
-    public static class Gen extends Class {
-
-      boolean concrete;
-
-      public Gen(String fqcn, ModuleInfo module, boolean concrete) {
-        super(ClassKind.API, fqcn, module);
-        this.concrete = concrete;
-      }
-
-      @Override
-      public TypeInfo.Class.Gen renamePackage(String oldPackageName, String newPackageName) {
-        return packageName.startsWith(oldPackageName) ?
-            new Gen(newPackageName + fqcn.substring(oldPackageName.length()), null, concrete) :
-            this;
-      }
-
-      public boolean isConcrete() {
-        return concrete;
-      }
-
-      public boolean isAbstract() {
-        return !concrete;
-      }
-    }
-
     /**
      * @return the optional module name only present for {@link io.vertx.codegen.annotations.VertxGen} annotated types.
      */
@@ -424,6 +421,56 @@ public abstract class TypeInfo {
     @Override
     public String format(boolean qualified) {
       return qualified ? fqcn : simpleName;
+    }
+
+    /**
+     * A special subclass for {@link io.vertx.codegen.ClassKind#API} kinds.
+     */
+    public static class Api extends Class {
+
+      final boolean concrete;
+      final TypeInfo readStreamArg;
+      final TypeInfo writeStreamArg;
+
+      public Api(String fqcn, boolean concrete, TypeInfo readStreamArg, TypeInfo writeStreamArg, ModuleInfo module) {
+        super(ClassKind.API, fqcn, module);
+
+        this.concrete = concrete;
+        this.readStreamArg = readStreamArg;
+        this.writeStreamArg = writeStreamArg;
+
+      }
+
+      @Override
+      public Class renamePackage(String oldPackageName, String newPackageName) {
+        return packageName.startsWith(oldPackageName) ?
+            new Api(newPackageName + fqcn.substring(oldPackageName.length()), concrete, readStreamArg, writeStreamArg, module) :
+            this;
+      }
+
+      public boolean isConcrete() {
+        return concrete;
+      }
+
+      public boolean isAbstract() {
+        return !concrete;
+      }
+
+      public TypeInfo getReadStreamArg() {
+        return readStreamArg;
+      }
+
+      public boolean isReadStream() {
+        return readStreamArg != null;
+      }
+
+      public TypeInfo getWriteStreamArg() {
+        return writeStreamArg;
+      }
+
+      public boolean isWriteStream() {
+        return writeStreamArg != null;
+      }
     }
   }
 
