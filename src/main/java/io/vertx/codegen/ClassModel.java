@@ -41,14 +41,12 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -465,26 +463,7 @@ public class ClassModel implements Model {
       }
     }
 
-    // Find all intermediate resolving types
-    LinkedList<DeclaredType> resolvingTypes = new LinkedList<>();
     DeclaredType current = (DeclaredType) modelElt.asType();
-    while (true) {
-      resolvingTypes.add(current);
-      DeclaredType next = null;
-      for (TypeMirror superType : typeUtils.directSupertypes(current)) {
-        if (typeUtils.isSubtype(superType, declaringElt.asType())) {
-          next = (DeclaredType) superType;
-          break;
-        }
-        next = (DeclaredType) superType;
-      }
-      if (next != null) {
-        current = next;
-      } else {
-        break;
-      }
-    }
-
     boolean isStatic = mods.contains(Modifier.STATIC);
     boolean isCacheReturn = methodElt.getAnnotation(CacheReturn.class) != null;
     ArrayList<String> typeParams = new ArrayList<>();
@@ -497,8 +476,11 @@ public class ClassModel implements Model {
       typeParams.add(typeParam.getSimpleName().toString());
     }
 
-    List<ParamInfo> mParams = getParams(resolvingTypes, methodElt);
+    //
+    ExecutableType methodType = (ExecutableType) typeUtils.asMemberOf((DeclaredType) modelElt.asType(), methodElt);
+    List<ParamInfo> mParams = getParams(methodElt, methodType);
 
+    //
     AnnotationMirror fluentAnnotation = Helper.resolveMethodAnnotation(Fluent.class, elementUtils, typeUtils, declaringElt, methodElt);
     boolean isFluent = fluentAnnotation != null;
     if (isFluent) {
@@ -516,7 +498,7 @@ public class ClassModel implements Model {
       }
     }
 
-    TypeInfo returnType = typeFactory.create(resolvingTypes, methodElt.getReturnType());
+    TypeInfo returnType = typeFactory.create(methodType.getReturnType());
     returnType.collectImports(importedTypes);
     if (isCacheReturn && returnType instanceof TypeInfo.Void) {
       throw new GenException(methodElt, "void method can't be marked with @CacheReturn");
@@ -589,13 +571,14 @@ public class ClassModel implements Model {
     return bound.getKind() == TypeKind.DECLARED && bound.toString().equals(Object.class.getName());
   }
 
-  private List<ParamInfo> getParams(LinkedList<DeclaredType> resolvingTypes, ExecutableElement execElem) {
+  private List<ParamInfo> getParams(ExecutableElement execElem, ExecutableType execType) {
     List<? extends VariableElement> params = execElem.getParameters();
     List<ParamInfo> mParams = new ArrayList<>();
-    for (VariableElement param: params) {
+    for (int i = 0;i < params.size();i++) {
+      VariableElement param = params.get(i);
       TypeInfo type;
       try {
-        type = typeFactory.create(resolvingTypes, param.asType());
+        type = typeFactory.create(execType.getParameterTypes().get(i));
       } catch (Exception e) {
         throw new GenException(param, e.getMessage());
       }
