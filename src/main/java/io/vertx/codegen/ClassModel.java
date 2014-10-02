@@ -463,7 +463,6 @@ public class ClassModel implements Model {
       }
     }
 
-    DeclaredType current = (DeclaredType) modelElt.asType();
     boolean isStatic = mods.contains(Modifier.STATIC);
     boolean isCacheReturn = methodElt.getAnnotation(CacheReturn.class) != null;
     ArrayList<String> typeParams = new ArrayList<>();
