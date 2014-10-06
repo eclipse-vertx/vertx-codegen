@@ -4,7 +4,6 @@ import io.vertx.codegen.ClassKind;
 import io.vertx.codegen.ClassModel;
 import io.vertx.codegen.GenException;
 import io.vertx.codegen.Generator;
-import io.vertx.codegen.Helper;
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.MethodKind;
 import io.vertx.codegen.ParamInfo;
@@ -45,6 +44,7 @@ import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument1;
 import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument2;
 import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument3;
 import io.vertx.test.codegen.testapi.MethodWithDiamond;
+import io.vertx.test.codegen.testapi.MethodWithEnumParam;
 import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultParam;
 import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerNonVertxGenReturn;
@@ -94,6 +94,7 @@ import io.vertx.test.codegen.testapi.NotInterface;
 import io.vertx.test.codegen.testapi.OverloadedMethodsWithDifferentReturnType;
 import io.vertx.test.codegen.testapi.SameSignatureMethod1;
 import io.vertx.test.codegen.testapi.SameSignatureMethod2;
+import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.test.codegen.testapi.VertxGenClass1;
 import io.vertx.test.codegen.testapi.VertxGenClass2;
 import io.vertx.test.codegen.testapi.VertxGenInterface1;
@@ -738,6 +739,26 @@ public class GeneratorTest {
   }
 
   @Test
+  public void testValidEnumParam() throws Exception {
+    ClassModel model = new Generator().generateModel(MethodWithEnumParam.class);
+    assertEquals(MethodWithEnumParam.class.getName(), model.getIfaceFQCN());
+    assertEquals(MethodWithEnumParam.class.getSimpleName(), model.getIfaceSimpleName());
+    assertTrue(model.getReferencedTypes().isEmpty());
+    assertTrue(model.getSuperTypes().isEmpty());
+    assertEquals(1, model.getMethods().size());
+    String methodName = "methodWithEnumParam";
+
+    Consumer<MethodInfo> checker = (method) -> {
+      checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 1);
+      List<ParamInfo> params = method.getParams();
+      checkClassParam(params.get(0), "weirdo", TestEnum.class.getName(), ClassKind.ENUM);
+    };
+
+    MethodInfo method = model.getMethods().get(0);
+    checker.accept(method);
+  }
+
+  @Test
   public void testValidOptionsParam() throws Exception {
     ClassModel model = new Generator().generateModel(MethodWithOptionsParam.class);
     assertEquals(MethodWithOptionsParam.class.getName(), model.getIfaceFQCN());
@@ -1252,7 +1273,7 @@ public class GeneratorTest {
     assertEquals(1, model.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "U", false, false, false, 0);
-      assertEquals(set(TypeInfo.create(DiamondMethod2.class),  TypeInfo.create(DiamondMethod3.class)), methods.get(0).getOwnerTypes());
+      assertEquals(set(TypeInfo.create(DiamondMethod2.class), TypeInfo.create(DiamondMethod3.class)), methods.get(0).getOwnerTypes());
     };
     checker.accept(model.getMethods());
   }

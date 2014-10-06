@@ -193,4 +193,6 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
   Map<String, String> methodWithMapReturn();
 
   Map<String, String> methodWithNullMapReturn();
+
+  String methodWithEnumParam(String strVal, TestEnum weirdo);
 }

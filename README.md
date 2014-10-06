@@ -98,6 +98,7 @@ The following set `P` of types are permitted as parameters to any API method:
 * the set `V`
 * the set `J`
 * any options class annotated with `@Options`
+* any Enum class
 * `io.vertx.java.core.Handler<io.vertx.java.core.AsyncResult<HA>>` where `HA` contains
     * the set `B`
     * the set `V`

@@ -13,6 +13,9 @@ public enum ClassKind {
   BOXED_PRIMITIVE(true, false, false),
   PRIMITIVE(true, false, false),
 
+  // Enum
+  ENUM(false, false, false),
+
   // Json types
   JSON_OBJECT(false, true, false),
   JSON_ARRAY(false, true, false),

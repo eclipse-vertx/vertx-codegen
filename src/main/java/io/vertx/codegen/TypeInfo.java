@@ -2,6 +2,7 @@ package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.GenModule;
 
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
@@ -134,7 +135,12 @@ public abstract class TypeInfo {
         }
       }
       String fqcn = typeUtils.erasure(type).toString();
-      ClassKind kind = Helper.getKind(annotationType -> type.asElement().getAnnotation(annotationType), fqcn);
+      ClassKind kind;
+      if (type.asElement().getKind() == ElementKind.ENUM) {
+        kind = ClassKind.ENUM;
+      } else {
+        kind = Helper.getKind(annotationType -> type.asElement().getAnnotation(annotationType), fqcn);
+      }
       Class raw = new Class(kind, fqcn, module);
       List<? extends TypeMirror> typeArgs = type.getTypeArguments();
       if (typeArgs.size() > 0) {

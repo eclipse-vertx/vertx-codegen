@@ -189,6 +189,10 @@ public class ClassModel implements Model {
     if (typeInfo.getKind().basic || typeInfo.getKind().json || typeInfo.getKind() == ClassKind.OBJECT) {
       return;
     }
+    // We also allow enums as parameter types
+    if (typeInfo.getKind() == ClassKind.ENUM) {
+      return;
+    }
     // Check legal handlers
     if (isLegalHandlerType(typeInfo)) {
       return;

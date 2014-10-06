@@ -703,4 +703,9 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   public Map<String, String> methodWithNullMapReturn() {
     return null;
   }
+
+  @Override
+  public String methodWithEnumParam(String strVal, TestEnum weirdo) {
+    return strVal + weirdo;
+  }
 }
