@@ -29,11 +29,13 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaFileObject;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,6 +57,11 @@ public class Generator {
 
   Template template; // Global trivial compiled template cache
   HashMap<String, String> options = new HashMap<>();
+  DiagnosticCollector<JavaFileObject> collector = new DiagnosticCollector<>();
+
+  public List<Diagnostic<? extends JavaFileObject>> getDiagnostics() {
+    return collector.getDiagnostics();
+  }
 
   public void setOption(String name, String value) {
     options.put(name, value);
@@ -111,7 +118,7 @@ public class Generator {
     URL url = clazz.getClassLoader().getResource(clazz.getName().replace('.', '/') + ".java");
     File f = new File(url.toURI());
     MyProcessor<PackageModel> processor = new MyProcessor<>(codegen -> codegen.getPackageModel(clazz.getPackage().getName()));
-    Compiler compiler = new Compiler(processor);
+    Compiler compiler = new Compiler(processor, collector);
     compiler.compile(f);
     return processor.result;
   }
@@ -120,14 +127,14 @@ public class Generator {
     URL url = loader.getResource(packageFqn.replace('.', '/') + "/package-info.java");
     File f = new File(url.toURI());
     MyProcessor<ModuleModel> processor = new MyProcessor<>(codegen -> codegen.getModuleModel(packageFqn));
-    Compiler compiler = new Compiler(processor);
+    Compiler compiler = new Compiler(processor, collector);
     compiler.compile(f);
     return processor.result;
   }
 
   public OptionsModel generateOptions(Class option) throws Exception {
     MyProcessor<OptionsModel> processor = new MyProcessor<>(codegen -> codegen.getOptionsModel(option.getName()));
-    Compiler compiler = new Compiler(processor);
+    Compiler compiler = new Compiler(processor, collector);
     compiler.compile(Collections.singletonList(option));
     return processor.result;
   }
@@ -139,27 +146,13 @@ public class Generator {
     Collections.addAll(types, rest);
     String className = c.getCanonicalName();
     MyProcessor<ClassModel> processor = new MyProcessor<>(codegen -> codegen.getClassModel(className));
-    Compiler compiler = new Compiler(processor);
+    Compiler compiler = new Compiler(processor, collector);
     compiler.compile(types);
     if (processor.result == null) {
       throw new IllegalArgumentException(className + " not processed. Does it have the VertxGen annotation?");
     }
     return processor.result;
   }
-
-  private void dumpClasspath(ClassLoader cl) {
-    if (cl instanceof URLClassLoader) {
-      URLClassLoader urlc = (URLClassLoader)cl;
-      URL[] urls = urlc.getURLs();
-      System.out.println("Dumping urls:");
-      for (URL url: urls) {
-        System.out.println(url);
-      }
-    } else {
-      System.out.println("Not URLClassloader!");
-    }
-  }
-
 
   private void sortMethodMap(Map<String, List<MethodInfo>> map) {
     for (List<MethodInfo> list: map.values()) {

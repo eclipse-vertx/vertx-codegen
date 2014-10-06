@@ -2,6 +2,7 @@ package io.vertx.codegen;
 
 import javax.annotation.processing.Processor;
 import javax.tools.DiagnosticCollector;
+import javax.tools.DiagnosticListener;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
@@ -23,13 +24,19 @@ import java.util.Scanner;
 public class Compiler {
 
   private Processor processor;
+  private DiagnosticListener<JavaFileObject> diagnosticListener;
 
   public Compiler(Processor processor) {
+    this(processor, new DiagnosticCollector<>());
+  }
+
+  public Compiler(Processor processor, DiagnosticListener<JavaFileObject> diagnosticListener) {
     this.processor = processor;
+    this.diagnosticListener = diagnosticListener;
   }
 
   public Compiler() {
-    this.processor = null;
+    this(null);
   }
 
   public Processor getProcessor() {
@@ -66,11 +73,10 @@ public class Compiler {
 
   public boolean compile(File... sourceFiles) throws Exception {
     JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-    DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-    StandardJavaFileManager fm = compiler.getStandardFileManager(diagnostics, null, null);
+    StandardJavaFileManager fm = compiler.getStandardFileManager(diagnosticListener, null, null);
     Iterable<? extends JavaFileObject> fileObjects = fm.getJavaFileObjects(sourceFiles);
     Writer out = new NullWriter();
-    JavaCompiler.CompilationTask task = compiler.getTask(out, fm, diagnostics, null, null, fileObjects);
+    JavaCompiler.CompilationTask task = compiler.getTask(out, fm, diagnosticListener, null, null, fileObjects);
     List<Processor> processors = Collections.<Processor>singletonList(processor);
     task.setProcessors(processors);
     try {

@@ -19,7 +19,9 @@ package io.vertx.codegen;
 import io.vertx.codegen.annotations.Options;
 import io.vertx.codegen.annotations.VertxGen;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -29,16 +31,31 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
+import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 public class Helper {
+
+  static final Function<Element, Stream<ExecutableElement>> FILTER_METHOD = element -> {
+    if (element.getKind() == ElementKind.METHOD) {
+      return Stream.of((ExecutableElement) element);
+    } else {
+      return Stream.empty();
+    }
+  };
 
   public static ClassKind getKind(AnnotationResolver annotations, String fqcn) {
     if (annotations.get(Options.class) != null) {
@@ -362,5 +379,71 @@ public class Helper {
       }
     }
     return true;
+  }
+
+  /**
+   * Resolve a method annotation, this method scan the specified method, if the annotation is not found
+   * it will also scan the methods this method overrides and return the annotation when it is found.
+   *
+   * @param annotationType the annotation type,
+   * @param elementUtils element utils
+   * @param typeUtils type utils
+   * @param declaring the element declaring the method
+   * @param method the method to start the resolution from
+   * @return the annotation if resolved otherwise null
+   */
+  public static AnnotationMirror resolveMethodAnnotation(
+      Class<? extends Annotation> annotationType, Elements elementUtils, Types typeUtils,
+      TypeElement declaring, ExecutableElement method) {
+    return resolveMethodAnnotation(
+        (DeclaredType) elementUtils.getTypeElement(annotationType.getName()).asType(),
+        elementUtils, typeUtils, declaring, method);
+  }
+
+  /**
+   * Resolve a method annotation, this method scan the specified method, if the annotation is not found
+   * it will also scan the methods this method overrides and return the annotation when it is found.
+   *
+   * @param annotationType the annotation type,
+   * @param elementUtils element utils
+   * @param typeUtils type utils
+   * @param declaring the element declaring the method
+   * @param method the method to start the resolution from
+   * @return the annotation if resolved otherwise null
+   */
+  public static AnnotationMirror resolveMethodAnnotation(
+      DeclaredType annotationType, Elements elementUtils, Types typeUtils,
+      TypeElement declaring, ExecutableElement method) {
+    Optional<? extends AnnotationMirror> annotation = method.getAnnotationMirrors().stream().filter(mirror -> typeUtils.isSameType(mirror.getAnnotationType(), annotationType)).findFirst();
+    if (annotation.isPresent()) {
+      return annotation.get();
+    } else {
+      return isFluent(annotationType, elementUtils, typeUtils, declaring, method, method.getEnclosingElement().asType());
+    }
+  }
+
+  private static AnnotationMirror isFluent(DeclaredType annotationType, Elements elementUtils,
+                                                    Types typeUtils, TypeElement declaring, ExecutableElement method, TypeMirror type) {
+    for (TypeMirror directSuperType : typeUtils.directSupertypes(type)) {
+      Element directSuperTypeElt = typeUtils.asElement(directSuperType);
+      if (directSuperTypeElt instanceof TypeElement) {
+        List<ExecutableElement> methods = ((TypeElement) directSuperTypeElt).getEnclosedElements().stream().
+            filter(member -> member.getKind() == ElementKind.METHOD).map(member -> (ExecutableElement) member).
+            collect(Collectors.toList());
+        for (ExecutableElement m : methods) {
+          if (elementUtils.overrides(method, m, declaring)) {
+            AnnotationMirror annotation = resolveMethodAnnotation(annotationType, elementUtils, typeUtils, (TypeElement) directSuperTypeElt, m);
+            if (annotation != null) {
+              return annotation;
+            }
+          }
+        }
+        AnnotationMirror annotation = isFluent(annotationType, elementUtils, typeUtils, declaring, method, directSuperType);
+        if (annotation != null) {
+          return annotation;
+        }
+      }
+    }
+    return null;
   }
 }

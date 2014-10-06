@@ -4,6 +4,7 @@ import io.vertx.codegen.annotations.GenModule;
 import io.vertx.codegen.annotations.Options;
 import io.vertx.codegen.annotations.VertxGen;
 
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
@@ -26,8 +27,10 @@ public class CodeGen {
   private final HashMap<String, PackageElement> modules = new HashMap<>();
   private final Elements elementUtils;
   private final Types typeUtils;
+  private final Messager messager;
 
   public CodeGen(ProcessingEnvironment env, RoundEnvironment round) {
+    this.messager = env.getMessager();
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
     round.getElementsAnnotatedWith(Options.class).
@@ -110,7 +113,7 @@ public class CodeGen {
     if (element == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
-      ClassModel model = new ClassModel(classes, elementUtils, typeUtils, element);
+      ClassModel model = new ClassModel(messager, classes, elementUtils, typeUtils, element);
       model.process();
       return model;
     }

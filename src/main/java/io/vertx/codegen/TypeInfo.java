@@ -14,7 +14,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -84,15 +83,11 @@ public abstract class TypeInfo {
     }
 
     public TypeInfo create(TypeMirror type) {
-      return create(Collections.emptyList(), type);
-    }
-
-    public TypeInfo create(Iterable<DeclaredType> resolvingTypes, TypeMirror type) {
       switch (type.getKind()) {
         case VOID:
           return Void.INSTANCE;
         case DECLARED:
-          return create(resolvingTypes, (DeclaredType) type);
+          return create((DeclaredType) type);
         case DOUBLE:
         case LONG:
         case FLOAT:
@@ -103,12 +98,7 @@ public abstract class TypeInfo {
         case INT:
           return new Primitive(type.toString());
         case TYPEVAR:
-          TypeMirror resolved = resolveTypeVariable(resolvingTypes, (TypeVariable) type);
-          if (resolved instanceof TypeVariable) {
-            return create((TypeVariable) resolved);
-          } else {
-            return create(resolvingTypes, resolved);
-          }
+          return create((TypeVariable) type);
         case WILDCARD:
           return create((WildcardType) type);
         default:
@@ -126,7 +116,7 @@ public abstract class TypeInfo {
       return new Wildcard();
     }
 
-    public TypeInfo create(Iterable<DeclaredType> resolvingTypes, DeclaredType type) {
+    public TypeInfo create(DeclaredType type) {
       ModuleInfo module = null;
       PackageElement pkgElt = elementUtils.getPackageOf(type.asElement());
       while (pkgElt != null) {
@@ -151,7 +141,7 @@ public abstract class TypeInfo {
         List<TypeInfo> typeArguments;
         typeArguments = new ArrayList<>(typeArgs.size());
         for (TypeMirror typeArg : typeArgs) {
-          TypeInfo typeArgDesc = create(resolvingTypes, typeArg);
+          TypeInfo typeArgDesc = create(typeArg);
           // Need to check it is an interface type
           typeArguments.add(typeArgDesc);
         }
@@ -165,24 +155,6 @@ public abstract class TypeInfo {
       return new Variable(type.toString());
     }
 
-    private TypeMirror resolveTypeVariable(Iterable<DeclaredType> resolvingTypes, TypeVariable type) {
-      for (DeclaredType d : resolvingTypes) {
-        TypeMirror tm;
-        try {
-          tm = typeUtils.asMemberOf(d, type.asElement());
-        } catch (IllegalArgumentException ignore) {
-          continue;
-        }
-        if (!typeUtils.isSameType(tm, type)) {
-          if (tm instanceof TypeVariable) {
-            type = (TypeVariable) tm;
-          } else {
-            return tm;
-          }
-        }
-      }
-      return type;
-    }
   }
 
   /**

@@ -23,6 +23,8 @@ import io.vertx.codegen.annotations.IndexGetter;
 import io.vertx.codegen.annotations.IndexSetter;
 import io.vertx.codegen.annotations.VertxGen;
 
+import javax.annotation.processing.Messager;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -31,25 +33,25 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * A processed source.
@@ -66,13 +68,14 @@ public class ClassModel implements Model {
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
   public static final String VERTX = "io.vertx.core.Vertx";
 
+  private final Messager messager;
   private final TypeInfo.Factory typeFactory;
   private final Map<String, TypeElement> sources;
   private final TypeElement modelElt;
   private final Elements elementUtils;
   private final Types typeUtils;
   private boolean processed = false;
-  private List<MethodInfo> methods = new ArrayList<>();
+  private LinkedHashMap<ExecutableElement, MethodInfo> methods = new LinkedHashMap<>();
   private HashSet<TypeInfo.Class> importedTypes = new HashSet<>();
   private Set<TypeInfo.Class> referencedTypes = new HashSet<>();
   private boolean concrete;
@@ -89,7 +92,8 @@ public class ClassModel implements Model {
   private Set<String> referencedOptionsTypes = new HashSet<>();
   private List<TypeParamInfo> typeParams = new ArrayList<>();
 
-  public ClassModel(Map<String, TypeElement> sources, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
+  public ClassModel(Messager messager, Map<String, TypeElement> sources, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
+    this.messager = messager;
     this.sources = sources;
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
@@ -112,7 +116,7 @@ public class ClassModel implements Model {
   }
 
   public List<MethodInfo> getMethods() {
-    return methods;
+    return new ArrayList<>(methods.values());
   }
 
   public Set<TypeInfo.Class> getImportedTypes() {
@@ -401,8 +405,13 @@ public class ClassModel implements Model {
 
     if (elem.getKind() == ElementKind.INTERFACE) {
 
+      TypeMirror objectType = elementUtils.getTypeElement("java.lang.Object").asType();
+
       // Traverse methods
-      traverseMethods(new LinkedList<>(), elem);
+      elementUtils.getAllMembers((TypeElement) elem).stream().
+          filter(elt -> !typeUtils.isSameType(elt.getEnclosingElement().asType(), objectType)).
+          flatMap(Helper.FILTER_METHOD).
+          forEach(this::addMethod);
 
       // We're done
       if (methods.isEmpty() && superTypes.isEmpty()) {
@@ -419,105 +428,97 @@ public class ClassModel implements Model {
     }
   }
 
-  private void traverseMethods(LinkedList<DeclaredType> resolvingTypes, Element currentElt) {
-    for (Element currentEnclosedElt : currentElt.getEnclosedElements()) {
-      if (currentEnclosedElt.getKind() == ElementKind.METHOD) {
-        ExecutableElement currentMethodElt = (ExecutableElement) currentEnclosedElt;
-        addMethod(resolvingTypes, currentMethodElt);
-      }
-    }
-    LinkedList<DeclaredType> resolvedTypes = new LinkedList<>();
-    resolveAbstractSuperTypes(currentElt.asType(), new HashSet<>(), resolvedTypes);
-    for (DeclaredType superType : resolvedTypes) {
-      TypeElement superTypeElt = (TypeElement) superType.asElement();
-      String superTypeName = superTypeElt.getQualifiedName().toString();
-      if (sources.containsKey(superTypeName)) {
-        // Use the one from the sources
-        superTypeElt = sources.get(superTypeName);
-      }
-      resolvingTypes.addFirst(superType);
-      traverseMethods(resolvingTypes, superTypeElt);
-      resolvingTypes.removeFirst();
-    }
-  }
-
-  private void resolveAbstractSuperTypes(TypeMirror type, HashSet<String> knownTypes, LinkedList<DeclaredType> resolvedTypes) {
-    for (TypeMirror superType : typeUtils.directSupertypes(type)) {
-      DeclaredType declaredSuperType = (DeclaredType) superType;
-      String superTypeFQCN = declaredSuperType.toString();
-      if (!knownTypes.contains(superTypeFQCN)) {
-        Element superTypeElement = declaredSuperType.asElement();
-        VertxGen gen = superTypeElement.getAnnotation(VertxGen.class);
-        if (gen != null && !gen.concrete()) {
-          knownTypes.add(superTypeFQCN);
-          resolvedTypes.add(declaredSuperType);
-        }
-        resolveAbstractSuperTypes(superType, knownTypes, resolvedTypes);
-      }
-    }
-  }
-
-  private void addMethod(LinkedList<DeclaredType> resolvingTypes, ExecutableElement execElem) {
-    boolean isIgnore = execElem.getAnnotation(GenIgnore.class) != null;
+  private void addMethod(ExecutableElement methodElt) {
+    boolean isIgnore = methodElt.getAnnotation(GenIgnore.class) != null;
     if (isIgnore) {
       return;
     }
-    Set<Modifier> mods = execElem.getModifiers();
+    Set<Modifier> mods = methodElt.getModifiers();
     if (!mods.contains(Modifier.PUBLIC)) {
       return;
     }
     if (mods.contains(Modifier.DEFAULT)) {
       return;
     }
+
+    TypeElement declaringElt = (TypeElement) methodElt.getEnclosingElement();
+    if (!declaringElt.equals(modelElt)) {
+      VertxGen ownerGen = declaringElt.getAnnotation(VertxGen.class);
+      if (ownerGen == null || ownerGen.concrete()) {
+        return;
+      }
+    }
+
+    TypeInfo.Class ownerType = typeFactory.create(declaringElt.asType()).getRaw();
+
+    // Check we don't hide another method
+    for (Map.Entry<ExecutableElement, MethodInfo> method : methods.entrySet()) {
+      if (method.getValue().getName().equals(methodElt.getSimpleName().toString())) {
+        ExecutableType t1 = (ExecutableType) method.getKey().asType();
+        ExecutableType t2 = (ExecutableType) methodElt.asType();
+        if (typeUtils.isSubsignature(t1, t2) && typeUtils.isSubsignature(t2, t1)) {
+          method.getValue().ownerTypes.add(ownerType);
+          return;
+        }
+      }
+    }
+
     boolean isStatic = mods.contains(Modifier.STATIC);
-    boolean isFluent = execElem.getAnnotation(Fluent.class) != null;
-    boolean isCacheReturn = execElem.getAnnotation(CacheReturn.class) != null;
+    boolean isCacheReturn = methodElt.getAnnotation(CacheReturn.class) != null;
     ArrayList<String> typeParams = new ArrayList<>();
-    for (TypeParameterElement typeParam : execElem.getTypeParameters()) {
+    for (TypeParameterElement typeParam : methodElt.getTypeParameters()) {
       for (TypeMirror bound : typeParam.getBounds()) {
         if (!isObjectBound(bound)) {
-          throw new GenException(execElem, "Type parameter bound not supported " + bound);
+          throw new GenException(methodElt, "Type parameter bound not supported " + bound);
         }
       }
       typeParams.add(typeParam.getSimpleName().toString());
     }
-    List<ParamInfo> mParams = getParams(resolvingTypes, execElem);
 
-    TypeInfo returnType = typeFactory.create(resolvingTypes, execElem.getReturnType());
-    returnType.collectImports(importedTypes);
-    if (returnType.toString().equals("void")) {
-      if (isCacheReturn) {
-        throw new GenException(execElem, "void method can't be marked with @CacheReturn");
-      }
-      if (isFluent) {
-        throw new GenException(execElem, "Methods marked with @Fluent must return a value");
+    //
+    ExecutableType methodType = (ExecutableType) typeUtils.asMemberOf((DeclaredType) modelElt.asType(), methodElt);
+    List<ParamInfo> mParams = getParams(methodElt, methodType);
+
+    //
+    AnnotationMirror fluentAnnotation = Helper.resolveMethodAnnotation(Fluent.class, elementUtils, typeUtils, declaringElt, methodElt);
+    boolean isFluent = fluentAnnotation != null;
+    if (isFluent) {
+      isFluent = true;
+      if (!typeUtils.isSameType(declaringElt.asType(), modelElt.asType())) {
+        String msg = "Interface " + modelElt + " does not redeclare the @Fluent return type " +
+            " of method " + methodElt + " declared by " + declaringElt;
+        messager.printMessage(Diagnostic.Kind.WARNING, msg, modelElt, fluentAnnotation);
+        logger.warning(msg);
+      } else {
+        TypeMirror fluentType = methodElt.getReturnType();
+        if (!typeUtils.isAssignable(fluentType, modelElt.asType())) {
+          throw new GenException(methodElt, "Methods marked with @Fluent must have a return type that extends the type");
+        }
       }
     }
-    String methodName = execElem.getSimpleName().toString();
+
+    TypeInfo returnType = typeFactory.create(methodType.getReturnType());
+    returnType.collectImports(importedTypes);
+    if (isCacheReturn && returnType instanceof TypeInfo.Void) {
+      throw new GenException(methodElt, "void method can't be marked with @CacheReturn");
+    }
+    String methodName = methodElt.getSimpleName().toString();
 
     // Only check the return type if not fluent, because generated code won't look it at anyway
     if (!isFluent) {
-      checkReturnType(execElem, returnType);
-    }
-
-    LinkedHashSet<TypeInfo.Class> ownerTypes = new LinkedHashSet<>();
-    TypeInfo ownerType = typeFactory.create(execElem.getEnclosingElement().asType());
-    if (ownerType instanceof TypeInfo.Parameterized) {
-      ownerTypes.add(ownerType.getRaw());
-    } else {
-      ownerTypes.add((TypeInfo.Class) ownerType);
+      checkReturnType(methodElt, returnType);
     }
 
     // Determine method kind + validate
     MethodKind kind = MethodKind.OTHER;
-    if (execElem.getAnnotation(IndexGetter.class) != null) {
+    if (methodElt.getAnnotation(IndexGetter.class) != null) {
       if (!mParams.stream().anyMatch(param -> param.type.getName().equals("int"))) {
-        throw new GenException(execElem, "No int arg found in index getter method");
+        throw new GenException(methodElt, "No int arg found in index getter method");
       }
       kind = MethodKind.INDEX_GETTER;
-    } else if (execElem.getAnnotation(IndexSetter.class) != null) {
+    } else if (methodElt.getAnnotation(IndexSetter.class) != null) {
       if (!mParams.stream().anyMatch(param -> param.type.getName().equals("int"))) {
-        throw new GenException(execElem, "No int arg found in index setter method");
+        throw new GenException(methodElt, "No int arg found in index setter method");
       }
       kind = MethodKind.INDEX_SETTER;
     } else {
@@ -544,19 +545,13 @@ public class ClassModel implements Model {
     }
 
     //
-    MethodInfo methodInfo = new MethodInfo(ownerTypes, methodName, kind, returnType,
-        isFluent, isCacheReturn, mParams, elementUtils.getDocComment(execElem), isStatic, typeParams);
+    MethodInfo methodInfo = new MethodInfo(Collections.singleton(ownerType), methodName, kind, returnType,
+        isFluent, isCacheReturn, mParams, elementUtils.getDocComment(methodElt), isStatic, typeParams);
     List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
     if (methodsByName == null) {
       methodsByName = new ArrayList<>();
       methodMap.put(methodInfo.getName(), methodsByName);
     } else {
-      // Check if we already have the signature
-      List<MethodInfo> sameSignatureMethods = methods.stream().filter(meth -> meth.hasSameSignature(methodInfo)).collect(Collectors.toList());
-      if (sameSignatureMethods.size() > 0) {
-        sameSignatureMethods.forEach(m -> m.ownerTypes.addAll(methodInfo.ownerTypes));
-        return;
-      }
       // Overloaded methods must have same return type
       for (MethodInfo meth: methodsByName) {
         if (!meth.returnType.equals(methodInfo.returnType)) {
@@ -567,7 +562,7 @@ public class ClassModel implements Model {
     }
 
     methodsByName.add(methodInfo);
-    methods.add(methodInfo);
+    methods.put(methodElt, methodInfo);
     methodInfo.collectImports(importedTypes);
   }
 
@@ -575,13 +570,14 @@ public class ClassModel implements Model {
     return bound.getKind() == TypeKind.DECLARED && bound.toString().equals(Object.class.getName());
   }
 
-  private List<ParamInfo> getParams(LinkedList<DeclaredType> resolvingTypes, ExecutableElement execElem) {
+  private List<ParamInfo> getParams(ExecutableElement execElem, ExecutableType execType) {
     List<? extends VariableElement> params = execElem.getParameters();
     List<ParamInfo> mParams = new ArrayList<>();
-    for (VariableElement param: params) {
+    for (int i = 0;i < params.size();i++) {
+      VariableElement param = params.get(i);
       TypeInfo type;
       try {
-        type = typeFactory.create(resolvingTypes, param.asType());
+        type = typeFactory.create(execType.getParameterTypes().get(i));
       } catch (Exception e) {
         throw new GenException(param, e.getMessage());
       }
