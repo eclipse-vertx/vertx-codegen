@@ -34,7 +34,6 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -159,15 +158,10 @@ public class Helper {
   }
 
   public static String getGenericType(String type) {
-    return getGenericType(type, 0);
-  }
-
-  public static String getGenericType(String type, int index) {
     int pos = type.indexOf("<");
     if (pos >= 0) {
-      int lastPos = type.lastIndexOf(">");
-      List<String> list = Arrays.asList(type.substring(pos + 1, lastPos).split(","));
-      return list.get(index);
+      String genericType = type.substring(pos + 1, type.lastIndexOf(">"));
+      return genericType;
     } else {
       return null;
     }
