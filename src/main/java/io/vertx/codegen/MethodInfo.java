@@ -18,6 +18,7 @@ package io.vertx.codegen;
 
 import javax.lang.model.element.ExecutableElement;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,7 +26,7 @@ import java.util.Set;
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
-public class MethodInfo {
+public class MethodInfo implements Comparable<MethodInfo> {
 
   final String name;
   final MethodKind kind;
@@ -143,6 +144,32 @@ public class MethodInfo {
 
   public void collectImports(Collection<TypeInfo.Class> imports) {
     params.stream().map(ParamInfo::getType).forEach(a -> a.collectImports(imports));
+  }
+
+  @Override
+  public int compareTo(MethodInfo o) {
+    int cmp = name.compareTo(o.name);
+    if (cmp != 0) {
+      return cmp;
+    }
+    Iterator<ParamInfo> i1 = params.iterator();
+    Iterator<ParamInfo> i2 = o.params.iterator();
+    while (i1.hasNext() && i2.hasNext()) {
+      ParamInfo p1 = i1.next();
+      ParamInfo p2 = i2.next();
+      cmp = p1.getType().getRaw().getName().compareTo(p2.getType().getRaw().getName());
+      if (cmp != 0) {
+        return cmp;
+      }
+    }
+    if (i1.hasNext()) {
+      if (!i2.hasNext()) {
+        return 1;
+      }
+    } else if (!i2.hasNext()) {
+      return -1;
+    }
+    return 0;
   }
 
   @Override
