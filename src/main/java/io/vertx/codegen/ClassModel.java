@@ -222,6 +222,10 @@ public class ClassModel implements Model {
     if (type.getKind().basic || type instanceof TypeInfo.Void || type.getKind().json) {
       return;
     }
+    // We also allow enums as return types
+    if (type.getKind() == ClassKind.ENUM) {
+      return;
+    }
 
     // List<T> and Set<T> are also legal for returns if T = basic type
     // Map<K,V> is also legal for returns if K is a String and V is a basic type, json, or a @VertxGen interface

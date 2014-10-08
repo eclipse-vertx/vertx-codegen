@@ -708,4 +708,9 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   public String methodWithEnumParam(String strVal, TestEnum weirdo) {
     return strVal + weirdo;
   }
+
+  @Override
+  public TestEnum methodWIthEnumReturn(String strVal) {
+    return TestEnum.valueOf(strVal);
+  }
 }

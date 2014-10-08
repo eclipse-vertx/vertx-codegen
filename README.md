@@ -119,27 +119,10 @@ The following set `R` of types are permitted as return types from any API method
 * the set `B`
 * the set `V`
 * the set `J`
+* any Enum class
 * type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
     * the set `B`
     * the set `V`
-
-### Overloaded methods
-
-Because some languages do not support operator overloading, we make the constraint that if there are overloaded
-versions of the same method in an interface, then they must have the same parameters at the same positions. I.e. the
-following would be legal:
-
-    void myMethod(String str, int num);
-
-    void myMethod(String str, int num, double d, Handler<String> myHandler);
-
-    void myMethod(String str, int num, double d);
-
-But the following would be illegal:
-
-    void myMethod(String str, int num);
-
-    void myMethod(int num, String str, double d, Handler<String> myHandler);
 
 ### Static factory methods
 
@@ -198,8 +181,6 @@ are referenced from the current interface
 * `superTypes` - a list of `TypeInfo` representing the set of user defined types which the current interface extends from
 * `concreteSuperTypes` - subset of `superTypes` which are *concrete*
 * `abstractSuperTypes` - subset of `superTypes` which are *abstract*
-* `squashedMethods` - this is a list of methods where all methods of the same name (i.e. overloaded methods) are squashed
-into a single method.
 * `methodMap` - this is a Map<String, MethodInfo> - which allows you to look up all methods with a given name
 * `importedTypes`- this is a `Set<TypeInfo>` containing the types used by this class
 
@@ -224,6 +205,7 @@ The `TypeInfo.Class` is a subclass of `TypeInfo` representing a Java class:
     * `OPTIONS`: a type annotations with @Options
     * `HANDLER`: io.vertx.core.Handler
     * `ASYNC_RESULT`: io.vertx.core.AsyncResult
+    * `ENUM`: An enum
     * `OTHER`: anything else
 
 The `MethodInfo` object has the following fields:
@@ -238,7 +220,6 @@ The `MethodInfo` object has the following fields:
 * `returnType`. The fully qualified return type (or `void`) of the method
 * `fluent`. `true` if the method is fluent (i.e. returns a reference to the interface itself for chaining calls)
 * `cacheReturn`. `true` if the generated API method should cache return value
-* `squashed`. `true` if the method is squashed (i.e. contains all overloaded params)
 * `comment`. Method comment.
 * `params`. List of `ParamInfo` objects representing the parameters of the method.
 * `staticMethod`. `true` if it's a static method.
