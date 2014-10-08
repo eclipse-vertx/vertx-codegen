@@ -710,7 +710,7 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
-  public TestEnum methodWIthEnumReturn(String strVal) {
+  public TestEnum methodWithEnumReturn(String strVal) {
     return TestEnum.valueOf(strVal);
   }
 }
