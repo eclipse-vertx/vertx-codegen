@@ -3,7 +3,6 @@ package io.vertx.codegen;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.mvel2.MVEL;
-import org.mvel2.templates.TemplateRuntime;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -17,42 +16,42 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @SupportedAnnotationTypes({"io.vertx.codegen.annotations.VertxGen","io.vertx.codegen.annotations.Options",
   "io.vertx.codegen.annotations.GenModule"})
-@javax.annotation.processing.SupportedOptions({"outputDirectory"})
+@javax.annotation.processing.SupportedOptions({"outputDirectory","codeGenerators"})
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)
 public class CodeGenProcessor extends AbstractProcessor {
 
   private static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
   private File outputDirectory;
-  private List<CodeGenerator> codeGenerators;
+  private Map<String, CodeGenerator> codeGenerators;
 
-  @Override
-  public synchronized void init(ProcessingEnvironment env) {
-    super.init(env);
-    codeGenerators = new ArrayList<>();
-    Enumeration<URL> descriptors = Collections.emptyEnumeration();
-    try {
-      descriptors = CodeGenProcessor.class.getClassLoader().getResources("codegen.json");
-    } catch (IOException ignore) {
-      env.getMessager().printMessage(Diagnostic.Kind.WARNING, "Could not load code generator descriptors");
-    }
-    while (descriptors.hasMoreElements()) {
+  private Collection<CodeGenerator> getCodeGenerators() {
+    if (codeGenerators == null) {
+      Map<String, CodeGenerator> codeGenerators = new LinkedHashMap<>();
+      Enumeration<URL> descriptors = Collections.emptyEnumeration();
+      try {
+        descriptors = CodeGenProcessor.class.getClassLoader().getResources("codegen.json");
+      } catch (IOException ignore) {
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Could not load code generator descriptors");
+      }
+      while (descriptors.hasMoreElements()) {
         URL descriptor = descriptors.nextElement();
         try (Scanner scanner = new Scanner(descriptor.openStream(), "UTF-8").useDelimiter("\\A")) {
           String s = scanner.next();
@@ -66,33 +65,46 @@ public class CodeGenProcessor extends AbstractProcessor {
             String fileName = generator.getString("fileName");
             Serializable fileNameExpression = MVEL.compileExpression(fileName);
             Template compiledTemplate = new Template(templateFileName);
-            compiledTemplate.setOptions(env.getOptions());
-            codeGenerators.add(new CodeGenerator(kind, fileNameExpression, compiledTemplate));
+            compiledTemplate.setOptions(processingEnv.getOptions());
+            codeGenerators.put(name, new CodeGenerator(kind, fileNameExpression, compiledTemplate));
             log.info("Loaded " + name + " code generator");
           }
         } catch (Exception e) {
           String msg = "Could not load code generator " + descriptor;
           log.log(Level.SEVERE, msg, e);
-          env.getMessager().printMessage(Diagnostic.Kind.ERROR, msg);
+          processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg);
         }
       }
-    String outputDirectoryOption = env.getOptions().get("outputDirectory");
-    if (outputDirectoryOption != null) {
-      outputDirectory = new File(outputDirectoryOption);
-      if (!outputDirectory.exists()) {
-        env.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " does not exist");
+      String outputDirectoryOption = processingEnv.getOptions().get("outputDirectory");
+      if (outputDirectoryOption != null) {
+        outputDirectory = new File(outputDirectoryOption);
+        if (!outputDirectory.exists()) {
+          processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " does not exist");
+        }
+        if (!outputDirectory.isDirectory()) {
+          processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " is not a directory");
+        }
       }
-      if (!outputDirectory.isDirectory()) {
-        env.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " is not a directory");
+      String codeGeneratorsOption = processingEnv.getOptions().get("codeGenerators");
+      if (codeGeneratorsOption != null) {
+        Set<String> wanted = Stream.of(codeGeneratorsOption.split(",")).map(String::trim).collect(Collectors.toSet());
+        if (codeGenerators.keySet().containsAll(wanted)) {
+          codeGenerators.keySet().retainAll(wanted);
+        } else {
+          codeGenerators.clear();
+          processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Code generators " + wanted.removeAll(codeGenerators.keySet()) + " not found");
+        }
       }
+      this.codeGenerators = codeGenerators;
     }
+    return codeGenerators.values();
   }
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    if (!roundEnv.errorRaised()) {
-      if (!roundEnv.processingOver()) {
-
+    if (!roundEnv.processingOver()) {
+      Collection<CodeGenerator> codeGenerators = getCodeGenerators();
+      if (!roundEnv.errorRaised()) {
         CodeGen codegen = new CodeGen(processingEnv, roundEnv);
 
         // Generate source code
