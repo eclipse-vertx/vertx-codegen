@@ -116,13 +116,18 @@ public class Template {
         } catch (TemplateError err) {
           // Load error try to resolve from base uri
           try {
-            URL url = new URL(new URL(baseURI), name);
+            URL url;
+            if (name.startsWith("/")) {
+              url = resolveURL(name.substring(1));
+            } else {
+              url = new URL(new URL(baseURI), name);
+            }
             InputStream in = url.openStream();
             CompiledTemplate compiledTemplate = loadCompiled(in);
             addNamedTemplate(name, compiledTemplate);
             return compiledTemplate;
           } catch (Exception ex) {
-            throw new TemplateError("Could not load template " + name + " from " + baseURI, ex);
+            throw new TemplateError("Could not load template " + name + " from template " + baseURI, ex);
           }
         }
       }
