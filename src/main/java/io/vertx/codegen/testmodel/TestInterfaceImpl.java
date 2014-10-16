@@ -8,6 +8,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -695,8 +696,83 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
-  public Map<String, String> methodWithMapReturn() {
-    return new HashMap<>();
+  public Map<String, String> methodWithMapReturn(Handler<String> handler) {
+    return new Map<String, String>() {
+
+      private Map<String, String> map = new HashMap<>();
+
+      @Override
+      public int size() {
+        handler.handle("size()");
+        return map.size();
+      }
+
+      @Override
+      public boolean isEmpty() {
+        handler.handle("isEmpty()");
+        return map.isEmpty();
+      }
+
+      @Override
+      public boolean containsKey(Object key) {
+        handler.handle("containsKey(" + key + ")");
+        return map.containsKey(key);
+      }
+
+      @Override
+      public boolean containsValue(Object value) {
+        handler.handle("containsValue(" + value + ")");
+        return map.containsValue(value);
+      }
+
+      @Override
+      public String get(Object key) {
+        handler.handle("get(" + key + ")");
+        return map.get(key);
+      }
+
+      @Override
+      public String put(String key, String value) {
+        handler.handle("put(" + key + "," + value + ")");
+        return map.put(key, value);
+      }
+
+      @Override
+      public String remove(Object key) {
+        handler.handle("remove(" + key + ")");
+        return map.remove(key);
+      }
+
+      @Override
+      public void putAll(Map<? extends String, ? extends String> m) {
+        handler.handle("putAll(m)");
+        map.putAll(m);
+      }
+
+      @Override
+      public void clear() {
+        handler.handle("clear()");
+        map.clear();
+      }
+
+      @Override
+      public Set<String> keySet() {
+        handler.handle("keySet()");
+        return map.keySet();
+      }
+
+      @Override
+      public Collection<String> values() {
+        handler.handle("values()");
+        return map.values();
+      }
+
+      @Override
+      public Set<Entry<String, String>> entrySet() {
+        handler.handle("entrySet()");
+        return map.entrySet();
+      }
+    };
   }
 
   @Override

@@ -190,7 +190,7 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
 
   void methodWithHandlerAsyncResultNullJsonArray(Handler<AsyncResult<JsonArray>> handler);
 
-  Map<String, String> methodWithMapReturn();
+  Map<String, String> methodWithMapReturn(Handler<String> handler);
 
   Map<String, String> methodWithNullMapReturn();
 
