@@ -123,6 +123,10 @@ The following set `R` of types are permitted as return types from any API method
 * type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
     * the set `B`
     * the set `V`
+* type `java.util.Map<K, C>` where `K` is a String and `C` contains
+    * the set `B`
+    * the set `J`
+    * the set `V`
 
 ### Static factory methods
 
