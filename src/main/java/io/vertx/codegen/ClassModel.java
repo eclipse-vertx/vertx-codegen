@@ -181,7 +181,7 @@ public class ClassModel implements Model {
     }
   }
 
-  private void checkParamType(Element elem, TypeInfo typeInfo) {
+  protected void checkParamType(Element elem, TypeInfo typeInfo) {
 
     // Basic types, int, long, String etc
     // JsonObject or JsonArray
@@ -215,7 +215,7 @@ public class ClassModel implements Model {
     throw new GenException(elem, "type " + typeInfo + " is not legal for use for a parameter in code generation");
   }
 
-  private void checkReturnType(Element elem, TypeInfo type) {
+  protected void checkReturnType(Element elem, TypeInfo type) {
     // Basic types, int, long, String etc
     // JsonObject or JsonArray
     // void

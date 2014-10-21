@@ -2,6 +2,7 @@ package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.GenModule;
 import io.vertx.codegen.annotations.Options;
+import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
 
 import javax.annotation.processing.Messager;
@@ -25,6 +26,7 @@ public class CodeGen {
   private final HashMap<String, TypeElement> options = new HashMap<>();
   private final HashMap<String, TypeElement> classes = new HashMap<>();
   private final HashMap<String, PackageElement> modules = new HashMap<>();
+  private final HashMap<String, TypeElement> proxyClasses = new HashMap<>();
   private final Elements elementUtils;
   private final Types typeUtils;
   private final Messager messager;
@@ -44,13 +46,18 @@ public class CodeGen {
       stream().
       map(element -> (PackageElement) element).
       forEach(element -> modules.put(element.getQualifiedName().toString(), element));
+    round.getElementsAnnotatedWith(ProxyGen.class).
+      stream().
+      filter(elt -> !elementUtils.getPackageOf(elt).getQualifiedName().toString().contains("impl")).
+      forEach(element -> proxyClasses.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
   }
 
   public Stream<Map.Entry<? extends Element, ? extends Model>> getModels() {
     return Stream.concat(getOptionsModels(),
       Stream.concat(getModuleModels(),
         Stream.concat(getPackageModels(),
-          getClassModels())));
+          Stream.concat(getClassModels(),
+            getProxyModels()))));
   }
 
   private static class ModelEntry<E extends Element, M extends Model> implements Map.Entry<E, M> {
@@ -98,6 +105,10 @@ public class CodeGen {
     return options.entrySet().stream().map(element -> new ModelEntry<>(element.getValue(), () -> getOptionsModel(element.getKey())));
   }
 
+  public Stream<Map.Entry<TypeElement, ProxyModel>> getProxyModels() {
+    return classes.entrySet().stream().map(entry -> new ModelEntry<>(entry.getValue(), () -> getProxyModel(entry.getKey())));
+  }
+
   public ModuleModel getModuleModel(String fqcn) {
     PackageElement element = modules.get(fqcn);
     GenModule annotation = element.getAnnotation(GenModule.class);
@@ -125,6 +136,17 @@ public class CodeGen {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
       OptionsModel model = new OptionsModel(elementUtils, typeUtils, element);
+      model.process();
+      return model;
+    }
+  }
+
+  public ProxyModel getProxyModel(String fqcn) {
+    TypeElement element = proxyClasses.get(fqcn);
+    if (element == null) {
+      throw new IllegalArgumentException("Source for " + fqcn + " not found");
+    } else {
+      ProxyModel model = new ProxyModel(messager, classes, elementUtils, typeUtils, element);
       model.process();
       return model;
     }
