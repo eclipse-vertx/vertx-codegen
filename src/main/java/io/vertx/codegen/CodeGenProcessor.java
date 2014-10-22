@@ -15,11 +15,13 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -39,11 +41,11 @@ public class CodeGenProcessor extends AbstractProcessor {
 
   private static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
   private File outputDirectory;
-  private Map<String, CodeGenerator> codeGenerators;
+  private Map<String, List<CodeGenerator>> codeGenerators;
 
   private Collection<CodeGenerator> getCodeGenerators() {
     if (codeGenerators == null) {
-      Map<String, CodeGenerator> codeGenerators = new LinkedHashMap<>();
+      Map<String, List<CodeGenerator>> codeGenerators = new LinkedHashMap<>();
       Enumeration<URL> descriptors = Collections.emptyEnumeration();
       try {
         descriptors = CodeGenProcessor.class.getClassLoader().getResources("codegen.json");
@@ -65,9 +67,10 @@ public class CodeGenProcessor extends AbstractProcessor {
             Serializable fileNameExpression = MVEL.compileExpression(fileName);
             Template compiledTemplate = new Template(templateFileName);
             compiledTemplate.setOptions(processingEnv.getOptions());
-            codeGenerators.put(name, new CodeGenerator(kind, fileNameExpression, compiledTemplate));
-            log.info("Loaded " + name + " code generator");
+            List<CodeGenerator> generators = codeGenerators.computeIfAbsent(name, abc -> new ArrayList<>());
+            generators.add(new CodeGenerator(kind, fileNameExpression, compiledTemplate));
           }
+          log.info("Loaded " + name + " code generator");
         } catch (Exception e) {
           String msg = "Could not load code generator " + descriptor;
           log.log(Level.SEVERE, msg, e);
@@ -96,7 +99,9 @@ public class CodeGenProcessor extends AbstractProcessor {
       }
       this.codeGenerators = codeGenerators;
     }
-    return codeGenerators.values();
+    ArrayList<CodeGenerator> ret = new ArrayList<>();
+    codeGenerators.values().stream().forEach(ret::addAll);
+    return ret;
   }
 
   @Override
