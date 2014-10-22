@@ -15,14 +15,11 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -46,15 +43,6 @@ public class CodeGenProcessor extends AbstractProcessor {
 
   private Collection<CodeGenerator> getCodeGenerators() {
     if (codeGenerators == null) {
-
-      ClassLoader cl = CodeGenProcessor.class.getClassLoader();
-      if (cl instanceof URLClassLoader) {
-        URLClassLoader urlc = (URLClassLoader)cl;
-        for (URL url: urlc.getURLs()) {
-          System.out.println(url);
-        }
-      }
-
       Map<String, CodeGenerator> codeGenerators = new LinkedHashMap<>();
       Enumeration<URL> descriptors = Collections.emptyEnumeration();
       try {
@@ -62,18 +50,8 @@ public class CodeGenProcessor extends AbstractProcessor {
       } catch (IOException ignore) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Could not load code generator descriptors");
       }
-      List<URL> descURls = new ArrayList<>();
       while (descriptors.hasMoreElements()) {
-        descURls.add(descriptors.nextElement());
-      }
-//      try {
-//        descURls.add(new File("/home/tim/projects/vert-x3/ext/ext-mongo/src/main/resources/codegen.json").toURI()
-//          .toURL());
-//      } catch (MalformedURLException e) {
-//        throw new IllegalStateException(e);
-//      }
-      for (URL descriptor: descURls) {
-        System.out.println("codegen url is " + descriptor);
+        URL descriptor = descriptors.nextElement();
         try (Scanner scanner = new Scanner(descriptor.openStream(), "UTF-8").useDelimiter("\\A")) {
           String s = scanner.next();
           JsonObject obj = new JsonObject(s);
@@ -140,15 +118,12 @@ public class CodeGenProcessor extends AbstractProcessor {
               vars.put("fqn", model.getFqn());
               vars.putAll(model.getVars());
               for (CodeGenerator codeGenerator : codeGenerators) {
-                System.out.println("Codegen kind is " + codeGenerator.kind + " fne: " + codeGenerator.fileNameExpression);
                 if (codeGenerator.kind.equals(model.getKind())) {
                   String relativeName = (String) MVEL.executeExpression(codeGenerator.fileNameExpression, vars);
-                  System.out.println("rel name is " + relativeName);
                   if (relativeName != null) {
                     if (relativeName.endsWith(".java")) {
                       // Special handling for .java
                       JavaFileObject target = processingEnv.getFiler().createSourceFile(relativeName.substring(0, relativeName.length() - ".java".length()));
-                      System.out.println("Target is " + target);
                       String output = codeGenerator.transformTemplate.render(model);
                       try (Writer writer = target.openWriter()) {
                         writer.append(output);
