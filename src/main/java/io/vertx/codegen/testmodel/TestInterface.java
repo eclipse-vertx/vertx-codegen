@@ -194,6 +194,10 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
 
   Map<String, String> methodWithNullMapReturn();
 
+  Map<String, JsonObject> methodWithMapJsonReturn(Handler<String> handler);
+
+  Map<String, JsonArray> methodWithMapJsonArrayReturn(Handler<String> handler);
+
   String methodWithEnumParam(String strVal, TestEnum weirdo);
 
   TestEnum methodWithEnumReturn(String strVal);
