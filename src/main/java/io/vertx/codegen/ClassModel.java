@@ -181,7 +181,7 @@ public class ClassModel implements Model {
     }
   }
 
-  protected void checkParamType(Element elem, TypeInfo typeInfo) {
+  protected void checkParamType(Element elem, TypeInfo typeInfo, int pos, int numParams) {
 
     // Basic types, int, long, String etc
     // JsonObject or JsonArray
@@ -588,7 +588,7 @@ public class ClassModel implements Model {
   private List<ParamInfo> getParams(ExecutableElement execElem, ExecutableType execType) {
     List<? extends VariableElement> params = execElem.getParameters();
     List<ParamInfo> mParams = new ArrayList<>();
-    for (int i = 0;i < params.size();i++) {
+    for (int i = 0; i < params.size();i++) {
       VariableElement param = params.get(i);
       TypeInfo type;
       try {
@@ -596,7 +596,7 @@ public class ClassModel implements Model {
       } catch (Exception e) {
         throw new GenException(param, e.getMessage());
       }
-      checkParamType(execElem, type);
+      checkParamType(execElem, type, i, params.size());
       ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), type);
       mParams.add(mParam);
     }

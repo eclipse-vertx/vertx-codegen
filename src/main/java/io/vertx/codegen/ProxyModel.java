@@ -41,7 +41,7 @@ public class ProxyModel extends ClassModel {
   }
 
   @Override
-  protected void checkParamType(Element elem, TypeInfo typeInfo) {
+  protected void checkParamType(Element elem, TypeInfo typeInfo, int pos, int numParams) {
     // Basic types, int, long, String etc
     // JsonObject or JsonArray
     if (typeInfo.getKind().basic || typeInfo.getKind().json) {
@@ -51,11 +51,10 @@ public class ProxyModel extends ClassModel {
     if (typeInfo.getKind() == ClassKind.ENUM) {
       return;
     }
-    // Check legal handlers
-    if (isLegalHandlerType(typeInfo)) {
-      return;
-    }
     if (isLegalHandlerAsyncResultType(typeInfo)) {
+      if (pos != numParams - 1) {
+        throw new GenException(elem, "Handler<AsyncResult<T>> must be the last parameter if present in a proxied method");
+      }
       return;
     }
     if (elem.getModifiers().contains(Modifier.STATIC)) {
@@ -76,17 +75,6 @@ public class ProxyModel extends ClassModel {
       return;
     }
     throw new GenException(elem, "Proxy methods must have void or fluent returns");
-  }
-
-  private boolean isLegalHandlerType(TypeInfo type) {
-    if (type.getErased().getKind() == ClassKind.HANDLER) {
-      TypeInfo eventType = ((TypeInfo.Parameterized) type).getArgs().get(0);
-      if (eventType.getKind().json || eventType.getKind().basic  ||
-        isLegalListOrSet(eventType) || eventType.getKind() == ClassKind.VOID) {
-        return true;
-      }
-    }
-    return false;
   }
 
   private boolean isLegalHandlerAsyncResultType(TypeInfo type) {
