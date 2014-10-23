@@ -106,7 +106,7 @@ public class CodeGen {
   }
 
   public Stream<Map.Entry<TypeElement, ProxyModel>> getProxyModels() {
-    return classes.entrySet().stream().map(entry -> new ModelEntry<>(entry.getValue(), () -> getProxyModel(entry.getKey())));
+    return proxyClasses.entrySet().stream().map(entry -> new ModelEntry<>(entry.getValue(), () -> getProxyModel(entry.getKey())));
   }
 
   public ModuleModel getModuleModel(String fqcn) {

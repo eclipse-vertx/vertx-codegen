@@ -21,6 +21,7 @@ import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.IndexGetter;
 import io.vertx.codegen.annotations.IndexSetter;
+import io.vertx.codegen.annotations.ProxyIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 
 import javax.annotation.processing.Messager;
@@ -512,6 +513,9 @@ public class ClassModel implements Model {
       }
     }
 
+    AnnotationMirror proxyIgnoreAnnotation = Helper.resolveMethodAnnotation(ProxyIgnore.class, elementUtils, typeUtils, declaringElt, methodElt);
+    boolean isProxyIgnore = proxyIgnoreAnnotation != null;
+
     TypeInfo returnType = typeFactory.create(methodType.getReturnType());
     returnType.collectImports(importedTypes);
     if (isCacheReturn && returnType instanceof TypeInfo.Void) {
@@ -561,7 +565,7 @@ public class ClassModel implements Model {
 
     //
     MethodInfo methodInfo = new MethodInfo(Collections.singleton(ownerType), methodName, kind, returnType,
-        isFluent, isCacheReturn, mParams, elementUtils.getDocComment(methodElt), isStatic, typeParams);
+        isFluent, isProxyIgnore, isCacheReturn, mParams, elementUtils.getDocComment(methodElt), isStatic, typeParams);
     List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
     if (methodsByName == null) {
       methodsByName = new ArrayList<>();

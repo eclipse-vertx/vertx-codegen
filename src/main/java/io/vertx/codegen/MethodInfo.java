@@ -32,6 +32,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   final MethodKind kind;
   final TypeInfo returnType;
   final boolean fluent;
+  final boolean proxyIgnore;
   final boolean cacheReturn;
   List<ParamInfo> params;
   final String comment;
@@ -40,12 +41,14 @@ public class MethodInfo implements Comparable<MethodInfo> {
   LinkedHashSet<TypeInfo.Class> ownerTypes;
 
   public MethodInfo(Set<TypeInfo.Class> ownerTypes, String name, MethodKind kind, TypeInfo returnType, boolean fluent,
+                    boolean proxyIgnore,
                     boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod, List<String> typeParams) {
 
 
     this.kind = kind;
     this.name = name;
     this.returnType = returnType;
+    this.proxyIgnore = proxyIgnore;
     this.fluent = fluent;
     this.cacheReturn = cacheReturn;
     this.comment = comment;
@@ -101,6 +104,10 @@ public class MethodInfo implements Comparable<MethodInfo> {
 
   public boolean isFluent() {
     return fluent;
+  }
+
+  public boolean isProxyIgnore() {
+    return proxyIgnore;
   }
 
   public boolean isIndexGetter() {
