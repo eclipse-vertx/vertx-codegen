@@ -109,7 +109,8 @@ public class ProxyModel extends ClassModel {
       if (eventType.getErased().getKind() == ClassKind.ASYNC_RESULT) {
         TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getArgs().get(0);
         if (resultType.getKind().json || resultType.getKind().basic ||
-          isLegalListOrSet(resultType) || resultType.getKind() == ClassKind.VOID) {
+          isLegalListOrSet(resultType) || resultType.getKind() == ClassKind.VOID ||
+          resultType.getKind() == ClassKind.ENUM) {
           return true;
         }
       }
@@ -122,7 +123,7 @@ public class ProxyModel extends ClassModel {
       TypeInfo raw = type.getRaw();
       if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
         TypeInfo elementType = ((TypeInfo.Parameterized) type).getArgs().get(0);
-        if (elementType.getKind().basic || elementType.getKind().json) {
+        if (elementType.getKind().basic || elementType.getKind().json || elementType.getKind() == ClassKind.ENUM) {
           return true;
         }
       }

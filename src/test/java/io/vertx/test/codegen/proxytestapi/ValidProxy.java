@@ -24,18 +24,30 @@ public interface ValidProxy {
 
   void enumType(SomeEnum someEnum);
 
-  void handlers(Handler<AsyncResult<String>> stringHandler, Handler<AsyncResult<Byte>> byteHandler, Handler<AsyncResult<Short>> shortHandler,
-                Handler<AsyncResult<Integer>> intHandler, Handler<AsyncResult<Long>> longHandler, Handler<AsyncResult<Float>> floatHandler,
-                Handler<AsyncResult<Double>> doubleHandler, Handler<AsyncResult<Character>> charHandler, Handler<AsyncResult<Boolean>> boolHandler,
-                Handler<AsyncResult<JsonObject>> jsonObjectHandler, Handler<AsyncResult<JsonArray>> jsonArrayHandler,
-                Handler<AsyncResult<SomeEnum>> enumHandler,
-                Handler<AsyncResult<List<String>>> stringListHandler, Handler<AsyncResult<List<Byte>>> byteListHandler,
-                Handler<AsyncResult<List<Short>>> shortListHandler, Handler<AsyncResult<List<Integer>>> intListHandler,
-                Handler<AsyncResult<List<Long>>> longListHandler, Handler<AsyncResult<List<Float>>> floatListHandler,
-                Handler<AsyncResult<List<Double>>> doubleListHandler, Handler<AsyncResult<List<Character>>> charListHandler,
-                Handler<AsyncResult<List<Boolean>>> boolListHandler,
-                Handler<AsyncResult<List<JsonObject>>> jsonObjectListHandler, Handler<AsyncResult<List<JsonArray>>> jsonArrayListHandler,
-                Handler<AsyncResult<List<SomeEnum>>> enumListHandler);
+  void handler0(Handler<AsyncResult<String>> stringHandler);
+  void handler1(Handler<AsyncResult<Byte>> byteHandler);
+  void handler2(Handler<AsyncResult<Short>> shortHandler);
+  void handler3(Handler<AsyncResult<Integer>> intHandler);
+  void handler4(Handler<AsyncResult<Long>> longHandler);
+  void handler5(Handler<AsyncResult<Float>> floatHandler);
+  void handler6(Handler<AsyncResult<Double>> doubleHandler);
+  void handler7(Handler<AsyncResult<Character>> charHandler);
+  void handler8(Handler<AsyncResult<Boolean>> boolHandler);
+  void handler9(Handler<AsyncResult<JsonObject>> jsonObjectHandler);
+  void handler10(Handler<AsyncResult<JsonArray>> jsonArrayHandler);
+  void handler11(Handler<AsyncResult<SomeEnum>> enumHandler);
+  void handler12(Handler<AsyncResult<List<String>>> stringListHandler);
+  void handler13(Handler<AsyncResult<List<Byte>>> byteListHandler);
+  void handler14(Handler<AsyncResult<List<Short>>> shortListHandler);
+  void handler15(Handler<AsyncResult<List<Integer>>> intListHandler);
+  void handler16(Handler<AsyncResult<List<Long>>> longListHandler);
+  void handler17(Handler<AsyncResult<List<Float>>> floatListHandler);
+  void handler18(Handler<AsyncResult<List<Double>>> doubleListHandler);
+  void handler19(Handler<AsyncResult<List<Character>>> charListHandler);
+  void handler20(Handler<AsyncResult<List<Boolean>>> boolListHandler);
+  void handler21(Handler<AsyncResult<List<JsonObject>>> jsonObjectListHandler);
+  void handler22(Handler<AsyncResult<List<JsonArray>>> jsonArrayListHandler);
+  void handler23(Handler<AsyncResult<List<SomeEnum>>> enumListHandler);
 
   @ProxyIgnore
   void ignored();

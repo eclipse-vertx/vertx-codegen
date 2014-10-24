@@ -353,9 +353,6 @@ public class ClassModel implements Model {
         throw new GenException(elem, "@VertxGen can only be used with interfaces in " + elem.asType().toString());
       }
       case INTERFACE: {
-
-        System.out.println("in classmodel");
-
         if (ifaceFQCN != null) {
           throw new GenException(elem, "Can only have one interface per file");
         }
@@ -364,7 +361,7 @@ public class ClassModel implements Model {
         ifaceSimpleName = elem.getSimpleName().toString();
         ifacePackageName = elementUtils.getPackageOf(elem).toString();
         ifaceComment = elementUtils.getDocComment(elem);
-        concrete = elem.getAnnotation(VertxGen.class).concrete();
+        concrete = elem.getAnnotation(VertxGen.class) != null && elem.getAnnotation(VertxGen.class).concrete();
         DeclaredType tm = (DeclaredType) elem.asType();
         List<? extends TypeMirror> typeArgs = tm.getTypeArguments();
         for (TypeMirror typeArg : typeArgs) {
@@ -460,12 +457,12 @@ public class ClassModel implements Model {
     }
 
     TypeElement declaringElt = (TypeElement) methodElt.getEnclosingElement();
-//    if (!declaringElt.equals(modelElt)) {
-//      VertxGen ownerGen = declaringElt.getAnnotation(VertxGen.class);
-//      if (ownerGen == null || ownerGen.concrete()) {
-//        return;
-//      }
-//    }
+    if (!declaringElt.equals(modelElt)) {
+      VertxGen ownerGen = declaringElt.getAnnotation(VertxGen.class);
+      if (ownerGen == null || ownerGen.concrete()) {
+        return;
+      }
+    }
 
     TypeInfo.Class ownerType = typeFactory.create(declaringElt.asType()).getRaw();
 
