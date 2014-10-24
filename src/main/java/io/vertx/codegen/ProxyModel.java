@@ -16,12 +16,18 @@
 
 package io.vertx.codegen;
 
+import io.vertx.codegen.annotations.ProxyIgnore;
+
 import javax.annotation.processing.Messager;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,13 +83,34 @@ public class ProxyModel extends ClassModel {
     throw new GenException(elem, "Proxy methods must have void or fluent returns");
   }
 
+  @Override
+  protected void checkMethod(MethodInfo methodInfo) {
+    // We don't allow overloaded methods in proxies
+    List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
+    if (methodsByName != null) {
+      throw new GenException(this.modelElt, "Overloaded methods are not allowed in ProxyGen interfaces " + methodInfo.name);
+    }
+  }
+
+  @Override
+  protected MethodInfo createMethodInfo(TypeInfo.Class ownerType, String methodName, MethodKind kind, TypeInfo returnType,
+                                        boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
+                                        ExecutableElement methodElt, boolean isStatic, ArrayList<String> typeParams,
+                                        TypeElement declaringElt) {
+    AnnotationMirror proxyIgnoreAnnotation = Helper.resolveMethodAnnotation(ProxyIgnore.class, elementUtils, typeUtils, declaringElt, methodElt);
+    boolean isProxyIgnore = proxyIgnoreAnnotation != null;
+    return new ProxyMethodInfo(Collections.singleton(ownerType), methodName, kind, returnType,
+      isFluent, isCacheReturn, mParams, elementUtils.getDocComment(methodElt), isStatic, typeParams, isProxyIgnore);
+  }
+
   private boolean isLegalHandlerAsyncResultType(TypeInfo type) {
     if (type.getErased().getKind() == ClassKind.HANDLER) {
       TypeInfo eventType = ((TypeInfo.Parameterized) type).getArgs().get(0);
       if (eventType.getErased().getKind() == ClassKind.ASYNC_RESULT) {
         TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getArgs().get(0);
         if (resultType.getKind().json || resultType.getKind().basic ||
-          isLegalListOrSet(resultType) || resultType.getKind() == ClassKind.VOID) {
+          isLegalListOrSet(resultType) || resultType.getKind() == ClassKind.VOID ||
+          resultType.getKind() == ClassKind.ENUM) {
           return true;
         }
       }
@@ -96,7 +123,7 @@ public class ProxyModel extends ClassModel {
       TypeInfo raw = type.getRaw();
       if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
         TypeInfo elementType = ((TypeInfo.Parameterized) type).getArgs().get(0);
-        if (elementType.getKind().basic || elementType.getKind().json) {
+        if (elementType.getKind().basic || elementType.getKind().json || elementType.getKind() == ClassKind.ENUM) {
           return true;
         }
       }

@@ -18,6 +18,7 @@ package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.GenModule;
 import io.vertx.codegen.annotations.Options;
+import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
 
 import javax.annotation.processing.Completion;
@@ -154,6 +155,21 @@ public class Generator {
     return processor.result;
   }
 
+  public ProxyModel generateProxyModel(Class c, Class... rest) throws Exception {
+    log.info("Generating proxy model for class " + c);
+    ArrayList<Class> types = new ArrayList<>();
+    types.add(c);
+    Collections.addAll(types, rest);
+    String className = c.getCanonicalName();
+    MyProcessor<ProxyModel> processor = new MyProcessor<>(codegen -> codegen.getProxyModel(className));
+    Compiler compiler = new Compiler(processor, collector);
+    compiler.compile(types);
+    if (processor.result == null) {
+      throw new IllegalArgumentException(className + " not processed. Does it have the ProxyGen annotation?");
+    }
+    return processor.result;
+  }
+
   private void sortMethodMap(Map<String, List<MethodInfo>> map) {
     for (List<MethodInfo> list: map.values()) {
       list.sort((meth1, meth2) -> meth1.params.size() - meth2.params.size());
@@ -184,6 +200,7 @@ public class Generator {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
       HashSet<String> set = new HashSet<>();
+      set.add(ProxyGen.class.getCanonicalName());
       set.add(VertxGen.class.getCanonicalName());
       set.add(Options.class.getCanonicalName());
       set.add(GenModule.class.getCanonicalName());

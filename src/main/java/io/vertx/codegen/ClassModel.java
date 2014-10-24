@@ -21,7 +21,6 @@ import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.IndexGetter;
 import io.vertx.codegen.annotations.IndexSetter;
-import io.vertx.codegen.annotations.ProxyIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 
 import javax.annotation.processing.Messager;
@@ -69,29 +68,29 @@ public class ClassModel implements Model {
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
   public static final String VERTX = "io.vertx.core.Vertx";
 
-  private final Messager messager;
-  private final TypeInfo.Factory typeFactory;
-  private final Map<String, TypeElement> sources;
-  private final TypeElement modelElt;
-  private final Elements elementUtils;
-  private final Types typeUtils;
-  private boolean processed = false;
-  private LinkedHashMap<ExecutableElement, MethodInfo> methods = new LinkedHashMap<>();
-  private HashSet<TypeInfo.Class> importedTypes = new HashSet<>();
-  private Set<TypeInfo.Class> referencedTypes = new HashSet<>();
-  private boolean concrete;
-  private TypeInfo type;
-  private String ifaceSimpleName;
-  private String ifaceFQCN;
-  private String ifacePackageName;
-  private String ifaceComment;
-  private List<TypeInfo> superTypes = new ArrayList<>();
-  private List<TypeInfo> concreteSuperTypes = new ArrayList<>();
-  private List<TypeInfo> abstractSuperTypes = new ArrayList<>();
+  protected final Messager messager;
+  protected final TypeInfo.Factory typeFactory;
+  protected final Map<String, TypeElement> sources;
+  protected final TypeElement modelElt;
+  protected final Elements elementUtils;
+  protected final Types typeUtils;
+  protected boolean processed = false;
+  protected LinkedHashMap<ExecutableElement, MethodInfo> methods = new LinkedHashMap<>();
+  protected HashSet<TypeInfo.Class> importedTypes = new HashSet<>();
+  protected Set<TypeInfo.Class> referencedTypes = new HashSet<>();
+  protected boolean concrete;
+  protected TypeInfo type;
+  protected String ifaceSimpleName;
+  protected String ifaceFQCN;
+  protected String ifacePackageName;
+  protected String ifaceComment;
+  protected List<TypeInfo> superTypes = new ArrayList<>();
+  protected List<TypeInfo> concreteSuperTypes = new ArrayList<>();
+  protected List<TypeInfo> abstractSuperTypes = new ArrayList<>();
   // The methods, grouped by name
-  private Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
-  private Set<String> referencedOptionsTypes = new HashSet<>();
-  private List<TypeParamInfo> typeParams = new ArrayList<>();
+  protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
+  protected Set<String> referencedOptionsTypes = new HashSet<>();
+  protected List<TypeParamInfo> typeParams = new ArrayList<>();
 
   public ClassModel(Messager messager, Map<String, TypeElement> sources, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
     this.messager = messager;
@@ -362,7 +361,7 @@ public class ClassModel implements Model {
         ifaceSimpleName = elem.getSimpleName().toString();
         ifacePackageName = elementUtils.getPackageOf(elem).toString();
         ifaceComment = elementUtils.getDocComment(elem);
-        concrete = elem.getAnnotation(VertxGen.class).concrete();
+        concrete = elem.getAnnotation(VertxGen.class) != null && elem.getAnnotation(VertxGen.class).concrete();
         DeclaredType tm = (DeclaredType) elem.asType();
         List<? extends TypeMirror> typeArgs = tm.getTypeArguments();
         for (TypeMirror typeArg : typeArgs) {
@@ -513,9 +512,6 @@ public class ClassModel implements Model {
       }
     }
 
-    AnnotationMirror proxyIgnoreAnnotation = Helper.resolveMethodAnnotation(ProxyIgnore.class, elementUtils, typeUtils, declaringElt, methodElt);
-    boolean isProxyIgnore = proxyIgnoreAnnotation != null;
-
     TypeInfo returnType = typeFactory.create(methodType.getReturnType());
     returnType.collectImports(importedTypes);
     if (isCacheReturn && returnType instanceof TypeInfo.Void) {
@@ -563,26 +559,40 @@ public class ClassModel implements Model {
       }
     }
 
-    //
-    MethodInfo methodInfo = new MethodInfo(Collections.singleton(ownerType), methodName, kind, returnType,
-        isFluent, isProxyIgnore, isCacheReturn, mParams, elementUtils.getDocComment(methodElt), isStatic, typeParams);
+    MethodInfo methodInfo = createMethodInfo(ownerType, methodName, kind, returnType,
+        isFluent, isCacheReturn, mParams, methodElt, isStatic, typeParams, declaringElt);
+    checkMethod(methodInfo);
     List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
     if (methodsByName == null) {
       methodsByName = new ArrayList<>();
       methodMap.put(methodInfo.getName(), methodsByName);
-    } else {
+    }
+    methodsByName.add(methodInfo);
+    methods.put(methodElt, methodInfo);
+    methodInfo.collectImports(importedTypes);
+  }
+
+  // This is a hook to allow a specific type of method to be created
+  protected MethodInfo createMethodInfo(TypeInfo.Class ownerType, String methodName, MethodKind kind, TypeInfo returnType,
+                                        boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
+                                        ExecutableElement methodElt, boolean isStatic, ArrayList<String> typeParams,
+                                        TypeElement declaringElt) {
+    return new MethodInfo(Collections.singleton(ownerType), methodName, kind, returnType,
+      isFluent, isCacheReturn, mParams, elementUtils.getDocComment(methodElt), isStatic, typeParams);
+  }
+
+  // This is a hook to allow different model implementations to check methods in different ways
+  protected void checkMethod(MethodInfo methodInfo) {
+    List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
+    if (methodsByName != null) {
       // Overloaded methods must have same return type
       for (MethodInfo meth: methodsByName) {
         if (!meth.returnType.equals(methodInfo.returnType)) {
           throw new GenException(this.modelElt, "Overloaded method " + methodInfo.name + " must have the same return type "
-              + meth.returnType + " != " + methodInfo.returnType);
+            + meth.returnType + " != " + methodInfo.returnType);
         }
       }
     }
-
-    methodsByName.add(methodInfo);
-    methods.put(methodElt, methodInfo);
-    methodInfo.collectImports(importedTypes);
   }
 
   private boolean isObjectBound(TypeMirror bound) {
