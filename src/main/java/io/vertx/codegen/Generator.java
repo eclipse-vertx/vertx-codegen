@@ -18,6 +18,7 @@ package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.GenModule;
 import io.vertx.codegen.annotations.Options;
+import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
 
 import javax.annotation.processing.Completion;
@@ -199,6 +200,7 @@ public class Generator {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
       HashSet<String> set = new HashSet<>();
+      set.add(ProxyGen.class.getCanonicalName());
       set.add(VertxGen.class.getCanonicalName());
       set.add(Options.class.getCanonicalName());
       set.add(GenModule.class.getCanonicalName());
