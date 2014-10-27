@@ -181,7 +181,7 @@ public class ClassModel implements Model {
     }
   }
 
-  protected void checkParamType(Element elem, TypeInfo typeInfo, int pos, int numParams) {
+  protected void checkParamType(Element elem, TypeMirror type, TypeInfo typeInfo, int pos, int numParams) {
 
     // Basic types, int, long, String etc
     // JsonObject or JsonArray
@@ -604,14 +604,15 @@ public class ClassModel implements Model {
     List<ParamInfo> mParams = new ArrayList<>();
     for (int i = 0; i < params.size();i++) {
       VariableElement param = params.get(i);
-      TypeInfo type;
+      TypeMirror type = execType.getParameterTypes().get(i);
+      TypeInfo typeInfo;
       try {
-        type = typeFactory.create(execType.getParameterTypes().get(i));
+        typeInfo = typeFactory.create(type);
       } catch (Exception e) {
         throw new GenException(param, e.getMessage());
       }
-      checkParamType(execElem, type, i, params.size());
-      ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), type);
+      checkParamType(execElem, type, typeInfo, i, params.size());
+      ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), typeInfo);
       mParams.add(mParam);
     }
     return mParams;

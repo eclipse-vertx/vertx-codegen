@@ -10,6 +10,7 @@ import io.vertx.test.codegen.proxytestapi.InvalidParams1;
 import io.vertx.test.codegen.proxytestapi.InvalidParams2;
 import io.vertx.test.codegen.proxytestapi.InvalidParams3;
 import io.vertx.test.codegen.proxytestapi.InvalidParams4;
+import io.vertx.test.codegen.proxytestapi.InvalidParamsOptions;
 import io.vertx.test.codegen.proxytestapi.InvalidReturn1;
 import io.vertx.test.codegen.proxytestapi.InvalidReturn2;
 import io.vertx.test.codegen.proxytestapi.InvalidReturn3;
@@ -79,6 +80,16 @@ public class ProxyTest {
   }
 
   @Test
+  public void testInvalidParamsOptions() throws Exception {
+    try {
+      new Generator().generateProxyModel(InvalidParamsOptions.class);
+      fail("Should throw exception");
+    } catch (GenException e) {
+      // OK
+    }
+  }
+
+  @Test
   public void testInvalidReturn1() throws Exception {
     try {
       new Generator().generateProxyModel(InvalidReturn1.class);
@@ -115,7 +126,7 @@ public class ProxyTest {
     assertEquals(ValidProxy.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(29, model.getMethods().size());
+    assertEquals(30, model.getMethods().size());
 
     // Not going to check all the types are correct as this is already tested in the VertxGen tests
     // but we do want to check the proxyIgnore flag is correctly set

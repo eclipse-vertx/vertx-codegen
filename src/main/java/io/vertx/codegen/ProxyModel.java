@@ -21,9 +21,12 @@ import io.vertx.codegen.annotations.ProxyIgnore;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
@@ -31,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -47,7 +51,7 @@ public class ProxyModel extends ClassModel {
   }
 
   @Override
-  protected void checkParamType(Element elem, TypeInfo typeInfo, int pos, int numParams) {
+  protected void checkParamType(Element elem, TypeMirror type, TypeInfo typeInfo, int pos, int numParams) {
     // Basic types, int, long, String etc
     // JsonObject or JsonArray
     if (typeInfo.getKind().basic || typeInfo.getKind().json) {
@@ -56,6 +60,24 @@ public class ProxyModel extends ClassModel {
     // We also allow enums as parameter types
     if (typeInfo.getKind() == ClassKind.ENUM) {
       return;
+    }
+    // We also allow options as parameter types if they have a 'public JsonObject toJson()' method
+    if (typeInfo.getKind() == ClassKind.OPTIONS) {
+      if (type instanceof DeclaredType) {
+        List<TypeInfo> list = ((DeclaredType) type).asElement().getEnclosedElements().stream()
+          .filter(e -> e.getKind() == ElementKind.METHOD)
+          .map(e -> (ExecutableElement) e)
+          .filter(e -> e.getParameters().size() == 0 && e.getSimpleName().toString().equals("toJson"))
+          .map(e -> typeFactory.create(e.getReturnType()))
+          .filter(ti -> ti.getKind() == ClassKind.JSON_OBJECT)
+          .collect(Collectors.toList());
+
+        if (list.size() == 1) { // we have our toJson method
+          return;
+        }
+
+        throw new GenException(elem, "type " + typeInfo + " does not have a valid 'public JsonObject toJson()' method.");
+      }
     }
     if (isLegalHandlerAsyncResultType(typeInfo)) {
       if (pos != numParams - 1) {

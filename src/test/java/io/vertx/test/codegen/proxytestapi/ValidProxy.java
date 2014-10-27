@@ -24,6 +24,8 @@ public interface ValidProxy {
 
   void enumType(SomeEnum someEnum);
 
+  void optionsType(ProxyOptions options);
+
   void handler0(Handler<AsyncResult<String>> stringHandler);
   void handler1(Handler<AsyncResult<Byte>> byteHandler);
   void handler2(Handler<AsyncResult<Short>> shortHandler);
