@@ -806,4 +806,13 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
       return map.entrySet();
     }
   }
+
+  @Override
+  public SomeProducer<RefedInterface1> getSomeProducer() {
+    return handler -> {
+      RefedInterface1Impl produced = new RefedInterface1Impl();
+      produced.setString("klf is gonna rock you");
+      handler.handle(produced);
+    };
+  }
 }

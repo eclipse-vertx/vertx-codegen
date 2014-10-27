@@ -35,11 +35,11 @@ public class MethodInfo implements Comparable<MethodInfo> {
   List<ParamInfo> params;
   final String comment;
   final boolean staticMethod;
-  List<String> typeParams;
+  List<TypeParamInfo.Method> typeParams;
   LinkedHashSet<TypeInfo.Class> ownerTypes;
 
   public MethodInfo(Set<TypeInfo.Class> ownerTypes, String name, MethodKind kind, TypeInfo returnType, boolean fluent,
-                    boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod, List<String> typeParams) {
+                    boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod, List<TypeParamInfo.Method> typeParams) {
 
 
     this.kind = kind;
@@ -126,11 +126,11 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return staticMethod;
   }
 
-  public List<String> getTypeParams() {
+  public List<TypeParamInfo.Method> getTypeParams() {
     return typeParams;
   }
 
-  public void mergeTypeParams(List<String> mergedTypeParams) throws IllegalArgumentException {
+  public void mergeTypeParams(List<TypeParamInfo.Method> mergedTypeParams) throws IllegalArgumentException {
     int l = Math.min(typeParams.size(), mergedTypeParams.size());
     if (typeParams.subList(0, l).equals(mergedTypeParams.subList(0, l))) {
       if (mergedTypeParams.size() > typeParams.size()) {

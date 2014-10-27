@@ -27,7 +27,7 @@ public class ProxyMethodInfo extends MethodInfo {
   private final boolean proxyIgnore;
 
   public ProxyMethodInfo(Set<TypeInfo.Class> ownerTypes, String name, MethodKind kind, TypeInfo returnType, boolean fluent,
-                         boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod, List<String> typeParams,
+                         boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod, List<TypeParamInfo.Method> typeParams,
                          boolean proxyIgnore) {
 
 

@@ -1,9 +1,12 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.GenModule;
+import io.vertx.codegen.annotations.VertxGen;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
@@ -67,7 +70,9 @@ public abstract class TypeInfo {
       java.lang.Class raw = (java.lang.Class) parameterizedType.getRawType();
       return new Parameterized((Class) create(raw), args);
     } else if (type instanceof java.lang.reflect.TypeVariable) {
-      return new Variable(((java.lang.reflect.TypeVariable)type).getName());
+      java.lang.reflect.TypeVariable typeVar = (java.lang.reflect.TypeVariable) type;
+      TypeParamInfo param = TypeParamInfo.create(typeVar);
+      return new Variable(param, ((java.lang.reflect.TypeVariable)type).getName());
     } else {
       throw new IllegalArgumentException("Unsupported type " + type);
     }
@@ -119,7 +124,8 @@ public abstract class TypeInfo {
 
     public TypeInfo create(DeclaredType type) {
       ModuleInfo module = null;
-      PackageElement pkgElt = elementUtils.getPackageOf(type.asElement());
+      Element elt = type.asElement();
+      PackageElement pkgElt = elementUtils.getPackageOf(elt);
       while (pkgElt != null) {
         GenModule annotation = pkgElt.getAnnotation(GenModule.class);
         if (annotation != null) {
@@ -136,12 +142,18 @@ public abstract class TypeInfo {
       }
       String fqcn = typeUtils.erasure(type).toString();
       ClassKind kind;
-      if (type.asElement().getKind() == ElementKind.ENUM) {
+      if (elt.getKind() == ElementKind.ENUM) {
         kind = ClassKind.ENUM;
       } else {
-        kind = Helper.getKind(annotationType -> type.asElement().getAnnotation(annotationType), fqcn);
+        kind = Helper.getKind(annotationType -> elt.getAnnotation(annotationType), fqcn);
       }
-      Class raw = new Class(kind, fqcn, module);
+      Class raw;
+      if (kind == ClassKind.API) {
+        VertxGen genAnn = elt.getAnnotation(VertxGen.class);
+        raw = new Class.Gen(fqcn, module, genAnn.concrete());
+      } else {
+        raw = new Class(kind, fqcn, module);
+      }
       List<? extends TypeMirror> typeArgs = type.getTypeArguments();
       if (typeArgs.size() > 0) {
         List<TypeInfo> typeArguments;
@@ -158,9 +170,10 @@ public abstract class TypeInfo {
     }
 
     public Variable create(TypeVariable type) {
-      return new Variable(type.toString());
+      TypeParameterElement elt = (TypeParameterElement) type.asElement();
+      TypeParamInfo param = TypeParamInfo.create(elt);
+      return new Variable(param, type.toString());
     }
-
   }
 
   /**
@@ -214,16 +227,22 @@ public abstract class TypeInfo {
   public static class Variable extends TypeInfo {
 
     final String name;
+    final TypeParamInfo param;
 
-    public Variable(String name) {
+    public Variable(TypeParamInfo param, String name) {
+      this.param = param;
       this.name = name;
+    }
+
+    public TypeParamInfo getParam() {
+      return param;
     }
 
     @Override
     public boolean equals(Object obj) {
       if (obj instanceof Variable) {
         Variable that = (Variable) obj;
-        return name.equals(that.name);
+        return param.equals(that.param);
       } else {
         return false;
       }
@@ -334,6 +353,31 @@ public abstract class TypeInfo {
       this.simpleName = Helper.getSimpleName(fqcn);
       this.packageName = Helper.getPackageName(fqcn);
       this.module = module;
+    }
+
+    public static class Gen extends Class {
+
+      boolean concrete;
+
+      public Gen(String fqcn, ModuleInfo module, boolean concrete) {
+        super(ClassKind.API, fqcn, module);
+        this.concrete = concrete;
+      }
+
+      @Override
+      public TypeInfo.Class.Gen renamePackage(String oldPackageName, String newPackageName) {
+        return packageName.startsWith(oldPackageName) ?
+            new Gen(newPackageName + fqcn.substring(oldPackageName.length()), null, concrete) :
+            this;
+      }
+
+      public boolean isConcrete() {
+        return concrete;
+      }
+
+      public boolean isAbstract() {
+        return !concrete;
+      }
     }
 
     /**

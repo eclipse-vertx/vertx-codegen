@@ -8,6 +8,7 @@ import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.MethodKind;
 import io.vertx.codegen.ParamInfo;
 import io.vertx.codegen.TypeInfo;
+import io.vertx.codegen.TypeParamInfo;
 import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -115,6 +116,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static io.vertx.test.codegen.Utils.*;
 import static org.junit.Assert.*;
@@ -565,7 +567,7 @@ public class GeneratorTest {
     assertEquals(1, model.getMethods().size());
     MethodInfo mi = model.getMethods().get(0);
     assertEquals("foo", mi.getName());
-    assertEquals(Arrays.asList("T"), mi.getTypeParams());
+    assertEquals(Arrays.asList("T"), mi.getTypeParams().stream().map(TypeParamInfo::getName).collect(Collectors.toList()));
   }
 
   @Test
@@ -807,18 +809,20 @@ public class GeneratorTest {
     assertTrue("Was expecting " + model.getReferencedTypes() + " to be empty", model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
     assertEquals(2, model.getMethods().size());
-
+    TypeInfo.Variable t = (TypeInfo.Variable) ((TypeInfo.Parameterized) model.getType()).getArgs().get(0);
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "methodWithClassTypeParam", null, MethodKind.OTHER, "T", false, false, false, 3);
       List<ParamInfo> params = methods.get(0).getParams();
       checkClassParam(params.get(0), "t", "T", ClassKind.OBJECT);
       assertTrue(params.get(0).getType() instanceof TypeInfo.Variable);
+      assertEquals(t, params.get(0).getType());
       checkClassParam(params.get(1), "handler", "io.vertx.core.Handler<T>", ClassKind.HANDLER);
       checkClassParam(params.get(2), "asyncResultHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<T>>", ClassKind.HANDLER);
       checkMethod(methods.get(1), "someGenericMethod", null, MethodKind.OTHER, "io.vertx.test.codegen.testapi.GenericInterface<R>", false, false, false, 3);
       params = methods.get(1).getParams();
       checkClassParam(params.get(0), "r", "R", ClassKind.OBJECT);
       assertTrue(params.get(0).getType() instanceof TypeInfo.Variable);
+      assertEquals(methods.get(1).getTypeParams().get(0), ((TypeInfo.Variable) params.get(0).getType()).getParam());
       checkClassParam(params.get(1), "handler", "io.vertx.core.Handler<R>", ClassKind.HANDLER);
       checkClassParam(params.get(2), "asyncResultHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<R>>", ClassKind.HANDLER);
     };

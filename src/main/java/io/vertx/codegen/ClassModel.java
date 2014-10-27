@@ -90,7 +90,7 @@ public class ClassModel implements Model {
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
   protected Set<String> referencedOptionsTypes = new HashSet<>();
-  protected List<TypeParamInfo> typeParams = new ArrayList<>();
+  protected List<TypeParamInfo.Class> typeParams = new ArrayList<>();
 
   public ClassModel(Messager messager, Map<String, TypeElement> sources, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
     this.messager = messager;
@@ -171,7 +171,7 @@ public class ClassModel implements Model {
     return referencedOptionsTypes;
   }
 
-  public List<TypeParamInfo> getTypeParams() {
+  public List<TypeParamInfo.Class> getTypeParams() {
     return typeParams;
   }
 
@@ -335,7 +335,8 @@ public class ClassModel implements Model {
 
   private void determineSiteDeclVariance() {
     List<? extends TypeParameterElement> typeParamElts = modelElt.getTypeParameters();
-    for (TypeParameterElement typeParamElt : typeParamElts) {
+    for (int index = 0;index < typeParamElts.size();index++) {
+      TypeParameterElement typeParamElt = typeParamElts.get(index);
       Set<Variance> siteVariance = EnumSet.noneOf(Variance.class);
       for (Variance variance : Variance.values()) {
         if (Helper.resolveSiteVariance(typeParamElt, variance)) {
@@ -343,7 +344,7 @@ public class ClassModel implements Model {
         }
       }
       logger.log(Level.FINE, "Site variances of " + modelElt + " " + typeParamElt + " : " + siteVariance);
-      typeParams.add(new TypeParamInfo(typeParamElt.getSimpleName().toString(), siteVariance));
+      typeParams.add(new TypeParamInfo.Class(modelElt.getQualifiedName().toString(), index, typeParamElt.getSimpleName().toString(), siteVariance));
     }
   }
 
@@ -480,14 +481,14 @@ public class ClassModel implements Model {
 
     boolean isStatic = mods.contains(Modifier.STATIC);
     boolean isCacheReturn = methodElt.getAnnotation(CacheReturn.class) != null;
-    ArrayList<String> typeParams = new ArrayList<>();
+    ArrayList<TypeParamInfo.Method> typeParams = new ArrayList<>();
     for (TypeParameterElement typeParam : methodElt.getTypeParameters()) {
       for (TypeMirror bound : typeParam.getBounds()) {
         if (!isObjectBound(bound)) {
           throw new GenException(methodElt, "Type parameter bound not supported " + bound);
         }
       }
-      typeParams.add(typeParam.getSimpleName().toString());
+      typeParams.add((TypeParamInfo.Method) TypeParamInfo.create(typeParam));
     }
 
     //
@@ -575,7 +576,7 @@ public class ClassModel implements Model {
   // This is a hook to allow a specific type of method to be created
   protected MethodInfo createMethodInfo(TypeInfo.Class ownerType, String methodName, MethodKind kind, TypeInfo returnType,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
-                                        ExecutableElement methodElt, boolean isStatic, ArrayList<String> typeParams,
+                                        ExecutableElement methodElt, boolean isStatic, ArrayList<TypeParamInfo.Method> typeParams,
                                         TypeElement declaringElt) {
     return new MethodInfo(Collections.singleton(ownerType), methodName, kind, returnType,
       isFluent, isCacheReturn, mParams, elementUtils.getDocComment(methodElt), isStatic, typeParams);
