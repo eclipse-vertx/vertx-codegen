@@ -183,9 +183,9 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
         assertTrue(obj instanceof JsonArray);
         JsonArray arr = (JsonArray)obj;
         assertEquals(3, arr.size());
-        assertEquals("foo", arr.get(0));
-        assertEquals("bar", arr.get(1));
-        assertEquals("wib", arr.get(2));
+        assertEquals("foo", arr.getString(0));
+        assertEquals("bar", arr.getString(1));
+        assertEquals("wib", arr.getString(2));
         break;
       }
       default: fail("invalid type");
@@ -267,7 +267,7 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
 
   @Override
   public void methodWithHandlerListJsonObject(Handler<List<JsonObject>> listHandler) {
-    List<JsonObject> list = Arrays.asList(new JsonObject().putString("cheese", "stilton"), new JsonObject().putString("socks", "tartan"));
+    List<JsonObject> list = Arrays.asList(new JsonObject().put("cheese", "stilton"), new JsonObject().put("socks", "tartan"));
     listHandler.handle(list);
   }
 
@@ -279,7 +279,7 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
 
   @Override
   public void methodWithHandlerSetJsonObject(Handler<Set<JsonObject>> setHandler) {
-    Set<JsonObject> set = new LinkedHashSet<>(Arrays.asList(new JsonObject().putString("cheese", "stilton"), new JsonObject().putString("socks", "tartan")));
+    Set<JsonObject> set = new LinkedHashSet<>(Arrays.asList(new JsonObject().put("cheese", "stilton"), new JsonObject().put("socks", "tartan")));
     setHandler.handle(set);
   }
 
@@ -339,7 +339,7 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
 
   @Override
   public void methodWithHandlerAsyncResultListJsonObject(Handler<AsyncResult<List<JsonObject>>> listHandler) {
-    List<JsonObject> list = Arrays.asList(new JsonObject().putString("cheese", "stilton"), new JsonObject().putString("socks", "tartan"));
+    List<JsonObject> list = Arrays.asList(new JsonObject().put("cheese", "stilton"), new JsonObject().put("socks", "tartan"));
     listHandler.handle(Future.completedFuture(list));
   }
 
@@ -351,7 +351,7 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
 
   @Override
   public void methodWithHandlerAsyncResultSetJsonObject(Handler<AsyncResult<Set<JsonObject>>> setHandler) {
-    Set<JsonObject> set = new LinkedHashSet<>(Arrays.asList(new JsonObject().putString("cheese", "stilton"), new JsonObject().putString("socks", "tartan")));
+    Set<JsonObject> set = new LinkedHashSet<>(Arrays.asList(new JsonObject().put("cheese", "stilton"), new JsonObject().put("socks", "tartan")));
     setHandler.handle(Future.completedFuture(set));
   }
 
@@ -573,11 +573,11 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
         return (U) new RefedInterface1Impl().setString("bar");
       }
       case "JsonObject": {
-        return (U) (new JsonObject().putString("foo", "hello").putNumber("bar", 123));
+        return (U) (new JsonObject().put("foo", "hello").put("bar", 123));
       }
       case "JsonObjectLong": {
         // Some languages will convert to Long
-        return (U) (new JsonObject().putString("foo", "hello").putNumber("bar", 123L));
+        return (U) (new JsonObject().put("foo", "hello").put("bar", 123L));
       }
       case "JsonArray": {
         return (U) (new JsonArray().add("foo").add("bar").add("wib"));
@@ -621,7 +621,7 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
 
   @Override
   public JsonObject methodWithJsonObjectReturn() {
-    return new JsonObject().putString("cheese", "stilton");
+    return new JsonObject().put("cheese", "stilton");
   }
 
   @Override
@@ -645,8 +645,8 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
     assertNotNull(jsonArray);
     assertEquals("lion", jsonObject.getString("cat"));
     assertEquals("cheddar", jsonObject.getString("cheese"));
-    assertEquals("house", jsonArray.get(0));
-    assertEquals("spider", jsonArray.get(1));
+    assertEquals("house", jsonArray.getString(0));
+    assertEquals("spider", jsonArray.getString(1));
   }
 
   @Override
@@ -659,7 +659,7 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   public void methodWithHandlerJson(Handler<JsonObject> jsonObjectHandler, Handler<JsonArray> jsonArrayHandler) {
     assertNotNull(jsonObjectHandler);
     assertNotNull(jsonArrayHandler);
-    jsonObjectHandler.handle(new JsonObject().putString("cheese", "stilton"));
+    jsonObjectHandler.handle(new JsonObject().put("cheese", "stilton"));
     jsonArrayHandler.handle(new JsonArray().add("socks").add("shoes"));
   }
 
@@ -674,7 +674,7 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   @Override
   public void methodWithHandlerAsyncResultJsonObject(Handler<AsyncResult<JsonObject>> handler) {
     assertNotNull(handler);
-    handler.handle(Future.completedFuture(new JsonObject().putString("cheese", "stilton")));
+    handler.handle(Future.completedFuture(new JsonObject().put("cheese", "stilton")));
   }
 
   @Override

@@ -58,7 +58,7 @@ public class CodeGenProcessor extends AbstractProcessor {
           String s = scanner.next();
           JsonObject obj = new JsonObject(s);
           String name = obj.getString("name");
-          JsonArray generatorsCfg = obj.getArray("generators");
+          JsonArray generatorsCfg = obj.getJsonArray("generators");
           for (Object o : generatorsCfg) {
             JsonObject generator = (JsonObject) o;
             String kind = generator.getString("kind");

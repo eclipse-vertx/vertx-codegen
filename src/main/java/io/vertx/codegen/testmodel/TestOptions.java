@@ -25,7 +25,7 @@ public class TestOptions {
   public TestOptions(JsonObject json) {
     this.foo = json.getString("foo", null);
     this.bar = json.getInteger("bar", 0);
-    this.wibble = (double)json.getNumber("wibble", 0);
+    this.wibble = json.getDouble("wibble", 0d);
   }
 
   public String getFoo() {
