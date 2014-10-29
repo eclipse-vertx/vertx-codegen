@@ -142,12 +142,7 @@ public class GeneratorTest {
 
   @Test
   public void testGenerateNotInterface() throws Exception {
-    try {
-      new Generator().generateModel(NotInterface.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(NotInterface.class);
   }
 
   @Test
@@ -162,342 +157,178 @@ public class GeneratorTest {
 
   @Test
   public void testGenerateNestedInterfaces() throws Exception {
-    try {
-      new Generator().generateModel(NestedInterface.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(NestedInterface.class);
   }
 
   @Test
   public void testGenerateInterfaceWithNoMethods() throws Exception {
-    try {
-      new Generator().generateModel(InterfaceWithNoMethods.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(InterfaceWithNoMethods.class);
   }
 
   @Test
   public void testGenerateInterfaceWithNoNotIgnoredMethods() throws Exception {
-    try {
-      new Generator().generateModel(InterfaceWithNoNotIgnoredMethods.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(InterfaceWithNoNotIgnoredMethods.class);
   }
 
   @Test
   public void testGenerateInterfaceWithDefaultMethod() throws Exception {
-    try {
-      new Generator().generateModel(InterfaceWithDefaultMethod.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(InterfaceWithDefaultMethod.class);
   }
 
   // Invalid params
 
   @Test
   public void testGenerateMethodWithJavaDotObjectParam() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithJavaDotObjectParam.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithJavaDotObjectParam.class);
   }
 
   @Test
   public void testGenerateMethodWithJavaDotObjectInHandler() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithJavaDotObjectInHandler.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithJavaDotObjectInHandler.class);
   }
 
   @Test
   public void testGenerateMethodWithJavaDotObjectInHandlerAsyncResult() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithJavaDotObjectInHandlerAsyncResult.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithJavaDotObjectInHandlerAsyncResult.class);
   }
 
   @Test
   public void testGenerateMethodWithNonVertxGenParam() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithNotVertxGenObjectParam.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    Class<?> c = MethodWithNotVertxGenObjectParam.class;
+    assertGenInvalid(c);
   }
 
   @Test
   public void testGenerateMethodWithNonVertxGenInHandler() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithNotVertxGenObjectInHandler.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithNotVertxGenObjectInHandler.class);
   }
 
   @Test
   public void testGenerateMethodWithNonVertxGenInHandlerAsyncResult() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithNotVertxGenObjectInHandlerAsyncResult.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithNotVertxGenObjectInHandlerAsyncResult.class);
   }
 
   // TODO Handler and Handler<AsyncResult> of List/String with non basic types
 
   @Test
   public void testGenerateMethodWithListParam() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithListParam.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithListParam.class);
   }
 
   @Test
   public void testGenerateMethodWithSetParam() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithSetParam.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithSetParam.class);
   }
 
   @Test
   public void testGenerateMethodWithWildcardUpperBoundTypeArg() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithWildcardUpperBoundTypeArg.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithWildcardUpperBoundTypeArg.class);
   }
 
   @Test
   public void testGenerateMethodWithWildcardLowerBoundTypeArg() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithWildcardLowerBoundTypeArg.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithWildcardLowerBoundTypeArg.class);
   }
 
   // Invalid returns
 
   @Test
   public void testGenerateMethodWithJavaDotObjectReturn() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithJavaDotObjectReturn.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithJavaDotObjectReturn.class);
   }
 
   @Test
   public void testGenerateMethodWithNonVertxGenReturn() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithNotVertxGenObjectReturn.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithNotVertxGenObjectReturn.class);
   }
 
   @Test
   public void testGenerateMethodWithObjectReturn() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithObjectReturn.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithObjectReturn.class);
   }
 
   @Test
   public void testGenerateMethodWithReturnSetNonBasicType() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithSetNonBasicTypeReturn.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithSetNonBasicTypeReturn.class);
   }
 
   @Test
   public void testGenerateMethodWithReturnListNonBasicType() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithListNonBasicTypeReturn.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithListNonBasicTypeReturn.class);
   }
 
   @Test
   public void testGenerateMethodWithReturnHandlerNonVertxGen() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithHandlerNonVertxGenReturn.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithHandlerNonVertxGenReturn.class);
   }
 
   @Test
   public void testGenerateMethodWithReturnAsyncResultHandler() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithHandlerAsyncResultReturn.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithHandlerAsyncResultReturn.class);
   }
 
   // Invalid methods
 
   @Test
   public void testOverloadedMethodsWithDifferentReturnType() throws Exception {
-    try {
-      new Generator().generateModel(OverloadedMethodsWithDifferentReturnType.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(OverloadedMethodsWithDifferentReturnType.class);
   }
 
   @Test
   public void testFluentMethodWithVoidReturn() throws Exception {
-    try {
-      new Generator().generateModel(FluentMethodWithVoidReturn.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(FluentMethodWithVoidReturn.class);
   }
 
   @Test
   public void testFluentMethodWithIllegalReturn() throws Exception {
-    try {
-      new Generator().generateModel(FluentMethodWithIllegalReturn.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(FluentMethodWithIllegalReturn.class);
   }
 
   @Test
   public void testFluentMethodWithGenericReturn() throws Exception {
-    try {
-      new Generator().generateModel(FluentMethodWithGenericReturn.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(FluentMethodWithGenericReturn.class);
   }
 
   @Test
   public void testFluentMethodWithIllegalParameterizedReturn() throws Exception {
-    try {
-      new Generator().generateModel(FluentMethodWithIllegalParameterizedReturn.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(FluentMethodWithIllegalParameterizedReturn.class);
   }
 
   @Test
   public void testFluentMethodOverrideWithSuperType() throws Exception {
-    try {
-      new Generator().generateModel(FluentMethodOverrideWithSuperType.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(FluentMethodOverrideWithSuperType.class);
   }
 
   @Test
   public void testCacheReturnMethodWithVoidReturn() throws Exception {
-    try {
-      new Generator().generateModel(CacheReturnMethodWithVoidReturn.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(CacheReturnMethodWithVoidReturn.class);
   }
 
   @Test
   public void testMethodWithTypeParameterUpperBound() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithTypeParameterUpperBound.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithTypeParameterUpperBound.class);
   }
 
   @Test
   public void testMethodWithNoIntIndexGetter() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithNoIntIndexGetter.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithNoIntIndexGetter.class);
   }
 
   @Test
   public void testMethodWithNoIntIndexSetter() throws Exception {
-    try {
-      new Generator().generateModel(MethodWithNoIntIndexSetter.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(MethodWithNoIntIndexSetter.class);
   }
 
   // Invalid abstract/concrete interfaces
 
   @Test
   public void testAbstractInterfaceCannotExtendConcreteInterface() throws Exception {
-    try {
-      new Generator().generateModel(AbstractInterfaceWithConcreteSuperInterface.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(AbstractInterfaceWithConcreteSuperInterface.class);
   }
 
   @Test
   public void testConcreteInterfaceCannotExtendTwoConcreteInterfaces() throws Exception {
-    try {
-      new Generator().generateModel(ConcreteInterfaceWithTwoConcreteSuperInterfaces.class);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
+    assertGenInvalid(ConcreteInterfaceWithTwoConcreteSuperInterfaces.class);
   }
 
   // Test valid stuff
@@ -1504,5 +1335,14 @@ public class GeneratorTest {
       paramType = param.getType();
     }
     assertEquals(kind, paramType.getKind());
+  }
+
+  private void assertGenInvalid(Class<?> c) throws Exception {
+    try {
+      new Generator().generateModel(c);
+      fail("Should throw exception");
+    } catch (GenException e) {
+      // OK
+    }
   }
 }
