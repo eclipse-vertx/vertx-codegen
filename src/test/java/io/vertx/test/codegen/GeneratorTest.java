@@ -53,6 +53,8 @@ import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerNonVertxGenReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn;
+import io.vertx.test.codegen.testapi.MethodWithInvalidParameterized;
+import io.vertx.test.codegen.testapi.MethodWithInvalidParameterizedReturn;
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectInHandler;
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectInHandlerAsyncResult;
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectParam;
@@ -230,6 +232,11 @@ public class GeneratorTest {
     assertGenInvalid(MethodWithWildcardLowerBoundTypeArg.class);
   }
 
+  @Test
+  public void testGenerateMethodWithInvalidParameterized() throws Exception {
+    assertGenInvalid(MethodWithInvalidParameterized.class);
+  }
+
   // Invalid returns
 
   @Test
@@ -265,6 +272,11 @@ public class GeneratorTest {
   @Test
   public void testGenerateMethodWithReturnAsyncResultHandler() throws Exception {
     assertGenInvalid(MethodWithHandlerAsyncResultReturn.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithInvalidParameterizedReturn() throws Exception {
+    assertGenInvalid(MethodWithInvalidParameterizedReturn.class, VertxGenClass1.class);
   }
 
   // Invalid methods
@@ -1337,9 +1349,9 @@ public class GeneratorTest {
     assertEquals(kind, paramType.getKind());
   }
 
-  private void assertGenInvalid(Class<?> c) throws Exception {
+  private void assertGenInvalid(Class<?> c, Class<?>... rest) throws Exception {
     try {
-      new Generator().generateModel(c);
+      new Generator().generateModel(c, rest);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK

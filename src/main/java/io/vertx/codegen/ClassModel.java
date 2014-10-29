@@ -40,6 +40,7 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
+import javax.xml.validation.TypeInfoProvider;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -274,7 +275,7 @@ public class ClassModel implements Model {
 
   private boolean isLegalListOrSet(TypeInfo type) {
     if (type instanceof TypeInfo.Parameterized) {
-      TypeInfo raw = ((TypeInfo.Parameterized) type).getRaw();
+      TypeInfo raw = type.getRaw();
       if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
         TypeInfo elementType = ((TypeInfo.Parameterized) type).getArgs().get(0);
         if (elementType.getKind().basic || elementType.getKind().json || isVertxGenInterface(elementType)) {
@@ -289,6 +290,14 @@ public class ClassModel implements Model {
     if (type.getKind() == ClassKind.API) {
       if (!type.getName().equals(VERTX)) {
         referencedTypes.add(type.getRaw());
+      }
+      if (type instanceof TypeInfo.Parameterized) {
+        TypeInfo.Parameterized parameterized = (TypeInfo.Parameterized) type;
+        for (TypeInfo param : parameterized.getArgs()) {
+          if (!(param instanceof TypeInfo.Variable || param instanceof TypeInfo.Wildcard)) {
+            return false;
+          }
+        }
       }
       return true;
     }
