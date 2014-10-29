@@ -419,6 +419,20 @@ public class TestInterfaceImpl<T> implements TestInterface<T> {
   }
 
   @Override
+  public <U> void methodWithHandlerGenericUserType(U value, Handler<GenericRefedInterface<U>> handler) {
+    GenericRefedInterfaceImpl<U> userObj = new GenericRefedInterfaceImpl<>();
+    userObj.setValue(value);
+    handler.handle(userObj);
+  }
+
+  @Override
+  public <U> void methodWithHandlerAsyncResultGenericUserType(U value, Handler<AsyncResult<GenericRefedInterface<U>>> handler) {
+    GenericRefedInterfaceImpl<U> userObj = new GenericRefedInterfaceImpl<>();
+    userObj.setValue(value);
+    handler.handle(Future.completedFuture(userObj));
+  }
+
+  @Override
   public byte methodWithByteReturn() {
     return (byte)123;
   }

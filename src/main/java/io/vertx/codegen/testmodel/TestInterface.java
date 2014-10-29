@@ -112,6 +112,10 @@ public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
 
   void methodWithHandlerThrowable(Handler<Throwable> handler);
 
+  <U> void methodWithHandlerGenericUserType(U value, Handler<GenericRefedInterface<U>> handler);
+
+  <U> void methodWithHandlerAsyncResultGenericUserType(U value, Handler<AsyncResult<GenericRefedInterface<U>>> handler);
+
   byte methodWithByteReturn();
 
   short methodWithShortReturn();
