@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
-public class TestInterfaceImpl<T> implements TestInterface<T> {
+public class TestInterfaceImpl implements TestInterface {
 
   private static <T> T assertInstanceOf(Class<T> expectedType, Object obj) {
     if (expectedType.isInstance(obj)) {

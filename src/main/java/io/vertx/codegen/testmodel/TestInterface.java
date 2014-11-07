@@ -16,7 +16,7 @@ import java.util.Set;
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @VertxGen
-public interface TestInterface<T> extends SuperInterface1, SuperInterface2 {
+public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   // Test params
 
