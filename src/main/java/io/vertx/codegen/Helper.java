@@ -154,7 +154,12 @@ public class Helper {
   }
 
   public static String getPackageName(String type) {
-    return type.substring(0, type.lastIndexOf('.'));
+    int index = type.lastIndexOf('.');
+    if (index >= 0) {
+      return type.substring(0, index);
+    } else {
+      return "";
+    }
   }
 
   public static String getGenericType(String type) {

@@ -92,6 +92,7 @@ public abstract class TypeInfo {
       switch (type.getKind()) {
         case VOID:
           return Void.INSTANCE;
+        case ERROR:
         case DECLARED:
           return create((DeclaredType) type);
         case DOUBLE:

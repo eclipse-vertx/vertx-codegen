@@ -10,6 +10,11 @@ import static org.junit.Assert.*;
 public class HelperTest {
 
   @Test
+  public void testGetEmptyPackageName() {
+    assertEquals("", Helper.getPackageName("SomeClass"));
+  }
+
+  @Test
   public void testExtractCommentTags() {
     String comment =
       " Interface comment line 1\n" +
