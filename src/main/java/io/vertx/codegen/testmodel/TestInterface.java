@@ -205,4 +205,6 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
   String methodWithEnumParam(String strVal, TestEnum weirdo);
 
   TestEnum methodWithEnumReturn(String strVal);
+
+  Throwable methodWithThrowableReturn(String strVal);
 }

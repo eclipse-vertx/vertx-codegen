@@ -73,6 +73,7 @@ import io.vertx.test.codegen.testapi.MethodWithOptionsParam;
 import io.vertx.test.codegen.testapi.MethodWithSameSignatureInheritedFromDistinctInterfaces;
 import io.vertx.test.codegen.testapi.MethodWithSetNonBasicTypeReturn;
 import io.vertx.test.codegen.testapi.MethodWithSetParam;
+import io.vertx.test.codegen.testapi.MethodWithThrowableReturn;
 import io.vertx.test.codegen.testapi.MethodWithTypeParameter;
 import io.vertx.test.codegen.testapi.MethodWithTypeParameterUpperBound;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicBoxedParams;
@@ -616,6 +617,24 @@ public class GeneratorTest {
 
     Consumer<MethodInfo> checker = (method) -> {
       checkMethod(method, methodName, null, MethodKind.OTHER, TestEnum.class.getName(), false, false, false, 0);
+    };
+
+    MethodInfo method = model.getMethods().get(0);
+    checker.accept(method);
+  }
+
+  @Test
+  public void testValidThrowableReturn() throws Exception {
+    ClassModel model = new Generator().generateModel(MethodWithThrowableReturn.class);
+    assertEquals(MethodWithThrowableReturn.class.getName(), model.getIfaceFQCN());
+    assertEquals(MethodWithThrowableReturn.class.getSimpleName(), model.getIfaceSimpleName());
+    assertTrue(model.getReferencedTypes().isEmpty());
+    assertTrue(model.getSuperTypes().isEmpty());
+    assertEquals(1, model.getMethods().size());
+    String methodName = "methodWithThrowableReturn";
+
+    Consumer<MethodInfo> checker = (method) -> {
+      checkMethod(method, methodName, null, MethodKind.OTHER, Throwable.class.getName(), false, false, false, 0);
     };
 
     MethodInfo method = model.getMethods().get(0);

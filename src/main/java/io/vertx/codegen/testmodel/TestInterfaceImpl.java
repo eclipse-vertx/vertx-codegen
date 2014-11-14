@@ -739,6 +739,11 @@ public class TestInterfaceImpl implements TestInterface {
     return TestEnum.valueOf(strVal);
   }
 
+  @Override
+  public Throwable methodWithThrowableReturn(String strVal) {
+    return new Exception(strVal);
+  }
+
   private static class HandlerTestMap<V> implements Map<String, V> {
     private Handler<String> handler;
     private Map<String, V> map;
