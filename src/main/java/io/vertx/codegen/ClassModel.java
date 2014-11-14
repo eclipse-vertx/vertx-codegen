@@ -53,6 +53,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * A processed source.
@@ -118,6 +119,14 @@ public class ClassModel implements Model {
 
   public List<MethodInfo> getMethods() {
     return new ArrayList<>(methods.values());
+  }
+
+  public List<MethodInfo> getStaticMethods() {
+    return methods.values().stream().filter(MethodInfo::isStaticMethod).collect(Collectors.toList());
+  }
+
+  public List<MethodInfo> getInstanceMethods() {
+    return methods.values().stream().filter(m -> !m.isStaticMethod()).collect(Collectors.toList());
   }
 
   public Set<TypeInfo.Class> getImportedTypes() {
