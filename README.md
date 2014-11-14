@@ -120,6 +120,7 @@ The following set `R` of types are permitted as return types from any API method
 * the set `V`
 * the set `J`
 * any Enum class
+* any `java.lang.Throwable`
 * type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
     * the set `B`
     * the set `V`

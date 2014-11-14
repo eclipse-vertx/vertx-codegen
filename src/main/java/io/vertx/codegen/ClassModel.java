@@ -40,7 +40,6 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-import javax.xml.validation.TypeInfoProvider;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -234,6 +233,11 @@ public class ClassModel implements Model {
     }
     // We also allow enums as return types
     if (type.getKind() == ClassKind.ENUM) {
+      return;
+    }
+
+    // We allow Throwable returns
+    if (type.getKind() == ClassKind.THROWABLE) {
       return;
     }
 
