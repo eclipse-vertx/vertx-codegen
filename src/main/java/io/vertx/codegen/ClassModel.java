@@ -660,6 +660,8 @@ public class ClassModel implements Model {
     vars.put("methodsByName", getMethodMap());
     vars.put("referencedOptionsTypes", getReferencedOptionsTypes());
     vars.put("typeParams", getTypeParams());
+    vars.put("instanceMethods", getInstanceMethods());
+    vars.put("staticMethods", getStaticMethods());
     vars.putAll(ClassKind.vars());
     vars.putAll(MethodKind.vars());
     return vars;
