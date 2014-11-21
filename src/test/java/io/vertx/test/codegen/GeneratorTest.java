@@ -42,6 +42,7 @@ import io.vertx.test.codegen.testapi.InterfaceWithParameterizedDeclaredSupertype
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedGenericArraySupertype;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedVariableSupertype;
 import io.vertx.test.codegen.testapi.InterfaceWithStaticMethods;
+import io.vertx.test.codegen.testapi.InterfaceWithSuperStaticMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithSupertypes;
 import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument1;
 import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument2;
@@ -1101,6 +1102,15 @@ public class GeneratorTest {
     checker.accept(model.getMethods());
     checker.accept(model.getStaticMethods());
     assertEquals(Collections.<MethodInfo>emptyList(), model.getInstanceMethods());
+  }
+
+  @Test
+  public void testStaticSuperStaticMethods() throws Exception {
+    ClassModel model = new Generator().generateModel(InterfaceWithSuperStaticMethods.class);
+    assertEquals(InterfaceWithSuperStaticMethods.class.getName(), model.getIfaceFQCN());
+    assertEquals(InterfaceWithSuperStaticMethods.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(Collections.singletonList(TypeInfo.create(InterfaceWithStaticMethods.class)), model.getSuperTypes());
+    assertEquals(0, model.getMethods().size());
   }
 
   @Test
