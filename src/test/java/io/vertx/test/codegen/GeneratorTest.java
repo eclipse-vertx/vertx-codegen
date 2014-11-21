@@ -30,6 +30,7 @@ import io.vertx.test.codegen.testapi.InterfaceWithDefaultMethod;
 import io.vertx.test.codegen.testapi.InterfaceWithGetterMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithIgnoredMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithIndexSetterGetterMethods;
+import io.vertx.test.codegen.testapi.InterfaceWithInstanceMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithMethodHavingGenericOverride;
 import io.vertx.test.codegen.testapi.InterfaceWithMethodOverride;
 import io.vertx.test.codegen.testapi.InterfaceWithNoMethods;
@@ -1098,6 +1099,27 @@ public class GeneratorTest {
       checkMethod(methods.get(1), "bar", null, MethodKind.OTHER, VertxGenClass2.class.getName(), false, false, true, 1);
     };
     checker.accept(model.getMethods());
+    checker.accept(model.getStaticMethods());
+    assertEquals(Collections.<MethodInfo>emptyList(), model.getInstanceMethods());
+  }
+
+  @Test
+  public void testInstanceMethods() throws Exception {
+    ClassModel model = new Generator().generateModel(InterfaceWithInstanceMethods.class);
+    assertEquals(InterfaceWithInstanceMethods.class.getName(), model.getIfaceFQCN());
+    assertEquals(InterfaceWithInstanceMethods.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(2, model.getReferencedTypes().size());
+    assertTrue(model.getReferencedTypes().contains(VertxGenClass1Info));
+    assertTrue(model.getReferencedTypes().contains(VertxGenClass2Info));
+    assertTrue(model.getSuperTypes().isEmpty());
+    assertEquals(2, model.getMethods().size());
+    Consumer<List<MethodInfo>> checker = (methods) -> {
+      checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, VertxGenClass1.class.getName(), false, false, false, 1);
+      checkMethod(methods.get(1), "bar", null, MethodKind.OTHER, VertxGenClass2.class.getName(), false, false, false, 1);
+    };
+    checker.accept(model.getMethods());
+    checker.accept(model.getInstanceMethods());
+    assertEquals(Collections.<MethodInfo>emptyList(), model.getStaticMethods());
   }
 
   @Test
