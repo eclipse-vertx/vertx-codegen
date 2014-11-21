@@ -16,6 +16,7 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -86,7 +87,14 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return ownerTypes;
   }
 
-
+  /**
+   * Returns the method signature, the returned object is freely modifiable.
+   *
+   * @return the method signature
+   */
+  public Signature getSignature() {
+    return new Signature(name, new ArrayList<>(params));
+  }
 
   /**
    * Return true if the provided type is the sole owner of this method, i.e this method

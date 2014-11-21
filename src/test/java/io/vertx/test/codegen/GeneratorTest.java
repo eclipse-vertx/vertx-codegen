@@ -7,6 +7,7 @@ import io.vertx.codegen.Generator;
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.MethodKind;
 import io.vertx.codegen.ParamInfo;
+import io.vertx.codegen.Signature;
 import io.vertx.codegen.TypeInfo;
 import io.vertx.codegen.TypeParamInfo;
 import io.vertx.codegen.testmodel.TestEnum;
@@ -36,6 +37,7 @@ import io.vertx.test.codegen.testapi.InterfaceWithMethodOverride;
 import io.vertx.test.codegen.testapi.InterfaceWithNoMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithNoNotIgnoredMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithNonGenSuperType;
+import io.vertx.test.codegen.testapi.InterfaceWithOverloadedFutureMethod;
 import io.vertx.test.codegen.testapi.InterfaceWithOverloadedMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedArraySupertype;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedDeclaredSupertype;
@@ -1227,6 +1229,42 @@ public class GeneratorTest {
       " @version 12.2\n" +
       " @see io.vertx.codegen.testmodel.TestInterface\n";
     assertEquals(comment, model.getIfaceComment());
+  }
+
+  @Test
+  public void testSignature() throws Exception {
+    ClassModel model = new Generator().generateModel(MethodWithValidBasicParams.class);
+    assertEquals(1, model.getMethods().size());
+    MethodInfo mi = model.getMethods().get(0);
+    Signature s1 = mi.getSignature();
+    Signature s2 = mi.getSignature();
+    assertNotSame(s1, s2);
+    assertEquals(s1, s2);
+    assertEquals(s1.hashCode(), s2.hashCode());
+    assertEquals("methodWithBasicParams", s1.getName());
+    assertEquals(9, s1.getParams().size());
+    s1.getParams().remove(8);
+    assertEquals(8, s1.getParams().size());
+    assertEquals(9, mi.getParams().size());
+  }
+
+  @Test
+  public void testOverloadedMethodFuture() throws Exception {
+    ClassModel model = new Generator().generateModel(InterfaceWithOverloadedFutureMethod.class);
+    assertEquals(4, model.getMethods().size());
+    assertEquals(2, model.getMethodMap().size());
+    List<MethodInfo> closes = model.getMethodMap().get("close");
+    assertEquals(0, closes.get(0).getParams().size());
+    assertEquals(1, closes.get(1).getParams().size());
+    Signature closeSignature = closes.get(1).getSignature();
+    closeSignature.getParams().remove(0);
+    assertEquals(closes.get(0).getSignature(), closeSignature);
+    List<MethodInfo> foos = model.getMethodMap().get("foo");
+    assertEquals(1, foos.get(0).getParams().size());
+    assertEquals(2, foos.get(1).getParams().size());
+    Signature fooSignature = foos.get(1).getSignature();
+    fooSignature.getParams().remove(1);
+    assertEquals(foos.get(0).getSignature(), fooSignature);
   }
 
   @Test
