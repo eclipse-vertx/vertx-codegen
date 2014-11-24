@@ -126,7 +126,7 @@ public class ProxyTest {
     assertEquals(ValidProxy.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(30, model.getMethods().size());
+    assertEquals(31, model.getMethods().size());
 
     // Not going to check all the types are correct as this is already tested in the VertxGen tests
     // but we do want to check the proxyIgnore flag is correctly set
@@ -136,6 +136,11 @@ public class ProxyTest {
         assertTrue(pmi.isProxyIgnore());
       } else {
         assertFalse(pmi.isProxyIgnore());
+      }
+      if (pmi.getName().equals("closeIt")) {
+        assertTrue(pmi.isProxyClose());
+      } else {
+        assertFalse(pmi.isProxyClose());
       }
     }
   }

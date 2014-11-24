@@ -32,14 +32,15 @@ public class MethodInfo implements Comparable<MethodInfo> {
   final TypeInfo returnType;
   final boolean fluent;
   final boolean cacheReturn;
-  List<ParamInfo> params;
   final String comment;
   final boolean staticMethod;
   List<TypeParamInfo.Method> typeParams;
   LinkedHashSet<TypeInfo.Class> ownerTypes;
+  List<ParamInfo> params;
 
   public MethodInfo(Set<TypeInfo.Class> ownerTypes, String name, MethodKind kind, TypeInfo returnType, boolean fluent,
-                    boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod, List<TypeParamInfo.Method> typeParams) {
+                    boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod,
+                    List<TypeParamInfo.Method> typeParams) {
 
 
     this.kind = kind;

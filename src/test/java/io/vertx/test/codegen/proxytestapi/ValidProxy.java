@@ -1,5 +1,6 @@
 package io.vertx.test.codegen.proxytestapi;
 
+import io.vertx.codegen.annotations.ProxyClose;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.ProxyIgnore;
 import io.vertx.core.AsyncResult;
@@ -53,5 +54,8 @@ public interface ValidProxy {
 
   @ProxyIgnore
   void ignored();
+
+  @ProxyClose
+  void closeIt();
 
 }

@@ -224,7 +224,7 @@ public class ClassModel implements Model {
     throw new GenException(elem, "type " + typeInfo + " is not legal for use for a parameter in code generation");
   }
 
-  protected void checkReturnType(Element elem, TypeInfo type) {
+  protected void checkReturnType(ExecutableElement elem, TypeInfo type) {
     // Basic types, int, long, String etc
     // JsonObject or JsonArray
     // void
