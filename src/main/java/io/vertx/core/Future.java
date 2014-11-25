@@ -5,11 +5,11 @@ package io.vertx.core;
  */
 public interface Future<T> extends AsyncResult<T> {
 
-  static <T> Future<T> completedFuture(T result) {
+  static <T> Future<T> succeededFuture(T result) {
     throw new UnsupportedOperationException();
   }
 
-  static <T> Future<T> completedFuture(Throwable t) {
+  static <T> Future<T> failedFuture(Throwable t) {
     throw new UnsupportedOperationException();
   }
 }
