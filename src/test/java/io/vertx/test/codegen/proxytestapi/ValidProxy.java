@@ -7,8 +7,11 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.test.codegen.testapi.VertxGenClass1;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -22,6 +25,12 @@ public interface ValidProxy {
                        Boolean bool);
 
   void jsonTypes(JsonObject jsonObject, JsonArray jsonArray);
+
+  void listTypes(List<String> listString, List<Long> listLong, List<JsonObject> listJsonObject, List<JsonArray> listJsonArray, List<VertxGenClass1> listVertxGen);
+
+  void setTypes(Set<String> setString, Set<Long> setLong, Set<JsonObject> setJsonObject, Set<JsonArray> setJsonArray, Set<VertxGenClass1> setVertxGen);
+
+  void mapTypes(Map<String, String> mapString, Map<String, Long> mapLong, Map<String, JsonObject> mapJsonObject, Map<String, JsonArray> mapJsonArray, Map<String, VertxGenClass1> mapVertxGen);
 
   void enumType(SomeEnum someEnum);
 

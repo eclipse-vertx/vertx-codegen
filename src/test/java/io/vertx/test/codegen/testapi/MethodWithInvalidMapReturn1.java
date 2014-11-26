@@ -8,6 +8,6 @@ import java.util.Map;
  * @author <a href="mailto:nscavell@redhat.com">Nick Scavelli</a>
  */
 @VertxGen
-public interface MethodWithInvalidMapReturn {
+public interface MethodWithInvalidMapReturn1 {
   public Map<Integer, String> map();
 }

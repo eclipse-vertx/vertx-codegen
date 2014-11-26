@@ -21,9 +21,11 @@ public interface MethodWithValidMapReturn {
   Map<String, Boolean> booleanMap();
   Map<String, Character> charMap();
   Map<String, String> stringMap();
-  Map<String, JsonObject> jsonMap();
-  Map<String, JsonArray> jsonArrayMap();
 
   Map<String, VertxGenClass1> vertxGen1Map();
   Map<String, VertxGenClass2> vertxGen2Map();
+
+  Map<String, JsonArray> jsonArrayMap();
+  Map<String, JsonObject> jsonObjectMap();
+
 }

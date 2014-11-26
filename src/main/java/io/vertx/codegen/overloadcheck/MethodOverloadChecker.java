@@ -35,6 +35,8 @@ public class MethodOverloadChecker {
 
   private final Map<String, Map<String, String>> typeMappingsMap = new HashMap<>();
 
+  private static final String ALL_TYPE = "ALL";
+
   public MethodOverloadChecker() {
     loadTypeMappings();
   }
@@ -81,23 +83,23 @@ public class MethodOverloadChecker {
   }
 
   private void checkMethodList(String targetLang, List<SimpleMethod> meths, Map<String, String> typeMapping) {
-    List<List<String>> jsParamTypesList = new ArrayList<>();
+    List<List<String>> paramsTypesList = new ArrayList<>();
     for (SimpleMethod meth: meths) {
-      // For each meth, convert it to the param types it would have in JS
-      List<String> jsParamTypes = convertToJSParamTypes(meth, typeMapping);
-      jsParamTypesList.add(jsParamTypes);
+      // For each meth, convert it to the param types it would have in each lang
+      List<String> paramTypes = convertToLangParamTypes(meth, typeMapping);
+      paramsTypesList.add(paramTypes);
     }
     // Now check if we have any two which are equal
     int index1 = 0;
-    for (List<String> paramTypes: jsParamTypesList) {
+    for (List<String> paramTypes: paramsTypesList) {
       int index2 = 0;
-      for (List<String> paramTypesToCompare: jsParamTypesList) {
+      for (List<String> paramTypesToCompare: paramsTypesList) {
         if (index1 != index2) {
           boolean matched = true;
           for (int i = 0; i < paramTypes.size(); i++) {
             String paramType = paramTypes.get(i);
             String paramTypeToCompare = paramTypesToCompare.get(i);
-            if (!(paramType.equals(paramTypeToCompare) || paramType.equals("ALL") || paramTypeToCompare.equals("ALL"))) {
+            if (!(paramType.equals(paramTypeToCompare) || paramType.equals(ALL_TYPE) || paramTypeToCompare.equals(ALL_TYPE))) {
               matched = false;
               break;
             }
@@ -117,22 +119,22 @@ public class MethodOverloadChecker {
     }
   }
   
-  private List<String> convertToJSParamTypes(SimpleMethod meth, Map<String, String> typeMapping) {
-    List<String> jsParamTypes = new ArrayList<>();
+  private List<String> convertToLangParamTypes(SimpleMethod meth, Map<String, String> typeMapping) {
+    List<String> langParamTypes = new ArrayList<>();
     for (SimpleParam param: meth.params) {
-      String jsType = typeMapping.get(param.classKind.toString());
-      if (jsType == null) {
+      String langType = typeMapping.get(param.classKind.toString());
+      if (langType == null) {
         // Try with type name appended
         String lhs = param.classKind.toString() + "." + param.typeName;
-        jsType = typeMapping.get(lhs);
-        if (jsType == null) {
+        langType = typeMapping.get(lhs);
+        if (langType == null) {
           throw new IllegalStateException("No type mapping found for param type " + lhs);
         }
       }
 
-      jsParamTypes.add(jsType);
+      langParamTypes.add(langType);
     }
-    return jsParamTypes;
+    return langParamTypes;
   }
 
   private void loadTypeMappings() {

@@ -214,6 +214,9 @@ public class ClassModel implements Model {
     if (isLegalHandlerAsyncResultType(typeInfo)) {
       return;
     }
+    if (isLegalListSetMap(typeInfo)) {
+      return;
+    }
     // Another user defined interface with the @VertxGen annotation is OK
     if (isVertxGenInterface(typeInfo)) {
       return;
@@ -246,24 +249,8 @@ public class ClassModel implements Model {
       return;
     }
 
-    // List<T> and Set<T> are also legal for returns if T = basic type
-    // Map<K,V> is also legal for returns if K is a String and V is a basic type, json, or a @VertxGen interface
-    if (rawTypeIs(type, List.class, Set.class, Map.class)) {
-      TypeInfo argument = ((TypeInfo.Parameterized) type).getArgs().get(0);
-      if (type.getKind() != ClassKind.MAP) {
-        if (argument.getKind().basic || argument.getKind().json) {
-          return;
-        } else if (isVertxGenInterface(argument)) {
-          return;
-        }
-      } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
-        argument = ((TypeInfo.Parameterized) type).getArgs().get(1);
-        if (argument.getKind().basic || argument.getKind().json) {
-          return;
-        } else if (isVertxGenInterface(argument)) {
-          return;
-        }
-      }
+    if (isLegalListSetMap(type)) {
+      return;
     }
 
     // Another user defined interface with the @VertxGen annotation is OK
@@ -291,7 +278,7 @@ public class ClassModel implements Model {
     return false;
   }
 
-  private boolean isLegalListOrSet(TypeInfo type) {
+  private boolean isLegalListOrSetForHandler(TypeInfo type) {
     if (type instanceof TypeInfo.Parameterized) {
       TypeInfo raw = type.getRaw();
       if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
@@ -303,6 +290,26 @@ public class ClassModel implements Model {
     }
     return false;
   }
+
+  protected boolean isLegalListSetMap(TypeInfo type) {
+    // List<T> and Set<T> are also legal for returns and params if T = basic type, json, or @VertxGen
+    // Map<K,V> is also legal for returns and params if K is a String and V is a basic type, json, or a @VertxGen interface
+    if (rawTypeIs(type, List.class, Set.class, Map.class)) {
+      TypeInfo argument = ((TypeInfo.Parameterized) type).getArgs().get(0);
+      if (type.getKind() != ClassKind.MAP) {
+        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument)) {
+          return true;
+        }
+      } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
+        argument = ((TypeInfo.Parameterized) type).getArgs().get(1);
+        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
 
   private boolean isVertxGenInterface(TypeInfo type) {
     if (type.getKind() == ClassKind.API) {
@@ -326,7 +333,7 @@ public class ClassModel implements Model {
     if (type.getErased().getKind() == ClassKind.HANDLER) {
       TypeInfo eventType = ((TypeInfo.Parameterized) type).getArgs().get(0);
       if (eventType.getKind().json || eventType.getKind().basic || isVertxGenInterface(eventType) ||
-          isLegalListOrSet(eventType) || eventType.getKind() == ClassKind.VOID ||
+          isLegalListOrSetForHandler(eventType) || eventType.getKind() == ClassKind.VOID ||
           eventType.getKind() == ClassKind.THROWABLE || isVariableType(eventType)) {
         return true;
       }
@@ -340,7 +347,7 @@ public class ClassModel implements Model {
       if (eventType.getErased().getKind() == ClassKind.ASYNC_RESULT) {
         TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getArgs().get(0);
         if (resultType.getKind().json || resultType.getKind().basic || isVertxGenInterface(resultType) ||
-            isLegalListOrSet(resultType) || resultType.getKind() == ClassKind.VOID ||
+            isLegalListOrSetForHandler(resultType) || resultType.getKind() == ClassKind.VOID ||
             isVariableType(resultType)) {
           return true;
         }

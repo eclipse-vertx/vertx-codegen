@@ -56,15 +56,25 @@ import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultParam;
 import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerNonVertxGenReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerParam;
-import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn;
+import io.vertx.test.codegen.testapi.MethodWithInvalidListParams1;
+import io.vertx.test.codegen.testapi.MethodWithInvalidListParams2;
+import io.vertx.test.codegen.testapi.MethodWithInvalidListReturn1;
+import io.vertx.test.codegen.testapi.MethodWithInvalidListReturn2;
+import io.vertx.test.codegen.testapi.MethodWithInvalidMapParams1;
+import io.vertx.test.codegen.testapi.MethodWithInvalidMapParams2;
+import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn1;
+import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn2;
 import io.vertx.test.codegen.testapi.MethodWithInvalidParameterized;
 import io.vertx.test.codegen.testapi.MethodWithInvalidParameterizedReturn;
+import io.vertx.test.codegen.testapi.MethodWithInvalidSetParams1;
+import io.vertx.test.codegen.testapi.MethodWithInvalidSetParams2;
+import io.vertx.test.codegen.testapi.MethodWithInvalidSetReturn1;
+import io.vertx.test.codegen.testapi.MethodWithInvalidSetReturn2;
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectInHandler;
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectInHandlerAsyncResult;
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectReturn;
 import io.vertx.test.codegen.testapi.MethodWithListNonBasicTypeReturn;
-import io.vertx.test.codegen.testapi.MethodWithListParam;
 import io.vertx.test.codegen.testapi.MethodWithNoIntIndexGetter;
 import io.vertx.test.codegen.testapi.MethodWithNoIntIndexSetter;
 import io.vertx.test.codegen.testapi.MethodWithNotVertxGenObjectInHandler;
@@ -76,7 +86,6 @@ import io.vertx.test.codegen.testapi.MethodWithObjectReturn;
 import io.vertx.test.codegen.testapi.MethodWithOptionsParam;
 import io.vertx.test.codegen.testapi.MethodWithSameSignatureInheritedFromDistinctInterfaces;
 import io.vertx.test.codegen.testapi.MethodWithSetNonBasicTypeReturn;
-import io.vertx.test.codegen.testapi.MethodWithSetParam;
 import io.vertx.test.codegen.testapi.MethodWithThrowableReturn;
 import io.vertx.test.codegen.testapi.MethodWithTypeParameter;
 import io.vertx.test.codegen.testapi.MethodWithTypeParameterUpperBound;
@@ -89,8 +98,11 @@ import io.vertx.test.codegen.testapi.MethodWithValidHandlerJSON;
 import io.vertx.test.codegen.testapi.MethodWithValidHandlerParams;
 import io.vertx.test.codegen.testapi.MethodWithValidJSONParams;
 import io.vertx.test.codegen.testapi.MethodWithValidJSONReturn;
+import io.vertx.test.codegen.testapi.MethodWithValidListParams;
 import io.vertx.test.codegen.testapi.MethodWithValidListReturn;
+import io.vertx.test.codegen.testapi.MethodWithValidMapParams;
 import io.vertx.test.codegen.testapi.MethodWithValidMapReturn;
+import io.vertx.test.codegen.testapi.MethodWithValidSetParams;
 import io.vertx.test.codegen.testapi.MethodWithValidSetReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenParams;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenReturn;
@@ -224,16 +236,6 @@ public class GeneratorTest {
   }
 
   // TODO Handler and Handler<AsyncResult> of List/String with non basic types
-
-  @Test
-  public void testGenerateMethodWithListParam() throws Exception {
-    assertGenInvalid(MethodWithListParam.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithSetParam() throws Exception {
-    assertGenInvalid(MethodWithSetParam.class);
-  }
 
   @Test
   public void testGenerateMethodWithWildcardUpperBoundTypeArg() throws Exception {
@@ -436,6 +438,81 @@ public class GeneratorTest {
     TypeInfo.Parameterized genericType = (TypeInfo.Parameterized) mi.getParams().get(0).getType();
     TypeInfo.Wildcard wildcard = (TypeInfo.Wildcard) genericType.getArgs().get(0);
     assertEquals(ClassKind.OBJECT, wildcard.getKind());
+  }
+
+  @Test
+  public void testValidListParams() throws Exception {
+    ClassModel model = new Generator().generateModel(MethodWithValidListParams.class);
+    assertEquals(MethodWithValidListParams.class.getName(), model.getIfaceFQCN());
+    assertEquals(MethodWithValidListParams.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(1, model.getReferencedTypes().size());
+    assertTrue(model.getReferencedTypes().contains(VertxGenClass1Info));
+    assertTrue(model.getSuperTypes().isEmpty());
+    assertEquals(1, model.getMethods().size());
+    String methodName = "methodWithListParams";
+
+    Consumer<MethodInfo> checker = (method) -> {
+      checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 5);
+      List<ParamInfo> params = method.getParams();
+      checkClassParam(params.get(0), "listString", "java.util.List<java.lang.String>", ClassKind.LIST);
+      checkClassParam(params.get(1), "listLong", "java.util.List<java.lang.Long>", ClassKind.LIST);
+      checkClassParam(params.get(2), "listJsonObject", "java.util.List<io.vertx.core.json.JsonObject>", ClassKind.LIST);
+      checkClassParam(params.get(3), "listJsonArray", "java.util.List<io.vertx.core.json.JsonArray>", ClassKind.LIST);
+      checkClassParam(params.get(4), "listVertxGen", "java.util.List<" + VertxGenClass1.class.getName() + ">", ClassKind.LIST);
+    };
+
+    MethodInfo method = model.getMethods().get(0);
+    checker.accept(method);
+  }
+
+  @Test
+  public void testValidSetParams() throws Exception {
+    ClassModel model = new Generator().generateModel(MethodWithValidSetParams.class);
+    assertEquals(MethodWithValidSetParams.class.getName(), model.getIfaceFQCN());
+    assertEquals(MethodWithValidSetParams.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(1, model.getReferencedTypes().size());
+    assertTrue(model.getReferencedTypes().contains(VertxGenClass1Info));
+    assertTrue(model.getSuperTypes().isEmpty());
+    assertEquals(1, model.getMethods().size());
+    String methodName = "methodWithSetParams";
+
+    Consumer<MethodInfo> checker = (method) -> {
+      checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 5);
+      List<ParamInfo> params = method.getParams();
+      checkClassParam(params.get(0), "setString", "java.util.Set<java.lang.String>", ClassKind.SET);
+      checkClassParam(params.get(1), "setLong", "java.util.Set<java.lang.Long>", ClassKind.SET);
+      checkClassParam(params.get(2), "setJsonObject", "java.util.Set<io.vertx.core.json.JsonObject>", ClassKind.SET);
+      checkClassParam(params.get(3), "setJsonArray", "java.util.Set<io.vertx.core.json.JsonArray>", ClassKind.SET);
+      checkClassParam(params.get(4), "setVertxGen", "java.util.Set<" + VertxGenClass1.class.getName() + ">", ClassKind.SET);
+    };
+
+    MethodInfo method = model.getMethods().get(0);
+    checker.accept(method);
+  }
+
+  @Test
+  public void testValidMapParams() throws Exception {
+    ClassModel model = new Generator().generateModel(MethodWithValidMapParams.class);
+    assertEquals(MethodWithValidMapParams.class.getName(), model.getIfaceFQCN());
+    assertEquals(MethodWithValidMapParams.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(1, model.getReferencedTypes().size());
+    assertTrue(model.getReferencedTypes().contains(VertxGenClass1Info));
+    assertTrue(model.getSuperTypes().isEmpty());
+    assertEquals(1, model.getMethods().size());
+    String methodName = "methodWithMapParams";
+
+    Consumer<MethodInfo> checker = (method) -> {
+      checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 5);
+      List<ParamInfo> params = method.getParams();
+      checkClassParam(params.get(0), "mapString", "java.util.Map<java.lang.String,java.lang.String>", ClassKind.MAP);
+      checkClassParam(params.get(1), "mapLong", "java.util.Map<java.lang.String,java.lang.Long>", ClassKind.MAP);
+      checkClassParam(params.get(2), "mapJsonObject", "java.util.Map<java.lang.String,io.vertx.core.json.JsonObject>", ClassKind.MAP);
+      checkClassParam(params.get(3), "mapJsonArray", "java.util.Map<java.lang.String,io.vertx.core.json.JsonArray>", ClassKind.MAP);
+      checkClassParam(params.get(4), "mapVertxGen", "java.util.Map<java.lang.String," + VertxGenClass1.class.getName() + ">", ClassKind.MAP);
+    };
+
+    MethodInfo method = model.getMethods().get(0);
+    checker.accept(method);
   }
 
   @Test
@@ -765,7 +842,7 @@ public class GeneratorTest {
     assertTrue(model.getReferencedTypes().contains(VertxGenClass1Info));
     assertTrue(model.getReferencedTypes().contains(VertxGenClass2Info));
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(11, model.getMethods().size());
+    assertEquals(13, model.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "byteList", null, MethodKind.OTHER, "java.util.List<java.lang.Byte>", false, false, false, 0);
       checkMethod(methods.get(1), "shortList", null, MethodKind.OTHER, "java.util.List<java.lang.Short>", false, false, false, 0);
@@ -778,6 +855,8 @@ public class GeneratorTest {
       checkMethod(methods.get(8), "stringList", null, MethodKind.OTHER, "java.util.List<java.lang.String>", false, false, false, 0);
       checkMethod(methods.get(9), "vertxGen1List", null, MethodKind.OTHER, "java.util.List<" + VertxGenClass1Info + ">", false, false, false, 0);
       checkMethod(methods.get(10), "vertxGen2List", null, MethodKind.OTHER, "java.util.List<" + VertxGenClass2.class.getName() + ">", false, false, false, 0);
+      checkMethod(methods.get(11), "jsonArrayList", null, MethodKind.OTHER, "java.util.List<" + JsonArray.class.getName() + ">", false, false, false, 0);
+      checkMethod(methods.get(12), "jsonObjectList", null, MethodKind.OTHER, "java.util.List<" + JsonObject.class.getName() + ">", false, false, false, 0);
     };
     checker.accept(model.getMethods());
   }
@@ -791,7 +870,7 @@ public class GeneratorTest {
     assertTrue(model.getReferencedTypes().contains(VertxGenClass1Info));
     assertTrue(model.getReferencedTypes().contains(VertxGenClass2Info));
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(11, model.getMethods().size());
+    assertEquals(13, model.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "byteSet", null, MethodKind.OTHER, "java.util.Set<java.lang.Byte>", false, false, false, 0);
       checkMethod(methods.get(1), "shortSet", null, MethodKind.OTHER, "java.util.Set<java.lang.Short>", false, false, false, 0);
@@ -804,6 +883,36 @@ public class GeneratorTest {
       checkMethod(methods.get(8), "stringSet", null, MethodKind.OTHER, "java.util.Set<java.lang.String>", false, false, false, 0);
       checkMethod(methods.get(9), "vertxGen1Set", null, MethodKind.OTHER, "java.util.Set<" + VertxGenClass1.class.getName() + ">", false, false, false, 0);
       checkMethod(methods.get(10), "vertxGen2Set", null, MethodKind.OTHER, "java.util.Set<" + VertxGenClass2.class.getName() + ">", false, false, false, 0);
+      checkMethod(methods.get(11), "jsonArraySet", null, MethodKind.OTHER, "java.util.Set<" + JsonArray.class.getName() + ">", false, false, false, 0);
+      checkMethod(methods.get(12), "jsonObjectSet", null, MethodKind.OTHER, "java.util.Set<" + JsonObject.class.getName() + ">", false, false, false, 0);
+    };
+    checker.accept(model.getMethods());
+  }
+
+  @Test
+  public void testValidMapReturn() throws Exception {
+    ClassModel model = new Generator().generateModel(MethodWithValidMapReturn.class);
+    assertEquals(MethodWithValidMapReturn.class.getName(), model.getIfaceFQCN());
+    assertEquals(MethodWithValidMapReturn.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(2, model.getReferencedTypes().size());
+    assertTrue(model.getReferencedTypes().contains(VertxGenClass1Info));
+    assertTrue(model.getReferencedTypes().contains(VertxGenClass2Info));
+    assertTrue(model.getSuperTypes().isEmpty());
+    assertEquals(13, model.getMethods().size());
+    Consumer<List<MethodInfo>> checker = (methods) -> {
+      checkMethod(methods.get(0), "byteMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String,java.lang.Byte>", false, false, false, 0);
+      checkMethod(methods.get(1), "shortMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String,java.lang.Short>", false, false, false, 0);
+      checkMethod(methods.get(2), "intMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String,java.lang.Integer>", false, false, false, 0);
+      checkMethod(methods.get(3), "longMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String,java.lang.Long>", false, false, false, 0);
+      checkMethod(methods.get(4), "floatMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String,java.lang.Float>", false, false, false, 0);
+      checkMethod(methods.get(5), "doubleMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String,java.lang.Double>", false, false, false, 0);
+      checkMethod(methods.get(6), "booleanMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String,java.lang.Boolean>", false, false, false, 0);
+      checkMethod(methods.get(7), "charMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String,java.lang.Character>", false, false, false, 0);
+      checkMethod(methods.get(8), "stringMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String,java.lang.String>", false, false, false, 0);
+      checkMethod(methods.get(9), "vertxGen1Map", null, MethodKind.OTHER, "java.util.Map<java.lang.String," + VertxGenClass1.class.getName() + ">", false, false, false, 0);
+      checkMethod(methods.get(10), "vertxGen2Map", null, MethodKind.OTHER, "java.util.Map<java.lang.String," + VertxGenClass2.class.getName() + ">", false, false, false, 0);
+      checkMethod(methods.get(11), "jsonArrayMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String," + JsonArray.class.getName() + ">", false, false, false, 0);
+      checkMethod(methods.get(12), "jsonObjectMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String," + JsonObject.class.getName() + ">", false, false, false, 0);
     };
     checker.accept(model.getMethods());
   }
@@ -1353,27 +1462,29 @@ public class GeneratorTest {
   }
 
   @Test
-  public void testMethodHandlerAsyncResultParamOverload() throws Exception {
-
-  }
-
-  @Test
-  public void testMethodValidMapReturn() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidMapReturn.class);
-
-    assertEquals(MethodWithValidMapReturn.class.getName(), model.getIfaceFQCN());
-    assertEquals(MethodWithValidMapReturn.class.getSimpleName(), model.getIfaceSimpleName());
-    assertEquals(2, model.getReferencedTypes().size());
-    assertTrue(model.getReferencedTypes().contains(VertxGenClass1Info));
-    assertTrue(model.getReferencedTypes().contains(VertxGenClass2Info));
-    assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(13, model.getMethods().size());
-  }
-
-  @Test
-  public void testMethodInvalidMapReturn() throws Exception {
+  public void testMethodInvalidMapReturn1() throws Exception {
     try {
-      new Generator().generateModel(MethodWithInvalidMapReturn.class);
+      new Generator().generateModel(MethodWithInvalidMapReturn1.class);
+      fail("Invalid Map return should fail");
+    } catch (GenException e) {
+      // pass
+    }
+  }
+
+  @Test
+  public void testMethodInvalidMapReturn2() throws Exception {
+    try {
+      new Generator().generateModel(MethodWithInvalidMapReturn2.class);
+      fail("Invalid Map return should fail");
+    } catch (GenException e) {
+      // pass
+    }
+  }
+
+  @Test
+  public void testMethodInvalidListReturn1() throws Exception {
+    try {
+      new Generator().generateModel(MethodWithInvalidListReturn1.class);
       fail("Invalid Map return should fail");
     } catch (GenException e) {
       // pass
@@ -1467,42 +1578,95 @@ public class GeneratorTest {
     assertNull(apiType.getWriteStreamArg());
   }
 
-/*
   @Test
-  public void testGenerateModelMoreThanOnce() throws Exception {
-    Generator generator = new Generator();
-    gen = generator.generateModel(InterfaceWithComments.class);
+  public void testMethodInvalidListReturn2() throws Exception {
     try {
-      gen = generator.generateModel(InterfaceWithComments.class);
-      fail("Should throw exception");
-    } catch (IllegalStateException e) {
-      // OK
+      new Generator().generateModel(MethodWithInvalidListReturn2.class);
+      fail("Invalid Map return should fail");
+    } catch (GenException e) {
+      // pass
     }
   }
-*/
 
-  //
+  @Test
+  public void testMethodInvalidSetReturn1() throws Exception {
+    try {
+      new Generator().generateModel(MethodWithInvalidSetReturn1.class);
+      fail("Invalid Map return should fail");
+    } catch (GenException e) {
+      // pass
+    }
+  }
 
-//  @Test
-//  public void testValidateCorePackage() throws Exception {
-//    gen.validatePackage("io.vertx.codegen.testmodel", packageName -> packageName.contains("eventbus") && !packageName.contains("impl"));
-//  }
+  @Test
+  public void testMethodInvalidSetReturn2() throws Exception {
+    try {
+      new Generator().generateModel(MethodWithInvalidSetReturn2.class);
+      fail("Invalid Map return should fail");
+    } catch (GenException e) {
+      // pass
+    }
+  }
 
+  @Test
+  public void testMethodInvalidMapParams1() throws Exception {
+    try {
+      new Generator().generateModel(MethodWithInvalidMapParams1.class);
+      fail("Invalid Map return should fail");
+    } catch (GenException e) {
+      // pass
+    }
+  }
 
-  /*
-  TODO
+  @Test
+  public void testMethodInvalidMapParams2() throws Exception {
+    try {
+      new Generator().generateModel(MethodWithInvalidMapParams2.class);
+      fail("Invalid Map return should fail");
+    } catch (GenException e) {
+      // pass
+    }
+  }
 
-  also test Handlers ansd AsyncHandlers with :
-  type io.vertx.core.Handler<? extends io.vertx.codegen.testmodel.eventbus.Message>
+  @Test
+  public void testMethodInvalidListParams1() throws Exception {
+    try {
+      new Generator().generateModel(MethodWithInvalidListParams1.class);
+      fail("Invalid Map return should fail");
+    } catch (GenException e) {
+      // pass
+    }
+  }
 
-  test that supertype gets full generic type name, but referenced type only gets non generic part
+  @Test
+  public void testMethodInvalidListParams2() throws Exception {
+    try {
+      new Generator().generateModel(MethodWithInvalidListParams2.class);
+      fail("Invalid Map return should fail");
+    } catch (GenException e) {
+      // pass
+    }
+  }
 
-  test that we CAN gen an empty interface IF it extends supertype
+  @Test
+  public void testMethodInvalidSetParams1() throws Exception {
+    try {
+      new Generator().generateModel(MethodWithInvalidSetParams1.class);
+      fail("Invalid Map return should fail");
+    } catch (GenException e) {
+      // pass
+    }
+  }
 
-  better error messages - show interface and method
-
-  tests that actually generate stuff
-   */
+  @Test
+  public void testMethodInvalidSetParams2() throws Exception {
+    try {
+      new Generator().generateModel(MethodWithInvalidSetParams2.class);
+      fail("Invalid Map return should fail");
+    } catch (GenException e) {
+      // pass
+    }
+  }
 
   private void checkMethod(MethodInfo meth, String name, String comment, MethodKind kind, String returnType, boolean cacheReturn,
                            boolean fluent, boolean staticMethod, int numParams) {
