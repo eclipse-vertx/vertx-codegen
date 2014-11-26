@@ -46,6 +46,12 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   void methodWithNullOptionsParam(TestOptions options);
 
+  void methodWithListParams(List<String> listString, List<Long> listLong, List<JsonObject> listJsonObject, List<JsonArray> listJsonArray, List<RefedInterface1> listVertxGen);
+
+  void methodWithSetParams(Set<String> setString, Set<Long> setLong, Set<JsonObject> setJsonObject, Set<JsonArray> setJsonArray, Set<RefedInterface1> setVertxGen);
+
+  void methodWithMapParams(Map<String, String> mapString, Map<String, Long> mapLong, Map<String, JsonObject> mapJsonObject, Map<String, JsonArray> mapJsonArray, Map<String, RefedInterface1> mapVertxGen);
+
   void methodWithHandlerListAndSet(Handler<List<String>> listStringHandler, Handler<List<Integer>> listIntHandler,
                                    Handler<Set<String>> setStringHandler, Handler<Set<Integer>> setIntHandler);
 
@@ -138,10 +144,6 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   RefedInterface2 methodWithAbstractVertxGenReturn();
 
-  List<String> methodWithListStringReturn();
-
-  Set<String> methodWithSetStringReturn();
-
   String overloadedMethod(String str, Handler<String> handler);
 
   String overloadedMethod(String str, RefedInterface1 refed);
@@ -194,13 +196,46 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   void methodWithHandlerAsyncResultNullJsonArray(Handler<AsyncResult<JsonArray>> handler);
 
-  Map<String, String> methodWithMapReturn(Handler<String> handler);
 
-  Map<String, String> methodWithNullMapReturn();
+  Map<String, String> methodWithMapStringReturn(Handler<String> handler);
+
+  Map<String, Long> methodWithMapLongReturn(Handler<String> handler);
+
+  Map<String, RefedInterface1> methodWithMapVertxGenReturn(Handler<String> handler);
 
   Map<String, JsonObject> methodWithMapJsonReturn(Handler<String> handler);
 
   Map<String, JsonArray> methodWithMapJsonArrayReturn(Handler<String> handler);
+
+  Map<String, String> methodWithNullMapReturn();
+
+
+  List<String> methodWithListStringReturn();
+
+  List<Long> methodWithListLongReturn();
+
+  List<RefedInterface1> methodWithListVertxGenReturn();
+
+  List<JsonObject> methodWithListJsonObjectGenReturn();
+
+  List<JsonArray> methodWithListJsonArrayGenReturn();
+
+  List<String> methodWithNullListReturn();
+
+
+
+  Set<String> methodWithSetStringReturn();
+
+  Set<Long> methodWithSetLongReturn();
+
+  Set<RefedInterface1> methodWithSetVertxGenReturn();
+
+  Set<JsonObject> methodWithSetJsonObjectGenReturn();
+
+  Set<JsonArray> methodWithSetJsonArrayGenReturn();
+
+  Set<String> methodWithNullSetReturn();
+
 
   String methodWithEnumParam(String strVal, TestEnum weirdo);
 

@@ -205,6 +205,22 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public void methodWithListParams(List<String> listString, List<Long> listLong, List<JsonObject> listJsonObject, List<JsonArray> listJsonArray, List<RefedInterface1> listVertxGen) {
+
+  }
+
+  @Override
+  public void methodWithSetParams(Set<String> setString, Set<Long> setLong, Set<JsonObject> setJsonObject, Set<JsonArray> setJsonArray, Set<RefedInterface1> setVertxGen) {
+
+  }
+
+  @Override
+  public void methodWithMapParams(Map<String, String> mapString, Map<String, Long> mapLong, Map<String, JsonObject> mapJsonObject, Map<String, JsonArray> mapJsonArray, Map<String, RefedInterface1> mapVertxGen) {
+
+  }
+
+
+  @Override
   public void methodWithHandlerListAndSet(Handler<List<String>> listStringHandler, Handler<List<Integer>> listIntHandler,
                                           Handler<Set<String>> setStringHandler, Handler<Set<Integer>> setIntHandler) {
     List<String> listString = Arrays.asList("foo", "bar", "wibble");
@@ -492,16 +508,6 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
-  public List<String> methodWithListStringReturn() {
-    return Arrays.asList("foo", "bar", "wibble");
-  }
-
-  @Override
-  public Set<String> methodWithSetStringReturn() {
-    return new LinkedHashSet<>( Arrays.asList("foo", "bar", "wibble"));
-  }
-
-  @Override
   public String overloadedMethod(String str, RefedInterface1 refed) {
     assertEquals("cat", str);
     assertEquals("dog", refed.getString());
@@ -710,7 +716,77 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
-  public Map<String, String> methodWithMapReturn(Handler<String> handler) {
+  public List<String> methodWithListStringReturn() {
+    return Arrays.asList("foo", "bar", "wibble");
+  }
+
+  @Override
+  public Set<String> methodWithSetStringReturn() {
+    return new LinkedHashSet<>( Arrays.asList("foo", "bar", "wibble"));
+  }
+
+  @Override
+  public Map<String, Long> methodWithMapLongReturn(Handler<String> handler) {
+    return null;
+  }
+
+  @Override
+  public Map<String, RefedInterface1> methodWithMapVertxGenReturn(Handler<String> handler) {
+    return null;
+  }
+
+  @Override
+  public List<Long> methodWithListLongReturn() {
+    return null;
+  }
+
+  @Override
+  public List<RefedInterface1> methodWithListVertxGenReturn() {
+    return null;
+  }
+
+  @Override
+  public List<JsonObject> methodWithListJsonObjectGenReturn() {
+    return null;
+  }
+
+  @Override
+  public List<JsonArray> methodWithListJsonArrayGenReturn() {
+    return null;
+  }
+
+  @Override
+  public List<String> methodWithNullListReturn() {
+    return null;
+  }
+
+  @Override
+  public Set<Long> methodWithSetLongReturn() {
+    return null;
+  }
+
+  @Override
+  public Set<RefedInterface1> methodWithSetVertxGenReturn() {
+    return null;
+  }
+
+  @Override
+  public Set<JsonObject> methodWithSetJsonObjectGenReturn() {
+    return null;
+  }
+
+  @Override
+  public Set<JsonArray> methodWithSetJsonArrayGenReturn() {
+    return null;
+  }
+
+  @Override
+  public Set<String> methodWithNullSetReturn() {
+    return null;
+  }
+
+  @Override
+  public Map<String, String> methodWithMapStringReturn(Handler<String> handler) {
     return new HandlerTestMap<>(handler);
   }
 

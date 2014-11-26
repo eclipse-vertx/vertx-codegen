@@ -1,6 +1,8 @@
 package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import java.util.Set;
 
@@ -23,5 +25,7 @@ public interface MethodWithValidSetReturn {
   Set<VertxGenClass1> vertxGen1Set();
   Set<VertxGenClass2> vertxGen2Set();
 
+  Set<JsonArray> jsonArraySet();
+  Set<JsonObject> jsonObjectSet();
 
 }

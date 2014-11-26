@@ -1,6 +1,8 @@
 package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import java.util.List;
 
@@ -22,6 +24,9 @@ public interface MethodWithValidListReturn {
 
   List<VertxGenClass1> vertxGen1List();
   List<VertxGenClass2> vertxGen2List();
+
+  List<JsonArray> jsonArrayList();
+  List<JsonObject> jsonObjectList();
 
 
 }
