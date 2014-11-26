@@ -19,6 +19,7 @@ package io.vertx.codegen;
 import io.vertx.codegen.annotations.ProxyClose;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.ProxyIgnore;
+import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
@@ -43,8 +44,8 @@ import java.util.stream.Collectors;
  */
 public class ProxyModel extends ClassModel {
 
-  public ProxyModel(Messager messager, Map<String, TypeElement> sources, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
-    super(messager, sources, elementUtils, typeUtils, modelElt);
+  public ProxyModel(MethodOverloadChecker methodOverloadChecker, Messager messager, Map<String, TypeElement> sources, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
+    super(methodOverloadChecker, messager, sources, elementUtils, typeUtils, modelElt);
   }
 
   @Override

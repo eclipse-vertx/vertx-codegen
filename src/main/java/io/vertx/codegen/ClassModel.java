@@ -22,6 +22,7 @@ import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.IndexGetter;
 import io.vertx.codegen.annotations.IndexSetter;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
@@ -69,6 +70,7 @@ public class ClassModel implements Model {
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
   public static final String VERTX = "io.vertx.core.Vertx";
 
+  protected final MethodOverloadChecker methodOverloadChecker;
   protected final Messager messager;
   protected final TypeInfo.Factory typeFactory;
   protected final Map<String, TypeElement> sources;
@@ -93,7 +95,8 @@ public class ClassModel implements Model {
   protected Set<String> referencedOptionsTypes = new HashSet<>();
   protected List<TypeParamInfo.Class> typeParams = new ArrayList<>();
 
-  public ClassModel(Messager messager, Map<String, TypeElement> sources, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
+  public ClassModel(MethodOverloadChecker methodOverloadChecker, Messager messager, Map<String, TypeElement> sources, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
+    this.methodOverloadChecker = methodOverloadChecker;
     this.messager = messager;
     this.sources = sources;
     this.elementUtils = elementUtils;
@@ -463,6 +466,16 @@ public class ClassModel implements Model {
         }
       }
       sortMethodMap(methodMap);
+
+      // Now check for ambiguous overloaded methods
+      for (List<MethodInfo> meths: methodMap.values()) {
+        try {
+          methodOverloadChecker.checkAmbiguous(meths);
+        } catch (RuntimeException e) {
+          throw new GenException(elem, e.getMessage());
+        }
+      }
+
     }
   }
 
