@@ -67,4 +67,6 @@ public interface ValidProxy {
   @ProxyClose
   void closeIt();
 
+  ProxyConnection connection();
+
 }
