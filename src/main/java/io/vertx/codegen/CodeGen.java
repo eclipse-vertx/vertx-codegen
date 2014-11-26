@@ -4,6 +4,7 @@ import io.vertx.codegen.annotations.GenModule;
 import io.vertx.codegen.annotations.Options;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
 
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -30,6 +31,7 @@ public class CodeGen {
   private final Elements elementUtils;
   private final Types typeUtils;
   private final Messager messager;
+  private final MethodOverloadChecker methodOverloadChecker = new MethodOverloadChecker();
 
   public CodeGen(ProcessingEnvironment env, RoundEnvironment round) {
     this.messager = env.getMessager();
@@ -124,7 +126,7 @@ public class CodeGen {
     if (element == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
-      ClassModel model = new ClassModel(messager, classes, elementUtils, typeUtils, element);
+      ClassModel model = new ClassModel(methodOverloadChecker, messager, classes, elementUtils, typeUtils, element);
       model.process();
       return model;
     }
@@ -146,7 +148,7 @@ public class CodeGen {
     if (element == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
-      ProxyModel model = new ProxyModel(messager, classes, elementUtils, typeUtils, element);
+      ProxyModel model = new ProxyModel(methodOverloadChecker, messager, classes, elementUtils, typeUtils, element);
       model.process();
       return model;
     }
