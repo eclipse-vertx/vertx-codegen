@@ -894,11 +894,9 @@ public class GeneratorTest {
     ClassModel model = new Generator().generateModel(MethodWithValidMapReturn.class);
     assertEquals(MethodWithValidMapReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidMapReturn.class.getSimpleName(), model.getIfaceSimpleName());
-    assertEquals(2, model.getReferencedTypes().size());
-    assertTrue(model.getReferencedTypes().contains(VertxGenClass1Info));
-    assertTrue(model.getReferencedTypes().contains(VertxGenClass2Info));
+    assertEquals(0, model.getReferencedTypes().size());
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(13, model.getMethods().size());
+    assertEquals(11, model.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "byteMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String,java.lang.Byte>", false, false, false, 0);
       checkMethod(methods.get(1), "shortMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String,java.lang.Short>", false, false, false, 0);
@@ -909,10 +907,8 @@ public class GeneratorTest {
       checkMethod(methods.get(6), "booleanMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String,java.lang.Boolean>", false, false, false, 0);
       checkMethod(methods.get(7), "charMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String,java.lang.Character>", false, false, false, 0);
       checkMethod(methods.get(8), "stringMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String,java.lang.String>", false, false, false, 0);
-      checkMethod(methods.get(9), "vertxGen1Map", null, MethodKind.OTHER, "java.util.Map<java.lang.String," + VertxGenClass1.class.getName() + ">", false, false, false, 0);
-      checkMethod(methods.get(10), "vertxGen2Map", null, MethodKind.OTHER, "java.util.Map<java.lang.String," + VertxGenClass2.class.getName() + ">", false, false, false, 0);
-      checkMethod(methods.get(11), "jsonArrayMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String," + JsonArray.class.getName() + ">", false, false, false, 0);
-      checkMethod(methods.get(12), "jsonObjectMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String," + JsonObject.class.getName() + ">", false, false, false, 0);
+      checkMethod(methods.get(9), "jsonArrayMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String," + JsonArray.class.getName() + ">", false, false, false, 0);
+      checkMethod(methods.get(10), "jsonObjectMap", null, MethodKind.OTHER, "java.util.Map<java.lang.String," + JsonObject.class.getName() + ">", false, false, false, 0);
     };
     checker.accept(model.getMethods());
   }

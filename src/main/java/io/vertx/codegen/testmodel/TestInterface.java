@@ -196,14 +196,13 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   void methodWithHandlerAsyncResultNullJsonArray(Handler<AsyncResult<JsonArray>> handler);
 
+  Map<String, String> methodWithMapReturn(Handler<String> handler);
 
   Map<String, String> methodWithMapStringReturn(Handler<String> handler);
 
   Map<String, Long> methodWithMapLongReturn(Handler<String> handler);
 
-  Map<String, RefedInterface1> methodWithMapVertxGenReturn(Handler<String> handler);
-
-  Map<String, JsonObject> methodWithMapJsonReturn(Handler<String> handler);
+  Map<String, JsonObject> methodWithMapJsonObjectReturn(Handler<String> handler);
 
   Map<String, JsonArray> methodWithMapJsonArrayReturn(Handler<String> handler);
 
@@ -216,9 +215,9 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   List<RefedInterface1> methodWithListVertxGenReturn();
 
-  List<JsonObject> methodWithListJsonObjectGenReturn();
+  List<JsonObject> methodWithListJsonObjectReturn();
 
-  List<JsonArray> methodWithListJsonArrayGenReturn();
+  List<JsonArray> methodWithListJsonArrayReturn();
 
   List<String> methodWithNullListReturn();
 
@@ -230,9 +229,9 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   Set<RefedInterface1> methodWithSetVertxGenReturn();
 
-  Set<JsonObject> methodWithSetJsonObjectGenReturn();
+  Set<JsonObject> methodWithSetJsonObjectReturn();
 
-  Set<JsonArray> methodWithSetJsonArrayGenReturn();
+  Set<JsonArray> methodWithSetJsonArrayReturn();
 
   Set<String> methodWithNullSetReturn();
 
