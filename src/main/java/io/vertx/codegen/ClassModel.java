@@ -212,7 +212,7 @@ public class ClassModel implements Model {
     if (isLegalHandlerAsyncResultType(typeInfo)) {
       return;
     }
-    if (isLegalListSetMap(typeInfo)) {
+    if (isLegalListSetMapParam(typeInfo)) {
       return;
     }
     // Another user defined interface with the @VertxGen annotation is OK
@@ -247,7 +247,7 @@ public class ClassModel implements Model {
       return;
     }
 
-    if (isLegalListSetMap(type)) {
+    if (isLegalListSetMapReturn(type)) {
       return;
     }
 
@@ -289,7 +289,7 @@ public class ClassModel implements Model {
     return false;
   }
 
-  protected boolean isLegalListSetMap(TypeInfo type) {
+  protected boolean isLegalListSetMapParam(TypeInfo type) {
     // List<T> and Set<T> are also legal for returns and params if T = basic type, json, or @VertxGen
     // Map<K,V> is also legal for returns and params if K is a String and V is a basic type, json, or a @VertxGen interface
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
@@ -301,6 +301,25 @@ public class ClassModel implements Model {
       } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
         argument = ((TypeInfo.Parameterized) type).getArgs().get(1);
         if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  protected boolean isLegalListSetMapReturn(TypeInfo type) {
+    // List<T> and Set<T> are also legal for returns and params if T = basic type, json, or @VertxGen
+    // Map<K,V> is also legal for returns and params if K is a String and V is a basic type, json, or a @VertxGen interface
+    if (rawTypeIs(type, List.class, Set.class, Map.class)) {
+      TypeInfo argument = ((TypeInfo.Parameterized) type).getArgs().get(0);
+      if (type.getKind() != ClassKind.MAP) {
+        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument)) {
+          return true;
+        }
+      } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
+        argument = ((TypeInfo.Parameterized) type).getArgs().get(1);
+        if (argument.getKind().basic || argument.getKind().json) {
           return true;
         }
       }

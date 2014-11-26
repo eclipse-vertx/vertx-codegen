@@ -136,7 +136,6 @@ The following set `R` of types are permitted as return types from any API method
 * type `java.util.Map<String, C>` where `C` contains
     * the set `B`
     * the set `J`
-    * the set `V`
 
 ### Static factory methods
 

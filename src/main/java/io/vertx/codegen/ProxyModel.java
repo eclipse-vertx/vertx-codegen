@@ -64,7 +64,7 @@ public class ProxyModel extends ClassModel {
     if (typeInfo.getKind() == ClassKind.ENUM) {
       return;
     }
-    if (isLegalListSetMap(typeInfo)) {
+    if (isLegalListSetMapParam(typeInfo)) {
       return;
     }
     // We also allow options as parameter types if they have a 'public JsonObject toJson()' method
