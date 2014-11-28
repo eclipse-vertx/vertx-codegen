@@ -79,7 +79,7 @@ public class ClassModel implements Model {
   protected final Types typeUtils;
   protected boolean processed = false;
   protected LinkedHashMap<ExecutableElement, MethodInfo> methods = new LinkedHashMap<>();
-  protected HashSet<TypeInfo.Class> importedTypes = new HashSet<>();
+  protected Set<TypeInfo.Class> importedTypes = new HashSet<>();
   protected Set<TypeInfo.Class> referencedTypes = new HashSet<>();
   protected boolean concrete;
   protected TypeInfo type;
@@ -92,7 +92,7 @@ public class ClassModel implements Model {
   protected List<TypeInfo> abstractSuperTypes = new ArrayList<>();
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
-  protected Set<String> referencedOptionsTypes = new HashSet<>();
+  protected List<TypeInfo> referencedOptionsTypes = new ArrayList<>();
   protected List<TypeParamInfo.Class> typeParams = new ArrayList<>();
 
   public ClassModel(MethodOverloadChecker methodOverloadChecker, Messager messager, Map<String, TypeElement> sources, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
@@ -179,7 +179,7 @@ public class ClassModel implements Model {
     return methodMap;
   }
 
-  public Set<String> getReferencedOptionsTypes() {
+  public List<TypeInfo> getReferencedOptionsTypes() {
     return referencedOptionsTypes;
   }
 
@@ -270,7 +270,7 @@ public class ClassModel implements Model {
 
   private boolean isOptionType(TypeInfo type) {
     if (type.getKind() == ClassKind.OPTIONS) {
-      referencedOptionsTypes.add(type.getName());
+      referencedOptionsTypes.add(type);
       return true;
     }
     return false;
