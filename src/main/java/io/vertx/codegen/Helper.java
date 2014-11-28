@@ -162,16 +162,6 @@ public class Helper {
     }
   }
 
-  public static String getGenericType(String type) {
-    int pos = type.indexOf("<");
-    if (pos >= 0) {
-      String genericType = type.substring(pos + 1, type.lastIndexOf(">"));
-      return genericType;
-    } else {
-      return null;
-    }
-  }
-
   public static String getNonGenericType(String type) {
     int pos = type.indexOf("<");
     if (pos >= 0) {
@@ -179,41 +169,6 @@ public class Helper {
       return nonGenericType;
     } else {
       return type;
-    }
-  }
-
-  public static boolean isBasicType(String type) {
-    switch (type) {
-      case "void":
-      case "byte":
-      case "short":
-      case "int":
-      case "long":
-      case "float":
-      case "double":
-      case "boolean":
-      case "char":
-      case "java.lang.String":
-      case "java.lang.Byte":
-      case "java.lang.Short":
-      case "java.lang.Integer":
-      case "java.lang.Long":
-      case "java.lang.Float":
-      case "java.lang.Double":
-      case "java.lang.Boolean":
-      case "java.lang.Character":
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  public static boolean isVertxGenType(String type) {
-    try {
-      Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(type);
-      return clazz.getAnnotation(VertxGen.class) != null;
-    } catch (ClassNotFoundException e) {
-      return false;
     }
   }
 
@@ -225,14 +180,6 @@ public class Helper {
       if (ch == '\n' && i != str.length() - 1) {
         sb.append(indent);
       }
-    }
-    return sb.toString();
-  }
-
-  public static String ind(int spaces) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < spaces; i++) {
-      sb.append(' ');
     }
     return sb.toString();
   }

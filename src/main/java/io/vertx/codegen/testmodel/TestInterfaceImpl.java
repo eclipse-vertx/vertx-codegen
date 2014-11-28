@@ -204,9 +204,16 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
-  public void methodWithListParams(List<String> listString, List<Long> listLong, List<JsonObject> listJsonObject, List<JsonArray> listJsonArray, List<RefedInterface1> listVertxGen) {
+  public void methodWithListParams(List<String> listString, List<Byte> listByte, List<Short> listShort, List<Integer> listInt, List<Long> listLong, List<JsonObject> listJsonObject, List<JsonArray> listJsonArray, List<RefedInterface1> listVertxGen) {
     assertEquals("foo", listString.get(0));
     assertEquals("bar", listString.get(1));
+    assertEquals((byte)2, listByte.get(0).byteValue());
+    assertEquals((byte)3, listByte.get(1).byteValue());
+    assertEquals((short)12, listShort.get(0).shortValue());
+    assertEquals((short)13, listShort.get(1).shortValue());
+    assertEquals((int)1234, listInt.get(0).intValue());
+    assertEquals((int)1345, listInt.get(1).intValue());
+    System.out.println("entry type is " + ((List)listLong).get(0).getClass().getName());
     assertEquals(123l, listLong.get(0).longValue());
     assertEquals(456l, listLong.get(1).longValue());
     assertEquals(new JsonObject().put("foo", "bar"), listJsonObject.get(0));
@@ -218,9 +225,15 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
-  public void methodWithSetParams(Set<String> setString, Set<Long> setLong, Set<JsonObject> setJsonObject, Set<JsonArray> setJsonArray, Set<RefedInterface1> setVertxGen) {
+  public void methodWithSetParams(Set<String> setString, Set<Byte> setByte, Set<Short> setShort, Set<Integer> setInt, Set<Long> setLong, Set<JsonObject> setJsonObject, Set<JsonArray> setJsonArray, Set<RefedInterface1> setVertxGen) {
     assertTrue(setString.contains("foo"));
     assertTrue(setString.contains("bar"));
+    assertTrue(setByte.contains((byte)2));
+    assertTrue(setByte.contains((byte)3));
+    assertTrue(setShort.contains((short)12));
+    assertTrue(setShort.contains((short)13));
+    assertTrue(setInt.contains(1234));
+    assertTrue(setInt.contains(1345));
     assertTrue(setLong.contains(123l));
     assertTrue(setLong.contains(456l));
     assertTrue(setJsonObject.contains(new JsonObject().put("foo", "bar")));
@@ -232,10 +245,16 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
-  public void methodWithMapParams(Map<String, String> mapString, Map<String, Long> mapLong, Map<String, JsonObject> mapJsonObject,
+  public void methodWithMapParams(Map<String, String> mapString, Map<String, Byte> mapByte, Map<String, Short> mapShort, Map<String, Integer> mapInt, Map<String, Long> mapLong, Map<String, JsonObject> mapJsonObject,
                                   Map<String, JsonArray> mapJsonArray, Map<String, RefedInterface1> mapVertxGen) {
     assertEquals("bar", mapString.get("foo"));
     assertEquals("wibble", mapString.get("eek"));
+    assertEquals((byte)2, mapByte.get("foo").byteValue());
+    assertEquals((byte)3, mapByte.get("eek").byteValue());
+    assertEquals((short)12, mapShort.get("foo").shortValue());
+    assertEquals((short)13, mapShort.get("eek").shortValue());
+    assertEquals(1234, mapInt.get("foo").intValue());
+    assertEquals(1345, mapInt.get("eek").intValue());
     assertEquals(123L, mapLong.get("foo").longValue());
     assertEquals(456L, mapLong.get("eek").longValue());
     assertEquals(new JsonObject().put("foo", "bar"), mapJsonObject.get("foo"));
@@ -940,3 +959,4 @@ public class TestInterfaceImpl implements TestInterface {
     }
   }
 }
+
