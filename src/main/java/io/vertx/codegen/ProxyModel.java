@@ -140,7 +140,7 @@ public class ProxyModel extends ClassModel {
       if (eventType.getErased().getKind() == ClassKind.ASYNC_RESULT) {
         TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getArgs().get(0);
         if (resultType.getKind().json || resultType.getKind().basic ||
-          isLegalListOrSet(resultType) || resultType.getKind() == ClassKind.VOID ||
+          isLegalListSetMapResult(resultType) || resultType.getKind() == ClassKind.VOID ||
           resultType.getKind() == ClassKind.ENUM) {
           return true;
         }
@@ -155,14 +155,35 @@ public class ProxyModel extends ClassModel {
     return false;
   }
 
-  private boolean isLegalListOrSet(TypeInfo type) {
+  private boolean isLegalListSetMapResult(TypeInfo type) {
     if (type instanceof TypeInfo.Parameterized) {
-      TypeInfo raw = type.getRaw();
-      if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
+      if (type.getKind() == ClassKind.LIST || type.getKind() == ClassKind.SET) {
         TypeInfo elementType = ((TypeInfo.Parameterized) type).getArgs().get(0);
-        if (elementType.getKind().basic || elementType.getKind().json || elementType.getKind() == ClassKind.ENUM) {
+        if (elementType.getKind().basic || elementType.getKind().json) {
           return true;
         }
+      }
+    }
+    return false;
+  }
+
+  // TODO should we allow enums in List/Set/Map params, and non String values???
+
+  protected boolean isLegalListSetMapParam(TypeInfo type) {
+    TypeInfo raw = type.getRaw();
+    if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
+      TypeInfo argument = ((TypeInfo.Parameterized) type).getArgs().get(0);
+      if (argument.getKind().basic || argument.getKind().json) {
+        return true;
+      }
+    } else if (raw.getName().equals(Map.class.getName())) {
+      TypeInfo argument0 = ((TypeInfo.Parameterized) type).getArgs().get(0);
+      if (!argument0.getName().equals(String.class.getName())) {
+        return false;
+      }
+      TypeInfo argument1 = ((TypeInfo.Parameterized) type).getArgs().get(1);
+      if (argument1.getKind().basic || argument1.getKind().json) {
+        return true;
       }
     }
     return false;
