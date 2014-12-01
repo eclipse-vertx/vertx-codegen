@@ -1,6 +1,7 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.GenModule;
+import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
 
 import javax.lang.model.element.Element;
@@ -62,9 +63,9 @@ public abstract class TypeInfo {
         }
         ClassKind kind = Helper.getKind(classType::getAnnotation, fqcn);
         if (kind == ClassKind.API) {
-          return new Class.Api(fqcn, true, null, null, module);
+          return new Class.Api(fqcn, true, null, null, module, false);
         } else {
-          return new Class(kind, fqcn, module);
+          return new Class(kind, fqcn, module, false);
         }
       }
     } else if (type instanceof ParameterizedType) {
@@ -155,6 +156,7 @@ public abstract class TypeInfo {
         kind = Helper.getKind(annotationType -> elt.getAnnotation(annotationType), fqcn);
       }
       Class raw;
+      boolean proxyGen = elt.getAnnotation(ProxyGen.class) != null;
       if (kind == ClassKind.API) {
         VertxGen genAnn = elt.getAnnotation(VertxGen.class);
         TypeElement readStreamElt = elementUtils.getTypeElement(ClassModel.VERTX_READ_STREAM);
@@ -173,9 +175,9 @@ public abstract class TypeInfo {
           TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, writeStreamElt.getTypeParameters().get(0));
           writeStreamArg = create(resolved);
         }
-        raw = new Class.Api(fqcn, genAnn.concrete(), readStreamArg, writeStreamArg, module);
+        raw = new Class.Api(fqcn, genAnn.concrete(), readStreamArg, writeStreamArg, module, proxyGen);
       } else {
-        raw = new Class(kind, fqcn, module);
+        raw = new Class(kind, fqcn, module, proxyGen);
       }
       List<? extends TypeMirror> typeArgs = type.getTypeArguments();
       if (typeArgs.size() > 0) {
@@ -273,7 +275,7 @@ public abstract class TypeInfo {
 
     @Override
     public TypeInfo getErased() {
-      return new Class(ClassKind.OBJECT, java.lang.Object.class.getName(), null);
+      return new Class(ClassKind.OBJECT, java.lang.Object.class.getName(), null, false);
     }
 
     @Override
@@ -369,13 +371,15 @@ public abstract class TypeInfo {
     final String simpleName;
     final String packageName;
     final ModuleInfo module;
+    final boolean proxyGen;
 
-    public Class(ClassKind kind, String fqcn, ModuleInfo module) {
+    public Class(ClassKind kind, String fqcn, ModuleInfo module, boolean proxyGen) {
       this.kind = kind;
       this.fqcn = fqcn;
       this.simpleName = Helper.getSimpleName(fqcn);
       this.packageName = Helper.getPackageName(fqcn);
       this.module = module;
+      this.proxyGen = proxyGen;
     }
 
     /**
@@ -393,6 +397,10 @@ public abstract class TypeInfo {
       return packageName;
     }
 
+    public boolean isProxyGen() {
+      return proxyGen;
+    }
+
     @Override
     public Class getRaw() {
       return this;
@@ -406,7 +414,7 @@ public abstract class TypeInfo {
     @Override
     public TypeInfo.Class renamePackage(String oldPackageName, String newPackageName) {
       return packageName.startsWith(oldPackageName) ?
-          new Class(kind, newPackageName + fqcn.substring(oldPackageName.length()), null) :
+          new Class(kind, newPackageName + fqcn.substring(oldPackageName.length()), null, proxyGen) :
           this;
     }
 
@@ -432,8 +440,9 @@ public abstract class TypeInfo {
       final TypeInfo readStreamArg;
       final TypeInfo writeStreamArg;
 
-      public Api(String fqcn, boolean concrete, TypeInfo readStreamArg, TypeInfo writeStreamArg, ModuleInfo module) {
-        super(ClassKind.API, fqcn, module);
+      public Api(String fqcn, boolean concrete, TypeInfo readStreamArg, TypeInfo writeStreamArg, ModuleInfo module,
+                 boolean proxyGen) {
+        super(ClassKind.API, fqcn, module, proxyGen);
 
         this.concrete = concrete;
         this.readStreamArg = readStreamArg;
@@ -444,7 +453,7 @@ public abstract class TypeInfo {
       @Override
       public Class renamePackage(String oldPackageName, String newPackageName) {
         return packageName.startsWith(oldPackageName) ?
-            new Api(newPackageName + fqcn.substring(oldPackageName.length()), concrete, readStreamArg, writeStreamArg, module) :
+            new Api(newPackageName + fqcn.substring(oldPackageName.length()), concrete, readStreamArg, writeStreamArg, module, proxyGen) :
             this;
       }
 

@@ -17,7 +17,6 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.ProxyClose;
-import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.ProxyIgnore;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
 
@@ -109,11 +108,7 @@ public class ProxyModel extends ClassModel {
       return;
     }
 
-    Element returnTypeElem = typeUtils.asElement(typeUtils.erasure(elem.getReturnType()));
-    if (returnTypeElem.getAnnotation(ProxyGen.class) != null) {
-      return;
-    }
-    throw new GenException(elem, "Proxy methods must have void, Fluent or ProxyGen types returns");
+    throw new GenException(elem, "Proxy methods must have void or Fluent returns");
   }
 
   @Override
@@ -132,15 +127,11 @@ public class ProxyModel extends ClassModel {
                                         TypeElement declaringElt) {
     AnnotationMirror proxyIgnoreAnnotation = Helper.resolveMethodAnnotation(ProxyIgnore.class, elementUtils, typeUtils, declaringElt, methodElt);
     boolean isProxyIgnore = proxyIgnoreAnnotation != null;
-    // TODO - maybe there is a simpler way of doing this??
-    Element returnTypeElem = typeUtils.asElement(typeUtils.erasure(methodElt.getReturnType()));
-    boolean proxyGen = returnTypeElem != null && (returnTypeElem.getAnnotation(ProxyGen.class) != null);
     AnnotationMirror proxyCloseAnnotation = Helper.resolveMethodAnnotation(ProxyClose.class, elementUtils, typeUtils, declaringElt, methodElt);
     boolean isProxyClose = proxyCloseAnnotation != null;
-
     return new ProxyMethodInfo(Collections.singleton(ownerType), methodName, kind, returnType,
       isFluent, isCacheReturn, mParams, elementUtils.getDocComment(methodElt), isStatic, typeParams, isProxyIgnore,
-      proxyGen, isProxyClose);
+      isProxyClose);
   }
 
   private boolean isLegalHandlerAsyncResultType(TypeInfo type) {
@@ -152,6 +143,12 @@ public class ProxyModel extends ClassModel {
           isLegalListOrSet(resultType) || resultType.getKind() == ClassKind.VOID ||
           resultType.getKind() == ClassKind.ENUM) {
           return true;
+        }
+        if (resultType.getKind() == ClassKind.API) {
+          TypeInfo.Class cla = (TypeInfo.Class)resultType;
+          if (cla.proxyGen) {
+            return true;
+          }
         }
       }
     }

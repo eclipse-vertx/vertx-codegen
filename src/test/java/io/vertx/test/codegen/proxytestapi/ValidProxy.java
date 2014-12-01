@@ -67,6 +67,6 @@ public interface ValidProxy {
   @ProxyClose
   void closeIt();
 
-  ProxyConnection connection();
+  void connection(String foo, Handler<AsyncResult<ProxyConnection>> resultHandler);
 
 }
