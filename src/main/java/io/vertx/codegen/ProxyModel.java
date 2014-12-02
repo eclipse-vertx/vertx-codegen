@@ -167,7 +167,7 @@ public class ProxyModel extends ClassModel {
     return false;
   }
 
-  // TODO should we allow enums in List/Set/Map params, and non String values???
+  // TODO should we allow enums/Options in List/Set/Map params
 
   protected boolean isLegalListSetMapParam(TypeInfo type) {
     TypeInfo raw = type.getRaw();
