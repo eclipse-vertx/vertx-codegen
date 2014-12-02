@@ -124,9 +124,8 @@ public class ProxyTest {
     ProxyModel model = new Generator().generateProxyModel(ValidProxy.class);
     assertEquals(ValidProxy.class.getName(), model.getIfaceFQCN());
     assertEquals(ValidProxy.class.getSimpleName(), model.getIfaceSimpleName());
-    assertTrue(model.getReferencedTypes().contains(GeneratorTest.VertxGenClass1Info));
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(35, model.getMethods().size());
+    assertEquals(44, model.getMethods().size());
 
     // Not going to check all the types are correct as this is already tested in the VertxGen tests
     // but we do want to check the proxyIgnore flag is correctly set

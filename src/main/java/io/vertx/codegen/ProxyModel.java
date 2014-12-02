@@ -17,7 +17,6 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.ProxyClose;
-import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.ProxyIgnore;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
 
@@ -109,11 +108,7 @@ public class ProxyModel extends ClassModel {
       return;
     }
 
-    Element returnTypeElem = typeUtils.asElement(typeUtils.erasure(elem.getReturnType()));
-    if (returnTypeElem.getAnnotation(ProxyGen.class) != null) {
-      return;
-    }
-    throw new GenException(elem, "Proxy methods must have void, Fluent or ProxyGen types returns");
+    throw new GenException(elem, "Proxy methods must have void or Fluent returns");
   }
 
   @Override
@@ -132,15 +127,11 @@ public class ProxyModel extends ClassModel {
                                         TypeElement declaringElt) {
     AnnotationMirror proxyIgnoreAnnotation = Helper.resolveMethodAnnotation(ProxyIgnore.class, elementUtils, typeUtils, declaringElt, methodElt);
     boolean isProxyIgnore = proxyIgnoreAnnotation != null;
-    // TODO - maybe there is a simpler way of doing this??
-    Element returnTypeElem = typeUtils.asElement(typeUtils.erasure(methodElt.getReturnType()));
-    boolean proxyGen = returnTypeElem != null && (returnTypeElem.getAnnotation(ProxyGen.class) != null);
     AnnotationMirror proxyCloseAnnotation = Helper.resolveMethodAnnotation(ProxyClose.class, elementUtils, typeUtils, declaringElt, methodElt);
     boolean isProxyClose = proxyCloseAnnotation != null;
-
     return new ProxyMethodInfo(Collections.singleton(ownerType), methodName, kind, returnType,
       isFluent, isCacheReturn, mParams, elementUtils.getDocComment(methodElt), isStatic, typeParams, isProxyIgnore,
-      proxyGen, isProxyClose);
+      isProxyClose);
   }
 
   private boolean isLegalHandlerAsyncResultType(TypeInfo type) {
@@ -149,8 +140,26 @@ public class ProxyModel extends ClassModel {
       if (eventType.getErased().getKind() == ClassKind.ASYNC_RESULT) {
         TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getArgs().get(0);
         if (resultType.getKind().json || resultType.getKind().basic ||
-          isLegalListOrSet(resultType) || resultType.getKind() == ClassKind.VOID ||
+          isLegalListSetMapResult(resultType) || resultType.getKind() == ClassKind.VOID ||
           resultType.getKind() == ClassKind.ENUM) {
+          return true;
+        }
+        if (resultType.getKind() == ClassKind.API) {
+          TypeInfo.Class cla = (TypeInfo.Class)resultType;
+          if (cla.proxyGen) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  private boolean isLegalListSetMapResult(TypeInfo type) {
+    if (type instanceof TypeInfo.Parameterized) {
+      if (type.getKind() == ClassKind.LIST || type.getKind() == ClassKind.SET) {
+        TypeInfo elementType = ((TypeInfo.Parameterized) type).getArgs().get(0);
+        if (elementType.getKind().basic || elementType.getKind().json) {
           return true;
         }
       }
@@ -158,14 +167,23 @@ public class ProxyModel extends ClassModel {
     return false;
   }
 
-  private boolean isLegalListOrSet(TypeInfo type) {
-    if (type instanceof TypeInfo.Parameterized) {
-      TypeInfo raw = type.getRaw();
-      if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
-        TypeInfo elementType = ((TypeInfo.Parameterized) type).getArgs().get(0);
-        if (elementType.getKind().basic || elementType.getKind().json || elementType.getKind() == ClassKind.ENUM) {
-          return true;
-        }
+  // TODO should we allow enums in List/Set/Map params, and non String values???
+
+  protected boolean isLegalListSetMapParam(TypeInfo type) {
+    TypeInfo raw = type.getRaw();
+    if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
+      TypeInfo argument = ((TypeInfo.Parameterized) type).getArgs().get(0);
+      if (argument.getKind().basic || argument.getKind().json) {
+        return true;
+      }
+    } else if (raw.getName().equals(Map.class.getName())) {
+      TypeInfo argument0 = ((TypeInfo.Parameterized) type).getArgs().get(0);
+      if (!argument0.getName().equals(String.class.getName())) {
+        return false;
+      }
+      TypeInfo argument1 = ((TypeInfo.Parameterized) type).getArgs().get(1);
+      if (argument1.getKind().basic || argument1.getKind().json) {
+        return true;
       }
     }
     return false;

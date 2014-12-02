@@ -25,27 +25,20 @@ import java.util.Set;
 public class ProxyMethodInfo extends MethodInfo {
 
   private final boolean proxyIgnore;
-  private final boolean proxyGenReturn;
   private final boolean proxyClose;
 
   public ProxyMethodInfo(Set<TypeInfo.Class> ownerTypes, String name, MethodKind kind, TypeInfo returnType, boolean fluent,
                          boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod,
-                         List<TypeParamInfo.Method> typeParams, boolean proxyIgnore, boolean proxygenReturn,
-                         boolean proxyClose) {
+                         List<TypeParamInfo.Method> typeParams, boolean proxyIgnore, boolean proxyClose) {
 
 
     super(ownerTypes, name, kind, returnType, fluent, cacheReturn, params, comment, staticMethod, typeParams);
     this.proxyIgnore = proxyIgnore;
-    this.proxyGenReturn = proxygenReturn;
     this.proxyClose = proxyClose;
   }
 
   public boolean isProxyIgnore() {
     return proxyIgnore;
-  }
-
-  public boolean isProxyGenReturn() {
-    return proxyGenReturn;
   }
 
   public boolean isProxyClose() {
