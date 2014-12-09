@@ -129,6 +129,9 @@ import io.vertx.test.codegen.testapi.fluent.FluentMethodWithIllegalReturn;
 import io.vertx.test.codegen.testapi.fluent.FluentMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromAbstract;
 import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromConcrete;
+import io.vertx.test.codegen.testapi.impl.InterfaceInImplPackage;
+import io.vertx.test.codegen.testapi.impl.sub.InterfaceInImplParentPackage;
+import io.vertx.test.codegen.testapi.simple.InterfaceInImplContainingPackage;
 import io.vertx.test.codegen.testapi.streams.GenericInterfaceExtentingReadStream;
 import io.vertx.test.codegen.testapi.streams.GenericInterfaceExtentingReadStreamAndWriteStream;
 import io.vertx.test.codegen.testapi.streams.GenericInterfaceExtentingWriteStream;
@@ -1662,6 +1665,22 @@ public class GeneratorTest {
     } catch (GenException e) {
       // pass
     }
+  }
+
+  @Test
+  public void testImplPackage() throws Exception {
+    try {
+      new Generator().generateClass(InterfaceInImplParentPackage.class);
+      fail();
+    } catch (IllegalArgumentException expected) {
+    }
+    try {
+      new Generator().generateClass(InterfaceInImplPackage.class);
+      fail();
+    } catch (IllegalArgumentException expected) {
+    }
+    ClassModel model = new Generator().generateClass(InterfaceInImplContainingPackage.class);
+    assertEquals(InterfaceInImplContainingPackage.class.getName(), model.getFqn());
   }
 
   private void checkMethod(MethodInfo meth, String name, String comment, MethodKind kind, String returnType, boolean cacheReturn,

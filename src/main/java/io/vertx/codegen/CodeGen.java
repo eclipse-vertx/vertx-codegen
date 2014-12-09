@@ -38,7 +38,10 @@ public class CodeGen {
     this.messager = env.getMessager();
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
-    Predicate<Element> implFilter = elt -> !elementUtils.getPackageOf(elt).getQualifiedName().toString().contains(".impl.");
+    Predicate<Element> implFilter = elt -> {
+      String fqn = elementUtils.getPackageOf(elt).getQualifiedName().toString();
+      return !(fqn.contains(".impl.") || fqn.endsWith(".impl"));
+    };
     round.getElementsAnnotatedWith(Options.class).
       stream().
       filter(implFilter).
