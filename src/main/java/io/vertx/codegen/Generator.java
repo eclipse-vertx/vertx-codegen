@@ -78,7 +78,7 @@ public class Generator {
   }
 
   public void genAndApply(Class clazz, Function<Class, String> outputFileFunction, String templateName) throws Exception {
-    ClassModel model = generateModel(clazz);
+    ClassModel model = generateClass(clazz);
     applyTemplate(model, outputFileFunction.apply(clazz), templateName);
   }
 
@@ -108,7 +108,7 @@ public class Generator {
     }
     for (Class<?> clazz: generableClasses) {
       Generator gen = new Generator();
-      ClassModel model = gen.generateModel(clazz, generableClasses.toArray(new Class[generableClasses.size()]));
+      ClassModel model = gen.generateClass(clazz, generableClasses.toArray(new Class[generableClasses.size()]));
       if (apply) {
         applyTemplate(model, outputFileFunction.apply(clazz), templateFileName);
       }
@@ -140,7 +140,7 @@ public class Generator {
     return processor.result;
   }
 
-  public ClassModel generateModel(Class c, Class... rest) throws Exception {
+  public ClassModel generateClass(Class c, Class... rest) throws Exception {
     log.info("Generating model for class " + c);
     ArrayList<Class> types = new ArrayList<>();
     types.add(c);

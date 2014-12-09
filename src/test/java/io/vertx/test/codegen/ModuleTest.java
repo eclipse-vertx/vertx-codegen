@@ -47,7 +47,7 @@ public class ModuleTest {
 
   @Test
   public void testModuleScopedApiModel() throws Exception {
-    ClassModel model = new Generator().generateModel(ModuleScopedApi.class);
+    ClassModel model = new Generator().generateClass(ModuleScopedApi.class);
     assertEquals(ModuleScopedApi.class.getName(), model.getIfaceFQCN());
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getFqn());
     assertEquals("simple", model.getModule().getName());
@@ -55,7 +55,7 @@ public class ModuleTest {
 
   @Test
   public void testModuleScopedSubApiModel() throws Exception {
-    ClassModel model = new Generator().generateModel(ModuleScopedSubApi.class);
+    ClassModel model = new Generator().generateClass(ModuleScopedSubApi.class);
     assertEquals(ModuleScopedSubApi.class.getName(), model.getFqn());
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getFqn());
     assertEquals("simple", model.getModule().getName());
@@ -80,7 +80,7 @@ public class ModuleTest {
   @Test
   public void testNoModuleApiModel() throws Exception {
     try {
-      new Generator().generateModel(NoModuleApi.class);
+      new Generator().generateClass(NoModuleApi.class);
       fail();
     } catch (GenException expected) {
     }

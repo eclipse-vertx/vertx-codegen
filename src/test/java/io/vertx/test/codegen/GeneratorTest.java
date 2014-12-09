@@ -175,7 +175,7 @@ public class GeneratorTest {
   @Test
   public void testGenerateNoVertxGenAnnotation() throws Exception {
     try {
-      new Generator().generateModel(NoVertxGen.class);
+      new Generator().generateClass(NoVertxGen.class);
       fail("Should throw exception");
     } catch (IllegalArgumentException e) {
       // OK
@@ -365,7 +365,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidBasicParams() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidBasicParams.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidBasicParams.class);
     assertEquals(MethodWithValidBasicParams.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidBasicParams.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -393,7 +393,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidBasicBoxedParams() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidBasicBoxedParams.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidBasicBoxedParams.class);
     assertEquals(MethodWithValidBasicBoxedParams.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidBasicBoxedParams.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -421,7 +421,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidTypeParam() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithTypeParameter.class);
+    ClassModel model = new Generator().generateClass(MethodWithTypeParameter.class);
     assertEquals(1, model.getMethods().size());
     MethodInfo mi = model.getMethods().get(0);
     assertEquals("foo", mi.getName());
@@ -430,7 +430,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidWildcardTypeArg() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithWildcardTypeArg.class);
+    ClassModel model = new Generator().generateClass(MethodWithWildcardTypeArg.class);
     assertEquals(1, model.getMethods().size());
     MethodInfo mi = model.getMethods().get(0);
     assertEquals("foo", mi.getName());
@@ -442,7 +442,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidListParams() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidListParams.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidListParams.class);
     assertEquals(MethodWithValidListParams.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidListParams.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(1, model.getReferencedTypes().size());
@@ -467,7 +467,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidSetParams() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidSetParams.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidSetParams.class);
     assertEquals(MethodWithValidSetParams.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidSetParams.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(1, model.getReferencedTypes().size());
@@ -492,7 +492,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidMapParams() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidMapParams.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidMapParams.class);
     assertEquals(MethodWithValidMapParams.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidMapParams.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(1, model.getReferencedTypes().size());
@@ -517,7 +517,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidHandlerParams() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidHandlerParams.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidHandlerParams.class);
     assertEquals(MethodWithValidHandlerParams.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidHandlerParams.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(2, model.getReferencedTypes().size());
@@ -575,7 +575,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidHandlerAsyncResultParams() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidHandlerAsyncResultParams.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidHandlerAsyncResultParams.class);
     assertEquals(MethodWithValidHandlerAsyncResultParams.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidHandlerAsyncResultParams.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(2, model.getReferencedTypes().size());
@@ -632,7 +632,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidVertxGenParams() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidVertxGenParams.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidVertxGenParams.class);
     assertEquals(MethodWithValidVertxGenParams.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidVertxGenParams.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(2, model.getReferencedTypes().size());
@@ -656,7 +656,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidObjectParam() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithObjectParam.class);
+    ClassModel model = new Generator().generateClass(MethodWithObjectParam.class);
     assertEquals(MethodWithObjectParam.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithObjectParam.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -676,7 +676,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidEnumParam() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithEnumParam.class);
+    ClassModel model = new Generator().generateClass(MethodWithEnumParam.class);
     assertEquals(MethodWithEnumParam.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithEnumParam.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -696,7 +696,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidEnumReturn() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithEnumReturn.class);
+    ClassModel model = new Generator().generateClass(MethodWithEnumReturn.class);
     assertEquals(MethodWithEnumReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithEnumReturn.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -714,7 +714,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidThrowableReturn() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithThrowableReturn.class);
+    ClassModel model = new Generator().generateClass(MethodWithThrowableReturn.class);
     assertEquals(MethodWithThrowableReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithThrowableReturn.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -732,7 +732,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidOptionsParam() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithOptionsParam.class);
+    ClassModel model = new Generator().generateClass(MethodWithOptionsParam.class);
     assertEquals(MethodWithOptionsParam.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithOptionsParam.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -754,7 +754,7 @@ public class GeneratorTest {
 
   @Test
   public void testGenericInterface() throws Exception {
-    ClassModel model = new Generator().generateModel(GenericInterface.class);
+    ClassModel model = new Generator().generateClass(GenericInterface.class);
     assertEquals(GenericInterface.class.getName() + "<T>", model.getIfaceFQCN());
     assertEquals(GenericInterface.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue("Was expecting " + model.getReferencedTypes() + " to be empty", model.getReferencedTypes().isEmpty());
@@ -784,7 +784,7 @@ public class GeneratorTest {
   @Test
   public void testGenericInterfaceWithUpperBound() throws Exception {
     try {
-      new Generator().generateModel(GenericInterfaceWithUpperBound.class);
+      new Generator().generateClass(GenericInterfaceWithUpperBound.class);
       fail();
     } catch (GenException e) {
     }
@@ -792,7 +792,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidBasicReturn() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidBasicReturn.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidBasicReturn.class);
     assertEquals(MethodWithValidBasicReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidBasicReturn.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -823,7 +823,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidVoidReturn() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidVoidReturn.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidVoidReturn.class);
     assertEquals(MethodWithValidVoidReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidVoidReturn.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -835,7 +835,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidListReturn() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidListReturn.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidListReturn.class);
     assertEquals(MethodWithValidListReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidListReturn.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(2, model.getReferencedTypes().size());
@@ -863,7 +863,7 @@ public class GeneratorTest {
   
   @Test
   public void testValidSetReturn() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidSetReturn.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidSetReturn.class);
     assertEquals(MethodWithValidSetReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidSetReturn.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(2, model.getReferencedTypes().size());
@@ -891,7 +891,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidMapReturn() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidMapReturn.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidMapReturn.class);
     assertEquals(MethodWithValidMapReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidMapReturn.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(0, model.getReferencedTypes().size());
@@ -915,7 +915,7 @@ public class GeneratorTest {
 
   @Test
   public void testValidVertxGenReturn() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidVertxGenReturn.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidVertxGenReturn.class);
     assertEquals(MethodWithValidVertxGenReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidVertxGenReturn.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(2, model.getReferencedTypes().size());
@@ -932,7 +932,7 @@ public class GeneratorTest {
 
   @Test
   public void testGenIgnore() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithIgnoredMethods.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithIgnoredMethods.class);
     assertEquals(InterfaceWithIgnoredMethods.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithIgnoredMethods.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -947,7 +947,7 @@ public class GeneratorTest {
 
   @Test
   public void testPropertyGetters() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithGetterMethods.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithGetterMethods.class);
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "isA", null, MethodKind.GETTER, "boolean", false, false, false, 0);
       assertEquals("a", methods.get(0).getPropertyName());
@@ -998,7 +998,7 @@ public class GeneratorTest {
 
   @Test
   public void testFluentMethodOverrideFromConcrete() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithFluentMethodOverrideFromConcrete.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithFluentMethodOverrideFromConcrete.class);
     assertEquals(InterfaceWithFluentMethodOverrideFromConcrete.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithFluentMethodOverrideFromConcrete.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(Collections.singleton((TypeInfo.Class) TypeInfo.create(ConcreteInterfaceWithFluentMethods.class)), model.getReferencedTypes());
@@ -1014,7 +1014,7 @@ public class GeneratorTest {
   @Test
   public void testFluentMethodOverrideFromAbstract() throws Exception {
     Generator gen = new Generator();
-    ClassModel model = gen.generateModel(InterfaceWithFluentMethodOverrideFromAbstract.class);
+    ClassModel model = gen.generateClass(InterfaceWithFluentMethodOverrideFromAbstract.class);
     assertEquals(0, gen.getDiagnostics().size());
     assertEquals(InterfaceWithFluentMethodOverrideFromAbstract.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithFluentMethodOverrideFromAbstract.class.getSimpleName(), model.getIfaceSimpleName());
@@ -1030,7 +1030,7 @@ public class GeneratorTest {
 
   @Test
   public void testFluentMethods() throws Exception {
-    ClassModel model = new Generator().generateModel(ConcreteInterfaceWithFluentMethods.class);
+    ClassModel model = new Generator().generateClass(ConcreteInterfaceWithFluentMethods.class);
     assertEquals(ConcreteInterfaceWithFluentMethods.class.getName(), model.getIfaceFQCN());
     assertEquals(ConcreteInterfaceWithFluentMethods.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -1045,7 +1045,7 @@ public class GeneratorTest {
 
   @Test
   public void testCacheReturnMethods() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithCacheReturnMethods.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithCacheReturnMethods.class);
     assertEquals(InterfaceWithCacheReturnMethods.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithCacheReturnMethods.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(1, model.getReferencedTypes().size());
@@ -1061,7 +1061,7 @@ public class GeneratorTest {
 
   @Test
   public void testIndexGetterSetterMethods() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithIndexSetterGetterMethods.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithIndexSetterGetterMethods.class);
     assertEquals(InterfaceWithIndexSetterGetterMethods.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithIndexSetterGetterMethods.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -1076,7 +1076,7 @@ public class GeneratorTest {
 
   @Test
   public void testSupertypes() throws Exception {
-    ClassModel gen = new Generator().generateModel(InterfaceWithSupertypes.class, VertxGenInterface1.class, VertxGenInterface2.class);
+    ClassModel gen = new Generator().generateClass(InterfaceWithSupertypes.class, VertxGenInterface1.class, VertxGenInterface2.class);
     assertEquals(InterfaceWithSupertypes.class.getName(), gen.getIfaceFQCN());
     assertEquals(InterfaceWithSupertypes.class.getSimpleName(), gen.getIfaceSimpleName());
     assertEquals(3, gen.getReferencedTypes().size());
@@ -1105,7 +1105,7 @@ public class GeneratorTest {
 
   @Test
   public void testParameterizedClassSuperType() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithParameterizedDeclaredSupertype.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithParameterizedDeclaredSupertype.class);
     assertEquals(InterfaceWithParameterizedDeclaredSupertype.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithParameterizedDeclaredSupertype.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(1, model.getReferencedTypes().size());
@@ -1116,7 +1116,7 @@ public class GeneratorTest {
 
   @Test
   public void testParameterizedVariableSuperType() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithParameterizedVariableSupertype.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithParameterizedVariableSupertype.class);
     assertEquals(InterfaceWithParameterizedVariableSupertype.class.getName() + "<T>", model.getIfaceFQCN());
     assertEquals(InterfaceWithParameterizedVariableSupertype.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(1, model.getReferencedTypes().size());
@@ -1127,7 +1127,7 @@ public class GeneratorTest {
 
   @Test
   public void testNonGenSuperType() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithNonGenSuperType.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithNonGenSuperType.class);
     assertEquals(InterfaceWithNonGenSuperType.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithNonGenSuperType.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(0, model.getReferencedTypes().size());
@@ -1147,7 +1147,7 @@ public class GeneratorTest {
     };
     for (Class<?> forbidenType : forbidenTypes) {
       try {
-        new Generator().generateModel(forbidenType);
+        new Generator().generateClass(forbidenType);
         fail();
       } catch (GenException e) {
       }
@@ -1156,7 +1156,7 @@ public class GeneratorTest {
 
   @Test
   public void testOverloadedMethods() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithOverloadedMethods.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithOverloadedMethods.class);
     assertEquals(InterfaceWithOverloadedMethods.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithOverloadedMethods.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(2, model.getReferencedTypes().size());
@@ -1202,7 +1202,7 @@ public class GeneratorTest {
 
   @Test
   public void testStaticMethods() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithStaticMethods.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithStaticMethods.class);
     assertEquals(InterfaceWithStaticMethods.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithStaticMethods.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(2, model.getReferencedTypes().size());
@@ -1221,7 +1221,7 @@ public class GeneratorTest {
 
   @Test
   public void testStaticSuperStaticMethods() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithSuperStaticMethods.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithSuperStaticMethods.class);
     assertEquals(InterfaceWithSuperStaticMethods.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithSuperStaticMethods.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(Collections.singletonList(TypeInfo.create(InterfaceWithStaticMethods.class)), model.getSuperTypes());
@@ -1230,7 +1230,7 @@ public class GeneratorTest {
 
   @Test
   public void testInstanceMethods() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithInstanceMethods.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithInstanceMethods.class);
     assertEquals(InterfaceWithInstanceMethods.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithInstanceMethods.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(2, model.getReferencedTypes().size());
@@ -1249,7 +1249,7 @@ public class GeneratorTest {
 
   @Test
   public void testMethodOverride() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithMethodOverride.class, VertxGenInterface1.class, VertxGenInterface2.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithMethodOverride.class, VertxGenInterface1.class, VertxGenInterface2.class);
     assertEquals(2, model.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "bar", null, MethodKind.OTHER, "void", false, false, false, 1);
@@ -1264,7 +1264,7 @@ public class GeneratorTest {
 
   @Test
   public void testInterfaceWithMethodHavingGenericOverride() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithMethodHavingGenericOverride.class, GenericAbstractInterface.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithMethodHavingGenericOverride.class, GenericAbstractInterface.class);
     assertEquals(4, model.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "java.lang.String", false, false, false, 0);
@@ -1279,7 +1279,7 @@ public class GeneratorTest {
 
   @Test
   public void testInterfaceWithTypeVariableArgument() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithTypeVariableArgument3.class, InterfaceWithTypeVariableArgument2.class, InterfaceWithTypeVariableArgument1.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithTypeVariableArgument3.class, InterfaceWithTypeVariableArgument2.class, InterfaceWithTypeVariableArgument1.class);
     assertEquals(1, model.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument3", false, false, false, 0);
@@ -1290,7 +1290,7 @@ public class GeneratorTest {
 
   @Test
   public void testMethodWithSameSignatureInheritedFromDistinctInterfaces() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithSameSignatureInheritedFromDistinctInterfaces.class, SameSignatureMethod1.class, SameSignatureMethod2.class);
+    ClassModel model = new Generator().generateClass(MethodWithSameSignatureInheritedFromDistinctInterfaces.class, SameSignatureMethod1.class, SameSignatureMethod2.class);
     assertEquals(1, model.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "U", false, false, false, 0);
@@ -1301,7 +1301,7 @@ public class GeneratorTest {
 
   @Test
   public void testMethodWithDiamond() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithDiamond.class, DiamondMethod1.class, DiamondMethod2.class, DiamondMethod3.class);
+    ClassModel model = new Generator().generateClass(MethodWithDiamond.class, DiamondMethod1.class, DiamondMethod2.class, DiamondMethod3.class);
     assertEquals(1, model.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "U", false, false, false, 0);
@@ -1312,7 +1312,7 @@ public class GeneratorTest {
 
   @Test
   public void testMethodComments() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithComments.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithComments.class);
     assertEquals(InterfaceWithComments.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithComments.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -1329,7 +1329,7 @@ public class GeneratorTest {
 
   @Test
   public void testInterfaceComments() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithComments.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithComments.class);
     assertEquals(InterfaceWithComments.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithComments.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -1346,7 +1346,7 @@ public class GeneratorTest {
 
   @Test
   public void testSignature() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidBasicParams.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidBasicParams.class);
     assertEquals(1, model.getMethods().size());
     MethodInfo mi = model.getMethods().get(0);
     Signature s1 = mi.getSignature();
@@ -1363,7 +1363,7 @@ public class GeneratorTest {
 
   @Test
   public void testOverloadedMethodFuture() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceWithOverloadedFutureMethod.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithOverloadedFutureMethod.class);
     assertEquals(4, model.getMethods().size());
     assertEquals(2, model.getMethodMap().size());
     List<MethodInfo> closes = model.getMethodMap().get("close");
@@ -1382,7 +1382,7 @@ public class GeneratorTest {
 
   @Test
   public void testJsonParams() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidJSONParams.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidJSONParams.class);
     assertEquals(MethodWithValidJSONParams.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidJSONParams.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -1395,7 +1395,7 @@ public class GeneratorTest {
 
   @Test
   public void testJsonHandlers() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidHandlerJSON.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidHandlerJSON.class);
     assertEquals(MethodWithValidHandlerJSON.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidHandlerJSON.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -1408,7 +1408,7 @@ public class GeneratorTest {
 
   @Test
   public void testJsonAsyncResultHandlers() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidHandlerAsyncResultJSON.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidHandlerAsyncResultJSON.class);
     assertEquals(MethodWithValidHandlerAsyncResultJSON.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidHandlerAsyncResultJSON.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -1421,7 +1421,7 @@ public class GeneratorTest {
 
   @Test
   public void testJsonReturns() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithValidJSONReturn.class);
+    ClassModel model = new Generator().generateClass(MethodWithValidJSONReturn.class);
     assertEquals(MethodWithValidJSONReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidJSONReturn.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -1433,7 +1433,7 @@ public class GeneratorTest {
 
   @Test
   public void testMethodHandlerParam() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithHandlerParam.class);
+    ClassModel model = new Generator().generateClass(MethodWithHandlerParam.class);
     checkMethod(model.getMethods().get(0), "foo_1", null, MethodKind.HANDLER, "void", false, false, false, 1);
     checkMethod(model.getMethods().get(1), "foo_2", null, MethodKind.HANDLER, "void", false, false, false, 2);
     checkMethod(model.getMethods().get(2), "foo_3", null, MethodKind.HANDLER, "void", false, false, false, 2);
@@ -1446,7 +1446,7 @@ public class GeneratorTest {
 
   @Test
   public void testMethodHandlerAsyncResultParam() throws Exception {
-    ClassModel model = new Generator().generateModel(MethodWithHandlerAsyncResultParam.class);
+    ClassModel model = new Generator().generateClass(MethodWithHandlerAsyncResultParam.class);
     checkMethod(model.getMethods().get(0), "foo_1", null, MethodKind.FUTURE, "void", false, false, false, 1);
     checkMethod(model.getMethods().get(1), "foo_2", null, MethodKind.FUTURE, "void", false, false, false, 2);
     checkMethod(model.getMethods().get(2), "foo_3", null, MethodKind.FUTURE, "void", false, false, false, 2);
@@ -1460,7 +1460,7 @@ public class GeneratorTest {
   @Test
   public void testMethodInvalidMapReturn1() throws Exception {
     try {
-      new Generator().generateModel(MethodWithInvalidMapReturn1.class);
+      new Generator().generateClass(MethodWithInvalidMapReturn1.class);
       fail("Invalid Map return should fail");
     } catch (GenException e) {
       // pass
@@ -1470,7 +1470,7 @@ public class GeneratorTest {
   @Test
   public void testMethodInvalidMapReturn2() throws Exception {
     try {
-      new Generator().generateModel(MethodWithInvalidMapReturn2.class);
+      new Generator().generateClass(MethodWithInvalidMapReturn2.class);
       fail("Invalid Map return should fail");
     } catch (GenException e) {
       // pass
@@ -1480,7 +1480,7 @@ public class GeneratorTest {
   @Test
   public void testMethodInvalidListReturn1() throws Exception {
     try {
-      new Generator().generateModel(MethodWithInvalidListReturn1.class);
+      new Generator().generateClass(MethodWithInvalidListReturn1.class);
       fail("Invalid Map return should fail");
     } catch (GenException e) {
       // pass
@@ -1489,7 +1489,7 @@ public class GeneratorTest {
 
   @Test
   public void testInterfaceExtendingReadStream() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceExtentingReadStream.class);
+    ClassModel model = new Generator().generateClass(InterfaceExtentingReadStream.class);
     TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
     assertTrue(apiType.isReadStream());
     assertEquals(TypeInfo.create(String.class), apiType.getReadStreamArg());
@@ -1499,7 +1499,7 @@ public class GeneratorTest {
 
   @Test
   public void testGenericInterfaceExtendingReadStream() throws Exception {
-    ClassModel model = new Generator().generateModel(GenericInterfaceExtentingReadStream.class);
+    ClassModel model = new Generator().generateClass(GenericInterfaceExtentingReadStream.class);
     TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType().getRaw();
     assertTrue(apiType.isReadStream());
     TypeInfo.Variable readStreamArg = (TypeInfo.Variable) apiType.getReadStreamArg();
@@ -1510,7 +1510,7 @@ public class GeneratorTest {
 
   @Test
   public void testInterfaceExtendingWriteStream() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceExtentingWriteStream.class);
+    ClassModel model = new Generator().generateClass(InterfaceExtentingWriteStream.class);
     TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
     assertFalse(apiType.isReadStream());
     assertNull(apiType.getReadStreamArg());
@@ -1520,7 +1520,7 @@ public class GeneratorTest {
 
   @Test
   public void testGenericInterfaceExtendingWriteStream() throws Exception {
-    ClassModel model = new Generator().generateModel(GenericInterfaceExtentingWriteStream.class);
+    ClassModel model = new Generator().generateClass(GenericInterfaceExtentingWriteStream.class);
     TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType().getRaw();
     assertFalse(apiType.isReadStream());
     assertNull(apiType.getReadStreamArg());
@@ -1531,7 +1531,7 @@ public class GeneratorTest {
 
   @Test
   public void testInterfaceExtendingReadStreamAndWriteStream() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceExtentingReadStreamAndWriteStream.class);
+    ClassModel model = new Generator().generateClass(InterfaceExtentingReadStreamAndWriteStream.class);
     TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
     assertTrue(apiType.isReadStream());
     assertEquals(TypeInfo.create(String.class), apiType.getReadStreamArg());
@@ -1541,7 +1541,7 @@ public class GeneratorTest {
 
   @Test
   public void testGenericInterfaceExtendingReadStreamAndWriteStream() throws Exception {
-    ClassModel model = new Generator().generateModel(GenericInterfaceExtentingReadStreamAndWriteStream.class);
+    ClassModel model = new Generator().generateClass(GenericInterfaceExtentingReadStreamAndWriteStream.class);
     TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType().getRaw();
     assertTrue(apiType.isReadStream());
     TypeInfo.Variable readStreamArg = (TypeInfo.Variable) apiType.getReadStreamArg();
@@ -1553,7 +1553,7 @@ public class GeneratorTest {
 
   @Test
   public void testInterfaceSubtypingReadStream() throws Exception {
-    ClassModel model = new Generator().generateModel(InterfaceSubtypingReadStream.class);
+    ClassModel model = new Generator().generateClass(InterfaceSubtypingReadStream.class);
     TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
     assertTrue(apiType.isReadStream());
     assertEquals(TypeInfo.create(String.class), apiType.getReadStreamArg());
@@ -1563,7 +1563,7 @@ public class GeneratorTest {
 
   @Test
   public void testReadStreamWithParameterizedTypeArg() throws Exception {
-    ClassModel model = new Generator().generateModel(ReadStreamWithParameterizedTypeArg.class);
+    ClassModel model = new Generator().generateClass(ReadStreamWithParameterizedTypeArg.class);
     TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType().getRaw();
     assertTrue(apiType.isReadStream());
     TypeInfo.Parameterized readStreamArg = (TypeInfo.Parameterized) apiType.getReadStreamArg();
@@ -1577,7 +1577,7 @@ public class GeneratorTest {
   @Test
   public void testMethodInvalidListReturn2() throws Exception {
     try {
-      new Generator().generateModel(MethodWithInvalidListReturn2.class);
+      new Generator().generateClass(MethodWithInvalidListReturn2.class);
       fail("Invalid Map return should fail");
     } catch (GenException e) {
       // pass
@@ -1587,7 +1587,7 @@ public class GeneratorTest {
   @Test
   public void testMethodInvalidSetReturn1() throws Exception {
     try {
-      new Generator().generateModel(MethodWithInvalidSetReturn1.class);
+      new Generator().generateClass(MethodWithInvalidSetReturn1.class);
       fail("Invalid Map return should fail");
     } catch (GenException e) {
       // pass
@@ -1597,7 +1597,7 @@ public class GeneratorTest {
   @Test
   public void testMethodInvalidSetReturn2() throws Exception {
     try {
-      new Generator().generateModel(MethodWithInvalidSetReturn2.class);
+      new Generator().generateClass(MethodWithInvalidSetReturn2.class);
       fail("Invalid Map return should fail");
     } catch (GenException e) {
       // pass
@@ -1607,7 +1607,7 @@ public class GeneratorTest {
   @Test
   public void testMethodInvalidMapParams1() throws Exception {
     try {
-      new Generator().generateModel(MethodWithInvalidMapParams1.class);
+      new Generator().generateClass(MethodWithInvalidMapParams1.class);
       fail("Invalid Map return should fail");
     } catch (GenException e) {
       // pass
@@ -1617,7 +1617,7 @@ public class GeneratorTest {
   @Test
   public void testMethodInvalidMapParams2() throws Exception {
     try {
-      new Generator().generateModel(MethodWithInvalidMapParams2.class);
+      new Generator().generateClass(MethodWithInvalidMapParams2.class);
       fail("Invalid Map return should fail");
     } catch (GenException e) {
       // pass
@@ -1627,7 +1627,7 @@ public class GeneratorTest {
   @Test
   public void testMethodInvalidListParams1() throws Exception {
     try {
-      new Generator().generateModel(MethodWithInvalidListParams1.class);
+      new Generator().generateClass(MethodWithInvalidListParams1.class);
       fail("Invalid Map return should fail");
     } catch (GenException e) {
       // pass
@@ -1637,7 +1637,7 @@ public class GeneratorTest {
   @Test
   public void testMethodInvalidListParams2() throws Exception {
     try {
-      new Generator().generateModel(MethodWithInvalidListParams2.class);
+      new Generator().generateClass(MethodWithInvalidListParams2.class);
       fail("Invalid Map return should fail");
     } catch (GenException e) {
       // pass
@@ -1647,7 +1647,7 @@ public class GeneratorTest {
   @Test
   public void testMethodInvalidSetParams1() throws Exception {
     try {
-      new Generator().generateModel(MethodWithInvalidSetParams1.class);
+      new Generator().generateClass(MethodWithInvalidSetParams1.class);
       fail("Invalid Map return should fail");
     } catch (GenException e) {
       // pass
@@ -1657,7 +1657,7 @@ public class GeneratorTest {
   @Test
   public void testMethodInvalidSetParams2() throws Exception {
     try {
-      new Generator().generateModel(MethodWithInvalidSetParams2.class);
+      new Generator().generateClass(MethodWithInvalidSetParams2.class);
       fail("Invalid Map return should fail");
     } catch (GenException e) {
       // pass
@@ -1695,7 +1695,7 @@ public class GeneratorTest {
 
   private void assertGenInvalid(Class<?> c, Class<?>... rest) throws Exception {
     try {
-      new Generator().generateModel(c, rest);
+      new Generator().generateClass(c, rest);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
