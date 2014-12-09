@@ -18,12 +18,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class CodeGen {
+
+  private static final Logger logger = Logger.getLogger(CodeGen.class.getName());
 
   private final HashMap<String, TypeElement> options = new HashMap<>();
   private final HashMap<String, TypeElement> classes = new HashMap<>();
@@ -40,7 +43,12 @@ public class CodeGen {
     this.typeUtils = env.getTypeUtils();
     Predicate<Element> implFilter = elt -> {
       String fqn = elementUtils.getPackageOf(elt).getQualifiedName().toString();
-      return !(fqn.contains(".impl.") || fqn.endsWith(".impl"));
+      if (fqn.contains(".impl.") || fqn.endsWith(".impl"))  {
+        logger.warning("Processed element " + elt + " is in an implementation package");
+        return false;
+      } else {
+        return true;
+      }
     };
     round.getElementsAnnotatedWith(Options.class).
       stream().
