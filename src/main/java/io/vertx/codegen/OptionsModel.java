@@ -91,6 +91,10 @@ public class OptionsModel implements Model {
     return superTypes;
   }
 
+  public ModuleInfo getModule() {
+    return type.getRaw().getModule();
+  }
+
   @Override
   public Map<String, Object> getVars() {
     HashMap<String, Object> vars = new HashMap<>();
@@ -126,6 +130,10 @@ public class OptionsModel implements Model {
       this.type = (TypeInfo.Class) typeFactory.create(modelElt.asType());
     } catch (ClassCastException e) {
       throw new GenException(modelElt, "Options must be a plain java class with no type parameters");
+    }
+
+    if (getModule() == null) {
+      throw new GenException(modelElt, "Options must have an ancestor package annotated with @ModuleGen");
     }
 
     modelElt.getInterfaces().stream()

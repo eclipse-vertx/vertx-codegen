@@ -16,6 +16,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -37,12 +38,14 @@ public class CodeGen {
     this.messager = env.getMessager();
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
+    Predicate<Element> implFilter = elt -> !elementUtils.getPackageOf(elt).getQualifiedName().toString().contains(".impl.");
     round.getElementsAnnotatedWith(Options.class).
       stream().
+      filter(implFilter).
       forEach(element -> options.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
     round.getElementsAnnotatedWith(VertxGen.class).
       stream().
-      filter(elt -> !elementUtils.getPackageOf(elt).getQualifiedName().toString().contains("impl")).
+      filter(implFilter).
       forEach(element -> classes.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
     round.getElementsAnnotatedWith(GenModule.class).
       stream().
@@ -50,7 +53,7 @@ public class CodeGen {
       forEach(element -> modules.put(element.getQualifiedName().toString(), element));
     round.getElementsAnnotatedWith(ProxyGen.class).
       stream().
-      filter(elt -> !elementUtils.getPackageOf(elt).getQualifiedName().toString().contains("impl")).
+      filter(implFilter).
       forEach(element -> proxyClasses.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
   }
 
@@ -114,6 +117,22 @@ public class CodeGen {
   public ModuleModel getModuleModel(String fqcn) {
     PackageElement element = modules.get(fqcn);
     GenModule annotation = element.getAnnotation(GenModule.class);
+    if (annotation.name().isEmpty()) {
+      throw new GenException(element, "A module name cannot be empty");
+    }
+    PackageElement pkgElt = element;
+    while (true) {
+      String pkgQN = pkgElt.getQualifiedName().toString();
+      int pos = pkgQN.lastIndexOf('.');
+      if (pos == -1) {
+        break;
+      } else {
+        pkgElt = elementUtils.getPackageElement(pkgQN.substring(0, pos));
+        if (pkgElt.getAnnotation(GenModule.class) != null) {
+          throw new GenException(element, "A module cannot be nested inside another module");
+        }
+      }
+    }
     return new ModuleModel(element, new ModuleInfo(fqcn, annotation.name()));
   }
 

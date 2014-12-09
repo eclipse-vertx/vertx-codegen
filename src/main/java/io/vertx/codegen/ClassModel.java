@@ -165,6 +165,10 @@ public class ClassModel implements Model {
     return type;
   }
 
+  public ModuleInfo getModule() {
+    return type.getRaw().getModule();
+  }
+
   public List<TypeInfo> getSuperTypes() {
     return superTypes;
   }
@@ -411,6 +415,9 @@ public class ClassModel implements Model {
           throw new GenException(elem, "Can only have one interface per file");
         }
         type = typeFactory.create(elem.asType());
+        if (getModule() == null) {
+          throw new GenException(elem, "@VertxGen type must have an ancestor package annotated with @ModuleGen");
+        }
         ifaceFQCN = elem.asType().toString();
         ifaceSimpleName = elem.getSimpleName().toString();
         ifacePackageName = elementUtils.getPackageOf(elem).toString();

@@ -389,6 +389,13 @@ public abstract class TypeInfo {
       return module != null ? module.getName() : null;
     }
 
+    /**
+     * @return the optional module name only present for {@link io.vertx.codegen.annotations.VertxGen} annotated types.
+     */
+    public ModuleInfo getModule() {
+      return module;
+    }
+
     public ClassKind getKind() {
       return kind;
     }
