@@ -371,7 +371,7 @@ public class ClassModel implements Model {
         TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getArgs().get(0);
         if (resultType.getKind().json || resultType.getKind().basic || isVertxGenInterface(resultType) ||
             isLegalListOrSetForHandler(resultType) || resultType.getKind() == ClassKind.VOID ||
-            isVariableType(resultType)) {
+            isVariableType(resultType) || isOptionType(resultType)) {
           return true;
         }
       }
