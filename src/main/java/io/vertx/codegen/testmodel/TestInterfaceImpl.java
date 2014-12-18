@@ -491,6 +491,12 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public void methodWithHandlerOptions(Handler<TestOptions> handler) {
+    TestOptions options = new TestOptions().setFoo("foo").setBar(123);
+    handler.handle(options);
+  }
+
+  @Override
   public <U> void methodWithHandlerGenericUserType(U value, Handler<GenericRefedInterface<U>> handler) {
     GenericRefedInterfaceImpl<U> userObj = new GenericRefedInterfaceImpl<>();
     userObj.setValue(value);
