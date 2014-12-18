@@ -37,6 +37,7 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
   void methodWithHandlerAsyncResultBoolean(boolean sendFailure, Handler<AsyncResult<Boolean>> handler);
   void methodWithHandlerAsyncResultCharacter(boolean sendFailure, Handler<AsyncResult<Character>> handler);
   void methodWithHandlerAsyncResultString(boolean sendFailure, Handler<AsyncResult<String>> handler);
+  void methodWithHandlerAsyncResultOptions(boolean sendFailure, Handler<AsyncResult<TestOptions>> handler);
 
   void methodWithUserTypes(RefedInterface1 refed);
 

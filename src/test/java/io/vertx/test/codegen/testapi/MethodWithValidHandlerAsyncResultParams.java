@@ -1,5 +1,6 @@
 package io.vertx.test.codegen.testapi;
 
+import io.vertx.codegen.testmodel.TestOptions;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.codegen.annotations.VertxGen;
@@ -27,5 +28,5 @@ public interface MethodWithValidHandlerAsyncResultParams {
                                Handler<AsyncResult<Set<Long>>> setLongHandler, Handler<AsyncResult<Set<Float>>> setFloatHandler, Handler<AsyncResult<Set<Double>>> setDoubleHandler,
                                Handler<AsyncResult<Set<Boolean>>> setBooleanHandler, Handler<AsyncResult<Set<Character>>> setCharHandler, Handler<AsyncResult<Set<String>>> setStrHandler,
                                Handler<AsyncResult<Set<VertxGenClass1>>> setVertxGenHandler, Handler<AsyncResult<Set<JsonObject>>> setJsonObjectHandler, Handler<AsyncResult<Set<JsonArray>>> setJsonArrayHandler,
-                               Handler<AsyncResult<Void>> voidHandler);
+                               Handler<AsyncResult<Void>> voidHandler, Handler<AsyncResult<TestOptions>> optionsHandler);
 }

@@ -357,7 +357,7 @@ public class ClassModel implements Model {
       TypeInfo eventType = ((TypeInfo.Parameterized) type).getArgs().get(0);
       if (eventType.getKind().json || eventType.getKind().basic || isVertxGenInterface(eventType) ||
           isLegalListOrSetForHandler(eventType) || eventType.getKind() == ClassKind.VOID ||
-          eventType.getKind() == ClassKind.THROWABLE || isVariableType(eventType)) {
+          eventType.getKind() == ClassKind.THROWABLE || isVariableType(eventType) || isOptionType(eventType)) {
         return true;
       }
     }

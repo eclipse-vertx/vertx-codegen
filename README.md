@@ -113,6 +113,7 @@ The following set `P` of types are permitted as parameters to any API method:
     * the set `J`
     * `java.lang.Void`
     * `java.lang.Throwable`
+    * any options class annotated with `@Options`
     * type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
         * the set `B`
         * the set `V`

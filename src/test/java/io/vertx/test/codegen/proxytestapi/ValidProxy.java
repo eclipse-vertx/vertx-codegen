@@ -46,6 +46,7 @@ public interface ValidProxy {
   void handler8(Handler<AsyncResult<Boolean>> boolHandler);
   void handler9(Handler<AsyncResult<JsonObject>> jsonObjectHandler);
   void handler10(Handler<AsyncResult<JsonArray>> jsonArrayHandler);
+  void handler11(Handler<AsyncResult<ProxyOptions>> optionsHandler);
 
   void handler12(Handler<AsyncResult<List<String>>> stringListHandler);
   void handler13(Handler<AsyncResult<List<Byte>>> byteListHandler);
