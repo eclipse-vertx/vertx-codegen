@@ -11,6 +11,7 @@ import io.vertx.codegen.Signature;
 import io.vertx.codegen.TypeInfo;
 import io.vertx.codegen.TypeParamInfo;
 import io.vertx.codegen.testmodel.TestEnum;
+import io.vertx.codegen.testmodel.TestOptions;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
@@ -531,7 +532,7 @@ public class GeneratorTest {
     String methodName = "methodWithHandlerParams";
 
     Consumer<MethodInfo> checker = (method) -> {
-      checkMethod(method, methodName, null, MethodKind.HANDLER, "void", false, false, false, 37);
+      checkMethod(method, methodName, null, MethodKind.HANDLER, "void", false, false, false, 38);
       List<ParamInfo> params = method.getParams();
       checkClassParam(params.get(0), "byteHandler", "io.vertx.core.Handler<java.lang.Byte>", ClassKind.HANDLER);
       checkClassParam(params.get(1), "shortHandler", "io.vertx.core.Handler<java.lang.Short>", ClassKind.HANDLER);
@@ -570,6 +571,7 @@ public class GeneratorTest {
       checkClassParam(params.get(34), "setJsonArrayHandler", "io.vertx.core.Handler<java.util.Set<" + JsonArray.class.getName() + ">>", ClassKind.HANDLER);
       checkClassParam(params.get(35), "voidHandler", "io.vertx.core.Handler<java.lang.Void>", ClassKind.HANDLER);
       checkClassParam(params.get(36), "throwableHandler", "io.vertx.core.Handler<java.lang.Throwable>", ClassKind.HANDLER);
+      checkClassParam(params.get(37), "optionsHandler", "io.vertx.core.Handler<" + TestOptions.class.getName() + ">", ClassKind.HANDLER);
     };
 
     MethodInfo method = model.getMethods().get(0);
@@ -589,7 +591,7 @@ public class GeneratorTest {
     String methodName = "methodWithHandlerParams";
 
     Consumer<MethodInfo> checker = (method) -> {
-      checkMethod(method, methodName, null, MethodKind.FUTURE, "void", false, false, false, 36);
+      checkMethod(method, methodName, null, MethodKind.FUTURE, "void", false, false, false, 37);
       List<ParamInfo> params = method.getParams();
       checkClassParam(params.get(0), "byteHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Byte>>", ClassKind.HANDLER);
       checkClassParam(params.get(1), "shortHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Short>>", ClassKind.HANDLER);
@@ -627,6 +629,7 @@ public class GeneratorTest {
       checkClassParam(params.get(33), "setJsonObjectHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<" + JsonObject.class.getName() + ">>>", ClassKind.HANDLER);
       checkClassParam(params.get(34), "setJsonArrayHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<" + JsonArray.class.getName() + ">>>", ClassKind.HANDLER);
       checkClassParam(params.get(35), "voidHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Void>>", ClassKind.HANDLER);
+      checkClassParam(params.get(36), "optionsHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<" + TestOptions.class.getName() + ">>", ClassKind.HANDLER);
     };
 
     MethodInfo method = model.getMethods().get(0);

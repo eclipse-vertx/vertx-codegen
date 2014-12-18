@@ -141,7 +141,7 @@ public class ProxyModel extends ClassModel {
         TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getArgs().get(0);
         if (resultType.getKind().json || resultType.getKind().basic ||
           isLegalListSetMapResult(resultType) || resultType.getKind() == ClassKind.VOID ||
-          resultType.getKind() == ClassKind.ENUM) {
+          resultType.getKind() == ClassKind.ENUM || resultType.getKind() == ClassKind.OPTIONS) {
           return true;
         }
         if (resultType.getKind() == ClassKind.API) {

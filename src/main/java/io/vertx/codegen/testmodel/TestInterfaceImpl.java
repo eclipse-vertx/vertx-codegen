@@ -164,6 +164,16 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public void methodWithHandlerAsyncResultOptions(boolean sendFailure, Handler<AsyncResult<TestOptions>> handler) {
+    if (sendFailure) {
+      Exception e = new Exception("foobar!");
+      handler.handle(Future.failedFuture(e));
+    } else {
+      handler.handle(Future.succeededFuture(new TestOptions().setFoo("foo").setBar(123)));
+    }
+  }
+
+  @Override
   public void methodWithUserTypes(RefedInterface1 refed) {
     assertEquals("aardvarks", refed.getString());
   }
@@ -478,6 +488,12 @@ public class TestInterfaceImpl implements TestInterface {
   @Override
   public void methodWithHandlerThrowable(Handler<Throwable> handler) {
     handler.handle(new VertxException("cheese!"));
+  }
+
+  @Override
+  public void methodWithHandlerOptions(Handler<TestOptions> handler) {
+    TestOptions options = new TestOptions().setFoo("foo").setBar(123);
+    handler.handle(options);
   }
 
   @Override
