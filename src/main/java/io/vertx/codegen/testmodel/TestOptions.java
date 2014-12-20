@@ -54,4 +54,12 @@ public class TestOptions {
     this.wibble = wibble;
     return this;
   }
+
+  public JsonObject toJson() {
+    JsonObject json = new JsonObject();
+    json.put("foo", this.foo);
+    json.put("bar", this.bar);
+    json.put("wibble", this.wibble);
+    return json;
+  }
 }

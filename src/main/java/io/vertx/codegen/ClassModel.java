@@ -23,6 +23,7 @@ import io.vertx.codegen.annotations.IndexGetter;
 import io.vertx.codegen.annotations.IndexSetter;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
+import io.vertx.core.json.JsonObject;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
@@ -41,6 +42,8 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -357,7 +360,7 @@ public class ClassModel implements Model {
       TypeInfo eventType = ((TypeInfo.Parameterized) type).getArgs().get(0);
       if (eventType.getKind().json || eventType.getKind().basic || isVertxGenInterface(eventType) ||
           isLegalListOrSetForHandler(eventType) || eventType.getKind() == ClassKind.VOID ||
-          eventType.getKind() == ClassKind.THROWABLE || isVariableType(eventType) || isOptionType(eventType)) {
+          eventType.getKind() == ClassKind.THROWABLE || isVariableType(eventType) || isOptionTypeWithToJson(eventType)) {
         return true;
       }
     }
@@ -371,10 +374,29 @@ public class ClassModel implements Model {
         TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getArgs().get(0);
         if (resultType.getKind().json || resultType.getKind().basic || isVertxGenInterface(resultType) ||
             isLegalListOrSetForHandler(resultType) || resultType.getKind() == ClassKind.VOID ||
-            isVariableType(resultType) || isOptionType(resultType)) {
+            isVariableType(resultType) || isOptionTypeWithToJson(resultType)) {
           return true;
         }
       }
+    }
+    return false;
+  }
+
+  protected boolean isOptionTypeWithToJson(TypeInfo type) {
+    if (type.getKind() == ClassKind.OPTIONS) {
+      try {
+        Class<?> c = Class.forName(type.getName());
+        List<Method> list = Arrays.asList(c.getMethods()).stream()
+          .filter(m -> "toJson".equals(m.getName()) && m.getReturnType().equals(JsonObject.class))
+          .collect(Collectors.toList());
+
+        if (!list.isEmpty()) { // we have our toJson method
+          return true;
+        }
+
+      } catch (Exception e) {
+      }
+
     }
     return false;
   }
