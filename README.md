@@ -257,8 +257,14 @@ The `ParamInfo` object has the following fields:
 * `type`. The type of the parameter as a `TypeInfo`
 * `options`. `true` If the parameter is an options type.
 
+The `PropertyInfo` object has the following fields:
 
-
+* `declared`. True if ... ???
+* `name`. The name of the property
+* `type`. The type of the property as `TypeInfo`
+* `methodName`. The name of the setter/adder method in Java
+* `array`. True if the property is an array
+* `adder`. True if the property is an adder (addSomething)
 
 
 
