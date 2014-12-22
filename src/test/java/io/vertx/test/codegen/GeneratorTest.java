@@ -67,7 +67,6 @@ import io.vertx.test.codegen.testapi.MethodWithInvalidMapParams1;
 import io.vertx.test.codegen.testapi.MethodWithInvalidMapParams2;
 import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn1;
 import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn2;
-import io.vertx.test.codegen.testapi.MethodWithInvalidOptionsParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidParameterized;
 import io.vertx.test.codegen.testapi.MethodWithInvalidParameterizedReturn;
 import io.vertx.test.codegen.testapi.MethodWithInvalidSetParams1;
