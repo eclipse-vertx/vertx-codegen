@@ -178,7 +178,7 @@ There should be a single MVEL template for each language API that is to be gener
 The template will be called once for each interface that is annotated with `@VertxGen` in the Java API. One
 output file (e.g. one .js file) will be created for each Java interface.
 
-### Template variables
+### Template variables for classes / interfaces
 
 The following variables are made available to templates:
 
@@ -186,7 +186,7 @@ The following variables are made available to templates:
 * `ifaceFQCN` - the fully qualified class name of the Java interface
 * `ifacePackageName` - the name of the Java package the Java interface belongs to
 * `ifaceComment` - the class comment from the Java interface
-* `concrete` - true when the interface is implemented by vert.x useful to decide the generation of a class or interface in the API shim
+* `concrete` - true when the interface is implemented by vert.x - useful to decide the generation of a class or interface in the API shim
 * `helper` - a helper class that of type `io.vertx.codegen.Helper` which contains useful methods for things such as
 converting CamelCase to underscores.
 * `methods` - a list of `MethodInfo` objects describing each method in the interface.
@@ -195,8 +195,20 @@ are referenced from the current interface
 * `superTypes` - a list of `TypeInfo` representing the set of user defined types which the current interface extends from
 * `concreteSuperTypes` - subset of `superTypes` which are *concrete*
 * `abstractSuperTypes` - subset of `superTypes` which are *abstract*
-* `methodMap` - this is a Map<String, MethodInfo> - which allows you to look up all methods with a given name
+* `methodMap` - this is a `Map<String, MethodInfo>` - which allows you to look up all methods with a given name
 * `importedTypes`- this is a `Set<TypeInfo>` containing the types used by this class
+
+### Template variables in options
+
+* `type` - the `TypeInfo` of the current option
+* `concrete`" - true when the option is implemented by vert.x - useful to decide the generation of a class or interface in the API shim
+* `properties` - a `Set<PropertyInfo>` of the available properties in this option
+* `importedTypes` - the imported types by the option
+* `superTypes` - a list of `TypeInfo` representing the set of user defined types which the current interface extends from
+* `superType` - the supertype of this option ???
+* `abstractSuperTypes` - subset of `superTypes` which are *abstract*
+
+### Types of template variables
 
 The `TypeInfo` represents a Java type:
 
