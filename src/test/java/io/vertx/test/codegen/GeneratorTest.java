@@ -57,6 +57,8 @@ import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultParam;
 import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerNonVertxGenReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerParam;
+import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerAsyncResultOptionsParam;
+import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerOptionsParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidListParams1;
 import io.vertx.test.codegen.testapi.MethodWithInvalidListParams2;
 import io.vertx.test.codegen.testapi.MethodWithInvalidListReturn1;
@@ -65,6 +67,7 @@ import io.vertx.test.codegen.testapi.MethodWithInvalidMapParams1;
 import io.vertx.test.codegen.testapi.MethodWithInvalidMapParams2;
 import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn1;
 import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn2;
+import io.vertx.test.codegen.testapi.MethodWithInvalidOptionsParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidParameterized;
 import io.vertx.test.codegen.testapi.MethodWithInvalidParameterizedReturn;
 import io.vertx.test.codegen.testapi.MethodWithInvalidSetParams1;
@@ -1665,6 +1668,26 @@ public class GeneratorTest {
     try {
       new Generator().generateClass(MethodWithInvalidSetParams2.class);
       fail("Invalid Map return should fail");
+    } catch (GenException e) {
+      // pass
+    }
+  }
+
+  @Test
+  public void testMethodInvalidHandlerOptionsParam() throws Exception {
+    try {
+      new Generator().generateClass(MethodWithInvalidHandlerOptionsParam.class);
+      fail("Option without toJson() in Handler param should fail");
+    } catch (GenException e) {
+      // pass
+    }
+  }
+
+  @Test
+  public void testMethodInvalidHandlerAsyncResultOptionsParam() throws Exception {
+    try {
+      new Generator().generateClass(MethodWithInvalidHandlerAsyncResultOptionsParam.class);
+      fail("Option without toJson() in AsyncResult param should fail");
     } catch (GenException e) {
       // pass
     }
