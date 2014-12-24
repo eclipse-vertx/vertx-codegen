@@ -36,6 +36,7 @@ import io.vertx.test.codegen.testoptions.ImportedSubinterface;
 import io.vertx.test.codegen.testoptions.JsonObjectAdder;
 import io.vertx.test.codegen.testoptions.JsonObjectSetter;
 import io.vertx.test.codegen.testoptions.ListBasicSetters;
+import io.vertx.test.codegen.testoptions.OptionWithGetterAndSetter;
 import io.vertx.test.codegen.testoptions.Parameterized;
 import io.vertx.test.codegen.testoptions.SetterNormalizationRules;
 import io.vertx.test.codegen.testoptions.SetterWithNestedOptions;
@@ -133,7 +134,7 @@ public class OptionsTest {
   public void testBasicGetters() throws Exception {
     OptionsModel model = new Generator().generateOptions(BasicGetters.class);
     assertNotNull(model);
-    assertEquals(0, model.getPropertyMap().size());
+    assertEquals(5, model.getPropertyMap().size());
   }
 
   @Test
@@ -318,6 +319,17 @@ public class OptionsTest {
     OptionsModel model = new Generator().generateOptions(ImportedNested.class);
     assertNotNull(model);
     assertEquals(Collections.singleton((TypeInfo.Class) TypeInfo.create(Imported.class)), model.getImportedTypes());
+  }
+
+  @Test
+  public void testOptionWithGetterAndSetter() throws Exception {
+    OptionsModel model = new Generator().generateOptions(OptionWithGetterAndSetter.class);
+    assertNotNull(model);
+    assertEquals(1, model.getPropertyMap().size());
+    PropertyInfo prop = model.getPropertyMap().get("someValue");
+    assertProperty(prop, "someValue", TypeInfo.create(String.class), true, false, false);
+    assertEquals(prop.getGetter(), "getSomeValue");
+    assertEquals(prop.getMethodName(), "setSomeValue");
   }
 
   private static void assertProperty(PropertyInfo property, String expectedName, TypeInfo expectedType,
