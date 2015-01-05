@@ -42,8 +42,6 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -53,6 +51,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -384,19 +383,18 @@ public class ClassModel implements Model {
 
   protected boolean isOptionTypeWithToJson(TypeInfo type) {
     if (type.getKind() == ClassKind.OPTIONS) {
-      try {
-        Class<?> c = Class.forName(type.getName());
-        List<Method> list = Arrays.asList(c.getMethods()).stream()
-          .filter(m -> "toJson".equals(m.getName()) && m.getReturnType().equals(JsonObject.class))
-          .collect(Collectors.toList());
-
-        if (!list.isEmpty()) { // we have our toJson method
-          return true;
-        }
-
-      } catch (Exception e) {
+      TypeElement typeElt = elementUtils.getTypeElement(type.getName());
+      if (typeElt != null) {
+        Optional<ExecutableElement> opt = elementUtils.
+            getAllMembers(typeElt).
+            stream().
+            flatMap(Helper.FILTER_METHOD).
+            filter(m -> m.getSimpleName().toString().equals("toJson") &&
+                m.getParameters().isEmpty() &&
+                m.getReturnType().toString().equals(JsonObject.class.getName())).
+            findFirst();
+        return opt.isPresent();
       }
-
     }
     return false;
   }
