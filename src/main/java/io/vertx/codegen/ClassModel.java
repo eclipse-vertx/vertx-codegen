@@ -732,6 +732,7 @@ public class ClassModel implements Model {
     vars.put("staticMethods", getStaticMethods());
     vars.putAll(ClassKind.vars());
     vars.putAll(MethodKind.vars());
+    vars.putAll(Case.vars());
     return vars;
   }
 

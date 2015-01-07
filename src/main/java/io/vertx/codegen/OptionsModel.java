@@ -107,6 +107,7 @@ public class OptionsModel implements Model {
     vars.put("abstractSuperTypes", abstractSuperTypes);
     vars.putAll(ClassKind.vars());
     vars.putAll(MethodKind.vars());
+    vars.putAll(Case.vars());
     return vars;
   }
 

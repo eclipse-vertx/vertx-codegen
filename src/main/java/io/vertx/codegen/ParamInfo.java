@@ -33,6 +33,10 @@ public class ParamInfo {
     return name;
   }
 
+  public String getName(Case _case) {
+    return _case.format(Case.CAMEL.parse(name));
+  }
+
   public TypeInfo getType() {
     return type;
   }
