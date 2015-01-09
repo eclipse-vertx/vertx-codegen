@@ -28,4 +28,12 @@ public class ModuleInfo {
   public String getName() {
     return name;
   }
+
+  /**
+   * @param _case the formatting case
+   * @return the module name in the specified case
+   */
+  public String getName(Case _case) {
+    return _case.format(Case.CAMEL.parse(name));
+  }
 }
