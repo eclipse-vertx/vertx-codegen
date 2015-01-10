@@ -39,6 +39,7 @@ import io.vertx.test.codegen.testapi.InterfaceWithNoMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithNoNotIgnoredMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithNonGenSuperType;
 import io.vertx.test.codegen.testapi.InterfaceWithOverloadedFutureMethod;
+import io.vertx.test.codegen.testapi.InterfaceWithOverloadedInstanceAndStaticMethod;
 import io.vertx.test.codegen.testapi.InterfaceWithOverloadedMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedArraySupertype;
 import io.vertx.test.codegen.testapi.InterfaceWithParameterizedDeclaredSupertype;
@@ -1386,6 +1387,11 @@ public class GeneratorTest {
     Signature fooSignature = foos.get(1).getSignature();
     fooSignature.getParams().remove(1);
     assertEquals(foos.get(0).getSignature(), fooSignature);
+  }
+
+  @Test
+  public void testOverloadedInstanceAndStaticMethod() throws Exception {
+    assertGenInvalid(InterfaceWithOverloadedInstanceAndStaticMethod.class);
   }
 
   @Test

@@ -522,15 +522,24 @@ public class ClassModel implements Model {
       }
       sortMethodMap(methodMap);
 
-      // Now check for ambiguous overloaded methods
+      // Now check for overloaded methods
       for (List<MethodInfo> meths: methodMap.values()) {
+
+        // Ambiguous
         try {
           methodOverloadChecker.checkAmbiguous(meths);
         } catch (RuntimeException e) {
           throw new GenException(elem, e.getMessage());
         }
-      }
 
+        // Cannot be both static and non static
+        MethodInfo first = meths.get(0);
+        for (MethodInfo method : meths) {
+          if (method.staticMethod != first.staticMethod) {
+            throw new GenException(elem, "Overloaded method " + method.getName() + " cannot be both static and instance");
+          }
+        }
+      }
     }
   }
 
