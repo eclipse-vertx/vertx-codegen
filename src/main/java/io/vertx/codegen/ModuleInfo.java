@@ -34,6 +34,6 @@ public class ModuleInfo {
    * @return the module name in the specified case
    */
   public String getName(Case _case) {
-    return _case.format(Case.CAMEL.parse(name));
+    return _case.format(Case.KEBAB.parse(name));
   }
 }
