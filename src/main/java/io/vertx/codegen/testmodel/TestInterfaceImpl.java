@@ -795,29 +795,177 @@ public class TestInterfaceImpl implements TestInterface {
 
   @Override
   public Map<String, String> methodWithMapStringReturn(Handler<String> handler) {
-    Map<String, String> map = new HandlerTestMap<>(handler);
+    Map<String, String> map = new HandlerTestMap<String>(handler) {
+      /**
+       * This method exists on purpose. On a put, this force a cast to String allowing us to test
+       * that values are converted properly.
+       */
+      @Override
+      public String put(String key, String value) {
+        return super.put(key, value);
+      }
+    };
     map.put("foo", "bar");
     return map;
   }
 
   @Override
   public Map<String, JsonObject> methodWithMapJsonObjectReturn(Handler<String> handler) {
-    Map<String, JsonObject> map = new HandlerTestMap<>(handler);
+    Map<String, JsonObject> map = new HandlerTestMap<JsonObject>(handler) {
+      /**
+       * This method exists on purpose. On a put, this force a cast to JsonObject allowing us to test
+       * that values are converted properly.
+       */
+      @Override
+      public JsonObject put(String key, JsonObject value) {
+        return super.put(key, value);
+      }
+    };
     map.put("foo", new JsonObject().put("wibble", "eek"));
     return map;
   }
 
   @Override
   public Map<String, JsonArray> methodWithMapJsonArrayReturn(Handler<String> handler) {
-    Map<String, JsonArray> map = new HandlerTestMap<>(handler);
+    Map<String, JsonArray> map = new HandlerTestMap<JsonArray>(handler) {
+      /**
+       * This method exists on purpose. On a put, this force a cast to JsonArray allowing us to test
+       * that values are converted properly.
+       */
+      @Override
+      public JsonArray put(String key, JsonArray value) {
+        return super.put(key, value);
+      }
+    };
     map.put("foo", new JsonArray().add("wibble"));
     return map;
   }
 
   @Override
   public Map<String, Long> methodWithMapLongReturn(Handler<String> handler) {
-    Map<String, Long> map = new HandlerTestMap<>(handler);
+    Map<String, Long> map = new HandlerTestMap<Long>(handler) {
+      /**
+       * This method exists on purpose. On a put, this force a cast to Long allowing us to test
+       * that values are converted properly.
+       */
+      @Override
+      public Long put(String key, Long value) {
+        return super.put(key, value);
+      }
+    };
     map.put("foo", 123l);
+    return map;
+  }
+
+  @Override
+  public Map<String, Integer> methodWithMapIntegerReturn(Handler<String> handler) {
+    Map<String, Integer> map = new HandlerTestMap<Integer>(handler) {
+      /**
+       * This method exists on purpose. On a put, this force a cast to Integer allowing us to test
+       * that values are converted properly.
+       */
+      @Override
+      public Integer put(String key, Integer value) {
+        return super.put(key, value);
+      }
+    };
+    map.put("foo", 123);
+    return map;
+  }
+
+  @Override
+  public Map<String, Short> methodWithMapShortReturn(Handler<String> handler) {
+    Map<String, Short> map = new HandlerTestMap<Short>(handler) {
+      /**
+       * This method exists on purpose. On a put, this force a cast to Short allowing us to test
+       * that values are converted properly.
+       */
+      @Override
+      public Short put(String key, Short value) {
+        return super.put(key, value);
+      }
+    };
+    map.put("foo", (short)123);
+    return map;
+  }
+
+  @Override
+  public Map<String, Byte> methodWithMapByteReturn(Handler<String> handler) {
+    Map<String, Byte> map = new HandlerTestMap<Byte>(handler) {
+      /**
+       * This method exists on purpose. On a put, this force a cast to Byte allowing us to test
+       * that values are converted properly.
+       */
+      @Override
+      public Byte put(String key, Byte value) {
+        return super.put(key, value);
+      }
+    };
+    map.put("foo", (byte)123);
+    return map;
+  }
+
+  @Override
+  public Map<String, Character> methodWithMapCharacterReturn(Handler<String> handler) {
+    Map<String, Character> map = new HandlerTestMap<Character>(handler) {
+      /**
+       * This method exists on purpose. On a put, this force a cast to Character allowing us to test
+       * that values are converted properly.
+       */
+      @Override
+      public Character put(String key, Character value) {
+        return super.put(key, value);
+      }
+    };
+    map.put("foo", 'X');
+    return map;
+  }
+
+  @Override
+  public Map<String, Boolean> methodWithMapBooleanReturn(Handler<String> handler) {
+    Map<String, Boolean> map = new HandlerTestMap<Boolean>(handler) {
+      /**
+       * This method exists on purpose. On a put, this force a cast to Boolean allowing us to test
+       * that values are converted properly.
+       */
+      @Override
+      public Boolean put(String key, Boolean value) {
+        return super.put(key, value);
+      }
+    };
+    map.put("foo", true);
+    return map;
+  }
+
+  @Override
+  public Map<String, Float> methodWithMapFloatReturn(Handler<String> handler) {
+    Map<String, Float> map = new HandlerTestMap<Float>(handler) {
+      /**
+       * This method exists on purpose. On a put, this force a cast to Float allowing us to test
+       * that values are converted properly.
+       */
+      @Override
+      public Float put(String key, Float value) {
+        return super.put(key, value);
+      }
+    };
+    map.put("foo", 0.123f);
+    return map;
+  }
+
+  @Override
+  public Map<String, Double> methodWithMapDoubleReturn(Handler<String> handler) {
+    Map<String, Double> map = new HandlerTestMap<Double>(handler) {
+      /**
+       * This method exists on purpose. On a put, this force a cast to Double allowing us to test
+       * that values are converted properly.
+       */
+      @Override
+      public Double put(String key, Double value) {
+        return super.put(key, value);
+      }
+    };
+    map.put("foo", 0.123d);
     return map;
   }
 

@@ -205,6 +205,20 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   Map<String, Long> methodWithMapLongReturn(Handler<String> handler);
 
+  Map<String, Integer> methodWithMapIntegerReturn(Handler<String> handler);
+
+  Map<String, Short> methodWithMapShortReturn(Handler<String> handler);
+
+  Map<String, Byte> methodWithMapByteReturn(Handler<String> handler);
+
+  Map<String, Character> methodWithMapCharacterReturn(Handler<String> handler);
+
+  Map<String, Boolean> methodWithMapBooleanReturn(Handler<String> handler);
+
+  Map<String, Float> methodWithMapFloatReturn(Handler<String> handler);
+
+  Map<String, Double> methodWithMapDoubleReturn(Handler<String> handler);
+
   Map<String, JsonObject> methodWithMapJsonObjectReturn(Handler<String> handler);
 
   Map<String, JsonArray> methodWithMapJsonArrayReturn(Handler<String> handler);
