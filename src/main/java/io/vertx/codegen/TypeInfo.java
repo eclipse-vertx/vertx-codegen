@@ -404,6 +404,10 @@ public abstract class TypeInfo {
       return packageName;
     }
 
+    public String getSimpleName(Case _case) {
+      return _case.format(Case.CAMEL.parse(simpleName));
+    }
+
     public boolean isProxyGen() {
       return proxyGen;
     }
