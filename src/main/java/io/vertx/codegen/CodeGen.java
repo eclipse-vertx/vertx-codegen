@@ -128,8 +128,14 @@ public class CodeGen {
   public ModuleModel getModuleModel(String fqcn) {
     PackageElement element = modules.get(fqcn);
     GenModule annotation = element.getAnnotation(GenModule.class);
-    if (annotation.name().isEmpty()) {
+    String moduleName = annotation.name();
+    if (moduleName.isEmpty()) {
       throw new GenException(element, "A module name cannot be empty");
+    }
+    try {
+      Case.KEBAB.parse(moduleName);
+    } catch (IllegalArgumentException e) {
+      throw new GenException(element, "Module name '" + moduleName + "' does not follow the snake case format (dash separated name)");
     }
     PackageElement pkgElt = element;
     while (true) {
@@ -144,7 +150,7 @@ public class CodeGen {
         }
       }
     }
-    return new ModuleModel(element, new ModuleInfo(fqcn, annotation.name()));
+    return new ModuleModel(element, new ModuleInfo(fqcn, moduleName));
   }
 
   public PackageModel getPackageModel(String fqn) {

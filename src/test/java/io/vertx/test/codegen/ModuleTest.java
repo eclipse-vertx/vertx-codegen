@@ -37,9 +37,18 @@ public class ModuleTest {
   }
 
   @Test
-  public void testEmptyModuleModel() throws Exception {
+  public void testEmptyNameModuleModel() throws Exception {
     try {
       new Generator().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.emptynamemodule");
+      fail();
+    } catch (GenException expected) {
+    }
+  }
+
+  @Test
+  public void testIllegalNameModuleModel() throws Exception {
+    try {
+      new Generator().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.illegalnamemodule");
       fail();
     } catch (GenException expected) {
     }

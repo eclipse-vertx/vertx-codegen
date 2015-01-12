@@ -33,8 +33,8 @@ public enum Case {
       return sb.toString();
     }
     @Override
-    public List<String> parse(String s) {
-      String[] atoms = s.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])");
+    public List<String> parse(String name) {
+      String[] atoms = name.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])");
       if (atoms.length == 1 && atoms[0].isEmpty()) {
         return Collections.emptyList();
       } else {
@@ -59,11 +59,11 @@ public enum Case {
     }
     private final Pattern validator = Pattern.compile("(?:\\p{Alnum}|(?:(?<=\\p{Alnum})\\.(?=\\p{Alnum})))*");
     @Override
-    public List<String> parse(String s) {
-      if (!validator.matcher(s).matches()) {
-        throw new IllegalArgumentException("Invalid qualified case:" + s);
+    public List<String> parse(String name) {
+      if (!validator.matcher(name).matches()) {
+        throw new IllegalArgumentException("Invalid qualified case:" + name);
       }
-      return split(s, "\\.");
+      return split(name, "\\.");
     }
   },
 
@@ -86,11 +86,11 @@ public enum Case {
     }
     private final Pattern validator = Pattern.compile("(?:\\p{Alnum}|(?:(?<=\\p{Alnum})-(?=\\p{Alnum})))*");
     @Override
-    public List<String> parse(String s) {
-      if (!validator.matcher(s).matches()) {
-        throw new IllegalArgumentException("Invalid kebab case:" + s);
+    public List<String> parse(String name) {
+      if (!validator.matcher(name).matches()) {
+        throw new IllegalArgumentException("Invalid kebab case:" + name);
       }
-      return split(s, "\\-");
+      return split(name, "\\-");
     }
   },
 
@@ -113,17 +113,24 @@ public enum Case {
     }
     private final Pattern validator = Pattern.compile("(?:\\p{Alnum}|(?:(?<=\\p{Alnum})_(?=\\p{Alnum})))*");
     @Override
-    public List<String> parse(String s) {
-      if (!validator.matcher(s).matches()) {
-        throw new IllegalArgumentException("Invalid snake case:" + s);
+    public List<String> parse(String name) {
+      if (!validator.matcher(name).matches()) {
+        throw new IllegalArgumentException("Invalid snake case:" + name);
       }
-      return split(s, "_");
+      return split(name, "_");
     }
   };
 
   public abstract String format(Iterable<String> atoms);
 
-  public abstract List<String> parse(String s);
+  /**
+   * Parse the {@code name} argument and returns a list of the name atoms.
+   *
+   * @param name the name to parse
+   * @return the name atoms
+   * @throws IllegalArgumentException if the name has a syntax error
+   */
+  public abstract List<String> parse(String name);
 
   private static List<String> split(String s, String regex) {
     String[] atoms = s.split(regex);
