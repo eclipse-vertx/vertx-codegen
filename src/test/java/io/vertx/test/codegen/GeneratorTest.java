@@ -697,6 +697,8 @@ public class GeneratorTest {
       checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 1);
       List<ParamInfo> params = method.getParams();
       checkClassParam(params.get(0), "weirdo", TestEnum.class.getName(), ClassKind.ENUM);
+      TypeInfo.Class.Enum enumType = (TypeInfo.Class.Enum) params.get(0).getType();
+      assertEquals(Arrays.asList("TIM", "JULIEN", "NICK", "WESTON"), enumType.getValues());
     };
 
     MethodInfo method = model.getMethods().get(0);

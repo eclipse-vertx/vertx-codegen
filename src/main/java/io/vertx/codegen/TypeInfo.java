@@ -149,48 +149,53 @@ public abstract class TypeInfo {
         }
       }
       String fqcn = typeUtils.erasure(type).toString();
-      ClassKind kind;
-      if (elt.getKind() == ElementKind.ENUM) {
-        kind = ClassKind.ENUM;
-      } else {
-        kind = Helper.getKind(annotationType -> elt.getAnnotation(annotationType), fqcn);
-      }
-      Class raw;
       boolean proxyGen = elt.getAnnotation(ProxyGen.class) != null;
-      if (kind == ClassKind.API) {
-        VertxGen genAnn = elt.getAnnotation(VertxGen.class);
-        TypeElement readStreamElt = elementUtils.getTypeElement(ClassModel.VERTX_READ_STREAM);
-        TypeMirror readStreamType = readStreamElt.asType();
-        TypeElement writeStreamElt = elementUtils.getTypeElement(ClassModel.VERTX_WRITE_STREAM);
-        TypeMirror writeStreamType = writeStreamElt.asType();
-        TypeMirror readStreamRawType = typeUtils.erasure(readStreamType);
-        TypeMirror writeStreamRawType = typeUtils.erasure(writeStreamType);
-        TypeInfo readStreamArg = null;
-        if (typeUtils.isSubtype(type, readStreamRawType)) {
-          TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, readStreamElt.getTypeParameters().get(0));
-          readStreamArg = create(resolved);
+      if (elt.getKind() == ElementKind.ENUM) {
+        ArrayList<String> values = new ArrayList<>();
+        for (Element enclosedElt : elt.getEnclosedElements()) {
+          if (enclosedElt.getKind() == ElementKind.ENUM_CONSTANT) {
+            values.add(enclosedElt.getSimpleName().toString());
+          }
         }
-        TypeInfo writeStreamArg = null;
-        if (typeUtils.isSubtype(type, writeStreamRawType)) {
-          TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, writeStreamElt.getTypeParameters().get(0));
-          writeStreamArg = create(resolved);
-        }
-        raw = new Class.Api(fqcn, genAnn.concrete(), readStreamArg, writeStreamArg, module, proxyGen);
+        return new Class.Enum(fqcn, values, module, proxyGen);
       } else {
-        raw = new Class(kind, fqcn, module, proxyGen);
-      }
-      List<? extends TypeMirror> typeArgs = type.getTypeArguments();
-      if (typeArgs.size() > 0) {
-        List<TypeInfo> typeArguments;
-        typeArguments = new ArrayList<>(typeArgs.size());
-        for (TypeMirror typeArg : typeArgs) {
-          TypeInfo typeArgDesc = create(typeArg);
-          // Need to check it is an interface type
-          typeArguments.add(typeArgDesc);
+        ClassKind kind = Helper.getKind(annotationType -> elt.getAnnotation(annotationType), fqcn);
+        Class raw;
+        if (kind == ClassKind.API) {
+          VertxGen genAnn = elt.getAnnotation(VertxGen.class);
+          TypeElement readStreamElt = elementUtils.getTypeElement(ClassModel.VERTX_READ_STREAM);
+          TypeMirror readStreamType = readStreamElt.asType();
+          TypeElement writeStreamElt = elementUtils.getTypeElement(ClassModel.VERTX_WRITE_STREAM);
+          TypeMirror writeStreamType = writeStreamElt.asType();
+          TypeMirror readStreamRawType = typeUtils.erasure(readStreamType);
+          TypeMirror writeStreamRawType = typeUtils.erasure(writeStreamType);
+          TypeInfo readStreamArg = null;
+          if (typeUtils.isSubtype(type, readStreamRawType)) {
+            TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, readStreamElt.getTypeParameters().get(0));
+            readStreamArg = create(resolved);
+          }
+          TypeInfo writeStreamArg = null;
+          if (typeUtils.isSubtype(type, writeStreamRawType)) {
+            TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, writeStreamElt.getTypeParameters().get(0));
+            writeStreamArg = create(resolved);
+          }
+          raw = new Class.Api(fqcn, genAnn.concrete(), readStreamArg, writeStreamArg, module, proxyGen);
+        } else {
+          raw = new Class(kind, fqcn, module, proxyGen);
         }
-        return new Parameterized(raw, typeArguments);
-      } else {
-        return raw;
+        List<? extends TypeMirror> typeArgs = type.getTypeArguments();
+        if (typeArgs.size() > 0) {
+          List<TypeInfo> typeArguments;
+          typeArguments = new ArrayList<>(typeArgs.size());
+          for (TypeMirror typeArg : typeArgs) {
+            TypeInfo typeArgDesc = create(typeArg);
+            // Need to check it is an interface type
+            typeArguments.add(typeArgDesc);
+          }
+          return new Parameterized(raw, typeArguments);
+        } else {
+          return raw;
+        }
       }
     }
 
@@ -440,6 +445,24 @@ public abstract class TypeInfo {
     @Override
     public String format(boolean qualified) {
       return qualified ? fqcn : simpleName;
+    }
+
+    public static class Enum extends Class {
+
+      final List<String> values;
+
+      public Enum(String fqcn, List<String> values, ModuleInfo module, boolean proxyGen) {
+        super(ClassKind.ENUM, fqcn, module, proxyGen);
+
+        this.values = values;
+      }
+
+      /**
+       * @return the enum possible values
+       */
+      public List<String> getValues() {
+        return values;
+      }
     }
 
     /**
