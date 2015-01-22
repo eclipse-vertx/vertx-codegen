@@ -231,7 +231,9 @@ public class OptionsModel implements Model {
             return;
           }
           VariableElement parameterElt = parameters.get(0);
+
           TypeInfo type = typeFactory.create(parameterElt.asType());
+
           boolean array;
           boolean adder;
           if ("add".equals(prefix)) {
@@ -251,47 +253,91 @@ public class OptionsModel implements Model {
               array = false;
             }
           }
-          switch (type.getKind()) {
-            case PRIMITIVE:
-            case BOXED_PRIMITIVE:
-            case STRING:
-            case OPTIONS:
-            case API:
-            case JSON_OBJECT:
-              break;
-            default:
-              return;
+
+          if (!typeIsOkay(type)) {
+            return;
           }
 
-          boolean declared;
-          Element ownerElt = methodElt.getEnclosingElement();
-          if (ownerElt.equals(modelElt)) {
-            // Handle the case where this methods overrides from another options
-            declared = true;
-            for (TypeMirror superTM : modelElt.getInterfaces()) {
-              DeclaredType superDT = (DeclaredType) superTM;
-              if (superDT.asElement().getAnnotation(Options.class) != null) {
-                for (Element foo : elementUtils.getAllMembers((TypeElement) superDT.asElement())) {
-                  if (foo instanceof ExecutableElement) {
-                    if (elementUtils.overrides(methodElt, (ExecutableElement) foo, modelElt)) {
-                      declared = false;
-                    }
-                  }
-                }
-              }
+          boolean declared = getDeclared(methodElt);
+
+          String getter = null;
+          if (propertyMap.containsKey(name)) {
+            PropertyInfo prop = propertyMap.get(name);
+            getter = prop.getter;
+            if (!prop.type.getName().equals(type.getName())) {
+              throw new GenException(methodElt, "Option " + methodElt + " has a getter / setter with different types");
             }
-          } else {
-            declared = ownerElt.getAnnotation(Options.class) == null;
+          }
+          PropertyInfo property = new PropertyInfo(declared, name, type, methodName, array, adder, getter);
+          propertyMap.put(name, property);
+          return;
+        }
+        case "is":
+        case "get": {
+          if (parameters.size() != 0) {
+            return;
           }
 
-          PropertyInfo property = new PropertyInfo(declared, name, type, methodName, array, adder);
-          if (propertyMap.containsKey(property.name)) {
-            //
+          TypeInfo type = typeFactory.create(methodElt.getReturnType());
+          if (!typeIsOkay(type)) {
+            return;
           }
-          propertyMap.put(property.name, property);
+
+          boolean declared = getDeclared(methodElt);
+          boolean array = false;
+          boolean adder = false;
+          String setter = null;
+          if (propertyMap.containsKey(name)) {
+            PropertyInfo prop = propertyMap.get(name);
+            setter = prop.methodName;
+            if (!prop.type.getName().equals(type.getName())) {
+              throw new GenException(methodElt, "Option " + methodElt + " has a getter / setter with different types");
+            }
+            array = prop.array;
+            adder = prop.adder;
+          }
+          PropertyInfo property = new PropertyInfo(declared, name, type, setter, array, adder, methodName);
+          propertyMap.put(name, property);
           return;
         }
       }
     }
+  }
+
+  private boolean typeIsOkay(TypeInfo type) {
+    switch (type.getKind()) {
+      case PRIMITIVE:
+      case BOXED_PRIMITIVE:
+      case STRING:
+      case OPTIONS:
+      case API:
+      case JSON_OBJECT:
+        return true;
+      default:
+        return false;
+    }
+  }
+  private boolean getDeclared(ExecutableElement methodElt) {
+    boolean declared;
+    Element ownerElt = methodElt.getEnclosingElement();
+    if (ownerElt.equals(modelElt)) {
+      // Handle the case where this methods overrides from another options
+      declared = true;
+      for (TypeMirror superTM : modelElt.getInterfaces()) {
+        DeclaredType superDT = (DeclaredType) superTM;
+        if (superDT.asElement().getAnnotation(Options.class) != null) {
+          for (Element foo : elementUtils.getAllMembers((TypeElement) superDT.asElement())) {
+            if (foo instanceof ExecutableElement) {
+              if (elementUtils.overrides(methodElt, (ExecutableElement) foo, modelElt)) {
+                declared = false;
+              }
+            }
+          }
+        }
+      }
+    } else {
+      declared = ownerElt.getAnnotation(Options.class) == null;
+    }
+    return declared;
   }
 }
