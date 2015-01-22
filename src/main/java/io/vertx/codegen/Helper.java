@@ -28,12 +28,14 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +43,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -430,5 +435,105 @@ public class Helper {
       }
     }
     return null;
+  }
+
+  private static final Pattern P = Pattern.compile("#(\\p{javaJavaIdentifierStart}(?:\\p{javaJavaIdentifierPart})*)(?:\\((.*)\\))?$");
+
+  /**
+   * Resolves a documentation signature, null can be returned if no element can be resolved.
+   *
+   * @param elementUtils the element utils
+   * @param typeUtils the type utils
+   * @param signature the signature to resolve
+   * @return the resolved element
+   */
+  public static Element resolveSignature(Elements elementUtils, Types typeUtils, String signature) {
+    Matcher signatureMatcher = P.matcher(signature);
+    if (signatureMatcher.find()) {
+      String memberName = signatureMatcher.group(1);
+      String typeName = signature.substring(0, signatureMatcher.start());
+      TypeElement typeElt = elementUtils.getTypeElement(typeName);
+      Predicate<? super Element> memberMatcher;
+      if (signatureMatcher.group(2) != null) {
+        String t = signatureMatcher.group(2).trim();
+        Predicate<ExecutableElement> parametersMatcher;
+        if (t.length() == 0) {
+          parametersMatcher = exeElt -> exeElt.getParameters().isEmpty();
+        } else {
+          parametersMatcher = parametersMatcher(typeUtils, t.split("\\s*,\\s*"));
+        }
+        memberMatcher = elt -> matchesConstructor(elt, memberName, parametersMatcher) || matchesMethod(elt, memberName, parametersMatcher);
+      } else {
+        memberMatcher = elt -> matchesConstructor(elt, memberName, exeElt -> true) ||
+            matchesMethod(elt, memberName, exeElt -> true) ||
+            matchesField(elt, memberName);
+      }
+      // The order of kinds is important
+      for (ElementKind kind : Arrays.asList(ElementKind.FIELD, ElementKind.CONSTRUCTOR, ElementKind.METHOD)) {
+        for (Element memberElt : elementUtils.getAllMembers(typeElt)) {
+          if(memberElt.getKind() == kind && memberMatcher.test(memberElt)) {
+            return memberElt;
+          }
+        }
+      }
+      return null;
+    } else {
+      Element elt = elementUtils.getTypeElement(signature);
+      if (elt == null) {
+        elt = elementUtils.getPackageElement(signature);
+      }
+      return elt;
+    }
+  }
+
+  private static boolean matchesConstructor(Element elt, String memberName, Predicate<ExecutableElement> parametersMatcher) {
+    if (elt.getKind() == ElementKind.CONSTRUCTOR) {
+      ExecutableElement constructorElt = (ExecutableElement) elt;
+      TypeElement typeElt = (TypeElement) constructorElt.getEnclosingElement();
+      return typeElt.getSimpleName().toString().equals(memberName) && parametersMatcher.test(constructorElt);
+    }
+    return false;
+  }
+
+  private static boolean matchesMethod(Element elt, String memberName, Predicate<ExecutableElement> parametersMatcher) {
+    if (elt.getKind() == ElementKind.METHOD) {
+      ExecutableElement methodElt = (ExecutableElement) elt;
+      return methodElt.getSimpleName().toString().equals(memberName) && parametersMatcher.test(methodElt);
+    }
+    return false;
+  }
+
+  private static boolean matchesField(Element elt, String memberName) {
+    return elt.getKind() == ElementKind.FIELD && elt.getSimpleName().toString().equals(memberName);
+  }
+
+  /**
+   * Return a matcher for parameters, given the parameter type signature of an executable element. The parameter signature
+   * is a list of parameter types formatted as a signature, i.e all types are raw, or primitive, or arrays. Unqualified
+   * types are resolved against the import of the specified {@code compilationUnitTree} argument.
+   *
+   * @param parameterSignature the parameter type names
+   * @return the matcher
+   */
+  private static Predicate<ExecutableElement> parametersMatcher(Types typeUtils, String[] parameterSignature) {
+    return exeElt -> {
+      if (exeElt.getParameters().size() == parameterSignature.length) {
+        TypeMirror tm2  = exeElt.asType();
+        ExecutableType tm3  = (ExecutableType) typeUtils.erasure(tm2);
+        for (int j = 0;j < parameterSignature.length;j++) {
+          String t1 = tm3.getParameterTypes().get(j).toString();
+          String t2 = parameterSignature[j];
+          if (t2.indexOf('.') == -1) {
+            t1 = t1.substring(t1.lastIndexOf('.') + 1);
+          }
+          if (!t1.equals(t2)) {
+            return false;
+          }
+        }
+        return true;
+      } else {
+        return false;
+      }
+    };
   }
 }
