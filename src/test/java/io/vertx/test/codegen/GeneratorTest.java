@@ -2,12 +2,14 @@ package io.vertx.test.codegen;
 
 import io.vertx.codegen.ClassKind;
 import io.vertx.codegen.ClassModel;
+import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.GenException;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.MethodKind;
 import io.vertx.codegen.ParamInfo;
 import io.vertx.codegen.Signature;
+import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.TypeInfo;
 import io.vertx.codegen.TypeParamInfo;
 import io.vertx.codegen.testmodel.TestEnum;
@@ -1329,8 +1331,8 @@ public class GeneratorTest {
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
     assertEquals(2, model.getMethods().size());
-    String comment1 = " Comment 1 line 1\n Comment 1 line 2\n";
-    String comment2 = " Comment 2 line 1\n Comment 2 line 2\n";
+    Doc comment1 = new Doc(" Comment 1 line 1\n Comment 1 line 2", null, Arrays.asList(new Tag("param", "str the_string\n")));
+    Doc comment2 = new Doc(" Comment 2 line 1\n Comment 2 line 2\n");
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "foo", comment1, MethodKind.OTHER, "void", false, false, false, 1);
       checkMethod(methods.get(1), "bar", comment2, MethodKind.OTHER, "void", false, false, false, 1);
@@ -1345,14 +1347,11 @@ public class GeneratorTest {
     assertEquals(InterfaceWithComments.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
-    String comment =
+    String firstSentence =
       " Interface comment line 1\n" +
       " Interface comment line 2\n" +
-      " Interface comment line 3\n\n" +
-      " @author <a href=\"http://tfox.org\">Tim Fox</a>\n" +
-      " @version 12.2\n" +
-      " @see io.vertx.codegen.testmodel.TestInterface\n";
-    assertEquals(comment, model.getIfaceComment());
+      " Interface comment line 3";
+    assertEquals(firstSentence, model.getDoc().getFirstSentence().getValue());
   }
 
   @Test
@@ -1716,11 +1715,18 @@ public class GeneratorTest {
     assertEquals(InterfaceInImplContainingPackage.class.getName(), model.getFqn());
   }
 
-  private void checkMethod(MethodInfo meth, String name, String comment, MethodKind kind, String returnType, boolean cacheReturn,
+  private void checkMethod(MethodInfo meth, String name, Doc comment, MethodKind kind, String returnType, boolean cacheReturn,
                            boolean fluent, boolean staticMethod, int numParams) {
 
     assertEquals(name, meth.getName());
-    assertEquals(comment, meth.getComment());
+    if (comment != null) {
+      assertNotNull(meth.getComment());
+      assertEquals(comment.getFirstSentence(), meth.getDoc().getFirstSentence());
+      assertEquals(comment.getBody(), meth.getDoc().getBody());
+      assertEquals(comment.getBlockTags(), meth.getDoc().getBlockTags());
+    } else {
+      assertNull(meth.getComment());
+    }
     assertEquals(kind, meth.getKind());
     assertEquals(returnType, meth.getReturnType().toString());
     assertEquals(cacheReturn, meth.isCacheReturn());

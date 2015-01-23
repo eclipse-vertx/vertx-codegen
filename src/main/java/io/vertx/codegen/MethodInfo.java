@@ -16,6 +16,8 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
+import io.vertx.codegen.doc.Doc;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -34,22 +36,25 @@ public class MethodInfo implements Comparable<MethodInfo> {
   final boolean fluent;
   final boolean cacheReturn;
   final String comment;
+  final Doc doc;
   final boolean staticMethod;
   List<TypeParamInfo.Method> typeParams;
   LinkedHashSet<TypeInfo.Class> ownerTypes;
   List<ParamInfo> params;
 
-  public MethodInfo(Set<TypeInfo.Class> ownerTypes, String name, MethodKind kind, TypeInfo returnType, boolean fluent,
-                    boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod,
+  public MethodInfo(Set<TypeInfo.Class> ownerTypes, String name, MethodKind kind,
+                    TypeInfo returnType, boolean fluent,  boolean cacheReturn,
+                    List<ParamInfo> params, String comment, Doc doc, boolean staticMethod,
                     List<TypeParamInfo.Method> typeParams) {
 
 
+    this.comment = comment;
     this.kind = kind;
     this.name = name;
     this.returnType = returnType;
     this.fluent = fluent;
     this.cacheReturn = cacheReturn;
-    this.comment = comment;
+    this.doc = doc;
     this.staticMethod = staticMethod;
     this.params = params;
     this.typeParams = typeParams;
@@ -133,6 +138,10 @@ public class MethodInfo implements Comparable<MethodInfo> {
 
   public String getComment() {
     return comment;
+  }
+
+  public Doc getDoc() {
+    return doc;
   }
 
   public boolean isStaticMethod() {

@@ -98,7 +98,7 @@ public class HelperTest {
   public void testResolveClassSignature() throws Exception {
     Utils.assertProcess((processingEnv, roundEnv) -> {
       Element elt = Helper.resolveSignature(processingEnv.getElementUtils(), processingEnv.getTypeUtils(),
-          "java.lang.Class");
+          null,  "java.lang.Class");
       assertEquals(ElementKind.CLASS, elt.getKind());
       TypeElement typeElt = (TypeElement) elt;
       assertEquals("java.lang.Class", typeElt.getQualifiedName().toString());
@@ -109,7 +109,7 @@ public class HelperTest {
   public void testResolveFieldSignature() throws Exception {
     Utils.assertProcess((processingEnv, roundEnv) -> {
       Element elt = Helper.resolveSignature(processingEnv.getElementUtils(), processingEnv.getTypeUtils(),
-          "java.util.Locale#FRENCH");
+          null, "java.util.Locale#FRENCH");
       assertEquals(ElementKind.FIELD, elt.getKind());
       VariableElement varElt = (VariableElement) elt;
       TypeElement typeElt = (TypeElement) varElt.getEnclosingElement();
@@ -119,7 +119,11 @@ public class HelperTest {
   }
 
   private void assertSignature(ProcessingEnvironment processingEnv, String signature, String className, String methodName, String... parameterTypes) {
-    Element elt = Helper.resolveSignature(processingEnv.getElementUtils(), processingEnv.getTypeUtils(), signature);
+    assertSignature(processingEnv, null, signature, className, methodName, parameterTypes);
+  }
+
+  private void assertSignature(ProcessingEnvironment processingEnv, TypeElement declaringElt, String signature, String className, String methodName, String... parameterTypes) {
+    Element elt = Helper.resolveSignature(processingEnv.getElementUtils(), processingEnv.getTypeUtils(), declaringElt, signature);
     assertEquals(ElementKind.METHOD, elt.getKind());
     ExecutableElement methodElt = (ExecutableElement) elt;
     TypeElement typeElt = (TypeElement) methodElt.getEnclosingElement();
@@ -137,11 +141,29 @@ public class HelperTest {
       assertSignature(processingEnv, "java.util.Locale#createConstant", "java.util.Locale", "createConstant", "java.lang.String", "java.lang.String");
       assertSignature(processingEnv, "java.util.Locale#createConstant(String,String)", "java.util.Locale", "createConstant", "java.lang.String", "java.lang.String");
       assertSignature(processingEnv, "java.util.Locale#createConstant(java.lang.String,java.lang.String)", "java.util.Locale", "createConstant", "java.lang.String", "java.lang.String");
+      assertSignature(processingEnv, "java.util.List#containsAll", "java.util.List", "containsAll", "java.util.Collection<?>");
       assertSignature(processingEnv, "java.util.List#containsAll(Collection)", "java.util.List", "containsAll", "java.util.Collection<?>");
       assertSignature(processingEnv, "java.util.List#containsAll(java.util.Collection)", "java.util.List", "containsAll", "java.util.Collection<?>");
       assertSignature(processingEnv, "java.util.List#get", "java.util.List", "get", "int");
       assertSignature(processingEnv, "java.util.List#get(int)", "java.util.List", "get", "int");
       assertSignature(processingEnv, "java.util.List#toArray(Object[])", "java.util.List", "toArray", "T[]");
+    });
+  }
+
+  @Test
+  public void testResolveRelativeMethodSignature() throws Exception {
+    Utils.assertProcess((processingEnv, roundEnv) -> {
+      TypeElement localeElt = processingEnv.getElementUtils().getTypeElement("java.util.Locale");
+      TypeElement listElt = processingEnv.getElementUtils().getTypeElement("java.util.List");
+      assertSignature(processingEnv, localeElt, "#createConstant", "java.util.Locale", "createConstant", "java.lang.String", "java.lang.String");
+      assertSignature(processingEnv, localeElt, "#createConstant(String,String)", "java.util.Locale", "createConstant", "java.lang.String", "java.lang.String");
+      assertSignature(processingEnv, localeElt, "#createConstant(java.lang.String,java.lang.String)", "java.util.Locale", "createConstant", "java.lang.String", "java.lang.String");
+      assertSignature(processingEnv, listElt, "#containsAll", "java.util.List", "containsAll", "java.util.Collection<?>");
+      assertSignature(processingEnv, listElt, "#containsAll(Collection)", "java.util.List", "containsAll", "java.util.Collection<?>");
+      assertSignature(processingEnv, listElt, "#containsAll(java.util.Collection)", "java.util.List", "containsAll", "java.util.Collection<?>");
+      assertSignature(processingEnv, listElt, "#get", "java.util.List", "get", "int");
+      assertSignature(processingEnv, listElt, "#get(int)", "java.util.List", "get", "int");
+      assertSignature(processingEnv, listElt, "#parallelStream()", "java.util.Collection", "parallelStream");
     });
   }
 
@@ -152,7 +174,7 @@ public class HelperTest {
           "java.util.Locale#createConstant(int,String)",
       };
       for (String signature : signatures) {
-        Element elt = Helper.resolveSignature(processingEnv.getElementUtils(), processingEnv.getTypeUtils(), signature);
+        Element elt = Helper.resolveSignature(processingEnv.getElementUtils(), processingEnv.getTypeUtils(), null, signature);
         assertNull(elt);
       }
     });

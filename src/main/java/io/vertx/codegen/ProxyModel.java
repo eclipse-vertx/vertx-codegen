@@ -18,6 +18,7 @@ package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.ProxyClose;
 import io.vertx.codegen.annotations.ProxyIgnore;
+import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
 
 import javax.annotation.processing.Messager;
@@ -121,7 +122,7 @@ public class ProxyModel extends ClassModel {
   }
 
   @Override
-  protected MethodInfo createMethodInfo(TypeInfo.Class ownerType, String methodName, MethodKind kind, TypeInfo returnType,
+  protected MethodInfo createMethodInfo(TypeInfo.Class ownerType, String methodName, String comment, Doc doc, MethodKind kind, TypeInfo returnType,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
                                         ExecutableElement methodElt, boolean isStatic, ArrayList<TypeParamInfo.Method> typeParams,
                                         TypeElement declaringElt) {
@@ -130,7 +131,7 @@ public class ProxyModel extends ClassModel {
     AnnotationMirror proxyCloseAnnotation = Helper.resolveMethodAnnotation(ProxyClose.class, elementUtils, typeUtils, declaringElt, methodElt);
     boolean isProxyClose = proxyCloseAnnotation != null;
     return new ProxyMethodInfo(Collections.singleton(ownerType), methodName, kind, returnType,
-      isFluent, isCacheReturn, mParams, elementUtils.getDocComment(methodElt), isStatic, typeParams, isProxyIgnore,
+      isFluent, isCacheReturn, mParams, comment, doc, isStatic, typeParams, isProxyIgnore,
       isProxyClose);
   }
 

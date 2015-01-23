@@ -16,6 +16,8 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
+import io.vertx.codegen.doc.Doc;
+
 import java.util.List;
 import java.util.Set;
 
@@ -28,11 +30,11 @@ public class ProxyMethodInfo extends MethodInfo {
   private final boolean proxyClose;
 
   public ProxyMethodInfo(Set<TypeInfo.Class> ownerTypes, String name, MethodKind kind, TypeInfo returnType, boolean fluent,
-                         boolean cacheReturn, List<ParamInfo> params, String comment, boolean staticMethod,
+                         boolean cacheReturn, List<ParamInfo> params, String comment, Doc doc, boolean staticMethod,
                          List<TypeParamInfo.Method> typeParams, boolean proxyIgnore, boolean proxyClose) {
 
 
-    super(ownerTypes, name, kind, returnType, fluent, cacheReturn, params, comment, staticMethod, typeParams);
+    super(ownerTypes, name, kind, returnType, fluent, cacheReturn, params, comment, doc, staticMethod, typeParams);
     this.proxyIgnore = proxyIgnore;
     this.proxyClose = proxyClose;
   }

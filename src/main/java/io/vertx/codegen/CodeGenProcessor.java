@@ -124,7 +124,7 @@ public class CodeGenProcessor extends AbstractProcessor {
               vars.putAll(model.getVars());
               for (CodeGenerator codeGenerator : codeGenerators) {
                 if (codeGenerator.kind.equals(model.getKind())) {
-                  String relativeName = (String) MVEL.executeExpression(codeGenerator.fileNameExpression, vars);
+                  String relativeName = (String) MVEL.executeExpression(codeGenerator.filenameExpr, vars);
                   if (relativeName != null) {
                     if (relativeName.endsWith(".java")) {
                       // Special handling for .java
@@ -161,11 +161,11 @@ public class CodeGenProcessor extends AbstractProcessor {
 
   static class CodeGenerator {
     final String kind;
-    final Serializable fileNameExpression;
+    final Serializable filenameExpr;
     final Template transformTemplate;
-    CodeGenerator(String kind, Serializable fileNameExpression, Template transformTemplate) {
+    CodeGenerator(String kind, Serializable filenameExpr, Template transformTemplate) {
       this.kind = kind;
-      this.fileNameExpression = fileNameExpression;
+      this.filenameExpr = filenameExpr;
       this.transformTemplate = transformTemplate;
     }
   }

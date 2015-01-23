@@ -437,52 +437,70 @@ public class Helper {
     return null;
   }
 
-  private static final Pattern P = Pattern.compile("#(\\p{javaJavaIdentifierStart}(?:\\p{javaJavaIdentifierPart})*)(?:\\((.*)\\))?$");
+  private static final Pattern SIGNATURE_PATTERN = Pattern.compile("#(\\p{javaJavaIdentifierStart}(?:\\p{javaJavaIdentifierPart})*)(?:\\((.*)\\))?$");
+  public static final Pattern LINK_REFERENCE_PATTERN = Pattern.compile(
+          "(?:(?:\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*\\.)*" + "\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*)?" +
+          "(?:" + SIGNATURE_PATTERN.pattern() + ")?");
 
   /**
    * Resolves a documentation signature, null can be returned if no element can be resolved.
    *
    * @param elementUtils the element utils
    * @param typeUtils the type utils
+   * @param declaringElt the declaring element, may be null
    * @param signature the signature to resolve
    * @return the resolved element
    */
-  public static Element resolveSignature(Elements elementUtils, Types typeUtils, String signature) {
-    Matcher signatureMatcher = P.matcher(signature);
+  public static Element resolveSignature(
+      Elements elementUtils,
+      Types typeUtils,
+      TypeElement declaringElt,
+      String signature) {
+    Matcher signatureMatcher = SIGNATURE_PATTERN.matcher(signature);
     if (signatureMatcher.find()) {
       String memberName = signatureMatcher.group(1);
       String typeName = signature.substring(0, signatureMatcher.start());
-      TypeElement typeElt = elementUtils.getTypeElement(typeName);
-      Predicate<? super Element> memberMatcher;
-      if (signatureMatcher.group(2) != null) {
-        String t = signatureMatcher.group(2).trim();
-        Predicate<ExecutableElement> parametersMatcher;
-        if (t.length() == 0) {
-          parametersMatcher = exeElt -> exeElt.getParameters().isEmpty();
+      TypeElement typeElt = resolveTypeElement(elementUtils, declaringElt, typeName);
+      if (typeElt != null) {
+        Predicate<? super Element> memberMatcher;
+        if (signatureMatcher.group(2) != null) {
+          String t = signatureMatcher.group(2).trim();
+          Predicate<ExecutableElement> parametersMatcher;
+          if (t.length() == 0) {
+            parametersMatcher = exeElt -> exeElt.getParameters().isEmpty();
+          } else {
+            parametersMatcher = parametersMatcher(typeUtils, t.split("\\s*,\\s*"));
+          }
+          memberMatcher = elt -> matchesConstructor(elt, memberName, parametersMatcher) || matchesMethod(elt, memberName, parametersMatcher);
         } else {
-          parametersMatcher = parametersMatcher(typeUtils, t.split("\\s*,\\s*"));
+          memberMatcher = elt -> matchesConstructor(elt, memberName, exeElt -> true) ||
+              matchesMethod(elt, memberName, exeElt -> true) ||
+              matchesField(elt, memberName);
         }
-        memberMatcher = elt -> matchesConstructor(elt, memberName, parametersMatcher) || matchesMethod(elt, memberName, parametersMatcher);
-      } else {
-        memberMatcher = elt -> matchesConstructor(elt, memberName, exeElt -> true) ||
-            matchesMethod(elt, memberName, exeElt -> true) ||
-            matchesField(elt, memberName);
-      }
-      // The order of kinds is important
-      for (ElementKind kind : Arrays.asList(ElementKind.FIELD, ElementKind.CONSTRUCTOR, ElementKind.METHOD)) {
-        for (Element memberElt : elementUtils.getAllMembers(typeElt)) {
-          if(memberElt.getKind() == kind && memberMatcher.test(memberElt)) {
-            return memberElt;
+        // The order of kinds is important
+        for (ElementKind kind : Arrays.asList(ElementKind.FIELD, ElementKind.CONSTRUCTOR, ElementKind.METHOD)) {
+          for (Element memberElt : elementUtils.getAllMembers(typeElt)) {
+            if(memberElt.getKind() == kind && memberMatcher.test(memberElt)) {
+               return memberElt;
+            }
           }
         }
       }
       return null;
     } else {
-      Element elt = elementUtils.getTypeElement(signature);
-      if (elt == null) {
-        elt = elementUtils.getPackageElement(signature);
+      return resolveTypeElement(elementUtils, declaringElt, signature);
+    }
+  }
+
+  private static TypeElement resolveTypeElement(Elements elementUtils, TypeElement declaringElt, String typeName) {
+    if (typeName.isEmpty()) {
+      return declaringElt;
+    } else {
+      if (typeName.lastIndexOf('.') == -1) {
+        String packageName = elementUtils.getPackageOf(declaringElt).getQualifiedName().toString();
+        typeName = packageName + '.' + typeName;
       }
-      return elt;
+      return elementUtils.getTypeElement(typeName);
     }
   }
 
@@ -518,9 +536,9 @@ public class Helper {
   private static Predicate<ExecutableElement> parametersMatcher(Types typeUtils, String[] parameterSignature) {
     return exeElt -> {
       if (exeElt.getParameters().size() == parameterSignature.length) {
-        TypeMirror tm2  = exeElt.asType();
-        ExecutableType tm3  = (ExecutableType) typeUtils.erasure(tm2);
-        for (int j = 0;j < parameterSignature.length;j++) {
+        TypeMirror tm2 = exeElt.asType();
+        ExecutableType tm3 = (ExecutableType) typeUtils.erasure(tm2);
+        for (int j = 0; j < parameterSignature.length; j++) {
           String t1 = tm3.getParameterTypes().get(j).toString();
           String t2 = parameterSignature[j];
           if (t2.indexOf('.') == -1) {
@@ -535,5 +553,22 @@ public class Helper {
         return false;
       }
     };
+  }
+
+  /**
+   * Return the element type of the specified element.
+   *
+   * @param elt the element
+   * @return the element type or null if none exists
+   */
+  public static TypeElement getElementTypeOf(Element elt) {
+    if (elt.getKind() == ElementKind.CLASS || elt.getKind() == ElementKind.INTERFACE) {
+      return (TypeElement) elt;
+    }
+    Element enclosingElt = elt.getEnclosingElement();
+    if (enclosingElt != null) {
+      return getElementTypeOf(enclosingElt);
+    }
+    return null;
   }
 }
