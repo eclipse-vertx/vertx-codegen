@@ -164,12 +164,12 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
-  public void methodWithHandlerAsyncResultOptions(boolean sendFailure, Handler<AsyncResult<TestOptions>> handler) {
+  public void methodWithHandlerAsyncResultDataObject(boolean sendFailure, Handler<AsyncResult<TestDataObject>> handler) {
     if (sendFailure) {
       Exception e = new Exception("foobar!");
       handler.handle(Future.failedFuture(e));
     } else {
-      handler.handle(Future.succeededFuture(new TestOptions().setFoo("foo").setBar(123)));
+      handler.handle(Future.succeededFuture(new TestDataObject().setFoo("foo").setBar(123)));
     }
   }
 
@@ -202,15 +202,15 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
-  public void methodWithOptionsParam(TestOptions options) {
-    assertEquals("hello", options.getFoo());
-    assertEquals(123, options.getBar());
-    assertEquals(1.23, options.getWibble(), 0);
+  public void methodWithDataObjectParam(TestDataObject dataObject) {
+    assertEquals("hello", dataObject.getFoo());
+    assertEquals(123, dataObject.getBar());
+    assertEquals(1.23, dataObject.getWibble(), 0);
   }
 
   @Override
-  public void methodWithNullOptionsParam(TestOptions options) {
-    assertNull(options);
+  public void methodWithNullDataObjectParam(TestDataObject dataObject) {
+    assertNull(dataObject);
   }
 
   @Override
@@ -491,9 +491,9 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
-  public void methodWithHandlerOptions(Handler<TestOptions> handler) {
-    TestOptions options = new TestOptions().setFoo("foo").setBar(123);
-    handler.handle(options);
+  public void methodWithHandlerDataObject(Handler<TestDataObject> handler) {
+    TestDataObject dataObject = new TestDataObject().setFoo("foo").setBar(123);
+    handler.handle(dataObject);
   }
 
   @Override

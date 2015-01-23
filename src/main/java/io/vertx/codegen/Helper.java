@@ -16,7 +16,7 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
-import io.vertx.codegen.annotations.Options;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.VertxGen;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -58,8 +58,8 @@ public class Helper {
   };
 
   public static ClassKind getKind(AnnotationResolver annotations, String fqcn) {
-    if (annotations.get(Options.class) != null) {
-      return ClassKind.OPTIONS;
+    if (annotations.get(DataObject.class) != null) {
+      return ClassKind.DATA_OBJECT;
     } else if (annotations.get(VertxGen.class) != null) {
       return ClassKind.API;
     } else if (fqcn.equals(ClassModel.VERTX_HANDLER)) {

@@ -1,7 +1,7 @@
 package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.codegen.testmodel.TestOptions;
+import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -27,5 +27,5 @@ public interface MethodWithValidHandlerParams {
                                Handler<Set<Long>> setLongHandler, Handler<Set<Float>> setFloatHandler, Handler<Set<Double>> setDoubleHandler,
                                Handler<Set<Boolean>> setBooleanHandler, Handler<Set<Character>> setCharHandler, Handler<Set<String>> setStrHandler,
                                Handler<Set<VertxGenClass1>> setVertxGenHandler, Handler<Set<JsonObject>> setJsonObjectHandler, Handler<Set<JsonArray>> setJsonArrayHandler,
-                               Handler<Void> voidHandler, Handler<Throwable> throwableHandler, Handler<TestOptions> optionsHandler);
+                               Handler<Void> voidHandler, Handler<Throwable> throwableHandler, Handler<TestDataObject> dataObjectHandler);
 }

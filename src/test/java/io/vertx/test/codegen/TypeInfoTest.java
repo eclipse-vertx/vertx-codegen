@@ -2,7 +2,7 @@ package io.vertx.test.codegen;
 
 import io.vertx.codegen.ClassKind;
 import io.vertx.codegen.TypeInfo;
-import io.vertx.codegen.annotations.Options;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -96,11 +96,12 @@ public class TypeInfoTest {
   public void testPrimitiveKind() {
 
     @VertxGen class ApiObject {}
-    @Options class OptionsObject {}
+    @DataObject
+    class DataObjectObject {}
     class Other {}
 
     assertEquals(ClassKind.OTHER, TypeInfo.create(Other.class).getKind());
-    assertEquals(ClassKind.OPTIONS, TypeInfo.create(OptionsObject.class).getKind());
+    assertEquals(ClassKind.DATA_OBJECT, TypeInfo.create(DataObjectObject.class).getKind());
     assertEquals(ClassKind.API, TypeInfo.create(ApiObject.class).getKind());
     assertEquals(ClassKind.HANDLER, TypeInfo.create(Handler.class).getKind());
     assertEquals(ClassKind.ASYNC_RESULT, TypeInfo.create(AsyncResult.class).getKind());

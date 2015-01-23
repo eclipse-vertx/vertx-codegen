@@ -66,8 +66,8 @@ public class ProxyModel extends ClassModel {
     if (isLegalListSetMapParam(typeInfo)) {
       return;
     }
-    // We also allow options as parameter types if they have a 'public JsonObject toJson()' method
-    if (typeInfo.getKind() == ClassKind.OPTIONS) {
+    // We also allow data object as parameter types if they have a 'public JsonObject toJson()' method
+    if (typeInfo.getKind() == ClassKind.DATA_OBJECT) {
       if (type instanceof DeclaredType) {
         List<TypeInfo> list = ((DeclaredType) type).asElement().getEnclosedElements().stream()
           .filter(e -> e.getKind() == ElementKind.METHOD)
@@ -141,7 +141,7 @@ public class ProxyModel extends ClassModel {
         TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getArgs().get(0);
         if (resultType.getKind().json || resultType.getKind().basic ||
           isLegalListSetMapResult(resultType) || resultType.getKind() == ClassKind.VOID ||
-          resultType.getKind() == ClassKind.ENUM || resultType.getKind() == ClassKind.OPTIONS) {
+          resultType.getKind() == ClassKind.ENUM || resultType.getKind() == ClassKind.DATA_OBJECT) {
           return true;
         }
         if (resultType.getKind() == ClassKind.API) {
@@ -167,7 +167,7 @@ public class ProxyModel extends ClassModel {
     return false;
   }
 
-  // TODO should we allow enums/Options in List/Set/Map params
+  // TODO should we allow enums/Data objects in List/Set/Map params
 
   protected boolean isLegalListSetMapParam(TypeInfo type) {
     TypeInfo raw = type.getRaw();

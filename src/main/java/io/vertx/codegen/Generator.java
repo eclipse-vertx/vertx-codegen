@@ -17,7 +17,7 @@ package io.vertx.codegen;
  */
 
 import io.vertx.codegen.annotations.GenModule;
-import io.vertx.codegen.annotations.Options;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
 
@@ -133,8 +133,8 @@ public class Generator {
     return processor.result;
   }
 
-  public OptionsModel generateOptions(Class option) throws Exception {
-    MyProcessor<OptionsModel> processor = new MyProcessor<>(codegen -> codegen.getOptionsModel(option.getName()));
+  public DataObjectModel generateDataObjects(Class option) throws Exception {
+    MyProcessor<DataObjectModel> processor = new MyProcessor<>(codegen -> codegen.getDataObjectModel(option.getName()));
     Compiler compiler = new Compiler(processor, collector);
     compiler.compile(Collections.singletonList(option));
     return processor.result;
@@ -202,7 +202,7 @@ public class Generator {
       HashSet<String> set = new HashSet<>();
       set.add(ProxyGen.class.getCanonicalName());
       set.add(VertxGen.class.getCanonicalName());
-      set.add(Options.class.getCanonicalName());
+      set.add(DataObject.class.getCanonicalName());
       set.add(GenModule.class.getCanonicalName());
       return set;
     }

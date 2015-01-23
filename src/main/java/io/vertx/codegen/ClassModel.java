@@ -96,7 +96,7 @@ public class ClassModel implements Model {
   protected List<TypeInfo> abstractSuperTypes = new ArrayList<>();
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
-  protected List<TypeInfo> referencedOptionsTypes = new ArrayList<>();
+  protected List<TypeInfo> referencedDataObjectTypes = new ArrayList<>();
   protected List<TypeParamInfo.Class> typeParams = new ArrayList<>();
 
   public ClassModel(MethodOverloadChecker methodOverloadChecker, Messager messager, Map<String, TypeElement> sources, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
@@ -187,8 +187,8 @@ public class ClassModel implements Model {
     return methodMap;
   }
 
-  public List<TypeInfo> getReferencedOptionsTypes() {
-    return referencedOptionsTypes;
+  public List<TypeInfo> getReferencedDataObjectTypes() {
+    return referencedDataObjectTypes;
   }
 
   public List<TypeParamInfo.Class> getTypeParams() {
@@ -228,7 +228,7 @@ public class ClassModel implements Model {
       return;
     }
     // Can also specify option classes (which aren't VertxGen)
-    if (isOptionType(typeInfo)) {
+    if (isDataObjectType(typeInfo)) {
       return;
     }
     // We also allow type parameters for param types
@@ -276,9 +276,9 @@ public class ClassModel implements Model {
     return type instanceof TypeInfo.Variable;
   }
 
-  private boolean isOptionType(TypeInfo type) {
-    if (type.getKind() == ClassKind.OPTIONS) {
-      referencedOptionsTypes.add(type);
+  private boolean isDataObjectType(TypeInfo type) {
+    if (type.getKind() == ClassKind.DATA_OBJECT) {
+      referencedDataObjectTypes.add(type);
       return true;
     }
     return false;
@@ -382,7 +382,7 @@ public class ClassModel implements Model {
   }
 
   protected boolean isOptionTypeWithToJson(TypeInfo type) {
-    if (type.getKind() == ClassKind.OPTIONS) {
+    if (type.getKind() == ClassKind.DATA_OBJECT) {
       TypeElement typeElt = elementUtils.getTypeElement(type.getName());
       if (typeElt != null) {
         Optional<ExecutableElement> opt = elementUtils.
@@ -735,7 +735,7 @@ public class ClassModel implements Model {
     vars.put("concreteSuperTypes", getConcreteSuperTypes());
     vars.put("abstractSuperTypes", getAbstractSuperTypes());
     vars.put("methodsByName", getMethodMap());
-    vars.put("referencedOptionsTypes", getReferencedOptionsTypes());
+    vars.put("referencedDataObjectTypes", getReferencedDataObjectTypes());
     vars.put("typeParams", getTypeParams());
     vars.put("instanceMethods", getInstanceMethods());
     vars.put("staticMethods", getStaticMethods());

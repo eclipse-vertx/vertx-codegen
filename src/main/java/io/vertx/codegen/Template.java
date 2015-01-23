@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -105,7 +104,7 @@ public class Template {
   public String render(Model model) {
     Map<String, Object> vars = model.getVars();
 
-    // Options
+    // options
     vars.put("options", options);
 
     TemplateRegistry registry = new SimpleTemplateRegistry() {

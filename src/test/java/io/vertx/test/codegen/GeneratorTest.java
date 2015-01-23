@@ -11,7 +11,7 @@ import io.vertx.codegen.Signature;
 import io.vertx.codegen.TypeInfo;
 import io.vertx.codegen.TypeParamInfo;
 import io.vertx.codegen.testmodel.TestEnum;
-import io.vertx.codegen.testmodel.TestOptions;
+import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
@@ -58,8 +58,8 @@ import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultParam;
 import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerNonVertxGenReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerParam;
-import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerAsyncResultOptionsParam;
-import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerOptionsParam;
+import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerAsyncResultDataObjectParam;
+import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerDataObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidListParams1;
 import io.vertx.test.codegen.testapi.MethodWithInvalidListParams2;
 import io.vertx.test.codegen.testapi.MethodWithInvalidListReturn1;
@@ -87,7 +87,7 @@ import io.vertx.test.codegen.testapi.MethodWithNotVertxGenObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithNotVertxGenObjectReturn;
 import io.vertx.test.codegen.testapi.MethodWithObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithObjectReturn;
-import io.vertx.test.codegen.testapi.MethodWithOptionsParam;
+import io.vertx.test.codegen.testapi.MethodWithDataObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithSameSignatureInheritedFromDistinctInterfaces;
 import io.vertx.test.codegen.testapi.MethodWithSetNonBasicTypeReturn;
 import io.vertx.test.codegen.testapi.MethodWithThrowableReturn;
@@ -574,7 +574,7 @@ public class GeneratorTest {
       checkClassParam(params.get(34), "setJsonArrayHandler", "io.vertx.core.Handler<java.util.Set<" + JsonArray.class.getName() + ">>", ClassKind.HANDLER);
       checkClassParam(params.get(35), "voidHandler", "io.vertx.core.Handler<java.lang.Void>", ClassKind.HANDLER);
       checkClassParam(params.get(36), "throwableHandler", "io.vertx.core.Handler<java.lang.Throwable>", ClassKind.HANDLER);
-      checkClassParam(params.get(37), "optionsHandler", "io.vertx.core.Handler<" + TestOptions.class.getName() + ">", ClassKind.HANDLER);
+      checkClassParam(params.get(37), "dataObjectHandler", "io.vertx.core.Handler<" + TestDataObject.class.getName() + ">", ClassKind.HANDLER);
     };
 
     MethodInfo method = model.getMethods().get(0);
@@ -632,7 +632,7 @@ public class GeneratorTest {
       checkClassParam(params.get(33), "setJsonObjectHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<" + JsonObject.class.getName() + ">>>", ClassKind.HANDLER);
       checkClassParam(params.get(34), "setJsonArrayHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<" + JsonArray.class.getName() + ">>>", ClassKind.HANDLER);
       checkClassParam(params.get(35), "voidHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Void>>", ClassKind.HANDLER);
-      checkClassParam(params.get(36), "optionsHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<" + TestOptions.class.getName() + ">>", ClassKind.HANDLER);
+      checkClassParam(params.get(36), "dataObjectHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<" + TestDataObject.class.getName() + ">>", ClassKind.HANDLER);
     };
 
     MethodInfo method = model.getMethods().get(0);
@@ -742,19 +742,19 @@ public class GeneratorTest {
   }
 
   @Test
-  public void testValidOptionsParam() throws Exception {
-    ClassModel model = new Generator().generateClass(MethodWithOptionsParam.class);
-    assertEquals(MethodWithOptionsParam.class.getName(), model.getIfaceFQCN());
-    assertEquals(MethodWithOptionsParam.class.getSimpleName(), model.getIfaceSimpleName());
+  public void testValidDataObjectsParam() throws Exception {
+    ClassModel model = new Generator().generateClass(MethodWithDataObjectParam.class);
+    assertEquals(MethodWithDataObjectParam.class.getName(), model.getIfaceFQCN());
+    assertEquals(MethodWithDataObjectParam.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
     assertEquals(1, model.getMethods().size());
-    String methodName = "methodWithOptionsParam";
+    String methodName = "methodWithDataObjectParam";
 
     Consumer<MethodInfo> checker = (method) -> {
       checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 1);
       List<ParamInfo> params = method.getParams();
-      checkClassParam(params.get(0), "options", NetServerOptions.class.getName(), ClassKind.OPTIONS);
+      checkClassParam(params.get(0), "dataObject", NetServerOptions.class.getName(), ClassKind.DATA_OBJECT);
     };
 
     MethodInfo method = model.getMethods().get(0);
@@ -1681,9 +1681,9 @@ public class GeneratorTest {
   }
 
   @Test
-  public void testMethodInvalidHandlerOptionsParam() throws Exception {
+  public void testMethodInvalidHandlerDataObjectsParam() throws Exception {
     try {
-      new Generator().generateClass(MethodWithInvalidHandlerOptionsParam.class);
+      new Generator().generateClass(MethodWithInvalidHandlerDataObjectParam.class);
       fail("Option without toJson() in Handler param should fail");
     } catch (GenException e) {
       // pass
@@ -1691,9 +1691,9 @@ public class GeneratorTest {
   }
 
   @Test
-  public void testMethodInvalidHandlerAsyncResultOptionsParam() throws Exception {
+  public void testMethodInvalidHandlerAsyncResultDataObjectsParam() throws Exception {
     try {
-      new Generator().generateClass(MethodWithInvalidHandlerAsyncResultOptionsParam.class);
+      new Generator().generateClass(MethodWithInvalidHandlerAsyncResultDataObjectParam.class);
       fail("Option without toJson() in AsyncResult param should fail");
     } catch (GenException e) {
       // pass

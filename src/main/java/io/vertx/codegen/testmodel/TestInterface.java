@@ -37,15 +37,15 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
   void methodWithHandlerAsyncResultBoolean(boolean sendFailure, Handler<AsyncResult<Boolean>> handler);
   void methodWithHandlerAsyncResultCharacter(boolean sendFailure, Handler<AsyncResult<Character>> handler);
   void methodWithHandlerAsyncResultString(boolean sendFailure, Handler<AsyncResult<String>> handler);
-  void methodWithHandlerAsyncResultOptions(boolean sendFailure, Handler<AsyncResult<TestOptions>> handler);
+  void methodWithHandlerAsyncResultDataObject(boolean sendFailure, Handler<AsyncResult<TestDataObject>> handler);
 
   void methodWithUserTypes(RefedInterface1 refed);
 
   void methodWithObjectParam(String str, Object obj);
 
-  void methodWithOptionsParam(TestOptions options);
+  void methodWithDataObjectParam(TestDataObject dataObject);
 
-  void methodWithNullOptionsParam(TestOptions options);
+  void methodWithNullDataObjectParam(TestDataObject dataObject);
 
   void methodWithListParams(List<String> listString, List<Byte> listByte, List<Short> listShort, List<Integer> listInt, List<Long> listLong, List<JsonObject> listJsonObject, List<JsonArray> listJsonArray, List<RefedInterface1> listVertxGen);
 
@@ -119,7 +119,7 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   void methodWithHandlerThrowable(Handler<Throwable> handler);
 
-  void methodWithHandlerOptions(Handler<TestOptions> handler);
+  void methodWithHandlerDataObject(Handler<TestDataObject> handler);
 
   <U> void methodWithHandlerGenericUserType(U value, Handler<GenericRefedInterface<U>> handler);
 

@@ -4,13 +4,13 @@ import io.vertx.codegen.ClassModel;
 import io.vertx.codegen.GenException;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.ModuleModel;
-import io.vertx.codegen.OptionsModel;
+import io.vertx.codegen.DataObjectModel;
 import io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedApi;
-import io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedOptions;
+import io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedDataObject;
 import io.vertx.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubApi;
-import io.vertx.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubOptions;
+import io.vertx.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubDataObject;
 import io.vertx.test.codegen.testmodule.nomodule.NoModuleApi;
-import io.vertx.test.codegen.testmodule.nomodule.NoModuleOptions;
+import io.vertx.test.codegen.testmodule.nomodule.NoModuleDataObject;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -71,17 +71,17 @@ public class ModuleTest {
   }
 
   @Test
-  public void testModuleScopedOptionsModel() throws Exception {
-    OptionsModel model = new Generator().generateOptions(ModuleScopedOptions.class);
-    assertEquals(ModuleScopedOptions.class.getName(), model.getFqn());
+  public void testModuleScopedDataObjectModel() throws Exception {
+    DataObjectModel model = new Generator().generateDataObjects(ModuleScopedDataObject.class);
+    assertEquals(ModuleScopedDataObject.class.getName(), model.getFqn());
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getFqn());
     assertEquals("simple", model.getModule().getName());
   }
 
   @Test
-  public void testModuleScopedSubOptionsModel() throws Exception {
-    OptionsModel model = new Generator().generateOptions(ModuleScopedSubOptions.class);
-    assertEquals(ModuleScopedSubOptions.class.getName(), model.getFqn());
+  public void testModuleScopedSubDataObjectModel() throws Exception {
+    DataObjectModel model = new Generator().generateDataObjects(ModuleScopedSubDataObject.class);
+    assertEquals(ModuleScopedSubDataObject.class.getName(), model.getFqn());
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getFqn());
     assertEquals("simple", model.getModule().getName());
   }
@@ -96,9 +96,9 @@ public class ModuleTest {
   }
 
   @Test
-  public void testNoModuleOptionsModel() throws Exception {
+  public void testNoModuleDataObjectModel() throws Exception {
     try {
-      new Generator().generateOptions(NoModuleOptions.class);
+      new Generator().generateDataObjects(NoModuleDataObject.class);
       fail();
     } catch (GenException expected) {
     }

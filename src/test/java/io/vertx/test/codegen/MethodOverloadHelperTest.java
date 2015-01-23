@@ -22,7 +22,7 @@ import io.vertx.codegen.overloadcheck.SimpleMethod;
 import io.vertx.codegen.overloadcheck.SimpleParam;
 import io.vertx.codegen.testmodel.RefedInterface1;
 import io.vertx.codegen.testmodel.TestEnum;
-import io.vertx.codegen.testmodel.TestOptions;
+import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -87,7 +87,7 @@ public class MethodOverloadHelperTest {
 
   @Test
   public void testAmbiguousMethodsObjectClash1() throws Exception {
-    testAmbiguousMethods(ClassKind.JSON_OBJECT, JsonObject.class.getName(), ClassKind.OPTIONS, TestOptions.class.getName());
+    testAmbiguousMethods(ClassKind.JSON_OBJECT, JsonObject.class.getName(), ClassKind.DATA_OBJECT, TestDataObject.class.getName());
   }
 
   @Test
@@ -97,7 +97,7 @@ public class MethodOverloadHelperTest {
 
   @Test
   public void testAmbiguousMethodsObjectClash3() throws Exception {
-    testAmbiguousMethods(ClassKind.MAP, Map.class.getName(), ClassKind.OPTIONS, TestOptions.class.getName());
+    testAmbiguousMethods(ClassKind.MAP, Map.class.getName(), ClassKind.DATA_OBJECT, TestDataObject.class.getName());
   }
 
   @Test
@@ -245,7 +245,7 @@ public class MethodOverloadHelperTest {
 
   @Test
   public void testAllClash7() throws Exception {
-    testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.OPTIONS, TestOptions.class.getName());
+    testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.DATA_OBJECT, TestDataObject.class.getName());
   }
 
   @Test

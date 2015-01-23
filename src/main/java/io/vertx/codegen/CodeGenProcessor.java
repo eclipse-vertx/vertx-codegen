@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@SupportedAnnotationTypes({"io.vertx.codegen.annotations.VertxGen","io.vertx.codegen.annotations.ProxyGen","io.vertx.codegen.annotations.Options",
+@SupportedAnnotationTypes({"io.vertx.codegen.annotations.VertxGen","io.vertx.codegen.annotations.ProxyGen","io.vertx.codegen.annotations.DataObject",
   "io.vertx.codegen.annotations.GenModule"})
 @javax.annotation.processing.SupportedOptions({"outputDirectory","codeGenerators"})
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)

@@ -1,7 +1,7 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.GenModule;
-import io.vertx.codegen.annotations.Options;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
@@ -28,7 +28,7 @@ public class CodeGen {
 
   private static final Logger logger = Logger.getLogger(CodeGen.class.getName());
 
-  private final HashMap<String, TypeElement> options = new HashMap<>();
+  private final HashMap<String, TypeElement> dataObjects = new HashMap<>();
   private final HashMap<String, TypeElement> classes = new HashMap<>();
   private final HashMap<String, PackageElement> modules = new HashMap<>();
   private final HashMap<String, TypeElement> proxyClasses = new HashMap<>();
@@ -50,10 +50,10 @@ public class CodeGen {
         return true;
       }
     };
-    round.getElementsAnnotatedWith(Options.class).
+    round.getElementsAnnotatedWith(DataObject.class).
       stream().
       filter(implFilter).
-      forEach(element -> options.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
+      forEach(element -> dataObjects.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
     round.getElementsAnnotatedWith(VertxGen.class).
       stream().
       filter(implFilter).
@@ -69,7 +69,7 @@ public class CodeGen {
   }
 
   public Stream<Map.Entry<? extends Element, ? extends Model>> getModels() {
-    return Stream.concat(getOptionsModels(),
+    return Stream.concat(getDataObjectModels(),
       Stream.concat(getModuleModels(),
         Stream.concat(getPackageModels(),
           Stream.concat(getClassModels(),
@@ -117,8 +117,8 @@ public class CodeGen {
     return modules.entrySet().stream().map(entry -> new ModelEntry<>(entry.getValue(), () -> getModuleModel(entry.getKey())));
   }
 
-  public Stream<Map.Entry<TypeElement, OptionsModel>> getOptionsModels() {
-    return options.entrySet().stream().map(element -> new ModelEntry<>(element.getValue(), () -> getOptionsModel(element.getKey())));
+  public Stream<Map.Entry<TypeElement, DataObjectModel>> getDataObjectModels() {
+    return dataObjects.entrySet().stream().map(element -> new ModelEntry<>(element.getValue(), () -> getDataObjectModel(element.getKey())));
   }
 
   public Stream<Map.Entry<TypeElement, ProxyModel>> getProxyModels() {
@@ -168,12 +168,12 @@ public class CodeGen {
     }
   }
 
-  public OptionsModel getOptionsModel(String fqcn) {
-    TypeElement element = options.get(fqcn);
+  public DataObjectModel getDataObjectModel(String fqcn) {
+    TypeElement element = dataObjects.get(fqcn);
     if (element == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
-      OptionsModel model = new OptionsModel(elementUtils, typeUtils, element);
+      DataObjectModel model = new DataObjectModel(elementUtils, typeUtils, element);
       model.process();
       return model;
     }

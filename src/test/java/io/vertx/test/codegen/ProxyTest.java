@@ -10,7 +10,7 @@ import io.vertx.test.codegen.proxytestapi.InvalidParams1;
 import io.vertx.test.codegen.proxytestapi.InvalidParams2;
 import io.vertx.test.codegen.proxytestapi.InvalidParams3;
 import io.vertx.test.codegen.proxytestapi.InvalidParams4;
-import io.vertx.test.codegen.proxytestapi.InvalidParamsOptions;
+import io.vertx.test.codegen.proxytestapi.InvalidParamsDataObject;
 import io.vertx.test.codegen.proxytestapi.InvalidReturn1;
 import io.vertx.test.codegen.proxytestapi.InvalidReturn2;
 import io.vertx.test.codegen.proxytestapi.InvalidReturn3;
@@ -80,9 +80,9 @@ public class ProxyTest {
   }
 
   @Test
-  public void testInvalidParamsOptions() throws Exception {
+  public void testInvalidParamsDataObject() throws Exception {
     try {
-      new Generator().generateProxyModel(InvalidParamsOptions.class);
+      new Generator().generateProxyModel(InvalidParamsDataObject.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK

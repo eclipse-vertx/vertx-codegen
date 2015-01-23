@@ -33,8 +33,8 @@ public enum ClassKind {
   // API types
   API(false, false, false),
 
-  // Options
-  OPTIONS(false, false, false),
+  // Data objects
+  DATA_OBJECT(false, false, false),
 
   // Handler
   HANDLER(false, false, false),

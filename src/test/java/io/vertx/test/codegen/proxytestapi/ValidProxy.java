@@ -33,7 +33,7 @@ public interface ValidProxy {
 
   void enumType(SomeEnum someEnum);
 
-  void optionsType(ProxyOptions options);
+  void dataObjectType(ProxyDataObject dataObject);
 
   void handler0(Handler<AsyncResult<String>> stringHandler);
   void handler1(Handler<AsyncResult<Byte>> byteHandler);
@@ -46,7 +46,7 @@ public interface ValidProxy {
   void handler8(Handler<AsyncResult<Boolean>> boolHandler);
   void handler9(Handler<AsyncResult<JsonObject>> jsonObjectHandler);
   void handler10(Handler<AsyncResult<JsonArray>> jsonArrayHandler);
-  void handler11(Handler<AsyncResult<ProxyOptions>> optionsHandler);
+  void handler11(Handler<AsyncResult<ProxyDataObject>> dataObjectHandler);
 
   void handler12(Handler<AsyncResult<List<String>>> stringListHandler);
   void handler13(Handler<AsyncResult<List<Byte>>> byteListHandler);

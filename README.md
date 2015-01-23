@@ -73,8 +73,8 @@ The constraints are
 * Nested interfaces are not permitted
 * All interfaces to have generation performed on them must be annotated with the `io.vertx.codegen.annotations.VertxGen` annotation
 * Fluent methods (methods which return a reference to this) must be annotated with the `io.vertx.codegen.annotations.Fluent` annotation
-* Options classes (classes which provide configuration options to methods) must be annotated with the `io.vertx.codegen.annotations.Options` annotation
-* Options classes must provide a constructor which takes a single `io.vertx.core.json.JsonObject` parameter.
+* Data object classes (classes which provide data (e.g. configuration) to methods) must be annotated with the `io.vertx.codegen.annotations.DataObject` annotation
+* Data object classes must provide a constructor which takes a single `io.vertx.core.json.JsonObject` parameter.
 * Methods where the return value must be cached in the API shim must be annotated with the `io.vertx.codegen.annotations.CacheReturn` annotation
 * Only certain types are allowed as parameter or return value types for any API methods (defined below).
 
@@ -97,7 +97,7 @@ The following set `P` of types are permitted as parameters to any API method:
 * `java.lang.Object`
 * the set `V`
 * the set `J`
-* any options class annotated with `@Options`
+* any data object class annotated with `@DataObject`
 * type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
     * the set `B`
     * the set `V`
@@ -113,7 +113,7 @@ The following set `P` of types are permitted as parameters to any API method:
     * the set `J`
     * `java.lang.Void`
     * `java.lang.Throwable`
-    * any options class annotated with `@Options`
+    * any data object class annotated with `@DataObject`
     * type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
         * the set `B`
         * the set `V`
@@ -216,7 +216,7 @@ The `TypeInfo.Class` is a subclass of `TypeInfo` representing a Java class:
     * `OBJECT`: java.lang.Object
     * `LIST`, `SET`: corresponding java collections
     * `API`: a type annotated with @VertxGen
-    * `OPTIONS`: a type annotations with @Options
+    * `DATA_OBJECT`: a type annotations with @DataObject
     * `HANDLER`: io.vertx.core.Handler
     * `ASYNC_RESULT`: io.vertx.core.AsyncResult
     * `ENUM`: An enum
@@ -243,7 +243,7 @@ The `ParamInfo` object has the following fields:
 
 * `name`. The name of the parameter
 * `type`. The type of the parameter as a `TypeInfo`
-* `options`. `true` If the parameter is an options type.
+* `dataObject`. `true` If the parameter is a data object type.
 
 
 
