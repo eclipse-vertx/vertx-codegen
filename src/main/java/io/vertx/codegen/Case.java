@@ -59,8 +59,6 @@ public abstract class Case {
     }
   }
 
-  private static final Case[] values = { CAMEL, QUALIFIED, SNAKE, KEBAB };
-
   /**
    * Useful for testing the method kind, allows to do method.kind == METHOD_HANDLER instead of method.kind.name() == "HANDLER"
    */
