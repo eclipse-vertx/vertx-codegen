@@ -17,6 +17,7 @@ public interface InterfaceWithComments {
   /**
    * Comment 1 line 1
    * Comment 1 line 2
+   * @param str the_string
    */
   void foo(String str);
 

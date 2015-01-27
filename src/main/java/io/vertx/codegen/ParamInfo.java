@@ -22,10 +22,12 @@ package io.vertx.codegen;
 public class ParamInfo {
 
   final String name;
+  final String description;
   final TypeInfo type;
 
-  public ParamInfo(String name, TypeInfo type) {
+  public ParamInfo(String name, String description, TypeInfo type) {
     this.name = name;
+    this.description = description;
     this.type = type;
   }
 
@@ -35,6 +37,10 @@ public class ParamInfo {
 
   public String getName(Case _case) {
     return _case.format(Case.CAMEL.parse(name));
+  }
+
+  public String getDescription() {
+    return description;
   }
 
   public TypeInfo getType() {

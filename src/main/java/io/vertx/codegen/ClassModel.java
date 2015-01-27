@@ -22,6 +22,7 @@ import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.IndexGetter;
 import io.vertx.codegen.annotations.IndexSetter;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
 import io.vertx.core.json.JsonObject;
 
@@ -77,6 +78,7 @@ public class ClassModel implements Model {
   protected final MethodOverloadChecker methodOverloadChecker;
   protected final Messager messager;
   protected final TypeInfo.Factory typeFactory;
+  protected final Doc.Factory docFactory;
   protected final Map<String, TypeElement> sources;
   protected final TypeElement modelElt;
   protected final Elements elementUtils;
@@ -91,6 +93,7 @@ public class ClassModel implements Model {
   protected String ifaceFQCN;
   protected String ifacePackageName;
   protected String ifaceComment;
+  protected Doc doc;
   protected List<TypeInfo> superTypes = new ArrayList<>();
   protected List<TypeInfo> concreteSuperTypes = new ArrayList<>();
   protected List<TypeInfo> abstractSuperTypes = new ArrayList<>();
@@ -99,14 +102,17 @@ public class ClassModel implements Model {
   protected List<TypeInfo> referencedDataObjectTypes = new ArrayList<>();
   protected List<TypeParamInfo.Class> typeParams = new ArrayList<>();
 
-  public ClassModel(MethodOverloadChecker methodOverloadChecker, Messager messager, Map<String, TypeElement> sources, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
+  public ClassModel(MethodOverloadChecker methodOverloadChecker,
+                    Messager messager,  Map<String, TypeElement> sources, Elements elementUtils,
+                    Types typeUtils, TypeElement modelElt) {
     this.methodOverloadChecker = methodOverloadChecker;
+    this.typeFactory = new TypeInfo.Factory(elementUtils, typeUtils);
+    this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, typeFactory, modelElt);
     this.messager = messager;
     this.sources = sources;
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
     this.modelElt = modelElt;
-    this.typeFactory = new TypeInfo.Factory(elementUtils, typeUtils);
   }
 
   @Override
@@ -161,6 +167,10 @@ public class ClassModel implements Model {
 
   public String getIfaceComment() {
     return ifaceComment;
+  }
+
+  public Doc getDoc() {
+    return doc;
   }
 
   public TypeInfo getType() {
@@ -442,6 +452,7 @@ public class ClassModel implements Model {
         ifaceSimpleName = elem.getSimpleName().toString();
         ifacePackageName = elementUtils.getPackageOf(elem).toString();
         ifaceComment = elementUtils.getDocComment(elem);
+        doc = docFactory.createDoc(elem);
         concrete = elem.getAnnotation(VertxGen.class) != null && elem.getAnnotation(VertxGen.class).concrete();
         DeclaredType tm = (DeclaredType) elem.asType();
         List<? extends TypeMirror> typeArgs = tm.getTypeArguments();
@@ -591,8 +602,20 @@ public class ClassModel implements Model {
     }
 
     //
+    Map<String, String> paramDescs = new HashMap<>();
+    String comment = elementUtils.getDocComment(methodElt);
+    Doc doc = docFactory.createDoc(methodElt);
+    if (doc != null) {
+      doc.
+          getBlockTags().
+          stream().
+          filter(tag -> tag.getName().equals("param")).
+          forEach(tag -> paramDescs.put(tag.getName(), tag.getValue()));
+    }
+
+    //
     ExecutableType methodType = (ExecutableType) typeUtils.asMemberOf((DeclaredType) modelElt.asType(), methodElt);
-    List<ParamInfo> mParams = getParams(methodElt, methodType);
+    List<ParamInfo> mParams = getParams(methodElt, methodType, paramDescs);
 
     //
     AnnotationMirror fluentAnnotation = Helper.resolveMethodAnnotation(Fluent.class, elementUtils, typeUtils, declaringElt, methodElt);
@@ -659,8 +682,8 @@ public class ClassModel implements Model {
       }
     }
 
-    MethodInfo methodInfo = createMethodInfo(ownerType, methodName, kind, returnType,
-        isFluent, isCacheReturn, mParams, methodElt, isStatic, typeParams, declaringElt);
+    MethodInfo methodInfo = createMethodInfo(ownerType, methodName, comment, doc, kind,
+        returnType, isFluent, isCacheReturn, mParams, methodElt, isStatic, typeParams, declaringElt);
     checkMethod(methodInfo);
     List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
     if (methodsByName == null) {
@@ -673,12 +696,12 @@ public class ClassModel implements Model {
   }
 
   // This is a hook to allow a specific type of method to be created
-  protected MethodInfo createMethodInfo(TypeInfo.Class ownerType, String methodName, MethodKind kind, TypeInfo returnType,
+  protected MethodInfo createMethodInfo(TypeInfo.Class ownerType, String methodName, String comment, Doc doc, MethodKind kind, TypeInfo returnType,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
                                         ExecutableElement methodElt, boolean isStatic, ArrayList<TypeParamInfo.Method> typeParams,
                                         TypeElement declaringElt) {
     return new MethodInfo(Collections.singleton(ownerType), methodName, kind, returnType,
-      isFluent, isCacheReturn, mParams, elementUtils.getDocComment(methodElt), isStatic, typeParams);
+      isFluent, isCacheReturn, mParams, comment, doc, isStatic, typeParams);
   }
 
   // This is a hook to allow different model implementations to check methods in different ways
@@ -699,7 +722,7 @@ public class ClassModel implements Model {
     return bound.getKind() == TypeKind.DECLARED && bound.toString().equals(Object.class.getName());
   }
 
-  private List<ParamInfo> getParams(ExecutableElement execElem, ExecutableType execType) {
+  private List<ParamInfo> getParams(ExecutableElement execElem, ExecutableType execType, Map<String, String> descs) {
     List<? extends VariableElement> params = execElem.getParameters();
     List<ParamInfo> mParams = new ArrayList<>();
     for (int i = 0; i < params.size();i++) {
@@ -712,7 +735,8 @@ public class ClassModel implements Model {
         throw new GenException(param, e.getMessage());
       }
       checkParamType(execElem, type, typeInfo, i, params.size());
-      ParamInfo mParam = new ParamInfo(param.getSimpleName().toString(), typeInfo);
+      String name = param.getSimpleName().toString();
+      ParamInfo mParam = new ParamInfo(name, descs.get(name), typeInfo);
       mParams.add(mParam);
     }
     return mParams;
@@ -728,6 +752,7 @@ public class ClassModel implements Model {
     vars.put("ifaceSimpleName", getIfaceSimpleName());
     vars.put("ifaceFQCN", getIfaceFQCN());
     vars.put("ifaceComment", getIfaceComment());
+    vars.put("doc", doc);
     vars.put("helper", new Helper());
     vars.put("methods", getMethods());
     vars.put("referencedTypes", getReferencedTypes());
