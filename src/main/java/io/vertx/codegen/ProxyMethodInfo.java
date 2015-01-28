@@ -29,12 +29,12 @@ public class ProxyMethodInfo extends MethodInfo {
   private final boolean proxyIgnore;
   private final boolean proxyClose;
 
-  public ProxyMethodInfo(Set<TypeInfo.Class> ownerTypes, String name, MethodKind kind, TypeInfo returnType, boolean fluent,
+  public ProxyMethodInfo(Set<TypeInfo.Class> ownerTypes, String name, MethodKind kind, TypeInfo returnType, String returnDescription, boolean fluent,
                          boolean cacheReturn, List<ParamInfo> params, String comment, Doc doc, boolean staticMethod,
                          List<TypeParamInfo.Method> typeParams, boolean proxyIgnore, boolean proxyClose) {
 
 
-    super(ownerTypes, name, kind, returnType, fluent, cacheReturn, params, comment, doc, staticMethod, typeParams);
+    super(ownerTypes, name, kind, returnType, returnDescription, fluent, cacheReturn, params, comment, doc, staticMethod, typeParams);
     this.proxyIgnore = proxyIgnore;
     this.proxyClose = proxyClose;
   }

@@ -606,6 +606,7 @@ public class ClassModel implements Model {
     Map<String, String> paramDescs = new HashMap<>();
     String comment = elementUtils.getDocComment(methodElt);
     Doc doc = docFactory.createDoc(methodElt);
+    String returnDesc = null;
     if (doc != null) {
       doc.
           getBlockTags().
@@ -613,6 +614,14 @@ public class ClassModel implements Model {
           filter(tag -> tag.getName().equals("param")).
           map(Tag.Param::new).
           forEach(tag -> paramDescs.put(tag.getParamName(), tag.getParamDescription()));
+      Optional<Tag> returnTag = doc.
+          getBlockTags().
+          stream().
+          filter(tag -> tag.getName().equals("return")).
+          findFirst();
+      if (returnTag.isPresent()) {
+        returnDesc = Helper.normalizeWhitespaces(returnTag.get().getValue());
+      }
     }
 
     //
@@ -685,7 +694,7 @@ public class ClassModel implements Model {
     }
 
     MethodInfo methodInfo = createMethodInfo(ownerType, methodName, comment, doc, kind,
-        returnType, isFluent, isCacheReturn, mParams, methodElt, isStatic, typeParams, declaringElt);
+        returnType, returnDesc, isFluent, isCacheReturn, mParams, methodElt, isStatic, typeParams, declaringElt);
     checkMethod(methodInfo);
     List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
     if (methodsByName == null) {
@@ -699,10 +708,11 @@ public class ClassModel implements Model {
 
   // This is a hook to allow a specific type of method to be created
   protected MethodInfo createMethodInfo(TypeInfo.Class ownerType, String methodName, String comment, Doc doc, MethodKind kind, TypeInfo returnType,
+                                        String returnDescription,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
                                         ExecutableElement methodElt, boolean isStatic, ArrayList<TypeParamInfo.Method> typeParams,
                                         TypeElement declaringElt) {
-    return new MethodInfo(Collections.singleton(ownerType), methodName, kind, returnType,
+    return new MethodInfo(Collections.singleton(ownerType), methodName, kind, returnType, returnDescription,
       isFluent, isCacheReturn, mParams, comment, doc, isStatic, typeParams);
   }
 

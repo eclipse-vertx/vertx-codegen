@@ -33,6 +33,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   final String name;
   final MethodKind kind;
   final TypeInfo returnType;
+  final String returnDescription;
   final boolean fluent;
   final boolean cacheReturn;
   final String comment;
@@ -43,7 +44,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   List<ParamInfo> params;
 
   public MethodInfo(Set<TypeInfo.Class> ownerTypes, String name, MethodKind kind,
-                    TypeInfo returnType, boolean fluent,  boolean cacheReturn,
+                    TypeInfo returnType, String returnDescription, boolean fluent,  boolean cacheReturn,
                     List<ParamInfo> params, String comment, Doc doc, boolean staticMethod,
                     List<TypeParamInfo.Method> typeParams) {
 
@@ -52,6 +53,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
     this.kind = kind;
     this.name = name;
     this.returnType = returnType;
+    this.returnDescription = returnDescription;
     this.fluent = fluent;
     this.cacheReturn = cacheReturn;
     this.doc = doc;
@@ -90,6 +92,10 @@ public class MethodInfo implements Comparable<MethodInfo> {
 
   public TypeInfo getReturnType() {
     return returnType;
+  }
+
+  public String getReturnDescription() {
+    return returnDescription;
   }
 
   public Set<TypeInfo.Class> getOwnerTypes() {

@@ -1,5 +1,6 @@
 package io.vertx.codegen.doc;
 
+import io.vertx.codegen.Helper;
 import io.vertx.codegen.TypeInfo;
 
 import javax.lang.model.element.Element;
@@ -55,7 +56,6 @@ public class Tag {
   public static class Param extends Tag {
 
     private static final Pattern PARAM_PATTERN = Pattern.compile("^\\s*(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*)(?:\\s((?:\\n|.)*))?");
-    private static final Pattern WHITESPACE_CLUSTER_PATTERN = Pattern.compile("\\s+");
 
     final String paramName;
     final String paramDescription;
@@ -73,8 +73,7 @@ public class Tag {
         paramName = matcher.group(1);
         String desc = matcher.group(2);
         if (desc != null) {
-          Matcher matcher2 = WHITESPACE_CLUSTER_PATTERN.matcher(desc);
-          desc = matcher2.replaceAll(" ").trim();
+          desc = Helper.normalizeWhitespaces(desc);
         }
         paramDescription = desc != null && !desc.trim().isEmpty() ? desc.trim() : null;
       } else {

@@ -571,4 +571,18 @@ public class Helper {
     }
     return null;
   }
+
+  private static final Pattern WHITESPACE_CLUSTER_PATTERN = Pattern.compile("\\s+");
+
+  /**
+   * Trim and normalize the whitespaces in a string: any cluster of more than one whitespace char
+   * is replaced by a space char, then the string is trimmed.
+   *
+   * @param s the string to normalize
+   * @return the normalized string
+   */
+  public static String normalizeWhitespaces(String s) {
+    Matcher matcher = WHITESPACE_CLUSTER_PATTERN.matcher(s);
+    return matcher.replaceAll(" ").trim();
+  }
 }
