@@ -1335,6 +1335,8 @@ public class GeneratorTest {
     Doc comment2 = new Doc(" Comment 2 line 1\n Comment 2 line 2\n");
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "foo", comment1, MethodKind.OTHER, "void", false, false, false, 1);
+      assertEquals("str", methods.get(0).getParams().get(0).getName());
+      assertEquals("the_string", methods.get(0).getParams().get(0).getDescription());
       checkMethod(methods.get(1), "bar", comment2, MethodKind.OTHER, "void", false, false, false, 1);
     };
     checker.accept(model.getMethods());

@@ -23,6 +23,7 @@ import io.vertx.codegen.annotations.IndexGetter;
 import io.vertx.codegen.annotations.IndexSetter;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.doc.Doc;
+import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
 import io.vertx.core.json.JsonObject;
 
@@ -610,7 +611,8 @@ public class ClassModel implements Model {
           getBlockTags().
           stream().
           filter(tag -> tag.getName().equals("param")).
-          forEach(tag -> paramDescs.put(tag.getName(), tag.getValue()));
+          map(Tag.Param::new).
+          forEach(tag -> paramDescs.put(tag.getParamName(), tag.getParamDescription()));
     }
 
     //

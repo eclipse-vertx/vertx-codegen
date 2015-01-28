@@ -155,4 +155,25 @@ public class CommentTest {
       assertEquals("" + i,expectedLabels[i], link.getLabel());
     }
   }
+
+  @Test
+  public void testTagParam() {
+    assertTagParam("param_name param_desc", "param_name", "param_desc");
+    assertTagParam("param_name", "param_name", null);
+    assertTagParam("param_name ", "param_name", null);
+    assertTagParam("param_name  ", "param_name", null);
+    assertTagParam("param_name  param_desc", "param_name", "param_desc");
+    assertTagParam(" param_name param_desc", "param_name", "param_desc");
+    assertTagParam("param_name\nparam_desc", "param_name", "param_desc");
+    assertTagParam("param_name param_\ndesc", "param_name", "param_ desc");
+    assertTagParam("param_name param_desc ", "param_name", "param_desc");
+    assertTagParam("param_name param desc", "param_name", "param desc");
+    assertTagParam(")param_name param desc", null, null);
+  }
+
+  private void assertTagParam(String comment, String expectedName, String expectedDescription) {
+    Tag.Param param = new Tag.Param("param", comment);
+    assertEquals(expectedName, param.getParamName());
+    assertEquals(expectedDescription, param.getParamDescription());
+  }
 }

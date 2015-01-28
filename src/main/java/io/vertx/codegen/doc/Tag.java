@@ -3,6 +3,8 @@ package io.vertx.codegen.doc;
 import io.vertx.codegen.TypeInfo;
 
 import javax.lang.model.element.Element;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A doc tag.
@@ -48,6 +50,46 @@ public class Tag {
   @Override
   public String toString() {
     return "@" + name + " " + value;
+  }
+
+  public static class Param extends Tag {
+
+    private static final Pattern PARAM_PATTERN = Pattern.compile("^\\s*(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*)(?:\\s((?:\\n|.)*))?");
+    private static final Pattern WHITESPACE_CLUSTER_PATTERN = Pattern.compile("\\s+");
+
+    final String paramName;
+    final String paramDescription;
+
+    public Param(Tag other) {
+      this(other.name, other.value);
+    }
+
+    public Param(String name, String value) {
+      super(name, value);
+
+      //
+      Matcher matcher = PARAM_PATTERN.matcher(value);
+      if (matcher.matches()) {
+        paramName = matcher.group(1);
+        String desc = matcher.group(2);
+        if (desc != null) {
+          Matcher matcher2 = WHITESPACE_CLUSTER_PATTERN.matcher(desc);
+          desc = matcher2.replaceAll(" ").trim();
+        }
+        paramDescription = desc != null && !desc.trim().isEmpty() ? desc.trim() : null;
+      } else {
+        paramName = null;
+        paramDescription = null;
+      }
+    }
+
+    public String getParamName() {
+      return paramName;
+    }
+
+    public String getParamDescription() {
+      return paramDescription;
+    }
   }
 
   /**
