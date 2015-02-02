@@ -62,6 +62,28 @@ public class Helper {
     }
   };
 
+  static <T> Function<Object, Stream<T>> instanceOf(Class<T> type) {
+    return o -> {
+      if (type.isInstance(o)) {
+        return Stream.of(type.cast(o));
+      } else {
+        return Stream.empty();
+      }
+    };
+  }
+
+  static <T> Function<Object, Stream<T>> cast(Class<T> type) {
+    return o -> Stream.of(type.cast(o));
+  }
+
+  static final Function<Element, Stream<ExecutableElement>> CAST = element -> {
+    if (element.getKind() == ElementKind.METHOD) {
+      return Stream.of((ExecutableElement) element);
+    } else {
+      return Stream.empty();
+    }
+  };
+
   public static ClassKind getKind(AnnotationResolver annotations, String fqcn) {
     if (annotations.get(DataObject.class) != null) {
       return ClassKind.DATA_OBJECT;

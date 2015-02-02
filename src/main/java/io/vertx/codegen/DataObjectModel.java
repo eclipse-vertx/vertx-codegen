@@ -1,8 +1,10 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.doc.Doc;
 import io.vertx.core.json.JsonObject;
 
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -17,9 +19,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
 
@@ -30,6 +37,7 @@ public class DataObjectModel implements Model {
 
   private final Elements elementUtils;
   private final Types typeUtils;
+  private final Doc.Factory docFactory;
   private final TypeInfo.Factory typeFactory;
   private final TypeElement modelElt;
   private boolean processed = false;
@@ -41,10 +49,11 @@ public class DataObjectModel implements Model {
   private final Set<TypeInfo.Class> importedTypes = new LinkedHashSet<>();
   private TypeInfo.Class type;
 
-  public DataObjectModel(Elements elementUtils, Types typeUtils, TypeElement modelElt) {
+  public DataObjectModel(Elements elementUtils, Types typeUtils, TypeElement modelElt, Messager messager) {
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
     this.typeFactory = new TypeInfo.Factory(elementUtils, typeUtils);
+    this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, typeFactory, modelElt);
     this.modelElt = modelElt;
   }
 
@@ -263,35 +272,50 @@ public class DataObjectModel implements Model {
               return;
           }
 
+          // A stream that list all overriden methods from super types
+          // the boolean control whether or not we want to filter only annotated
+          // data objects
+          Function<Boolean, Stream<ExecutableElement>> overridenMethods = (annotated) -> {
+            LinkedList<TypeMirror> superTypes = new LinkedList<>(modelElt.getInterfaces());
+            if (modelElt.getSuperclass() != null) {
+              superTypes.addFirst(modelElt.getSuperclass());
+            }
+            return superTypes.
+                stream().
+                flatMap(Helper.instanceOf(DeclaredType.class)).
+                map(DeclaredType::asElement).
+                filter(superTypeElt -> !annotated || superTypeElt.getAnnotation(DataObject.class) != null).
+                flatMap(Helper.cast(TypeElement.class)).
+                flatMap(superTypeElt -> elementUtils.getAllMembers(superTypeElt).stream()).
+                flatMap(Helper.instanceOf(ExecutableElement.class)).
+                filter(executableElt -> executableElt.getKind() == ElementKind.METHOD && elementUtils.overrides(methodElt, executableElt, modelElt));
+          };
+
           boolean declared;
           Element ownerElt = methodElt.getEnclosingElement();
           if (ownerElt.equals(modelElt)) {
             // Handle the case where this methods overrides from another data object
-            declared = true;
-            for (TypeMirror superTM : modelElt.getInterfaces()) {
-              DeclaredType superDT = (DeclaredType) superTM;
-              if (superDT.asElement().getAnnotation(DataObject.class) != null) {
-                for (Element foo : elementUtils.getAllMembers((TypeElement) superDT.asElement())) {
-                  if (foo instanceof ExecutableElement) {
-                    if (elementUtils.overrides(methodElt, (ExecutableElement) foo, modelElt)) {
-                      declared = false;
-                    }
-                  }
-                }
-              }
-            }
+            declared = overridenMethods.apply(true).count() == 0;
           } else {
             declared = ownerElt.getAnnotation(DataObject.class) == null;
           }
 
-          PropertyInfo property = new PropertyInfo(declared, name, type, methodName, array, adder);
-          if (propertyMap.containsKey(property.name)) {
-            //
+          Doc doc = docFactory.createDoc(methodElt);
+          if (doc == null) {
+            Optional<Doc> first = overridenMethods.apply(false).
+                map(docFactory::createDoc).
+                filter(d -> d != null).
+                findFirst();
+            doc = first.orElse(null);
           }
+
+          PropertyInfo property = new PropertyInfo(declared, name, doc, type, methodName, array, adder);
           propertyMap.put(property.name, property);
-          return;
         }
       }
     }
   }
+
+
+
 }

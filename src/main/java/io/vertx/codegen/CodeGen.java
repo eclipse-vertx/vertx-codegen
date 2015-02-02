@@ -173,7 +173,7 @@ public class CodeGen {
     if (element == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
-      DataObjectModel model = new DataObjectModel(elementUtils, typeUtils, element);
+      DataObjectModel model = new DataObjectModel(elementUtils, typeUtils, element, messager);
       model.process();
       return model;
     }

@@ -72,7 +72,7 @@ public class ModuleTest {
 
   @Test
   public void testModuleScopedDataObjectModel() throws Exception {
-    DataObjectModel model = new Generator().generateDataObjects(ModuleScopedDataObject.class);
+    DataObjectModel model = new Generator().generateDataObject(ModuleScopedDataObject.class);
     assertEquals(ModuleScopedDataObject.class.getName(), model.getFqn());
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getFqn());
     assertEquals("simple", model.getModule().getName());
@@ -80,7 +80,7 @@ public class ModuleTest {
 
   @Test
   public void testModuleScopedSubDataObjectModel() throws Exception {
-    DataObjectModel model = new Generator().generateDataObjects(ModuleScopedSubDataObject.class);
+    DataObjectModel model = new Generator().generateDataObject(ModuleScopedSubDataObject.class);
     assertEquals(ModuleScopedSubDataObject.class.getName(), model.getFqn());
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getFqn());
     assertEquals("simple", model.getModule().getName());
@@ -98,7 +98,7 @@ public class ModuleTest {
   @Test
   public void testNoModuleDataObjectModel() throws Exception {
     try {
-      new Generator().generateDataObjects(NoModuleDataObject.class);
+      new Generator().generateDataObject(NoModuleDataObject.class);
       fail();
     } catch (GenException expected) {
     }

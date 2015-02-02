@@ -34,18 +34,14 @@ import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.logging.Logger;
 
 /**
  *
@@ -53,8 +49,6 @@ import java.util.logging.Logger;
  *
  */
 public class Generator {
-
-  private static final Logger log = Logger.getLogger(Generator.class.getName());
 
   Template template; // Global trivial compiled template cache
   HashMap<String, String> options = new HashMap<>();
@@ -133,61 +127,30 @@ public class Generator {
     return processor.result;
   }
 
-  public DataObjectModel generateDataObjects(Class option) throws Exception {
-    MyProcessor<DataObjectModel> processor = new MyProcessor<>(codegen -> codegen.getDataObjectModel(option.getName()));
-    Compiler compiler = new Compiler(processor, collector);
-    compiler.compile(Collections.singletonList(option));
-    return processor.result;
+  public DataObjectModel generateDataObject(Class c, Class... rest) throws Exception {
+    return generateClass(codegen -> codegen.getDataObjectModel(c.getCanonicalName()), c, rest);
   }
 
   public ClassModel generateClass(Class c, Class... rest) throws Exception {
-    log.info("Generating model for class " + c);
-    ArrayList<Class> types = new ArrayList<>();
-    types.add(c);
-    Collections.addAll(types, rest);
-    String className = c.getCanonicalName();
-    MyProcessor<ClassModel> processor = new MyProcessor<>(codegen -> codegen.getClassModel(className));
-    Compiler compiler = new Compiler(processor, collector);
-    compiler.compile(types);
-    if (processor.result == null) {
-      throw new IllegalArgumentException(className + " not processed. Does it have the VertxGen annotation?");
-    }
-    return processor.result;
+    return generateClass(codegen -> codegen.getClassModel(c.getCanonicalName()), c, rest);
   }
 
   public ProxyModel generateProxyModel(Class c, Class... rest) throws Exception {
-    log.info("Generating proxy model for class " + c);
+    return generateClass(codegen -> codegen.getProxyModel(c.getCanonicalName()), c, rest);
+  }
+
+  public <M> M generateClass(Function<CodeGen, M> f, Class c, Class... rest) throws Exception {
     ArrayList<Class> types = new ArrayList<>();
     types.add(c);
     Collections.addAll(types, rest);
     String className = c.getCanonicalName();
-    MyProcessor<ProxyModel> processor = new MyProcessor<>(codegen -> codegen.getProxyModel(className));
+    MyProcessor<M> processor = new MyProcessor<>(f);
     Compiler compiler = new Compiler(processor, collector);
     compiler.compile(types);
     if (processor.result == null) {
-      throw new IllegalArgumentException(className + " not processed. Does it have the ProxyGen annotation?");
+      throw new IllegalArgumentException(className + " not processed.");
     }
     return processor.result;
-  }
-
-  private void sortMethodMap(Map<String, List<MethodInfo>> map) {
-    for (List<MethodInfo> list: map.values()) {
-      list.sort((meth1, meth2) -> meth1.params.size() - meth2.params.size());
-    }
-  }
-
-  private static class NullWriter extends Writer {
-    @Override
-    public void write(char[] cbuf, int off, int len) throws IOException {
-    }
-
-    @Override
-    public void flush() throws IOException {
-    }
-
-    @Override
-    public void close() throws IOException {
-    }
   }
 
   private class MyProcessor<R> implements Processor {
