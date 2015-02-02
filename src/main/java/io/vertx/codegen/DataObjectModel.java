@@ -48,6 +48,7 @@ public class DataObjectModel implements Model {
   private final Set<TypeInfo.Class> abstractSuperTypes = new LinkedHashSet<>();
   private final Set<TypeInfo.Class> importedTypes = new LinkedHashSet<>();
   private TypeInfo.Class type;
+  private Doc doc;
 
   public DataObjectModel(Elements elementUtils, Types typeUtils, TypeElement modelElt, Messager messager) {
     this.elementUtils = elementUtils;
@@ -70,6 +71,10 @@ public class DataObjectModel implements Model {
   @Override
   public String getFqn() {
     return type.getName();
+  }
+
+  public Doc getDoc() {
+    return doc;
   }
 
   public boolean isAbstract() {
@@ -108,6 +113,7 @@ public class DataObjectModel implements Model {
   public Map<String, Object> getVars() {
     HashMap<String, Object> vars = new HashMap<>();
     vars.put("type", type);
+    vars.put("doc", doc);
     vars.put("concrete", concrete);
     vars.put("properties", propertyMap.values());
     vars.put("importedTypes", importedTypes);
@@ -141,6 +147,7 @@ public class DataObjectModel implements Model {
     } catch (ClassCastException e) {
       throw new GenException(modelElt, "Data object must be a plain java class with no type parameters");
     }
+    doc = docFactory.createDoc(modelElt);
 
     if (getModule() == null) {
       throw new GenException(modelElt, "Data object must have an ancestor package annotated with @ModuleGen");

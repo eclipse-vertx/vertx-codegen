@@ -23,6 +23,7 @@ import io.vertx.test.codegen.testdataobject.ApiSetter;
 import io.vertx.test.codegen.testdataobject.BasicAdders;
 import io.vertx.test.codegen.testdataobject.BasicGetters;
 import io.vertx.test.codegen.testdataobject.BasicSetters;
+import io.vertx.test.codegen.testdataobject.CommentedDataObject;
 import io.vertx.test.codegen.testdataobject.CommentedProperty;
 import io.vertx.test.codegen.testdataobject.CommentedPropertyInheritedFromCommentedProperty;
 import io.vertx.test.codegen.testdataobject.CommentedPropertyOverridesCommentedProperty;
@@ -326,6 +327,13 @@ public class DataObjectTest {
     DataObjectModel model = new Generator().generateDataObject(ImportedNested.class);
     assertNotNull(model);
     assertEquals(Collections.singleton((TypeInfo.Class) TypeInfo.create(Imported.class)), model.getImportedTypes());
+  }
+
+  @Test
+  public void testCommentedDataObject() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(CommentedDataObject.class);
+    Doc doc = model.getDoc();
+    assertEquals(" The data object comment.\n", doc.getFirstSentence().getValue());
   }
 
   @Test
