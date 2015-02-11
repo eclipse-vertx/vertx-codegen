@@ -367,6 +367,8 @@ public class GeneratorTest {
     assertGenInvalid(ConcreteInterfaceWithTwoConcreteSuperInterfaces.class);
   }
 
+  // Various
+
   // Test valid stuff
   // ----------------
 
@@ -394,6 +396,14 @@ public class GeneratorTest {
       checkParam(params.get(6), "bool", "boolean");
       checkParam(params.get(7), "ch", "char");
       checkClassParam(params.get(8), "str", "java.lang.String", ClassKind.STRING);
+      assertEquals("java.lang.Byte", ((TypeInfo.Primitive)params.get(0).getType()).getBoxed().getName());
+      assertEquals("java.lang.Short", ((TypeInfo.Primitive)params.get(1).getType()).getBoxed().getName());
+      assertEquals("java.lang.Integer", ((TypeInfo.Primitive)params.get(2).getType()).getBoxed().getName());
+      assertEquals("java.lang.Long", ((TypeInfo.Primitive)params.get(3).getType()).getBoxed().getName());
+      assertEquals("java.lang.Float", ((TypeInfo.Primitive)params.get(4).getType()).getBoxed().getName());
+      assertEquals("java.lang.Double", ((TypeInfo.Primitive)params.get(5).getType()).getBoxed().getName());
+      assertEquals("java.lang.Boolean", ((TypeInfo.Primitive)params.get(6).getType()).getBoxed().getName());
+      assertEquals("java.lang.Character", ((TypeInfo.Primitive)params.get(7).getType()).getBoxed().getName());
     };
 
     MethodInfo method = model.getMethods().get(0);

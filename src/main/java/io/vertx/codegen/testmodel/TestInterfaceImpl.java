@@ -702,6 +702,11 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public int methodWithCachedReturnPrimitive(int arg) {
+    return arg;
+  }
+
+  @Override
   public JsonObject methodWithJsonObjectReturn() {
     return new JsonObject().put("cheese", "stilton");
   }

@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,7 @@ public abstract class TypeInfo {
       String fqcn = type.getTypeName();
       java.lang.Class classType = (java.lang.Class) type;
       if (classType.isPrimitive()) {
-        return new Primitive(classType.getName());
+        return Primitive.PRIMITIVES.get(classType.getName());
       } else {
         Package pkg = classType.getPackage();
         ModuleInfo module = null;
@@ -110,7 +111,7 @@ public abstract class TypeInfo {
         case SHORT:
         case BOOLEAN:
         case INT:
-          return new Primitive(type.toString());
+          return Primitive.PRIMITIVES.get(type.toString());
         case TYPEVAR:
           return create((TypeVariable) type);
         case WILDCARD:
@@ -161,7 +162,9 @@ public abstract class TypeInfo {
       } else {
         ClassKind kind = Helper.getKind(annotationType -> elt.getAnnotation(annotationType), fqcn);
         Class raw;
-        if (kind == ClassKind.API) {
+        if (kind == ClassKind.BOXED_PRIMITIVE) {
+          raw = Class.PRIMITIVES.get(fqcn);
+        } if (kind == ClassKind.API) {
           VertxGen genAnn = elt.getAnnotation(VertxGen.class);
           TypeElement readStreamElt = elementUtils.getTypeElement(ClassModel.VERTX_READ_STREAM);
           TypeMirror readStreamType = readStreamElt.asType();
@@ -229,10 +232,26 @@ public abstract class TypeInfo {
 
   public static class Primitive extends TypeInfo {
 
-    final String name;
+    private static final HashMap<String, Primitive> PRIMITIVES = new HashMap<>();
 
-    public Primitive(String name) {
+    static {
+      java.lang.Class<?>[] primitives = {boolean.class,byte.class,short.class,int.class,long.class,
+          float.class,double.class,char.class};
+      java.lang.Class<?>[] boxes = {Boolean.class,Byte.class,Short.class,Integer.class,Long.class,
+          Float.class,Double.class,Character.class};
+      for (int i = 0;i < primitives.length;i++) {
+        java.lang.Class<?> primitive = primitives[i];
+        String name = primitive.getName();
+        PRIMITIVES.put(name, new Primitive(primitive.getName(), boxes[i].getName()));
+      }
+    }
+
+    final String name;
+    final String boxedName;
+
+    private Primitive(String name, String boxedName) {
       this.name = name;
+      this.boxedName = boxedName;
     }
 
     @Override
@@ -241,6 +260,13 @@ public abstract class TypeInfo {
         return name.equals(((Primitive) obj).name);
       }
       return false;
+    }
+
+    /**
+     * @return the boxed equivalent
+     */
+    public TypeInfo.Class getBoxed() {
+      return Class.PRIMITIVES.get(boxedName);
     }
 
     @Override
@@ -370,6 +396,17 @@ public abstract class TypeInfo {
   }
 
   public static class Class extends TypeInfo {
+
+    private static final HashMap<String, Class> PRIMITIVES = new HashMap<>();
+
+    static {
+      java.lang.Class<?>[] boxes = {Boolean.class,Byte.class,Short.class,Integer.class,Long.class,
+          Float.class,Double.class,Character.class};
+      for (java.lang.Class<?> boxe : boxes) {
+        String name = boxe.getName();
+        PRIMITIVES.put(name, new Class(ClassKind.BOXED_PRIMITIVE, name, null, false));
+      }
+    }
 
     final ClassKind kind;
     final String fqcn;
