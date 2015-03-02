@@ -35,9 +35,11 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -606,5 +608,34 @@ public class Helper {
   public static String normalizeWhitespaces(String s) {
     Matcher matcher = WHITESPACE_CLUSTER_PATTERN.matcher(s);
     return matcher.replaceAll(" ").trim();
+  }
+
+  /**
+   * Resolve the set of all the ancestors declared types of a given type element.
+   *
+   * @param typeElt the type element to resolve
+   * @return the set of ancestors
+   */
+  public static Set<DeclaredType> resolveAncestorTypes(TypeElement typeElt) {
+    Set<DeclaredType> ancestors = new LinkedHashSet<>();
+    resolveAncestorTypes(typeElt, ancestors);
+    return ancestors;
+  }
+
+  private static void resolveAncestorTypes(TypeElement typeElt, Set<DeclaredType> ancestors) {
+    List<TypeMirror> superTypes = new ArrayList<>();
+    if (typeElt.getSuperclass() != null) {
+      superTypes.add(typeElt.getSuperclass());
+    }
+    superTypes.addAll(typeElt.getInterfaces());
+    for (TypeMirror superType : superTypes) {
+      if (superType.getKind() == TypeKind.DECLARED) {
+        DeclaredType superDeclaredType = (DeclaredType) superType;
+        if (!ancestors.contains(superDeclaredType)) {
+          ancestors.add(superDeclaredType);
+          resolveAncestorTypes((TypeElement) superDeclaredType.asElement(), ancestors);
+        }
+      }
+    }
   }
 }

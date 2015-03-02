@@ -28,7 +28,7 @@ import io.vertx.test.codegen.testdataobject.CommentedProperty;
 import io.vertx.test.codegen.testdataobject.CommentedPropertyInheritedFromCommentedProperty;
 import io.vertx.test.codegen.testdataobject.CommentedPropertyOverridesCommentedProperty;
 import io.vertx.test.codegen.testdataobject.CommentedPropertyOverridesUncommentedProperty;
-import io.vertx.test.codegen.testdataobject.UncommentedPropertyOverridesCommentedProperty;
+import io.vertx.test.codegen.testdataobject.UncommentedPropertyOverridesSuperCommentedProperty;
 import io.vertx.test.codegen.testdataobject.Concrete;
 import io.vertx.test.codegen.testdataobject.ConcreteInheritsAbstract;
 import io.vertx.test.codegen.testdataobject.ConcreteInheritsConcrete;
@@ -49,6 +49,7 @@ import io.vertx.test.codegen.testdataobject.Parameterized;
 import io.vertx.test.codegen.testdataobject.SetterNormalizationRules;
 import io.vertx.test.codegen.testdataobject.SetterWithNestedDataObject;
 import io.vertx.test.codegen.testdataobject.SetterWithNonFluentReturnType;
+import io.vertx.test.codegen.testdataobject.UncommentedPropertyOverridesAncestorSuperCommentedProperty;
 import io.vertx.test.codegen.testdataobject.imported.Imported;
 import org.junit.Test;
 
@@ -361,7 +362,15 @@ public class DataObjectTest {
 
   @Test
   public void testUncommentedPropertyOverridesCommentedProperty() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(UncommentedPropertyOverridesCommentedProperty.class, AbstractCommentedProperty.class);
+    DataObjectModel model = new Generator().generateDataObject(UncommentedPropertyOverridesSuperCommentedProperty.class, AbstractCommentedProperty.class);
+    PropertyInfo propertyInfo = model.getPropertyMap().get("theProperty");
+    Doc propertyDoc = propertyInfo.getDoc();
+    assertEquals(" The property description.\n", propertyDoc.getFirstSentence().getValue());
+  }
+
+  @Test
+  public void testUncommentedPropertyOverridesAncestorCommentedProperty() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(UncommentedPropertyOverridesAncestorSuperCommentedProperty.class, AbstractCommentedProperty.class);
     PropertyInfo propertyInfo = model.getPropertyMap().get("theProperty");
     Doc propertyDoc = propertyInfo.getDoc();
     assertEquals(" The property description.\n", propertyDoc.getFirstSentence().getValue());

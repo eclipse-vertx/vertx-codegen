@@ -7,15 +7,15 @@ import io.vertx.core.json.JsonObject;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @DataObject
-public class UncommentedPropertyOverridesCommentedProperty extends AbstractCommentedProperty {
+public class UncommentedPropertyOverridesSuperCommentedProperty extends AbstractCommentedProperty {
 
-  public UncommentedPropertyOverridesCommentedProperty() {
+  public UncommentedPropertyOverridesSuperCommentedProperty() {
   }
 
-  public UncommentedPropertyOverridesCommentedProperty(JsonObject json) {
+  public UncommentedPropertyOverridesSuperCommentedProperty(JsonObject json) {
   }
 
-  public UncommentedPropertyOverridesCommentedProperty(UncommentedPropertyOverridesCommentedProperty other) {
+  public UncommentedPropertyOverridesSuperCommentedProperty(UncommentedPropertyOverridesSuperCommentedProperty other) {
   }
 
   @Override
