@@ -1,7 +1,9 @@
 package io.vertx.codegen;
 
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.mvel2.MVEL;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -39,6 +41,7 @@ import java.util.stream.Stream;
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)
 public class CodeGenProcessor extends AbstractProcessor {
 
+  private final static ObjectMapper mapper = new ObjectMapper();
   private static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
   private File outputDirectory;
   private Map<String, List<CodeGenerator>> codeGenerators;
@@ -56,14 +59,13 @@ public class CodeGenProcessor extends AbstractProcessor {
         URL descriptor = descriptors.nextElement();
         try (Scanner scanner = new Scanner(descriptor.openStream(), "UTF-8").useDelimiter("\\A")) {
           String s = scanner.next();
-          JsonObject obj = new JsonObject(s);
-          String name = obj.getString("name");
-          JsonArray generatorsCfg = obj.getJsonArray("generators");
-          for (Object o : generatorsCfg) {
-            JsonObject generator = (JsonObject) o;
-            String kind = generator.getString("kind");
-            String templateFileName = generator.getString("templateFileName");
-            String fileName = generator.getString("fileName");
+          ObjectNode obj = (ObjectNode) mapper.readTree(s);
+          String name = obj.get("name").asText();
+          ArrayNode generatorsCfg = (ArrayNode) obj.get("generators");
+          for (JsonNode generator : generatorsCfg) {
+            String kind = generator.get("kind").asText();
+            String templateFileName = generator.get("templateFileName").asText();
+            String fileName = generator.get("fileName").asText();
             Serializable fileNameExpression = MVEL.compileExpression(fileName);
             Template compiledTemplate = new Template(templateFileName);
             compiledTemplate.setOptions(processingEnv.getOptions());
