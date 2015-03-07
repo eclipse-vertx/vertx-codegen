@@ -10,8 +10,10 @@ import org.mvel2.templates.TemplateRuntime;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,9 +34,9 @@ public class Template {
     this.name = file.substring(file.lastIndexOf('/') + 1);
     try {
       this.baseURI = url.toURI().toString();
-      this.compiled = loadCompiled(url.openStream());
-    } catch (Exception e) {
-      throw new IllegalArgumentException("Cannot load template file: " + name, e);
+      this.compiled = loadCompiled(url);
+    } catch (URISyntaxException e) {
+      throw new TemplateError("Could not load template from template " + url, e);
     }
   }
 
@@ -47,6 +49,36 @@ public class Template {
     this.options.putAll(options);
   }
 
+  // A global template cache because loading a template is expensive
+  private static final Map<URL, CompiledTemplate> templateCache = new HashMap<>();
+
+  /**
+   * Load a template given its {@code templateURL}.
+   *
+   * @param templateURL the template url
+   * @return the compiled template
+   */
+  public static CompiledTemplate loadCompiled(URL templateURL) {
+    CompiledTemplate template = templateCache.get(templateURL);
+    if (template == null) {
+      InputStream is = null;
+      try {
+        is = templateURL.openStream();
+      } catch (IOException e) {
+        throw new TemplateError("Could not load template from template " + templateURL, e);
+      }
+      template = loadCompiled(is);
+      templateCache.put(templateURL, template);
+    }
+    return template;
+  }
+
+  /**
+   * Load a template given its {@code source}.
+   *
+   * @param source the template source
+   * @return the compiled template
+   */
   public static CompiledTemplate loadCompiled(InputStream source) {
     // Load the template
     String template;
@@ -121,8 +153,7 @@ public class Template {
             } else {
               url = new URL(new URL(baseURI), name);
             }
-            InputStream in = url.openStream();
-            CompiledTemplate compiledTemplate = loadCompiled(in);
+            CompiledTemplate compiledTemplate = loadCompiled(url);
             addNamedTemplate(name, compiledTemplate);
             return compiledTemplate;
           } catch (Exception ex) {
