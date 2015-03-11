@@ -113,9 +113,11 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   void methodWithHandlerAsyncResultUserTypes(Handler<AsyncResult<RefedInterface1>> handler);
 
-  void methodWithConcreteHandlerUserTypesSubtype(ConcreteHandlerUserType handler);
+  void methodWithConcreteHandlerUserTypeSubtype(ConcreteHandlerUserType handler);
 
-  void methodWithAbstractHandlerUserTypesSubtype(AbstractHandlerUserType handler);
+  void methodWithAbstractHandlerUserTypeSubtype(AbstractHandlerUserType handler);
+
+  void methodWithConcreteHandlerUserTypeSubtypeExtension(ConcreteHandlerUserTypeExtension handler);
 
   void methodWithHandlerVoid(Handler<Void> handler);
 

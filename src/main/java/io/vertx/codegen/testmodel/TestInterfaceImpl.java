@@ -472,14 +472,21 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
-  public void methodWithConcreteHandlerUserTypesSubtype(ConcreteHandlerUserType handler) {
+  public void methodWithConcreteHandlerUserTypeSubtype(ConcreteHandlerUserType handler) {
     RefedInterface1 refed = new RefedInterface1Impl();
     refed.setString("echidnas");
     handler.handle(refed);
   }
 
   @Override
-  public void methodWithAbstractHandlerUserTypesSubtype(AbstractHandlerUserType handler) {
+  public void methodWithAbstractHandlerUserTypeSubtype(AbstractHandlerUserType handler) {
+    RefedInterface1 refed = new RefedInterface1Impl();
+    refed.setString("echidnas");
+    handler.handle(refed);
+  }
+
+  @Override
+  public void methodWithConcreteHandlerUserTypeSubtypeExtension(ConcreteHandlerUserTypeExtension handler) {
     RefedInterface1 refed = new RefedInterface1Impl();
     refed.setString("echidnas");
     handler.handle(refed);

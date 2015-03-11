@@ -98,6 +98,7 @@ public class ClassModel implements Model {
   protected List<TypeInfo> superTypes = new ArrayList<>();
   protected List<TypeInfo> concreteSuperTypes = new ArrayList<>();
   protected List<TypeInfo> abstractSuperTypes = new ArrayList<>();
+  protected TypeInfo handlerSuperType;
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
   protected List<TypeInfo> referencedDataObjectTypes = new ArrayList<>();
@@ -192,6 +193,10 @@ public class ClassModel implements Model {
 
   public List<TypeInfo> getAbstractSuperTypes() {
     return abstractSuperTypes;
+  }
+
+  public TypeInfo getHandlerSuperType() {
+    return handlerSuperType;
   }
 
   public Map<String, List<MethodInfo>> getMethodMap() {
@@ -465,27 +470,30 @@ public class ClassModel implements Model {
         }
         List<? extends TypeMirror> st = typeUtils.directSupertypes(tm);
         for (TypeMirror tmSuper: st) {
-          Element superElement = typeUtils.asElement(tmSuper);
-          VertxGen superGen = superElement.getAnnotation(VertxGen.class);
           if (!tmSuper.toString().equals(Object.class.getName())) {
-            if (superElement.getAnnotation(VertxGen.class) != null) {
-              try {
-                TypeInfo.Class superType = typeFactory.create(tmSuper).getRaw();
-                referencedTypes.add(superType);
-              } catch (Exception e) {
-                throw new GenException(elem, e.getMessage());
-              }
-            }
+            TypeInfo superTypeInfo;
             try {
-              TypeInfo superTypeInfo = typeFactory.create(tmSuper);
-              superTypeInfo.collectImports(importedTypes);
-              if (superGen != null) {
-                (superGen.concrete() ? concreteSuperTypes : abstractSuperTypes).add(superTypeInfo);
-                superTypes.add(superTypeInfo);
-              }
+              superTypeInfo = typeFactory.create(tmSuper);
             } catch (IllegalArgumentException e) {
               throw new GenException(elem, e.getMessage());
             }
+            switch (superTypeInfo.getKind()) {
+              case API: {
+                try {
+                  TypeInfo.Class.Api superType = (TypeInfo.Class.Api) typeFactory.create(tmSuper).getRaw();
+                  referencedTypes.add(superType);
+                  (superType.isConcrete() ? concreteSuperTypes : abstractSuperTypes).add(superTypeInfo);
+                  superTypes.add(superTypeInfo);
+                } catch (Exception e) {
+                  throw new GenException(elem, e.getMessage());
+                }
+                break;
+              }
+              case HANDLER:
+                handlerSuperType = superTypeInfo;
+                break;
+            }
+            superTypeInfo.collectImports(importedTypes);
           }
         }
         if (concrete && concreteSuperTypes.size() > 1) {
@@ -786,6 +794,7 @@ public class ClassModel implements Model {
     vars.put("superTypes", getSuperTypes());
     vars.put("concreteSuperTypes", getConcreteSuperTypes());
     vars.put("abstractSuperTypes", getAbstractSuperTypes());
+    vars.put("handlerSuperType", getHandlerSuperType());
     vars.put("methodsByName", getMethodMap());
     vars.put("referencedDataObjectTypes", getReferencedDataObjectTypes());
     vars.put("typeParams", getTypeParams());

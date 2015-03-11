@@ -1621,6 +1621,9 @@ public class GeneratorTest {
   @Test
   public void testInterfaceExtendingHandlerStringSubtype() throws Exception {
     ClassModel model = new Generator().generateClass(InterfaceExtendingHandlerStringSubtype.class);
+    TypeInfo.Parameterized handlerSuperType = (TypeInfo.Parameterized) model.getHandlerSuperType();
+    assertEquals(1, handlerSuperType.getArgs().size());
+    assertEquals(TypeInfo.create(String.class), handlerSuperType.getArgs().get(0));
     TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
     assertTrue(apiType.isHandler());
     assertEquals(TypeInfo.create(String.class), apiType.getHandlerArg());
@@ -1634,6 +1637,9 @@ public class GeneratorTest {
   @Test
   public void testInterfaceExtendingHandlerVertxGenSubtype() throws Exception {
     ClassModel model = new Generator().generateClass(InterfaceExtendingHandlerVertxGenSubtype.class, VertxGenClass1.class);
+    TypeInfo.Parameterized handlerSuperType = (TypeInfo.Parameterized) model.getHandlerSuperType();
+    assertEquals(1, handlerSuperType.getArgs().size());
+    assertEquals(TypeInfo.create(VertxGenClass1.class), handlerSuperType.getArgs().get(0));
     TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
     assertTrue(apiType.isHandler());
     assertEquals(TypeInfo.create(VertxGenClass1.class), apiType.getHandlerArg());
