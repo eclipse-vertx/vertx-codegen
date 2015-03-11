@@ -454,7 +454,7 @@ public class ClassModel implements Model {
         ifacePackageName = elementUtils.getPackageOf(elem).toString();
         ifaceComment = elementUtils.getDocComment(elem);
         doc = docFactory.createDoc(elem);
-        concrete = elem.getAnnotation(VertxGen.class) != null && elem.getAnnotation(VertxGen.class).concrete();
+        concrete = elem.getAnnotation(VertxGen.class) == null || elem.getAnnotation(VertxGen.class).concrete();
         DeclaredType tm = (DeclaredType) elem.asType();
         List<? extends TypeMirror> typeArgs = tm.getTypeArguments();
         for (TypeMirror typeArg : typeArgs) {
@@ -602,6 +602,10 @@ public class ClassModel implements Model {
     }
 
     boolean isStatic = mods.contains(Modifier.STATIC);
+    if (isStatic && !concrete) {
+      throw new GenException(methodElt, "Abstract interface cannot declare static methods");
+    }
+
     boolean isCacheReturn = methodElt.getAnnotation(CacheReturn.class) != null;
     ArrayList<TypeParamInfo.Method> typeParams = new ArrayList<>();
     for (TypeParameterElement typeParam : methodElt.getTypeParameters()) {

@@ -20,6 +20,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetServerOptions;
 import io.vertx.test.codegen.testapi.AbstractInterfaceWithConcreteSuperInterface;
+import io.vertx.test.codegen.testapi.AbstractInterfaceWithStaticMethod;
 import io.vertx.test.codegen.testapi.CacheReturnMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.ConcreteInterfaceWithTwoConcreteSuperInterfaces;
 import io.vertx.test.codegen.testapi.DiamondMethod1;
@@ -362,6 +363,11 @@ public class GeneratorTest {
   @Test
   public void testAbstractInterfaceCannotExtendConcreteInterface() throws Exception {
     assertGenInvalid(AbstractInterfaceWithConcreteSuperInterface.class);
+  }
+
+  @Test
+  public void testAbstractInterfaceCannotHaveStaticMethod() throws Exception {
+    assertGenInvalid(AbstractInterfaceWithStaticMethod.class);
   }
 
   @Test
