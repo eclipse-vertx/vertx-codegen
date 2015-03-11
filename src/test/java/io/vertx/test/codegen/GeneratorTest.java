@@ -135,6 +135,8 @@ import io.vertx.test.codegen.testapi.fluent.FluentMethodWithIllegalReturn;
 import io.vertx.test.codegen.testapi.fluent.FluentMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromAbstract;
 import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromConcrete;
+import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerStringSubtype;
+import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerVertxGenSubtype;
 import io.vertx.test.codegen.testapi.impl.InterfaceInImplPackage;
 import io.vertx.test.codegen.testapi.impl.sub.InterfaceInImplParentPackage;
 import io.vertx.test.codegen.testapi.simple.InterfaceInImplContainingPackage;
@@ -1523,6 +1525,7 @@ public class GeneratorTest {
     assertEquals(TypeInfo.create(String.class), apiType.getReadStreamArg());
     assertFalse(apiType.isWriteStream());
     assertNull(apiType.getWriteStreamArg());
+    assertFalse(apiType.isHandler());
   }
 
   @Test
@@ -1534,6 +1537,7 @@ public class GeneratorTest {
     assertEquals("U", readStreamArg.getName());
     assertFalse(apiType.isWriteStream());
     assertNull(apiType.getWriteStreamArg());
+    assertFalse(apiType.isHandler());
   }
 
   @Test
@@ -1544,6 +1548,7 @@ public class GeneratorTest {
     assertNull(apiType.getReadStreamArg());
     assertTrue(apiType.isWriteStream());
     assertEquals(TypeInfo.create(String.class), apiType.getWriteStreamArg());
+    assertFalse(apiType.isHandler());
   }
 
   @Test
@@ -1555,6 +1560,7 @@ public class GeneratorTest {
     assertTrue(apiType.isWriteStream());
     TypeInfo.Variable writeStreamArg = (TypeInfo.Variable) apiType.getWriteStreamArg();
     assertEquals("U", writeStreamArg.getName());
+    assertFalse(apiType.isHandler());
   }
 
   @Test
@@ -1565,6 +1571,7 @@ public class GeneratorTest {
     assertEquals(TypeInfo.create(String.class), apiType.getReadStreamArg());
     assertTrue(apiType.isWriteStream());
     assertEquals(TypeInfo.create(String.class), apiType.getWriteStreamArg());
+    assertFalse(apiType.isHandler());
   }
 
   @Test
@@ -1577,6 +1584,7 @@ public class GeneratorTest {
     assertTrue(apiType.isWriteStream());
     TypeInfo.Variable writeStreamArg = (TypeInfo.Variable) apiType.getWriteStreamArg();
     assertEquals("U", writeStreamArg.getName());
+    assertFalse(apiType.isHandler());
   }
 
   @Test
@@ -1587,6 +1595,7 @@ public class GeneratorTest {
     assertEquals(TypeInfo.create(String.class), apiType.getReadStreamArg());
     assertFalse(apiType.isWriteStream());
     assertNull(apiType.getWriteStreamArg());
+    assertFalse(apiType.isHandler());
   }
 
   @Test
@@ -1600,6 +1609,33 @@ public class GeneratorTest {
     assertEquals("T", readStreamArg.getArgs().get(0).getName());
     assertFalse(apiType.isWriteStream());
     assertNull(apiType.getWriteStreamArg());
+    assertFalse(apiType.isHandler());
+  }
+
+  @Test
+  public void testInterfaceExtendingHandlerStringSubtype() throws Exception {
+    ClassModel model = new Generator().generateClass(InterfaceExtendingHandlerStringSubtype.class);
+    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
+    assertTrue(apiType.isHandler());
+    assertEquals(TypeInfo.create(String.class), apiType.getHandlerArg());
+    assertFalse(apiType.isReadStream());
+    assertFalse(apiType.isWriteStream());
+    assertEquals(1, model.getMethodMap().size());
+    assertEquals(1, model.getMethodMap().get("handle").size());
+    checkMethod(model.getMethodMap().get("handle").get(0), "handle", null, MethodKind.OTHER, "void", false, false, false, 1);
+  }
+
+  @Test
+  public void testInterfaceExtendingHandlerVertxGenSubtype() throws Exception {
+    ClassModel model = new Generator().generateClass(InterfaceExtendingHandlerVertxGenSubtype.class, VertxGenClass1.class);
+    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
+    assertTrue(apiType.isHandler());
+    assertEquals(TypeInfo.create(VertxGenClass1.class), apiType.getHandlerArg());
+    assertFalse(apiType.isReadStream());
+    assertFalse(apiType.isWriteStream());
+    assertEquals(1, model.getMethodMap().size());
+    assertEquals(1, model.getMethodMap().get("handle").size());
+    checkMethod(model.getMethodMap().get("handle").get(0), "handle", null, MethodKind.OTHER, "void", false, false, false, 1);
   }
 
   @Test

@@ -570,9 +570,20 @@ public class ClassModel implements Model {
 
     TypeElement declaringElt = (TypeElement) methodElt.getEnclosingElement();
     if (!declaringElt.equals(modelElt)) {
-      VertxGen ownerGen = declaringElt.getAnnotation(VertxGen.class);
-      if (ownerGen == null || ownerGen.concrete()) {
-        return;
+      TypeInfo declaringType = typeFactory.create(declaringElt.asType());
+      switch (declaringType.getKind()) {
+        case API: {
+          TypeInfo.Class.Api declaringApiType = (TypeInfo.Class.Api) declaringType.getRaw();
+          if (declaringApiType.isConcrete()) {
+            return;
+          }
+          break;
+        }
+        case HANDLER: {
+          break;
+        }
+        default:
+          return;
       }
     }
 

@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Describes a java type.
@@ -64,7 +65,7 @@ public abstract class TypeInfo {
         }
         ClassKind kind = Helper.getKind(classType::getAnnotation, fqcn);
         if (kind == ClassKind.API) {
-          return new Class.Api(fqcn, true, null, null, module, false);
+          return new Class.Api(fqcn, true, null, null, null, module, false);
         } else {
           return new Class(kind, fqcn, module, false);
         }
@@ -166,23 +167,21 @@ public abstract class TypeInfo {
           raw = Class.PRIMITIVES.get(fqcn);
         } if (kind == ClassKind.API) {
           VertxGen genAnn = elt.getAnnotation(VertxGen.class);
-          TypeElement readStreamElt = elementUtils.getTypeElement(ClassModel.VERTX_READ_STREAM);
-          TypeMirror readStreamType = readStreamElt.asType();
-          TypeElement writeStreamElt = elementUtils.getTypeElement(ClassModel.VERTX_WRITE_STREAM);
-          TypeMirror writeStreamType = writeStreamElt.asType();
-          TypeMirror readStreamRawType = typeUtils.erasure(readStreamType);
-          TypeMirror writeStreamRawType = typeUtils.erasure(writeStreamType);
-          TypeInfo readStreamArg = null;
-          if (typeUtils.isSubtype(type, readStreamRawType)) {
-            TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, readStreamElt.getTypeParameters().get(0));
-            readStreamArg = create(resolved);
-          }
-          TypeInfo writeStreamArg = null;
-          if (typeUtils.isSubtype(type, writeStreamRawType)) {
-            TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, writeStreamElt.getTypeParameters().get(0));
-            writeStreamArg = create(resolved);
-          }
-          raw = new Class.Api(fqcn, genAnn.concrete(), readStreamArg, writeStreamArg, module, proxyGen);
+          TypeInfo[] args = Stream.of(
+              ClassModel.VERTX_READ_STREAM,
+              ClassModel.VERTX_WRITE_STREAM,
+              ClassModel.VERTX_HANDLER
+          ).map(s -> {
+            TypeElement parameterizedElt = elementUtils.getTypeElement(s);
+            TypeMirror parameterizedType = parameterizedElt.asType();
+            TypeMirror rawType = typeUtils.erasure(parameterizedType);
+            if (typeUtils.isSubtype(type, rawType)) {
+              TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, parameterizedElt.getTypeParameters().get(0));
+              return create(resolved);
+            }
+            return null;
+          }).toArray(TypeInfo[]::new);
+          raw = new Class.Api(fqcn, genAnn.concrete(), args[0], args[1], args[2], module, proxyGen);
         } else {
           raw = new Class(kind, fqcn, module, proxyGen);
         }
@@ -510,21 +509,27 @@ public abstract class TypeInfo {
       final boolean concrete;
       final TypeInfo readStreamArg;
       final TypeInfo writeStreamArg;
+      final TypeInfo handlerArg;
 
-      public Api(String fqcn, boolean concrete, TypeInfo readStreamArg, TypeInfo writeStreamArg, ModuleInfo module,
-                 boolean proxyGen) {
+      public Api(
+          String fqcn,
+          boolean concrete,
+          TypeInfo readStreamArg,
+          TypeInfo writeStreamArg,
+          TypeInfo handlerArg,
+          ModuleInfo module,
+          boolean proxyGen) {
         super(ClassKind.API, fqcn, module, proxyGen);
-
         this.concrete = concrete;
         this.readStreamArg = readStreamArg;
         this.writeStreamArg = writeStreamArg;
-
+        this.handlerArg = handlerArg;
       }
 
       @Override
       public Class renamePackage(String oldPackageName, String newPackageName) {
         return packageName.startsWith(oldPackageName) ?
-            new Api(newPackageName + fqcn.substring(oldPackageName.length()), concrete, readStreamArg, writeStreamArg, module, proxyGen) :
+            new Api(newPackageName + fqcn.substring(oldPackageName.length()), concrete, readStreamArg, writeStreamArg, handlerArg, module, proxyGen) :
             this;
       }
 
@@ -550,6 +555,14 @@ public abstract class TypeInfo {
 
       public boolean isWriteStream() {
         return writeStreamArg != null;
+      }
+
+      public TypeInfo getHandlerArg() {
+        return handlerArg;
+      }
+
+      public boolean isHandler() {
+        return handlerArg != null;
       }
     }
   }
