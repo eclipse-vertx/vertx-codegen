@@ -136,8 +136,10 @@ import io.vertx.test.codegen.testapi.fluent.FluentMethodWithIllegalReturn;
 import io.vertx.test.codegen.testapi.fluent.FluentMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromAbstract;
 import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromConcrete;
+import io.vertx.test.codegen.testapi.handler.InterfaceExtendingAsyncResultHandler;
 import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerStringSubtype;
 import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerVertxGenSubtype;
+import io.vertx.test.codegen.testapi.handler.InterfaceExtendingInvalidAsyncResultHandler;
 import io.vertx.test.codegen.testapi.impl.InterfaceInImplPackage;
 import io.vertx.test.codegen.testapi.impl.sub.InterfaceInImplParentPackage;
 import io.vertx.test.codegen.testapi.simple.InterfaceInImplContainingPackage;
@@ -1648,6 +1650,35 @@ public class GeneratorTest {
     assertEquals(1, model.getMethodMap().size());
     assertEquals(1, model.getMethodMap().get("handle").size());
     checkMethod(model.getMethodMap().get("handle").get(0), "handle", null, MethodKind.OTHER, "void", false, false, false, 1);
+  }
+
+  @Test
+  public void testInterfaceExtendingAsyncResultHandler() throws Exception {
+    for (Class<?> clazz : Arrays.asList(InterfaceExtendingAsyncResultHandler.class, InterfaceExtendingAsyncResultHandler.class)) {
+      ClassModel model = new Generator().generateClass(clazz);
+      TypeInfo.Parameterized handlerSuperType = (TypeInfo.Parameterized) model.getHandlerSuperType();
+      assertEquals(1, handlerSuperType.getArgs().size());
+      TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
+      assertTrue(apiType.isHandler());
+      TypeInfo handlerArg = apiType.getHandlerArg();
+      assertEquals(TypeInfo.create(AsyncResult.class), handlerArg.getRaw());
+      assertEquals(TypeInfo.create(String.class), ((TypeInfo.Parameterized) handlerArg).getArgs().get(0));
+      assertFalse(apiType.isReadStream());
+      assertFalse(apiType.isWriteStream());
+      assertEquals(1, model.getMethodMap().size());
+      assertEquals(1, model.getMethodMap().get("handle").size());
+      checkMethod(model.getMethodMap().get("handle").get(0), "handle", null, MethodKind.OTHER, "void", false, false, false, 1);
+    }
+  }
+
+  @Test
+  public void testInterfaceExtendingInvalidAsyncResultHandler() throws Exception {
+    try {
+      new Generator().generateClass(InterfaceExtendingInvalidAsyncResultHandler.class);
+      fail("Invalid async result handler extension should fail");
+    } catch (GenException e) {
+      // pass
+    }
   }
 
   @Test

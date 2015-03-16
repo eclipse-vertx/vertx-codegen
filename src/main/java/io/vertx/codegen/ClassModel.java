@@ -769,7 +769,15 @@ public class ClassModel implements Model {
       } catch (Exception e) {
         throw new GenException(param, e.getMessage());
       }
-      checkParamType(execElem, type, typeInfo, i, params.size());
+      TypeElement handlerElt = elementUtils.getTypeElement(VERTX_HANDLER);
+      ExecutableElement handlerMeth = (ExecutableElement) handlerElt.getEnclosedElements().get(0);
+      if (handlerMeth.equals(execElem)) {
+        // Special case : create an Handler<type> type
+        DeclaredType handlerType = typeUtils.getDeclaredType(handlerElt, type);
+        checkParamType(execElem, handlerType, typeFactory.create(handlerType), i, params.size());
+      } else {
+        checkParamType(execElem, type, typeInfo, i, params.size());
+      }
       String name = param.getSimpleName().toString();
       ParamInfo mParam = new ParamInfo(name, descs.get(name), typeInfo);
       mParams.add(mParam);
