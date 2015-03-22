@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
@@ -219,7 +218,7 @@ public class DataObjectModel implements Model {
             TypeInfo ti = typeFactory.create(parameters.get(0).asType());
             if (ti instanceof TypeInfo.Class) {
               TypeInfo.Class cl = (TypeInfo.Class) ti;
-              if (cl.fqcn.equals(getFqn())) {
+              if (cl.name.equals(getFqn())) {
                 return 4;
               } else if (cl.getKind() == ClassKind.JSON_OBJECT) {
                 return 8;

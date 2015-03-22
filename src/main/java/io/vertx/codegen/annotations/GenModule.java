@@ -19,4 +19,9 @@ public @interface GenModule {
    */
   String name();
 
+  /**
+   * @return the group package name, defaults to @{literal io.vertx}
+   */
+  String groupPackageName() default "io.vertx";
+
 }

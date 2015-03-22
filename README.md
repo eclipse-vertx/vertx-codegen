@@ -169,6 +169,40 @@ and can inherit at most one other *concrete* interface and any *abstract* interf
 
 If you do not wish a method to be used for generation you can annotate it with the `@GenIgnore` annotation.
 
+## Modules
+
+Generated types must belong to a module: a java package annotated with `@GenModule` that defines a module, modules
+cannot be nested. Such file is created in a file _package-info.java_.
+
+In addition of the package name, a module must define a `name` used when generating languages that don't follow Java
+ package naming, like JavaScript or Ruby.
+
+```
+@GenModule(name = "vertx-unit")
+package io.vertx.ext.unit;
+```
+
+For _non Vert.x_ modules, the `@GenModule` annotation provides the `groupPackageName` member to define the
+package of the group used for generating the generated package names (for _Groovy_ or _RxJava_ generation):
+
+```
+@GenModule(name = "acme", groupPackageName="com.acme")
+package com.acme.myservice;
+```
+
+The group package name must be a prefix of the annotated module, it defines the naming of the generate packages o
+ for the modules that belongs to the same group, in this case:
+
+- `com.acme.groovy...` for Groovy API
+- `com.acme.rxjava...` for RxJava API
+
+For this particular `com.acme.myservice` module we have:
+
+- `com.acme.groovy.myservice` for Groovy API
+- `com.acme.rxjava.myservice` for RxJava API
+
+NOTE: the default group name is `io.vertx` and should only be used by Vert.x projects or extensions.
+
 ## Templates
 
 We use MVEL templating to generate APIs.

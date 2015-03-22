@@ -22,6 +22,10 @@ public class ModuleModel implements Model {
     return info.getName();
   }
 
+  public String translateFqn(String name) {
+    return info.translatePackageName(name);
+  }
+
   @Override
   public String getKind() {
     return "module";
@@ -34,15 +38,20 @@ public class ModuleModel implements Model {
 
   @Override
   public String getFqn() {
-    return info.getFqn();
+    return info.getPackageName();
   }
 
   @Override
   public Map<String, Object> getVars() {
     Map<String, Object> vars = new HashMap<>();
-    vars.put("fqn", info.getFqn());
+    vars.put("fqn", info.getPackageName());
     vars.put("name", info.getName());
     vars.putAll(Case.vars());
     return vars;
+  }
+
+  @Override
+  public ModuleInfo getModule() {
+    return info;
   }
 }

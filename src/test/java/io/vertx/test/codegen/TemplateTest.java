@@ -1,6 +1,7 @@
 package io.vertx.test.codegen;
 
 import io.vertx.codegen.Model;
+import io.vertx.codegen.ModuleInfo;
 import io.vertx.codegen.Template;
 import org.junit.Test;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
@@ -37,6 +38,11 @@ public class TemplateTest {
 
     public Map<String, Object> getVars() {
       return new HashMap<>();
+    }
+
+    @Override
+    public ModuleInfo getModule() {
+      throw new UnsupportedOperationException();
     }
   };
 

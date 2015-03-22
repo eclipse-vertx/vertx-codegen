@@ -110,7 +110,14 @@ public class CodeGen {
   }
 
   public Stream<Map.Entry<PackageElement, PackageModel>> getPackageModels() {
-    return classes.values().stream().map(elementUtils::getPackageOf).distinct().map(element -> new ModelEntry<>(element, () -> new PackageModel(element.getQualifiedName().toString())));
+    return classes.values().
+        stream().
+        map(elementUtils::getPackageOf).distinct().
+        map(element ->
+            new ModelEntry<>(element, () -> new PackageModel(
+                element.getQualifiedName().toString(),
+                ModuleInfo.resolve(elementUtils, element))
+    ));
   }
 
   public Stream<Map.Entry<PackageElement, ModuleModel>> getModuleModels() {
@@ -125,8 +132,8 @@ public class CodeGen {
     return proxyClasses.entrySet().stream().map(entry -> new ModelEntry<>(entry.getValue(), () -> getProxyModel(entry.getKey())));
   }
 
-  public ModuleModel getModuleModel(String fqcn) {
-    PackageElement element = modules.get(fqcn);
+  public ModuleModel getModuleModel(String modulePackageName) {
+    PackageElement element = modules.get(modulePackageName);
     GenModule annotation = element.getAnnotation(GenModule.class);
     String moduleName = annotation.name();
     if (moduleName.isEmpty()) {
@@ -150,7 +157,16 @@ public class CodeGen {
         }
       }
     }
-    return new ModuleModel(element, new ModuleInfo(fqcn, moduleName));
+    String groupPackageName = annotation.groupPackageName();
+    if (!modulePackageName.startsWith(groupPackageName)) {
+      throw new GenException(element, "A module package name (" + modulePackageName + ") must be prefixed by the group package name (" + groupPackageName + ")");
+    }
+    try {
+      Case.QUALIFIED.parse(groupPackageName);
+    } catch (Exception e) {
+      throw new GenException(element, "Invalid group package name " + groupPackageName);
+    }
+    return new ModuleModel(element, new ModuleInfo(modulePackageName, moduleName, groupPackageName));
   }
 
   public PackageModel getPackageModel(String fqn) {

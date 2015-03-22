@@ -123,6 +123,7 @@ public class CodeGenProcessor extends AbstractProcessor {
               vars.put("options", processingEnv.getOptions());
               vars.put("fileSeparator", File.separator);
               vars.put("fqn", model.getFqn());
+              vars.put("module", model.getModule());
               vars.putAll(model.getVars());
               for (CodeGenerator codeGenerator : codeGenerators) {
                 if (codeGenerator.kind.equals(model.getKind())) {

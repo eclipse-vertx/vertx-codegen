@@ -10,9 +10,11 @@ import java.util.Map;
 public class PackageModel implements Model {
 
   private final String fqn;
+  private final ModuleInfo module;
 
-  public PackageModel(String fqn) {
+  public PackageModel(String fqn, ModuleInfo module) {
     this.fqn = fqn;
+    this.module = module;
   }
 
   @Override
@@ -36,5 +38,10 @@ public class PackageModel implements Model {
     vars.put("fqn", fqn);
     vars.putAll(Case.vars());
     return vars;
+  }
+
+  @Override
+  public ModuleInfo getModule() {
+    return module;
   }
 }

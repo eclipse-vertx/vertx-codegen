@@ -43,8 +43,6 @@ public class TypeInfoTest {
     TypeInfo.Parameterized info = (TypeInfo.Parameterized) TypeInfo.create(InterfaceWithParameterizedDeclaredSupertype.class.getGenericInterfaces()[0]);
     assertEquals("io.vertx.test.codegen.testapi.GenericInterface<java.lang.String>", info.getName());
     assertEquals("GenericInterface<String>", info.getSimpleName());
-    assertEquals("foo.bar.GenericInterface<java.lang.String>", info.renamePackage("io.vertx.test.codegen.testapi", "foo.bar").getName());
-    assertEquals("io.vertx.test.codegen.testapi.GenericInterface<foo.bar.String>", info.renamePackage("java.lang", "foo.bar").getName());
   }
 
   @Test
@@ -52,7 +50,6 @@ public class TypeInfoTest {
     TypeInfo.Parameterized info = (TypeInfo.Parameterized) TypeInfo.create(InterfaceWithParameterizedVariableSupertype.class.getGenericInterfaces()[0]);
     assertEquals("io.vertx.test.codegen.testapi.GenericInterface<T>", info.getName());
     assertEquals("GenericInterface<T>", info.getSimpleName());
-    assertEquals("foo.bar.GenericInterface<T>", info.renamePackage("io.vertx.test.codegen.testapi", "foo.bar").getName());
   }
 
   @Test
@@ -68,7 +65,6 @@ public class TypeInfoTest {
     TypeInfo.Class info = (TypeInfo.Class) TypeInfo.create(String.class);
     assertEquals("java.lang.String", info.getName());
     assertEquals("String", info.getSimpleName());
-    assertEquals("foo.bar.String", info.renamePackage("java.lang", "foo.bar").getName());
   }
 
   @Test
@@ -76,7 +72,6 @@ public class TypeInfoTest {
     TypeInfo.Class info = (TypeInfo.Class) TypeInfo.create(Runnable.class);
     assertEquals("java.lang.Runnable", info.getName());
     assertEquals("Runnable", info.getSimpleName());
-    assertEquals("foo.bar.Runnable", info.renamePackage("java.lang", "foo.bar").getName());
   }
 
   // TypeKind testing

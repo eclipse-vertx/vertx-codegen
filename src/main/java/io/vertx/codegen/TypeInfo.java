@@ -49,7 +49,7 @@ public abstract class TypeInfo {
           while (pkg != null) {
             GenModule annotation = pkg.getAnnotation(GenModule.class);
             if (annotation != null) {
-              module = new ModuleInfo(pkg.getName(), annotation.name());
+              module = new ModuleInfo(pkg.getName(), annotation.name(), annotation.groupPackageName());
               break;
             } else {
               int pos = pkg.getName().lastIndexOf('.');
@@ -133,23 +133,9 @@ public abstract class TypeInfo {
     }
 
     public TypeInfo create(DeclaredType type) {
-      ModuleInfo module = null;
       Element elt = type.asElement();
       PackageElement pkgElt = elementUtils.getPackageOf(elt);
-      while (pkgElt != null) {
-        GenModule annotation = pkgElt.getAnnotation(GenModule.class);
-        if (annotation != null) {
-          module = new ModuleInfo(pkgElt.getQualifiedName().toString(), annotation.name());
-          break;
-        }
-        String pkgQN = pkgElt.getQualifiedName().toString();
-        int pos = pkgQN.lastIndexOf('.');
-        if (pos == -1) {
-          break;
-        } else {
-          pkgElt = elementUtils.getPackageElement(pkgQN.substring(0, pos));
-        }
-      }
+      ModuleInfo module = ModuleInfo.resolve(elementUtils, pkgElt);
       String fqcn = typeUtils.erasure(type).toString();
       boolean proxyGen = elt.getAnnotation(ProxyGen.class) != null;
       if (elt.getKind() == ElementKind.ENUM) {
@@ -386,11 +372,17 @@ public abstract class TypeInfo {
     }
 
     @Override
-    public TypeInfo renamePackage(String oldPackageName, String newPackageName) {
-      return new Parameterized(
-          raw.renamePackage(oldPackageName, newPackageName),
-          args.stream().map(typeArgument -> typeArgument.renamePackage(oldPackageName, newPackageName)).
-              collect(Collectors.toList()));
+    public String translateName(String lang) {
+      StringBuilder buf = new StringBuilder(raw.translateName(lang)).append('<');
+      for (int i = 0;i < args.size();i++) {
+        TypeInfo typeArgument = args.get(i);
+        if (i > 0) {
+          buf.append(',');
+        }
+        buf.append(typeArgument.translateName(lang));
+      }
+      buf.append('>');
+      return buf.toString();
     }
   }
 
@@ -408,17 +400,17 @@ public abstract class TypeInfo {
     }
 
     final ClassKind kind;
-    final String fqcn;
+    final String name;
     final String simpleName;
     final String packageName;
     final ModuleInfo module;
     final boolean proxyGen;
 
-    public Class(ClassKind kind, String fqcn, ModuleInfo module, boolean proxyGen) {
+    public Class(ClassKind kind, String name, ModuleInfo module, boolean proxyGen) {
       this.kind = kind;
-      this.fqcn = fqcn;
-      this.simpleName = Helper.getSimpleName(fqcn);
-      this.packageName = Helper.getPackageName(fqcn);
+      this.name = name;
+      this.simpleName = Helper.getSimpleName(name);
+      this.packageName = Helper.getPackageName(name);
       this.module = module;
       this.proxyGen = proxyGen;
     }
@@ -464,23 +456,16 @@ public abstract class TypeInfo {
     }
 
     @Override
-    public TypeInfo.Class renamePackage(String oldPackageName, String newPackageName) {
-      return packageName.startsWith(oldPackageName) ?
-          new Class(kind, newPackageName + fqcn.substring(oldPackageName.length()), null, proxyGen) :
-          this;
-    }
-
-    @Override
     public boolean equals(Object obj) {
       if (obj instanceof Class) {
-        return fqcn.equals(((Class) obj).fqcn);
+        return name.equals(((Class) obj).name);
       }
       return false;
     }
 
     @Override
     public String format(boolean qualified) {
-      return qualified ? fqcn : simpleName;
+      return qualified ? name : simpleName;
     }
 
     public static class Enum extends Class {
@@ -526,13 +511,6 @@ public abstract class TypeInfo {
         this.handlerArg = handlerArg;
       }
 
-      @Override
-      public Class renamePackage(String oldPackageName, String newPackageName) {
-        return packageName.startsWith(oldPackageName) ?
-            new Api(newPackageName + fqcn.substring(oldPackageName.length()), concrete, readStreamArg, writeStreamArg, handlerArg, module, proxyGen) :
-            this;
-      }
-
       public boolean isConcrete() {
         return concrete;
       }
@@ -563,6 +541,14 @@ public abstract class TypeInfo {
 
       public boolean isHandler() {
         return handlerArg != null;
+      }
+
+      public String translatePackageName(String id) {
+        return module.translateQualifiedName(packageName, id);
+      }
+
+      public String translateName(String lang) {
+        return module.translateQualifiedName(name, lang);
       }
     }
   }
@@ -623,8 +609,16 @@ public abstract class TypeInfo {
     return format(true);
   }
 
-  public TypeInfo renamePackage(String oldPackageName, String newPackageName) {
-    return this;
+  /**
+   * Translate the current type name based on the module group package name and the specified
+   * {@code lang} parameter. This has effect only for {@link io.vertx.codegen.TypeInfo.Class.Api} or
+   * {@link io.vertx.codegen.TypeInfo.Parameterized} types.
+   *
+   * @param lang the target language, for instance {@literal groovy}
+   * @return the translated name
+   */
+  public String translateName(String lang) {
+    return getName();
   }
 
   /**

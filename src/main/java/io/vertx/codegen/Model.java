@@ -16,4 +16,6 @@ public interface Model {
 
   Map<String, Object> getVars();
 
+  ModuleInfo getModule();
+
 }
