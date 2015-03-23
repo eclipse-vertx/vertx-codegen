@@ -6,6 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Declares a Java interface type to be processed for creating API in various languages of polyglot Vert.x.
+ *
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @Retention(RetentionPolicy.RUNTIME)

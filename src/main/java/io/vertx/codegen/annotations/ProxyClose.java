@@ -20,6 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
+ * Declares a proxy close method.
+ *
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
