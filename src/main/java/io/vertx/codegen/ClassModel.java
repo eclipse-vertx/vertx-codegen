@@ -19,8 +19,6 @@ package io.vertx.codegen;
 import io.vertx.codegen.annotations.CacheReturn;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
-import io.vertx.codegen.annotations.IndexGetter;
-import io.vertx.codegen.annotations.IndexSetter;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Tag;
@@ -683,34 +681,22 @@ public class ClassModel implements Model {
 
     // Determine method kind + validate
     MethodKind kind = MethodKind.OTHER;
-    if (methodElt.getAnnotation(IndexGetter.class) != null) {
-      if (!mParams.stream().anyMatch(param -> param.type.getName().equals("int"))) {
-        throw new GenException(methodElt, "No int arg found in index getter method");
-      }
-      kind = MethodKind.INDEX_GETTER;
-    } else if (methodElt.getAnnotation(IndexSetter.class) != null) {
-      if (!mParams.stream().anyMatch(param -> param.type.getName().equals("int"))) {
-        throw new GenException(methodElt, "No int arg found in index setter method");
-      }
-      kind = MethodKind.INDEX_SETTER;
+    if (methodName.startsWith("is") && methodName.length() > 2 && Character.isUpperCase(methodName.charAt(2)) &&
+        mParams.isEmpty() && !(returnType instanceof TypeInfo.Void)) {
+      kind = MethodKind.GETTER;
+    } else if (methodName.startsWith("get") && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) &&
+        mParams.isEmpty() && !(returnType instanceof TypeInfo.Void)) {
+      kind = MethodKind.GETTER;
     } else {
-      if (methodName.startsWith("is") && methodName.length() > 2 && Character.isUpperCase(methodName.charAt(2)) &&
-          mParams.isEmpty() && !(returnType instanceof TypeInfo.Void)) {
-        kind = MethodKind.GETTER;
-      } else if (methodName.startsWith("get") && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) &&
-          mParams.isEmpty() && !(returnType instanceof TypeInfo.Void)) {
-        kind = MethodKind.GETTER;
-      } else {
-        int lastParamIndex = mParams.size() - 1;
-        if (lastParamIndex >= 0 && (returnType instanceof TypeInfo.Void || isFluent)) {
-          TypeInfo lastParamType = mParams.get(lastParamIndex).type;
-          if (lastParamType.getKind() == ClassKind.HANDLER) {
-            TypeInfo typeArg = ((TypeInfo.Parameterized) lastParamType).getArgs().get(0);
-            if (typeArg.getKind() == ClassKind.ASYNC_RESULT) {
-              kind = MethodKind.FUTURE;
-            } else {
-              kind = MethodKind.HANDLER;
-            }
+      int lastParamIndex = mParams.size() - 1;
+      if (lastParamIndex >= 0 && (returnType instanceof TypeInfo.Void || isFluent)) {
+        TypeInfo lastParamType = mParams.get(lastParamIndex).type;
+        if (lastParamType.getKind() == ClassKind.HANDLER) {
+          TypeInfo typeArg = ((TypeInfo.Parameterized) lastParamType).getArgs().get(0);
+          if (typeArg.getKind() == ClassKind.ASYNC_RESULT) {
+            kind = MethodKind.FUTURE;
+          } else {
+            kind = MethodKind.HANDLER;
           }
         }
       }

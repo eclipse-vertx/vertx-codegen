@@ -34,7 +34,6 @@ import io.vertx.test.codegen.testapi.InterfaceWithComments;
 import io.vertx.test.codegen.testapi.InterfaceWithDefaultMethod;
 import io.vertx.test.codegen.testapi.InterfaceWithGetterMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithIgnoredMethods;
-import io.vertx.test.codegen.testapi.InterfaceWithIndexSetterGetterMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithInstanceMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithMethodHavingGenericOverride;
 import io.vertx.test.codegen.testapi.InterfaceWithMethodOverride;
@@ -82,8 +81,6 @@ import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectInHandlerAsyncResult
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectReturn;
 import io.vertx.test.codegen.testapi.MethodWithListNonBasicTypeReturn;
-import io.vertx.test.codegen.testapi.MethodWithNoIntIndexGetter;
-import io.vertx.test.codegen.testapi.MethodWithNoIntIndexSetter;
 import io.vertx.test.codegen.testapi.MethodWithNotVertxGenObjectInHandler;
 import io.vertx.test.codegen.testapi.MethodWithNotVertxGenObjectInHandlerAsyncResult;
 import io.vertx.test.codegen.testapi.MethodWithNotVertxGenObjectParam;
@@ -346,16 +343,6 @@ public class GeneratorTest {
   @Test
   public void testMethodWithTypeParameterUpperBound() throws Exception {
     assertGenInvalid(MethodWithTypeParameterUpperBound.class);
-  }
-
-  @Test
-  public void testMethodWithNoIntIndexGetter() throws Exception {
-    assertGenInvalid(MethodWithNoIntIndexGetter.class);
-  }
-
-  @Test
-  public void testMethodWithNoIntIndexSetter() throws Exception {
-    assertGenInvalid(MethodWithNoIntIndexSetter.class);
   }
 
   // Invalid abstract/concrete interfaces
@@ -1086,21 +1073,6 @@ public class GeneratorTest {
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, String.class.getName(), true, false, false, 1);
       checkMethod(methods.get(1), "bar", null, MethodKind.OTHER, VertxGenClass1.class.getName(), true, false, false, 1);
-    };
-    checker.accept(model.getMethods());
-  }
-
-  @Test
-  public void testIndexGetterSetterMethods() throws Exception {
-    ClassModel model = new Generator().generateClass(InterfaceWithIndexSetterGetterMethods.class);
-    assertEquals(InterfaceWithIndexSetterGetterMethods.class.getName(), model.getIfaceFQCN());
-    assertEquals(InterfaceWithIndexSetterGetterMethods.class.getSimpleName(), model.getIfaceSimpleName());
-    assertTrue(model.getReferencedTypes().isEmpty());
-    assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(2, model.getMethods().size());
-    Consumer<List<MethodInfo>> checker = (methods) -> {
-      checkMethod(methods.get(0), "getAt", null, MethodKind.INDEX_GETTER, "byte", false, false, false, 1);
-      checkMethod(methods.get(1), "setAt", null, MethodKind.INDEX_SETTER, "void", false, false, false, 2);
     };
     checker.accept(model.getMethods());
   }

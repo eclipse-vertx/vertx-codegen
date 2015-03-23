@@ -126,14 +126,6 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return fluent;
   }
 
-  public boolean isIndexGetter() {
-    return kind == MethodKind.INDEX_GETTER;
-  }
-
-  public boolean isIndexSetter() {
-    return kind == MethodKind.INDEX_SETTER;
-  }
-
   public boolean isCacheReturn() {
     return cacheReturn;
   }

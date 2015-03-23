@@ -26,10 +26,6 @@ public enum MethodKind {
    */
   GETTER,
 
-  INDEX_GETTER,
-
-  INDEX_SETTER,
-
   OTHER;
 
   /**
