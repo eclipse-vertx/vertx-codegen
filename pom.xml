@@ -30,13 +30,11 @@
       <artifactId>mvel2</artifactId>
       <version>2.2.0.Final</version>
     </dependency>
-
-    <!-- Not really needed, only by TCK, until we have better -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.11</version>
-      <optional>true</optional>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -78,7 +76,7 @@
           <execution>
             <id>add-tck-source</id>
             <goals>
-              <goal>add-source</goal>
+              <goal>add-test-source</goal>
             </goals>
             <configuration>
               <sources>

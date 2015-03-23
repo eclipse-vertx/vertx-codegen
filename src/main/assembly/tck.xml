@@ -8,7 +8,7 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>${project.build.outputDirectory}</directory>
+      <directory>${project.build.directory}/test-classes</directory>
       <includes>
         <include>io/vertx/codegen/testmodel/**</include>
         <include>com/acme/pkg/**</include>
