@@ -23,7 +23,8 @@ A code generator consist of an _MVEL_ template declared in a `codegen.json` desc
     - `class` : applied on each API classes
     - `package` : applied on each Java package
     - `module` : applied on each declared module, a module uniquely identifies an API
-    - `options`: applied on each option class
+    - `dataObject`: applied on each data object class
+    - `proxy`: applied on each proxy class
 
 There can be as many generators as you like.
 
