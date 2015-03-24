@@ -28,6 +28,7 @@ import io.vertx.test.codegen.testdataobject.CommentedProperty;
 import io.vertx.test.codegen.testdataobject.CommentedPropertyInheritedFromCommentedProperty;
 import io.vertx.test.codegen.testdataobject.CommentedPropertyOverridesCommentedProperty;
 import io.vertx.test.codegen.testdataobject.CommentedPropertyOverridesUncommentedProperty;
+import io.vertx.test.codegen.testdataobject.DataObjectWithIgnoredProperty;
 import io.vertx.test.codegen.testdataobject.UncommentedPropertyOverridesSuperCommentedProperty;
 import io.vertx.test.codegen.testdataobject.Concrete;
 import io.vertx.test.codegen.testdataobject.ConcreteInheritsAbstract;
@@ -390,6 +391,13 @@ public class DataObjectTest {
     PropertyInfo propertyInfo = model.getPropertyMap().get("theProperty");
     Doc propertyDoc = propertyInfo.getDoc();
     assertEquals(" The overriden property description.\n", propertyDoc.getFirstSentence().getValue());
+  }
+
+  @Test
+  public void testDataObjectWithIgnoredProperty() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(DataObjectWithIgnoredProperty.class);
+    assertNotNull(model);
+    assertEquals(0, model.getPropertyMap().size());
   }
 
   private static void assertProperty(PropertyInfo property, String expectedName, TypeInfo expectedType,

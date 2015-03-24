@@ -1,6 +1,7 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.core.json.JsonObject;
 
@@ -172,7 +173,9 @@ public class DataObjectModel implements Model {
           break;
         case METHOD: {
           ExecutableElement methodElt = (ExecutableElement) enclosedElt;
-          processMethod(methodElt);
+          if (methodElt.getAnnotation(GenIgnore.class) == null) {
+            processMethod(methodElt);
+          }
           break;
         }
       }
