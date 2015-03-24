@@ -99,6 +99,7 @@
               <attach>true</attach>
               <descriptors>
                 <descriptor>src/main/assembly/tck.xml</descriptor>
+                <descriptor>src/main/assembly/tck-sources.xml</descriptor>
               </descriptors>
             </configuration>
           </execution>
