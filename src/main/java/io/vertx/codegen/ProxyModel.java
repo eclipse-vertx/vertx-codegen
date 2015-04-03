@@ -131,6 +131,20 @@ public class ProxyModel extends ClassModel {
     boolean isProxyIgnore = proxyIgnoreAnnotation != null;
     AnnotationMirror proxyCloseAnnotation = Helper.resolveMethodAnnotation(ProxyClose.class, elementUtils, typeUtils, declaringElt, methodElt);
     boolean isProxyClose = proxyCloseAnnotation != null;
+    if (isProxyClose && mParams.size() > 0) {
+      if (mParams.size() > 1) {
+        throw new GenException(this.modelElt, "@ProxyClose methods can't have more than one parameter");
+      }
+      if (kind != MethodKind.FUTURE) {
+        throw new GenException(this.modelElt, "@ProxyClose parameter must be Handler<AsyncResult<Void>>");
+      }
+      TypeInfo type = mParams.get(0).getType();
+      TypeInfo arg = ((TypeInfo.Parameterized) ((TypeInfo.Parameterized) type).getArgs().get(0)).getArgs().get(0);
+      if (arg.getKind() != ClassKind.VOID) {
+        throw new GenException(this.modelElt, "@ProxyClose parameter must be " +
+            "Handler<AsyncResult<Void>> instead of " + type);
+      }
+    }
     return new ProxyMethodInfo(Collections.singleton(ownerType), methodName, kind, returnType, returnDescription,
       isFluent, isCacheReturn, mParams, comment, doc, isStatic, typeParams, isProxyIgnore,
       isProxyClose);

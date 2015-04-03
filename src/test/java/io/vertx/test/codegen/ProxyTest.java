@@ -1,10 +1,16 @@
 package io.vertx.test.codegen;
 
+import io.vertx.codegen.ClassKind;
 import io.vertx.codegen.GenException;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.MethodInfo;
+import io.vertx.codegen.MethodKind;
 import io.vertx.codegen.ProxyMethodInfo;
 import io.vertx.codegen.ProxyModel;
+import io.vertx.codegen.TypeInfo;
+import io.vertx.test.codegen.proxytestapi.InvalidClose1;
+import io.vertx.test.codegen.proxytestapi.InvalidClose2;
+import io.vertx.test.codegen.proxytestapi.InvalidClose3;
 import io.vertx.test.codegen.proxytestapi.InvalidOverloaded;
 import io.vertx.test.codegen.proxytestapi.InvalidParams1;
 import io.vertx.test.codegen.proxytestapi.InvalidParams2;
@@ -15,6 +21,7 @@ import io.vertx.test.codegen.proxytestapi.InvalidReturn1;
 import io.vertx.test.codegen.proxytestapi.InvalidReturn2;
 import io.vertx.test.codegen.proxytestapi.InvalidReturn3;
 import io.vertx.test.codegen.proxytestapi.ValidProxy;
+import io.vertx.test.codegen.proxytestapi.ValidProxyCloseWithFuture;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -144,4 +151,43 @@ public class ProxyTest {
     }
   }
 
+  @Test
+  public void testValidCloseWithFuture() throws Exception {
+    ProxyModel model = new Generator().generateProxyModel(ValidProxyCloseWithFuture.class);
+    assertEquals(1, model.getMethods().size());
+    assertEquals(MethodKind.FUTURE, model.getMethods().get(0).getKind());
+    TypeInfo.Parameterized handlerType = (TypeInfo.Parameterized) model.getMethods().get(0).getParams().get(0).getType();
+    TypeInfo.Parameterized asyncResultType = (TypeInfo.Parameterized) handlerType.getArgs().get(0);
+    assertEquals(ClassKind.VOID, asyncResultType.getArgs().get(0).getKind());
+  }
+
+  @Test
+  public void testInvalidClose1() throws Exception {
+    try {
+      new Generator().generateProxyModel(InvalidClose1.class);
+      fail("Should throw exception");
+    } catch (GenException e) {
+      // OK
+    }
+  }
+
+  @Test
+  public void testInvalidClose2() throws Exception {
+    try {
+      new Generator().generateProxyModel(InvalidClose2.class);
+      fail("Should throw exception");
+    } catch (GenException e) {
+      // OK
+    }
+  }
+
+  @Test
+  public void testInvalidClose3() throws Exception {
+    try {
+      new Generator().generateProxyModel(InvalidClose3.class);
+      fail("Should throw exception");
+    } catch (GenException e) {
+      // OK
+    }
+  }
 }
