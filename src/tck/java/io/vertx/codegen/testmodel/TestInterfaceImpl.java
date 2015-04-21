@@ -181,6 +181,34 @@ public class TestInterfaceImpl implements TestInterface {
   @Override
   public void methodWithObjectParam(String str, Object obj) {
     switch (str) {
+      case "null":
+        assertNull(obj);
+        break;
+      case "string":
+        assertTrue(obj instanceof String);
+        String s = (String) obj;
+        assertEquals("wibble", s);
+        break;
+      case "true":
+        assertTrue(obj instanceof Boolean);
+        Boolean t = (Boolean) obj;
+        assertEquals(true, t);
+        break;
+      case "false":
+        assertTrue(obj instanceof Boolean);
+        Boolean f = (Boolean) obj;
+        assertEquals(false, f);
+        break;
+      case "long":
+        assertTrue(obj instanceof Number);
+        Number l = (Number) obj;
+        assertEquals(123, l.longValue());
+        break;
+      case "double":
+        assertTrue(obj instanceof Number);
+        Number n = (Number) obj;
+        assertEquals(123.456, n.doubleValue(), 0);
+        break;
       case "JsonObject" : {
         assertTrue(obj instanceof JsonObject);
         JsonObject jsonObject = (JsonObject)obj;
