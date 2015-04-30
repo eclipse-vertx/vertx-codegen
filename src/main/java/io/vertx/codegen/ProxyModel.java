@@ -175,7 +175,7 @@ public class ProxyModel extends ClassModel {
     if (type instanceof TypeInfo.Parameterized) {
       if (type.getKind() == ClassKind.LIST || type.getKind() == ClassKind.SET) {
         TypeInfo elementType = ((TypeInfo.Parameterized) type).getArgs().get(0);
-        if (elementType.getKind().basic || elementType.getKind().json) {
+        if (elementType.getKind().basic || elementType.getKind().json || elementType.getKind() == ClassKind.DATA_OBJECT) {
           return true;
         }
       }
