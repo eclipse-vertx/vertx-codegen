@@ -189,7 +189,7 @@ public class ProxyModel extends ClassModel {
     TypeInfo raw = type.getRaw();
     if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
       TypeInfo argument = ((TypeInfo.Parameterized) type).getArgs().get(0);
-      if (argument.getKind().basic || argument.getKind().json) {
+      if (argument.getKind().basic || argument.getKind().json || argument.getKind() == ClassKind.DATA_OBJECT) {
         return true;
       }
     } else if (raw.getName().equals(Map.class.getName())) {
