@@ -11,10 +11,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -242,7 +244,7 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
-  public void methodWithListParams(List<String> listString, List<Byte> listByte, List<Short> listShort, List<Integer> listInt, List<Long> listLong, List<JsonObject> listJsonObject, List<JsonArray> listJsonArray, List<RefedInterface1> listVertxGen) {
+  public void methodWithListParams(List<String> listString, List<Byte> listByte, List<Short> listShort, List<Integer> listInt, List<Long> listLong, List<JsonObject> listJsonObject, List<JsonArray> listJsonArray, List<RefedInterface1> listVertxGen, List<TestDataObject> listDataObject) {
     assertEquals("foo", listString.get(0));
     assertEquals("bar", listString.get(1));
     assertEquals((byte)2, listByte.get(0).byteValue());
@@ -260,10 +262,12 @@ public class TestInterfaceImpl implements TestInterface {
     assertEquals(new JsonArray().add("blah"), listJsonArray.get(1));
     assertEquals("foo", listVertxGen.get(0).getString());
     assertEquals("bar", listVertxGen.get(1).getString());
+    assertEquals(new JsonObject().put("foo", "String 1").put("bar", 1).put("wibble", 1.1), listDataObject.get(0).toJson());
+    assertEquals(new JsonObject().put("foo", "String 2").put("bar", 2).put("wibble", 2.2), listDataObject.get(1).toJson());
   }
 
   @Override
-  public void methodWithSetParams(Set<String> setString, Set<Byte> setByte, Set<Short> setShort, Set<Integer> setInt, Set<Long> setLong, Set<JsonObject> setJsonObject, Set<JsonArray> setJsonArray, Set<RefedInterface1> setVertxGen) {
+  public void methodWithSetParams(Set<String> setString, Set<Byte> setByte, Set<Short> setShort, Set<Integer> setInt, Set<Long> setLong, Set<JsonObject> setJsonObject, Set<JsonArray> setJsonArray, Set<RefedInterface1> setVertxGen, Set<TestDataObject> setDataObject) {
     assertTrue(setString.contains("foo"));
     assertTrue(setString.contains("bar"));
     assertTrue(setByte.contains((byte)2));
@@ -280,6 +284,10 @@ public class TestInterfaceImpl implements TestInterface {
     assertTrue(setJsonArray.contains(new JsonArray().add("blah")));
     assertTrue(setVertxGen.contains(new RefedInterface1Impl().setString("foo")));
     assertTrue(setVertxGen.contains(new RefedInterface1Impl().setString("bar")));
+    assertEquals(2, setDataObject.size());
+    Set<JsonObject> setDataObjectJson = setDataObject.stream().map(d -> d.toJson()).collect(Collectors.toSet());
+    assertTrue(setDataObjectJson.contains(new JsonObject().put("foo", "String 1").put("bar", 1).put("wibble", 1.1)));
+    assertTrue(setDataObjectJson.contains(new JsonObject().put("foo", "String 2").put("bar", 2).put("wibble", 2.2)));
   }
 
   @Override
@@ -483,6 +491,20 @@ public class TestInterfaceImpl implements TestInterface {
   public void methodWithHandlerAsyncResultSetNullJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler) {
     Set<JsonArray> set = Collections.singleton(null);
     listHandler.handle(Future.succeededFuture(set));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultListDataObject(Handler<AsyncResult<List<TestDataObject>>> listHandler) {
+    List<TestDataObject> list = 
+        Arrays.asList(new TestDataObject().setFoo("String 1").setBar(1).setWibble(1.1), new TestDataObject().setFoo("String 2").setBar(2).setWibble(2.2));
+    listHandler.handle(Future.succeededFuture(list));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultSetDataObject(Handler<AsyncResult<Set<TestDataObject>>> setHandler) {
+    Set<TestDataObject> set = 
+        new HashSet<>(Arrays.asList(new TestDataObject().setFoo("String 1").setBar(1).setWibble(1.1), new TestDataObject().setFoo("String 2").setBar(2).setWibble(2.2)));
+    setHandler.handle(Future.succeededFuture(set));
   }
 
   @Override
