@@ -103,6 +103,7 @@ The following set `P` of types are permitted as parameters to any API method:
     * the set `B`
     * the set `V`
     * the set `J`
+    * any data object class annotated with `@DataObject`
 * type `java.util.Map<String, C>` where `C` contains
     * the set `B`
     * the set `J`
@@ -119,6 +120,7 @@ The following set `P` of types are permitted as parameters to any API method:
         * the set `B`
         * the set `V`
         * the set `J`
+        * any data object class annotated with `@DataObject`
 * `io.vertx.java.core.Handler<H>` where `H` contains
     * the set `HA`
     * `java.lang.Throwable`
