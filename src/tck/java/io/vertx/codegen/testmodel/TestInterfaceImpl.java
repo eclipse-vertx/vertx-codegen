@@ -501,9 +501,21 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public void methodWithHandlerAsyncResultListNullDataObject(Handler<AsyncResult<List<TestDataObject>>> listHandler) {
+    List<TestDataObject> list = Collections.singletonList(null);
+	  listHandler.handle(Future.succeededFuture(list));
+  }
+
+  @Override
   public void methodWithHandlerAsyncResultSetDataObject(Handler<AsyncResult<Set<TestDataObject>>> setHandler) {
     Set<TestDataObject> set = 
         new HashSet<>(Arrays.asList(new TestDataObject().setFoo("String 1").setBar(1).setWibble(1.1), new TestDataObject().setFoo("String 2").setBar(2).setWibble(2.2)));
+    setHandler.handle(Future.succeededFuture(set));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultSetNullDataObject(Handler<AsyncResult<Set<TestDataObject>>> setHandler) {
+    Set<TestDataObject> set = Collections.singleton(null);
     setHandler.handle(Future.succeededFuture(set));
   }
 

@@ -111,7 +111,11 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   void methodWithHandlerAsyncResultListDataObject(Handler<AsyncResult<List<TestDataObject>>> listHandler);
 
+  void methodWithHandlerAsyncResultListNullDataObject(Handler<AsyncResult<List<TestDataObject>>> listHandler);
+
   void methodWithHandlerAsyncResultSetDataObject(Handler<AsyncResult<Set<TestDataObject>>> setHandler);
+
+  void methodWithHandlerAsyncResultSetNullDataObject(Handler<AsyncResult<Set<TestDataObject>>> setHandler);
 
   void methodWithHandlerUserTypes(Handler<RefedInterface1> handler);
 
