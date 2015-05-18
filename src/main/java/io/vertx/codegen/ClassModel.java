@@ -495,10 +495,10 @@ public class ClassModel implements Model {
           }
         }
         if (concrete && concreteSuperTypes.size() > 1) {
-          throw new GenException(elem, "A concrete interface cannot extend more than two concrete interfaces");
+          throw new GenException(elem, "A concrete interface cannot extend more than one concrete interfaces");
         }
         if (!concrete && concreteSuperTypes.size() > 0) {
-          throw new GenException(elem, "A abstract interface cannot extend more a concrete interface");
+          throw new GenException(elem, "A abstract interface cannot extend a concrete interface");
         }
         for (Iterator<TypeInfo.Class> i = importedTypes.iterator();i.hasNext();) {
           TypeInfo.Class type = i.next();
