@@ -422,6 +422,32 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public void methodWithHandlerListDataObject(Handler<List<TestDataObject>> listHandler) {
+    List<TestDataObject> list =
+        Arrays.asList(new TestDataObject().setFoo("String 1").setBar(1).setWibble(1.1), new TestDataObject().setFoo("String 2").setBar(2).setWibble(2.2));
+    listHandler.handle(list);
+  }
+
+  @Override
+  public void methodWithHandlerListNullDataObject(Handler<List<TestDataObject>> listHandler) {
+    List<TestDataObject> list = Collections.singletonList(null);
+    listHandler.handle(list);
+  }
+
+  @Override
+  public void methodWithHandlerSetDataObject(Handler<Set<TestDataObject>> setHandler) {
+    Set<TestDataObject> set =
+        new HashSet<>(Arrays.asList(new TestDataObject().setFoo("String 1").setBar(1).setWibble(1.1), new TestDataObject().setFoo("String 2").setBar(2).setWibble(2.2)));
+    setHandler.handle(set);
+  }
+
+  @Override
+  public void methodWithHandlerSetNullDataObject(Handler<Set<TestDataObject>> setHandler) {
+    Set<TestDataObject> set = Collections.singleton(null);
+    setHandler.handle(set);
+  }
+
+  @Override
   public void methodWithHandlerAsyncResultListVertxGen(Handler<AsyncResult<List<RefedInterface1>>> listHandler) {
     List<RefedInterface1> list = Arrays.asList(new RefedInterface1Impl().setString("foo"), new RefedInterface1Impl().setString("bar"));
     listHandler.handle(Future.succeededFuture(list));

@@ -85,6 +85,14 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   void methodWithHandlerSetNullJsonArray(Handler<Set<JsonArray>> listHandler);
 
+  void methodWithHandlerListDataObject(Handler<List<TestDataObject>> listHandler);
+
+  void methodWithHandlerListNullDataObject(Handler<List<TestDataObject>> listHandler);
+
+  void methodWithHandlerSetDataObject(Handler<Set<TestDataObject>> setHandler);
+
+  void methodWithHandlerSetNullDataObject(Handler<Set<TestDataObject>> setHandler);
+
   void methodWithHandlerAsyncResultListVertxGen(Handler<AsyncResult<List<RefedInterface1>>> listHandler);
 
   void methodWithHandlerAsyncResultSetVertxGen(Handler<AsyncResult<Set<RefedInterface1>>> listHandler);
