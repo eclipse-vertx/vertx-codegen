@@ -298,12 +298,30 @@ public class ClassModel implements Model {
     return false;
   }
 
+  protected boolean isDataObjectTypeWithToJson(TypeInfo type) {
+    if (type.getKind() == ClassKind.DATA_OBJECT) {
+      TypeElement typeElt = elementUtils.getTypeElement(type.getName());
+      if (typeElt != null) {
+        Optional<ExecutableElement> opt = elementUtils.
+            getAllMembers(typeElt).
+            stream().
+            flatMap(Helper.FILTER_METHOD).
+            filter(m -> m.getSimpleName().toString().equals("toJson") &&
+                m.getParameters().isEmpty() &&
+                m.getReturnType().toString().equals(JsonObject.class.getName())).
+            findFirst();
+        return opt.isPresent();
+      }
+    }
+    return false;
+  }
+
   private boolean isLegalListOrSetForHandler(TypeInfo type) {
     if (type instanceof TypeInfo.Parameterized) {
       TypeInfo raw = type.getRaw();
       if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
         TypeInfo elementType = ((TypeInfo.Parameterized) type).getArgs().get(0);
-        if (elementType.getKind().basic || elementType.getKind().json || isVertxGenInterface(elementType) || isDataObjectType(elementType)) {
+        if (elementType.getKind().basic || elementType.getKind().json || isVertxGenInterface(elementType) || isDataObjectTypeWithToJson(elementType)) {
           return true;
         }
       }
@@ -373,7 +391,7 @@ public class ClassModel implements Model {
       TypeInfo eventType = ((TypeInfo.Parameterized) type).getArgs().get(0);
       if (eventType.getKind().json || eventType.getKind().basic || isVertxGenInterface(eventType) ||
           isLegalListOrSetForHandler(eventType) || eventType.getKind() == ClassKind.VOID ||
-          eventType.getKind() == ClassKind.THROWABLE || isVariableType(eventType) || isOptionTypeWithToJson(eventType)) {
+          eventType.getKind() == ClassKind.THROWABLE || isVariableType(eventType) || isDataObjectTypeWithToJson(eventType)) {
         return true;
       }
     }
@@ -387,27 +405,9 @@ public class ClassModel implements Model {
         TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getArgs().get(0);
         if (resultType.getKind().json || resultType.getKind().basic || isVertxGenInterface(resultType) ||
             isLegalListOrSetForHandler(resultType) || resultType.getKind() == ClassKind.VOID ||
-            isVariableType(resultType) || isOptionTypeWithToJson(resultType)) {
+            isVariableType(resultType) || isDataObjectTypeWithToJson(resultType)) {
           return true;
         }
-      }
-    }
-    return false;
-  }
-
-  protected boolean isOptionTypeWithToJson(TypeInfo type) {
-    if (type.getKind() == ClassKind.DATA_OBJECT) {
-      TypeElement typeElt = elementUtils.getTypeElement(type.getName());
-      if (typeElt != null) {
-        Optional<ExecutableElement> opt = elementUtils.
-            getAllMembers(typeElt).
-            stream().
-            flatMap(Helper.FILTER_METHOD).
-            filter(m -> m.getSimpleName().toString().equals("toJson") &&
-                m.getParameters().isEmpty() &&
-                m.getReturnType().toString().equals(JsonObject.class.getName())).
-            findFirst();
-        return opt.isPresent();
       }
     }
     return false;
