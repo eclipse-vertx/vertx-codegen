@@ -67,19 +67,19 @@ public class Doc {
     return new Doc(first, body, blockTags);
   }
 
-  final Comment firstSentence;
-  final Comment body;
+  final Text firstSentence;
+  final Text body;
   final List<Tag> blockTags;
 
-  public Doc(Comment firstSentence) {
+  public Doc(Text firstSentence) {
     this(firstSentence, null);
   }
 
-  public Doc(Comment firstSentence, Comment body) {
+  public Doc(Text firstSentence, Text body) {
     this(firstSentence, body, Collections.emptyList());
   }
 
-  public Doc(Comment firstSentence, Comment body, List<Tag> blockTags) {
+  public Doc(Text firstSentence, Text body, List<Tag> blockTags) {
     this.firstSentence = firstSentence;
     this.body = body;
     this.blockTags = blockTags;
@@ -94,8 +94,8 @@ public class Doc {
   }
 
   public Doc(String firstSentence, String body, List<Tag> blockTags) {
-    this.firstSentence = new Comment(firstSentence);
-    this.body = body != null ? new Comment(body) : null;
+    this.firstSentence = new Text(firstSentence);
+    this.body = body != null ? new Text(body) : null;
     this.blockTags = blockTags;
   }
 
@@ -115,11 +115,11 @@ public class Doc {
     }
   }
 
-  public Comment getFirstSentence() {
+  public Text getFirstSentence() {
     return firstSentence;
   }
 
-  public Comment getBody() {
+  public Text getBody() {
     return body;
   }
 
