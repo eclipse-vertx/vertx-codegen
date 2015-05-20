@@ -437,7 +437,7 @@ public class TestInterfaceImpl implements TestInterface {
   @Override
   public void methodWithHandlerSetDataObject(Handler<Set<TestDataObject>> setHandler) {
     Set<TestDataObject> set =
-        new HashSet<>(Arrays.asList(new TestDataObject().setFoo("String 1").setBar(1).setWibble(1.1), new TestDataObject().setFoo("String 2").setBar(2).setWibble(2.2)));
+        new LinkedHashSet<>(Arrays.asList(new TestDataObject().setFoo("String 1").setBar(1).setWibble(1.1), new TestDataObject().setFoo("String 2").setBar(2).setWibble(2.2)));
     setHandler.handle(set);
   }
 
@@ -535,7 +535,7 @@ public class TestInterfaceImpl implements TestInterface {
   @Override
   public void methodWithHandlerAsyncResultSetDataObject(Handler<AsyncResult<Set<TestDataObject>>> setHandler) {
     Set<TestDataObject> set = 
-        new HashSet<>(Arrays.asList(new TestDataObject().setFoo("String 1").setBar(1).setWibble(1.1), new TestDataObject().setFoo("String 2").setBar(2).setWibble(2.2)));
+        new LinkedHashSet<>(Arrays.asList(new TestDataObject().setFoo("String 1").setBar(1).setWibble(1.1), new TestDataObject().setFoo("String 2").setBar(2).setWibble(2.2)));
     setHandler.handle(Future.succeededFuture(set));
   }
 
