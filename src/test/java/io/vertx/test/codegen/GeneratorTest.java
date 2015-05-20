@@ -466,13 +466,14 @@ public class GeneratorTest {
     String methodName = "methodWithListParams";
 
     Consumer<MethodInfo> checker = (method) -> {
-      checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 5);
+      checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 6);
       List<ParamInfo> params = method.getParams();
       checkClassParam(params.get(0), "listString", "java.util.List<java.lang.String>", ClassKind.LIST);
       checkClassParam(params.get(1), "listLong", "java.util.List<java.lang.Long>", ClassKind.LIST);
       checkClassParam(params.get(2), "listJsonObject", "java.util.List<io.vertx.core.json.JsonObject>", ClassKind.LIST);
       checkClassParam(params.get(3), "listJsonArray", "java.util.List<io.vertx.core.json.JsonArray>", ClassKind.LIST);
       checkClassParam(params.get(4), "listVertxGen", "java.util.List<" + VertxGenClass1.class.getName() + ">", ClassKind.LIST);
+      checkClassParam(params.get(5), "listDataObject", "java.util.List<" + TestDataObject.class.getName() + ">", ClassKind.LIST);
     };
 
     MethodInfo method = model.getMethods().get(0);
@@ -491,13 +492,14 @@ public class GeneratorTest {
     String methodName = "methodWithSetParams";
 
     Consumer<MethodInfo> checker = (method) -> {
-      checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 5);
+      checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 6);
       List<ParamInfo> params = method.getParams();
       checkClassParam(params.get(0), "setString", "java.util.Set<java.lang.String>", ClassKind.SET);
       checkClassParam(params.get(1), "setLong", "java.util.Set<java.lang.Long>", ClassKind.SET);
       checkClassParam(params.get(2), "setJsonObject", "java.util.Set<io.vertx.core.json.JsonObject>", ClassKind.SET);
       checkClassParam(params.get(3), "setJsonArray", "java.util.Set<io.vertx.core.json.JsonArray>", ClassKind.SET);
       checkClassParam(params.get(4), "setVertxGen", "java.util.Set<" + VertxGenClass1.class.getName() + ">", ClassKind.SET);
+      checkClassParam(params.get(5), "setDataObject", "java.util.Set<" + TestDataObject.class.getName() + ">", ClassKind.SET);
     };
 
     MethodInfo method = model.getMethods().get(0);
@@ -601,7 +603,7 @@ public class GeneratorTest {
     String methodName = "methodWithHandlerParams";
 
     Consumer<MethodInfo> checker = (method) -> {
-      checkMethod(method, methodName, null, MethodKind.FUTURE, "void", false, false, false, 37);
+      checkMethod(method, methodName, null, MethodKind.FUTURE, "void", false, false, false, 39);
       List<ParamInfo> params = method.getParams();
       checkClassParam(params.get(0), "byteHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Byte>>", ClassKind.HANDLER);
       checkClassParam(params.get(1), "shortHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Short>>", ClassKind.HANDLER);
@@ -640,6 +642,8 @@ public class GeneratorTest {
       checkClassParam(params.get(34), "setJsonArrayHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<" + JsonArray.class.getName() + ">>>", ClassKind.HANDLER);
       checkClassParam(params.get(35), "voidHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Void>>", ClassKind.HANDLER);
       checkClassParam(params.get(36), "dataObjectHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<" + TestDataObject.class.getName() + ">>", ClassKind.HANDLER);
+      checkClassParam(params.get(37), "listDataObjectHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.List<" + TestDataObject.class.getName() + ">>>", ClassKind.HANDLER);
+      checkClassParam(params.get(38), "setDataObjectHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<" + TestDataObject.class.getName() + ">>>", ClassKind.HANDLER);
     };
 
     MethodInfo method = model.getMethods().get(0);
