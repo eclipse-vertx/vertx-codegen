@@ -144,19 +144,6 @@ public class CodeGen {
     } catch (IllegalArgumentException e) {
       throw new GenException(element, "Module name '" + moduleName + "' does not follow the snake case format (dash separated name)");
     }
-    PackageElement pkgElt = element;
-    while (true) {
-      String pkgQN = pkgElt.getQualifiedName().toString();
-      int pos = pkgQN.lastIndexOf('.');
-      if (pos == -1) {
-        break;
-      } else {
-        pkgElt = elementUtils.getPackageElement(pkgQN.substring(0, pos));
-        if (pkgElt.getAnnotation(GenModule.class) != null) {
-          throw new GenException(element, "A module cannot be nested inside another module");
-        }
-      }
-    }
     String groupPackageName = annotation.groupPackageName();
     if (!modulePackageName.startsWith(groupPackageName)) {
       throw new GenException(element, "A module package name (" + modulePackageName + ") must be prefixed by the group package name (" + groupPackageName + ")");

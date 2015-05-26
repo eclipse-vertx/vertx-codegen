@@ -10,6 +10,8 @@ import io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedApi;
 import io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedDataObject;
 import io.vertx.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubApi;
 import io.vertx.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubDataObject;
+import io.vertx.test.codegen.testmodule.nestingmodule.nestedmodule.NestedApi;
+import io.vertx.test.codegen.testmodule.nestingmodule.nestedmodule.NestedDataObject;
 import io.vertx.test.codegen.testmodule.nomodule.NoModuleApi;
 import io.vertx.test.codegen.testmodule.nomodule.NoModuleDataObject;
 import org.junit.Test;
@@ -31,11 +33,16 @@ public class ModuleTest {
 
   @Test
   public void testNestedModuleModel() throws Exception {
-    try {
-      new Generator().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.nestingmodule.nestedmodule");
-      fail();
-    } catch (GenException expected) {
-    }
+    ModuleModel module = new Generator().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.nestingmodule.nestedmodule");
+    assertEquals("io.vertx.test.codegen.testmodule.nestingmodule.nestedmodule", module.getFqn());
+    assertEquals("nested", module.getName());
+    assertEquals("io.vertx.groovy.test.codegen.testmodule.nestingmodule.nestedmodule", module.translateFqn("groovy"));
+    ClassModel api = new Generator().generateClass(NestedApi.class);
+    assertEquals("io.vertx.test.codegen.testmodule.nestingmodule.nestedmodule", api.getModule().getPackageName());
+    assertEquals("nested", api.getModule().getName());
+    DataObjectModel dataObj = new Generator().generateDataObject(NestedDataObject.class);
+    assertEquals("io.vertx.test.codegen.testmodule.nestingmodule.nestedmodule", dataObj.getModule().getPackageName());
+    assertEquals("nested", dataObj.getModule().getName());
   }
 
   @Test
