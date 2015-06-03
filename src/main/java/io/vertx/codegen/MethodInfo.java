@@ -17,6 +17,7 @@ package io.vertx.codegen;
  */
 
 import io.vertx.codegen.doc.Doc;
+import io.vertx.codegen.doc.Text;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +34,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   final String name;
   final MethodKind kind;
   final TypeInfo returnType;
-  final String returnDescription;
+  final Text returnDescription;
   final boolean fluent;
   final boolean cacheReturn;
   final String comment;
@@ -44,7 +45,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   List<ParamInfo> params;
 
   public MethodInfo(Set<TypeInfo.Class> ownerTypes, String name, MethodKind kind,
-                    TypeInfo returnType, String returnDescription, boolean fluent,  boolean cacheReturn,
+                    TypeInfo returnType, Text returnDescription, boolean fluent,  boolean cacheReturn,
                     List<ParamInfo> params, String comment, Doc doc, boolean staticMethod,
                     List<TypeParamInfo.Method> typeParams) {
 
@@ -94,7 +95,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return returnType;
   }
 
-  public String getReturnDescription() {
+  public Text getReturnDescription() {
     return returnDescription;
   }
 

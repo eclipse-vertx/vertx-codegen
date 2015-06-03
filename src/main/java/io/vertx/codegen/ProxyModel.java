@@ -19,6 +19,7 @@ package io.vertx.codegen;
 import io.vertx.codegen.annotations.ProxyClose;
 import io.vertx.codegen.annotations.ProxyIgnore;
 import io.vertx.codegen.doc.Doc;
+import io.vertx.codegen.doc.Text;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
 
 import javax.annotation.processing.Messager;
@@ -123,7 +124,7 @@ public class ProxyModel extends ClassModel {
 
   @Override
   protected MethodInfo createMethodInfo(TypeInfo.Class ownerType, String methodName, String comment, Doc doc, MethodKind kind, TypeInfo returnType,
-                                        String returnDescription,
+                                        Text returnDescription,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
                                         ExecutableElement methodElt, boolean isStatic, ArrayList<TypeParamInfo.Method> typeParams,
                                         TypeElement declaringElt) {

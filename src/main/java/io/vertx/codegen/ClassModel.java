@@ -629,7 +629,7 @@ public class ClassModel implements Model {
     Map<String, String> paramDescs = new HashMap<>();
     String comment = elementUtils.getDocComment(methodElt);
     Doc doc = docFactory.createDoc(methodElt);
-    String returnDesc = null;
+    Text returnDesc = null;
     if (doc != null) {
       doc.
           getBlockTags().
@@ -643,7 +643,7 @@ public class ClassModel implements Model {
           filter(tag -> tag.getName().equals("return")).
           findFirst();
       if (returnTag.isPresent()) {
-        returnDesc = Helper.normalizeWhitespaces(returnTag.get().getValue());
+        returnDesc = new Text(Helper.normalizeWhitespaces(returnTag.get().getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt));
       }
     }
 
@@ -719,7 +719,7 @@ public class ClassModel implements Model {
 
   // This is a hook to allow a specific type of method to be created
   protected MethodInfo createMethodInfo(TypeInfo.Class ownerType, String methodName, String comment, Doc doc, MethodKind kind, TypeInfo returnType,
-                                        String returnDescription,
+                                        Text returnDescription,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
                                         ExecutableElement methodElt, boolean isStatic, ArrayList<TypeParamInfo.Method> typeParams,
                                         TypeElement declaringElt) {
