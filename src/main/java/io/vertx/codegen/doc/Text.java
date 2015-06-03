@@ -37,7 +37,7 @@ public class Text {
    * @param mapping the mapping function
    * @return the new text object
    */
-  Text map(Function<Token, Token> mapping) {
+  public Text map(Function<Token, Token> mapping) {
     return new Text(value, tokens.stream().map(mapping).collect(Collectors.toList()));
   }
 

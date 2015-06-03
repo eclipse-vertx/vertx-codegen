@@ -517,15 +517,21 @@ public class Helper {
   }
 
   private static TypeElement resolveTypeElement(Elements elementUtils, TypeElement declaringElt, String typeName) {
+    TypeElement resolvedElt;
     if (typeName.isEmpty()) {
-      return declaringElt;
+      resolvedElt = declaringElt;
     } else {
       if (typeName.lastIndexOf('.') == -1) {
-        String packageName = elementUtils.getPackageOf(declaringElt).getQualifiedName().toString();
-        typeName = packageName + '.' + typeName;
+        resolvedElt = elementUtils.getTypeElement("java.lang." +typeName);
+        if (resolvedElt == null) {
+          String packageName = elementUtils.getPackageOf(declaringElt).getQualifiedName().toString();
+          resolvedElt = elementUtils.getTypeElement(packageName + '.' + typeName);
+        }
+      } else {
+        resolvedElt = elementUtils.getTypeElement(typeName);
       }
-      return elementUtils.getTypeElement(typeName);
     }
+    return resolvedElt;
   }
 
   private static boolean matchesConstructor(Element elt, String memberName, Predicate<ExecutableElement> parametersMatcher) {

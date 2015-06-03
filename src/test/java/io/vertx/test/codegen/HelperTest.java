@@ -97,11 +97,14 @@ public class HelperTest {
   @Test
   public void testResolveClassSignature() throws Exception {
     Utils.assertProcess((processingEnv, roundEnv) -> {
-      Element elt = Helper.resolveSignature(processingEnv.getElementUtils(), processingEnv.getTypeUtils(),
+      TypeElement elt = (TypeElement) Helper.resolveSignature(processingEnv.getElementUtils(), processingEnv.getTypeUtils(),
           null,  "java.lang.Class");
       assertEquals(ElementKind.CLASS, elt.getKind());
-      TypeElement typeElt = (TypeElement) elt;
-      assertEquals("java.lang.Class", typeElt.getQualifiedName().toString());
+      assertEquals("java.lang.Class", elt.getQualifiedName().toString());
+      elt = (TypeElement) Helper.resolveSignature(processingEnv.getElementUtils(), processingEnv.getTypeUtils(),
+          null,  "Class");
+      assertEquals(ElementKind.CLASS, elt.getKind());
+      assertEquals("java.lang.Class", elt.getQualifiedName().toString());
     });
   }
 

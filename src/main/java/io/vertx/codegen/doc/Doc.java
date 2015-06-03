@@ -6,10 +6,8 @@ import io.vertx.codegen.TypeInfo;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import javax.tools.Diagnostic;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -145,12 +143,6 @@ public class Doc {
    */
   public static class Factory {
 
-    // Slight modification to accomodate left whitespace trimming
-    private static final Pattern LINK_REFERENCE_PATTERN = Pattern.compile(
-        "^\\s*(" +
-        Helper.LINK_REFERENCE_PATTERN.pattern() +
-        ")");
-
     private final Messager messager;
     private final Elements elementUtils;
     private final Types typeUtils;
@@ -178,34 +170,7 @@ public class Doc {
         Doc doc = Doc.create(docComment);
 
         // Rewrite the link token with more contextual type info
-        Function<Token, Token> mapper = token -> {
-          if (token.isInlineTag()) {
-            Tag tag = ((Token.InlineTag) token).getTag();
-            if (tag.getName().equals("link")) {
-              Matcher matcher = LINK_REFERENCE_PATTERN.matcher(tag.getValue());
-              if (matcher.find()) {
-                Element resolvedElt = Helper.resolveSignature(
-                    elementUtils,
-                    typeUtils,
-                    ownerElt,
-                    matcher.group(1));
-                if (resolvedElt != null) {
-                  DeclaredType resolvedType = (DeclaredType) Helper.getElementTypeOf(resolvedElt).asType();
-                  Tag.Link tagLink = new Tag.Link(
-                      tag.getValue(),
-                      resolvedElt,
-                      typeFactory.create(resolvedType),
-                      tag.getValue().substring(matcher.end()));
-                  token = new Token.InlineTag(token.getValue(), tagLink);
-                } else {
-                  String msg = "Could not resolve documentation link " + tag;
-                  messager.printMessage(Diagnostic.Kind.WARNING, msg, elt);
-                }
-              }
-            }
-          }
-          return token;
-        };
+        Function<Token, Token> mapper = Token.tagMapper(elementUtils, typeUtils, ownerElt);
 
         //
         return new Doc(

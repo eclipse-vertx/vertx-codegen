@@ -22,6 +22,8 @@ import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Tag;
+import io.vertx.codegen.doc.Text;
+import io.vertx.codegen.doc.Token;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
 import io.vertx.core.json.JsonObject;
 
@@ -757,7 +759,9 @@ public class ClassModel implements Model {
       }
       checkParamType(execElem, type, typeInfo, i, params.size());
       String name = param.getSimpleName().toString();
-      ParamInfo mParam = new ParamInfo(name, descs.get(name), typeInfo);
+      String desc = descs.get(name);
+      Text text = desc != null ? new Text(desc).map(Token.tagMapper(elementUtils, typeUtils, modelElt)) : null;
+      ParamInfo mParam = new ParamInfo(name, text, typeInfo);
       mParams.add(mParam);
     }
     return mParams;

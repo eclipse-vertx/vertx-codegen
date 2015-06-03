@@ -1,7 +1,16 @@
 package io.vertx.codegen.doc;
 
+import io.vertx.codegen.Helper;
+import io.vertx.codegen.TypeInfo;
+
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -128,5 +137,49 @@ public abstract class Token {
     public Tag getTag() {
       return tag;
     }
+  }
+
+  // Slight modification to accomodate left whitespace trimming
+  private static final Pattern LINK_REFERENCE_PATTERN = Pattern.compile(
+      "^\\s*(" +
+          Helper.LINK_REFERENCE_PATTERN.pattern() +
+          ")");
+
+  /**
+   * Create a tag mapper that remaps tags with extra contexutal info like @link tags.
+   *
+   * @param elementUtils the element utils
+   * @param typeUtils the type utils
+   * @param ownerElt the type element in which this tag is declared
+   * @return the mapper
+   */
+  public static Function<Token, Token> tagMapper(
+      Elements elementUtils, Types typeUtils, TypeElement ownerElt) {
+    TypeInfo.Factory typeFactory = new TypeInfo.Factory(elementUtils, typeUtils);
+    return token -> {
+      if (token.isInlineTag()) {
+        Tag tag = ((Token.InlineTag) token).getTag();
+        if (tag.getName().equals("link")) {
+          Matcher matcher = LINK_REFERENCE_PATTERN.matcher(tag.getValue());
+          if (matcher.find()) {
+            Element resolvedElt = Helper.resolveSignature(
+                elementUtils,
+                typeUtils,
+                ownerElt,
+                matcher.group(1));
+            if (resolvedElt != null) {
+              DeclaredType resolvedType = (DeclaredType) Helper.getElementTypeOf(resolvedElt).asType();
+              Tag.Link tagLink = new Tag.Link(
+                  tag.getValue(),
+                  resolvedElt,
+                  typeFactory.create(resolvedType),
+                  tag.getValue().substring(matcher.end()));
+              token = new Token.InlineTag(token.getValue(), tagLink);
+            }
+          }
+        }
+      }
+      return token;
+    };
   }
 }

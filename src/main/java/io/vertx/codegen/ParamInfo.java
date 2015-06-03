@@ -16,16 +16,18 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
+import io.vertx.codegen.doc.Text;
+
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 public class ParamInfo {
 
   final String name;
-  final String description;
+  final Text description;
   final TypeInfo type;
 
-  public ParamInfo(String name, String description, TypeInfo type) {
+  public ParamInfo(String name, Text description, TypeInfo type) {
     this.name = name;
     this.description = description;
     this.type = type;
@@ -39,7 +41,7 @@ public class ParamInfo {
     return _case.format(Case.CAMEL.parse(name));
   }
 
-  public String getDescription() {
+  public Text getDescription() {
     return description;
   }
 
@@ -48,7 +50,7 @@ public class ParamInfo {
   }
 
   public boolean isDataObject() {
-    return type instanceof TypeInfo.Class && ((TypeInfo.Class) type).getKind() == ClassKind.DATA_OBJECT;
+    return type instanceof TypeInfo.Class && (type).getKind() == ClassKind.DATA_OBJECT;
   }
 
   @Override
