@@ -168,13 +168,16 @@ public abstract class Token {
                 ownerElt,
                 matcher.group(1));
             if (resolvedElt != null) {
-              DeclaredType resolvedType = (DeclaredType) Helper.getElementTypeOf(resolvedElt).asType();
-              Tag.Link tagLink = new Tag.Link(
-                  tag.getValue(),
-                  resolvedElt,
-                  typeFactory.create(resolvedType),
-                  tag.getValue().substring(matcher.end()));
-              token = new Token.InlineTag(token.getValue(), tagLink);
+              TypeElement resolvedTypeElt = Helper.getElementTypeOf(resolvedElt);
+              if (resolvedTypeElt != null) {
+                DeclaredType resolvedType = (DeclaredType) resolvedTypeElt.asType();
+                Tag.Link tagLink = new Tag.Link(
+                    tag.getValue(),
+                    resolvedElt,
+                    typeFactory.create(resolvedType),
+                    tag.getValue().substring(matcher.end()));
+                token = new Token.InlineTag(token.getValue(), tagLink);
+              }
             }
           }
         }

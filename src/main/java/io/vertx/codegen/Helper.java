@@ -592,7 +592,8 @@ public class Helper {
    * @return the element type or null if none exists
    */
   public static TypeElement getElementTypeOf(Element elt) {
-    if (elt.getKind() == ElementKind.CLASS || elt.getKind() == ElementKind.INTERFACE) {
+    ElementKind kind = elt.getKind();
+    if (kind == ElementKind.CLASS || kind == ElementKind.INTERFACE || kind == ElementKind.ENUM) {
       return (TypeElement) elt;
     }
     Element enclosingElt = elt.getEnclosingElement();

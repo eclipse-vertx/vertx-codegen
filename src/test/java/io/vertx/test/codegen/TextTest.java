@@ -6,7 +6,9 @@ import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.doc.Token;
+import io.vertx.test.codegen.doc.FooEnum;
 import io.vertx.test.codegen.doc.LinkLabel;
+import io.vertx.test.codegen.doc.LinkToEnum;
 import io.vertx.test.codegen.doc.LinkToMethodInSameType;
 import io.vertx.test.codegen.doc.LinkToSameType;
 import org.junit.Test;
@@ -139,6 +141,19 @@ public class TextTest {
     for (Token token : tokens) {
       Tag.Link link = (Tag.Link) ((Token.InlineTag) token).getTag();
       assertEquals(LinkToSameType.class.getName(), link.getTargetElement().toString());
+    }
+  }
+
+  @Test
+  public void testLinkToEnum() throws Exception {
+    ClassModel model = new Generator().generateClass(LinkToEnum.class);
+    MethodInfo method = model.getMethodMap().get("m").get(0);
+    Doc doc = method.getDoc();
+    List<Token> tokens = doc.getTokens();
+    assertEquals(2, tokens.size());
+    for (Token token : tokens) {
+      Tag.Link link = (Tag.Link) ((Token.InlineTag) token).getTag();
+      assertEquals(FooEnum.class.getName(), link.getTargetElement().toString());
     }
   }
 
