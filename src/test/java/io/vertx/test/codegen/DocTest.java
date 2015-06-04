@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class TextTest {
+public class DocTest {
 
   @Test
   public void testTags() {
