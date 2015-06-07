@@ -167,6 +167,8 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   RefedInterface1 methodWithVertxGenReturn();
 
+  RefedInterface1 methodWithVertxGenNullReturn();
+
   RefedInterface2 methodWithAbstractVertxGenReturn();
 
   String overloadedMethod(String str, Handler<String> handler);

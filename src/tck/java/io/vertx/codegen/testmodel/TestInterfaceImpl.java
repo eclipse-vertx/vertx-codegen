@@ -672,6 +672,11 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public RefedInterface1 methodWithVertxGenNullReturn() {
+    return null;
+  }
+
+  @Override
   public RefedInterface2 methodWithAbstractVertxGenReturn() {
     RefedInterface2 refed = new RefedInterface2Impl();
     refed.setString("abstractchaffinch");
