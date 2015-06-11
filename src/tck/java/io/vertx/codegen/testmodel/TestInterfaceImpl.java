@@ -1,5 +1,10 @@
 package io.vertx.codegen.testmodel;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -11,14 +16,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static org.junit.Assert.*;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -386,6 +388,12 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public void methodWithHandlerListComplexJsonObject(Handler<List<JsonObject>> listHandler) {
+    List<JsonObject> list = Arrays.asList(new JsonObject().put("outer", new JsonObject().put("socks", "tartan")).put("list", new JsonArray().add("yellow").add("blue")));
+    listHandler.handle(list);    
+  }
+
+  @Override
   public void methodWithHandlerSetJsonObject(Handler<Set<JsonObject>> setHandler) {
     Set<JsonObject> set = new LinkedHashSet<>(Arrays.asList(new JsonObject().put("cheese", "stilton"), new JsonObject().put("socks", "tartan")));
     setHandler.handle(set);
@@ -394,6 +402,12 @@ public class TestInterfaceImpl implements TestInterface {
   @Override
   public void methodWithHandlerSetNullJsonObject(Handler<Set<JsonObject>> setHandler) {
     Set<JsonObject> set = Collections.singleton(null);
+    setHandler.handle(set);
+  }
+
+  @Override
+  public void methodWithHandlerSetComplexJsonObject(Handler<Set<JsonObject>> setHandler) {
+    Set<JsonObject> set = new LinkedHashSet<>(Arrays.asList(new JsonObject().put("outer", new JsonObject().put("socks", "tartan")).put("list", new JsonArray().add("yellow").add("blue"))));
     setHandler.handle(set);
   }
 
@@ -410,6 +424,12 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public void methodWithHandlerListComplexJsonArray(Handler<List<JsonArray>> listHandler) {
+    List<JsonArray> list = Arrays.asList(new JsonArray().add(new JsonObject().put("foo", "hello")), new JsonArray().add(new JsonObject().put("bar", "bye")));
+    listHandler.handle(list);
+  }
+
+  @Override
   public void methodWithHandlerSetJsonArray(Handler<Set<JsonArray>> listHandler) {
     Set<JsonArray> set = new LinkedHashSet<>(Arrays.asList(new JsonArray().add("green").add("blue"), new JsonArray().add("yellow").add("purple")));
     listHandler.handle(set);
@@ -419,6 +439,13 @@ public class TestInterfaceImpl implements TestInterface {
   public void methodWithHandlerSetNullJsonArray(Handler<Set<JsonArray>> listHandler) {
     Set<JsonArray> set = Collections.singleton(null);
     listHandler.handle(set);
+  }
+
+  @Override
+  public void methodWithHandlerSetComplexJsonArray(Handler<Set<JsonArray>> setHandler) {
+    List<JsonArray> list = Arrays.asList(new JsonArray().add(new JsonObject().put("foo", "hello")), new JsonArray().add(new JsonObject().put("bar", "bye")));
+    Set<JsonArray> set = new LinkedHashSet<>(list);
+    setHandler.handle(set);
   }
 
   @Override
@@ -484,6 +511,12 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public void methodWithHandlerAsyncResultListComplexJsonObject(Handler<AsyncResult<List<JsonObject>>> listHandler) {
+    List<JsonObject> list = Arrays.asList(new JsonObject().put("outer", new JsonObject().put("socks", "tartan")).put("list", new JsonArray().add("yellow").add("blue")));
+    listHandler.handle(Future.succeededFuture(list));
+  }
+
+  @Override
   public void methodWithHandlerAsyncResultSetJsonObject(Handler<AsyncResult<Set<JsonObject>>> setHandler) {
     Set<JsonObject> set = new LinkedHashSet<>(Arrays.asList(new JsonObject().put("cheese", "stilton"), new JsonObject().put("socks", "tartan")));
     setHandler.handle(Future.succeededFuture(set));
@@ -492,6 +525,12 @@ public class TestInterfaceImpl implements TestInterface {
   @Override
   public void methodWithHandlerAsyncResultSetNullJsonObject(Handler<AsyncResult<Set<JsonObject>>> setHandler) {
     Set<JsonObject> set = Collections.singleton(null);
+    setHandler.handle(Future.succeededFuture(set));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultSetComplexJsonObject(Handler<AsyncResult<Set<JsonObject>>> setHandler) {
+    Set<JsonObject> set = new LinkedHashSet<>(Arrays.asList(new JsonObject().put("outer", new JsonObject().put("socks", "tartan")).put("list", new JsonArray().add("yellow").add("blue"))));
     setHandler.handle(Future.succeededFuture(set));
   }
 
@@ -508,6 +547,12 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public void methodWithHandlerAsyncResultListComplexJsonArray(Handler<AsyncResult<List<JsonArray>>> listHandler) {
+    List<JsonArray> list = Arrays.asList(new JsonArray().add(new JsonObject().put("foo", "hello")), new JsonArray().add(new JsonObject().put("bar", "bye")));
+    listHandler.handle(Future.succeededFuture(list));
+  }
+
+  @Override
   public void methodWithHandlerAsyncResultSetJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler) {
     Set<JsonArray> set = new LinkedHashSet<>(Arrays.asList(new JsonArray().add("green").add("blue"), new JsonArray().add("yellow").add("purple")));
     listHandler.handle(Future.succeededFuture(set));
@@ -516,6 +561,12 @@ public class TestInterfaceImpl implements TestInterface {
   @Override
   public void methodWithHandlerAsyncResultSetNullJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler) {
     Set<JsonArray> set = Collections.singleton(null);
+    listHandler.handle(Future.succeededFuture(set));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultSetComplexJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler) {
+    Set<JsonArray> set = new LinkedHashSet<>(Arrays.asList(new JsonArray().add(new JsonObject().put("foo", "hello")), new JsonArray().add(new JsonObject().put("bar", "bye"))));
     listHandler.handle(Future.succeededFuture(set));
   }
 
@@ -775,6 +826,9 @@ public class TestInterfaceImpl implements TestInterface {
         // Some languages will convert to Long
         return (U) (new JsonObject().put("foo", "hello").put("bar", 123L));
       }
+      case "JsonObjectComplex": {
+        return (U) (new JsonObject().put("outer", new JsonObject().put("foo", "hello")).put("bar", new JsonArray().add("this").add("that")));
+      }
       case "JsonArray": {
         return (U) (new JsonArray().add("foo").add("bar").add("wib"));
       }
@@ -831,6 +885,11 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public JsonObject methodWithComplexJsonObjectReturn() {
+    return new JsonObject().put("outer", new JsonObject().put("socks", "tartan")).put("list", new JsonArray().add("yellow").add("blue"));
+  }
+
+  @Override
   public JsonArray methodWithJsonArrayReturn() {
     return new JsonArray().add("socks").add("shoes");
   }
@@ -838,6 +897,11 @@ public class TestInterfaceImpl implements TestInterface {
   @Override
   public JsonArray methodWithNullJsonArrayReturn() {
     return null;
+  }
+
+  @Override
+  public JsonArray methodWithComplexJsonArrayReturn() {
+    return new JsonArray().add(new JsonObject().put("foo", "hello")).add(new JsonObject().put("bar", "bye"));
   }
 
   @Override
@@ -873,6 +937,14 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public void methodWithHandlerComplexJson(Handler<JsonObject> jsonObjectHandler, Handler<JsonArray> jsonArrayHandler) {
+    assertNotNull(jsonObjectHandler);
+    assertNotNull(jsonArrayHandler);
+    jsonObjectHandler.handle(new JsonObject().put("outer", new JsonObject().put("socks", "tartan")).put("list", new JsonArray().add("yellow").add("blue")));
+    jsonArrayHandler.handle(new JsonArray().add(new JsonArray().add(new JsonObject().put("foo", "hello"))).add(new JsonArray().add(new JsonObject().put("bar", "bye"))));
+  }
+
+  @Override
   public void methodWithHandlerAsyncResultJsonObject(Handler<AsyncResult<JsonObject>> handler) {
     assertNotNull(handler);
     handler.handle(Future.succeededFuture(new JsonObject().put("cheese", "stilton")));
@@ -885,6 +957,12 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public void methodWithHandlerAsyncResultComplexJsonObject(Handler<AsyncResult<JsonObject>> handler) {
+    assertNotNull(handler);
+    handler.handle(Future.succeededFuture(new JsonObject().put("outer", new JsonObject().put("socks", "tartan")).put("list", new JsonArray().add("yellow").add("blue"))));
+  }
+  
+  @Override
   public void methodWithHandlerAsyncResultJsonArray(Handler<AsyncResult<JsonArray>> handler) {
     assertNotNull(handler);
     handler.handle(Future.succeededFuture(new JsonArray().add("socks").add("shoes")));
@@ -894,6 +972,12 @@ public class TestInterfaceImpl implements TestInterface {
   public void methodWithHandlerAsyncResultNullJsonArray(Handler<AsyncResult<JsonArray>> handler) {
     assertNotNull(handler);
     handler.handle(Future.succeededFuture(null));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultComplexJsonArray(Handler<AsyncResult<JsonArray>> handler) {
+    assertNotNull(handler);
+    handler.handle(Future.succeededFuture(new JsonArray().add(new JsonObject().put("foo", "hello")).add(new JsonObject().put("bar", "bye"))));
   }
 
   @Override
@@ -927,9 +1011,23 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public Map<String, JsonObject> methodWithMapComplexJsonObjectReturn(Handler<String> handler) {
+    Map<String, JsonObject> map = new JsonObjectHandlerTestMap(handler);
+    map.put("foo", new JsonObject().put("outer", new JsonObject().put("socks", "tartan")).put("list", new JsonArray().add("yellow").add("blue")));
+    return map;
+  }
+
+  @Override
   public Map<String, JsonArray> methodWithMapJsonArrayReturn(Handler<String> handler) {
     Map<String, JsonArray> map = new JsonArrayHandlerTestMap(handler);
     map.put("foo", new JsonArray().add("wibble"));
+    return map;
+  }
+
+  @Override
+  public Map<String, JsonArray> methodWithMapComplexJsonArrayReturn(Handler<String> handler) {
+    Map<String, JsonArray> map = new JsonArrayHandlerTestMap(handler);
+    map.put("foo", new JsonArray().add(new JsonObject().put("foo", "hello")).add(new JsonObject().put("bar", "bye")));
     return map;
   }
 
@@ -1025,8 +1123,18 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public List<JsonObject> methodWithListComplexJsonObjectReturn() {
+    return Arrays.asList(new JsonObject().put("outer", new JsonObject().put("socks", "tartan")).put("list", new JsonArray().add("yellow").add("blue")));
+  }
+  
+  @Override
   public List<JsonArray> methodWithListJsonArrayReturn() {
     return Arrays.asList(new JsonArray().add("foo"), new JsonArray().add("blah"));
+  }
+
+  @Override
+  public List<JsonArray> methodWithListComplexJsonArrayReturn() {
+    return Arrays.asList(new JsonArray().add(new JsonObject().put("foo", "hello")), new JsonArray().add(new JsonObject().put("bar", "bye")));
   }
 
   @Override
@@ -1050,8 +1158,18 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public Set<JsonObject> methodWithSetComplexJsonObjectReturn() {
+    return new LinkedHashSet<>(Arrays.asList(new JsonObject().put("outer", new JsonObject().put("socks", "tartan")).put("list", new JsonArray().add("yellow").add("blue"))));
+  }
+
+  @Override
   public Set<JsonArray> methodWithSetJsonArrayReturn() {
     return new LinkedHashSet<>(Arrays.asList(new JsonArray().add("foo"), new JsonArray().add("blah")));
+  }
+
+  @Override
+  public Set<JsonArray> methodWithSetComplexJsonArrayReturn() {
+    return new LinkedHashSet<>(Arrays.asList(new JsonArray().add(new JsonObject().put("foo", "hello")), new JsonArray().add(new JsonObject().put("bar", "bye"))));
   }
 
   @Override
@@ -1306,5 +1424,6 @@ public class TestInterfaceImpl implements TestInterface {
       return super.put(key, value);
     }
   }
+
 }
 
