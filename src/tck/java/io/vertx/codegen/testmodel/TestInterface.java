@@ -73,17 +73,25 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   void methodWithHandlerListNullJsonObject(Handler<List<JsonObject>> listHandler);
 
+  void methodWithHandlerListComplexJsonObject(Handler<List<JsonObject>> listHandler);
+
   void methodWithHandlerSetJsonObject(Handler<Set<JsonObject>> listHandler);
 
   void methodWithHandlerSetNullJsonObject(Handler<Set<JsonObject>> listHandler);
+
+  void methodWithHandlerSetComplexJsonObject(Handler<Set<JsonObject>> listHandler);
 
   void methodWithHandlerListJsonArray(Handler<List<JsonArray>> listHandler);
 
   void methodWithHandlerListNullJsonArray(Handler<List<JsonArray>> listHandler);
 
+  void methodWithHandlerListComplexJsonArray(Handler<List<JsonArray>> listHandler);
+
   void methodWithHandlerSetJsonArray(Handler<Set<JsonArray>> listHandler);
 
   void methodWithHandlerSetNullJsonArray(Handler<Set<JsonArray>> listHandler);
+
+  void methodWithHandlerSetComplexJsonArray(Handler<Set<JsonArray>> setHandler);
 
   void methodWithHandlerListDataObject(Handler<List<TestDataObject>> listHandler);
 
@@ -105,17 +113,25 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   void methodWithHandlerAsyncResultListNullJsonObject(Handler<AsyncResult<List<JsonObject>>> listHandler);
 
+  void methodWithHandlerAsyncResultListComplexJsonObject(Handler<AsyncResult<List<JsonObject>>> listHandler);
+
   void methodWithHandlerAsyncResultSetJsonObject(Handler<AsyncResult<Set<JsonObject>>> listHandler);
 
   void methodWithHandlerAsyncResultSetNullJsonObject(Handler<AsyncResult<Set<JsonObject>>> listHandler);
+
+  void methodWithHandlerAsyncResultSetComplexJsonObject(Handler<AsyncResult<Set<JsonObject>>> listHandler);
 
   void methodWithHandlerAsyncResultListJsonArray(Handler<AsyncResult<List<JsonArray>>> listHandler);
 
   void methodWithHandlerAsyncResultListNullJsonArray(Handler<AsyncResult<List<JsonArray>>> listHandler);
 
+  void methodWithHandlerAsyncResultListComplexJsonArray(Handler<AsyncResult<List<JsonArray>>> listHandler);
+
   void methodWithHandlerAsyncResultSetJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler);
 
   void methodWithHandlerAsyncResultSetNullJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler);
+
+  void methodWithHandlerAsyncResultSetComplexJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler);
 
   void methodWithHandlerAsyncResultListDataObject(Handler<AsyncResult<List<TestDataObject>>> listHandler);
 
@@ -206,9 +222,13 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   JsonObject methodWithNullJsonObjectReturn();
 
+  JsonObject methodWithComplexJsonObjectReturn();
+
   JsonArray methodWithJsonArrayReturn();
 
   JsonArray methodWithNullJsonArrayReturn();
+
+  JsonArray methodWithComplexJsonArrayReturn();
 
   void methodWithJsonParams(JsonObject jsonObject, JsonArray jsonArray);
 
@@ -218,13 +238,19 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   void methodWithHandlerNullJson(Handler<JsonObject> jsonObjectHandler, Handler<JsonArray> jsonArrayHandler);
 
+  void methodWithHandlerComplexJson(Handler<JsonObject> jsonObjectHandler, Handler<JsonArray> jsonArrayHandler);
+
   void methodWithHandlerAsyncResultJsonObject(Handler<AsyncResult<JsonObject>> handler);
 
   void methodWithHandlerAsyncResultNullJsonObject(Handler<AsyncResult<JsonObject>> handler);
 
+  void methodWithHandlerAsyncResultComplexJsonObject(Handler<AsyncResult<JsonObject>> handler);
+
   void methodWithHandlerAsyncResultJsonArray(Handler<AsyncResult<JsonArray>> handler);
 
   void methodWithHandlerAsyncResultNullJsonArray(Handler<AsyncResult<JsonArray>> handler);
+
+  void methodWithHandlerAsyncResultComplexJsonArray(Handler<AsyncResult<JsonArray>> handler);
 
   Map<String, String> methodWithMapReturn(Handler<String> handler);
 
@@ -248,7 +274,11 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   Map<String, JsonObject> methodWithMapJsonObjectReturn(Handler<String> handler);
 
+  Map<String, JsonObject> methodWithMapComplexJsonObjectReturn(Handler<String> handler);
+
   Map<String, JsonArray> methodWithMapJsonArrayReturn(Handler<String> handler);
+
+  Map<String, JsonArray> methodWithMapComplexJsonArrayReturn(Handler<String> handler);
 
   Map<String, String> methodWithNullMapReturn();
 
@@ -262,8 +292,12 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   List<JsonObject> methodWithListJsonObjectReturn();
 
+  List<JsonObject> methodWithListComplexJsonObjectReturn();
+
   List<JsonArray> methodWithListJsonArrayReturn();
 
+  List<JsonArray> methodWithListComplexJsonArrayReturn();
+  
   List<String> methodWithNullListReturn();
 
 
@@ -276,7 +310,11 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   Set<JsonObject> methodWithSetJsonObjectReturn();
 
+  Set<JsonObject> methodWithSetComplexJsonObjectReturn();
+
   Set<JsonArray> methodWithSetJsonArrayReturn();
+
+  Set<JsonArray> methodWithSetComplexJsonArrayReturn();
 
   Set<String> methodWithNullSetReturn();
 
