@@ -14,6 +14,8 @@ public class JsonObject  {
   public JsonObject getJsonObject(String name) { throw new UnsupportedOperationException(); }
   public String getString(String name) { throw new UnsupportedOperationException(); }
   public String getString(String name, String def) { throw new UnsupportedOperationException(); }
+  public JsonObject put(String fieldName, JsonObject value) { throw new UnsupportedOperationException(); }
+  public JsonObject put(String fieldName, JsonArray value) { throw new UnsupportedOperationException(); }
   public JsonObject put(String fieldName, String value) { throw new UnsupportedOperationException(); }
   public JsonObject put(String fieldName, Integer value) { throw new UnsupportedOperationException(); }
   public JsonObject put(String fieldName, Long value) { throw new UnsupportedOperationException(); }
