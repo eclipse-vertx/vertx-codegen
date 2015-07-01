@@ -6,5 +6,5 @@ import io.vertx.codegen.annotations.VertxGen;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @VertxGen
-public interface InterfaceWithMethodHavingGenericOverride extends GenericAbstractInterface<String> {
+public interface InterfaceExtendingGenericAbstractInterface extends GenericAbstractInterface<String> {
 }

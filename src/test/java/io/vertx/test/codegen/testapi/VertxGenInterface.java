@@ -6,7 +6,7 @@ import io.vertx.codegen.annotations.VertxGen;
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @VertxGen(concrete = false)
-public interface VertxGenInterface2 {
+public interface VertxGenInterface {
 
-  void juu(String str);
+  void bar(String str);
 }

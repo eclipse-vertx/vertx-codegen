@@ -20,4 +20,6 @@ public interface GenericAbstractInterface<T> {
 
   void daa(Handler<T> handler);
 
+  void collargol(T t);
+
 }

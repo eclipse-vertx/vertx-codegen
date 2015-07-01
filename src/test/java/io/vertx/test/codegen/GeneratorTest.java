@@ -35,8 +35,9 @@ import io.vertx.test.codegen.testapi.InterfaceWithDefaultMethod;
 import io.vertx.test.codegen.testapi.InterfaceWithGetterMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithIgnoredMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithInstanceMethods;
-import io.vertx.test.codegen.testapi.InterfaceWithMethodHavingGenericOverride;
+import io.vertx.test.codegen.testapi.InterfaceExtendingGenericAbstractInterface;
 import io.vertx.test.codegen.testapi.InterfaceWithMethodOverride;
+import io.vertx.test.codegen.testapi.InterfaceWithMethodOverrideParameterRenamed;
 import io.vertx.test.codegen.testapi.InterfaceWithNoMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithNoNotIgnoredMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithNonGenSuperType;
@@ -122,8 +123,7 @@ import io.vertx.test.codegen.testapi.SameSignatureMethod1;
 import io.vertx.test.codegen.testapi.SameSignatureMethod2;
 import io.vertx.test.codegen.testapi.VertxGenClass1;
 import io.vertx.test.codegen.testapi.VertxGenClass2;
-import io.vertx.test.codegen.testapi.VertxGenInterface1;
-import io.vertx.test.codegen.testapi.VertxGenInterface2;
+import io.vertx.test.codegen.testapi.VertxGenInterface;
 import io.vertx.test.codegen.testapi.fluent.AbstractInterfaceWithFluentMethods;
 import io.vertx.test.codegen.testapi.fluent.ConcreteInterfaceWithFluentMethods;
 import io.vertx.test.codegen.testapi.fluent.FluentMethodOverrideWithSuperType;
@@ -165,8 +165,7 @@ public class GeneratorTest {
   static final TypeInfo.Class GenericInterfaceInfo = (TypeInfo.Class) TypeInfo.create(GenericInterface.class);
   static final TypeInfo.Class VertxGenClass1Info = (TypeInfo.Class) TypeInfo.create(VertxGenClass1.class);
   static final TypeInfo.Class VertxGenClass2Info = (TypeInfo.Class) TypeInfo.create(VertxGenClass2.class);
-  static final TypeInfo.Class VertxGenInterface1Info = (TypeInfo.Class) TypeInfo.create(VertxGenInterface1.class);
-  static final TypeInfo.Class VertxGenInterface2Info = (TypeInfo.Class) TypeInfo.create(VertxGenInterface2.class);
+  static final TypeInfo.Class VertxGenInterfaceInfo = (TypeInfo.Class) TypeInfo.create(VertxGenInterface.class);
 
   public GeneratorTest() {
   }
@@ -1083,29 +1082,25 @@ public class GeneratorTest {
 
   @Test
   public void testSupertypes() throws Exception {
-    ClassModel gen = new Generator().generateClass(InterfaceWithSupertypes.class, VertxGenInterface1.class, VertxGenInterface2.class);
+    ClassModel gen = new Generator().generateClass(InterfaceWithSupertypes.class, VertxGenClass1.class, VertxGenInterface.class);
     assertEquals(InterfaceWithSupertypes.class.getName(), gen.getIfaceFQCN());
     assertEquals(InterfaceWithSupertypes.class.getSimpleName(), gen.getIfaceSimpleName());
-    assertEquals(3, gen.getReferencedTypes().size());
+    assertEquals(2, gen.getReferencedTypes().size());
     assertTrue(gen.getReferencedTypes().contains(VertxGenClass1Info));
-    assertTrue(gen.getReferencedTypes().contains(VertxGenInterface1Info));
-    assertTrue(gen.getReferencedTypes().contains(VertxGenInterface2Info));
-    assertEquals(3, gen.getSuperTypes().size());
-    assertTrue(gen.getSuperTypes().contains(TypeInfo.create(VertxGenClass1.class)));
-    assertTrue(gen.getSuperTypes().contains(TypeInfo.create(VertxGenInterface1.class)));
-    assertTrue(gen.getSuperTypes().contains(TypeInfo.create(VertxGenInterface2.class)));
+    assertTrue(gen.getReferencedTypes().contains(VertxGenInterfaceInfo));
+    assertEquals(2, gen.getSuperTypes().size());
+    assertTrue(gen.getSuperTypes().contains(VertxGenClass1Info));
+    assertTrue(gen.getSuperTypes().contains(VertxGenInterfaceInfo));
     assertEquals(1, gen.getConcreteSuperTypes().size());
-    assertTrue(gen.getConcreteSuperTypes().contains(TypeInfo.create(VertxGenClass1.class)));
-    assertEquals(2, gen.getAbstractSuperTypes().size());
-    assertTrue(gen.getAbstractSuperTypes().contains(TypeInfo.create(VertxGenInterface1.class)));
-    assertTrue(gen.getAbstractSuperTypes().contains(TypeInfo.create(VertxGenInterface2.class)));
+    assertTrue(gen.getConcreteSuperTypes().contains(VertxGenClass1Info));
+    assertEquals(1, gen.getAbstractSuperTypes().size());
+    assertTrue(gen.getAbstractSuperTypes().contains(VertxGenInterfaceInfo));
     List<MethodInfo> methods = gen.getMethods();
-    assertEquals(3, methods.size());
+    assertEquals(2, methods.size());
     Collections.sort(methods);
     Consumer<List<MethodInfo>> checker = (m) -> {
       checkMethod(methods.get(0), "bar", null, MethodKind.OTHER, "void", false, false, false, 1);
-      checkMethod(methods.get(1), "juu", null, MethodKind.OTHER, "void", false, false, false, 1);
-      checkMethod(methods.get(2), "quux", null, MethodKind.OTHER, "void", false, false, false, 1);
+      checkMethod(methods.get(1), "quux", null, MethodKind.OTHER, "void", false, false, false, 1);
     };
     checker.accept(methods);
   }
@@ -1256,38 +1251,49 @@ public class GeneratorTest {
 
   @Test
   public void testMethodOverride() throws Exception {
-    ClassModel model = new Generator().generateClass(InterfaceWithMethodOverride.class, VertxGenInterface1.class, VertxGenInterface2.class);
-    assertEquals(2, model.getMethods().size());
+    ClassModel model = new Generator().generateClass(InterfaceWithMethodOverride.class, VertxGenInterface.class);
+    assertEquals(1, model.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "bar", null, MethodKind.OTHER, "void", false, false, false, 1);
       assertEquals(set(
           TypeInfo.create(InterfaceWithMethodOverride.class),
-          TypeInfo.create(VertxGenInterface1.class)
+          TypeInfo.create(VertxGenInterface.class)
       ), methods.get(0).getOwnerTypes());
-      checkMethod(methods.get(1), "juu", null, MethodKind.OTHER, "void", false, false, false, 1);
-      assertEquals(set(
-          TypeInfo.create(InterfaceWithMethodOverride.class),
-          TypeInfo.create(VertxGenInterface2.class)
-      ), methods.get(1).getOwnerTypes());
     };
     checker.accept(model.getMethods());
     checkClassParam(model.getMethods().get(0).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
-    checkClassParam(model.getMethods().get(1).getParams().get(0), "str_renamed", String.class.getName(), ClassKind.STRING);
   }
 
   @Test
-  public void testInterfaceWithMethodHavingGenericOverride() throws Exception {
-    ClassModel model = new Generator().generateClass(InterfaceWithMethodHavingGenericOverride.class, GenericAbstractInterface.class);
-    assertEquals(4, model.getMethods().size());
+  public void testMethodOverrideParameterRenamed() throws Exception {
+    ClassModel model = new Generator().generateClass(InterfaceWithMethodOverrideParameterRenamed.class, VertxGenInterface.class);
+    assertEquals(1, model.getMethods().size());
+    Consumer<List<MethodInfo>> checker = (methods) -> {
+      checkMethod(methods.get(0), "bar", null, MethodKind.OTHER, "void", false, false, false, 1);
+      assertEquals(set(
+          TypeInfo.create(InterfaceWithMethodOverrideParameterRenamed.class),
+          TypeInfo.create(VertxGenInterface.class)
+      ), methods.get(0).getOwnerTypes());
+    };
+    checker.accept(model.getMethods());
+    checkClassParam(model.getMethods().get(0).getParams().get(0), "str_renamed", String.class.getName(), ClassKind.STRING);
+  }
+
+  @Test
+  public void testInterfaceExtendingGenericAbstractInterface() throws Exception {
+    ClassModel model = new Generator().generateClass(InterfaceExtendingGenericAbstractInterface.class, GenericAbstractInterface.class);
+    assertEquals(5, model.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "java.lang.String", false, false, false, 0);
       checkMethod(methods.get(1), "bar", null, MethodKind.OTHER, "java.util.List<java.lang.String>", false, false, false, 0);
       checkMethod(methods.get(2), "juu", null, MethodKind.FUTURE, "void", false, false, false, 1);
       checkMethod(methods.get(3), "daa", null, MethodKind.HANDLER, "void", false, false, false, 1);
+      checkMethod(methods.get(4), "collargol", null, MethodKind.OTHER, "void", false, false, false, 1);
     };
     checker.accept(model.getMethods());
     checkClassParam(model.getMethods().get(2).getParams().get(0), "handler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.String>>", ClassKind.HANDLER);
     checkClassParam(model.getMethods().get(3).getParams().get(0), "handler", "io.vertx.core.Handler<java.lang.String>", ClassKind.HANDLER);
+    checkClassParam(model.getMethods().get(4).getParams().get(0), "t", "java.lang.String", ClassKind.STRING);
   }
 
   @Test
