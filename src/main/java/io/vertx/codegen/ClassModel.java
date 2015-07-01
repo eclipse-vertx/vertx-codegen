@@ -595,15 +595,36 @@ public class ClassModel implements Model {
       }
     }
 
-    TypeInfo.Class ownerType = typeFactory.create(declaringElt.asType()).getRaw();
+    TypeInfo.Class type = typeFactory.create(declaringElt.asType()).getRaw();
 
-    // Check we don't hide another method
+    // The owner types of type method
+    Set<TypeInfo.Class> ownerTypes = new HashSet<>();
+    ownerTypes.add(type);
+
+    // Check overrides
+    for (DeclaredType ancestorType : Helper.resolveAncestorTypes(modelElt)) {
+      TypeElement ancestorElt = (TypeElement) ancestorType.asElement();
+      if (ancestorElt.getAnnotation(VertxGen.class) != null) {
+        elementUtils.getAllMembers(ancestorElt).
+            stream().
+            flatMap(Helper.FILTER_METHOD).
+            forEach(meth -> {
+              if (elementUtils.overrides(methodElt, meth, modelElt)) {
+                ownerTypes.add(typeFactory.create((DeclaredType) ancestorElt.asType()).getRaw());
+              }
+            });
+      }
+    }
+
+    // Check we don't hide another method, we don't check overrides but we are more
+    // interested by situations like diamond inheritance of the same method, in this case
+    // we see two methods with the same signature that don't override each other
     for (Map.Entry<ExecutableElement, MethodInfo> method : methods.entrySet()) {
       if (method.getValue().getName().equals(methodElt.getSimpleName().toString())) {
         ExecutableType t1 = (ExecutableType) method.getKey().asType();
         ExecutableType t2 = (ExecutableType) methodElt.asType();
         if (typeUtils.isSubsignature(t1, t2) && typeUtils.isSubsignature(t2, t1)) {
-          method.getValue().ownerTypes.add(ownerType);
+          method.getValue().ownerTypes.addAll(ownerTypes);
           return;
         }
       }
@@ -704,7 +725,7 @@ public class ClassModel implements Model {
       }
     }
 
-    MethodInfo methodInfo = createMethodInfo(ownerType, methodName, comment, doc, kind,
+    MethodInfo methodInfo = createMethodInfo(ownerTypes, methodName, comment, doc, kind,
         returnType, returnDesc, isFluent, isCacheReturn, mParams, methodElt, isStatic, typeParams, declaringElt);
     checkMethod(methodInfo);
     List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
@@ -718,12 +739,12 @@ public class ClassModel implements Model {
   }
 
   // This is a hook to allow a specific type of method to be created
-  protected MethodInfo createMethodInfo(TypeInfo.Class ownerType, String methodName, String comment, Doc doc, MethodKind kind, TypeInfo returnType,
+  protected MethodInfo createMethodInfo(Set<TypeInfo.Class> ownerTypes, String methodName, String comment, Doc doc, MethodKind kind, TypeInfo returnType,
                                         Text returnDescription,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
                                         ExecutableElement methodElt, boolean isStatic, ArrayList<TypeParamInfo.Method> typeParams,
                                         TypeElement declaringElt) {
-    return new MethodInfo(Collections.singleton(ownerType), methodName, kind, returnType, returnDescription,
+    return new MethodInfo(ownerTypes, methodName, kind, returnType, returnDescription,
       isFluent, isCacheReturn, mParams, comment, doc, isStatic, typeParams);
   }
 

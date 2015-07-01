@@ -123,7 +123,7 @@ public class ProxyModel extends ClassModel {
   }
 
   @Override
-  protected MethodInfo createMethodInfo(TypeInfo.Class ownerType, String methodName, String comment, Doc doc, MethodKind kind, TypeInfo returnType,
+  protected MethodInfo createMethodInfo(Set<TypeInfo.Class> ownerTypes, String methodName, String comment, Doc doc, MethodKind kind, TypeInfo returnType,
                                         Text returnDescription,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
                                         ExecutableElement methodElt, boolean isStatic, ArrayList<TypeParamInfo.Method> typeParams,
@@ -146,7 +146,7 @@ public class ProxyModel extends ClassModel {
             "Handler<AsyncResult<Void>> instead of " + type);
       }
     }
-    return new ProxyMethodInfo(Collections.singleton(ownerType), methodName, kind, returnType, returnDescription,
+    return new ProxyMethodInfo(ownerTypes, methodName, kind, returnType, returnDescription,
       isFluent, isCacheReturn, mParams, comment, doc, isStatic, typeParams, isProxyIgnore,
       isProxyClose);
   }

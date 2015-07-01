@@ -1260,9 +1260,15 @@ public class GeneratorTest {
     assertEquals(2, model.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "bar", null, MethodKind.OTHER, "void", false, false, false, 1);
-      assertEquals(set(TypeInfo.create(InterfaceWithMethodOverride.class)), methods.get(0).getOwnerTypes());
+      assertEquals(set(
+          TypeInfo.create(InterfaceWithMethodOverride.class),
+          TypeInfo.create(VertxGenInterface1.class)
+      ), methods.get(0).getOwnerTypes());
       checkMethod(methods.get(1), "juu", null, MethodKind.OTHER, "void", false, false, false, 1);
-      assertEquals(set(TypeInfo.create(InterfaceWithMethodOverride.class)), methods.get(1).getOwnerTypes());
+      assertEquals(set(
+          TypeInfo.create(InterfaceWithMethodOverride.class),
+          TypeInfo.create(VertxGenInterface2.class)
+      ), methods.get(1).getOwnerTypes());
     };
     checker.accept(model.getMethods());
     checkClassParam(model.getMethods().get(0).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
@@ -1290,7 +1296,10 @@ public class GeneratorTest {
     assertEquals(1, model.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument3", false, false, false, 0);
-      assertEquals(set(TypeInfo.create(InterfaceWithTypeVariableArgument2.class)), methods.get(0).getOwnerTypes());
+      assertEquals(set(
+          TypeInfo.create(InterfaceWithTypeVariableArgument1.class),
+          TypeInfo.create(InterfaceWithTypeVariableArgument2.class)
+      ), methods.get(0).getOwnerTypes());
     };
     checker.accept(model.getMethods());
   }
@@ -1312,7 +1321,7 @@ public class GeneratorTest {
     assertEquals(1, model.getMethods().size());
     Consumer<List<MethodInfo>> checker = (methods) -> {
       checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "U", false, false, false, 0);
-      assertEquals(set(TypeInfo.create(DiamondMethod2.class), TypeInfo.create(DiamondMethod3.class)), methods.get(0).getOwnerTypes());
+      assertEquals(set(TypeInfo.create(DiamondMethod1.class), TypeInfo.create(DiamondMethod2.class), TypeInfo.create(DiamondMethod3.class)), methods.get(0).getOwnerTypes());
     };
     checker.accept(model.getMethods());
   }
