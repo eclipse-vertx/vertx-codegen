@@ -32,6 +32,7 @@ import io.vertx.test.codegen.testapi.GenericInterfaceWithUpperBound;
 import io.vertx.test.codegen.testapi.InterfaceWithCacheReturnMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithComments;
 import io.vertx.test.codegen.testapi.InterfaceWithDefaultMethod;
+import io.vertx.test.codegen.testapi.InterfaceWithGenericMethodOverride;
 import io.vertx.test.codegen.testapi.InterfaceWithGetterMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithIgnoredMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithInstanceMethods;
@@ -1277,6 +1278,29 @@ public class GeneratorTest {
     };
     checker.accept(model.getMethods());
     checkClassParam(model.getMethods().get(0).getParams().get(0), "str_renamed", String.class.getName(), ClassKind.STRING);
+  }
+
+  @Test
+  public void testInterfaceWithGenericMethodOverride() throws Exception {
+    ClassModel model = new Generator().generateClass(InterfaceWithGenericMethodOverride.class, GenericAbstractInterface.class);
+    assertEquals(5, model.getMethods().size());
+    Consumer<List<MethodInfo>> checker = (methods) -> {
+      checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "java.lang.String", false, false, false, 0);
+      checkMethod(methods.get(1), "bar", null, MethodKind.OTHER, "java.util.List<java.lang.String>", false, false, false, 0);
+      checkMethod(methods.get(2), "juu", null, MethodKind.FUTURE, "void", false, false, false, 1);
+      checkMethod(methods.get(3), "daa", null, MethodKind.HANDLER, "void", false, false, false, 1);
+      checkMethod(methods.get(4), "collargol", null, MethodKind.OTHER, "void", false, false, false, 1);
+      for (int i = 0;i < 5;i++) {
+        assertEquals(set(
+            TypeInfo.create(InterfaceWithGenericMethodOverride.class),
+            TypeInfo.create(GenericAbstractInterface.class)
+        ), methods.get(i).getOwnerTypes());
+      }
+    };
+    checker.accept(model.getMethods());
+    checkClassParam(model.getMethods().get(2).getParams().get(0), "handler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.String>>", ClassKind.HANDLER);
+    checkClassParam(model.getMethods().get(3).getParams().get(0), "handler", "io.vertx.core.Handler<java.lang.String>", ClassKind.HANDLER);
+    checkClassParam(model.getMethods().get(4).getParams().get(0), "t", "java.lang.String", ClassKind.STRING);
   }
 
   @Test
