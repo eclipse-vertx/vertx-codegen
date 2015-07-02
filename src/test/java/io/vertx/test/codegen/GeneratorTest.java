@@ -148,9 +148,13 @@ import io.vertx.test.codegen.testapi.streams.InterfaceSubtypingReadStream;
 import io.vertx.test.codegen.testapi.streams.ReadStreamWithParameterizedTypeArg;
 import org.junit.Test;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -381,15 +385,15 @@ public class GeneratorTest {
     MethodInfo method = model.getMethods().get(0);
     checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 9);
     List<ParamInfo> params = method.getParams();
-    checkParam(params.get(0), "b", "byte");
-    checkParam(params.get(1), "s", "short");
-    checkParam(params.get(2), "i", "int");
-    checkParam(params.get(3), "l", "long");
-    checkParam(params.get(4), "f", "float");
-    checkParam(params.get(5), "d", "double");
-    checkParam(params.get(6), "bool", "boolean");
-    checkParam(params.get(7), "ch", "char");
-    checkClassParam(params.get(8), "str", "java.lang.String", ClassKind.STRING);
+    basicParamCheck(params.get(0), "b", "byte");
+    basicParamCheck(params.get(1), "s", "short");
+    basicParamCheck(params.get(2), "i", "int");
+    basicParamCheck(params.get(3), "l", "long");
+    basicParamCheck(params.get(4), "f", "float");
+    basicParamCheck(params.get(5), "d", "double");
+    basicParamCheck(params.get(6), "bool", "boolean");
+    basicParamCheck(params.get(7), "ch", "char");
+    new ParamCheck<String>(params.get(8), "str") {};
     assertEquals("java.lang.Byte", ((TypeInfo.Primitive)params.get(0).getType()).getBoxed().getName());
     assertEquals("java.lang.Short", ((TypeInfo.Primitive)params.get(1).getType()).getBoxed().getName());
     assertEquals("java.lang.Integer", ((TypeInfo.Primitive)params.get(2).getType()).getBoxed().getName());
@@ -412,15 +416,15 @@ public class GeneratorTest {
     MethodInfo method = model.getMethods().get(0);
     checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 9);
     List<ParamInfo> params = method.getParams();
-    checkClassParam(params.get(0), "b", "java.lang.Byte", ClassKind.BOXED_PRIMITIVE);
-    checkClassParam(params.get(1), "s", "java.lang.Short", ClassKind.BOXED_PRIMITIVE);
-    checkClassParam(params.get(2), "i", "java.lang.Integer", ClassKind.BOXED_PRIMITIVE);
-    checkClassParam(params.get(3), "l", "java.lang.Long", ClassKind.BOXED_PRIMITIVE);
-    checkClassParam(params.get(4), "f", "java.lang.Float", ClassKind.BOXED_PRIMITIVE);
-    checkClassParam(params.get(5), "d", "java.lang.Double", ClassKind.BOXED_PRIMITIVE);
-    checkClassParam(params.get(6), "bool", "java.lang.Boolean", ClassKind.BOXED_PRIMITIVE);
-    checkClassParam(params.get(7), "ch", "java.lang.Character", ClassKind.BOXED_PRIMITIVE);
-    checkClassParam(params.get(8), "str", "java.lang.String", ClassKind.STRING);
+    new ParamCheck<Byte>(params.get(0), "b") {};
+    new ParamCheck<Short>(params.get(1), "s") {};
+    new ParamCheck<Integer>(params.get(2), "i") {};
+    new ParamCheck<Long>(params.get(3), "l") {};
+    new ParamCheck<Float>(params.get(4), "f") {};
+    new ParamCheck<Double>(params.get(5), "d") {};
+    new ParamCheck<Boolean>(params.get(6), "bool") {};
+    new ParamCheck<Character>(params.get(7), "ch") {};
+    new ParamCheck<String>(params.get(8), "str") {};
   }
 
   @Test
@@ -458,12 +462,12 @@ public class GeneratorTest {
     MethodInfo method = model.getMethods().get(0);
     checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 6);
     List<ParamInfo> params = method.getParams();
-    checkClassParam(params.get(0), "listString", "java.util.List<java.lang.String>", ClassKind.LIST);
-    checkClassParam(params.get(1), "listLong", "java.util.List<java.lang.Long>", ClassKind.LIST);
-    checkClassParam(params.get(2), "listJsonObject", "java.util.List<io.vertx.core.json.JsonObject>", ClassKind.LIST);
-    checkClassParam(params.get(3), "listJsonArray", "java.util.List<io.vertx.core.json.JsonArray>", ClassKind.LIST);
-    checkClassParam(params.get(4), "listVertxGen", "java.util.List<" + VertxGenClass1.class.getName() + ">", ClassKind.LIST);
-    checkClassParam(params.get(5), "listDataObject", "java.util.List<" + TestDataObject.class.getName() + ">", ClassKind.LIST);
+    new ParamCheck<List<String>>(params.get(0), "listString") {};
+    new ParamCheck<List<Long>>(params.get(1), "listLong") {};
+    new ParamCheck<List<JsonObject>>(params.get(2), "listJsonObject") {};
+    new ParamCheck<List<JsonArray>>(params.get(3), "listJsonArray") {};
+    new ParamCheck<List<VertxGenClass1>>(params.get(4), "listVertxGen") {};
+    new ParamCheck<List<TestDataObject>>(params.get(5), "listDataObject") {};
   }
 
   @Test
@@ -480,12 +484,12 @@ public class GeneratorTest {
     MethodInfo method = model.getMethods().get(0);
     checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 6);
     List<ParamInfo> params = method.getParams();
-    checkClassParam(params.get(0), "setString", "java.util.Set<java.lang.String>", ClassKind.SET);
-    checkClassParam(params.get(1), "setLong", "java.util.Set<java.lang.Long>", ClassKind.SET);
-    checkClassParam(params.get(2), "setJsonObject", "java.util.Set<io.vertx.core.json.JsonObject>", ClassKind.SET);
-    checkClassParam(params.get(3), "setJsonArray", "java.util.Set<io.vertx.core.json.JsonArray>", ClassKind.SET);
-    checkClassParam(params.get(4), "setVertxGen", "java.util.Set<" + VertxGenClass1.class.getName() + ">", ClassKind.SET);
-    checkClassParam(params.get(5), "setDataObject", "java.util.Set<" + TestDataObject.class.getName() + ">", ClassKind.SET);
+    new ParamCheck<Set<String>>(params.get(0), "setString") {};
+    new ParamCheck<Set<Long>>(params.get(1), "setLong") {};
+    new ParamCheck<Set<JsonObject>>(params.get(2), "setJsonObject") {};
+    new ParamCheck<Set<JsonArray>>(params.get(3), "setJsonArray") {};
+    new ParamCheck<Set<VertxGenClass1>>(params.get(4), "setVertxGen") {};
+    new ParamCheck<Set<TestDataObject>>(params.get(5), "setDataObject") {};
   }
 
   @Test
@@ -502,11 +506,11 @@ public class GeneratorTest {
     MethodInfo method = model.getMethods().get(0);
     checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 5);
     List<ParamInfo> params = method.getParams();
-    checkClassParam(params.get(0), "mapString", "java.util.Map<java.lang.String,java.lang.String>", ClassKind.MAP);
-    checkClassParam(params.get(1), "mapLong", "java.util.Map<java.lang.String,java.lang.Long>", ClassKind.MAP);
-    checkClassParam(params.get(2), "mapJsonObject", "java.util.Map<java.lang.String,io.vertx.core.json.JsonObject>", ClassKind.MAP);
-    checkClassParam(params.get(3), "mapJsonArray", "java.util.Map<java.lang.String,io.vertx.core.json.JsonArray>", ClassKind.MAP);
-    checkClassParam(params.get(4), "mapVertxGen", "java.util.Map<java.lang.String," + VertxGenClass1.class.getName() + ">", ClassKind.MAP);
+    new ParamCheck<Map<String, String>>(params.get(0), "mapString") {};
+    new ParamCheck<Map<String, Long>>(params.get(1), "mapLong") {};
+    new ParamCheck<Map<String, JsonObject>>(params.get(2), "mapJsonObject") {};
+    new ParamCheck<Map<String, JsonArray>>(params.get(3), "mapJsonArray") {};
+    new ParamCheck<Map<String, VertxGenClass1>>(params.get(4), "mapVertxGen") {};
   }
 
   @Test
@@ -524,44 +528,44 @@ public class GeneratorTest {
     MethodInfo method = model.getMethods().get(0);
     checkMethod(method, methodName, null, MethodKind.HANDLER, "void", false, false, false, 38);
     List<ParamInfo> params = method.getParams();
-    checkClassParam(params.get(0), "byteHandler", "io.vertx.core.Handler<java.lang.Byte>", ClassKind.HANDLER);
-    checkClassParam(params.get(1), "shortHandler", "io.vertx.core.Handler<java.lang.Short>", ClassKind.HANDLER);
-    checkClassParam(params.get(2), "intHandler", "io.vertx.core.Handler<java.lang.Integer>", ClassKind.HANDLER);
-    checkClassParam(params.get(3), "longHandler", "io.vertx.core.Handler<java.lang.Long>", ClassKind.HANDLER);
-    checkClassParam(params.get(4), "floatHandler", "io.vertx.core.Handler<java.lang.Float>", ClassKind.HANDLER);
-    checkClassParam(params.get(5), "doubleHandler", "io.vertx.core.Handler<java.lang.Double>", ClassKind.HANDLER);
-    checkClassParam(params.get(6), "booleanHandler", "io.vertx.core.Handler<java.lang.Boolean>", ClassKind.HANDLER);
-    checkClassParam(params.get(7), "charHandler", "io.vertx.core.Handler<java.lang.Character>", ClassKind.HANDLER);
-    checkClassParam(params.get(8), "strHandler", "io.vertx.core.Handler<java.lang.String>", ClassKind.HANDLER);
-    checkClassParam(params.get(9), "gen1Handler", "io.vertx.core.Handler<" + VertxGenClass1Info + ">", ClassKind.HANDLER);
-    checkClassParam(params.get(10), "gen2Handler", "io.vertx.core.Handler<" + VertxGenClass2.class.getName() + ">", ClassKind.HANDLER);
-    checkClassParam(params.get(11), "listByteHandler", "io.vertx.core.Handler<java.util.List<java.lang.Byte>>", ClassKind.HANDLER);
-    checkClassParam(params.get(12), "listShortHandler", "io.vertx.core.Handler<java.util.List<java.lang.Short>>", ClassKind.HANDLER);
-    checkClassParam(params.get(13), "listIntHandler", "io.vertx.core.Handler<java.util.List<java.lang.Integer>>", ClassKind.HANDLER);
-    checkClassParam(params.get(14), "listLongHandler", "io.vertx.core.Handler<java.util.List<java.lang.Long>>", ClassKind.HANDLER);
-    checkClassParam(params.get(15), "listFloatHandler", "io.vertx.core.Handler<java.util.List<java.lang.Float>>", ClassKind.HANDLER);
-    checkClassParam(params.get(16), "listDoubleHandler", "io.vertx.core.Handler<java.util.List<java.lang.Double>>", ClassKind.HANDLER);
-    checkClassParam(params.get(17), "listBooleanHandler", "io.vertx.core.Handler<java.util.List<java.lang.Boolean>>", ClassKind.HANDLER);
-    checkClassParam(params.get(18), "listCharHandler", "io.vertx.core.Handler<java.util.List<java.lang.Character>>", ClassKind.HANDLER);
-    checkClassParam(params.get(19), "listStrHandler", "io.vertx.core.Handler<java.util.List<java.lang.String>>", ClassKind.HANDLER);
-    checkClassParam(params.get(20), "listVertxGenHandler", "io.vertx.core.Handler<java.util.List<" + VertxGenClass1Info + ">>", ClassKind.HANDLER);
-    checkClassParam(params.get(21), "listJsonObjectHandler", "io.vertx.core.Handler<java.util.List<" + JsonObject.class.getName() + ">>", ClassKind.HANDLER);
-    checkClassParam(params.get(22), "listJsonArrayHandler", "io.vertx.core.Handler<java.util.List<" + JsonArray.class.getName() + ">>", ClassKind.HANDLER);
-    checkClassParam(params.get(23), "setByteHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Byte>>", ClassKind.HANDLER);
-    checkClassParam(params.get(24), "setShortHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Short>>", ClassKind.HANDLER);
-    checkClassParam(params.get(25), "setIntHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Integer>>", ClassKind.HANDLER);
-    checkClassParam(params.get(26), "setLongHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Long>>", ClassKind.HANDLER);
-    checkClassParam(params.get(27), "setFloatHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Float>>", ClassKind.HANDLER);
-    checkClassParam(params.get(28), "setDoubleHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Double>>", ClassKind.HANDLER);
-    checkClassParam(params.get(29), "setBooleanHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Boolean>>", ClassKind.HANDLER);
-    checkClassParam(params.get(30), "setCharHandler", "io.vertx.core.Handler<java.util.Set<java.lang.Character>>", ClassKind.HANDLER);
-    checkClassParam(params.get(31), "setStrHandler", "io.vertx.core.Handler<java.util.Set<java.lang.String>>", ClassKind.HANDLER);
-    checkClassParam(params.get(32), "setVertxGenHandler", "io.vertx.core.Handler<java.util.Set<" + VertxGenClass1Info + ">>", ClassKind.HANDLER);
-    checkClassParam(params.get(33), "setJsonObjectHandler", "io.vertx.core.Handler<java.util.Set<" + JsonObject.class.getName() + ">>", ClassKind.HANDLER);
-    checkClassParam(params.get(34), "setJsonArrayHandler", "io.vertx.core.Handler<java.util.Set<" + JsonArray.class.getName() + ">>", ClassKind.HANDLER);
-    checkClassParam(params.get(35), "voidHandler", "io.vertx.core.Handler<java.lang.Void>", ClassKind.HANDLER);
-    checkClassParam(params.get(36), "throwableHandler", "io.vertx.core.Handler<java.lang.Throwable>", ClassKind.HANDLER);
-    checkClassParam(params.get(37), "dataObjectHandler", "io.vertx.core.Handler<" + TestDataObject.class.getName() + ">", ClassKind.HANDLER);
+    new ParamCheck<Handler<Byte>>(params.get(0), "byteHandler"){};
+    new ParamCheck<Handler<Short>>(params.get(1), "shortHandler"){};
+    new ParamCheck<Handler<Integer>>(params.get(2), "intHandler"){};
+    new ParamCheck<Handler<Long>>(params.get(3), "longHandler"){};
+    new ParamCheck<Handler<Float>>(params.get(4), "floatHandler"){};
+    new ParamCheck<Handler<Double>>(params.get(5), "doubleHandler"){};
+    new ParamCheck<Handler<Boolean>>(params.get(6), "booleanHandler"){};
+    new ParamCheck<Handler<Character>>(params.get(7), "charHandler"){};
+    new ParamCheck<Handler<String>>(params.get(8), "strHandler"){};
+    new ParamCheck<Handler<VertxGenClass1>>(params.get(9), "gen1Handler"){};
+    new ParamCheck<Handler<VertxGenClass2>>(params.get(10), "gen2Handler"){};
+    new ParamCheck<Handler<List<Byte>>>(params.get(11), "listByteHandler"){};
+    new ParamCheck<Handler<List<Short>>>(params.get(12), "listShortHandler"){};
+    new ParamCheck<Handler<List<Integer>>>(params.get(13), "listIntHandler"){};
+    new ParamCheck<Handler<List<Long>>>(params.get(14), "listLongHandler"){};
+    new ParamCheck<Handler<List<Float>>>(params.get(15), "listFloatHandler"){};
+    new ParamCheck<Handler<List<Double>>>(params.get(16), "listDoubleHandler"){};
+    new ParamCheck<Handler<List<Boolean>>>(params.get(17), "listBooleanHandler"){};
+    new ParamCheck<Handler<List<Character>>>(params.get(18), "listCharHandler"){};
+    new ParamCheck<Handler<List<String>>>(params.get(19), "listStrHandler"){};
+    new ParamCheck<Handler<List<VertxGenClass1>>>(params.get(20), "listVertxGenHandler"){};
+    new ParamCheck<Handler<List<JsonObject>>>(params.get(21), "listJsonObjectHandler"){};
+    new ParamCheck<Handler<List<JsonArray>>>(params.get(22), "listJsonArrayHandler"){};
+    new ParamCheck<Handler<Set<Byte>>>(params.get(23), "setByteHandler"){};
+    new ParamCheck<Handler<Set<Short>>>(params.get(24), "setShortHandler"){};
+    new ParamCheck<Handler<Set<Integer>>>(params.get(25), "setIntHandler"){};
+    new ParamCheck<Handler<Set<Long>>>(params.get(26), "setLongHandler"){};
+    new ParamCheck<Handler<Set<Float>>>(params.get(27), "setFloatHandler"){};
+    new ParamCheck<Handler<Set<Double>>>(params.get(28), "setDoubleHandler"){};
+    new ParamCheck<Handler<Set<Boolean>>>(params.get(29), "setBooleanHandler"){};
+    new ParamCheck<Handler<Set<Character>>>(params.get(30), "setCharHandler"){};
+    new ParamCheck<Handler<Set<String>>>(params.get(31), "setStrHandler"){};
+    new ParamCheck<Handler<Set<VertxGenClass1>>>(params.get(32), "setVertxGenHandler"){};
+    new ParamCheck<Handler<Set<JsonObject>>>(params.get(33), "setJsonObjectHandler"){};
+    new ParamCheck<Handler<Set<JsonArray>>>(params.get(34), "setJsonArrayHandler"){};
+    new ParamCheck<Handler<Void>>(params.get(35), "voidHandler"){};
+    new ParamCheck<Handler<Throwable>>(params.get(36), "throwableHandler"){};
+    new ParamCheck<Handler<TestDataObject>>(params.get(37), "dataObjectHandler"){};
   }
 
   @Test
@@ -579,6 +583,8 @@ public class GeneratorTest {
     MethodInfo method = model.getMethods().get(0);
     checkMethod(method, methodName, null, MethodKind.FUTURE, "void", false, false, false, 39);
     List<ParamInfo> params = method.getParams();
+
+/*
     checkClassParam(params.get(0), "byteHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Byte>>", ClassKind.HANDLER);
     checkClassParam(params.get(1), "shortHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Short>>", ClassKind.HANDLER);
     checkClassParam(params.get(2), "intHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Integer>>", ClassKind.HANDLER);
@@ -615,9 +621,46 @@ public class GeneratorTest {
     checkClassParam(params.get(33), "setJsonObjectHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<" + JsonObject.class.getName() + ">>>", ClassKind.HANDLER);
     checkClassParam(params.get(34), "setJsonArrayHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<" + JsonArray.class.getName() + ">>>", ClassKind.HANDLER);
     checkClassParam(params.get(35), "voidHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.Void>>", ClassKind.HANDLER);
-    checkClassParam(params.get(36), "dataObjectHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<" + TestDataObject.class.getName() + ">>", ClassKind.HANDLER);
-    checkClassParam(params.get(37), "listDataObjectHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.List<" + TestDataObject.class.getName() + ">>>", ClassKind.HANDLER);
-    checkClassParam(params.get(38), "setDataObjectHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.util.Set<" + TestDataObject.class.getName() + ">>>", ClassKind.HANDLER);
+*/
+    new ParamCheck<Handler<AsyncResult<Byte>>>(params.get(0), "byteHandler"){};
+    new ParamCheck<Handler<AsyncResult<Short>>>(params.get(1), "shortHandler"){};
+    new ParamCheck<Handler<AsyncResult<Integer>>>(params.get(2), "intHandler"){};
+    new ParamCheck<Handler<AsyncResult<Long>>>(params.get(3), "longHandler"){};
+    new ParamCheck<Handler<AsyncResult<Float>>>(params.get(4), "floatHandler"){};
+    new ParamCheck<Handler<AsyncResult<Double>>>(params.get(5), "doubleHandler"){};
+    new ParamCheck<Handler<AsyncResult<Boolean>>>(params.get(6), "booleanHandler"){};
+    new ParamCheck<Handler<AsyncResult<Character>>>(params.get(7), "charHandler"){};
+    new ParamCheck<Handler<AsyncResult<String>>>(params.get(8), "strHandler"){};
+    new ParamCheck<Handler<AsyncResult<VertxGenClass1>>>(params.get(9), "gen1Handler"){};
+    new ParamCheck<Handler<AsyncResult<VertxGenClass2>>>(params.get(10), "gen2Handler"){};
+    new ParamCheck<Handler<AsyncResult<List<Byte>>>>(params.get(11), "listByteHandler"){};
+    new ParamCheck<Handler<AsyncResult<List<Short>>>>(params.get(12), "listShortHandler"){};
+    new ParamCheck<Handler<AsyncResult<List<Integer>>>>(params.get(13), "listIntHandler"){};
+    new ParamCheck<Handler<AsyncResult<List<Long>>>>(params.get(14), "listLongHandler"){};
+    new ParamCheck<Handler<AsyncResult<List<Float>>>>(params.get(15), "listFloatHandler"){};
+    new ParamCheck<Handler<AsyncResult<List<Double>>>>(params.get(16), "listDoubleHandler"){};
+    new ParamCheck<Handler<AsyncResult<List<Boolean>>>>(params.get(17), "listBooleanHandler"){};
+    new ParamCheck<Handler<AsyncResult<List<Character>>>>(params.get(18), "listCharHandler"){};
+    new ParamCheck<Handler<AsyncResult<List<String>>>>(params.get(19), "listStrHandler"){};
+    new ParamCheck<Handler<AsyncResult<List<VertxGenClass1>>>>(params.get(20), "listVertxGenHandler"){};
+    new ParamCheck<Handler<AsyncResult<List<JsonObject>>>>(params.get(21), "listJsonObjectHandler"){};
+    new ParamCheck<Handler<AsyncResult<List<JsonArray>>>>(params.get(22), "listJsonArrayHandler"){};
+    new ParamCheck<Handler<AsyncResult<Set<Byte>>>>(params.get(23), "setByteHandler"){};
+    new ParamCheck<Handler<AsyncResult<Set<Short>>>>(params.get(24), "setShortHandler"){};
+    new ParamCheck<Handler<AsyncResult<Set<Integer>>>>(params.get(25), "setIntHandler"){};
+    new ParamCheck<Handler<AsyncResult<Set<Long>>>>(params.get(26), "setLongHandler"){};
+    new ParamCheck<Handler<AsyncResult<Set<Float>>>>(params.get(27), "setFloatHandler"){};
+    new ParamCheck<Handler<AsyncResult<Set<Double>>>>(params.get(28), "setDoubleHandler"){};
+    new ParamCheck<Handler<AsyncResult<Set<Boolean>>>>(params.get(29), "setBooleanHandler"){};
+    new ParamCheck<Handler<AsyncResult<Set<Character>>>>(params.get(30), "setCharHandler"){};
+    new ParamCheck<Handler<AsyncResult<Set<String>>>>(params.get(31), "setStrHandler"){};
+    new ParamCheck<Handler<AsyncResult<Set<VertxGenClass1>>>>(params.get(32), "setVertxGenHandler"){};
+    new ParamCheck<Handler<AsyncResult<Set<JsonObject>>>>(params.get(33), "setJsonObjectHandler"){};
+    new ParamCheck<Handler<AsyncResult<Set<JsonArray>>>>(params.get(34), "setJsonArrayHandler"){};
+    new ParamCheck<Handler<AsyncResult<Void>>>(params.get(35), "voidHandler"){};
+    new ParamCheck<Handler<AsyncResult<TestDataObject>>>(params.get(36), "dataObjectHandler"){};
+    new ParamCheck<Handler<AsyncResult<List<TestDataObject>>>>(params.get(37), "listDataObjectHandler"){};
+    new ParamCheck<Handler<AsyncResult<Set<TestDataObject>>>>(params.get(38), "setDataObjectHandler"){};
   }
 
   @Test
@@ -635,9 +678,9 @@ public class GeneratorTest {
     MethodInfo method = model.getMethods().get(0);
     checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 3);
     List<ParamInfo> params = method.getParams();
-    checkClassParam(params.get(0), "str", "java.lang.String", ClassKind.STRING);
-    checkClassParam(params.get(1), "myParam1", VertxGenClass1.class.getName(), ClassKind.API);
-    checkClassParam(params.get(2), "myParam2", VertxGenClass2.class.getName(), ClassKind.API);
+    new ParamCheck<String>(params.get(0), "str"){};
+    new ParamCheck<VertxGenClass1>(params.get(1), "myParam1"){};
+    new ParamCheck<VertxGenClass2>(params.get(2), "myParam2"){};
   }
 
   @Test
@@ -653,7 +696,7 @@ public class GeneratorTest {
     MethodInfo method = model.getMethods().get(0);
     checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 1);
     List<ParamInfo> params = method.getParams();
-    checkClassParam(params.get(0), "obj", "java.lang.Object", ClassKind.OBJECT);
+    new ParamCheck<Object>(params.get(0), "obj"){};
   }
 
   @Test
@@ -669,7 +712,7 @@ public class GeneratorTest {
     MethodInfo method = model.getMethods().get(0);
     checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 1);
     List<ParamInfo> params = method.getParams();
-    checkClassParam(params.get(0), "weirdo", TestEnum.class.getName(), ClassKind.ENUM);
+    new ParamCheck<TestEnum>(params.get(0), "weirdo"){};
     TypeInfo.Class.Enum enumType = (TypeInfo.Class.Enum) params.get(0).getType();
     assertEquals(Arrays.asList("TIM", "JULIEN", "NICK", "WESTON"), enumType.getValues());
   }
@@ -715,7 +758,7 @@ public class GeneratorTest {
     MethodInfo method = model.getMethods().get(0);
     checkMethod(method, methodName, null, MethodKind.OTHER, "void", false, false, false, 1);
     List<ParamInfo> params = method.getParams();
-    checkClassParam(params.get(0), "dataObject", NetServerOptions.class.getName(), ClassKind.DATA_OBJECT);
+    new ParamCheck<NetServerOptions>(params.get(0), "dataObject"){};
   }
 
   // Valid returns
@@ -731,19 +774,19 @@ public class GeneratorTest {
     assertEquals(2, methods.size());
     TypeInfo.Variable t = (TypeInfo.Variable) ((TypeInfo.Parameterized) model.getType()).getArgs().get(0);
     checkMethod(methods.get(0), "methodWithClassTypeParam", null, MethodKind.OTHER, "T", false, false, false, 3);
-    List<ParamInfo> params = methods.get(0).getParams();
-    checkClassParam(params.get(0), "t", "T", ClassKind.OBJECT);
-    assertTrue(params.get(0).getType() instanceof TypeInfo.Variable);
-    assertEquals(t, params.get(0).getType());
-    checkClassParam(params.get(1), "handler", "io.vertx.core.Handler<T>", ClassKind.HANDLER);
-    checkClassParam(params.get(2), "asyncResultHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<T>>", ClassKind.HANDLER);
+    List<ParamInfo> params1 = methods.get(0).getParams();
+    class Check1<T> extends ParamCheck<T> { public Check1() { super(params1.get(0), "t"); } }
+    assertTrue(params1.get(0).getType() instanceof TypeInfo.Variable);
+    assertEquals(t, params1.get(0).getType());
+    class Check2<T> extends ParamCheck<Handler<T>> { public Check2() { super(params1.get(1), "handler"); } }
+    class Check3<T> extends ParamCheck<Handler<AsyncResult<T>>> { public Check3() { super(params1.get(2), "asyncResultHandler"); } }
     checkMethod(methods.get(1), "someGenericMethod", null, MethodKind.OTHER, "io.vertx.test.codegen.testapi.GenericInterface<R>", false, false, false, 3);
-    params = methods.get(1).getParams();
-    checkClassParam(params.get(0), "r", "R", ClassKind.OBJECT);
-    assertTrue(params.get(0).getType() instanceof TypeInfo.Variable);
-    assertEquals(methods.get(1).getTypeParams().get(0), ((TypeInfo.Variable) params.get(0).getType()).getParam());
-    checkClassParam(params.get(1), "handler", "io.vertx.core.Handler<R>", ClassKind.HANDLER);
-    checkClassParam(params.get(2), "asyncResultHandler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<R>>", ClassKind.HANDLER);
+    List<ParamInfo> params2 = methods.get(1).getParams();
+    class Check4<R> extends ParamCheck<R> { public Check4() { super(params2.get(0), "r"); } }
+    assertTrue(params2.get(0).getType() instanceof TypeInfo.Variable);
+    assertEquals(methods.get(1).getTypeParams().get(0), ((TypeInfo.Variable) params2.get(0).getType()).getParam());
+    class Check5<R> extends ParamCheck<Handler<R>> { public Check5() { super(params2.get(0), "handler"); } }
+    class Check6<R> extends ParamCheck<Handler<AsyncResult<R>>> { public Check6() { super(params2.get(0), "asyncResultHandler"); } }
   }
 
 
@@ -1034,41 +1077,46 @@ public class GeneratorTest {
     assertTrue(model.getReferencedTypes().contains(VertxGenClass1Info));
     assertTrue(model.getReferencedTypes().contains(VertxGenClass2Info));
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(8, model.getMethods().size());
-    checkMethod(model.getMethods().get(0), "foo", null, MethodKind.OTHER, "void", false, false, false, 1);
-    checkClassParam(model.getMethods().get(0).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
+    List<MethodInfo> methods = model.getMethods();
+    assertEquals(8, methods.size());
+    checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "void", false, false, false, 1);
+    new ParamCheck<String>(methods.get(0).getParams().get(0), "str"){};
 
-    checkMethod(model.getMethods().get(1), "foo", null, MethodKind.HANDLER, "void", false, false, false, 2);
-    checkClassParam(model.getMethods().get(1).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
-    checkClassParam(model.getMethods().get(1).getParams().get(1), "handler", "io.vertx.core.Handler<" + VertxGenClass1Info + ">", ClassKind.HANDLER);
+    checkMethod(methods.get(1), "foo", null, MethodKind.HANDLER, "void", false, false, false, 2);
+    new ParamCheck<String>(methods.get(1).getParams().get(0), "str"){};
+    new ParamCheck<Handler<VertxGenClass1>>(methods.get(1).getParams().get(1), "handler"){};
 
-    checkMethod(model.getMethods().get(2), "foo", null, MethodKind.HANDLER, "void", false, false, false, 3);
-    checkClassParam(model.getMethods().get(2).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
-    checkParam(model.getMethods().get(2).getParams().get(1), "time", "long");
-    checkClassParam(model.getMethods().get(2).getParams().get(2), "handler", "io.vertx.core.Handler<" + VertxGenClass1Info + ">", ClassKind.HANDLER);
-    checkMethod(model.getMethods().get(3), "bar", null, MethodKind.OTHER, "void", false, false, false, 1);
-    checkClassParam(model.getMethods().get(3).getParams().get(0), "obj1", VertxGenClass2.class.getName(), ClassKind.API);
-    checkMethod(model.getMethods().get(4), "bar", null, MethodKind.OTHER, "void", false, false, false, 1);
-    checkClassParam(model.getMethods().get(4).getParams().get(0), "obj1", String.class.getName(), ClassKind.STRING);
-    checkMethod(model.getMethods().get(5), "juu", null, MethodKind.OTHER, "void", false, false, false, 1);
-    checkClassParam(model.getMethods().get(0).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
-    checkMethod(model.getMethods().get(6), "juu", null, MethodKind.OTHER, "void", false, false, false, 2);
-    checkClassParam(model.getMethods().get(6).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
-    checkParam(model.getMethods().get(6).getParams().get(1), "time", "long");
-    checkMethod(model.getMethods().get(7), "juu", null, MethodKind.HANDLER, "void", false, false, false, 3);
-    checkClassParam(model.getMethods().get(7).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
-    checkParam(model.getMethods().get(7).getParams().get(1), "time", "long");
-    checkClassParam(model.getMethods().get(7).getParams().get(2), "handler", "io.vertx.core.Handler<T>", ClassKind.HANDLER);
+    checkMethod(methods.get(2), "foo", null, MethodKind.HANDLER, "void", false, false, false, 3);
+    new ParamCheck<String>(methods.get(2).getParams().get(0), "str"){};
+
+    basicParamCheck(methods.get(2).getParams().get(1), "time", "long");
+    new ParamCheck<Handler<VertxGenClass1>>(methods.get(2).getParams().get(2), "handler"){};
+
+    checkMethod(methods.get(3), "bar", null, MethodKind.OTHER, "void", false, false, false, 1);
+    new ParamCheck<VertxGenClass2>(methods.get(3).getParams().get(0), "obj1"){};
+
+    checkMethod(methods.get(4), "bar", null, MethodKind.OTHER, "void", false, false, false, 1);
+    new ParamCheck<String>(methods.get(4).getParams().get(0), "obj1"){};
+
+    checkMethod(methods.get(5), "juu", null, MethodKind.OTHER, "void", false, false, false, 1);
+    new ParamCheck<String>(methods.get(5).getParams().get(0), "str"){};
+    checkMethod(methods.get(6), "juu", null, MethodKind.OTHER, "void", false, false, false, 2);
+    new ParamCheck<String>(methods.get(6).getParams().get(0), "str"){};
+    basicParamCheck(methods.get(6).getParams().get(1), "time", "long");
+    checkMethod(methods.get(7), "juu", null, MethodKind.HANDLER, "void", false, false, false, 3);
+    new ParamCheck<String>(methods.get(7).getParams().get(0), "str"){};
+    basicParamCheck(methods.get(7).getParams().get(1), "time", "long");
+    class Check1<T> extends ParamCheck<Handler<T>> { public Check1() { super(methods.get(7).getParams().get(2), "handler"); } }
     assertEquals(3, model.getMethodMap().size());
     List<MethodInfo> meths1 = model.getMethodMap().get("foo");
     assertEquals(3, meths1.size());
-    assertSame(model.getMethods().get(0), meths1.get(0));
-    assertSame(model.getMethods().get(1), meths1.get(1));
-    assertSame(model.getMethods().get(2), meths1.get(2));
+    assertSame(methods.get(0), meths1.get(0));
+    assertSame(methods.get(1), meths1.get(1));
+    assertSame(methods.get(2), meths1.get(2));
     List<MethodInfo> meths2 = model.getMethodMap().get("bar");
     assertEquals(2, meths2.size());
-    assertSame(model.getMethods().get(3), meths2.get(0));
-    assertSame(model.getMethods().get(4), meths2.get(1));
+    assertSame(methods.get(3), meths2.get(0));
+    assertSame(methods.get(4), meths2.get(1));
   }
 
   @Test
@@ -1128,8 +1176,7 @@ public class GeneratorTest {
         TypeInfo.create(InterfaceWithMethodOverride.class),
         TypeInfo.create(VertxGenInterface.class)
     ), methods.get(0).getOwnerTypes());
-    checkClassParam(methods.get(0).getParams().get(0), "str", String.class.getName(), ClassKind.STRING);
-  }
+    new ParamCheck<String>(methods.get(0).getParams().get(0), "str"){};}
 
   @Test
   public void testMethodOverrideParameterRenamed() throws Exception {
@@ -1141,7 +1188,7 @@ public class GeneratorTest {
         TypeInfo.create(InterfaceWithMethodOverrideParameterRenamed.class),
         TypeInfo.create(VertxGenInterface.class)
     ), methods.get(0).getOwnerTypes());
-    checkClassParam(methods.get(0).getParams().get(0), "str_renamed", String.class.getName(), ClassKind.STRING);
+    new ParamCheck<String>(methods.get(0).getParams().get(0), "str_renamed"){};
   }
 
   @Test
@@ -1160,9 +1207,9 @@ public class GeneratorTest {
           TypeInfo.create(GenericAbstractInterface.class)
       ), methods.get(i).getOwnerTypes());
     }
-    checkClassParam(methods.get(2).getParams().get(0), "handler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.String>>", ClassKind.HANDLER);
-    checkClassParam(methods.get(3).getParams().get(0), "handler", "io.vertx.core.Handler<java.lang.String>", ClassKind.HANDLER);
-    checkClassParam(methods.get(4).getParams().get(0), "t", "java.lang.String", ClassKind.STRING);
+    new ParamCheck<Handler<AsyncResult<String>>>(methods.get(2).getParams().get(0), "handler"){};
+    new ParamCheck<Handler<String>>(methods.get(3).getParams().get(0), "handler"){};
+    new ParamCheck<String>(methods.get(4).getParams().get(0), "t"){};
   }
 
   @Test
@@ -1175,9 +1222,9 @@ public class GeneratorTest {
     checkMethod(methods.get(2), "juu", null, MethodKind.FUTURE, "void", false, false, false, 1);
     checkMethod(methods.get(3), "daa", null, MethodKind.HANDLER, "void", false, false, false, 1);
     checkMethod(methods.get(4), "collargol", null, MethodKind.OTHER, "void", false, false, false, 1);
-    checkClassParam(methods.get(2).getParams().get(0), "handler", "io.vertx.core.Handler<io.vertx.core.AsyncResult<java.lang.String>>", ClassKind.HANDLER);
-    checkClassParam(methods.get(3).getParams().get(0), "handler", "io.vertx.core.Handler<java.lang.String>", ClassKind.HANDLER);
-    checkClassParam(methods.get(4).getParams().get(0), "t", "java.lang.String", ClassKind.STRING);
+    new ParamCheck<Handler<AsyncResult<String>>>(methods.get(2).getParams().get(0), "handler"){};
+    new ParamCheck<Handler<String>>(methods.get(3).getParams().get(0), "handler"){};
+    new ParamCheck<String>(methods.get(4).getParams().get(0), "t"){};
   }
 
   @Test
@@ -1290,10 +1337,11 @@ public class GeneratorTest {
     assertEquals(MethodWithValidJSONParams.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(1, model.getMethods().size());
-    checkMethod(model.getMethods().get(0), "methodWithJsonParams", null, MethodKind.OTHER, "void", false, false, false, 2);
-    checkClassParam(model.getMethods().get(0).getParams().get(0), "jsonObject", JsonObject.class.getName(), ClassKind.JSON_OBJECT);
-    checkClassParam(model.getMethods().get(0).getParams().get(1), "jsonArray", JsonArray.class.getName(), ClassKind.JSON_ARRAY);
+    List<MethodInfo> methods = model.getMethods();
+    assertEquals(1, methods.size());
+    checkMethod(methods.get(0), "methodWithJsonParams", null, MethodKind.OTHER, "void", false, false, false, 2);
+    new ParamCheck<JsonObject>(methods.get(0).getParams().get(0), "jsonObject"){};
+    new ParamCheck<JsonArray>(methods.get(0).getParams().get(1), "jsonArray"){};
   }
 
   @Test
@@ -1303,10 +1351,11 @@ public class GeneratorTest {
     assertEquals(MethodWithValidHandlerJSON.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(1, model.getMethods().size());
-    checkMethod(model.getMethods().get(0), "methodWithJsonHandlers", null, MethodKind.HANDLER, "void", false, false, false, 2);
-    checkClassParam(model.getMethods().get(0).getParams().get(0), "jsonObjectHandler", Handler.class.getName() + "<" + JsonObject.class.getName() + ">", ClassKind.HANDLER);
-    checkClassParam(model.getMethods().get(0).getParams().get(1), "jsonArrayHandler", Handler.class.getName() + "<" + JsonArray.class.getName() + ">", ClassKind.HANDLER);
+    List<MethodInfo> methods = model.getMethods();
+    assertEquals(1, methods.size());
+    checkMethod(methods.get(0), "methodWithJsonHandlers", null, MethodKind.HANDLER, "void", false, false, false, 2);
+    new ParamCheck<Handler<JsonObject>>(methods.get(0).getParams().get(0), "jsonObjectHandler"){};
+    new ParamCheck<Handler<JsonArray>>(methods.get(0).getParams().get(1), "jsonArrayHandler"){};
   }
 
   @Test
@@ -1316,10 +1365,11 @@ public class GeneratorTest {
     assertEquals(MethodWithValidHandlerAsyncResultJSON.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(1, model.getMethods().size());
-    checkMethod(model.getMethods().get(0), "methodwithJsonHandlersAsyncResult", null, MethodKind.FUTURE, "void", false, false, false, 2);
-    checkClassParam(model.getMethods().get(0).getParams().get(0), "jsonObjectHandler", Handler.class.getName() + "<" + AsyncResult.class.getName() + "<" + JsonObject.class.getName() + ">>", ClassKind.HANDLER);
-    checkClassParam(model.getMethods().get(0).getParams().get(1), "jsonArrayHandler", Handler.class.getName() + "<" + AsyncResult.class.getName() + "<" + JsonArray.class.getName() + ">>", ClassKind.HANDLER);
+    List<MethodInfo> methods = model.getMethods();
+    assertEquals(1, methods.size());
+    checkMethod(methods.get(0), "methodwithJsonHandlersAsyncResult", null, MethodKind.FUTURE, "void", false, false, false, 2);
+    new ParamCheck<Handler<AsyncResult<JsonObject>>>(methods.get(0).getParams().get(0), "jsonObjectHandler"){};
+    new ParamCheck<Handler<AsyncResult<JsonArray>>>(methods.get(0).getParams().get(1), "jsonArrayHandler"){};
   }
 
   @Test
@@ -1593,20 +1643,17 @@ public class GeneratorTest {
     assertEquals(numParams, meth.getParams().size());
   }
 
-  private void checkParam(ParamInfo param, String name, String type) {
+  private void basicParamCheck(ParamInfo param, String name, String type) {
     assertEquals(name, param.getName());
     assertEquals(type, param.getType().toString());
   }
 
-  private void checkClassParam(ParamInfo param, String name, String type, ClassKind kind) {
-    checkParam(param, name, type);
-    TypeInfo paramType;
-    if (param.getType() instanceof TypeInfo.Parameterized) {
-      paramType = param.getType().getRaw();
-    } else {
-      paramType = param.getType();
+  static abstract class ParamCheck<T> {
+    public ParamCheck(ParamInfo param, String expectedName) {
+      Type type = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+      assertEquals(TypeInfo.create(type), param.getType());
+      assertEquals(expectedName, param.getName());
     }
-    assertEquals(kind, paramType.getKind());
   }
 
   private void assertGenInvalid(Class<?> c, Class<?>... rest) throws Exception {
