@@ -33,7 +33,6 @@ import io.vertx.test.codegen.testapi.InterfaceWithCacheReturnMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithComments;
 import io.vertx.test.codegen.testapi.InterfaceWithDefaultMethod;
 import io.vertx.test.codegen.testapi.InterfaceWithGenericMethodOverride;
-import io.vertx.test.codegen.testapi.InterfaceWithGetterMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithIgnoredMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithInstanceMethods;
 import io.vertx.test.codegen.testapi.InterfaceExtendingGenericAbstractInterface;
@@ -898,55 +897,6 @@ public class GeneratorTest {
     assertEquals(2, methods.size());
     checkMethod(methods.get(0), "foo", null, MethodKind.OTHER, "void", false, false, false, 1);
     checkMethod(methods.get(1), "bar", null, MethodKind.OTHER, "void", false, false, false, 1);
-  }
-
-  @Test
-  public void testPropertyGetters() throws Exception {
-    ClassModel model = new Generator().generateClass(InterfaceWithGetterMethods.class);
-    List<MethodInfo> methods = model.getMethods();
-    checkMethod(methods.get(0), "isA", null, MethodKind.GETTER, "boolean", false, false, false, 0);
-    assertEquals("a", methods.get(0).getPropertyName());
-    checkMethod(methods.get(1), "isAb", null, MethodKind.GETTER, "boolean", false, false, false, 0);
-    assertEquals("ab", methods.get(1).getPropertyName());
-    checkMethod(methods.get(2), "isABC", null, MethodKind.GETTER, "boolean", false, false, false, 0);
-    assertEquals("abc", methods.get(2).getPropertyName());
-    checkMethod(methods.get(3), "isABCd", null, MethodKind.GETTER, "boolean", false, false, false, 0);
-    assertEquals("abCd", methods.get(3).getPropertyName());
-    checkMethod(methods.get(4), "isAbCde", null, MethodKind.GETTER, "boolean", false, false, false, 0);
-    assertEquals("abCde", methods.get(4).getPropertyName());
-
-    checkMethod(methods.get(5), "getB", null, MethodKind.GETTER, "java.lang.String", false, false, false, 0);
-    assertEquals("b", methods.get(5).getPropertyName());
-    checkMethod(methods.get(6), "getBc", null, MethodKind.GETTER, "java.lang.String", false, false, false, 0);
-    assertEquals("bc", methods.get(6).getPropertyName());
-    checkMethod(methods.get(7), "getBCD", null, MethodKind.GETTER, "java.lang.String", false, false, false, 0);
-    assertEquals("bcd", methods.get(7).getPropertyName());
-    checkMethod(methods.get(8), "getBCDe", null, MethodKind.GETTER, "java.lang.String", false, false, false, 0);
-    assertEquals("bcDe", methods.get(8).getPropertyName());
-    checkMethod(methods.get(9), "getBcDef", null, MethodKind.GETTER, "java.lang.String", false, false, false, 0);
-    assertEquals("bcDef", methods.get(9).getPropertyName());
-
-    checkMethod(methods.get(10), "isC", null, MethodKind.OTHER, "void", false, false, false, 0);
-    assertEquals(null, methods.get(10).getPropertyName());
-    checkMethod(methods.get(11), "isCd", null, MethodKind.OTHER, "void", false, false, false, 0);
-    assertEquals(null, methods.get(11).getPropertyName());
-    checkMethod(methods.get(12), "isCDE", null, MethodKind.OTHER, "void", false, false, false, 0);
-    assertEquals(null, methods.get(12).getPropertyName());
-    checkMethod(methods.get(13), "isCDEf", null, MethodKind.OTHER, "void", false, false, false, 0);
-    assertEquals(null, methods.get(13).getPropertyName());
-    checkMethod(methods.get(14), "isCdEfg", null, MethodKind.OTHER, "void", false, false, false, 0);
-    assertEquals(null, methods.get(14).getPropertyName());
-
-    checkMethod(methods.get(15), "getD", null, MethodKind.OTHER, "void", false, false, false, 0);
-    assertEquals(null, methods.get(15).getPropertyName());
-    checkMethod(methods.get(16), "getDe", null, MethodKind.OTHER, "void", false, false, false, 0);
-    assertEquals(null, methods.get(16).getPropertyName());
-    checkMethod(methods.get(17), "getDEF", null, MethodKind.OTHER, "void", false, false, false, 0);
-    assertEquals(null, methods.get(17).getPropertyName());
-    checkMethod(methods.get(18), "getDEFg", null, MethodKind.OTHER, "void", false, false, false, 0);
-    assertEquals(null, methods.get(18).getPropertyName());
-    checkMethod(methods.get(19), "getDeFgh", null, MethodKind.OTHER, "void", false, false, false, 0);
-    assertEquals(null, methods.get(19).getPropertyName());
   }
 
   @Test

@@ -64,21 +64,6 @@ public class MethodInfo implements Comparable<MethodInfo> {
     this.ownerTypes = new LinkedHashSet<>(ownerTypes);
   }
 
-  /**
-   * @return the associated property name when this method is a getter otherwise null is returned
-   */
-  public String getPropertyName() {
-    if (kind == MethodKind.GETTER) {
-      if (name.startsWith("is")) {
-        return Helper.normalizePropertyName(name.substring(2));
-      } else {
-        return Helper.normalizePropertyName(name.substring(3));
-      }
-    } else {
-      return null;
-    }
-  }
-
   public String getName() {
     return name;
   }

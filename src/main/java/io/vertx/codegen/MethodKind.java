@@ -21,11 +21,6 @@ public enum MethodKind {
    */
   FUTURE,
 
-  /**
-   * A method that is recognized as a property getter.
-   */
-  GETTER,
-
   OTHER;
 
   /**

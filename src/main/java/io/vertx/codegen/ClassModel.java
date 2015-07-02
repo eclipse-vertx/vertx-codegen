@@ -45,7 +45,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -704,23 +703,15 @@ public class ClassModel implements Model {
 
     // Determine method kind + validate
     MethodKind kind = MethodKind.OTHER;
-    if (methodName.startsWith("is") && methodName.length() > 2 && Character.isUpperCase(methodName.charAt(2)) &&
-        mParams.isEmpty() && !(returnType instanceof TypeInfo.Void)) {
-      kind = MethodKind.GETTER;
-    } else if (methodName.startsWith("get") && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) &&
-        mParams.isEmpty() && !(returnType instanceof TypeInfo.Void)) {
-      kind = MethodKind.GETTER;
-    } else {
-      int lastParamIndex = mParams.size() - 1;
-      if (lastParamIndex >= 0 && (returnType instanceof TypeInfo.Void || isFluent)) {
-        TypeInfo lastParamType = mParams.get(lastParamIndex).type;
-        if (lastParamType.getKind() == ClassKind.HANDLER) {
-          TypeInfo typeArg = ((TypeInfo.Parameterized) lastParamType).getArgs().get(0);
-          if (typeArg.getKind() == ClassKind.ASYNC_RESULT) {
-            kind = MethodKind.FUTURE;
-          } else {
-            kind = MethodKind.HANDLER;
-          }
+    int lastParamIndex = mParams.size() - 1;
+    if (lastParamIndex >= 0 && (returnType instanceof TypeInfo.Void || isFluent)) {
+      TypeInfo lastParamType = mParams.get(lastParamIndex).type;
+      if (lastParamType.getKind() == ClassKind.HANDLER) {
+        TypeInfo typeArg = ((TypeInfo.Parameterized) lastParamType).getArgs().get(0);
+        if (typeArg.getKind() == ClassKind.ASYNC_RESULT) {
+          kind = MethodKind.FUTURE;
+        } else {
+          kind = MethodKind.HANDLER;
         }
       }
     }
