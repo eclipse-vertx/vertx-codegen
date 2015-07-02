@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,11 +64,15 @@ public abstract class TypeInfo {
         } finally {
           Thread.currentThread().setContextClassLoader(loader);
         }
-        ClassKind kind = Helper.getKind(classType::getAnnotation, fqcn);
-        if (kind == ClassKind.API) {
-          return new Class.Api(fqcn, true, null, null, null, module, false);
+        if (classType.isEnum()) {
+          return new Class.Enum(fqcn, Collections.emptyList(), module, false);
         } else {
-          return new Class(kind, fqcn, module, false);
+          ClassKind kind = Helper.getKind(classType::getAnnotation, fqcn);
+          if (kind == ClassKind.API) {
+            return new Class.Api(fqcn, true, null, null, null, module, false);
+          } else {
+            return new Class(kind, fqcn, module, false);
+          }
         }
       }
     } else if (type instanceof ParameterizedType) {
