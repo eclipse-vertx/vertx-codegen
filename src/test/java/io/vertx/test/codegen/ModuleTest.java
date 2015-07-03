@@ -29,6 +29,10 @@ public class ModuleTest {
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getFqn());
     assertEquals("simple", model.getName());
     assertEquals("io.vertx.groovy.test.codegen.testmodule.modulescoped", model.translateFqn("groovy"));
+    assertNotNull(model.getModule());
+    assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getPackageName());
+    assertEquals("simple", model.getModule().getName());
+    assertEquals("io.vertx.groovy.test.codegen.testmodule.modulescoped", model.getModule().translatePackageName("groovy"));
   }
 
   @Test

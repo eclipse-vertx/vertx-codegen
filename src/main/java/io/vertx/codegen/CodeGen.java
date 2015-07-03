@@ -153,7 +153,8 @@ public class CodeGen {
     } catch (Exception e) {
       throw new GenException(element, "Invalid group package name " + groupPackageName);
     }
-    return new ModuleModel(element, new ModuleInfo(modulePackageName, moduleName, groupPackageName));
+    ModuleInfo info = new ModuleInfo(modulePackageName, moduleName, groupPackageName);
+    return new ModuleModel(element, info);
   }
 
   public PackageModel getPackageModel(String fqn) {

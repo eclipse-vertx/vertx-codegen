@@ -46,6 +46,7 @@ public class ModuleModel implements Model {
     Map<String, Object> vars = new HashMap<>();
     vars.put("fqn", info.getPackageName());
     vars.put("name", info.getName());
+    vars.put("module", getModule());
     vars.putAll(Case.vars());
     return vars;
   }
