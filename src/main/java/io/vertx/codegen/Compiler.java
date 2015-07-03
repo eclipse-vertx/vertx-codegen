@@ -6,6 +6,7 @@ import javax.tools.DiagnosticListener;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
+import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,7 +14,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -74,6 +78,9 @@ public class Compiler {
   public boolean compile(File... sourceFiles) throws Exception {
     JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     StandardJavaFileManager fm = compiler.getStandardFileManager(diagnosticListener, null, null);
+    File tmp = Files.createTempDirectory("codegen").toFile();
+    tmp.deleteOnExit();
+    fm.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(tmp));
     Iterable<? extends JavaFileObject> fileObjects = fm.getJavaFileObjects(sourceFiles);
     Writer out = new NullWriter();
     JavaCompiler.CompilationTask task = compiler.getTask(out, fm, diagnosticListener, null, null, fileObjects);

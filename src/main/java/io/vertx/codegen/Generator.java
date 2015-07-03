@@ -35,6 +35,9 @@ import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 import java.io.File;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -120,10 +123,11 @@ public class Generator {
 
   public ModuleModel generateModule(ClassLoader loader, String packageFqn) throws Exception {
     URL url = loader.getResource(packageFqn.replace('.', '/') + "/package-info.java");
-    File f = new File(url.toURI());
+    File info = new File(url.toURI());
+    File[] files = Files.walk(info.getParentFile().toPath()).filter(Files::isRegularFile).map(Path::toFile).toArray(File[]::new);
     MyProcessor<ModuleModel> processor = new MyProcessor<>(codegen -> codegen.getModuleModel(packageFqn));
     Compiler compiler = new Compiler(processor, collector);
-    compiler.compile(f);
+    compiler.compile(files);
     return processor.result;
   }
 

@@ -16,6 +16,11 @@ import io.vertx.test.codegen.testmodule.nomodule.NoModuleApi;
 import io.vertx.test.codegen.testmodule.nomodule.NoModuleDataObject;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import static org.junit.Assert.*;
 
 /**
@@ -33,6 +38,11 @@ public class ModuleTest {
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getPackageName());
     assertEquals("simple", model.getModule().getName());
     assertEquals("io.vertx.groovy.test.codegen.testmodule.modulescoped", model.getModule().translatePackageName("groovy"));
+    Set<String> actualClasses = model.getClasses().stream().map(ClassModel::getFqn).collect(Collectors.toSet());
+    Set<String> expectedClasses = new HashSet<>(Arrays.asList(
+        ModuleScopedApi.class.getName(),
+        ModuleScopedSubApi.class.getName()));
+    assertEquals(expectedClasses, actualClasses);
   }
 
   @Test

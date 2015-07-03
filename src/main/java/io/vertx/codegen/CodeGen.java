@@ -12,10 +12,13 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
@@ -148,13 +151,20 @@ public class CodeGen {
     if (!modulePackageName.startsWith(groupPackageName)) {
       throw new GenException(element, "A module package name (" + modulePackageName + ") must be prefixed by the group package name (" + groupPackageName + ")");
     }
+    Set<ClassModel> classModels = new HashSet<>();
+    for (TypeElement classElt : classes.values()) {
+      ClassModel classModel = getClassModel(classElt.getQualifiedName().toString());
+      if (classModel.getModule().getPackageName().equals(modulePackageName)) {
+        classModels.add(classModel);
+      }
+    }
     try {
       Case.QUALIFIED.parse(groupPackageName);
     } catch (Exception e) {
       throw new GenException(element, "Invalid group package name " + groupPackageName);
     }
     ModuleInfo info = new ModuleInfo(modulePackageName, moduleName, groupPackageName);
-    return new ModuleModel(element, info);
+    return new ModuleModel(element, info, classModels);
   }
 
   public PackageModel getPackageModel(String fqn) {
