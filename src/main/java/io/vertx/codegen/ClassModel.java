@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,8 +84,10 @@ public class ClassModel implements Model {
   protected final Types typeUtils;
   protected boolean processed = false;
   protected LinkedHashMap<ExecutableElement, MethodInfo> methods = new LinkedHashMap<>();
+  protected Set<TypeInfo.Class> collectedTypes = new HashSet<>();
   protected Set<TypeInfo.Class> importedTypes = new HashSet<>();
-  protected Set<TypeInfo.Class> referencedTypes = new HashSet<>();
+  protected Set<TypeInfo.Class.Api> referencedTypes = new HashSet<>();
+  protected Set<TypeInfo.Class> referencedDataObjectTypes = new HashSet<>();
   protected boolean concrete;
   protected TypeInfo type;
   protected String ifaceSimpleName;
@@ -100,7 +101,6 @@ public class ClassModel implements Model {
   protected TypeInfo handlerSuperType;
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
-  protected List<TypeInfo> referencedDataObjectTypes = new ArrayList<>();
   protected List<TypeParamInfo.Class> typeParams = new ArrayList<>();
 
   public ClassModel(MethodOverloadChecker methodOverloadChecker,
@@ -142,16 +142,29 @@ public class ClassModel implements Model {
     return methods.values().stream().filter(m -> !m.isStaticMethod()).collect(Collectors.toList());
   }
 
-  public Set<TypeInfo.Class> getImportedTypes() {
-    return importedTypes;
-  }
-
   public boolean isConcrete() {
     return concrete;
   }
 
-  public Set<TypeInfo.Class> getReferencedTypes() {
+  /**
+   * @return all classes that are not in the same package
+   */
+  public Set<TypeInfo.Class> getImportedTypes() {
+    return importedTypes;
+  }
+
+  /**
+   * @return all the referenced api types
+   */
+  public Set<TypeInfo.Class.Api> getReferencedTypes() {
     return referencedTypes;
+  }
+
+  /**
+   * @return all the referenced data object types
+   */
+  public Set<TypeInfo.Class> getReferencedDataObjectTypes() {
+    return referencedDataObjectTypes;
   }
 
   public String getIfaceSimpleName() {
@@ -200,10 +213,6 @@ public class ClassModel implements Model {
 
   public Map<String, List<MethodInfo>> getMethodMap() {
     return methodMap;
-  }
-
-  public List<TypeInfo> getReferencedDataObjectTypes() {
-    return referencedDataObjectTypes;
   }
 
   public List<TypeParamInfo.Class> getTypeParams() {
@@ -292,11 +301,7 @@ public class ClassModel implements Model {
   }
 
   private boolean isDataObjectType(TypeInfo type) {
-    if (type.getKind() == ClassKind.DATA_OBJECT) {
-      referencedDataObjectTypes.add(type);
-      return true;
-    }
-    return false;
+    return type.getKind() == ClassKind.DATA_OBJECT;
   }
 
   protected boolean isDataObjectTypeWithToJson(TypeInfo type) {
@@ -371,9 +376,6 @@ public class ClassModel implements Model {
 
   private boolean isVertxGenInterface(TypeInfo type) {
     if (type.getKind() == ClassKind.API) {
-      if (!type.getName().equals(VERTX)) {
-        referencedTypes.add(type.getRaw());
-      }
       if (type instanceof TypeInfo.Parameterized) {
         TypeInfo.Parameterized parameterized = (TypeInfo.Parameterized) type;
         for (TypeInfo param : parameterized.getArgs()) {
@@ -414,9 +416,28 @@ public class ClassModel implements Model {
     return false;
   }
 
+  private void determineApiTypes() {
+    collectedTypes.stream().
+        map(TypeInfo.Class::getRaw).
+        flatMap(Helper.instanceOf(TypeInfo.Class.class)).
+        filter(t -> !t.getPackageName().equals(ifaceFQCN)).
+        forEach(importedTypes::add);
+    collectedTypes.stream().
+        map(TypeInfo.Class::getRaw).
+        flatMap(Helper.instanceOf(TypeInfo.Class.Api.class)).
+        filter(t -> !t.equals(type.getRaw())).
+        forEach(referencedTypes::add);
+    collectedTypes.stream().
+        map(TypeInfo.Class::getRaw).
+        flatMap(Helper.instanceOf(TypeInfo.Class.class)).
+        filter(t -> t.getKind() == ClassKind.DATA_OBJECT).
+        forEach(referencedDataObjectTypes::add);
+  }
+
   boolean process() {
     if (!processed) {
       traverseElem(modelElt);
+      determineApiTypes();
       determineSiteDeclVariance();
       processed = true;
       return true;
@@ -480,7 +501,6 @@ public class ClassModel implements Model {
               case API: {
                 try {
                   TypeInfo.Class.Api superType = (TypeInfo.Class.Api) typeFactory.create(tmSuper).getRaw();
-                  referencedTypes.add(superType);
                   (superType.isConcrete() ? concreteSuperTypes : abstractSuperTypes).add(superTypeInfo);
                   superTypes.add(superTypeInfo);
                 } catch (Exception e) {
@@ -492,7 +512,7 @@ public class ClassModel implements Model {
                 handlerSuperType = superTypeInfo;
                 break;
             }
-            superTypeInfo.collectImports(importedTypes);
+            superTypeInfo.collectImports(collectedTypes);
           }
         }
         if (concrete && concreteSuperTypes.size() > 1) {
@@ -500,12 +520,6 @@ public class ClassModel implements Model {
         }
         if (!concrete && concreteSuperTypes.size() > 0) {
           throw new GenException(elem, "A abstract interface cannot extend a concrete interface");
-        }
-        for (Iterator<TypeInfo.Class> i = importedTypes.iterator();i.hasNext();) {
-          TypeInfo.Class type = i.next();
-          if (Helper.getPackageName(type.toString()).equals(Helper.getPackageName(ifaceFQCN))) {
-            i.remove();
-          }
         }
         break;
       }
@@ -531,13 +545,6 @@ public class ClassModel implements Model {
       // We're done
       if (methods.isEmpty() && superTypes.isEmpty()) {
         throw new GenException(elem, "Interface " + ifaceFQCN + " does not contain any methods for generation");
-      }
-      // don't reference yourself
-      for (Iterator<TypeInfo.Class> i = referencedTypes.iterator();i.hasNext();) {
-        TypeInfo.Class next = i.next();
-        if (next.getName().equals(Helper.getNonGenericType(ifaceFQCN))) {
-          i.remove();
-        }
       }
       sortMethodMap(methodMap);
 
@@ -690,7 +697,7 @@ public class ClassModel implements Model {
     }
 
     TypeInfo returnType = typeFactory.create(methodType.getReturnType());
-    returnType.collectImports(importedTypes);
+    returnType.collectImports(collectedTypes);
     if (isCacheReturn && returnType instanceof TypeInfo.Void) {
       throw new GenException(methodElt, "void method can't be marked with @CacheReturn");
     }
@@ -726,7 +733,7 @@ public class ClassModel implements Model {
     }
     methodsByName.add(methodInfo);
     methods.put(methodElt, methodInfo);
-    methodInfo.collectImports(importedTypes);
+    methodInfo.collectImports(collectedTypes);
   }
 
   // This is a hook to allow a specific type of method to be created

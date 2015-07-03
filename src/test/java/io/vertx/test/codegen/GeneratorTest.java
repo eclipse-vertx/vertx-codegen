@@ -729,7 +729,7 @@ public class GeneratorTest {
     ClassModel model = new Generator().generateClass(GenericInterface.class);
     assertEquals(GenericInterface.class.getName() + "<T>", model.getIfaceFQCN());
     assertEquals(GenericInterface.class.getSimpleName(), model.getIfaceSimpleName());
-    assertTrue("Was expecting " + model.getReferencedTypes() + " to be empty", model.getReferencedTypes().isEmpty());
+    assertEquals(Collections.<TypeInfo.Class>emptySet(), model.getReferencedTypes());
     assertTrue(model.getSuperTypes().isEmpty());
     List<MethodInfo> methods = model.getMethods();
     assertEquals(2, methods.size());
