@@ -16,6 +16,8 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -193,6 +195,12 @@ public class DataObjectModel implements Model {
     if (concrete && !hasJsonConstructor) {
       throw new GenException(modelElt, "Data object " + modelElt + " class does not have a constructor " + modelElt.getSimpleName() + "(" + JsonObject.class.getSimpleName() + ")");
     }
+
+    // Sort the properties so we do have a consistent order
+    ArrayList<PropertyInfo> props = new ArrayList<>(propertyMap.values());
+    Collections.sort(props, (p1, p2) -> p1.name.compareTo(p2.name));
+    propertyMap.clear();
+    props.forEach(prop -> propertyMap.put(prop.name, prop));
   }
 
   private void processImportedTypes() {
