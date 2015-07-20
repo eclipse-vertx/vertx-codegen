@@ -16,4 +16,10 @@
       <outputDirectory>/</outputDirectory>
     </fileSet>
   </fileSets>
+  <files>
+    <file>
+      <source>${project.basedir}/src/main/resources/META-INF/services/javax.annotation.processing.Processor</source>
+      <outputDirectory>META-INF</outputDirectory>
+    </file>
+  </files>    
 </assembly>
