@@ -21,8 +21,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -69,9 +71,9 @@ public abstract class TypeInfo {
         } else {
           ClassKind kind = Helper.getKind(classType::getAnnotation, fqcn);
           if (kind == ClassKind.API) {
-            return new Class.Api(fqcn, true, null, null, null, module, false);
+            return new Class.Api(fqcn, true, Collections.emptyList(), null, null, null, module, false);
           } else {
-            return new Class(kind, fqcn, module, false);
+            return new Class(kind, fqcn, module, false, Collections.emptyList());
           }
         }
       }
@@ -156,25 +158,28 @@ public abstract class TypeInfo {
         Class raw;
         if (kind == ClassKind.BOXED_PRIMITIVE) {
           raw = Class.PRIMITIVES.get(fqcn);
-        } if (kind == ClassKind.API) {
-          VertxGen genAnn = elt.getAnnotation(VertxGen.class);
-          TypeInfo[] args = Stream.of(
-              ClassModel.VERTX_READ_STREAM,
-              ClassModel.VERTX_WRITE_STREAM,
-              ClassModel.VERTX_HANDLER
-          ).map(s -> {
-            TypeElement parameterizedElt = elementUtils.getTypeElement(s);
-            TypeMirror parameterizedType = parameterizedElt.asType();
-            TypeMirror rawType = typeUtils.erasure(parameterizedType);
-            if (typeUtils.isSubtype(type, rawType)) {
-              TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, parameterizedElt.getTypeParameters().get(0));
-              return create(resolved);
-            }
-            return null;
-          }).toArray(TypeInfo[]::new);
-          raw = new Class.Api(fqcn, genAnn.concrete(), args[0], args[1], args[2], module, proxyGen);
         } else {
-          raw = new Class(kind, fqcn, module, proxyGen);
+          List<TypeParamInfo.Class> typeParams = createTypeParams(type);
+          if (kind == ClassKind.API) {
+            VertxGen genAnn = elt.getAnnotation(VertxGen.class);
+            TypeInfo[] args = Stream.of(
+                ClassModel.VERTX_READ_STREAM,
+                ClassModel.VERTX_WRITE_STREAM,
+                ClassModel.VERTX_HANDLER
+            ).map(s -> {
+              TypeElement parameterizedElt = elementUtils.getTypeElement(s);
+              TypeMirror parameterizedType = parameterizedElt.asType();
+              TypeMirror rawType = typeUtils.erasure(parameterizedType);
+              if (typeUtils.isSubtype(type, rawType)) {
+                TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, parameterizedElt.getTypeParameters().get(0));
+                return create(resolved);
+              }
+              return null;
+            }).toArray(TypeInfo[]::new);
+            raw = new Class.Api(fqcn, genAnn.concrete(), typeParams, args[0], args[1], args[2], module, proxyGen);
+          } else {
+            raw = new Class(kind, fqcn, module, proxyGen, typeParams);
+          }
         }
         List<? extends TypeMirror> typeArgs = type.getTypeArguments();
         if (typeArgs.size() > 0) {
@@ -196,6 +201,23 @@ public abstract class TypeInfo {
       TypeParameterElement elt = (TypeParameterElement) type.asElement();
       TypeParamInfo param = TypeParamInfo.create(elt);
       return new Variable(param, type.toString());
+    }
+
+    private List<TypeParamInfo.Class> createTypeParams(DeclaredType type) {
+      List<TypeParamInfo.Class> typeParams = new ArrayList<>();
+      TypeElement elt = (TypeElement) type.asElement();
+      List<? extends TypeParameterElement> typeParamElts = elt.getTypeParameters();
+      for (int index = 0;index < typeParamElts.size();index++) {
+        TypeParameterElement typeParamElt = typeParamElts.get(index);
+        Set<Variance> siteVariance = EnumSet.noneOf(Variance.class);
+        for (Variance variance : Variance.values()) {
+          if (Helper.resolveSiteVariance(typeParamElt, variance)) {
+            siteVariance.add(variance);
+          }
+        }
+        typeParams.add(new TypeParamInfo.Class(elt.getQualifiedName().toString(), index, typeParamElt.getSimpleName().toString(), siteVariance));
+      }
+      return typeParams;
     }
   }
 
@@ -296,7 +318,7 @@ public abstract class TypeInfo {
 
     @Override
     public TypeInfo getErased() {
-      return new Class(ClassKind.OBJECT, java.lang.Object.class.getName(), null, false);
+      return new Class(ClassKind.OBJECT, java.lang.Object.class.getName(), null, false, Collections.emptyList());
     }
 
     @Override
@@ -400,7 +422,7 @@ public abstract class TypeInfo {
           Float.class,Double.class,Character.class};
       for (java.lang.Class<?> boxe : boxes) {
         String name = boxe.getName();
-        PRIMITIVES.put(name, new Class(ClassKind.BOXED_PRIMITIVE, name, null, false));
+        PRIMITIVES.put(name, new Class(ClassKind.BOXED_PRIMITIVE, name, null, false, Collections.emptyList()));
       }
     }
 
@@ -410,14 +432,20 @@ public abstract class TypeInfo {
     final String packageName;
     final ModuleInfo module;
     final boolean proxyGen;
+    final List<TypeParamInfo.Class> params;
 
-    public Class(ClassKind kind, String name, ModuleInfo module, boolean proxyGen) {
+    public Class(ClassKind kind, String name, ModuleInfo module, boolean proxyGen, List<TypeParamInfo.Class> params) {
       this.kind = kind;
       this.name = name;
       this.simpleName = Helper.getSimpleName(name);
       this.packageName = Helper.getPackageName(name);
       this.module = module;
       this.proxyGen = proxyGen;
+      this.params = params;
+    }
+
+    public List<TypeParamInfo.Class> getParams() {
+      return params;
     }
 
     /**
@@ -478,7 +506,7 @@ public abstract class TypeInfo {
       final List<String> values;
 
       public Enum(String fqcn, List<String> values, ModuleInfo module, boolean proxyGen) {
-        super(ClassKind.ENUM, fqcn, module, proxyGen);
+        super(ClassKind.ENUM, fqcn, module, proxyGen, Collections.emptyList());
 
         this.values = values;
       }
@@ -504,12 +532,13 @@ public abstract class TypeInfo {
       public Api(
           String fqcn,
           boolean concrete,
+          List<TypeParamInfo.Class> params,
           TypeInfo readStreamArg,
           TypeInfo writeStreamArg,
           TypeInfo handlerArg,
           ModuleInfo module,
           boolean proxyGen) {
-        super(ClassKind.API, fqcn, module, proxyGen);
+        super(ClassKind.API, fqcn, module, proxyGen, params);
         this.concrete = concrete;
         this.readStreamArg = readStreamArg;
         this.writeStreamArg = writeStreamArg;

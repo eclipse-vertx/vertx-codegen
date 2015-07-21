@@ -45,7 +45,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -53,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -101,7 +99,6 @@ public class ClassModel implements Model {
   protected TypeInfo handlerSuperType;
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
-  protected List<TypeParamInfo.Class> typeParams = new ArrayList<>();
 
   public ClassModel(MethodOverloadChecker methodOverloadChecker,
                     Messager messager,  Map<String, TypeElement> sources, Elements elementUtils,
@@ -216,7 +213,7 @@ public class ClassModel implements Model {
   }
 
   public List<TypeParamInfo.Class> getTypeParams() {
-    return typeParams;
+    return ((TypeInfo.Class.Api) type.getRaw()).getParams();
   }
 
   private void sortMethodMap(Map<String, List<MethodInfo>> map) {
@@ -438,26 +435,10 @@ public class ClassModel implements Model {
     if (!processed) {
       traverseElem(modelElt);
       determineApiTypes();
-      determineSiteDeclVariance();
       processed = true;
       return true;
     } else {
       return false;
-    }
-  }
-
-  private void determineSiteDeclVariance() {
-    List<? extends TypeParameterElement> typeParamElts = modelElt.getTypeParameters();
-    for (int index = 0;index < typeParamElts.size();index++) {
-      TypeParameterElement typeParamElt = typeParamElts.get(index);
-      Set<Variance> siteVariance = EnumSet.noneOf(Variance.class);
-      for (Variance variance : Variance.values()) {
-        if (Helper.resolveSiteVariance(typeParamElt, variance)) {
-          siteVariance.add(variance);
-        }
-      }
-      logger.log(Level.FINE, "Site variances of " + modelElt + " " + typeParamElt + " : " + siteVariance);
-      typeParams.add(new TypeParamInfo.Class(modelElt.getQualifiedName().toString(), index, typeParamElt.getSimpleName().toString(), siteVariance));
     }
   }
 
