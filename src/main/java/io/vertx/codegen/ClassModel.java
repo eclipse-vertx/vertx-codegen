@@ -376,7 +376,7 @@ public class ClassModel implements Model {
       if (type instanceof TypeInfo.Parameterized) {
         TypeInfo.Parameterized parameterized = (TypeInfo.Parameterized) type;
         for (TypeInfo param : parameterized.getArgs()) {
-          if (!(param instanceof TypeInfo.Variable || param instanceof TypeInfo.Wildcard)) {
+          if (!(param instanceof TypeInfo.Variable || param.getKind() == ClassKind.VOID)) {
             return false;
           }
         }

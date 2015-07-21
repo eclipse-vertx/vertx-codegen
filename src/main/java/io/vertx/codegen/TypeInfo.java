@@ -12,7 +12,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
-import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.lang.reflect.ParameterizedType;
@@ -122,21 +121,9 @@ public abstract class TypeInfo {
           return Primitive.PRIMITIVES.get(type.toString());
         case TYPEVAR:
           return create((TypeVariable) type);
-        case WILDCARD:
-          return create((WildcardType) type);
         default:
           throw new IllegalArgumentException("Illegal type " + type + " of kind " + type.getKind());
       }
-    }
-
-    public Wildcard create(WildcardType type) {
-      if (type.getExtendsBound() != null) {
-        throw new IllegalArgumentException("Wildcard type cannot have an upper bound");
-      }
-      if (type.getSuperBound() != null) {
-        throw new IllegalArgumentException("Wildcard type cannot have a lower bound");
-      }
-      return new Wildcard();
     }
 
     public TypeInfo create(DeclaredType type) {
@@ -218,27 +205,6 @@ public abstract class TypeInfo {
         typeParams.add(new TypeParamInfo.Class(elt.getQualifiedName().toString(), index, typeParamElt.getSimpleName().toString(), siteVariance));
       }
       return typeParams;
-    }
-  }
-
-  /**
-   * Simple wildcard without bound support.
-   */
-  public static class Wildcard extends TypeInfo {
-
-    @Override
-    public boolean equals(Object obj) {
-      return obj instanceof Wildcard;
-    }
-
-    @Override
-    public String format(boolean qualified) {
-      return "?";
-    }
-
-    @Override
-    public ClassKind getKind() {
-      return ClassKind.OBJECT;
     }
   }
 

@@ -112,8 +112,9 @@ import io.vertx.test.codegen.testapi.MethodWithValidSetReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenParams;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidVoidReturn;
+import io.vertx.test.codegen.testapi.MethodWithValidVoidTypeArg;
 import io.vertx.test.codegen.testapi.MethodWithWildcardLowerBoundTypeArg;
-import io.vertx.test.codegen.testapi.MethodWithWildcardTypeArg;
+import io.vertx.test.codegen.testapi.MethodWithInvalidWildcardTypeArg;
 import io.vertx.test.codegen.testapi.MethodWithWildcardUpperBoundTypeArg;
 import io.vertx.test.codegen.testapi.NestedInterface;
 import io.vertx.test.codegen.testapi.NoVertxGen;
@@ -367,6 +368,11 @@ public class GeneratorTest {
 
   // Various
 
+  @Test
+  public void testInvalidWildcardTypeArg() throws Exception {
+    assertGenInvalid(MethodWithInvalidWildcardTypeArg.class);
+  }
+
   // Test valid stuff
   // ----------------
 
@@ -437,15 +443,15 @@ public class GeneratorTest {
   }
 
   @Test
-  public void testValidWildcardTypeArg() throws Exception {
-    ClassModel model = new Generator().generateClass(MethodWithWildcardTypeArg.class);
+  public void testValidVoidTypeArg() throws Exception {
+    ClassModel model = new Generator().generateClass(MethodWithValidVoidTypeArg.class);
     assertEquals(1, model.getMethods().size());
     MethodInfo mi = model.getMethods().get(0);
     assertEquals("foo", mi.getName());
-    assertEquals(new TypeInfo.Parameterized(new TypeInfo.Class(ClassKind.API, GenericInterface.class.getName(), null, false, Collections.emptyList()), Arrays.asList(new TypeInfo.Wildcard())), mi.getParams().get(0).getType());
+    assertEquals(new TypeInfo.Parameterized(new TypeInfo.Class(ClassKind.API, GenericInterface.class.getName(), null, false, Collections.emptyList()), Arrays.asList(TypeInfo.create(Void.class))), mi.getParams().get(0).getType());
     TypeInfo.Parameterized genericType = (TypeInfo.Parameterized) mi.getParams().get(0).getType();
-    TypeInfo.Wildcard wildcard = (TypeInfo.Wildcard) genericType.getArgs().get(0);
-    assertEquals(ClassKind.OBJECT, wildcard.getKind());
+    TypeInfo.Class voidType = (TypeInfo.Class) genericType.getArgs().get(0);
+    assertEquals(ClassKind.VOID , voidType.getKind());
   }
 
   @Test
