@@ -110,6 +110,7 @@ The following set `P` of types are permitted as parameters to any API method:
     * the set `J`
     * the set `V`    
 * any Enum class
+* the exact `java.lang.Throwable` class
 * `io.vertx.java.core.Handler<io.vertx.java.core.AsyncResult<HA>>` where `HA` contains
     * the set `B`
     * the set `V`

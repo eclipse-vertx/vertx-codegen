@@ -61,6 +61,7 @@ import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultParam;
 import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerNonVertxGenReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerParam;
+import io.vertx.test.codegen.testapi.MethodWithInvalidExceptionParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerAsyncResultDataObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerDataObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidListParams1;
@@ -109,6 +110,7 @@ import io.vertx.test.codegen.testapi.MethodWithValidMapParams;
 import io.vertx.test.codegen.testapi.MethodWithValidMapReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidSetParams;
 import io.vertx.test.codegen.testapi.MethodWithValidSetReturn;
+import io.vertx.test.codegen.testapi.MethodWithValidThrowableParam;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenParams;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidVoidReturn;
@@ -651,6 +653,21 @@ public class GeneratorTest {
   }
 
   @Test
+  public void testValidExceptionParam() throws Exception {
+    ClassModel model = new Generator().generateClass(MethodWithValidThrowableParam.class);
+    assertEquals(0, model.getReferencedTypes().size());
+    assertEquals(1, model.getImportedTypes().size());
+    assertEquals(ClassKind.THROWABLE, model.getImportedTypes().iterator().next().getKind());
+    assertEquals(1, model.getMethods().size());
+    String methodName = "methodWithThrowableParam";
+
+    MethodInfo method = model.getMethods().get(0);
+    checkMethod(method, methodName, 1, "void", MethodKind.OTHER);
+    List<ParamInfo> params = method.getParams();
+    checkParam(params.get(0), "t", Throwable.class);
+  }
+
+  @Test
   public void testValidObjectParam() throws Exception {
     ClassModel model = new Generator().generateClass(MethodWithObjectParam.class);
     assertEquals(MethodWithObjectParam.class.getName(), model.getIfaceFQCN());
@@ -1175,8 +1192,10 @@ public class GeneratorTest {
           TypeInfo.create(GenericAbstractInterface.class)
       ), methods.get(i).getOwnerTypes());
     }
-    checkParam(methods.get(2).getParams().get(0), "handler", new TypeLiteral<Handler<AsyncResult<String>>>(){});
-    checkParam(methods.get(3).getParams().get(0), "handler", new TypeLiteral<Handler<String>>(){});
+    checkParam(methods.get(2).getParams().get(0), "handler", new TypeLiteral<Handler<AsyncResult<String>>>() {
+    });
+    checkParam(methods.get(3).getParams().get(0), "handler", new TypeLiteral<Handler<String>>() {
+    });
     checkParam(methods.get(4).getParams().get(0), "t", String.class);
   }
 
@@ -1574,6 +1593,11 @@ public class GeneratorTest {
   @Test
   public void testMethodInvalidHandlerAsyncResultDataObjectsParam() throws Exception {
     assertGenFail(MethodWithInvalidHandlerAsyncResultDataObjectParam.class, "Option without toJson() in AsyncResult param should fail");
+  }
+
+  @Test
+  public void testMethodInvalidThrowableParam() throws Exception {
+    assertGenInvalid(MethodWithInvalidExceptionParam.class);
   }
 
   @Test

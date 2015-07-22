@@ -227,7 +227,8 @@ public class ClassModel implements Model {
     // Basic types, int, long, String etc
     // JsonObject or JsonArray
     // Also can use Object as a param type (e.g. for EventBus)
-    if (typeInfo.getKind().basic || typeInfo.getKind().json || typeInfo.getKind() == ClassKind.OBJECT) {
+    if (typeInfo.getKind().basic || typeInfo.getKind().json ||
+        typeInfo.getKind() == ClassKind.OBJECT || typeInfo.getKind() == ClassKind.THROWABLE) {
       return;
     }
     // We also allow enums as parameter types

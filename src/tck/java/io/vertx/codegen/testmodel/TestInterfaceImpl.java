@@ -1193,6 +1193,11 @@ public class TestInterfaceImpl implements TestInterface {
     return new Exception(strVal);
   }
 
+  @Override
+  public String methodWithThrowableParam(Throwable t) {
+    return t.getMessage();
+  }
+
   private static class HandlerTestMap<V> implements Map<String, V> {
     private Handler<String> handler;
     private Map<String, V> map;
