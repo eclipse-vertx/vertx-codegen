@@ -4,11 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.GenModule;
+import io.vertx.codegen.annotations.ProxyGen;
+import io.vertx.codegen.annotations.VertxGen;
 import org.mvel2.MVEL;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
@@ -18,6 +21,7 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -35,8 +39,6 @@ import java.util.stream.Stream;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@SupportedAnnotationTypes({"io.vertx.codegen.annotations.VertxGen","io.vertx.codegen.annotations.ProxyGen","io.vertx.codegen.annotations.DataObject",
-  "io.vertx.codegen.annotations.GenModule"})
 @javax.annotation.processing.SupportedOptions({"outputDirectory","codeGenerators"})
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)
 public class CodeGenProcessor extends AbstractProcessor {
@@ -45,6 +47,17 @@ public class CodeGenProcessor extends AbstractProcessor {
   private static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
   private File outputDirectory;
   private Map<String, List<CodeGenerator>> codeGenerators;
+
+  @Override
+  public Set<String> getSupportedAnnotationTypes() {
+    return Arrays.asList(
+        VertxGen.class,
+        ProxyGen.class,
+        DataObject.class,
+        DataObject.class,
+        GenModule.class
+    ).stream().map(Class::getName).collect(Collectors.toSet());
+  }
 
   private Collection<CodeGenerator> getCodeGenerators() {
     if (codeGenerators == null) {
