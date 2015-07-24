@@ -34,7 +34,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -100,7 +99,7 @@ public class ProxyModel extends ClassModel {
   }
 
   @Override
-  protected void checkReturnType(ExecutableElement elem, TypeInfo type) {
+  protected void checkReturnType(ExecutableElement elem, TypeInfo type, TypeMirror typeMirror) {
 
     if (elem.getModifiers().contains(Modifier.STATIC)) {
       // Ignore static methods - we won't use them anyway

@@ -64,6 +64,7 @@ import io.vertx.test.codegen.testapi.MethodWithHandlerParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidExceptionParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerAsyncResultDataObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerDataObjectParam;
+import io.vertx.test.codegen.testapi.MethodWithInvalidNestedEnumParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidListParams1;
 import io.vertx.test.codegen.testapi.MethodWithInvalidListParams2;
 import io.vertx.test.codegen.testapi.MethodWithInvalidListReturn1;
@@ -1598,6 +1599,11 @@ public class GeneratorTest {
   @Test
   public void testMethodInvalidThrowableParam() throws Exception {
     assertGenInvalid(MethodWithInvalidExceptionParam.class);
+  }
+
+  @Test
+  public void testMethodInvalidNestedEnumParam() throws Exception {
+    assertGenInvalid(MethodWithInvalidNestedEnumParam.class);
   }
 
   @Test

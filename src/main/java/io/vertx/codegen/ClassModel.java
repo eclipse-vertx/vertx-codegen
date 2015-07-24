@@ -233,7 +233,7 @@ public class ClassModel implements Model {
       return;
     }
     // We also allow enums as parameter types
-    if (typeInfo.getKind() == ClassKind.ENUM) {
+    if (isLegalEnum(type)) {
       return;
     }
     // Check legal handlers
@@ -261,7 +261,7 @@ public class ClassModel implements Model {
     throw new GenException(elem, "type " + typeInfo + " is not legal for use for a parameter in code generation");
   }
 
-  protected void checkReturnType(ExecutableElement elem, TypeInfo type) {
+  protected void checkReturnType(ExecutableElement elem, TypeInfo type, TypeMirror typeMirror) {
     // Basic types, int, long, String etc
     // JsonObject or JsonArray
     // void
@@ -269,7 +269,7 @@ public class ClassModel implements Model {
       return;
     }
     // We also allow enums as return types
-    if (type.getKind() == ClassKind.ENUM) {
+    if (isLegalEnum(typeMirror)) {
       return;
     }
 
@@ -293,6 +293,18 @@ public class ClassModel implements Model {
     }
 
     throw new GenException(elem, "type " + type + " is not legal for use for a return type in code generation");
+  }
+
+  private boolean isLegalEnum(TypeMirror type) {
+    if (type.getKind() != TypeKind.DECLARED) {
+      return false;
+    }
+    Element typeElt = ((DeclaredType) type).asElement();
+    if (typeElt.getKind() != ElementKind.ENUM) {
+      return false;
+    }
+    Element enclosing = typeElt.getEnclosingElement();
+    return enclosing.getKind() == ElementKind.PACKAGE;
   }
 
   private boolean isVariableType(TypeInfo type) {
@@ -688,7 +700,7 @@ public class ClassModel implements Model {
 
     // Only check the return type if not fluent, because generated code won't look it at anyway
     if (!isFluent) {
-      checkReturnType(methodElt, returnType);
+      checkReturnType(methodElt, returnType, methodType.getReturnType());
     }
 
     // Determine method kind + validate
