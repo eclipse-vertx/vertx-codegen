@@ -689,6 +689,7 @@ public class GeneratorTest {
     ClassModel model = new Generator().generateClass(MethodWithEnumParam.class);
     assertEquals(MethodWithEnumParam.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithEnumParam.class.getSimpleName(), model.getIfaceSimpleName());
+    assertTrue(model.getImportedTypes().contains(TypeInfo.create(TestEnum.class)));
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
     assertEquals(1, model.getMethods().size());
@@ -707,6 +708,7 @@ public class GeneratorTest {
     ClassModel model = new Generator().generateClass(MethodWithEnumReturn.class);
     assertEquals(MethodWithEnumReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithEnumReturn.class.getSimpleName(), model.getIfaceSimpleName());
+    assertTrue(model.getImportedTypes().contains(TypeInfo.create(TestEnum.class)));
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
     assertEquals(1, model.getMethods().size());
