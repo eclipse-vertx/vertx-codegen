@@ -43,6 +43,7 @@ public class DataObjectModel implements Model {
   private final TypeElement modelElt;
   private boolean processed = false;
   private boolean concrete;
+  private boolean isClass;
   private final Map<String, PropertyInfo> propertyMap = new LinkedHashMap<>();
   private final Set<TypeInfo.Class> superTypes = new LinkedHashSet<>();
   private TypeInfo.Class superType;
@@ -110,6 +111,10 @@ public class DataObjectModel implements Model {
     return type.getRaw().getModule();
   }
 
+  public boolean isClass() {
+    return isClass;
+  }
+
   @Override
   public Map<String, Object> getVars() {
     HashMap<String, Object> vars = new HashMap<>();
@@ -142,7 +147,8 @@ public class DataObjectModel implements Model {
   }
 
   private void traverse() {
-    this.concrete = modelElt.getKind() == ElementKind.CLASS;
+    this.isClass = modelElt.getKind() == ElementKind.CLASS;
+    this.concrete = isClass && !modelElt.getModifiers().contains(Modifier.ABSTRACT);
     try {
       this.type = (TypeInfo.Class) typeFactory.create(modelElt.asType());
     } catch (ClassCastException e) {
@@ -291,14 +297,14 @@ public class DataObjectModel implements Model {
           // A stream that list all overriden methods from super types
           // the boolean control whether or not we want to filter only annotated
           // data objects
-          Function<Boolean, Stream<ExecutableElement>> overridenMethods = (annotated) -> {
-            Set<DeclaredType> ancestorTypes = Helper.resolveAncestorTypes(modelElt);
+          Function<Boolean, Stream<ExecutableElement>> overridenMeths = (annotated) -> {
+            Set<DeclaredType> ancestorTypes = Helper.resolveAncestorTypes(modelElt, true, true);
             return ancestorTypes.
                 stream().
                 map(DeclaredType::asElement).
-                filter(superTypeElt -> !annotated || superTypeElt.getAnnotation(DataObject.class) != null).
+                filter(elt -> !annotated || elt.getAnnotation(DataObject.class) != null).
                 flatMap(Helper.cast(TypeElement.class)).
-                flatMap(superTypeElt -> elementUtils.getAllMembers(superTypeElt).stream()).
+                flatMap(elt -> elementUtils.getAllMembers(elt).stream()).
                 flatMap(Helper.instanceOf(ExecutableElement.class)).
                 filter(executableElt -> executableElt.getKind() == ElementKind.METHOD && elementUtils.overrides(methodElt, executableElt, modelElt));
           };
@@ -306,15 +312,16 @@ public class DataObjectModel implements Model {
           boolean declared;
           Element ownerElt = methodElt.getEnclosingElement();
           if (ownerElt.equals(modelElt)) {
+            Object[] arr = overridenMeths.apply(true).limit(1).filter(elt -> !elt.getModifiers().contains(Modifier.ABSTRACT)).toArray();
             // Handle the case where this methods overrides from another data object
-            declared = overridenMethods.apply(true).count() == 0;
+            declared = arr.length == 0;
           } else {
             declared = ownerElt.getAnnotation(DataObject.class) == null;
           }
 
           Doc doc = docFactory.createDoc(methodElt);
           if (doc == null) {
-            Optional<Doc> first = overridenMethods.apply(false).
+            Optional<Doc> first = overridenMeths.apply(false).
                 map(docFactory::createDoc).
                 filter(d -> d != null).
                 findFirst();

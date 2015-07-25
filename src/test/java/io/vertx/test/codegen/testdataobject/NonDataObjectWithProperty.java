@@ -1,10 +1,22 @@
 package io.vertx.test.codegen.testdataobject;
 
+import io.vertx.core.json.JsonObject;
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public interface NonDataObjectWithProperty<T extends NonDataObjectWithProperty> {
+public class NonDataObjectWithProperty {
 
-  T setNonDataObjectProperty(String value);
+  public NonDataObjectWithProperty() {
+  }
 
+  public NonDataObjectWithProperty(JsonObject json) {
+  }
+
+  public NonDataObjectWithProperty(NonDataObjectWithProperty that) {
+  }
+
+  public NonDataObjectWithProperty setNonDataObjectProperty(String value) {
+    return this;
+  }
 }

@@ -25,6 +25,10 @@ public class PropertyInfo {
     this.adder = adder;
   }
 
+  /**
+   * @return true if the property is declared by the its data object, that means it does not override the same property
+   *   from other data object ancestors
+   */
   public boolean isDeclared() {
     return declared;
   }

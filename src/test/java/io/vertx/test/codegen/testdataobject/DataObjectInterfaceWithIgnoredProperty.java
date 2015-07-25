@@ -7,12 +7,12 @@ import io.vertx.codegen.annotations.GenIgnore;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @DataObject
-public interface DataObjectWithIgnoredProperty {
+public interface DataObjectInterfaceWithIgnoredProperty {
 
   @GenIgnore
-  DataObjectWithIgnoredProperty setIgnoredProperty1(String value);
+  DataObjectInterfaceWithIgnoredProperty setIgnoredProperty1(String value);
 
   @GenIgnore
-  DataObjectWithIgnoredProperty addIgnoredProperty2(String value);
+  DataObjectInterfaceWithIgnoredProperty addIgnoredProperty2(String value);
 
 }

@@ -623,24 +623,26 @@ public class Helper {
    * @param typeElt the type element to resolve
    * @return the set of ancestors
    */
-  public static Set<DeclaredType> resolveAncestorTypes(TypeElement typeElt) {
+  public static Set<DeclaredType> resolveAncestorTypes(TypeElement typeElt, boolean withSuper, boolean withInterfaces) {
     Set<DeclaredType> ancestors = new LinkedHashSet<>();
-    resolveAncestorTypes(typeElt, ancestors);
+    resolveAncestorTypes(typeElt, ancestors, withSuper, withInterfaces);
     return ancestors;
   }
 
-  private static void resolveAncestorTypes(TypeElement typeElt, Set<DeclaredType> ancestors) {
+  private static void resolveAncestorTypes(TypeElement typeElt, Set<DeclaredType> ancestors, boolean withSuper, boolean withInterfaces) {
     List<TypeMirror> superTypes = new ArrayList<>();
-    if (typeElt.getSuperclass() != null) {
+    if (withSuper && typeElt.getSuperclass() != null) {
       superTypes.add(typeElt.getSuperclass());
     }
-    superTypes.addAll(typeElt.getInterfaces());
+    if (withInterfaces) {
+      superTypes.addAll(typeElt.getInterfaces());
+    }
     for (TypeMirror superType : superTypes) {
       if (superType.getKind() == TypeKind.DECLARED) {
         DeclaredType superDeclaredType = (DeclaredType) superType;
         if (!ancestors.contains(superDeclaredType)) {
           ancestors.add(superDeclaredType);
-          resolveAncestorTypes((TypeElement) superDeclaredType.asElement(), ancestors);
+          resolveAncestorTypes((TypeElement) superDeclaredType.asElement(), ancestors, withSuper, withInterfaces);
         }
       }
     }

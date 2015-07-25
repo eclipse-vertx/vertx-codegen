@@ -28,16 +28,17 @@ import io.vertx.test.codegen.testdataobject.CommentedProperty;
 import io.vertx.test.codegen.testdataobject.CommentedPropertyInheritedFromCommentedProperty;
 import io.vertx.test.codegen.testdataobject.CommentedPropertyOverridesCommentedProperty;
 import io.vertx.test.codegen.testdataobject.CommentedPropertyOverridesUncommentedProperty;
-import io.vertx.test.codegen.testdataobject.DataObjectWithIgnoredProperty;
+import io.vertx.test.codegen.testdataobject.ConcreteOverridesFromAbstractDataObject;
+import io.vertx.test.codegen.testdataobject.DataObjectInterfaceWithIgnoredProperty;
 import io.vertx.test.codegen.testdataobject.UncommentedPropertyOverridesSuperCommentedProperty;
 import io.vertx.test.codegen.testdataobject.Concrete;
 import io.vertx.test.codegen.testdataobject.ConcreteInheritsAbstract;
-import io.vertx.test.codegen.testdataobject.ConcreteInheritsConcrete;
-import io.vertx.test.codegen.testdataobject.ConcreteInheritsNonDataObject;
-import io.vertx.test.codegen.testdataobject.ConcreteInheritsOverridenPropertyFromNonDataObject;
-import io.vertx.test.codegen.testdataobject.ConcreteInheritsOverridenPropertyFromDataObject;
-import io.vertx.test.codegen.testdataobject.ConcreteInheritsPropertyFromNonDataObject;
-import io.vertx.test.codegen.testdataobject.ConcreteInheritsPropertyFromDataObject;
+import io.vertx.test.codegen.testdataobject.ConcreteExtendsConcrete;
+import io.vertx.test.codegen.testdataobject.ConcreteImplementsNonDataObject;
+import io.vertx.test.codegen.testdataobject.ConcreteOverridesFromNonDataObject;
+import io.vertx.test.codegen.testdataobject.ConcreteOverridesFromDataObject;
+import io.vertx.test.codegen.testdataobject.ConcreteImplementsFromNonDataObject;
+import io.vertx.test.codegen.testdataobject.ConcreteImplementsFromDataObject;
 import io.vertx.test.codegen.testdataobject.Empty;
 import io.vertx.test.codegen.testdataobject.IgnoreMethods;
 import io.vertx.test.codegen.testdataobject.ImportedNested;
@@ -228,7 +229,7 @@ public class DataObjectTest {
 
   @Test
   public void testConcreteInheritsConcrete() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ConcreteInheritsConcrete.class);
+    DataObjectModel model = new Generator().generateDataObject(ConcreteExtendsConcrete.class);
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(0, model.getPropertyMap().size());
@@ -238,7 +239,7 @@ public class DataObjectTest {
   }
 
   @Test
-  public void testConcreteInheritsAbstract() throws Exception {
+  public void testConcreteImplementsAbstract() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(ConcreteInheritsAbstract.class);
     assertNotNull(model);
     assertTrue(model.isConcrete());
@@ -249,16 +250,16 @@ public class DataObjectTest {
   }
 
   @Test
-  public void testConcreteInheritsNonOption() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ConcreteInheritsNonDataObject.class);
+  public void testConcreteImplementsNonDataObject() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(ConcreteImplementsNonDataObject.class);
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(0, model.getPropertyMap().size());
   }
 
   @Test
-  public void testConcreteInheritsPropertyFromNonDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ConcreteInheritsPropertyFromNonDataObject.class);
+  public void testConcreteImplementsFromNonDataObject() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(ConcreteImplementsFromNonDataObject.class);
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(1, model.getPropertyMap().size());
@@ -267,31 +268,42 @@ public class DataObjectTest {
   }
 
   @Test
-  public void testConcreteInheritsPropertyFromDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ConcreteInheritsPropertyFromDataObject.class);
+  public void testConcreteImplementsFromDataObject() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(ConcreteImplementsFromDataObject.class);
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("nonDataObjectProperty"), "nonDataObjectProperty", TypeInfo.create(String.class), false, false, false);
+    assertProperty(model.getPropertyMap().get("dataObjectProperty"), "dataObjectProperty", TypeInfo.create(String.class), true, false, false);
   }
 
   @Test
-  public void testConcreteInheritsOveriddenPropertyFromDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ConcreteInheritsOverridenPropertyFromDataObject.class);
+  public void testConcreteOverridesFromDataObject() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(ConcreteOverridesFromDataObject.class);
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("nonDataObjectProperty"), "nonDataObjectProperty", TypeInfo.create(String.class), false, false, false);
+    assertProperty(model.getPropertyMap().get("dataObjectProperty"), "dataObjectProperty", TypeInfo.create(String.class), false, false, false);
   }
 
   @Test
-  public void testConcreteInheritsOverridenPropertyFromNonDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ConcreteInheritsOverridenPropertyFromNonDataObject.class);
+  public void testConcreteOverridesFromNonDataObject() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(ConcreteOverridesFromNonDataObject.class);
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(1, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("nonDataObjectProperty"), "nonDataObjectProperty", TypeInfo.create(String.class), true, false, false);
     assertEquals(Collections.<TypeInfo.Class>emptySet(), model.getSuperTypes());
+  }
+
+  @Test
+  public void testConcreteOverridesFromAbstractDataObject() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(ConcreteOverridesFromAbstractDataObject.class);
+    assertNotNull(model);
+    assertTrue(model.isConcrete());
+    assertEquals(3, model.getPropertyMap().size());
+    assertProperty(model.getPropertyMap().get("inheritedProperty"), "inheritedProperty", TypeInfo.create(String.class), false, false, false);
+    assertProperty(model.getPropertyMap().get("overriddenProperty"), "overriddenProperty", TypeInfo.create(String.class), false, false, false);
+    assertProperty(model.getPropertyMap().get("abstractProperty"), "abstractProperty", TypeInfo.create(String.class), true, false, false);
   }
 
   @Test
@@ -395,7 +407,7 @@ public class DataObjectTest {
 
   @Test
   public void testDataObjectWithIgnoredProperty() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(DataObjectWithIgnoredProperty.class);
+    DataObjectModel model = new Generator().generateDataObject(DataObjectInterfaceWithIgnoredProperty.class);
     assertNotNull(model);
     assertEquals(0, model.getPropertyMap().size());
   }
@@ -403,7 +415,7 @@ public class DataObjectTest {
   private static void assertProperty(PropertyInfo property, String expectedName, TypeInfo expectedType,
                                      boolean expectedDeclared, boolean expectedArray, boolean expectedAdder) {
     assertNotNull(property);
-    assertEquals(expectedDeclared, property.isDeclared());
+    assertEquals("Was expecting property to have be declared=" + expectedDeclared, expectedDeclared, property.isDeclared());
     assertEquals(expectedName, property.getName());
     assertEquals(expectedType, property.getType());
     assertEquals(expectedArray, property.isArray());

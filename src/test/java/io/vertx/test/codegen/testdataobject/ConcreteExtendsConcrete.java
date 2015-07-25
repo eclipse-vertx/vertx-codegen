@@ -7,13 +7,13 @@ import io.vertx.core.json.JsonObject;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @DataObject
-public class ConcreteInheritsConcrete extends Concrete {
-  public ConcreteInheritsConcrete() {
+public class ConcreteExtendsConcrete extends Concrete {
+  public ConcreteExtendsConcrete() {
   }
 
-  public ConcreteInheritsConcrete(ConcreteInheritsConcrete other) {
+  public ConcreteExtendsConcrete(ConcreteExtendsConcrete other) {
   }
 
-  public ConcreteInheritsConcrete(JsonObject json) {
+  public ConcreteExtendsConcrete(JsonObject json) {
   }
 }

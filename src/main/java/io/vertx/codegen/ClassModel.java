@@ -603,7 +603,7 @@ public class ClassModel implements Model {
     ownerTypes.add(type);
 
     // Check overrides
-    for (DeclaredType ancestorType : Helper.resolveAncestorTypes(modelElt)) {
+    for (DeclaredType ancestorType : Helper.resolveAncestorTypes(modelElt, true, true)) {
       TypeElement ancestorElt = (TypeElement) ancestorType.asElement();
       if (ancestorElt.getAnnotation(VertxGen.class) != null) {
         elementUtils.getAllMembers(ancestorElt).
