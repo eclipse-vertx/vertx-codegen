@@ -17,6 +17,6 @@ public interface AdderWithNestedDataObject {
     throw new UnsupportedOperationException();
   }
 
-  AdderWithNestedDataObject addNested(Empty nested);
+  AdderWithNestedDataObject addNested(EmptyDataObject nested);
 
 }

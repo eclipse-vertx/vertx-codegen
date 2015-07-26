@@ -8,6 +8,6 @@ import io.vertx.codegen.annotations.DataObject;
 @DataObject
 public interface SetterWithNestedDataObject {
 
-  SetterWithNestedDataObject setNested(Empty nested);
+  SetterWithNestedDataObject setNested(EmptyDataObject nested);
 
 }

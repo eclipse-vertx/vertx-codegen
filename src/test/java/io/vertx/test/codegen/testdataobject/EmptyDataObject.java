@@ -7,14 +7,14 @@ import io.vertx.core.json.JsonObject;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @DataObject
-public class Empty {
+public class EmptyDataObject {
 
-  public Empty() {
+  public EmptyDataObject() {
   }
 
-  public Empty(Empty other) {
+  public EmptyDataObject(EmptyDataObject other) {
   }
 
-  public Empty(JsonObject json) {
+  public EmptyDataObject(JsonObject json) {
   }
 }

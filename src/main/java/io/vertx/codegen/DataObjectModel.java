@@ -13,6 +13,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -27,6 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
@@ -253,7 +255,8 @@ public class DataObjectModel implements Model {
     String mutatorMethod = methodElt.getSimpleName().toString();
     if (mutatorMethod.length() > 3) {
       String prefix = mutatorMethod.substring(0, 3);
-      String name = Helper.normalizePropertyName(mutatorMethod.substring(3));
+      String abc = mutatorMethod.substring(3);
+      String name = Helper.normalizePropertyName(abc);
       List<? extends VariableElement> parameters = methodElt.getParameters();
       switch (prefix) {
         case "add":
@@ -261,8 +264,9 @@ public class DataObjectModel implements Model {
           if (parameters.size() != 1) {
             return;
           }
-          VariableElement parameterElt = parameters.get(0);
-          TypeInfo type = typeFactory.create(parameterElt.asType());
+          VariableElement paramElt = parameters.get(0);
+          TypeMirror propTypeMirror = paramElt.asType();
+          TypeInfo propType = typeFactory.create(propTypeMirror);
           boolean array;
           boolean adder;
           if ("add".equals(prefix)) {
@@ -275,24 +279,49 @@ public class DataObjectModel implements Model {
             adder = true;
           } else {
             adder = false;
-            if (type.getKind() == ClassKind.LIST) {
-              type = ((TypeInfo.Parameterized) type).getArgs().get(0);
+            if (propType.getKind() == ClassKind.LIST) {
+              propType = ((TypeInfo.Parameterized) propType).getArgs().get(0);
               array = true;
             } else {
               array = false;
             }
           }
-          switch (type.getKind()) {
+
+          boolean jsonifiable;
+          switch (propType.getKind()) {
             case PRIMITIVE:
             case BOXED_PRIMITIVE:
             case STRING:
-            case DATA_OBJECT:
             case API:
             case JSON_OBJECT:
+              jsonifiable = true;
+              break;
+            case DATA_OBJECT:
+              TypeMirror jsonType = elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType();
+              Element propTypeElt = typeUtils.asElement(propTypeMirror);
+              jsonifiable = propTypeElt.getAnnotation(DataObject.class) == null ||
+                  elementUtils.getAllMembers(
+                      (TypeElement) propTypeElt).stream().
+                      flatMap(Helper.FILTER_METHOD).
+                      filter(exeElt -> exeElt.getSimpleName().toString().equals("toJson") && typeUtils.isSameType(jsonType, exeElt.getReturnType())).
+                      count() > 0;
               break;
             default:
               return;
           }
+
+          String readerMethod;
+          if (propType.getName().equals("boolean") || propType.getName().equals("java.lang.Boolean")) {
+            readerMethod = "is" + abc;
+          } else {
+            readerMethod = "get" + abc;
+          }
+          boolean hasReader = elementUtils.getAllMembers(modelElt).
+              stream().
+              flatMap(Helper.FILTER_METHOD).
+              filter(elt -> elt.getSimpleName().toString().equals(readerMethod)).
+              filter(elt -> typeUtils.isSameType(elt.getReturnType(), propTypeMirror)).
+              count() > 0;
 
           // A stream that list all overriden methods from super types
           // the boolean control whether or not we want to filter only annotated
@@ -328,7 +357,7 @@ public class DataObjectModel implements Model {
             doc = first.orElse(null);
           }
 
-          PropertyInfo property = new PropertyInfo(declared, name, doc, type, mutatorMethod, array, adder);
+          PropertyInfo property = new PropertyInfo(declared, name, doc, propType, mutatorMethod, hasReader ? readerMethod : null, array, adder, jsonifiable);
           propertyMap.put(property.name, property);
         }
       }

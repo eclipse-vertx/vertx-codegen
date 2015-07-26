@@ -17,12 +17,10 @@ import io.vertx.test.codegen.testdataobject.AbstractInheritsAbstract;
 import io.vertx.test.codegen.testdataobject.AbstractUncommentedProperty;
 import io.vertx.test.codegen.testdataobject.AdderNormalizationRules;
 import io.vertx.test.codegen.testdataobject.AdderWithNestedDataObject;
-import io.vertx.test.codegen.testdataobject.ApiAdder;
 import io.vertx.test.codegen.testdataobject.ApiObject;
-import io.vertx.test.codegen.testdataobject.ApiSetter;
-import io.vertx.test.codegen.testdataobject.BasicAdders;
-import io.vertx.test.codegen.testdataobject.BasicGetters;
-import io.vertx.test.codegen.testdataobject.BasicSetters;
+import io.vertx.test.codegen.testdataobject.PropertyAdders;
+import io.vertx.test.codegen.testdataobject.PropertyGetters;
+import io.vertx.test.codegen.testdataobject.PropertySetters;
 import io.vertx.test.codegen.testdataobject.CommentedDataObject;
 import io.vertx.test.codegen.testdataobject.CommentedProperty;
 import io.vertx.test.codegen.testdataobject.CommentedPropertyInheritedFromCommentedProperty;
@@ -30,6 +28,7 @@ import io.vertx.test.codegen.testdataobject.CommentedPropertyOverridesCommentedP
 import io.vertx.test.codegen.testdataobject.CommentedPropertyOverridesUncommentedProperty;
 import io.vertx.test.codegen.testdataobject.ConcreteOverridesFromAbstractDataObject;
 import io.vertx.test.codegen.testdataobject.DataObjectInterfaceWithIgnoredProperty;
+import io.vertx.test.codegen.testdataobject.ToJsonDataObject;
 import io.vertx.test.codegen.testdataobject.UncommentedPropertyOverridesSuperCommentedProperty;
 import io.vertx.test.codegen.testdataobject.Concrete;
 import io.vertx.test.codegen.testdataobject.ConcreteInheritsAbstract;
@@ -39,7 +38,7 @@ import io.vertx.test.codegen.testdataobject.ConcreteOverridesFromNonDataObject;
 import io.vertx.test.codegen.testdataobject.ConcreteOverridesFromDataObject;
 import io.vertx.test.codegen.testdataobject.ConcreteImplementsFromNonDataObject;
 import io.vertx.test.codegen.testdataobject.ConcreteImplementsFromDataObject;
-import io.vertx.test.codegen.testdataobject.Empty;
+import io.vertx.test.codegen.testdataobject.EmptyDataObject;
 import io.vertx.test.codegen.testdataobject.IgnoreMethods;
 import io.vertx.test.codegen.testdataobject.ImportedNested;
 import io.vertx.test.codegen.testdataobject.ImportedSubinterface;
@@ -87,7 +86,7 @@ public class DataObjectTest {
 
   @Test
   public void testEmptyDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(Empty.class);
+    DataObjectModel model = new Generator().generateDataObject(EmptyDataObject.class);
     assertNotNull(model);
   }
 
@@ -101,22 +100,25 @@ public class DataObjectTest {
     DataObjectModel model = new Generator().generateDataObject(SetterWithNonFluentReturnType.class);
     assertNotNull(model);
     assertEquals(2, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("string"), "string", "setString", TypeInfo.create(String.class), true, false, false);
-    assertProperty(model.getPropertyMap().get("primitiveBoolean"), "primitiveBoolean", "setPrimitiveBoolean", TypeInfo.create(boolean.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("string"), "string", "setString", null, TypeInfo.create(String.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("primitiveBoolean"), "primitiveBoolean", "setPrimitiveBoolean", null, TypeInfo.create(boolean.class), true, false, false, true);
   }
 
   @Test
-  public void testBasicSetters() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(BasicSetters.class);
+  public void testPropertySetters() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(PropertySetters.class);
     assertNotNull(model);
-    assertEquals(7, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("string"), "string", "setString", TypeInfo.create(String.class), true, false, false);
-    assertProperty(model.getPropertyMap().get("boxedInteger"), "boxedInteger", "setBoxedInteger", TypeInfo.create(Integer.class), true, false, false);
-    assertProperty(model.getPropertyMap().get("primitiveInteger"), "primitiveInteger", "setPrimitiveInteger", TypeInfo.create(int.class), true, false, false);
-    assertProperty(model.getPropertyMap().get("boxedBoolean"), "boxedBoolean", "setBoxedBoolean", TypeInfo.create(Boolean.class), true, false, false);
-    assertProperty(model.getPropertyMap().get("primitiveBoolean"), "primitiveBoolean", "setPrimitiveBoolean", TypeInfo.create(boolean.class), true, false, false);
-    assertProperty(model.getPropertyMap().get("boxedLong"), "boxedLong", "setBoxedLong", TypeInfo.create(Long.class), true, false, false);
-    assertProperty(model.getPropertyMap().get("primitiveLong"), "primitiveLong", "setPrimitiveLong", TypeInfo.create(long.class), true, false, false);
+    assertEquals(10, model.getPropertyMap().size());
+    assertProperty(model.getPropertyMap().get("string"), "string", "setString", null, TypeInfo.create(String.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("boxedInteger"), "boxedInteger", "setBoxedInteger", null, TypeInfo.create(Integer.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("primitiveInteger"), "primitiveInteger", "setPrimitiveInteger", null, TypeInfo.create(int.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("boxedBoolean"), "boxedBoolean", "setBoxedBoolean", null, TypeInfo.create(Boolean.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("primitiveBoolean"), "primitiveBoolean", "setPrimitiveBoolean", null, TypeInfo.create(boolean.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("boxedLong"), "boxedLong", "setBoxedLong", null, TypeInfo.create(Long.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("primitiveLong"), "primitiveLong", "setPrimitiveLong", null, TypeInfo.create(long.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("apiObject"), "apiObject", "setApiObject", null, TypeInfo.create(ApiObject.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("dataObject"), "dataObject", "setDataObject", null, TypeInfo.create(EmptyDataObject.class), true, false, false, false);
+    assertProperty(model.getPropertyMap().get("toJsonDataObject"), "toJsonDataObject", "setToJsonDataObject", null, TypeInfo.create(ToJsonDataObject.class), true, false, false, true);
   }
 
   @Test
@@ -124,9 +126,9 @@ public class DataObjectTest {
     DataObjectModel model = new Generator().generateDataObject(SetterNormalizationRules.class);
     assertNotNull(model);
     assertEquals(3, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("ha"), "ha", "setHA", TypeInfo.create(boolean.class), true, false, false);
-    assertProperty(model.getPropertyMap().get("haGroup"), "haGroup", "setHAGroup", TypeInfo.create(boolean.class), true, false, false);
-    assertProperty(model.getPropertyMap().get("group"), "group", "setGroup", TypeInfo.create(boolean.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("ha"), "ha", "setHA", null, TypeInfo.create(boolean.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("haGroup"), "haGroup", "setHAGroup", null, TypeInfo.create(boolean.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("group"), "group", "setGroup", null, TypeInfo.create(boolean.class), true, false, false, true);
   }
 
   @Test
@@ -134,26 +136,28 @@ public class DataObjectTest {
     DataObjectModel model = new Generator().generateDataObject(ListBasicSetters.class);
     assertNotNull(model);
     assertEquals(5, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("extraClassPath"), "extraClassPath", "setExtraClassPath", TypeInfo.create(String.class), true, true, false);
-    assertProperty(model.getPropertyMap().get("strings"), "strings", "setStrings", TypeInfo.create(String.class), true, true, false);
-    assertProperty(model.getPropertyMap().get("boxedIntegers"), "boxedIntegers", "setBoxedIntegers", TypeInfo.create(Integer.class), true, true, false);
-    assertProperty(model.getPropertyMap().get("boxedBooleans"), "boxedBooleans", "setBoxedBooleans", TypeInfo.create(Boolean.class), true, true, false);
-    assertProperty(model.getPropertyMap().get("boxedLongs"), "boxedLongs", "setBoxedLongs", TypeInfo.create(Long.class), true, true, false);
+    assertProperty(model.getPropertyMap().get("extraClassPath"), "extraClassPath", "setExtraClassPath", null, TypeInfo.create(String.class), true, true, false, true);
+    assertProperty(model.getPropertyMap().get("strings"), "strings", "setStrings", null, TypeInfo.create(String.class), true, true, false, true);
+    assertProperty(model.getPropertyMap().get("boxedIntegers"), "boxedIntegers", "setBoxedIntegers", null, TypeInfo.create(Integer.class), true, true, false, true);
+    assertProperty(model.getPropertyMap().get("boxedBooleans"), "boxedBooleans", "setBoxedBooleans", null, TypeInfo.create(Boolean.class), true, true, false, true);
+    assertProperty(model.getPropertyMap().get("boxedLongs"), "boxedLongs", "setBoxedLongs", null, TypeInfo.create(Long.class), true, true, false, true);
   }
 
   @Test
-  public void testBasicGetters() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(BasicGetters.class);
+  public void testPropertyGetters() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(PropertyGetters.class);
     assertNotNull(model);
-    assertEquals(0, model.getPropertyMap().size());
-  }
-
-  @Test
-  public void testApiSetter() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ApiSetter.class);
-    assertNotNull(model);
-    assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("apiObject"), "apiObject", "setApiObject", TypeInfo.create(ApiObject.class), true, false, false);
+    assertEquals(10, model.getPropertyMap().size());
+    assertProperty(model.getPropertyMap().get("string"), "string", "setString", "getString", TypeInfo.create(String.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("boxedInteger"), "boxedInteger", "setBoxedInteger", "getBoxedInteger", TypeInfo.create(Integer.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("primitiveInteger"), "primitiveInteger", "setPrimitiveInteger", "getPrimitiveInteger", TypeInfo.create(int.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("boxedBoolean"), "boxedBoolean", "setBoxedBoolean", "isBoxedBoolean", TypeInfo.create(Boolean.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("primitiveBoolean"), "primitiveBoolean", "setPrimitiveBoolean", "isPrimitiveBoolean", TypeInfo.create(boolean.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("boxedLong"), "boxedLong", "setBoxedLong", "getBoxedLong", TypeInfo.create(Long.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("primitiveLong"), "primitiveLong", "setPrimitiveLong", "getPrimitiveLong", TypeInfo.create(long.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("apiObject"), "apiObject", "setApiObject", "getApiObject", TypeInfo.create(ApiObject.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("dataObject"), "dataObject", "setDataObject", "getDataObject", TypeInfo.create(EmptyDataObject.class), true, false, false, false);
+    assertProperty(model.getPropertyMap().get("toJsonDataObject"), "toJsonDataObject", "setToJsonDataObject", "getToJsonDataObject", TypeInfo.create(ToJsonDataObject.class), true, false, false, true);
   }
 
   @Test
@@ -161,21 +165,24 @@ public class DataObjectTest {
     DataObjectModel model = new Generator().generateDataObject(JsonObjectSetter.class);
     assertNotNull(model);
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("jsonObject"), "jsonObject", "setJsonObject", TypeInfo.create(JsonObject.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("jsonObject"), "jsonObject", "setJsonObject", null, TypeInfo.create(JsonObject.class), true, false, false, true);
   }
 
   @Test
-  public void testBasicAdders() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(BasicAdders.class);
+  public void testPropertyAdders() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(PropertyAdders.class);
     assertNotNull(model);
-    assertEquals(7, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("strings"), "strings", "addString", TypeInfo.create(String.class), true, true, true);
-    assertProperty(model.getPropertyMap().get("boxedIntegers"), "boxedIntegers", "addBoxedInteger", TypeInfo.create(Integer.class), true, true, true);
-    assertProperty(model.getPropertyMap().get("primitiveIntegers"), "primitiveIntegers", "addPrimitiveInteger", TypeInfo.create(int.class), true, true, true);
-    assertProperty(model.getPropertyMap().get("boxedBooleans"), "boxedBooleans", "addBoxedBoolean", TypeInfo.create(Boolean.class), true, true, true);
-    assertProperty(model.getPropertyMap().get("primitiveBooleans"), "primitiveBooleans", "addPrimitiveBoolean", TypeInfo.create(boolean.class), true, true, true);
-    assertProperty(model.getPropertyMap().get("boxedLongs"), "boxedLongs", "addBoxedLong", TypeInfo.create(Long.class), true, true, true);
-    assertProperty(model.getPropertyMap().get("primitiveLongs"), "primitiveLongs", "addPrimitiveLong", TypeInfo.create(long.class), true, true, true);
+    assertEquals(10, model.getPropertyMap().size());
+    assertProperty(model.getPropertyMap().get("strings"), "strings", "addString", null, TypeInfo.create(String.class), true, true, true, true);
+    assertProperty(model.getPropertyMap().get("boxedIntegers"), "boxedIntegers", "addBoxedInteger", null, TypeInfo.create(Integer.class), true, true, true, true);
+    assertProperty(model.getPropertyMap().get("primitiveIntegers"), "primitiveIntegers", "addPrimitiveInteger", null, TypeInfo.create(int.class), true, true, true, true);
+    assertProperty(model.getPropertyMap().get("boxedBooleans"), "boxedBooleans", "addBoxedBoolean", null, TypeInfo.create(Boolean.class), true, true, true, true);
+    assertProperty(model.getPropertyMap().get("primitiveBooleans"), "primitiveBooleans", "addPrimitiveBoolean", null, TypeInfo.create(boolean.class), true, true, true, true);
+    assertProperty(model.getPropertyMap().get("boxedLongs"), "boxedLongs", "addBoxedLong", null, TypeInfo.create(Long.class), true, true, true, true);
+    assertProperty(model.getPropertyMap().get("primitiveLongs"), "primitiveLongs", "addPrimitiveLong", null, TypeInfo.create(long.class), true, true, true, true);
+    assertProperty(model.getPropertyMap().get("apiObjects"), "apiObjects", "addApiObject", null, TypeInfo.create(ApiObject.class), true, true, true, true);
+    assertProperty(model.getPropertyMap().get("dataObjects"), "dataObjects", "addDataObject", null, TypeInfo.create(EmptyDataObject.class), true, true, true, false);
+    assertProperty(model.getPropertyMap().get("toJsonDataObjects"), "toJsonDataObjects", "addToJsonDataObject", null, TypeInfo.create(ToJsonDataObject.class), true, true, true, true);
   }
 
   @Test
@@ -183,17 +190,9 @@ public class DataObjectTest {
     DataObjectModel model = new Generator().generateDataObject(AdderNormalizationRules.class);
     assertNotNull(model);
     assertEquals(3, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("urls"), "urls", "addURL", TypeInfo.create(boolean.class), true, true, true);
-    assertProperty(model.getPropertyMap().get("urlLocators"), "urlLocators", "addURLLocator", TypeInfo.create(boolean.class), true, true, true);
-    assertProperty(model.getPropertyMap().get("locators"), "locators", "addLocator", TypeInfo.create(boolean.class), true, true, true);
-  }
-
-  @Test
-  public void testApiAdder() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ApiAdder.class);
-    assertNotNull(model);
-    assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("apiObjects"), "apiObjects", "addApiObject", TypeInfo.create(ApiObject.class), true, true, true);
+    assertProperty(model.getPropertyMap().get("urls"), "urls", "addURL", null, TypeInfo.create(boolean.class), true, true, true, true);
+    assertProperty(model.getPropertyMap().get("urlLocators"), "urlLocators", "addURLLocator", null, TypeInfo.create(boolean.class), true, true, true, true);
+    assertProperty(model.getPropertyMap().get("locators"), "locators", "addLocator", null, TypeInfo.create(boolean.class), true, true, true, true);
   }
 
   @Test
@@ -201,7 +200,7 @@ public class DataObjectTest {
     DataObjectModel model = new Generator().generateDataObject(JsonObjectAdder.class);
     assertNotNull(model);
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("jsonObjects"), "jsonObjects", "addJsonObject", TypeInfo.create(JsonObject.class), true, true, true);
+    assertProperty(model.getPropertyMap().get("jsonObjects"), "jsonObjects", "addJsonObject", null, TypeInfo.create(JsonObject.class), true, true, true, true);
   }
 
   @Test
@@ -209,7 +208,7 @@ public class DataObjectTest {
     DataObjectModel model = new Generator().generateDataObject(SetterWithNestedDataObject.class);
     assertNotNull(model);
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("nested"), "nested", "setNested", TypeInfo.create(Empty.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("nested"), "nested", "setNested", null, TypeInfo.create(EmptyDataObject.class), true, false, false, false);
   }
 
   @Test
@@ -217,7 +216,7 @@ public class DataObjectTest {
     DataObjectModel model = new Generator().generateDataObject(AdderWithNestedDataObject.class);
     assertNotNull(model);
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("nesteds"), "nesteds", "addNested", TypeInfo.create(Empty.class), true, true, true);
+    assertProperty(model.getPropertyMap().get("nesteds"), "nesteds", "addNested", null, TypeInfo.create(EmptyDataObject.class), true, true, true, false);
   }
 
   @Test
@@ -263,7 +262,7 @@ public class DataObjectTest {
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("nonDataObjectProperty"), "nonDataObjectProperty", "setNonDataObjectProperty", TypeInfo.create(String.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("nonDataObjectProperty"), "nonDataObjectProperty", "setNonDataObjectProperty", null, TypeInfo.create(String.class), true, false, false, true);
     assertEquals(Collections.<TypeInfo.Class>emptySet(), model.getSuperTypes());
   }
 
@@ -273,7 +272,7 @@ public class DataObjectTest {
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("dataObjectProperty"), "dataObjectProperty", "setDataObjectProperty", TypeInfo.create(String.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("dataObjectProperty"), "dataObjectProperty", "setDataObjectProperty", null, TypeInfo.create(String.class), true, false, false, true);
   }
 
   @Test
@@ -282,7 +281,7 @@ public class DataObjectTest {
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("dataObjectProperty"), "dataObjectProperty", "setDataObjectProperty", TypeInfo.create(String.class), false, false, false);
+    assertProperty(model.getPropertyMap().get("dataObjectProperty"), "dataObjectProperty", "setDataObjectProperty", null, TypeInfo.create(String.class), false, false, false, true);
   }
 
   @Test
@@ -291,7 +290,7 @@ public class DataObjectTest {
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(1, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("nonDataObjectProperty"), "nonDataObjectProperty", "setNonDataObjectProperty", TypeInfo.create(String.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("nonDataObjectProperty"), "nonDataObjectProperty", "setNonDataObjectProperty", null, TypeInfo.create(String.class), true, false, false, true);
     assertEquals(Collections.<TypeInfo.Class>emptySet(), model.getSuperTypes());
   }
 
@@ -301,9 +300,9 @@ public class DataObjectTest {
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(3, model.getPropertyMap().size());
-    assertProperty(model.getPropertyMap().get("inheritedProperty"), "inheritedProperty", "setInheritedProperty", TypeInfo.create(String.class), false, false, false);
-    assertProperty(model.getPropertyMap().get("overriddenProperty"), "overriddenProperty", "setOverriddenProperty", TypeInfo.create(String.class), false, false, false);
-    assertProperty(model.getPropertyMap().get("abstractProperty"), "abstractProperty", "setAbstractProperty", TypeInfo.create(String.class), true, false, false);
+    assertProperty(model.getPropertyMap().get("inheritedProperty"), "inheritedProperty", "setInheritedProperty", null, TypeInfo.create(String.class), false, false, false, true);
+    assertProperty(model.getPropertyMap().get("overriddenProperty"), "overriddenProperty", "setOverriddenProperty", null, TypeInfo.create(String.class), false, false, false, true);
+    assertProperty(model.getPropertyMap().get("abstractProperty"), "abstractProperty", "setAbstractProperty", null, TypeInfo.create(String.class), true, false, false, true);
   }
 
   @Test
@@ -412,15 +411,25 @@ public class DataObjectTest {
     assertEquals(0, model.getPropertyMap().size());
   }
 
-  private static void assertProperty(PropertyInfo property, String expectedName, String expectedMutator, TypeInfo expectedType,
-                                     boolean expectedDeclared, boolean expectedArray, boolean expectedAdder) {
+  private static void assertProperty(
+      PropertyInfo property,
+      String expectedName,
+      String expectedMutator,
+      String expectedReader,
+      TypeInfo expectedType,
+      boolean expectedDeclared,
+      boolean expectedArray,
+      boolean expectedAdder,
+      boolean expectedJsonifiable) {
     assertNotNull(property);
     assertEquals("Was expecting property to have be declared=" + expectedDeclared, expectedDeclared, property.isDeclared());
     assertEquals(expectedMutator, property.getMutatorMethod());
+    assertEquals(expectedReader, property.getReaderMethod());
     assertEquals(expectedName, property.getName());
     assertEquals(expectedType, property.getType());
     assertEquals(expectedArray, property.isArray());
     assertEquals(expectedAdder, property.isAdder());
+    assertEquals(expectedJsonifiable, property.isJsonifiable());
   }
 
   private void assertInvalidDataObject(Class<?> dataObjectClass) throws Exception {

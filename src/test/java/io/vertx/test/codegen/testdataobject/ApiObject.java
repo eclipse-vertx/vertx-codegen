@@ -7,7 +7,9 @@ import io.vertx.codegen.annotations.VertxGen;
  */
 @VertxGen
 public interface ApiObject {
-   String getFoo();
+
+  String getFoo();
+
   void setFoo(String foo);
 
 }
