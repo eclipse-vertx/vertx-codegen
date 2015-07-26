@@ -250,10 +250,10 @@ public class DataObjectModel implements Model {
   }
 
   private void processMethod(ExecutableElement methodElt) {
-    String methodName = methodElt.getSimpleName().toString();
-    if (methodName.length() > 3) {
-      String prefix = methodName.substring(0, 3);
-      String name = Helper.normalizePropertyName(methodName.substring(3));
+    String mutatorMethod = methodElt.getSimpleName().toString();
+    if (mutatorMethod.length() > 3) {
+      String prefix = mutatorMethod.substring(0, 3);
+      String name = Helper.normalizePropertyName(mutatorMethod.substring(3));
       List<? extends VariableElement> parameters = methodElt.getParameters();
       switch (prefix) {
         case "add":
@@ -328,7 +328,7 @@ public class DataObjectModel implements Model {
             doc = first.orElse(null);
           }
 
-          PropertyInfo property = new PropertyInfo(declared, name, doc, type, methodName, array, adder);
+          PropertyInfo property = new PropertyInfo(declared, name, doc, type, mutatorMethod, array, adder);
           propertyMap.put(property.name, property);
         }
       }

@@ -11,16 +11,16 @@ public class PropertyInfo {
   final String name;
   final Doc doc;
   final TypeInfo type;
-  final String methodName;
+  final String mutatorMethod;
   final boolean array;
   final boolean adder;
 
-  public PropertyInfo(boolean declared, String name, Doc doc, TypeInfo type, String methodName, boolean array, boolean adder) {
+  public PropertyInfo(boolean declared, String name, Doc doc, TypeInfo type, String mutatorMethod, boolean array, boolean adder) {
     this.declared = declared;
     this.name = name;
     this.doc = doc;
     this.type = type;
-    this.methodName = methodName;
+    this.mutatorMethod = mutatorMethod;
     this.array = array;
     this.adder = adder;
   }
@@ -45,8 +45,12 @@ public class PropertyInfo {
     return type;
   }
 
-  public String getMethodName() {
-    return methodName;
+  /**
+   * @return the mutator method that will update the state of this property on the data object, the nature of the method
+   * depends on the {@link #isAdder()} and {@link #isArray()} values.
+   */
+  public String getMutatorMethod() {
+    return mutatorMethod;
   }
 
   public boolean isArray() {
