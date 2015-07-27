@@ -13,6 +13,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -313,16 +314,28 @@ public class DataObjectModel implements Model {
           }
 
           String readerMethod;
-          if (propType.getName().equals("boolean") || propType.getName().equals("java.lang.Boolean")) {
+          if ((propType.getName().equals("boolean") || propType.getName().equals("java.lang.Boolean")) && !array) {
             readerMethod = "is" + abc;
           } else {
-            readerMethod = "get" + abc;
+            readerMethod = "get" + abc + (adder ? "s" : "");
+          }
+
+          TypeMirror readerType;
+          if (adder) {
+            TypeElement listType = elementUtils.getTypeElement("java.util.List");
+            TypeMirror eltType = propTypeMirror;
+            if (eltType instanceof PrimitiveType) {
+              eltType = typeUtils.boxedClass((PrimitiveType) eltType).asType();
+            }
+            readerType = typeUtils.getDeclaredType(listType, eltType);
+          } else {
+            readerType = propTypeMirror;
           }
           boolean hasReader = elementUtils.getAllMembers(modelElt).
               stream().
               flatMap(Helper.FILTER_METHOD).
               filter(elt -> elt.getSimpleName().toString().equals(readerMethod)).
-              filter(elt -> typeUtils.isSameType(elt.getReturnType(), propTypeMirror)).
+              filter(elt -> typeUtils.isSameType(elt.getReturnType(), readerType)).
               count() > 0;
 
           // A stream that list all overriden methods from super types

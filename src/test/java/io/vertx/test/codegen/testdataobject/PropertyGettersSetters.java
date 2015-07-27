@@ -8,13 +8,13 @@ import io.vertx.core.json.JsonObject;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @DataObject
-public interface PropertyGetters {
+public interface PropertyGettersSetters {
 
-  public static PropertyGetters dataObject() {
+  public static PropertyGettersSetters dataObject() {
     throw new UnsupportedOperationException();
   }
 
-  public static PropertyGetters dataObjectFromJson(JsonObject obj) {
+  public static PropertyGettersSetters dataObjectFromJson(JsonObject obj) {
     throw new UnsupportedOperationException();
   }
 
@@ -33,11 +33,11 @@ public interface PropertyGetters {
   void setPrimitiveLong(long l);
   long getPrimitiveLong();
 
-  PropertyGetters setApiObject(ApiObject s);
+  PropertyGettersSetters setApiObject(ApiObject s);
   ApiObject getApiObject();
-  PropertyGetters setDataObject(EmptyDataObject obj);
+  PropertyGettersSetters setDataObject(EmptyDataObject obj);
   EmptyDataObject getDataObject();
-  PropertyGetters setToJsonDataObject(ToJsonDataObject obj);
+  PropertyGettersSetters setToJsonDataObject(ToJsonDataObject obj);
   ToJsonDataObject getToJsonDataObject();
 
   JsonObject getJsonObject();
