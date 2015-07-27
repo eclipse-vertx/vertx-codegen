@@ -19,6 +19,7 @@ import io.vertx.test.codegen.testdataobject.AbstractUncommentedProperty;
 import io.vertx.test.codegen.testdataobject.AdderNormalizationRules;
 import io.vertx.test.codegen.testdataobject.AdderWithNestedDataObject;
 import io.vertx.test.codegen.testdataobject.ApiObject;
+import io.vertx.test.codegen.testdataobject.Enumerated;
 import io.vertx.test.codegen.testdataobject.PropertyAdders;
 import io.vertx.test.codegen.testdataobject.PropertyGetters;
 import io.vertx.test.codegen.testdataobject.PropertySetters;
@@ -109,7 +110,7 @@ public class DataObjectTest {
   public void testPropertySetters() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(PropertySetters.class);
     assertNotNull(model);
-    assertEquals(12, model.getPropertyMap().size());
+    assertEquals(13, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("string"), "string", "setString", null, TypeInfo.create(String.class), true, false, false, true);
     assertProperty(model.getPropertyMap().get("boxedInteger"), "boxedInteger", "setBoxedInteger", null, TypeInfo.create(Integer.class), true, false, false, true);
     assertProperty(model.getPropertyMap().get("primitiveInteger"), "primitiveInteger", "setPrimitiveInteger", null, TypeInfo.create(int.class), true, false, false, true);
@@ -122,6 +123,7 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("toJsonDataObject"), "toJsonDataObject", "setToJsonDataObject", null, TypeInfo.create(ToJsonDataObject.class), true, false, false, true);
     assertProperty(model.getPropertyMap().get("jsonObject"), "jsonObject", "setJsonObject", null, TypeInfo.create(JsonObject.class), true, false, false, true);
     assertProperty(model.getPropertyMap().get("jsonArray"), "jsonArray", "setJsonArray", null, TypeInfo.create(JsonArray.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("enumerated"), "enumerated", "setEnumerated", null, TypeInfo.create(Enumerated.class), true, false, false, true);
   }
 
   @Test
@@ -150,7 +152,7 @@ public class DataObjectTest {
   public void testPropertyGetters() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(PropertyGetters.class);
     assertNotNull(model);
-    assertEquals(12, model.getPropertyMap().size());
+    assertEquals(13, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("string"), "string", "setString", "getString", TypeInfo.create(String.class), true, false, false, true);
     assertProperty(model.getPropertyMap().get("boxedInteger"), "boxedInteger", "setBoxedInteger", "getBoxedInteger", TypeInfo.create(Integer.class), true, false, false, true);
     assertProperty(model.getPropertyMap().get("primitiveInteger"), "primitiveInteger", "setPrimitiveInteger", "getPrimitiveInteger", TypeInfo.create(int.class), true, false, false, true);
@@ -163,6 +165,7 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("toJsonDataObject"), "toJsonDataObject", "setToJsonDataObject", "getToJsonDataObject", TypeInfo.create(ToJsonDataObject.class), true, false, false, true);
     assertProperty(model.getPropertyMap().get("jsonObject"), "jsonObject", "setJsonObject", "getJsonObject", TypeInfo.create(JsonObject.class), true, false, false, true);
     assertProperty(model.getPropertyMap().get("jsonArray"), "jsonArray", "setJsonArray", "getJsonArray", TypeInfo.create(JsonArray.class), true, false, false, true);
+    assertProperty(model.getPropertyMap().get("enumerated"), "enumerated", "setEnumerated", "getEnumerated", TypeInfo.create(Enumerated.class), true, false, false, true);
   }
 
   @Test
@@ -177,7 +180,7 @@ public class DataObjectTest {
   public void testPropertyAdders() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(PropertyAdders.class);
     assertNotNull(model);
-    assertEquals(12, model.getPropertyMap().size());
+    assertEquals(13, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("strings"), "strings", "addString", null, TypeInfo.create(String.class), true, true, true, true);
     assertProperty(model.getPropertyMap().get("boxedIntegers"), "boxedIntegers", "addBoxedInteger", null, TypeInfo.create(Integer.class), true, true, true, true);
     assertProperty(model.getPropertyMap().get("primitiveIntegers"), "primitiveIntegers", "addPrimitiveInteger", null, TypeInfo.create(int.class), true, true, true, true);
@@ -190,6 +193,7 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("toJsonDataObjects"), "toJsonDataObjects", "addToJsonDataObject", null, TypeInfo.create(ToJsonDataObject.class), true, true, true, true);
     assertProperty(model.getPropertyMap().get("jsonObjects"), "jsonObjects", "addJsonObject", null, TypeInfo.create(JsonObject.class), true, true, true, true);
     assertProperty(model.getPropertyMap().get("jsonArrays"), "jsonArrays", "addJsonArray", null, TypeInfo.create(JsonArray.class), true, true, true, true);
+    assertProperty(model.getPropertyMap().get("enumerateds"), "enumerateds", "addEnumerated", null, TypeInfo.create(Enumerated.class), true, true, true, true);
   }
 
   @Test

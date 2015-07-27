@@ -295,6 +295,7 @@ public class DataObjectModel implements Model {
             case API:
             case JSON_OBJECT:
             case JSON_ARRAY:
+            case ENUM:
               jsonifiable = true;
               break;
             case DATA_OBJECT:

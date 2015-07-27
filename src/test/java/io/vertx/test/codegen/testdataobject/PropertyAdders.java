@@ -32,4 +32,6 @@ public interface PropertyAdders {
 
   PropertySetters addJsonObject(JsonObject jsonObject);
   PropertySetters addJsonArray(JsonArray jsonArray);
+
+  PropertySetters addEnumerated(Enumerated enumerated);
 }
