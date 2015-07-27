@@ -294,6 +294,7 @@ public class DataObjectModel implements Model {
             case STRING:
             case API:
             case JSON_OBJECT:
+            case JSON_ARRAY:
               jsonifiable = true;
               break;
             case DATA_OBJECT:

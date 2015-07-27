@@ -1,6 +1,7 @@
 package io.vertx.test.codegen.testdataobject;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 /**
@@ -29,4 +30,6 @@ public interface PropertyAdders {
   PropertyAdders addDataObject(EmptyDataObject s);
   PropertyAdders addToJsonDataObject(ToJsonDataObject s);
 
+  PropertySetters addJsonObject(JsonObject jsonObject);
+  PropertySetters addJsonArray(JsonArray jsonArray);
 }

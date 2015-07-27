@@ -1,6 +1,7 @@
 package io.vertx.test.codegen.testdataobject;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 /**
@@ -28,4 +29,7 @@ public interface PropertySetters {
   PropertySetters setApiObject(ApiObject s);
   PropertySetters setDataObject(EmptyDataObject nested);
   PropertySetters setToJsonDataObject(ToJsonDataObject nested);
+
+  PropertySetters setJsonObject(JsonObject jsonObject);
+  PropertySetters setJsonArray(JsonArray jsonArray);
 }
