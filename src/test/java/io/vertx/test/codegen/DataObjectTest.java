@@ -423,7 +423,7 @@ public class DataObjectTest {
       boolean expectedJsonifiable) {
     assertNotNull(property);
     assertEquals("Was expecting property to have be declared=" + expectedDeclared, expectedDeclared, property.isDeclared());
-    assertEquals(expectedMutator, property.getMutatorMethod());
+    assertEquals(expectedMutator, property.getWriterMethod());
     assertEquals(expectedReader, property.getReaderMethod());
     assertEquals(expectedName, property.getName());
     assertEquals(expectedType, property.getType());

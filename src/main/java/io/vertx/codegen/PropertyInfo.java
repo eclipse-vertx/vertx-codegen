@@ -11,7 +11,7 @@ public class PropertyInfo {
   final String name;
   final Doc doc;
   final TypeInfo type;
-  final String mutatorMethod;
+  final String writerMethod;
   final String readerMethod;
   final boolean array;
   final boolean adder;
@@ -23,7 +23,7 @@ public class PropertyInfo {
     this.name = name;
     this.doc = doc;
     this.type = type;
-    this.mutatorMethod = mutatorMethod;
+    this.writerMethod = mutatorMethod;
     this.readerMethod = readerMethod;
     this.array = array;
     this.adder = adder;
@@ -55,11 +55,11 @@ public class PropertyInfo {
   }
 
   /**
-   * @return the mutator method that will update the state of this property on the data object, the nature of the method
+   * @return the writer method that will update the state of this property on the data object, the nature of the method
    * depends on the {@link #isAdder()} and {@link #isArray()} values.
    */
-  public String getMutatorMethod() {
-    return mutatorMethod;
+  public String getWriterMethod() {
+    return writerMethod;
   }
 
   public boolean isArray() {
