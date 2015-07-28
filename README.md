@@ -216,7 +216,7 @@ There should be a single MVEL template for each language API that is to be gener
 The template will be called once for each interface that is annotated with `@VertxGen` in the Java API. One
 output file (e.g. one .js file) will be created for each Java interface.
 
-### Template variables
+### Template variables for class models
 
 The following variables are made available to templates:
 
@@ -283,9 +283,26 @@ The `ParamInfo` object has the following fields:
 * `type`. The type of the parameter as a `TypeInfo`
 * `dataObject`. `true` If the parameter is a data object type.
 
+### Template variables in data object models
 
+* `type` - the `TypeInfo` of the current option
+* `doc` - the `Doc` object
+* `concrete`" - true when the option is implemented by vert.x - useful to decide the generation of a class or interface in the API shim
+* `gnerateConverter` - whether a converter should be generated or not
+* `inheritConverter` - whether the generated converter should convert all properties
+* `properties` - a `Set<PropertyInfo>` of the available properties in this option
+* `importedTypes` - the imported types by the option
+* `superTypes` - a list of `TypeInfo` representing the set of user defined types which the current interface extends from
+* `superType` - the supertype of this option ???
 
+The `PropertyInfo` object has the following fields:
 
-
-
-
+* `name`. The name of the property
+* `type`. The type of the property as `TypeInfo`
+* `doc` - the `Doc` object
+* `declared`. True if the property is declared by its data object and does not override the same property from an ancestor
+* `writerMethod`. The name of the setter/adder method in Java
+* `readerMethod`. The optional name of the getter method in Java
+* `array`. True if the property is an array
+* `adder`. True if the property is an adder (addSomething)
+* `jsonifiable`. True if the object can be converted somehow to json
