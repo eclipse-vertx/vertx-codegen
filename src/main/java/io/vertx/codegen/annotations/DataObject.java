@@ -44,4 +44,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface DataObject {
+  /**
+   * @return true if converters should be generated for the data object
+   */
+  boolean generateConverters() default true;
 }

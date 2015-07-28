@@ -47,6 +47,7 @@ public class DataObjectModel implements Model {
   private boolean processed = false;
   private boolean concrete;
   private boolean isClass;
+  private boolean generateConverters;
   private final Map<String, PropertyInfo> propertyMap = new LinkedHashMap<>();
   private final Set<TypeInfo.Class> superTypes = new LinkedHashSet<>();
   private TypeInfo.Class superType;
@@ -118,11 +119,16 @@ public class DataObjectModel implements Model {
     return isClass;
   }
 
+  public boolean getGenerateConverters() {
+    return generateConverters;
+  }
+
   @Override
   public Map<String, Object> getVars() {
     HashMap<String, Object> vars = new HashMap<>();
     vars.put("type", type);
     vars.put("doc", doc);
+    vars.put("generateConverts", generateConverters);
     vars.put("concrete", concrete);
     vars.put("properties", propertyMap.values());
     vars.put("importedTypes", importedTypes);
@@ -150,6 +156,7 @@ public class DataObjectModel implements Model {
   }
 
   private void traverse() {
+    this.generateConverters = modelElt.getAnnotation(DataObject.class).generateConverters();
     this.isClass = modelElt.getKind() == ElementKind.CLASS;
     this.concrete = isClass && !modelElt.getModifiers().contains(Modifier.ABSTRACT);
     try {
