@@ -30,14 +30,27 @@ import java.lang.annotation.Target;
  *
  * <ul>
  *   <li>any basic type</li>
- *   <li>a valid data object</li>
+ *   <li>a valid data object type</li>
  *   <li>{@link io.vertx.core.json.JsonObject}</li>
+ *   <li>{@link io.vertx.core.json.JsonArray}</li>
+ *   <li>an enum type</li>
  *   <li>a {@link java.util.List} of above</li>
  * </ul>
  * <p/>
  *
  * A data object can be an interface or an abstract class to accomodate the api design. Data object can extend
- * other data objects.
+ * other data objects.<p/>
+ *
+ * Sometimes data object can have a {@code toJson()} method that takes no arguments and returns a {@code JsonObject} representing
+ * the data object as a {@code JsonObject}.<p/>
+ *
+ * Vertx core will generate a json converters using annotation processing to ease conversion, for a given data object,
+ * a converter is generated, the name of this converter is the name of the data object with the {@literal Converter} suffix.<p/>
+ *
+ * The converter has a {@code fromJson(JsonObject,T)} and a {@code toJson(T,JsonObject)} public static methods, such methods
+ * can be used by the json constructor or the {@code toJson()} method to implement the conversion code. The generated methods
+ * only handle the conversion of the property of the data object and do not handle the properties of the ancestors of this
+ * data object. The converter generation can be prevented with the {@link #generateConverters()} annotation member.
  *
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
