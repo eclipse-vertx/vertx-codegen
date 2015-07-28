@@ -44,21 +44,29 @@ import java.lang.annotation.Target;
  * Sometimes data object can have a {@code toJson()} method that takes no arguments and returns a {@code JsonObject} representing
  * the data object as a {@code JsonObject}.<p/>
  *
- * Vertx core will generate a json converters using annotation processing to ease conversion, for a given data object,
+ * Vert.x core will generate a json converters using annotation processing to ease conversion, for a given data object,
  * a converter is generated, the name of this converter is the name of the data object with the {@literal Converter} suffix.<p/>
  *
  * The converter has a {@code fromJson(JsonObject,T)} and a {@code toJson(T,JsonObject)} public static methods, such methods
- * can be used by the json constructor or the {@code toJson()} method to implement the conversion code. The generated methods
- * only handle the conversion of the property of the data object and do not handle the properties of the ancestors of this
- * data object. The converter generation can be prevented with the {@link #generateConverters()} annotation member.
+ * can be used by the json constructor or the {@code toJson()} method to implement the conversion code. By default the
+ * generated methods only handle the conversion of the property of the data object and do not handle the properties of the
+ * ancestors of this data object, {@link #inheritConverter()} can be set to true to change this behavior and handle the
+ * conversion of the inherited properties as well. The converter generation can be prevented with the
+ * {@link #generateConverter()} annotation member.
  *
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface DataObject {
+
   /**
-   * @return true if converters should be generated for the data object
+   * @return true if converter should be generated for the data object
    */
-  boolean generateConverters() default true;
+  boolean generateConverter() default true;
+
+  /**
+   * @return true if the converter should handle the state of the ancestors.
+   */
+  boolean inheritConverter() default false;
 }

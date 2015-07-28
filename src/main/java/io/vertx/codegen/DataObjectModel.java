@@ -14,7 +14,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -29,7 +28,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
@@ -47,7 +45,8 @@ public class DataObjectModel implements Model {
   private boolean processed = false;
   private boolean concrete;
   private boolean isClass;
-  private boolean generateConverters;
+  private boolean generateConverter;
+  private boolean inheritConverter;
   private final Map<String, PropertyInfo> propertyMap = new LinkedHashMap<>();
   private final Set<TypeInfo.Class> superTypes = new LinkedHashSet<>();
   private TypeInfo.Class superType;
@@ -119,8 +118,12 @@ public class DataObjectModel implements Model {
     return isClass;
   }
 
-  public boolean getGenerateConverters() {
-    return generateConverters;
+  public boolean getGenerateConverter() {
+    return generateConverter;
+  }
+
+  public boolean getInheritConverter() {
+    return inheritConverter;
   }
 
   @Override
@@ -128,7 +131,8 @@ public class DataObjectModel implements Model {
     HashMap<String, Object> vars = new HashMap<>();
     vars.put("type", type);
     vars.put("doc", doc);
-    vars.put("generateConverts", generateConverters);
+    vars.put("generateConverter", generateConverter);
+    vars.put("inheritConverter", inheritConverter);
     vars.put("concrete", concrete);
     vars.put("properties", propertyMap.values());
     vars.put("importedTypes", importedTypes);
@@ -156,7 +160,9 @@ public class DataObjectModel implements Model {
   }
 
   private void traverse() {
-    this.generateConverters = modelElt.getAnnotation(DataObject.class).generateConverters();
+    DataObject ann = modelElt.getAnnotation(DataObject.class);
+    this.generateConverter = ann.generateConverter();
+    this.inheritConverter = ann.inheritConverter();
     this.isClass = modelElt.getKind() == ElementKind.CLASS;
     this.concrete = isClass && !modelElt.getModifiers().contains(Modifier.ABSTRACT);
     try {

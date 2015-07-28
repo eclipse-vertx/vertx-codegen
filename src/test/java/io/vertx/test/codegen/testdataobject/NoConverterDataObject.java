@@ -6,7 +6,7 @@ import io.vertx.core.json.JsonObject;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@DataObject(generateConverters = false)
+@DataObject(generateConverter = false)
 public class NoConverterDataObject {
 
   public NoConverterDataObject() {
