@@ -15,7 +15,9 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
@@ -145,7 +147,12 @@ public class CodeGenProcessor extends AbstractProcessor {
                   if (relativeName != null) {
                     if (relativeName.endsWith(".java")) {
                       // Special handling for .java
-                      JavaFileObject target = processingEnv.getFiler().createSourceFile(relativeName.substring(0, relativeName.length() - ".java".length()));
+                      String fqn = relativeName.substring(0, relativeName.length() - ".java".length());
+                      // Avoid to recreate the same file (this may happen as we unzip and recompile source trees)
+                      if (processingEnv.getElementUtils().getTypeElement(fqn) != null) {
+                        return;
+                      }
+                      JavaFileObject target = processingEnv.getFiler().createSourceFile(fqn);
                       String output = codeGenerator.transformTemplate.render(model);
                       try (Writer writer = target.openWriter()) {
                         writer.append(output);
