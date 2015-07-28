@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,7 @@ public class CodeGenProcessor extends AbstractProcessor {
       } catch (IOException ignore) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Could not load code generator descriptors");
       }
+      Set<String> templates = new HashSet<>();
       while (descriptors.hasMoreElements()) {
         URL descriptor = descriptors.nextElement();
         try (Scanner scanner = new Scanner(descriptor.openStream(), "UTF-8").useDelimiter("\\A")) {
@@ -81,13 +83,16 @@ public class CodeGenProcessor extends AbstractProcessor {
             String kind = generator.get("kind").asText();
             String templateFileName = generator.get("templateFileName").asText();
             String fileName = generator.get("fileName").asText();
-            Serializable fileNameExpression = MVEL.compileExpression(fileName);
-            Template compiledTemplate = new Template(templateFileName);
-            compiledTemplate.setOptions(processingEnv.getOptions());
-            List<CodeGenerator> generators = codeGenerators.computeIfAbsent(name, abc -> new ArrayList<>());
-            generators.add(new CodeGenerator(kind, fileNameExpression, compiledTemplate));
+            if (!templates.contains(templateFileName)) {
+              templates.add(templateFileName);
+              Serializable fileNameExpression = MVEL.compileExpression(fileName);
+              Template compiledTemplate = new Template(templateFileName);
+              compiledTemplate.setOptions(processingEnv.getOptions());
+              List<CodeGenerator> generators = codeGenerators.computeIfAbsent(name, abc -> new ArrayList<>());
+              generators.add(new CodeGenerator(kind, fileNameExpression, compiledTemplate));
+              log.info("Loaded " + name + " code generator");
+            }
           }
-          log.info("Loaded " + name + " code generator");
         } catch (Exception e) {
           String msg = "Could not load code generator " + descriptor;
           log.log(Level.SEVERE, msg, e);
