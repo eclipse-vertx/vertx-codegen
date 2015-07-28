@@ -20,7 +20,7 @@ import io.vertx.test.codegen.testdataobject.AdderNormalizationRules;
 import io.vertx.test.codegen.testdataobject.AdderWithNestedDataObject;
 import io.vertx.test.codegen.testdataobject.ApiObject;
 import io.vertx.test.codegen.testdataobject.Enumerated;
-import io.vertx.test.codegen.testdataobject.InheritedConverterDataObject;
+import io.vertx.test.codegen.testdataobject.InheritingConverterDataObject;
 import io.vertx.test.codegen.testdataobject.NoConverterDataObject;
 import io.vertx.test.codegen.testdataobject.PropertyAdders;
 import io.vertx.test.codegen.testdataobject.PropertyGettersAdders;
@@ -95,6 +95,7 @@ public class DataObjectTest {
     DataObjectModel model = new Generator().generateDataObject(EmptyDataObject.class);
     assertNotNull(model);
     assertTrue(model.getGenerateConverter());
+    assertFalse(model.getInheritConverter());
   }
 
   @Test
@@ -479,8 +480,8 @@ public class DataObjectTest {
 
   @Test
   public void testInheritedConverterDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(InheritedConverterDataObject.class);
-    assertFalse(model.getInheritConverter());
+    DataObjectModel model = new Generator().generateDataObject(InheritingConverterDataObject.class);
+    assertTrue(model.getInheritConverter());
   }
 
   private static void assertProperty(
