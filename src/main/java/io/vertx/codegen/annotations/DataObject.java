@@ -63,7 +63,7 @@ public @interface DataObject {
   /**
    * @return true if converter should be generated for the data object
    */
-  boolean generateConverter() default true;
+  boolean generateConverter() default false;
 
   /**
    * @return true if the converter should handle the state of the ancestors.
