@@ -11,6 +11,7 @@ import io.vertx.codegen.annotations.VertxGen;
 import org.mvel2.MVEL;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
@@ -152,7 +153,16 @@ public class CodeGenProcessor extends AbstractProcessor {
                       if (processingEnv.getElementUtils().getTypeElement(fqn) != null) {
                         return;
                       }
-                      JavaFileObject target = processingEnv.getFiler().createSourceFile(fqn);
+                      Filer filer = processingEnv.getFiler();
+                      String pkg = fqn.substring(0, fqn.lastIndexOf('.'));
+                      String simpleName = fqn.substring(fqn.lastIndexOf('.') + 1);
+                      try {
+                        filer.getResource(StandardLocation.SOURCE_OUTPUT, pkg, simpleName + ".java");
+                        // Generated previously
+                        return;
+                      } catch (FileNotFoundException e) {
+                      }
+                      JavaFileObject target = filer.createSourceFile(fqn);
                       String output = codeGenerator.transformTemplate.render(model);
                       try (Writer writer = target.openWriter()) {
                         writer.append(output);
