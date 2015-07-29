@@ -187,6 +187,10 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   RefedInterface2 methodWithAbstractVertxGenReturn();
 
+  TestDataObject methodWithDataObjectReturn();
+
+  TestDataObject methodWithDataObjectNullReturn();
+
   String overloadedMethod(String str, Handler<String> handler);
 
   String overloadedMethod(String str, RefedInterface1 refed);

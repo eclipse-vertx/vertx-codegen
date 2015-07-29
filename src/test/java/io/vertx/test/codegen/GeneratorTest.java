@@ -2,6 +2,7 @@ package io.vertx.test.codegen;
 
 import io.vertx.codegen.ClassKind;
 import io.vertx.codegen.ClassModel;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.GenException;
 import io.vertx.codegen.Generator;
@@ -99,6 +100,7 @@ import io.vertx.test.codegen.testapi.MethodWithTypeParameterUpperBound;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicBoxedParams;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicParams;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicReturn;
+import io.vertx.test.codegen.testapi.MethodWithValidDataObjectReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidHandlerAsyncResultJSON;
 import io.vertx.test.codegen.testapi.MethodWithValidHandlerAsyncResultParams;
 import io.vertx.test.codegen.testapi.MethodWithValidHandlerJSON;
@@ -827,6 +829,18 @@ public class GeneratorTest {
     assertEquals(1, model.getMethods().size());
     String methodName = "methodWithVoidReturn";
     checkMethod(model.getMethods().get(0), methodName, 0, "void", MethodKind.OTHER);
+  }
+
+  @Test
+  public void testValidDataObjectReturn() throws Exception {
+    ClassModel model = new Generator().generateClass(MethodWithValidDataObjectReturn.class);
+    assertEquals(MethodWithValidDataObjectReturn.class.getName(), model.getIfaceFQCN());
+    assertEquals(MethodWithValidDataObjectReturn.class.getSimpleName(), model.getIfaceSimpleName());
+    assertTrue(model.getReferencedTypes().isEmpty());
+    assertTrue(model.getSuperTypes().isEmpty());
+    assertEquals(1, model.getMethods().size());
+    String methodName = "methodWithDataObjectReturn";
+    checkMethod(model.getMethods().get(0), methodName, 0, TestDataObject.class.getName(), MethodKind.OTHER);
   }
 
   @Test

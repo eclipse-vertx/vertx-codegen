@@ -652,8 +652,7 @@ public class TestInterfaceImpl implements TestInterface {
 
   @Override
   public void methodWithHandlerDataObject(Handler<TestDataObject> handler) {
-    TestDataObject dataObject = new TestDataObject().setFoo("foo").setBar(123);
-    handler.handle(dataObject);
+    handler.handle(methodWithDataObjectReturn());
   }
 
   @Override
@@ -732,6 +731,16 @@ public class TestInterfaceImpl implements TestInterface {
     RefedInterface2 refed = new RefedInterface2Impl();
     refed.setString("abstractchaffinch");
     return refed;
+  }
+
+  @Override
+  public TestDataObject methodWithDataObjectReturn() {
+    return new TestDataObject().setFoo("foo").setBar(123);
+  }
+
+  @Override
+  public TestDataObject methodWithDataObjectNullReturn() {
+    return null;
   }
 
   @Override

@@ -286,6 +286,10 @@ public class ClassModel implements Model {
       return;
     }
 
+    if (isDataObjectTypeWithToJson(type)) {
+      return;
+    }
+
     // Variable type is ok
     if (isVariableType(type)) {
       return;
