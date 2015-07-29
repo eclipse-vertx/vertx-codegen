@@ -23,9 +23,11 @@ public interface MethodWithValidHandlerParams {
                                Handler<List<Long>> listLongHandler, Handler<List<Float>> listFloatHandler, Handler<List<Double>> listDoubleHandler,
                                Handler<List<Boolean>> listBooleanHandler, Handler<List<Character>> listCharHandler, Handler<List<String>> listStrHandler,
                                Handler<List<VertxGenClass1>> listVertxGenHandler, Handler<List<JsonObject>> listJsonObjectHandler, Handler<List<JsonArray>> listJsonArrayHandler,
+                               Handler<List<TestDataObject>> listDataObjectHandler,
                                Handler<Set<Byte>> setByteHandler, Handler<Set<Short>> setShortHandler, Handler<Set<Integer>> setIntHandler,
                                Handler<Set<Long>> setLongHandler, Handler<Set<Float>> setFloatHandler, Handler<Set<Double>> setDoubleHandler,
                                Handler<Set<Boolean>> setBooleanHandler, Handler<Set<Character>> setCharHandler, Handler<Set<String>> setStrHandler,
                                Handler<Set<VertxGenClass1>> setVertxGenHandler, Handler<Set<JsonObject>> setJsonObjectHandler, Handler<Set<JsonArray>> setJsonArrayHandler,
+                               Handler<Set<TestDataObject>> setDataObjectHandler,
                                Handler<Void> voidHandler, Handler<Throwable> throwableHandler, Handler<TestDataObject> dataObjectHandler);
 }

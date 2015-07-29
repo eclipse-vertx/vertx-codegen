@@ -535,7 +535,7 @@ public class GeneratorTest {
     String methodName = "methodWithHandlerParams";
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, methodName, 38, "void", MethodKind.HANDLER);
+    checkMethod(method, methodName, 40, "void", MethodKind.HANDLER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "byteHandler", new TypeLiteral<Handler<Byte>>(){});
     checkParam(params.get(1), "shortHandler", new TypeLiteral<Handler<Short>>(){});
@@ -560,21 +560,23 @@ public class GeneratorTest {
     checkParam(params.get(20), "listVertxGenHandler", new TypeLiteral<Handler<List<VertxGenClass1>>>(){});
     checkParam(params.get(21), "listJsonObjectHandler", new TypeLiteral<Handler<List<JsonObject>>>(){});
     checkParam(params.get(22), "listJsonArrayHandler", new TypeLiteral<Handler<List<JsonArray>>>(){});
-    checkParam(params.get(23), "setByteHandler", new TypeLiteral<Handler<Set<Byte>>>(){});
-    checkParam(params.get(24), "setShortHandler", new TypeLiteral<Handler<Set<Short>>>(){});
-    checkParam(params.get(25), "setIntHandler", new TypeLiteral<Handler<Set<Integer>>>(){});
-    checkParam(params.get(26), "setLongHandler", new TypeLiteral<Handler<Set<Long>>>(){});
-    checkParam(params.get(27), "setFloatHandler", new TypeLiteral<Handler<Set<Float>>>(){});
-    checkParam(params.get(28), "setDoubleHandler", new TypeLiteral<Handler<Set<Double>>>(){});
-    checkParam(params.get(29), "setBooleanHandler", new TypeLiteral<Handler<Set<Boolean>>>(){});
-    checkParam(params.get(30), "setCharHandler", new TypeLiteral<Handler<Set<Character>>>(){});
-    checkParam(params.get(31), "setStrHandler", new TypeLiteral<Handler<Set<String>>>(){});
-    checkParam(params.get(32), "setVertxGenHandler", new TypeLiteral<Handler<Set<VertxGenClass1>>>(){});
-    checkParam(params.get(33), "setJsonObjectHandler", new TypeLiteral<Handler<Set<JsonObject>>>(){});
-    checkParam(params.get(34), "setJsonArrayHandler",  new TypeLiteral<Handler<Set<JsonArray>>>(){});
-    checkParam(params.get(35), "voidHandler",  new TypeLiteral<Handler<Void>>(){});
-    checkParam(params.get(36), "throwableHandler",  new TypeLiteral<Handler<Throwable>>(){});
-    checkParam(params.get(37), "dataObjectHandler", new TypeLiteral<Handler<TestDataObject>>(){});
+    checkParam(params.get(23), "listDataObjectHandler", new TypeLiteral<Handler<List<TestDataObject>>>(){});
+    checkParam(params.get(24), "setByteHandler", new TypeLiteral<Handler<Set<Byte>>>(){});
+    checkParam(params.get(25), "setShortHandler", new TypeLiteral<Handler<Set<Short>>>(){});
+    checkParam(params.get(26), "setIntHandler", new TypeLiteral<Handler<Set<Integer>>>(){});
+    checkParam(params.get(27), "setLongHandler", new TypeLiteral<Handler<Set<Long>>>(){});
+    checkParam(params.get(28), "setFloatHandler", new TypeLiteral<Handler<Set<Float>>>(){});
+    checkParam(params.get(29), "setDoubleHandler", new TypeLiteral<Handler<Set<Double>>>(){});
+    checkParam(params.get(30), "setBooleanHandler", new TypeLiteral<Handler<Set<Boolean>>>(){});
+    checkParam(params.get(31), "setCharHandler", new TypeLiteral<Handler<Set<Character>>>(){});
+    checkParam(params.get(32), "setStrHandler", new TypeLiteral<Handler<Set<String>>>(){});
+    checkParam(params.get(33), "setVertxGenHandler", new TypeLiteral<Handler<Set<VertxGenClass1>>>(){});
+    checkParam(params.get(34), "setJsonObjectHandler", new TypeLiteral<Handler<Set<JsonObject>>>(){});
+    checkParam(params.get(35), "setJsonArrayHandler",  new TypeLiteral<Handler<Set<JsonArray>>>(){});
+    checkParam(params.get(36), "setDataObjectHandler",  new TypeLiteral<Handler<Set<TestDataObject>>>(){});
+    checkParam(params.get(37), "voidHandler",  new TypeLiteral<Handler<Void>>(){});
+    checkParam(params.get(38), "throwableHandler",  new TypeLiteral<Handler<Throwable>>(){});
+    checkParam(params.get(39), "dataObjectHandler", new TypeLiteral<Handler<TestDataObject>>(){});
   }
 
   @Test
