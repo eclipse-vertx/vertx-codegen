@@ -25,7 +25,6 @@ import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.doc.Text;
 import io.vertx.codegen.doc.Token;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
-import io.vertx.core.json.JsonObject;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
@@ -325,7 +324,7 @@ public class ClassModel implements Model {
             flatMap(Helper.FILTER_METHOD).
             filter(m -> m.getSimpleName().toString().equals("toJson") &&
                 m.getParameters().isEmpty() &&
-                m.getReturnType().toString().equals(JsonObject.class.getName())).
+                m.getReturnType().toString().equals(JSON_OBJECT)).
             findFirst();
         return opt.isPresent();
       }
