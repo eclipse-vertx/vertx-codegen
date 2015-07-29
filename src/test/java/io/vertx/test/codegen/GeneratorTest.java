@@ -839,8 +839,9 @@ public class GeneratorTest {
     assertTrue(model.getReferencedTypes().contains(VertxGenClass2Info));
     assertTrue(model.getSuperTypes().isEmpty());
     List<MethodInfo> methods = model.getMethods();
-    assertEquals(13, methods.size());
-    checkMethod(methods.get(0), "byteList", 0, new TypeLiteral<List<Byte>>() {}, MethodKind.OTHER);
+    assertEquals(14, methods.size());
+    checkMethod(methods.get(0), "byteList", 0, new TypeLiteral<List<Byte>>() {
+    }, MethodKind.OTHER);
     checkMethod(methods.get(1), "shortList", 0, new TypeLiteral<List<Short>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(2), "intList", 0, new TypeLiteral<List<Integer>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(3), "longList", 0, new TypeLiteral<List<Long>>() {}, MethodKind.OTHER);
@@ -853,6 +854,7 @@ public class GeneratorTest {
     checkMethod(methods.get(10), "vertxGen2List", 0, new TypeLiteral<List<VertxGenClass2>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(11), "jsonArrayList", 0, new TypeLiteral<List<JsonArray>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(12), "jsonObjectList", 0, new TypeLiteral<List<JsonObject>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(13), "dataObjectList", 0, new TypeLiteral<List<TestDataObject>>() {}, MethodKind.OTHER);
   }
   
   @Test
@@ -865,8 +867,9 @@ public class GeneratorTest {
     assertTrue(model.getReferencedTypes().contains(VertxGenClass2Info));
     assertTrue(model.getSuperTypes().isEmpty());
     List<MethodInfo> methods = model.getMethods();
-    assertEquals(13, methods.size());
-    checkMethod(methods.get(0), "byteSet", 0, new TypeLiteral<Set<Byte>>() {}, MethodKind.OTHER);
+    assertEquals(14, methods.size());
+    checkMethod(methods.get(0), "byteSet", 0, new TypeLiteral<Set<Byte>>() {
+    }, MethodKind.OTHER);
     checkMethod(methods.get(1), "shortSet", 0, new TypeLiteral<Set<Short>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(2), "intSet", 0, new TypeLiteral<Set<Integer>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(3), "longSet", 0, new TypeLiteral<Set<Long>>() {}, MethodKind.OTHER);
@@ -879,6 +882,7 @@ public class GeneratorTest {
     checkMethod(methods.get(10), "vertxGen2Set", 0, new TypeLiteral<Set<VertxGenClass2>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(11), "jsonArraySet", 0, new TypeLiteral<Set<JsonArray>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(12), "jsonObjectSet", 0, new TypeLiteral<Set<JsonObject>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(13), "dataObjectSet", 0, new TypeLiteral<Set<TestDataObject>>() {}, MethodKind.OTHER);
   }
 
   @Test

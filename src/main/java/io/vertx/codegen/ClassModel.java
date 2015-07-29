@@ -370,7 +370,7 @@ public class ClassModel implements Model {
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
       TypeInfo argument = ((TypeInfo.Parameterized) type).getArgs().get(0);
       if (type.getKind() != ClassKind.MAP) {
-        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument)) {
+        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument) || isDataObjectTypeWithToJson(argument)) {
           return true;
         }
       } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys

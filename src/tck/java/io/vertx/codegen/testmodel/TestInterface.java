@@ -297,7 +297,9 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
   List<JsonArray> methodWithListJsonArrayReturn();
 
   List<JsonArray> methodWithListComplexJsonArrayReturn();
-  
+
+  List<TestDataObject> methodWithListDataObjectReturn();
+
   List<String> methodWithNullListReturn();
 
 
@@ -315,6 +317,8 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
   Set<JsonArray> methodWithSetJsonArrayReturn();
 
   Set<JsonArray> methodWithSetComplexJsonArrayReturn();
+
+  Set<TestDataObject> methodWithSetDataObjectReturn();
 
   Set<String> methodWithNullSetReturn();
 

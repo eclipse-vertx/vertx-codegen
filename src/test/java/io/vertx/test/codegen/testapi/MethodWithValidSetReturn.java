@@ -1,6 +1,7 @@
 package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -27,5 +28,6 @@ public interface MethodWithValidSetReturn {
 
   Set<JsonArray> jsonArraySet();
   Set<JsonObject> jsonObjectSet();
+  Set<TestDataObject> dataObjectSet();
 
 }

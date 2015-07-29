@@ -1138,6 +1138,11 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public List<TestDataObject> methodWithListDataObjectReturn() {
+    return Arrays.asList(new TestDataObject().setFoo("String 1").setBar(1).setWibble(1.1), new TestDataObject().setFoo("String 2").setBar(2).setWibble(2.2));
+  }
+
+  @Override
   public List<String> methodWithNullListReturn() {
     return null;
   }
@@ -1170,6 +1175,11 @@ public class TestInterfaceImpl implements TestInterface {
   @Override
   public Set<JsonArray> methodWithSetComplexJsonArrayReturn() {
     return new LinkedHashSet<>(Arrays.asList(new JsonArray().add(new JsonObject().put("foo", "hello")), new JsonArray().add(new JsonObject().put("bar", "bye"))));
+  }
+
+  @Override
+  public Set<TestDataObject> methodWithSetDataObjectReturn() {
+    return new LinkedHashSet<>(methodWithListDataObjectReturn());
   }
 
   @Override
