@@ -212,7 +212,7 @@ public class ClassModel implements Model {
   }
 
   public List<TypeParamInfo.Class> getTypeParams() {
-    return ((TypeInfo.Class.Api) type.getRaw()).getParams();
+    return type.getRaw().getParams();
   }
 
   private void sortMethodMap(Map<String, List<MethodInfo>> map) {
