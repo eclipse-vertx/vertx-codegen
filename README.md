@@ -290,7 +290,7 @@ The `ParamInfo` object has the following fields:
 * `type` - the `TypeInfo` of the current option
 * `doc` - the `Doc` object
 * `concrete`" - true when the option is implemented by vert.x - useful to decide the generation of a class or interface in the API shim
-* `gnerateConverter` - whether a converter should be generated or not
+* `generateConverter` - whether a converter should be generated or not
 * `inheritConverter` - whether the generated converter should convert all properties
 * `properties` - a `Set<PropertyInfo>` of the available properties in this option
 * `importedTypes` - the imported types by the option
