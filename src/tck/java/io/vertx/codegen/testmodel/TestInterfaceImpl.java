@@ -12,14 +12,7 @@ import io.vertx.core.VertxException;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -238,6 +231,21 @@ public class TestInterfaceImpl implements TestInterface {
     assertEquals("hello", dataObject.getFoo());
     assertEquals(123, dataObject.getBar());
     assertEquals(1.23, dataObject.getWibble(), 0);
+  }
+
+  @Override
+  public void methodWithListOfDataObjectsParam(List<TestDataObject> dataObjects) {
+    assertEquals(2, dataObjects.size());
+    assertEquals("hello", dataObjects.get(0).getFoo());
+    assertEquals("world", dataObjects.get(1).getFoo());
+  }
+
+  @Override
+  public void methodWithSetOfDataObjectsParam(Set<TestDataObject> dataObjects) {
+    assertEquals(2, dataObjects.size());
+    List<String> strings = dataObjects.stream().map(TestDataObject::getFoo).collect(Collectors.toList());
+    assertTrue(strings.contains("hello"));
+    assertTrue(strings.contains("world"));
   }
 
   @Override
