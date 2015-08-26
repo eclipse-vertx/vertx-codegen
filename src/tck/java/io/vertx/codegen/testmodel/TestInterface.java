@@ -44,6 +44,8 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
   void methodWithObjectParam(String str, Object obj);
 
   void methodWithDataObjectParam(TestDataObject dataObject);
+  void methodWithListOfDataObjectsParam(List<TestDataObject> dataObjects);
+  void methodWithSetOfDataObjectsParam(Set<TestDataObject> dataObjects);
 
   void methodWithNullDataObjectParam(TestDataObject dataObject);
 
