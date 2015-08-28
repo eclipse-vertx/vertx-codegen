@@ -467,6 +467,14 @@ public abstract class TypeInfo {
       return qualified ? name : simpleName;
     }
 
+    public String translatePackageName(String id) {
+      return module.translateQualifiedName(packageName, id);
+    }
+
+    public String translateName(String lang) {
+      return module.translateQualifiedName(name, lang);
+    }
+
     public static class Enum extends Class {
 
       final List<String> values;
@@ -541,14 +549,6 @@ public abstract class TypeInfo {
 
       public boolean isHandler() {
         return handlerArg != null;
-      }
-
-      public String translatePackageName(String id) {
-        return module.translateQualifiedName(packageName, id);
-      }
-
-      public String translateName(String lang) {
-        return module.translateQualifiedName(name, lang);
       }
     }
   }

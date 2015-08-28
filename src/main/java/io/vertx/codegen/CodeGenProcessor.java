@@ -150,7 +150,7 @@ public class CodeGenProcessor extends AbstractProcessor {
                 if (codeGenerator.kind.equals(model.getKind())) {
                   String relativeName = (String) MVEL.executeExpression(codeGenerator.filenameExpr, vars);
                   if (relativeName != null) {
-                    if (relativeName.endsWith(".java")) {
+                    if (relativeName.endsWith(".java") && !relativeName.contains("/")) {
                       // Special handling for .java
                       String fqn = relativeName.substring(0, relativeName.length() - ".java".length());
                       // Avoid to recreate the same file (this may happen as we unzip and recompile source trees)

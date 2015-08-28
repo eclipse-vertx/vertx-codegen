@@ -89,12 +89,14 @@ public class DataObjectTest {
   public void testDataObjectInterface() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(DataObjectInterface.class);
     assertNotNull(model);
+    assertFalse(model.isClass());
   }
 
   @Test
   public void testEmptyDataObject() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(EmptyDataObject.class);
     assertNotNull(model);
+    assertTrue(model.isClass());
     assertFalse(model.getGenerateConverter());
     assertFalse(model.getInheritConverter());
   }
@@ -489,6 +491,12 @@ public class DataObjectTest {
   public void testInheritedConverterDataObject() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(InheritingConverterDataObject.class);
     assertTrue(model.getInheritConverter());
+  }
+
+  @Test
+  public void testToJson() throws Exception {
+    assertTrue(new Generator().generateDataObject(ToJsonDataObject.class).getToJson());
+    assertFalse(new Generator().generateDataObject(EmptyDataObject.class).getToJson());
   }
 
   private static void assertProperty(
