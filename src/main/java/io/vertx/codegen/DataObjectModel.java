@@ -54,7 +54,7 @@ public class DataObjectModel implements Model {
   private final Set<TypeInfo.Class> importedTypes = new LinkedHashSet<>();
   private TypeInfo.Class type;
   private Doc doc;
-  private boolean toJson;
+  private boolean jsonifiable;
 
   public DataObjectModel(Elements elementUtils, Types typeUtils, TypeElement modelElt, Messager messager) {
     this.elementUtils = elementUtils;
@@ -123,8 +123,8 @@ public class DataObjectModel implements Model {
     return generateConverter;
   }
 
-  public boolean getToJson() {
-    return toJson;
+  public boolean isJsonifiable() {
+    return jsonifiable;
   }
 
   public boolean getInheritConverter() {
@@ -145,7 +145,7 @@ public class DataObjectModel implements Model {
     vars.put("superTypes", superTypes);
     vars.put("superType", superType);
     vars.put("abstractSuperTypes", abstractSuperTypes);
-    vars.put("toJson", toJson);
+    vars.put("jsonifiable", jsonifiable);
     vars.putAll(ClassKind.vars());
     vars.putAll(MethodKind.vars());
     vars.putAll(Case.vars());
@@ -207,7 +207,7 @@ public class DataObjectModel implements Model {
           if (methodElt.getSimpleName().toString().equals("toJson") &&
               methodElt.getParameters().isEmpty() &&
               typeFactory.create(methodElt.getReturnType()).getKind() == ClassKind.JSON_OBJECT) {
-            toJson = true;
+            jsonifiable = true;
           }
           if (methodElt.getAnnotation(GenIgnore.class) == null) {
             processMethod(methodElt);

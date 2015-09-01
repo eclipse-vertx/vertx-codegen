@@ -495,8 +495,8 @@ public class DataObjectTest {
 
   @Test
   public void testToJson() throws Exception {
-    assertTrue(new Generator().generateDataObject(ToJsonDataObject.class).getToJson());
-    assertFalse(new Generator().generateDataObject(EmptyDataObject.class).getToJson());
+    assertTrue(new Generator().generateDataObject(ToJsonDataObject.class).isJsonifiable());
+    assertFalse(new Generator().generateDataObject(EmptyDataObject.class).isJsonifiable());
   }
 
   private static void assertProperty(

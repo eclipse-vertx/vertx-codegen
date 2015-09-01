@@ -296,6 +296,7 @@ The `ParamInfo` object has the following fields:
 * `importedTypes` - the imported types by the option
 * `superTypes` - a list of `TypeInfo` representing the set of user defined types which the current interface extends from
 * `superType` - the supertype of this option ???
+* `jsonifiable` - True if the object has a `toJson()` method
 
 The `PropertyInfo` object has the following fields:
 
