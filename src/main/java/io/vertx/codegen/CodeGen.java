@@ -10,6 +10,7 @@ import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -33,6 +34,7 @@ public class CodeGen {
 
   private final HashMap<String, TypeElement> dataObjects = new HashMap<>();
   private final HashMap<String, TypeElement> classes = new HashMap<>();
+  private final HashMap<String, TypeElement> enums = new HashMap<>();
   private final HashMap<String, PackageElement> modules = new HashMap<>();
   private final HashMap<String, TypeElement> proxyClasses = new HashMap<>();
   private final Elements elementUtils;
@@ -60,7 +62,13 @@ public class CodeGen {
     round.getElementsAnnotatedWith(VertxGen.class).
       stream().
       filter(implFilter).
+      filter(elt -> elt.getKind() != ElementKind.ENUM).
       forEach(element -> classes.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
+    round.getElementsAnnotatedWith(VertxGen.class).
+        stream().
+        filter(implFilter).
+        filter(elt -> elt.getKind() == ElementKind.ENUM).
+        forEach(element -> enums.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
     round.getElementsAnnotatedWith(GenModule.class).
       stream().
       map(element -> (PackageElement) element).
@@ -76,7 +84,8 @@ public class CodeGen {
       Stream.concat(getModuleModels(),
         Stream.concat(getPackageModels(),
           Stream.concat(getClassModels(),
-            getProxyModels()))));
+            Stream.concat(getEnumModels(),
+              getProxyModels())))));
   }
 
   private static class ModelEntry<E extends Element, M extends Model> implements Map.Entry<E, M> {
@@ -120,7 +129,7 @@ public class CodeGen {
             new ModelEntry<>(element, () -> new PackageModel(
                 element.getQualifiedName().toString(),
                 ModuleInfo.resolve(elementUtils, element))
-    ));
+            ));
   }
 
   public Stream<Map.Entry<PackageElement, ModuleModel>> getModuleModels() {
@@ -133,6 +142,10 @@ public class CodeGen {
 
   public Stream<Map.Entry<TypeElement, ProxyModel>> getProxyModels() {
     return proxyClasses.entrySet().stream().map(entry -> new ModelEntry<>(entry.getValue(), () -> getProxyModel(entry.getKey())));
+  }
+
+  public Stream<Map.Entry<TypeElement, EnumModel>> getEnumModels() {
+    return enums.entrySet().stream().map(entry -> new ModelEntry<>(entry.getValue(), () -> getEnumModel(entry.getKey())));
   }
 
   public ModuleModel getModuleModel(String modulePackageName) {
@@ -177,6 +190,17 @@ public class CodeGen {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
       ClassModel model = new ClassModel(methodOverloadChecker, messager, classes, elementUtils, typeUtils, element);
+      model.process();
+      return model;
+    }
+  }
+
+  public EnumModel getEnumModel(String fqcn) {
+    TypeElement element = enums.get(fqcn);
+    if (element == null) {
+      throw new IllegalArgumentException("Source for " + fqcn + " not found");
+    } else {
+      EnumModel model = new EnumModel(elementUtils, typeUtils, element);
       model.process();
       return model;
     }

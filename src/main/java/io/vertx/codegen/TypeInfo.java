@@ -66,7 +66,7 @@ public abstract class TypeInfo {
           Thread.currentThread().setContextClassLoader(loader);
         }
         if (classType.isEnum()) {
-          return new Class.Enum(fqcn, Collections.emptyList(), module, false);
+          return new Class.Enum(fqcn, false, Collections.emptyList(), module, false);
         } else {
           ClassKind kind = Helper.getKind(classType::getAnnotation, fqcn);
           if (kind == ClassKind.API) {
@@ -139,7 +139,8 @@ public abstract class TypeInfo {
             values.add(enclosedElt.getSimpleName().toString());
           }
         }
-        return new Class.Enum(fqcn, values, module, proxyGen);
+        boolean gen = elt.getAnnotation(VertxGen.class) != null;
+        return new Class.Enum(fqcn, gen, values, module, proxyGen);
       } else {
         ClassKind kind = Helper.getKind(annotationType -> elt.getAnnotation(annotationType), fqcn);
         Class raw;
@@ -478,11 +479,20 @@ public abstract class TypeInfo {
     public static class Enum extends Class {
 
       final List<String> values;
+      final boolean gen;
 
-      public Enum(String fqcn, List<String> values, ModuleInfo module, boolean proxyGen) {
+      public Enum(String fqcn, boolean gen, List<String> values, ModuleInfo module, boolean proxyGen) {
         super(ClassKind.ENUM, fqcn, module, proxyGen, Collections.emptyList());
 
+        this.gen = gen;
         this.values = values;
+      }
+
+      /**
+       * @return true if the type is a generated type
+       */
+      public boolean isGen() {
+        return gen;
       }
 
       /**

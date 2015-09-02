@@ -143,6 +143,10 @@ public class Generator {
     return generateClass(codegen -> codegen.getProxyModel(c.getCanonicalName()), c, rest);
   }
 
+  public EnumModel generateEnum(Class c, Class... rest) throws Exception {
+    return generateClass(codegen -> codegen.getEnumModel(c.getCanonicalName()), c, rest);
+  }
+
   public <M> M generateClass(Function<CodeGen, M> f, Class c, Class... rest) throws Exception {
     ArrayList<Class> types = new ArrayList<>();
     types.add(c);
