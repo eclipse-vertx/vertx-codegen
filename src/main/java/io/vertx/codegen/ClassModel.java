@@ -470,7 +470,7 @@ public class ClassModel implements Model {
         }
         type = typeFactory.create(elem.asType());
         if (getModule() == null) {
-          throw new GenException(elem, "@VertxGen type must have an ancestor package annotated with @ModuleGen");
+          throw new GenException(elem, "@VertxGen type must have an ancestor package annotated with @GenModule");
         }
         ifaceFQCN = elem.asType().toString();
         ifaceSimpleName = elem.getSimpleName().toString();
