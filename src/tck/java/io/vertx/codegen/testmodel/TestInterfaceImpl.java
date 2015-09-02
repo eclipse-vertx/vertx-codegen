@@ -1216,6 +1216,16 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public String methodWithGenEnumParam(String strVal, TestGenEnum weirdo) {
+    return strVal + weirdo;
+  }
+
+  @Override
+  public TestGenEnum methodWithGenEnumReturn(String strVal) {
+    return TestGenEnum.valueOf(strVal);
+  }
+
+  @Override
   public Throwable methodWithThrowableReturn(String strVal) {
     return new Exception(strVal);
   }

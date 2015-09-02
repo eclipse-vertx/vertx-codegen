@@ -15,6 +15,7 @@ import io.vertx.codegen.TypeInfo;
 import io.vertx.codegen.TypeParamInfo;
 import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.codegen.testmodel.TestDataObject;
+import io.vertx.codegen.testmodel.TestGenEnum;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
@@ -696,15 +697,23 @@ public class GeneratorTest {
     assertTrue(model.getImportedTypes().contains(TypeInfo.create(TestEnum.class)));
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(1, model.getMethods().size());
-    String methodName = "methodWithEnumParam";
+    assertEquals(2, model.getMethods().size());
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, methodName, 1, "void", MethodKind.OTHER);
+    checkMethod(method, "methodWithEnumParam", 1, "void", MethodKind.OTHER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "weirdo", TestEnum.class);
     TypeInfo.Class.Enum enumType = (TypeInfo.Class.Enum) params.get(0).getType();
+    assertFalse(enumType.isGen());
     assertEquals(Arrays.asList("TIM", "JULIEN", "NICK", "WESTON"), enumType.getValues());
+
+    method = model.getMethods().get(1);
+    checkMethod(method, "methodWithGenEnumParam", 1, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "weirdo", TestGenEnum.class);
+    enumType = (TypeInfo.Class.Enum) params.get(0).getType();
+    assertTrue(enumType.isGen());
+    assertEquals(Arrays.asList("LAURA", "BOB", "MIKE", "LELAND"), enumType.getValues());
   }
 
   @Test
@@ -715,11 +724,10 @@ public class GeneratorTest {
     assertTrue(model.getImportedTypes().contains(TypeInfo.create(TestEnum.class)));
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(1, model.getMethods().size());
-    String methodName = "methodWithEnumReturn";
+    assertEquals(2, model.getMethods().size());
 
-    MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, methodName, 0, TestEnum.class, MethodKind.OTHER);
+    checkMethod(model.getMethods().get(0), "methodWithEnumReturn", 0, TestEnum.class, MethodKind.OTHER);
+    checkMethod(model.getMethods().get(1), "methodWithGenEnumReturn", 0, TestGenEnum.class, MethodKind.OTHER);
   }
 
   @Test

@@ -27,6 +27,7 @@ A code generator consist of an _MVEL_ template declared in a `codegen.json` desc
     - `module` : applied on each declared module, a module uniquely identifies an API
     - `dataObject`: applied on each data object class
     - `proxy`: applied on each proxy class
+    - `enum`: applied on each enum class annotated with `@VertxGen`
 
 There can be as many generators as you like.
 
@@ -80,6 +81,7 @@ The constraints are
 * Data object classes must provide a constructor which takes a single `io.vertx.core.json.JsonObject` parameter.
 * Methods where the return value must be cached in the API shim must be annotated with the `io.vertx.codegen.annotations.CacheReturn` annotation
 * Only certain types are allowed as parameter or return value types for any API methods (defined below).
+* Custom enums should be annotated with `@VertxGen`, although this is not mandatory to allow the usage of existing Java enums
 
 
 ### Permitted types
@@ -208,6 +210,13 @@ For this particular `com.acme.myservice` module we have:
 - `com.acme.rxjava.myservice` for RxJava API
 
 NOTE: the default group name is `io.vertx` and should only be used by Vert.x projects or extensions.
+
+## Enums
+
+Enum types can be freely used in an API, custom enum types *should* be annotated with `@VertxGen`
+to allow processing of the enum. This is not mandatory to allow the reuse the existing Java enums.
+
+Enums can be processed for providing more idiomatic APIs in some languages.
 
 ## Templates
 
