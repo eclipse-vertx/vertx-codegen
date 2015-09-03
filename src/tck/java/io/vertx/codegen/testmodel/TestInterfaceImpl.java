@@ -60,7 +60,7 @@ public class TestInterfaceImpl implements TestInterface {
                                           Handler<Boolean> booleanHandler, Handler<Character> charHandler,
                                           Handler<String> stringHandler) {
     byteHandler.handle((byte)123);
-    shortHandler.handle((short)12345);
+    shortHandler.handle((short) 12345);
     intHandler.handle(1234567);
     longHandler.handle(1265615234l);
     floatHandler.handle(12.345f);
@@ -280,10 +280,10 @@ public class TestInterfaceImpl implements TestInterface {
   public void methodWithSetParams(Set<String> setString, Set<Byte> setByte, Set<Short> setShort, Set<Integer> setInt, Set<Long> setLong, Set<JsonObject> setJsonObject, Set<JsonArray> setJsonArray, Set<RefedInterface1> setVertxGen, Set<TestDataObject> setDataObject) {
     assertTrue(setString.contains("foo"));
     assertTrue(setString.contains("bar"));
-    assertTrue(setByte.contains((byte)2));
-    assertTrue(setByte.contains((byte)3));
-    assertTrue(setShort.contains((short)12));
-    assertTrue(setShort.contains((short)13));
+    assertTrue(setByte.contains((byte) 2));
+    assertTrue(setByte.contains((byte) 3));
+    assertTrue(setShort.contains((short) 12));
+    assertTrue(setShort.contains((short) 13));
     assertTrue(setInt.contains(1234));
     assertTrue(setInt.contains(1345));
     assertTrue(setLong.contains(123l));
@@ -305,10 +305,10 @@ public class TestInterfaceImpl implements TestInterface {
                                   Map<String, JsonArray> mapJsonArray, Map<String, RefedInterface1> mapVertxGen) {
     assertEquals("bar", mapString.get("foo"));
     assertEquals("wibble", mapString.get("eek"));
-    assertEquals((byte)2, mapByte.get("foo").byteValue());
-    assertEquals((byte)3, mapByte.get("eek").byteValue());
-    assertEquals((short)12, mapShort.get("foo").shortValue());
-    assertEquals((short)13, mapShort.get("eek").shortValue());
+    assertEquals((byte) 2, mapByte.get("foo").byteValue());
+    assertEquals((byte) 3, mapByte.get("eek").byteValue());
+    assertEquals((short) 12, mapShort.get("foo").shortValue());
+    assertEquals((short) 13, mapShort.get("eek").shortValue());
     assertEquals(1234, mapInt.get("foo").intValue());
     assertEquals(1345, mapInt.get("eek").intValue());
     assertEquals(123L, mapLong.get("foo").longValue());
@@ -398,7 +398,7 @@ public class TestInterfaceImpl implements TestInterface {
   @Override
   public void methodWithHandlerListComplexJsonObject(Handler<List<JsonObject>> listHandler) {
     List<JsonObject> list = Arrays.asList(new JsonObject().put("outer", new JsonObject().put("socks", "tartan")).put("list", new JsonArray().add("yellow").add("blue")));
-    listHandler.handle(list);    
+    listHandler.handle(list);
   }
 
   @Override
@@ -580,7 +580,7 @@ public class TestInterfaceImpl implements TestInterface {
 
   @Override
   public void methodWithHandlerAsyncResultListDataObject(Handler<AsyncResult<List<TestDataObject>>> listHandler) {
-    List<TestDataObject> list = 
+    List<TestDataObject> list =
         Arrays.asList(new TestDataObject().setFoo("String 1").setBar(1).setWibble(1.1), new TestDataObject().setFoo("String 2").setBar(2).setWibble(2.2));
     listHandler.handle(Future.succeededFuture(list));
   }
@@ -593,7 +593,7 @@ public class TestInterfaceImpl implements TestInterface {
 
   @Override
   public void methodWithHandlerAsyncResultSetDataObject(Handler<AsyncResult<Set<TestDataObject>>> setHandler) {
-    Set<TestDataObject> set = 
+    Set<TestDataObject> set =
         new LinkedHashSet<>(Arrays.asList(new TestDataObject().setFoo("String 1").setBar(1).setWibble(1.1), new TestDataObject().setFoo("String 2").setBar(2).setWibble(2.2)));
     setHandler.handle(Future.succeededFuture(set));
   }
@@ -889,6 +889,11 @@ public class TestInterfaceImpl implements TestInterface {
   @Override
   public int methodWithCachedReturnPrimitive(int arg) {
     return arg;
+  }
+
+  @Override
+  public List<RefedInterface1> methodWithCachedListReturn() {
+    return Arrays.asList(new RefedInterface1Impl().setString("foo"), new RefedInterface1Impl().setString("bar"));
   }
 
   @Override
