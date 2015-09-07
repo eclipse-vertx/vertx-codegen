@@ -4,17 +4,19 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.util.Map;
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @DataObject
 public interface PropertyGettersSetters {
 
-  public static PropertyGettersSetters dataObject() {
+  static PropertyGettersSetters dataObject() {
     throw new UnsupportedOperationException();
   }
 
-  public static PropertyGettersSetters dataObjectFromJson(JsonObject obj) {
+  static PropertyGettersSetters dataObjectFromJson(JsonObject obj) {
     throw new UnsupportedOperationException();
   }
 
@@ -41,10 +43,10 @@ public interface PropertyGettersSetters {
   ToJsonDataObject getToJsonDataObject();
 
   JsonObject getJsonObject();
-  PropertySetters setJsonObject(JsonObject jsonObject);
+  PropertyGettersSetters setJsonObject(JsonObject jsonObject);
   JsonArray getJsonArray();
-  PropertySetters setJsonArray(JsonArray jsonArray);
+  PropertyGettersSetters setJsonArray(JsonArray jsonArray);
 
   Enumerated getEnumerated();
-  PropertySetters setEnumerated(Enumerated enumerated);
+  PropertyGettersSetters setEnumerated(Enumerated enumerated);
 }

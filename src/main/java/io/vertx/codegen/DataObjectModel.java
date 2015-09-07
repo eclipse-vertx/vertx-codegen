@@ -284,6 +284,7 @@ public class DataObjectModel implements Model {
       String abc = mutatorMethod.substring(3);
       String name = Helper.normalizePropertyName(abc);
       List<? extends VariableElement> parameters = methodElt.getParameters();
+      PropertyKind kind;
       switch (prefix) {
         case "add":
         case "set": {
@@ -293,28 +294,32 @@ public class DataObjectModel implements Model {
           VariableElement paramElt = parameters.get(0);
           TypeMirror propTypeMirror = paramElt.asType();
           TypeInfo propType = typeFactory.create(propTypeMirror);
-          boolean array;
-          boolean adder;
           if ("add".equals(prefix)) {
             if (name.endsWith("s")) {
               throw new GenException(methodElt, "Option adder name must not terminate with 's' char");
             } else {
               name += "s";
             }
-            array = true;
-            adder = true;
+            kind = PropertyKind.LIST_ADD;
           } else {
-            adder = false;
-            if (propType.getKind() == ClassKind.LIST) {
-              propType = ((TypeInfo.Parameterized) propType).getArgs().get(0);
-              array = true;
-            } else {
-              array = false;
+            switch (propType.getKind()) {
+              case LIST:
+                propType = ((TypeInfo.Parameterized) propType).getArgs().get(0);
+                kind = PropertyKind.LIST;
+                break;
+              case MAP:
+                propType = ((TypeInfo.Parameterized) propType).getArgs().get(1);
+                kind = PropertyKind.MAP;
+                break;
+              default:
+                kind = PropertyKind.VALUE;
+                break;
             }
           }
 
           boolean jsonifiable;
           switch (propType.getKind()) {
+            case OBJECT:
             case PRIMITIVE:
             case BOXED_PRIMITIVE:
             case STRING:
@@ -339,14 +344,14 @@ public class DataObjectModel implements Model {
           }
 
           String readerMethod;
-          if ((propType.getName().equals("boolean") || propType.getName().equals("java.lang.Boolean")) && !array) {
+          if ((propType.getName().equals("boolean") || propType.getName().equals("java.lang.Boolean")) && kind == PropertyKind.VALUE) {
             readerMethod = "is" + abc;
           } else {
-            readerMethod = "get" + abc + (adder ? "s" : "");
+            readerMethod = "get" + abc + (kind.isAdder() ? "s" : "");
           }
 
           TypeMirror readerType;
-          if (adder) {
+          if (kind.isAdder()) {
             TypeElement listType = elementUtils.getTypeElement("java.util.List");
             TypeMirror eltType = propTypeMirror;
             if (eltType instanceof PrimitiveType) {
@@ -397,7 +402,7 @@ public class DataObjectModel implements Model {
             doc = first.orElse(null);
           }
 
-          PropertyInfo property = new PropertyInfo(declared, name, doc, propType, mutatorMethod, hasReader ? readerMethod : null, array, adder, jsonifiable);
+          PropertyInfo property = new PropertyInfo(declared, name, doc, propType, mutatorMethod, hasReader ? readerMethod : null, kind, jsonifiable);
           propertyMap.put(property.name, property);
         }
       }

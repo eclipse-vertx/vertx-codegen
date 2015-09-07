@@ -9,26 +9,24 @@ import io.vertx.codegen.doc.Doc;
  */
 public class PropertyInfo {
 
+  final PropertyKind kind;
   final boolean declared;
   final String name;
   final Doc doc;
   final TypeInfo type;
   final String writerMethod;
   final String readerMethod;
-  final boolean array;
-  final boolean adder;
   final boolean jsonifiable;
 
   public PropertyInfo(boolean declared, String name, Doc doc, TypeInfo type, String writerMethod, String readerMethod,
-                      boolean array, boolean adder, boolean jsonifiable) {
+                      PropertyKind kind, boolean jsonifiable) {
+    this.kind = kind;
     this.declared = declared;
     this.name = name;
     this.doc = doc;
     this.type = type;
     this.writerMethod = writerMethod;
     this.readerMethod = readerMethod;
-    this.array = array;
-    this.adder = adder;
     this.jsonifiable = jsonifiable;
   }
 
@@ -45,6 +43,13 @@ public class PropertyInfo {
    */
   public Doc getDoc() {
     return doc;
+  }
+
+  /**
+   * @return the property kind
+   */
+  public PropertyKind getKind() {
+    return kind;
   }
 
   /**
@@ -77,17 +82,31 @@ public class PropertyInfo {
   }
 
   /**
-   * @return true if the property is managed by a {@code java.util.List}
+   * @return true if the property is managed as a single value
+   */
+  public boolean isValue() {
+    return kind == PropertyKind.VALUE;
+  }
+
+  /**
+   * @return true if the property is managed by a {@code java.util.List<T>}
    */
   public boolean isArray() {
-    return array;
+    return kind == PropertyKind.LIST || kind == PropertyKind.LIST_ADD;
+  }
+
+  /**
+   * @return true if the property is managed by a {@code java.util.Map<String, T>}
+   */
+  public boolean isMap() {
+    return kind == PropertyKind.MAP;
   }
 
   /**
    * @return true if the property is using an adder
    */
   public boolean isAdder() {
-    return adder;
+    return kind == PropertyKind.LIST_ADD;
   }
 
   /**

@@ -1,5 +1,7 @@
 package io.vertx.core.json;
 
+import java.util.Map;
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
@@ -24,4 +26,10 @@ public class JsonObject  {
   public Integer getInteger(String fieldName, Integer def) { throw new UnsupportedOperationException(); }
   public Double getDouble(String fieldName, Double def) { throw new UnsupportedOperationException(); }
   public JsonArray getJsonArray(String name) { throw new UnsupportedOperationException(); }
+  public Map<String, Object> getMap() {
+    throw new UnsupportedOperationException();
+  }
+  public JsonObject putAll(Map<String, Object> map) {
+    throw new UnsupportedOperationException();
+  }
 }

@@ -211,6 +211,42 @@ For this particular `com.acme.myservice` module we have:
 
 NOTE: the default group name is `io.vertx` and should only be used by Vert.x projects or extensions.
 
+## Data objects
+
+A data object is a plain Java public class annotated with `@DataObject` that follows these minimum requirements:
+
+* A public no arg constructor
+* A copy constructor
+* A constructor with `io.vertx.core.json.JsonObject` parameter type
+
+Optionally a data object can define a public `io.vertx.core.json.JsonObject toJson()` method: such method makes the 
+data object convertible to `JsonObject`, the data object can then be used as an Api return type.
+
+By default, a data object is responsible to decode from Json (via the `JsonObject` constructor) and encode
+to Json (via the `toJson` method).
+
+Data object converter can be generated with `@DataObject(generateConverter=true)` by Vert.x Core. Such
+ Data object conversion recognize the following types as _member_ of any `@DataObject`:
+
+* the specific `io.vertx.core.Buffer` type
+* the set `B`
+* the set `J`
+* any data object class annotated with `@DataObject`
+* type `java.util.List<C>` where `C` contains
+    * the specific `io.vertx.core.Buffer` type
+    * the set `B`
+    * the set `J`
+    * any `@DataObject`
+    * the Object type : the `List<Object>` acts like a `JsonArray`
+* type `java.util.Map<String, C>` where `C` contains
+    * the specific `io.vertx.core.Buffer` type
+    * the set `B`
+    * the set `J`
+    * any `@DataObject`
+    * the Object type : the `Map<String, Object>` acts like a `JsonMap`
+
+This is also used for data object _cheatsheet_ generation.
+
 ## Enums
 
 Enum types can be freely used in an API, custom enum types *should* be annotated with `@VertxGen`
