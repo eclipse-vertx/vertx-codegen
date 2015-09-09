@@ -1,0 +1,9 @@
+{
+  "name": "testgen2",
+  "generators": [ {
+    "kind": "class",
+    "incremental": true,
+    "fileName": "model.type.raw.module.packageName.replace('.', '_') + '.properties'",
+    "templateFileName": "templates/incrementalClassGen.templ"
+  }]
+}

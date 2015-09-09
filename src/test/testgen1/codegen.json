@@ -1,5 +1,5 @@
 {
-  "name": "testgen",
+  "name": "testgen1",
   "generators": [ {
     "kind": "class",
     "fileName": "model.type.name.replace('.', '_') + '.properties'",
