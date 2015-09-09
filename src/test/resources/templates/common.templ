@@ -1,0 +1,9 @@
+@code{
+  def sortTypes(types) {
+    var map = new java.util.TreeMap();
+    for (type : types) {
+      map.put(type.name, type);
+    }
+    return map.values();
+  }
+}

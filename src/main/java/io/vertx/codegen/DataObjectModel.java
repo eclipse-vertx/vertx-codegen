@@ -79,6 +79,10 @@ public class DataObjectModel implements Model {
     return type.getName();
   }
 
+  public TypeInfo.Class getType() {
+    return type;
+  }
+
   public Doc getDoc() {
     return doc;
   }

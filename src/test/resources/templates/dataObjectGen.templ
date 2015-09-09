@@ -1,0 +1,13 @@
+@includeNamed{'common.templ'}
+type=@{type}\n
+generateConverter=@{generateConverter}\n
+inheritConverter=@{inheritConverter}\n
+concrete=@{concrete}\n
+isClass=@{isClass}\n
+importedTypes=@{sortTypes(importedTypes)}\n
+superTypes=@{sortTypes(superTypes)}\n
+abstractSuperTypes=@{sortTypes(abstractSuperTypes)}\n
+superType=@{superType}\n
+@foreach{property:properties}
+property.@{property.name}=@{property.type}\n
+@end{}

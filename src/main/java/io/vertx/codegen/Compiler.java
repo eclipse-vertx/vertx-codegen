@@ -29,6 +29,7 @@ public class Compiler {
 
   private Processor processor;
   private DiagnosticListener<JavaFileObject> diagnosticListener;
+  private List<String> options = new ArrayList<>();
 
   public Compiler(Processor processor) {
     this(processor, new DiagnosticCollector<>());
@@ -45,6 +46,15 @@ public class Compiler {
 
   public Processor getProcessor() {
     return processor;
+  }
+
+  public Compiler addOption(String option) {
+    options.add(option);
+    return this;
+  }
+
+  public boolean compile(Class... types) throws Exception {
+    return compile(Arrays.asList(types));
   }
 
   public boolean compile(List<Class> types) throws Exception {
@@ -83,7 +93,7 @@ public class Compiler {
     fm.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(tmp));
     Iterable<? extends JavaFileObject> fileObjects = fm.getJavaFileObjects(sourceFiles);
     Writer out = new NullWriter();
-    JavaCompiler.CompilationTask task = compiler.getTask(out, fm, diagnosticListener, null, null, fileObjects);
+    JavaCompiler.CompilationTask task = compiler.getTask(out, fm, diagnosticListener, options, null, fileObjects);
     List<Processor> processors = Collections.<Processor>singletonList(processor);
     task.setProcessors(processors);
     try {

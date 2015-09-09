@@ -88,7 +88,7 @@ public class EnumModel implements Model  {
     Map<String, Object> vars = new HashMap<>();
     vars.put("type", getType());
     vars.put("helper", new Helper());
-    vars.put("members", values);
+    vars.put("values", values);
     return vars;
   }
 
