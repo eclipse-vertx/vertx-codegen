@@ -11,13 +11,14 @@ import io.vertx.codegen.annotations.VertxGen;
 import org.mvel2.MVEL;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
-import javax.tools.StandardLocation;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
@@ -50,6 +51,7 @@ public class CodeGenProcessor extends AbstractProcessor {
   private static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
   private File outputDirectory;
   private Map<String, List<CodeGenerator>> codeGenerators;
+  Map<File, GeneratedFile> generatedFiles = new HashMap<>();
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
@@ -60,6 +62,12 @@ public class CodeGenProcessor extends AbstractProcessor {
         DataObject.class,
         GenModule.class
     ).stream().map(Class::getName).collect(Collectors.toSet());
+  }
+
+  @Override
+  public synchronized void init(ProcessingEnvironment processingEnv) {
+    super.init(processingEnv);
+    generatedFiles.clear();
   }
 
   private Collection<CodeGenerator> getCodeGenerators() {
@@ -83,13 +91,14 @@ public class CodeGenProcessor extends AbstractProcessor {
             String kind = generator.get("kind").asText();
             String templateFileName = generator.get("templateFileName").asText();
             String fileName = generator.get("fileName").asText();
+            boolean incremental = generator.has("incremental") && generator.get("incremental").asBoolean();
             if (!templates.contains(templateFileName)) {
               templates.add(templateFileName);
               Serializable fileNameExpression = MVEL.compileExpression(fileName);
               Template compiledTemplate = new Template(templateFileName);
               compiledTemplate.setOptions(processingEnv.getOptions());
               List<CodeGenerator> generators = codeGenerators.computeIfAbsent(name, abc -> new ArrayList<>());
-              generators.add(new CodeGenerator(kind, fileNameExpression, compiledTemplate));
+              generators.add(new CodeGenerator(kind, incremental, fileNameExpression, compiledTemplate));
               log.info("Loaded " + name + " code generator");
             }
           }
@@ -128,8 +137,10 @@ public class CodeGenProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+
     if (!roundEnv.processingOver()) {
       Collection<CodeGenerator> codeGenerators = getCodeGenerators();
+
       if (!roundEnv.errorRaised()) {
         CodeGen codegen = new CodeGen(processingEnv, roundEnv);
 
@@ -163,8 +174,13 @@ public class CodeGenProcessor extends AbstractProcessor {
                         writer.append(output);
                       }
                     } else {
-                      File target = new File(outputDirectory, relativeName);
-                      codeGenerator.transformTemplate.apply(model, target);
+                      File target = new File(outputDirectory, relativeName).getAbsoluteFile();
+                      if (codeGenerator.incremental) {
+                        List<ModelProcessing> processings = generatedFiles.computeIfAbsent(target, GeneratedFile::new);
+                        processings.add(new ModelProcessing(model, codeGenerator));
+                      } else {
+                        codeGenerator.transformTemplate.apply(model, target);
+                      }
                     }
                     log.info("Generated model " + model.getFqn() + ": " + relativeName);
                   }
@@ -174,28 +190,80 @@ public class CodeGenProcessor extends AbstractProcessor {
               log.info("Validated model " + model.getFqn());
             }
           } catch (GenException e) {
-            String msg = "Could not generate model for " + e.element + ": " + e.msg;
-            log.log(Level.SEVERE, msg, e);
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, e.element);
+            reportGenException(e);
           } catch (Exception e) {
-            String msg = "Could not generate element for " + entry.getKey() + ": " + e.getMessage();
-            log.log(Level.SEVERE, msg, e);
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, entry.getKey());
+            reportException(e, entry.getKey());
           }
         });
       }
+    } else {
+
+      // Incremental post processing
+      generatedFiles.values().forEach(generated -> {
+        try (FileWriter fileWriter = new FileWriter(generated.file)) {
+          for (int i = 0; i < generated.size(); i++) {
+            ModelProcessing processing = generated.get(i);
+            Map<String, Object> vars = new HashMap<>();
+            vars.put("incrementalIndex", i);
+            vars.put("incrementalSize", generated.size());
+            vars.put("session", generated.session);
+            try {
+              String part = processing.generator.transformTemplate.render(processing.model, vars);
+              fileWriter.append(part);
+            } catch (GenException e) {
+              reportGenException(e);
+            } catch (Exception e) {
+              reportException(e, processing.model.getElement());
+            }
+          }
+        } catch (Exception e) {
+          reportException(e, generated.get(0).model.getElement());
+        }
+      });
     }
     return true;
   }
 
-  static class CodeGenerator {
+  private void reportGenException(GenException e) {
+    String msg = "Could not generate model for " + e.element + ": " + e.msg;
+    log.log(Level.SEVERE, msg, e);
+    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, e.element);
+  }
+
+  private void reportException(Exception e, Element elt) {
+    String msg = "Could not generate element for " + elt + ": " + e.getMessage();
+    log.log(Level.SEVERE, msg, e);
+    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, elt);
+  }
+
+  private static class CodeGenerator {
     final String kind;
+    final boolean incremental;
     final Serializable filenameExpr;
     final Template transformTemplate;
-    CodeGenerator(String kind, Serializable filenameExpr, Template transformTemplate) {
+    CodeGenerator(String kind, boolean incremental, Serializable filenameExpr, Template transformTemplate) {
       this.kind = kind;
       this.filenameExpr = filenameExpr;
       this.transformTemplate = transformTemplate;
+      this.incremental = incremental;
+    }
+  }
+
+  private static class ModelProcessing {
+    final Model model;
+    final CodeGenerator generator;
+    public ModelProcessing(Model model, CodeGenerator generator) {
+      this.model = model;
+      this.generator = generator;
+    }
+  }
+
+  private static class GeneratedFile extends ArrayList<ModelProcessing> {
+    final File file;
+    final Map<String, Object> session = new HashMap<>();
+    public GeneratedFile(File file) {
+      super();
+      this.file = file;
     }
   }
 }

@@ -123,7 +123,7 @@ public class Template {
   }
 
   public void apply(Model model, File outputFile) throws Exception {
-    String output = render(model);
+    String output = render(model, new HashMap<>());
     if (!outputFile.getParentFile().exists()) {
       outputFile.getParentFile().mkdirs();
     }
@@ -134,10 +134,12 @@ public class Template {
   }
 
   public String render(Model model) {
-    Map<String, Object> vars = model.getVars();
+    return render(model, new HashMap<>());
+  }
 
-    // options
+  public String render(Model model, Map<String, Object> vars) {
     vars.put("options", options);
+    vars.putAll(model.getVars());
 
     TemplateRegistry registry = new SimpleTemplateRegistry() {
       @Override
