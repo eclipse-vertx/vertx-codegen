@@ -171,14 +171,14 @@ import static org.junit.Assert.*;
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
-public class GeneratorTest {
+public class ClassTest {
 
   static final TypeInfo.Class GenericInterfaceInfo = (TypeInfo.Class) TypeInfo.create(GenericInterface.class);
   static final TypeInfo.Class VertxGenClass1Info = (TypeInfo.Class) TypeInfo.create(VertxGenClass1.class);
   static final TypeInfo.Class VertxGenClass2Info = (TypeInfo.Class) TypeInfo.create(VertxGenClass2.class);
   static final TypeInfo.Class VertxGenInterfaceInfo = (TypeInfo.Class) TypeInfo.create(VertxGenInterface.class);
 
-  public GeneratorTest() {
+  public ClassTest() {
   }
 
   // Test invalid stuff
