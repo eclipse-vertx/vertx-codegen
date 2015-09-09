@@ -8,6 +8,8 @@ import io.vertx.test.codegen.testapi.VertxGenClass1;
 import io.vertx.test.codegen.testapi.VertxGenClass2;
 import io.vertx.test.codegen.testdataobject.PropertyGettersSetters;
 import io.vertx.test.codegen.testenum.ValidEnum;
+import io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedApi;
+import io.vertx.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubApi;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,9 +17,16 @@ import org.junit.Test;
 import io.vertx.codegen.Compiler;
 import org.junit.rules.TestName;
 
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
+import javax.tools.DiagnosticListener;
+import javax.tools.JavaFileObject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import static org.junit.Assert.*;
@@ -40,9 +49,9 @@ public class CodeGeneratorTest {
     }
   }
 
-  private Properties assertCompile(Class... classes) throws Exception {
+  private Properties assertCompile(String gen, Class... classes) throws Exception {
     Compiler compiler = new Compiler(new CodeGenProcessor());
-    compiler.addOption("-AcodeGenerators=testgen");
+    compiler.addOption("-AcodeGenerators=" + gen);
     compiler.addOption("-AoutputDirectory=" + testDir.getAbsolutePath());
     assertTrue(compiler.compile(classes));
     File f = new File(testDir, classes[0].getName().replace('.', '_') + ".properties");
@@ -53,7 +62,7 @@ public class CodeGeneratorTest {
 
   @Test
   public void testClassGen() throws Exception {
-    Properties props = assertCompile(MethodWithValidVertxGenParams.class, VertxGenClass1.class, VertxGenClass2.class);
+    Properties props = assertCompile("testgen1", MethodWithValidVertxGenParams.class, VertxGenClass1.class, VertxGenClass2.class);
     assertEquals("[" + VertxGenClass1.class.getName() + ", " + VertxGenClass2.class.getName() + ", " + String.class.getName() + "]", props.remove("importedTypes"));
     assertEquals("true", props.remove("concrete"));
     assertEquals(MethodWithValidVertxGenParams.class.getName(), props.remove("type"));
@@ -71,7 +80,7 @@ public class CodeGeneratorTest {
 
   @Test
   public void testDataObjectGen() throws Exception {
-    Properties props = assertCompile(PropertyGettersSetters.class);
+    Properties props = assertCompile("testgen1", PropertyGettersSetters.class);
     assertEquals(PropertyGettersSetters.class.getName(), props.remove("type"));
     assertEquals("false", props.remove("generateConverter"));
     assertEquals("false", props.remove("inheritConverter"));
@@ -101,7 +110,7 @@ public class CodeGeneratorTest {
 
   @Test
   public void testEnumGen() throws Exception {
-    Properties props = assertCompile(ValidEnum.class);
+    Properties props = assertCompile("testgen1", ValidEnum.class);
     assertEquals(ValidEnum.class.getName(), props.remove("type"));
     assertEquals("[RED, GREEN, BLUE]", props.remove("values"));
     assertEquals(new Properties(), props);
@@ -111,7 +120,7 @@ public class CodeGeneratorTest {
   public void testModuleGen() throws Exception {
     URL url = CodeGenProcessor.class.getClassLoader().getResource("io/vertx/test/codegen/testmodule/customgroup/package-info.java");
     Compiler compiler = new Compiler(new CodeGenProcessor());
-    compiler.addOption("-AcodeGenerators=testgen");
+    compiler.addOption("-AcodeGenerators=testgen1");
     compiler.addOption("-AoutputDirectory=" + testDir.getAbsolutePath());
     assertTrue(compiler.compile(new File(url.toURI())));
     File f = new File(testDir, "io_vertx_test_codegen_testmodule_customgroup.properties");
@@ -120,5 +129,20 @@ public class CodeGeneratorTest {
     assertEquals("io.vertx.test.codegen.testmodule.customgroup", props.remove("fqn"));
     assertEquals("custom", props.remove("name"));
     assertEquals(new Properties(), props);
+  }
+
+  @Test
+  public void testIncrementalClass() throws Exception {
+    Compiler compiler = new Compiler(new CodeGenProcessor());
+    compiler.addOption("-AcodeGenerators=testgen2");
+    compiler.addOption("-AoutputDirectory=" + testDir.getAbsolutePath());
+    assertTrue(compiler.compile(ModuleScopedApi.class, ModuleScopedSubApi.class));
+    File f = new File(testDir, "io_vertx_test_codegen_testmodule_modulescoped.properties");
+    List<String> lines = Files.readAllLines(f.toPath());
+    assertEquals(Arrays.asList(
+        "0/2",
+        "1/2",
+        "[io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedApi, io.vertx.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubApi]"
+    ), lines);
   }
 }

@@ -62,6 +62,8 @@
           <configuration>
             <additionalClasspathElements>
               <additionalClasspathElement>${project.build.testSourceDirectory}</additionalClasspathElement>
+              <additionalClasspathElement>${project.basedir}/src/test/testgen1</additionalClasspathElement>
+              <additionalClasspathElement>${project.basedir}/src/test/testgen2</additionalClasspathElement>
             </additionalClasspathElements>
           </configuration>
         </plugin>

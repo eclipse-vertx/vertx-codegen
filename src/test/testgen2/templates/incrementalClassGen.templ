@@ -1,0 +1,13 @@
+@code{
+  if (incrementalIndex == 0) {
+    session.s = new java.util.ArrayList();
+  }
+  session.s.add(type.name);
+}
+@{incrementalIndex}/@{incrementalSize}\n
+@if{incrementalIndex==incrementalSize-1}
+@code{
+  java.util.Collections.sort(session.s);
+}
+@{session.s}\n
+@end{}
