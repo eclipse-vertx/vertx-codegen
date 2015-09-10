@@ -37,6 +37,7 @@ public class EnumModel implements Model  {
         throw new GenException(modelElt, "@VertxGen can only be used with interfaces or enums" + modelElt.asType().toString());
       }
       type = (TypeInfo.Class.Enum) new TypeInfo.Factory(elementUtils, typeUtils).create(modelElt.asType());
+      Helper.checkUnderModule(this, "@VertxGen");
       values = elementUtils.
           getAllMembers(modelElt).
           stream().

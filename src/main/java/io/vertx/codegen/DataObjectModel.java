@@ -181,6 +181,7 @@ public class DataObjectModel implements Model {
     } catch (ClassCastException e) {
       throw new GenException(modelElt, "Data object must be a plain java class with no type parameters");
     }
+    Helper.checkUnderModule(this, "@VertxGen");
     doc = docFactory.createDoc(modelElt);
 
     if (getModule() == null) {

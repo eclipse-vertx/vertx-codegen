@@ -470,11 +470,7 @@ public class ClassModel implements Model {
           throw new GenException(elem, "Can only have one interface per file");
         }
         type = typeFactory.create(elem.asType());
-        if (getModule() == null) {
-          throw new GenException(elem, "Classes annotated with @VertxGen must be under a package annotated" +
-              "with @ModuleGen. Check that the package of the class '" + elem.asType().toString() +
-              "' or a parent package contains a 'package-info.java' using the @ModuleGen annotation");
-        }
+        Helper.checkUnderModule(this, "@VertxGen");
         ifaceFQCN = elem.asType().toString();
         ifaceSimpleName = elem.getSimpleName().toString();
         ifacePackageName = elementUtils.getPackageOf(elem).toString();

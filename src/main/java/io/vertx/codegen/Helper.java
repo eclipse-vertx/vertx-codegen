@@ -647,4 +647,12 @@ public class Helper {
       }
     }
   }
+
+  static void checkUnderModule(Model model, String annotation) {
+    if (model.getModule() == null) {
+      throw new GenException(model.getElement(), "Declaration annotated with " + annotation + " must be under a package annotated" +
+          "with @ModuleGen. Check that the package '" + model.getFqn() +
+          "' or a parent package contains a 'package-info.java' using the @ModuleGen annotation");
+    }
+  }
 }

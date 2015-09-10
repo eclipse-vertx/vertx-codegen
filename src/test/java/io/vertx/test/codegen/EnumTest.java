@@ -22,7 +22,7 @@ public class EnumTest {
     assertEquals(Arrays.asList("RED", "GREEN", "BLUE"), model.getValues());
     assertEquals("enum", model.getKind());
     assertEquals(ValidEnum.class.getName(), model.getFqn());
-    assertEquals(null, model.getModule());
+    assertEquals("dummy", model.getModule().getName());
     assertTrue(model.getType().isGen());
   }
 
