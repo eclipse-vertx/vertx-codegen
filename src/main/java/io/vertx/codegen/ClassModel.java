@@ -471,7 +471,9 @@ public class ClassModel implements Model {
         }
         type = typeFactory.create(elem.asType());
         if (getModule() == null) {
-          throw new GenException(elem, "@VertxGen type must have an ancestor package annotated with @ModuleGen");
+          throw new GenException(elem, "Classes annotated with @VertxGen must be under a package annotated" +
+              "with @ModuleGen. Check that the package of the class '" + elem.asType().toString() +
+              "' or a parent package contains a 'package-info.java' using the @ModuleGen annotation");
         }
         ifaceFQCN = elem.asType().toString();
         ifaceSimpleName = elem.getSimpleName().toString();
