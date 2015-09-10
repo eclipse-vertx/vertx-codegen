@@ -469,11 +469,11 @@ public abstract class TypeInfo {
     }
 
     public String translatePackageName(String id) {
-      return module.translateQualifiedName(packageName, id);
+      return module == null ? packageName : module.translateQualifiedName(packageName, id);
     }
 
     public String translateName(String lang) {
-      return module.translateQualifiedName(name, lang);
+      return  module == null ? name : module.translateQualifiedName(name, lang);
     }
 
     public static class Enum extends Class {
