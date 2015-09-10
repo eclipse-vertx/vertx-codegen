@@ -50,6 +50,16 @@ public abstract class Case {
     throw new UnsupportedOperationException();
   }
 
+  /**
+   * Convert a name from this case to the {@literal dest} case
+   * @param dest the destination case
+   * @param name the name to convert
+   * @return the converted name
+   */
+  public String to(Case dest, String name) {
+    return dest.format(parse(name));
+  }
+
   protected static List<String> split(String s, String regex) {
     String[] atoms = s.split(regex);
     if (atoms.length == 1 && atoms[0].isEmpty()) {

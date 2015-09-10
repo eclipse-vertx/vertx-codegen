@@ -110,6 +110,14 @@ public class CaseTest {
     }
   }
 
+  @Test
+  public void testConversion() {
+    assertEquals("foo-bar-juu", Case.CAMEL.to(Case.KEBAB, "FooBarJuu"));
+    assertEquals("foo_bar_juu", Case.CAMEL.to(Case.SNAKE, "FooBarJuu"));
+    assertEquals("FooBarJuu", Case.SNAKE.to(Case.CAMEL, "foo_bar_juu"));
+    assertEquals("FooBarJuu", Case.KEBAB.to(Case.CAMEL, "foo-bar-juu"));
+  }
+
   private void formatCamelCase(String expected, String... atoms) {
     assertCase(Case.CAMEL, expected, atoms);
   }
