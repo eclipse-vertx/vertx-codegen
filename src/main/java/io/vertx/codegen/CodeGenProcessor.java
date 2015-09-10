@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.annotations.GenModule;
+import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
 import org.mvel2.MVEL;
@@ -15,9 +15,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
-import javax.tools.StandardLocation;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
@@ -58,7 +56,7 @@ public class CodeGenProcessor extends AbstractProcessor {
         ProxyGen.class,
         DataObject.class,
         DataObject.class,
-        GenModule.class
+        ModuleGen.class
     ).stream().map(Class::getName).collect(Collectors.toSet());
   }
 

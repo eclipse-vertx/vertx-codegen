@@ -16,7 +16,7 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
-import io.vertx.codegen.annotations.GenModule;
+import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
@@ -37,7 +37,6 @@ import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -174,7 +173,7 @@ public class Generator {
       set.add(ProxyGen.class.getCanonicalName());
       set.add(VertxGen.class.getCanonicalName());
       set.add(DataObject.class.getCanonicalName());
-      set.add(GenModule.class.getCanonicalName());
+      set.add(ModuleGen.class.getCanonicalName());
       return set;
     }
 

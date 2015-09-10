@@ -179,26 +179,21 @@ If you do not wish a method to be used for generation you can annotate it with t
 
 ## Modules
 
-Generated types must belong to a module: a java package annotated with `@GenModule` that defines a module, modules
-cannot be nested. Such file is created in a file _package-info.java_.
+Generated types must belong to a module: a java package annotated with `@ModuleGen` that defines a module. Such
+file is created in a file _package-info.java_.
 
-In addition of the package name, a module must define a `name` used when generating languages that don't follow Java
- package naming, like JavaScript or Ruby.
+A module must define:
 
-```
-@GenModule(name = "vertx-unit")
-package io.vertx.ext.unit;
-```
-
-For _non Vert.x_ modules, the `@GenModule` annotation provides the `groupPackageName` member to define the
-package of the group used for generating the generated package names (for _Groovy_ or _RxJava_ generation):
+- a `name` used when generating languages that don't follow Java package naming, like JavaScript or Ruby.
+- a `groupPackage` to define the package of the group used for generating the generated package names
+(for _Groovy_, _RxJava_ or _Ceylon_ generation):
 
 ```
-@GenModule(name = "acme", groupPackageName="com.acme")
+@ModuleGen(name = "acme", groupPackage="com.acme")
 package com.acme.myservice;
 ```
 
-The group package name must be a prefix of the annotated module, it defines the naming of the generate packages o
+The group package must be a prefix of the annotated module, it defines the naming of the generate packages o
  for the modules that belongs to the same group, in this case:
 
 - `com.acme.groovy...` for Groovy API
@@ -209,7 +204,11 @@ For this particular `com.acme.myservice` module we have:
 - `com.acme.groovy.myservice` for Groovy API
 - `com.acme.rxjava.myservice` for RxJava API
 
-NOTE: the default group name is `io.vertx` and should only be used by Vert.x projects or extensions.
+Vert.x Apis uses the `io.vertx` group package and `vertx-XYZ` name, this naming is _exclusively_ reserved
+to Vert.x Apis.
+
+NOTE: using Maven coordinates for name and group package is encouraged: the name corresponding to the 
+Maven _artifactId_ and the group package corresponding to the `groupId`.
 
 ## Data objects
 

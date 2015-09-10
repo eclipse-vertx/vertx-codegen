@@ -1,6 +1,6 @@
 package io.vertx.codegen;
 
-import io.vertx.codegen.annotations.GenModule;
+import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
@@ -13,7 +13,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.HashMap;
@@ -69,7 +68,7 @@ public class CodeGen {
         filter(implFilter).
         filter(elt -> elt.getKind() == ElementKind.ENUM).
         forEach(element -> enums.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
-    round.getElementsAnnotatedWith(GenModule.class).
+    round.getElementsAnnotatedWith(ModuleGen.class).
       stream().
       map(element -> (PackageElement) element).
       forEach(element -> modules.put(element.getQualifiedName().toString(), element));
@@ -81,11 +80,11 @@ public class CodeGen {
 
   public Stream<Map.Entry<? extends Element, ? extends Model>> getModels() {
     return Stream.concat(getDataObjectModels(),
-      Stream.concat(getModuleModels(),
-        Stream.concat(getPackageModels(),
-          Stream.concat(getClassModels(),
-            Stream.concat(getEnumModels(),
-              getProxyModels())))));
+        Stream.concat(getModuleModels(),
+            Stream.concat(getPackageModels(),
+                Stream.concat(getClassModels(),
+                    Stream.concat(getEnumModels(),
+                        getProxyModels())))));
   }
 
   private static class ModelEntry<E extends Element, M extends Model> implements Map.Entry<E, M> {
@@ -148,9 +147,9 @@ public class CodeGen {
     return enums.entrySet().stream().map(entry -> new ModelEntry<>(entry.getValue(), () -> getEnumModel(entry.getKey())));
   }
 
-  public ModuleModel getModuleModel(String modulePackageName) {
-    PackageElement element = modules.get(modulePackageName);
-    GenModule annotation = element.getAnnotation(GenModule.class);
+  public ModuleModel getModuleModel(String modulePackage) {
+    PackageElement element = modules.get(modulePackage);
+    ModuleGen annotation = element.getAnnotation(ModuleGen.class);
     String moduleName = annotation.name();
     if (moduleName.isEmpty()) {
       throw new GenException(element, "A module name cannot be empty");
@@ -160,23 +159,25 @@ public class CodeGen {
     } catch (IllegalArgumentException e) {
       throw new GenException(element, "Module name '" + moduleName + "' does not follow the snake case format (dash separated name)");
     }
-    String groupPackageName = annotation.groupPackageName();
-    if (!modulePackageName.startsWith(groupPackageName)) {
-      throw new GenException(element, "A module package name (" + modulePackageName + ") must be prefixed by the group package name (" + groupPackageName + ")");
+    String groupPackage = annotation.groupPackage();
+    if (groupPackage.equals("")) {
+      groupPackage = modulePackage;
+    } else if (!modulePackage.startsWith(groupPackage)) {
+      throw new GenException(element, "A module package (" + modulePackage + ") must be prefixed by the group package (" + groupPackage + ")");
     }
     Set<ClassModel> classModels = new HashSet<>();
     for (TypeElement classElt : classes.values()) {
       ClassModel classModel = getClassModel(classElt.getQualifiedName().toString());
-      if (classModel.getModule().getPackageName().equals(modulePackageName)) {
+      if (classModel.getModule().getPackageName().equals(modulePackage)) {
         classModels.add(classModel);
       }
     }
     try {
-      Case.QUALIFIED.parse(groupPackageName);
+      Case.QUALIFIED.parse(groupPackage);
     } catch (Exception e) {
-      throw new GenException(element, "Invalid group package name " + groupPackageName);
+      throw new GenException(element, "Invalid group package name " + groupPackage);
     }
-    ModuleInfo info = new ModuleInfo(modulePackageName, moduleName, groupPackageName);
+    ModuleInfo info = new ModuleInfo(modulePackage, moduleName, groupPackage);
     return new ModuleModel(element, info, classModels);
   }
 

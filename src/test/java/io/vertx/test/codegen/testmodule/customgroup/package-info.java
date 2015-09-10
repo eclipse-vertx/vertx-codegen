@@ -1,4 +1,4 @@
-@GenModule(name = "custom", groupPackageName = "io.vertx.test.codegen.testmodule")
+@ModuleGen(name = "custom", groupPackage = "io.vertx.test.codegen.testmodule")
 package io.vertx.test.codegen.testmodule.customgroup;
 
-import io.vertx.codegen.annotations.GenModule;
+import io.vertx.codegen.annotations.ModuleGen;

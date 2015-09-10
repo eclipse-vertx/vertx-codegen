@@ -33,11 +33,11 @@ public class ModuleTest {
     ModuleModel model = new Generator().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.modulescoped");
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getFqn());
     assertEquals("simple", model.getName());
-    assertEquals("io.vertx.groovy.test.codegen.testmodule.modulescoped", model.translateFqn("groovy"));
+    assertEquals("io.vertx.test.groovy.codegen.testmodule.modulescoped", model.translateFqn("groovy"));
     assertNotNull(model.getModule());
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getPackageName());
     assertEquals("simple", model.getModule().getName());
-    assertEquals("io.vertx.groovy.test.codegen.testmodule.modulescoped", model.getModule().translatePackageName("groovy"));
+    assertEquals("io.vertx.test.groovy.codegen.testmodule.modulescoped", model.getModule().translatePackageName("groovy"));
     Set<String> actualClasses = model.getClasses().stream().map(ClassModel::getFqn).collect(Collectors.toSet());
     Set<String> expectedClasses = new HashSet<>(Arrays.asList(
         ModuleScopedApi.class.getName(),
@@ -50,7 +50,7 @@ public class ModuleTest {
     ModuleModel module = new Generator().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.nestingmodule.nestedmodule");
     assertEquals("io.vertx.test.codegen.testmodule.nestingmodule.nestedmodule", module.getFqn());
     assertEquals("nested", module.getName());
-    assertEquals("io.vertx.groovy.test.codegen.testmodule.nestingmodule.nestedmodule", module.translateFqn("groovy"));
+    assertEquals("io.vertx.test.groovy.codegen.testmodule.nestingmodule.nestedmodule", module.translateFqn("groovy"));
     ClassModel api = new Generator().generateClass(NestedApi.class);
     assertEquals("io.vertx.test.codegen.testmodule.nestingmodule.nestedmodule", api.getModule().getPackageName());
     assertEquals("nested", api.getModule().getName());
@@ -110,7 +110,7 @@ public class ModuleTest {
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getPackageName());
     assertEquals("simple", model.getModule().getName());
     TypeInfo.Class.Api type = (TypeInfo.Class.Api) model.getType();
-    assertEquals("io.vertx.groovy.test.codegen.testmodule.modulescoped.ModuleScopedApi", type.translateName("groovy"));
+    assertEquals("io.vertx.test.groovy.codegen.testmodule.modulescoped.ModuleScopedApi", type.translateName("groovy"));
   }
 
   @Test
@@ -120,7 +120,7 @@ public class ModuleTest {
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getPackageName());
     assertEquals("simple", model.getModule().getName());
     TypeInfo.Class.Api type = (TypeInfo.Class.Api) model.getType();
-    assertEquals("io.vertx.groovy.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubApi", type.translateName("groovy"));
+    assertEquals("io.vertx.test.groovy.codegen.testmodule.modulescoped.sub.ModuleScopedSubApi", type.translateName("groovy"));
   }
 
   @Test

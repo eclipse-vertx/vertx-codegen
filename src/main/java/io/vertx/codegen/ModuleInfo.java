@@ -1,6 +1,6 @@
 package io.vertx.codegen;
 
-import io.vertx.codegen.annotations.GenModule;
+import io.vertx.codegen.annotations.ModuleGen;
 
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.util.Elements;
@@ -31,9 +31,9 @@ public class ModuleInfo {
    */
   public static ModuleInfo resolve(Elements elementUtils, PackageElement pkgElt) {
     while (pkgElt != null) {
-      GenModule annotation = pkgElt.getAnnotation(GenModule.class);
+      ModuleGen annotation = pkgElt.getAnnotation(ModuleGen.class);
       if (annotation != null) {
-        return new ModuleInfo(pkgElt.getQualifiedName().toString(), annotation.name(), annotation.groupPackageName());
+        return new ModuleInfo(pkgElt.getQualifiedName().toString(), annotation.name(), annotation.groupPackage());
       }
       String pkgQN = pkgElt.getQualifiedName().toString();
       int pos = pkgQN.lastIndexOf('.');
@@ -47,7 +47,7 @@ public class ModuleInfo {
   }
 
   /**
-   * @return the module package name, i.e the name of the package annotated with the {@link io.vertx.codegen.annotations.GenModule} annotation
+   * @return the module package name, i.e the name of the package annotated with the {@link ModuleGen} annotation
    */
   public String getPackageName() {
     return packageName;

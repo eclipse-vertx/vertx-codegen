@@ -14,15 +14,15 @@ import java.lang.annotation.Target;
  * the JavaScript or Ruby language to generate modules for their runtime. The Java or Groovy runtime do
  * not use this info.<p/>
  *
- * The {@link #groupPackageName()} declares the group name of the module: the package of the group used
+ * The {@link #groupPackage()} declares the group name of the module: the package of the group used
  * for generating the generated package names (for <i>Groovy</i> or <i>RxJava</i> generation).<p/>
  *
  * <code>
- * {@literal @GenModule}(name = "acme", groupPackageName="com.acme")
+ * {@literal @ModuleGen}(name = "acme", groupPackage="com.acme")
  * package com.acme.myservice;
  * </code>
  *
- * The group package name must be a prefix of the annotated module, it defines the naming of the generate
+ * The group package must be a prefix of the annotated module package, it defines the naming of the generate
  * packages for the modules that belongs to the same group, in this case:<p/>
  *
  * <ul>
@@ -42,7 +42,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PACKAGE)
-public @interface GenModule {
+public @interface ModuleGen {
 
   /**
    * @return the module name
@@ -50,8 +50,8 @@ public @interface GenModule {
   String name();
 
   /**
-   * @return the group package name, defaults to @{literal io.vertx}
+   * @return the module group package
    */
-  String groupPackageName() default "io.vertx";
+  String groupPackage();
 
 }

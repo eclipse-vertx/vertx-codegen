@@ -1,6 +1,6 @@
 package io.vertx.codegen;
 
-import io.vertx.codegen.annotations.GenModule;
+import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
 
@@ -49,9 +49,9 @@ public abstract class TypeInfo {
         Thread.currentThread().setContextClassLoader(classType.getClassLoader());
         try {
           while (pkg != null) {
-            GenModule annotation = pkg.getAnnotation(GenModule.class);
+            ModuleGen annotation = pkg.getAnnotation(ModuleGen.class);
             if (annotation != null) {
-              module = new ModuleInfo(pkg.getName(), annotation.name(), annotation.groupPackageName());
+              module = new ModuleInfo(pkg.getName(), annotation.name(), annotation.groupPackage());
               break;
             } else {
               int pos = pkg.getName().lastIndexOf('.');

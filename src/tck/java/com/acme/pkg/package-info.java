@@ -1,7 +1,7 @@
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@GenModule(name = "acme", groupPackageName = "com.acme")
+@ModuleGen(name = "acme", groupPackage = "com.acme")
 package com.acme.pkg;
 
-import io.vertx.codegen.annotations.GenModule;
+import io.vertx.codegen.annotations.ModuleGen;
