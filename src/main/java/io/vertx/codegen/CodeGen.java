@@ -16,9 +16,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
@@ -165,20 +163,13 @@ public class CodeGen {
     } else if (!modulePackage.startsWith(groupPackage)) {
       throw new GenException(element, "A module package (" + modulePackage + ") must be prefixed by the group package (" + groupPackage + ")");
     }
-    Set<ClassModel> classModels = new HashSet<>();
-    for (TypeElement classElt : classes.values()) {
-      ClassModel classModel = getClassModel(classElt.getQualifiedName().toString());
-      if (classModel.getModule().getPackageName().equals(modulePackage)) {
-        classModels.add(classModel);
-      }
-    }
     try {
       Case.QUALIFIED.parse(groupPackage);
     } catch (Exception e) {
       throw new GenException(element, "Invalid group package name " + groupPackage);
     }
     ModuleInfo info = new ModuleInfo(modulePackage, moduleName, groupPackage);
-    return new ModuleModel(element, info, classModels);
+    return new ModuleModel(element, info);
   }
 
   public PackageModel getPackageModel(String fqn) {
