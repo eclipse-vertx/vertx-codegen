@@ -1,6 +1,8 @@
 package io.vertx.test.codegen;
 
 import io.vertx.codegen.CodeGenProcessor;
+import io.vertx.codegen.EnumValueInfo;
+import io.vertx.codegen.doc.Doc;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenParams;
@@ -17,10 +19,6 @@ import org.junit.Test;
 import io.vertx.codegen.Compiler;
 import org.junit.rules.TestName;
 
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticCollector;
-import javax.tools.DiagnosticListener;
-import javax.tools.JavaFileObject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
@@ -28,6 +26,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -112,7 +111,7 @@ public class CodeGeneratorTest {
   public void testEnumGen() throws Exception {
     Properties props = assertCompile("testgen1", ValidEnum.class);
     assertEquals(ValidEnum.class.getName(), props.remove("type"));
-    assertEquals("[RED, GREEN, BLUE]", props.remove("values"));
+    assertEquals("RED,GREEN,BLUE", props.remove("values"));
     assertEquals(new Properties(), props);
   }
 

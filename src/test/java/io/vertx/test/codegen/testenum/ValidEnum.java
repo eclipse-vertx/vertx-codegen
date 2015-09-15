@@ -2,12 +2,17 @@ package io.vertx.test.codegen.testenum;
 
 import io.vertx.codegen.annotations.VertxGen;
 
-/**
- * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
- */
+/**ValidEnum doc*/
 @VertxGen
 public enum ValidEnum {
 
-  RED, GREEN, BLUE
+  /**RED doc*/
+  RED,
+
+  /**GREEN doc*/
+  GREEN,
+
+  /**BLUE doc*/
+  BLUE
 
 }

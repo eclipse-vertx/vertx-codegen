@@ -1,5 +1,8 @@
 package io.vertx.codegen;
 
+import io.vertx.codegen.doc.Doc;
+
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
@@ -18,14 +21,17 @@ import java.util.stream.Collectors;
  */
 public class EnumModel implements Model  {
 
+  private final Doc.Factory docFactory;
   protected final Elements elementUtils;
   protected final Types typeUtils;
   protected final TypeElement modelElt;
   protected TypeInfo.Class.Enum type;
-  private List<String> values;
+  private Doc doc;
+  private List<EnumValueInfo> values;
   private boolean processed;
 
-  public EnumModel(Elements elementUtils, Types typeUtils, TypeElement modelElt) {
+  public EnumModel(Messager messager, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
+    this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, new TypeInfo.Factory(elementUtils, typeUtils), modelElt);
     this.typeUtils = typeUtils;
     this.elementUtils = elementUtils;
     this.modelElt = modelElt;
@@ -36,6 +42,7 @@ public class EnumModel implements Model  {
       if (modelElt.getKind() != ElementKind.ENUM) {
         throw new GenException(modelElt, "@VertxGen can only be used with interfaces or enums" + modelElt.asType().toString());
       }
+      doc = docFactory.createDoc(modelElt);
       type = (TypeInfo.Class.Enum) new TypeInfo.Factory(elementUtils, typeUtils).create(modelElt.asType());
       Helper.checkUnderModule(this, "@VertxGen");
       values = elementUtils.
@@ -43,7 +50,7 @@ public class EnumModel implements Model  {
           stream().
           filter(elt -> elt.getKind() == ElementKind.ENUM_CONSTANT).
           flatMap(Helper.cast(VariableElement.class)).
-          map(elt -> elt.getSimpleName().toString()).
+          map(elt -> new EnumValueInfo(elt.getSimpleName().toString(), docFactory.createDoc(elt))).
           collect(Collectors.toList());
       if (values.isEmpty()) {
         throw new GenException(modelElt, "No empty enums");
@@ -65,8 +72,15 @@ public class EnumModel implements Model  {
   /**
    * @return the possible enum values
    */
-  public List<String> getValues() {
+  public List<EnumValueInfo> getValues() {
     return values;
+  }
+
+  /**
+   * @return the enum doc
+   */
+  public Doc getDoc() {
+    return doc;
   }
 
   @Override
@@ -88,6 +102,7 @@ public class EnumModel implements Model  {
   public Map<String, Object> getVars() {
     Map<String, Object> vars = new HashMap<>();
     vars.put("type", getType());
+    vars.put("doc", doc);
     vars.put("helper", new Helper());
     vars.put("values", values);
     return vars;

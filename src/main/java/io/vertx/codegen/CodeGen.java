@@ -192,7 +192,7 @@ public class CodeGen {
     if (element == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
-      EnumModel model = new EnumModel(elementUtils, typeUtils, element);
+      EnumModel model = new EnumModel(messager, elementUtils, typeUtils, element);
       model.process();
       return model;
     }
