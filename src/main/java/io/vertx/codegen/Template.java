@@ -124,9 +124,7 @@ public class Template {
 
   public void apply(Model model, File outputFile) throws Exception {
     String output = render(model, new HashMap<>());
-    if (!outputFile.getParentFile().exists()) {
-      outputFile.getParentFile().mkdirs();
-    }
+    Helper.ensureParentDir(outputFile);
     try (PrintStream outStream = new PrintStream(new FileOutputStream(outputFile))) {
       outStream.print(output);
       outStream.flush();

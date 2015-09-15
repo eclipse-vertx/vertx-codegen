@@ -200,7 +200,9 @@ public class CodeGenProcessor extends AbstractProcessor {
 
       // Incremental post processing
       generatedFiles.values().forEach(generated -> {
-        try (FileWriter fileWriter = new FileWriter(generated.file)) {
+        File file = generated.file;
+        Helper.ensureParentDir(file);
+        try (FileWriter fileWriter = new FileWriter(file)) {
           for (int i = 0; i < generated.size(); i++) {
             ModelProcessing processing = generated.get(i);
             Map<String, Object> vars = new HashMap<>();

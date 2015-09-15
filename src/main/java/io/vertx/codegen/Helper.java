@@ -34,6 +34,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -653,6 +654,12 @@ public class Helper {
       throw new GenException(model.getElement(), "Declaration annotated with " + annotation + " must be under a package annotated" +
           "with @ModuleGen. Check that the package '" + model.getFqn() +
           "' or a parent package contains a 'package-info.java' using the @ModuleGen annotation");
+    }
+  }
+
+  static void ensureParentDir(File f) {
+    if (!f.getParentFile().exists()) {
+      f.getParentFile().mkdirs();
     }
   }
 }
