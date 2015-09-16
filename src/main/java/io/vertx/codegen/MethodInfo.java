@@ -40,13 +40,14 @@ public class MethodInfo implements Comparable<MethodInfo> {
   final String comment;
   final Doc doc;
   final boolean staticMethod;
+  final boolean defaultMethod;
   List<TypeParamInfo.Method> typeParams;
   LinkedHashSet<TypeInfo.Class> ownerTypes;
   List<ParamInfo> params;
 
   public MethodInfo(Set<TypeInfo.Class> ownerTypes, String name, MethodKind kind,
                     TypeInfo returnType, Text returnDescription, boolean fluent,  boolean cacheReturn,
-                    List<ParamInfo> params, String comment, Doc doc, boolean staticMethod,
+                    List<ParamInfo> params, String comment, Doc doc, boolean staticMethod, boolean defaultMethod,
                     List<TypeParamInfo.Method> typeParams) {
 
 
@@ -59,6 +60,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
     this.cacheReturn = cacheReturn;
     this.doc = doc;
     this.staticMethod = staticMethod;
+    this.defaultMethod = defaultMethod;
     this.params = params;
     this.typeParams = typeParams;
     this.ownerTypes = new LinkedHashSet<>(ownerTypes);
@@ -130,6 +132,10 @@ public class MethodInfo implements Comparable<MethodInfo> {
 
   public boolean isStaticMethod() {
     return staticMethod;
+  }
+
+  public boolean isDefaultMethod() {
+    return defaultMethod;
   }
 
   public List<TypeParamInfo.Method> getTypeParams() {

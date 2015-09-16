@@ -125,7 +125,7 @@ public class ProxyModel extends ClassModel {
   protected MethodInfo createMethodInfo(Set<TypeInfo.Class> ownerTypes, String methodName, String comment, Doc doc, MethodKind kind, TypeInfo returnType,
                                         Text returnDescription,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
-                                        ExecutableElement methodElt, boolean isStatic, ArrayList<TypeParamInfo.Method> typeParams,
+                                        ExecutableElement methodElt, boolean isStatic, boolean isDefault, ArrayList<TypeParamInfo.Method> typeParams,
                                         TypeElement declaringElt) {
     AnnotationMirror proxyIgnoreAnnotation = Helper.resolveMethodAnnotation(ProxyIgnore.class, elementUtils, typeUtils, declaringElt, methodElt);
     boolean isProxyIgnore = proxyIgnoreAnnotation != null;
@@ -146,7 +146,7 @@ public class ProxyModel extends ClassModel {
       }
     }
     return new ProxyMethodInfo(ownerTypes, methodName, kind, returnType, returnDescription,
-      isFluent, isCacheReturn, mParams, comment, doc, isStatic, typeParams, isProxyIgnore,
+      isFluent, isCacheReturn, mParams, comment, doc, isStatic, isDefault, typeParams, isProxyIgnore,
       isProxyClose);
   }
 

@@ -2,7 +2,6 @@ package io.vertx.test.codegen;
 
 import io.vertx.codegen.ClassKind;
 import io.vertx.codegen.ClassModel;
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.GenException;
 import io.vertx.codegen.Generator;
@@ -34,6 +33,7 @@ import io.vertx.test.codegen.testapi.GenericInterfaceWithUpperBound;
 import io.vertx.test.codegen.testapi.InterfaceWithCacheReturnMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithComments;
 import io.vertx.test.codegen.testapi.InterfaceWithDefaultMethod;
+import io.vertx.test.codegen.testapi.InterfaceWithOnlyDefaultMethod;
 import io.vertx.test.codegen.testapi.InterfaceWithGenericMethodOverride;
 import io.vertx.test.codegen.testapi.InterfaceWithIgnoredMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithInstanceMethods;
@@ -217,8 +217,8 @@ public class ClassTest {
   }
 
   @Test
-  public void testGenerateInterfaceWithDefaultMethod() throws Exception {
-    assertGenInvalid(InterfaceWithDefaultMethod.class);
+  public void testGenerateInterfaceWithOnlyDefaultMethod() throws Exception {
+    assertGenInvalid(InterfaceWithOnlyDefaultMethod.class);
   }
 
   // Invalid params
@@ -1081,6 +1081,12 @@ public class ClassTest {
       } catch (GenException e) {
       }
     }
+  }
+
+  @Test
+  public void testGenerateInterfaceWithDefaultMethod() throws Exception {
+    ClassModel model = new Generator().generateClass(InterfaceWithDefaultMethod.class);
+    assertEquals(2, model.getMethods().size());
   }
 
   @Test

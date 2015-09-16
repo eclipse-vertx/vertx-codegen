@@ -539,8 +539,8 @@ public class ClassModel implements Model {
           flatMap(Helper.FILTER_METHOD).
           forEach(this::addMethod);
 
-      // We're done
-      if (methods.isEmpty() && superTypes.isEmpty()) {
+      boolean hasNoMethods = methods.values().stream().filter(m -> !m.isDefaultMethod()).count() == 0;
+      if (hasNoMethods && superTypes.isEmpty()) {
         throw new GenException(elem, "Interface " + ifaceFQCN + " does not contain any methods for generation");
       }
       sortMethodMap(methodMap);
@@ -573,9 +573,6 @@ public class ClassModel implements Model {
     }
     Set<Modifier> mods = methodElt.getModifiers();
     if (!mods.contains(Modifier.PUBLIC)) {
-      return;
-    }
-    if (mods.contains(Modifier.DEFAULT)) {
       return;
     }
 
@@ -633,6 +630,7 @@ public class ClassModel implements Model {
       }
     }
 
+    boolean isDefault = mods.contains(Modifier.DEFAULT);
     boolean isStatic = mods.contains(Modifier.STATIC);
     if (isStatic && !concrete) {
       throw new GenException(methodElt, "Abstract interface cannot declare static methods");
@@ -721,7 +719,7 @@ public class ClassModel implements Model {
     }
 
     MethodInfo methodInfo = createMethodInfo(ownerTypes, methodName, comment, doc, kind,
-        returnType, returnDesc, isFluent, isCacheReturn, mParams, methodElt, isStatic, typeParams, declaringElt);
+        returnType, returnDesc, isFluent, isCacheReturn, mParams, methodElt, isStatic, isDefault, typeParams, declaringElt);
     checkMethod(methodInfo);
     List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
     if (methodsByName == null) {
@@ -737,10 +735,10 @@ public class ClassModel implements Model {
   protected MethodInfo createMethodInfo(Set<TypeInfo.Class> ownerTypes, String methodName, String comment, Doc doc, MethodKind kind, TypeInfo returnType,
                                         Text returnDescription,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
-                                        ExecutableElement methodElt, boolean isStatic, ArrayList<TypeParamInfo.Method> typeParams,
+                                        ExecutableElement methodElt, boolean isStatic, boolean isDefault, ArrayList<TypeParamInfo.Method> typeParams,
                                         TypeElement declaringElt) {
     return new MethodInfo(ownerTypes, methodName, kind, returnType, returnDescription,
-      isFluent, isCacheReturn, mParams, comment, doc, isStatic, typeParams);
+      isFluent, isCacheReturn, mParams, comment, doc, isStatic, isDefault, typeParams);
   }
 
   // This is a hook to allow different model implementations to check methods in different ways

@@ -6,10 +6,8 @@ import io.vertx.codegen.annotations.VertxGen;
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @VertxGen
-public interface InterfaceWithDefaultMethod {
+public interface InterfaceWithOnlyDefaultMethod {
 
   default void foo(String str) {
   }
-
-  void bar(String s);
 }
