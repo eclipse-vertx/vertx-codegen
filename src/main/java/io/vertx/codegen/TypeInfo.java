@@ -3,6 +3,7 @@ package io.vertx.codegen;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.streams.ReadStream;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -39,7 +40,7 @@ public abstract class TypeInfo {
       return Void.INSTANCE;
     } else if (type instanceof java.lang.Class) {
       String fqcn = type.getTypeName();
-      java.lang.Class classType = (java.lang.Class) type;
+      java.lang.Class<?> classType = (java.lang.Class<?>) type;
       if (classType.isPrimitive()) {
         return Primitive.PRIMITIVES.get(classType.getName());
       } else {
@@ -66,13 +67,25 @@ public abstract class TypeInfo {
           Thread.currentThread().setContextClassLoader(loader);
         }
         if (classType.isEnum()) {
-          return new Class.Enum(fqcn, false, Collections.emptyList(), module, false);
+          return new Class.Enum(
+              fqcn,
+              classType.getDeclaredAnnotation(VertxGen.class) != null,
+              Stream.of(classType.getEnumConstants()).map(Object::toString).collect(Collectors.toList()),
+              module,
+              false);
         } else {
           ClassKind kind = Helper.getKind(classType::getAnnotation, fqcn);
+          List<TypeParamInfo.Class> typeParams = new ArrayList<>();
+          int index = 0;
+          for (java.lang.reflect.TypeVariable<? extends java.lang.Class<?>> var : classType.getTypeParameters()) {
+            typeParams.add(new TypeParamInfo.Class(classType.getName(), index++, var.getName(), Collections.<Variance>emptySet()));
+          }
           if (kind == ClassKind.API) {
-            return new Class.Api(fqcn, true, Collections.emptyList(), null, null, null, module, false);
+            java.lang.reflect.TypeVariable<java.lang.Class<ReadStream>> classTypeVariable = ReadStream.class.getTypeParameters()[0];
+            Type readStreamArg = Helper.resolveTypeParameter(type, classTypeVariable);
+            return new Class.Api(fqcn, true, typeParams, readStreamArg != null ? create(readStreamArg) : null, null, null, module, false);
           } else {
-            return new Class(kind, fqcn, module, false, Collections.emptyList());
+            return new Class(kind, fqcn, module, false, typeParams);
           }
         }
       }
@@ -82,7 +95,7 @@ public abstract class TypeInfo {
           stream().
           map(TypeInfo::create).
           collect(Collectors.toList());
-      java.lang.Class raw = (java.lang.Class) parameterizedType.getRawType();
+      Type raw = parameterizedType.getRawType();
       return new Parameterized((Class) create(raw), args);
     } else if (type instanceof java.lang.reflect.TypeVariable) {
       java.lang.reflect.TypeVariable typeVar = (java.lang.reflect.TypeVariable) type;
@@ -329,6 +342,14 @@ public abstract class TypeInfo {
      */
     public List<TypeInfo> getArgs() {
       return args;
+    }
+
+    /**
+     * @param index the type argument index
+     * @return a specific type argument
+     */
+    public TypeInfo getArg(int index) {
+      return args.get(index);
     }
 
     @Override

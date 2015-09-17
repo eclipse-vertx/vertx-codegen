@@ -36,6 +36,9 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.io.File;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -57,7 +60,7 @@ import java.util.stream.Stream;
  */
 public class Helper {
 
-  static final Function<Element, Stream<ExecutableElement>> FILTER_METHOD = element -> {
+  public static final Function<Element, Stream<ExecutableElement>> FILTER_METHOD = element -> {
     if (element.getKind() == ElementKind.METHOD) {
       return Stream.of((ExecutableElement) element);
     } else {
@@ -435,7 +438,7 @@ public class Helper {
   /**
    * Return the type of a type parameter element of a given type element when that type parameter
    * element is parameterized by a sub type, directly or indirectly. When the type parameter cannot
-   * be resolve, null is returned.
+   * be resolved, null is returned.
    *
    * @param typeUtils the type utils
    * @param subType the sub type for which the type parameter is parameterized
@@ -458,6 +461,53 @@ public class Helper {
           }
         }
       }
+    }
+    return null;
+  }
+
+  /**
+   * Return the type of a type parameter element of a given type element when that type parameter
+   * element is parameterized by a sub type, directly or indirectly. When the type parameter cannot
+   * be resolve, null is returned.
+   *
+   * @param type the sub type for which the type parameter is parameterized
+   * @param typeParam the type parameter to resolve
+   * @return the type parameterizing the type parameter
+   */
+  public static <T> Type resolveTypeParameter(Type type, java.lang.reflect.TypeVariable<java.lang.Class<T>> typeParam) {
+    if (type instanceof Class<?>) {
+      Class<?> classType = (Class<?>) type;
+      if (Stream.of(classType.getTypeParameters()).filter(tp -> tp.equals(typeParam)).findFirst().isPresent()) {
+        return typeParam;
+      }
+      List<Type> superTypes = new ArrayList<>();
+      if (classType.getGenericSuperclass() != null) {
+        superTypes.add(classType.getGenericSuperclass());
+      }
+      Collections.addAll(superTypes, classType.getGenericInterfaces());
+      for (Type superType : superTypes) {
+        Type resolved = resolveTypeParameter(superType, typeParam);
+        if (resolved != null) {
+          return resolved;
+        }
+      }
+    } else if (type instanceof ParameterizedType) {
+      ParameterizedType parameterizedType = (ParameterizedType) type;
+      Type rawType = parameterizedType.getRawType();
+      Type resolvedType = resolveTypeParameter(rawType, typeParam);
+      if (resolvedType instanceof java.lang.reflect.TypeVariable<?>) {
+        GenericDeclaration owner = ((java.lang.reflect.TypeVariable) resolvedType).getGenericDeclaration();
+        if (owner.equals(rawType)) {
+          java.lang.reflect.TypeVariable<?>[] typeParams = owner.getTypeParameters();
+          for (int i = 0;i < typeParams.length;i++) {
+            if (typeParams[i].equals(resolvedType)) {
+              return parameterizedType.getActualTypeArguments()[i];
+            }
+          }
+        }
+      }
+    } else {
+      throw new UnsupportedOperationException("Todo " + type.getTypeName() + " " + type.getClass().getName());
     }
     return null;
   }

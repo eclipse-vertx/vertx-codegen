@@ -1,10 +1,10 @@
-package io.vertx.core.streams;
+package io.vertx.test.codegen.testtype;
 
 import io.vertx.codegen.annotations.VertxGen;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@VertxGen(concrete = false)
-public interface WriteStream<T> {
+@VertxGen
+public interface ApiObject {
 }
