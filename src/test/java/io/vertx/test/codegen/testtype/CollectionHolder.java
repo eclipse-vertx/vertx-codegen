@@ -3,6 +3,7 @@ package io.vertx.test.codegen.testtype;
 import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.test.codegen.testenum.ValidEnum;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ public interface CollectionHolder<ClassTypeParam> {
   TestDataObject DataObject();
   JsonObject JsonObject();
   JsonArray JsonArray();
+  ValidEnum Enum();
 
   List list();
   List<String> listOfString();
@@ -26,6 +28,7 @@ public interface CollectionHolder<ClassTypeParam> {
   List<TestDataObject> listOfDataObject();
   List<JsonObject> listOfJsonObject();
   List<JsonArray> listOfJsonArray();
+  List<ValidEnum> listOfEnum();
 
   Set set();
   Set<String> setOfString();
@@ -34,6 +37,7 @@ public interface CollectionHolder<ClassTypeParam> {
   Set<TestDataObject> setOfDataObject();
   Set<JsonObject> setOfJsonObject();
   Set<JsonArray> setOfJsonArray();
+  Set<ValidEnum> setOfEnum();
 
   Map map();
   Map<String, String> mapOfString();
@@ -42,4 +46,5 @@ public interface CollectionHolder<ClassTypeParam> {
   Map<String, TestDataObject> mapOfDataObject();
   Map<String, JsonObject> mapOfJsonObject();
   Map<String, JsonArray> mapOfJsonArray();
+  Map<String, ValidEnum> mapOfEnum();
 }

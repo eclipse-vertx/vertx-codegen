@@ -283,6 +283,10 @@ public class TypeInfoTest {
         assertEquals(colKind, ofJsonArray.getKind());
         assertEquals(TypeInfo.Parameterized.class, ofJsonArray.getClass());
         assertEquals(map.get("JsonArray"), ofJsonArray.getArg(typeParamIndex));
+        TypeInfo.Parameterized ofEnum = (TypeInfo.Parameterized) map.get(colType + "OfEnum");
+        assertEquals(colKind, ofEnum.getKind());
+        assertEquals(TypeInfo.Parameterized.class, ofEnum.getClass());
+        assertEquals(map.get("Enum"), ofEnum.getArg(typeParamIndex));
       }
     });
   }
