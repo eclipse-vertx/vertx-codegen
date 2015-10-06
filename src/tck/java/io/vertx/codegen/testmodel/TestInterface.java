@@ -2,6 +2,7 @@ package io.vertx.codegen.testmodel;
 
 import io.vertx.codegen.annotations.CacheReturn;
 import io.vertx.codegen.annotations.Fluent;
+import io.vertx.codegen.annotations.Nullable;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -352,4 +353,5 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
   Throwable methodWithThrowableReturn(String strVal);
 
   String methodWithThrowableParam(Throwable t);
+
 }

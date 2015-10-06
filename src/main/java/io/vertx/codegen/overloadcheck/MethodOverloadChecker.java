@@ -18,6 +18,7 @@ package io.vertx.codegen.overloadcheck;
 
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.ParamInfo;
+import io.vertx.codegen.TypeInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,8 +35,6 @@ import java.util.Properties;
 public class MethodOverloadChecker {
 
   private final Map<String, Map<String, String>> typeMappingsMap = new HashMap<>();
-
-  private static final String ALL_TYPE = "ALL";
 
   public MethodOverloadChecker() {
     loadTypeMappings();
@@ -75,7 +74,8 @@ public class MethodOverloadChecker {
     for (MethodInfo meth: meths) {
       List<SimpleParam> simpleParams = new ArrayList<>();
       for (ParamInfo param: meth.getParams()) {
-        simpleParams.add(new SimpleParam(param.getName(), param.getType().getKind(), param.getType().getName()));
+        TypeInfo type = param.getType();
+        simpleParams.add(new SimpleParam(param.getName(), type.getKind(), param.isNullable(), type.getName()));
       }
       simpleMethods.add(new SimpleMethod(meth.getName(), simpleParams));
     }
@@ -83,23 +83,23 @@ public class MethodOverloadChecker {
   }
 
   private void checkMethodList(String targetLang, List<SimpleMethod> meths, Map<String, String> typeMapping) {
-    List<List<String>> paramsTypesList = new ArrayList<>();
+    List<List<SimpleType>> paramsTypesList = new ArrayList<>();
     for (SimpleMethod meth: meths) {
       // For each meth, convert it to the param types it would have in each lang
-      List<String> paramTypes = convertToLangParamTypes(meth, typeMapping);
+      List<SimpleType> paramTypes = convertToLangParamTypes(meth, typeMapping);
       paramsTypesList.add(paramTypes);
     }
     // Now check if we have any two which are equal
     int index1 = 0;
-    for (List<String> paramTypes: paramsTypesList) {
+    for (List<SimpleType> paramTypes: paramsTypesList) {
       int index2 = 0;
-      for (List<String> paramTypesToCompare: paramsTypesList) {
+      for (List<SimpleType> paramTypesToCompare: paramsTypesList) {
         if (index1 != index2) {
           boolean matched = true;
           for (int i = 0; i < paramTypes.size(); i++) {
-            String paramType = paramTypes.get(i);
-            String paramTypeToCompare = paramTypesToCompare.get(i);
-            if (!(paramType.equals(paramTypeToCompare) || paramType.equals(ALL_TYPE) || paramTypeToCompare.equals(ALL_TYPE))) {
+            SimpleType paramType = paramTypes.get(i);
+            SimpleType paramTypeToCompare = paramTypesToCompare.get(i);
+            if (!(paramType.matches(paramTypeToCompare))) {
               matched = false;
               break;
             }
@@ -119,8 +119,8 @@ public class MethodOverloadChecker {
     }
   }
   
-  private List<String> convertToLangParamTypes(SimpleMethod meth, Map<String, String> typeMapping) {
-    List<String> langParamTypes = new ArrayList<>();
+  private List<SimpleType> convertToLangParamTypes(SimpleMethod meth, Map<String, String> typeMapping) {
+    List<SimpleType> langParamTypes = new ArrayList<>();
     for (SimpleParam param: meth.params) {
       String langType = typeMapping.get(param.classKind.toString());
       if (langType == null) {
@@ -131,8 +131,11 @@ public class MethodOverloadChecker {
           throw new IllegalStateException("No type mapping found for param type " + lhs);
         }
       }
-
-      langParamTypes.add(langType);
+      String nullable = null;
+      if (param.nullable) {
+        nullable = typeMapping.get("NULL");
+      }
+      langParamTypes.add(new SimpleType(langType, nullable));
     }
     return langParamTypes;
   }

@@ -321,6 +321,74 @@
  * The JavaScript language use the type number in both cases: at runtime there is no possibility for the
  * JavaScript shim to know which method to use.
  *
+ * ==== Nullable types
+ *
+ * Null values have an impact on shim design:
+ *
+ * - shims based on value types for dispatching overloaded methods fail for null values, for example a `foo(String)`
+ * method overloaded by a `foo(Buffer)` method invoked with `foo(null)` cannot delegate to the correct underlying method in
+ * JavaScript.
+ * - some shims can leverage this information to provide a better API, for instance an `Optional<String>` Java type or the
+ * `String?` in Ceylon, etc...
+ *
+ * Codegen provides the {@link io.vertx.codegen.annotations.Nullable} annotations for annotating types.
+ *
+ * Method return type can be {@link io.vertx.codegen.annotations.Nullable}:
+ *
+ * [source,java]
+ * ----
+ * Nullable String getAttribute(String name);
+ * ----
+ *
+ * As well as method parameter type:
+ *
+ * [source,java]
+ * ----
+ * void close(Nullable Handler<Void> closeHandler);
+ * ----
+ *
+ * WARNING: type validation is a non goal for this feature, its purpose is to give hints to the shim
+ * for generating correct code.
+ *
+ * These rules apply to {@link io.vertx.codegen.annotations.Nullable} types:
+ *
+ * . primitive types cannot be {@link io.vertx.codegen.annotations.Nullable}
+ * . method parameter type can be {@link io.vertx.codegen.annotations.Nullable}
+ * . method return type can be {@link io.vertx.codegen.annotations.Nullable} but not for {@link io.vertx.codegen.annotations.Fluent}
+ * . `io.vertx.core.Handler` type argument can be {@link io.vertx.codegen.annotations.Nullable} but not for
+ * `java.lang.Void` or `io.vertx.core.AsyncResult`
+ * . `io.vertx.core.Handler<io.vertx.core.AsyncResult>` type argument can be {@link io.vertx.codegen.annotations.Nullable}
+ * but not for `java.lang.Void`
+ * . the `java.lang.Object` type is always nullable
+ * . the `<T>` in `<T>` parameter/return, `Handler<T>` or `Handler<AsyncResult<T>>` is always nullable
+ * . a method overriding another method `inherits` the {@link io.vertx.codegen.annotations.Nullable} usage of the overriden method
+ * . a method overriding another method cannot declare {@link io.vertx.codegen.annotations.Nullable} in its types
+ *
+ * In addition these rules apply to {@link io.vertx.codegen.annotations.Nullable} type arguments:
+ *
+ * . methods cannot declare generic api types with nullable type arguments, e.g `<T> void method(GenericApi<Nullable T> api)` is not permitted
+ * . methods can declare nullable collection, e.g `void method(List<Nullable String> list)` is allowed
+ *
+ * Besides these rules, nullable types of method parameters have an impact on method overloading: the parameter
+ * at the same position cannot be {@link io.vertx.codegen.annotations.Nullable} more than one time when the number
+ * of method parameters is the same, e.g:
+ *
+ * [source,java]
+ * ----
+ * void write(Nullable String s);
+ * void write(Nullable Buffer s);
+ * ----
+ *
+ * is not permitted, however:
+ *
+ * [source,java]
+ * ----
+ * void write(Nullable String s);
+ * void write(Nullable String s, String encoding);
+ * ----
+ *
+ * is permitted because the number of parameters differs.
+ *
  * === Static methods
  *
  * Vert.x generated types allow _static_ methods, such methods often plays the role of factory. For instance

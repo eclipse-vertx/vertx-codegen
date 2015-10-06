@@ -166,7 +166,7 @@ public class CodeGenProcessor extends AbstractProcessor {
                       String fqn = relativeName.substring(0, relativeName.length() - ".java".length());
                       // Avoid to recreate the same file (this may happen as we unzip and recompile source trees)
                       if (processingEnv.getElementUtils().getTypeElement(fqn) != null) {
-                        return;
+                        continue;
                       }
                       JavaFileObject target = processingEnv.getFiler().createSourceFile(fqn);
                       String output = codeGenerator.transformTemplate.render(model);

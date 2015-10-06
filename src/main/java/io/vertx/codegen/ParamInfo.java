@@ -18,19 +18,27 @@ package io.vertx.codegen;
 
 import io.vertx.codegen.doc.Text;
 
+import javax.lang.model.type.TypeVariable;
+
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 public class ParamInfo {
 
+  final int index;
   final String name;
   final Text description;
   final TypeInfo type;
 
-  public ParamInfo(String name, Text description, TypeInfo type) {
+  public ParamInfo(int index, String name, Text description, TypeInfo type) {
+    this.index = index;
     this.name = name;
     this.description = description;
     this.type = type;
+  }
+
+  public int getIndex() {
+    return index;
   }
 
   public String getName() {
@@ -43,6 +51,41 @@ public class ParamInfo {
 
   public Text getDescription() {
     return description;
+  }
+
+  /**
+   * @return true when the param is nullable
+   */
+  public boolean isNullable() {
+    return type instanceof TypeInfo.Variable || type.isNullable();
+  }
+
+  /**
+   * @return true when the param callback value is nullable: when the parameter type is an
+   *         handler or an async result handler it returns the nullable boolean of the corresponding
+   *         parameter, otherwise it returns null
+   */
+  public Boolean isNullableCallback() {
+    switch (type.getKind()) {
+      case HANDLER:
+        TypeInfo handler = ((TypeInfo.Parameterized)type).getArg(0);
+        switch (handler.getKind()) {
+          case OBJECT:
+            return true;
+          case ASYNC_RESULT:
+            TypeInfo asyncResult = ((TypeInfo.Parameterized)handler).getArg(0);
+            switch (asyncResult.getKind()) {
+              case OBJECT:
+                return true;
+              default:
+                return asyncResult.isNullable();
+            }
+          default:
+            return handler.isNullable();
+        }
+      default:
+        return null;
+    }
   }
 
   public TypeInfo getType() {

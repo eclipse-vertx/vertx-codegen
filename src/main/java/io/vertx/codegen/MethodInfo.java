@@ -118,6 +118,13 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return cacheReturn;
   }
 
+  /**
+   * @return true if the method has a nullable return
+   */
+  public boolean isNullableReturn() {
+    return returnType instanceof TypeInfo.Variable || returnType.isNullable();
+  }
+
   public List<ParamInfo> getParams() {
     return params;
   }

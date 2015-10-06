@@ -155,10 +155,8 @@ import io.vertx.test.codegen.testapi.streams.InterfaceSubtypingReadStream;
 import io.vertx.test.codegen.testapi.streams.ReadStreamWithParameterizedTypeArg;
 import org.junit.Test;
 
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -171,7 +169,7 @@ import static org.junit.Assert.*;
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
-public class ClassTest {
+public class ClassTest extends ClassTestBase {
 
   static final TypeInfo.Class GenericInterfaceInfo = (TypeInfo.Class) TypeInfo.create(GenericInterface.class);
   static final TypeInfo.Class VertxGenClass1Info = (TypeInfo.Class) TypeInfo.create(VertxGenClass1.class);
@@ -406,14 +404,14 @@ public class ClassTest {
     checkParam(params.get(6), "bool", boolean.class);
     checkParam(params.get(7), "ch", char.class);
     checkParam(params.get(8), "str", String.class);
-    assertEquals("java.lang.Byte", ((TypeInfo.Primitive)params.get(0).getType()).getBoxed().getName());
-    assertEquals("java.lang.Short", ((TypeInfo.Primitive)params.get(1).getType()).getBoxed().getName());
-    assertEquals("java.lang.Integer", ((TypeInfo.Primitive)params.get(2).getType()).getBoxed().getName());
-    assertEquals("java.lang.Long", ((TypeInfo.Primitive)params.get(3).getType()).getBoxed().getName());
-    assertEquals("java.lang.Float", ((TypeInfo.Primitive)params.get(4).getType()).getBoxed().getName());
-    assertEquals("java.lang.Double", ((TypeInfo.Primitive)params.get(5).getType()).getBoxed().getName());
-    assertEquals("java.lang.Boolean", ((TypeInfo.Primitive)params.get(6).getType()).getBoxed().getName());
-    assertEquals("java.lang.Character", ((TypeInfo.Primitive)params.get(7).getType()).getBoxed().getName());
+    assertEquals("java.lang.Byte", ((TypeInfo.Primitive) params.get(0).getType()).getBoxed().getName());
+    assertEquals("java.lang.Short", ((TypeInfo.Primitive) params.get(1).getType()).getBoxed().getName());
+    assertEquals("java.lang.Integer", ((TypeInfo.Primitive) params.get(2).getType()).getBoxed().getName());
+    assertEquals("java.lang.Long", ((TypeInfo.Primitive) params.get(3).getType()).getBoxed().getName());
+    assertEquals("java.lang.Float", ((TypeInfo.Primitive) params.get(4).getType()).getBoxed().getName());
+    assertEquals("java.lang.Double", ((TypeInfo.Primitive) params.get(5).getType()).getBoxed().getName());
+    assertEquals("java.lang.Boolean", ((TypeInfo.Primitive) params.get(6).getType()).getBoxed().getName());
+    assertEquals("java.lang.Character", ((TypeInfo.Primitive) params.get(7).getType()).getBoxed().getName());
   }
 
   @Test
@@ -454,10 +452,10 @@ public class ClassTest {
     assertEquals(1, model.getMethods().size());
     MethodInfo mi = model.getMethods().get(0);
     assertEquals("foo", mi.getName());
-    assertEquals(new TypeInfo.Parameterized(new TypeInfo.Class(ClassKind.API, GenericInterface.class.getName(), null, false, Collections.emptyList()), Arrays.asList(TypeInfo.create(Void.class))), mi.getParams().get(0).getType());
+    assertEquals(new TypeInfo.Parameterized(new TypeInfo.Class(ClassKind.API, GenericInterface.class.getName(), null, false, false, Collections.emptyList()), false, Arrays.asList(TypeInfo.create(Void.class))), mi.getParams().get(0).getType());
     TypeInfo.Parameterized genericType = (TypeInfo.Parameterized) mi.getParams().get(0).getType();
     TypeInfo.Class voidType = (TypeInfo.Class) genericType.getArgs().get(0);
-    assertEquals(ClassKind.VOID , voidType.getKind());
+    assertEquals(ClassKind.VOID, voidType.getKind());
   }
 
   @Test
@@ -499,8 +497,8 @@ public class ClassTest {
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "setString", new TypeLiteral<Set<String>>(){});
     checkParam(params.get(1), "setLong", new TypeLiteral<Set<Long>>(){});
-    checkParam(params.get(2), "setJsonObject", new TypeLiteral<Set<JsonObject>>(){});
-    checkParam(params.get(3), "setJsonArray", new TypeLiteral<Set<JsonArray>>(){});
+    checkParam(params.get(2), "setJsonObject", new TypeLiteral<Set<JsonObject>>() {});
+    checkParam(params.get(3), "setJsonArray", new TypeLiteral<Set<JsonArray>>() {});
     checkParam(params.get(4), "setVertxGen", new TypeLiteral<Set<VertxGenClass1>>(){});
     checkParam(params.get(5), "setDataObject", new TypeLiteral<Set<TestDataObject>>(){});
     checkParam(params.get(6), "setEnum", new TypeLiteral<Set<TestEnum>>(){});
@@ -1724,78 +1722,4 @@ public class ClassTest {
     assertEquals(InterfaceInImplContainingPackage.class.getName(), model.getFqn());
   }
 
-  static enum MethodCheck {
-    FLUENT,
-    STATIC,
-    CACHE_RETURN
-  }
-
-  private void checkMethod(MethodInfo meth, String name, int numParams, TypeLiteral<?> returnType, MethodKind kind, MethodCheck... checks) {
-    checkMethod(meth, name, numParams, returnType.type, kind, checks);
-  }
-
-  private void checkMethod(MethodInfo meth, String name, int numParams, TypeLiteral<?> returnType, MethodKind kind, Doc comment, MethodCheck... checks) {
-    checkMethod(meth, name, numParams, returnType.type, kind, comment, checks);
-  }
-
-  private void checkMethod(MethodInfo meth, String name, int numParams, Type returnType, MethodKind kind, MethodCheck... checks) {
-    checkMethod(meth, name, numParams, returnType.getTypeName().replaceAll(" ", ""), kind, checks);
-  }
-
-  private void checkMethod(MethodInfo meth, String name, int numParams, Type returnType, MethodKind kind, Doc comment, MethodCheck... checks) {
-    checkMethod(meth, name, numParams, returnType.getTypeName().replaceAll(" ", ""), kind, comment, checks);
-  }
-
-  private void checkMethod(MethodInfo meth, String name, int numParams, String returnType, MethodKind kind, MethodCheck... checks) {
-    checkMethod(meth, name, numParams, returnType, kind, null, checks);
-  }
-
-  private void checkMethod(MethodInfo meth, String name, int numParams, String returnType, MethodKind kind, Doc comment, MethodCheck... checks) {
-    EnumSet<MethodCheck> checkSet = EnumSet.noneOf(MethodCheck.class);
-    Collections.addAll(checkSet, checks);
-    assertEquals(name, meth.getName());
-    if (comment != null) {
-      assertNotNull(meth.getComment());
-      assertEquals(comment.getFirstSentence(), meth.getDoc().getFirstSentence());
-      assertEquals(comment.getBody(), meth.getDoc().getBody());
-      assertEquals(comment.getBlockTags(), meth.getDoc().getBlockTags());
-    } else {
-      assertNull(meth.getComment());
-    }
-    assertEquals(kind, meth.getKind());
-    assertEquals(returnType, meth.getReturnType().toString());
-    assertEquals(checkSet.contains(MethodCheck.CACHE_RETURN), meth.isCacheReturn());
-    assertEquals(checkSet.contains(MethodCheck.FLUENT), meth.isFluent());
-    assertEquals(checkSet.contains(MethodCheck.STATIC), meth.isStaticMethod());
-    assertEquals(numParams, meth.getParams().size());
-  }
-
-  private void checkParam(ParamInfo param, String name, TypeLiteral<?> type) {
-    checkParam(param, name, type.type);
-  }
-
-  private void checkParam(ParamInfo param, String name, Type expectedType) {
-    assertEquals(name, param.getName());
-    TypeInfo expectedTypeInfo = TypeInfo.create(expectedType);
-    assertEquals(expectedTypeInfo.getName(), param.getType().getName());
-    assertEquals(expectedTypeInfo.getKind(), param.getType().getKind());
-  }
-
-  private void assertGenInvalid(Class<?> c, Class<?>... rest) throws Exception {
-    try {
-      new Generator().generateClass(c, rest);
-      fail("Should throw exception");
-    } catch (GenException e) {
-      // OK
-    }
-  }
-
-  private void assertGenFail(Class<?> type, String msg) throws Exception {
-    try {
-      new Generator().generateClass(type);
-      fail(msg);
-    } catch (GenException e) {
-      // pass
-    }
-  }
 }

@@ -1,5 +1,6 @@
 package io.vertx.codegen;
 
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
@@ -72,9 +73,10 @@ public abstract class TypeInfo {
               classType.getDeclaredAnnotation(VertxGen.class) != null,
               Stream.of(classType.getEnumConstants()).map(Object::toString).collect(Collectors.toList()),
               module,
+              false,
               false);
         } else {
-          ClassKind kind = Helper.getKind(classType::getAnnotation, fqcn);
+          ClassKind kind = Helper.getKind(fqcn, classType.getAnnotation(DataObject.class) != null, classType.getAnnotation(VertxGen.class) != null);
           List<TypeParamInfo.Class> typeParams = new ArrayList<>();
           int index = 0;
           for (java.lang.reflect.TypeVariable<? extends java.lang.Class<?>> var : classType.getTypeParameters()) {
@@ -83,9 +85,9 @@ public abstract class TypeInfo {
           if (kind == ClassKind.API) {
             java.lang.reflect.TypeVariable<java.lang.Class<ReadStream>> classTypeVariable = ReadStream.class.getTypeParameters()[0];
             Type readStreamArg = Helper.resolveTypeParameter(type, classTypeVariable);
-            return new Class.Api(fqcn, true, typeParams, readStreamArg != null ? create(readStreamArg) : null, null, null, module, false);
+            return new Class.Api(fqcn, true, typeParams, readStreamArg != null ? create(readStreamArg) : null, null, null, module, false, false);
           } else {
-            return new Class(kind, fqcn, module, false, typeParams);
+            return new Class(kind, fqcn, module, false, false, typeParams);
           }
         }
       }
@@ -96,11 +98,11 @@ public abstract class TypeInfo {
           map(TypeInfo::create).
           collect(Collectors.toList());
       Type raw = parameterizedType.getRawType();
-      return new Parameterized((Class) create(raw), args);
+      return new Parameterized((Class) create(raw), false, args);
     } else if (type instanceof java.lang.reflect.TypeVariable) {
       java.lang.reflect.TypeVariable typeVar = (java.lang.reflect.TypeVariable) type;
       TypeParamInfo param = TypeParamInfo.create(typeVar);
-      return new Variable(param, ((java.lang.reflect.TypeVariable)type).getName());
+      return new Variable(param, false, ((java.lang.reflect.TypeVariable)type).getName());
     } else {
       throw new IllegalArgumentException("Unsupported type " + type);
     }
@@ -117,12 +119,16 @@ public abstract class TypeInfo {
     }
 
     public TypeInfo create(TypeMirror type) {
+      return create(null, type);
+    }
+
+    public TypeInfo create(TypeUse use, TypeMirror type) {
       switch (type.getKind()) {
         case VOID:
           return Void.INSTANCE;
         case ERROR:
         case DECLARED:
-          return create((DeclaredType) type);
+          return create(use, (DeclaredType) type);
         case DOUBLE:
         case LONG:
         case FLOAT:
@@ -131,19 +137,27 @@ public abstract class TypeInfo {
         case SHORT:
         case BOOLEAN:
         case INT:
-          return Primitive.PRIMITIVES.get(type.toString());
+          if (use != null && use.isNullable()) {
+            throw new IllegalArgumentException("Primitive types cannot be annotated with @Nullable");
+          }
+          return Primitive.PRIMITIVES.get(type.getKind().name().toLowerCase());
         case TYPEVAR:
-          return create((TypeVariable) type);
+          return create(use, (TypeVariable) type);
         default:
           throw new IllegalArgumentException("Illegal type " + type + " of kind " + type.getKind());
       }
     }
 
     public TypeInfo create(DeclaredType type) {
-      Element elt = type.asElement();
+      return create(null, type);
+    }
+
+    public TypeInfo create(TypeUse use, DeclaredType type) {
+      boolean nullable = use != null && use.isNullable();
+      TypeElement elt = (TypeElement) type.asElement();
       PackageElement pkgElt = elementUtils.getPackageOf(elt);
       ModuleInfo module = ModuleInfo.resolve(elementUtils, pkgElt);
-      String fqcn = typeUtils.erasure(type).toString();
+      String fqcn = elt.getQualifiedName().toString();
       boolean proxyGen = elt.getAnnotation(ProxyGen.class) != null;
       if (elt.getKind() == ElementKind.ENUM) {
         ArrayList<String> values = new ArrayList<>();
@@ -153,12 +167,15 @@ public abstract class TypeInfo {
           }
         }
         boolean gen = elt.getAnnotation(VertxGen.class) != null;
-        return new Class.Enum(fqcn, gen, values, module, proxyGen);
+        return new Class.Enum(fqcn, gen, values, module, nullable, proxyGen);
       } else {
-        ClassKind kind = Helper.getKind(annotationType -> elt.getAnnotation(annotationType), fqcn);
+        ClassKind kind = Helper.getKind(fqcn, elt.getAnnotation(DataObject.class) != null, elt.getAnnotation(VertxGen.class) != null);
         Class raw;
         if (kind == ClassKind.BOXED_PRIMITIVE) {
           raw = Class.PRIMITIVES.get(fqcn);
+          if (nullable) {
+            raw = new Class(raw.kind, raw.name, raw.module, true, raw.proxyGen, raw.params);
+          }
         } else {
           List<TypeParamInfo.Class> typeParams = createTypeParams(type);
           if (kind == ClassKind.API) {
@@ -177,31 +194,32 @@ public abstract class TypeInfo {
               }
               return null;
             }).toArray(TypeInfo[]::new);
-            raw = new Class.Api(fqcn, genAnn.concrete(), typeParams, args[0], args[1], args[2], module, proxyGen);
+            raw = new Class.Api(fqcn, genAnn.concrete(), typeParams, args[0], args[1], args[2], module, nullable, proxyGen);
           } else {
-            raw = new Class(kind, fqcn, module, proxyGen, typeParams);
+            raw = new Class(kind, fqcn, module, nullable, proxyGen, typeParams);
           }
         }
         List<? extends TypeMirror> typeArgs = type.getTypeArguments();
         if (typeArgs.size() > 0) {
           List<TypeInfo> typeArguments;
           typeArguments = new ArrayList<>(typeArgs.size());
-          for (TypeMirror typeArg : typeArgs) {
-            TypeInfo typeArgDesc = create(typeArg);
+          for (int i = 0;i < typeArgs.size();i++) {
+            TypeUse argUse = use != null ? use.getArg(i) : null;
+            TypeInfo typeArgDesc = create(argUse, typeArgs.get(i));
             // Need to check it is an interface type
             typeArguments.add(typeArgDesc);
           }
-          return new Parameterized(raw, typeArguments);
+          return new Parameterized(raw, nullable, typeArguments);
         } else {
           return raw;
         }
       }
     }
 
-    public Variable create(TypeVariable type) {
+    public Variable create(TypeUse use, TypeVariable type) {
       TypeParameterElement elt = (TypeParameterElement) type.asElement();
       TypeParamInfo param = TypeParamInfo.create(elt);
-      return new Variable(param, type.toString());
+      return new Variable(param, use != null && use.isNullable(), type.toString());
     }
 
     private List<TypeParamInfo.Class> createTypeParams(DeclaredType type) {
@@ -275,10 +293,12 @@ public abstract class TypeInfo {
   public static class Variable extends TypeInfo {
 
     final String name;
+    final boolean nullable;
     final TypeParamInfo param;
 
-    public Variable(TypeParamInfo param, String name) {
+    public Variable(TypeParamInfo param, boolean nullable, String name) {
       this.param = param;
+      this.nullable = nullable;
       this.name = name;
     }
 
@@ -297,8 +317,13 @@ public abstract class TypeInfo {
     }
 
     @Override
+    public boolean isNullable() {
+      return nullable;
+    }
+
+    @Override
     public TypeInfo getErased() {
-      return new Class(ClassKind.OBJECT, java.lang.Object.class.getName(), null, false, Collections.emptyList());
+      return new Class(ClassKind.OBJECT, java.lang.Object.class.getName(), null, false, false, Collections.emptyList());
     }
 
     @Override
@@ -321,16 +346,23 @@ public abstract class TypeInfo {
   public static class Parameterized extends TypeInfo {
 
     final Class raw;
+    final boolean nullable;
     final List<TypeInfo> args;
 
-    public Parameterized(Class raw, List<TypeInfo> args) {
+    public Parameterized(Class raw, boolean nullable, List<TypeInfo> args) {
       this.raw = raw;
+      this.nullable = nullable;
       this.args = args;
     }
 
     @Override
     public TypeInfo getErased() {
-      return new Parameterized(raw, args.stream().map(TypeInfo::getErased).collect(Collectors.toList()));
+      return new Parameterized(raw, nullable, args.stream().map(TypeInfo::getErased).collect(Collectors.toList()));
+    }
+
+    @Override
+    public boolean isNullable() {
+      return nullable;
     }
 
     public Class getRaw() {
@@ -410,7 +442,7 @@ public abstract class TypeInfo {
           Float.class,Double.class,Character.class};
       for (java.lang.Class<?> boxe : boxes) {
         String name = boxe.getName();
-        PRIMITIVES.put(name, new Class(ClassKind.BOXED_PRIMITIVE, name, null, false, Collections.emptyList()));
+        PRIMITIVES.put(name, new Class(ClassKind.BOXED_PRIMITIVE, name, null, false, false, Collections.emptyList()));
       }
     }
 
@@ -419,15 +451,17 @@ public abstract class TypeInfo {
     final String simpleName;
     final String packageName;
     final ModuleInfo module;
+    final boolean nullable;
     final boolean proxyGen;
     final List<TypeParamInfo.Class> params;
 
-    public Class(ClassKind kind, String name, ModuleInfo module, boolean proxyGen, List<TypeParamInfo.Class> params) {
+    public Class(ClassKind kind, String name, ModuleInfo module, boolean nullable, boolean proxyGen, List<TypeParamInfo.Class> params) {
       this.kind = kind;
       this.name = name;
       this.simpleName = Helper.getSimpleName(name);
       this.packageName = Helper.getPackageName(name);
       this.module = module;
+      this.nullable = nullable;
       this.proxyGen = proxyGen;
       this.params = params;
     }
@@ -448,6 +482,10 @@ public abstract class TypeInfo {
      */
     public ModuleInfo getModule() {
       return module;
+    }
+
+    public boolean isNullable() {
+      return nullable;
     }
 
     public ClassKind getKind() {
@@ -502,8 +540,8 @@ public abstract class TypeInfo {
       final List<String> values;
       final boolean gen;
 
-      public Enum(String fqcn, boolean gen, List<String> values, ModuleInfo module, boolean proxyGen) {
-        super(ClassKind.ENUM, fqcn, module, proxyGen, Collections.emptyList());
+      public Enum(String fqcn, boolean gen, List<String> values, ModuleInfo module, boolean nullable, boolean proxyGen) {
+        super(ClassKind.ENUM, fqcn, module, nullable, proxyGen, Collections.emptyList());
 
         this.gen = gen;
         this.values = values;
@@ -542,8 +580,9 @@ public abstract class TypeInfo {
           TypeInfo writeStreamArg,
           TypeInfo handlerArg,
           ModuleInfo module,
+          boolean nullable,
           boolean proxyGen) {
-        super(ClassKind.API, fqcn, module, proxyGen, params);
+        super(ClassKind.API, fqcn, module, nullable, proxyGen, params);
         this.concrete = concrete;
         this.readStreamArg = readStreamArg;
         this.writeStreamArg = writeStreamArg;
@@ -638,6 +677,13 @@ public abstract class TypeInfo {
    */
   public String getName() {
     return format(true);
+  }
+
+  /**
+   * @return true if the type is nullable
+   */
+  public boolean isNullable() {
+    return false;
   }
 
   /**

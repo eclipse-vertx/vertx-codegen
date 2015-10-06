@@ -354,6 +354,59 @@ public class MethodOverloadHelperTest {
 
   }
 
+  @Test
+  public void testNullableNotAmbiguous() throws Exception {
+    List<SimpleMethod> meths = new ArrayList<>();
+    List<SimpleParam> params1 = new ArrayList<>();
+    params1.add(new SimpleParam("arg0", ClassKind.STRING, true, JsonArray.class.getName()));
+    SimpleMethod meth1 = new SimpleMethod("meth1", params1);
+    meths.add(meth1);
+
+    List<SimpleParam> params2 = new ArrayList<>();
+    params2.add(new SimpleParam("arg0", ClassKind.LIST, false, List.class.getName()));
+    SimpleMethod meth2 = new SimpleMethod("meth1", params2);
+
+    meths.add(meth2);
+
+    testAmbiguousMethodsOK(meths);
+  }
+
+  @Test
+  public void testNullableDifferentPositionsNotAmbiguous() throws Exception {
+    List<SimpleMethod> meths = new ArrayList<>();
+    List<SimpleParam> params1 = new ArrayList<>();
+    params1.add(new SimpleParam("arg0", ClassKind.STRING, true, JsonArray.class.getName()));
+    params1.add(new SimpleParam("arg1", ClassKind.LIST, false, List.class.getName()));
+    SimpleMethod meth1 = new SimpleMethod("meth1", params1);
+    meths.add(meth1);
+
+    List<SimpleParam> params2 = new ArrayList<>();
+    params2.add(new SimpleParam("arg0", ClassKind.LIST, false, List.class.getName()));
+    params2.add(new SimpleParam("arg1", ClassKind.STRING, true, String.class.getName()));
+    SimpleMethod meth2 = new SimpleMethod("meth1", params2);
+
+    meths.add(meth2);
+
+    testAmbiguousMethodsOK(meths);
+  }
+
+  @Test
+  public void testNullableAmbiguous() throws Exception {
+    List<SimpleMethod> meths = new ArrayList<>();
+    List<SimpleParam> params1 = new ArrayList<>();
+    params1.add(new SimpleParam("arg0", ClassKind.STRING, true, JsonArray.class.getName()));
+    SimpleMethod meth1 = new SimpleMethod("meth1", params1);
+    meths.add(meth1);
+
+    List<SimpleParam> params2 = new ArrayList<>();
+    params2.add(new SimpleParam("arg0", ClassKind.LIST, true, List.class.getName()));
+    SimpleMethod meth2 = new SimpleMethod("meth1", params2);
+
+    meths.add(meth2);
+
+    testAmbiguousMethods(meths);
+  }
+
   private void testAmbiguousMethods(List<SimpleMethod> meths) throws Exception {
     try {
       checker.checkAmbiguousSimple(meths);
