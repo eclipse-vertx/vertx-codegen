@@ -14,7 +14,16 @@
   <artifactId>vertx-codegen</artifactId>
   <version>3.2.0-SNAPSHOT</version>
 
+  <properties>
+    <asciidoc.dir>${project.basedir}/src/main/asciidoc</asciidoc.dir>
+  </properties>
+
   <dependencies>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-docgen</artifactId>
+      <version>3.1.0-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
@@ -41,6 +50,24 @@
   <build>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>default-compile</id>
+              <configuration>
+                <annotationProcessors>
+                  <annotationProcessor>io.vertx.docgen.JavaDocGenProcessor</annotationProcessor>
+                </annotationProcessors>
+                <compilerArgs>
+                  <arg>-Adocgen.output=${asciidoc.dir}/java</arg>
+                </compilerArgs>
+                <generatedSourcesDirectory>${generated.dir}</generatedSourcesDirectory>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <executions>
@@ -75,6 +102,17 @@
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>1.9.1</version>
         <executions>
+          <execution>
+            <id>add-example-source</id>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${basedir}/src/examples/java</source>
+              </sources>
+            </configuration>
+          </execution>
           <execution>
             <id>add-tck-source</id>
             <goals>
