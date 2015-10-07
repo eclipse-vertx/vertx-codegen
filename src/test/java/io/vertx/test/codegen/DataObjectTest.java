@@ -21,6 +21,7 @@ import io.vertx.test.codegen.testdataobject.AdderNormalizationRules;
 import io.vertx.test.codegen.testdataobject.AdderWithNestedDataObject;
 import io.vertx.test.codegen.testdataobject.ApiObject;
 import io.vertx.test.codegen.testdataobject.ConverterDataObject;
+import io.vertx.test.codegen.testdataobject.DataObjectWithObjectProperty;
 import io.vertx.test.codegen.testdataobject.Enumerated;
 import io.vertx.test.codegen.testdataobject.InheritingConverterDataObject;
 import io.vertx.test.codegen.testdataobject.NoConverterDataObject;
@@ -116,6 +117,13 @@ public class DataObjectTest {
     assertEquals(2, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("string"), "string", "setString", null, TypeInfo.create(String.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("primitiveBoolean"), "primitiveBoolean", "setPrimitiveBoolean", null, TypeInfo.create(boolean.class), true, PropertyKind.VALUE, true);
+  }
+
+  @Test
+  public void testObjectProperty() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(DataObjectWithObjectProperty.class);
+    assertNotNull(model);
+    assertEquals(0, model.getPropertyMap().size());
   }
 
   @Test
