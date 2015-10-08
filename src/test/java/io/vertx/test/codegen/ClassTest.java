@@ -1023,8 +1023,7 @@ public class ClassTest {
     assertEquals(2, gen.getSuperTypes().size());
     assertTrue(gen.getSuperTypes().contains(VertxGenClass1Info));
     assertTrue(gen.getSuperTypes().contains(VertxGenInterfaceInfo));
-    assertEquals(1, gen.getConcreteSuperTypes().size());
-    assertTrue(gen.getConcreteSuperTypes().contains(VertxGenClass1Info));
+    assertEquals(VertxGenClass1Info, gen.getConcreteSuperType());
     assertEquals(1, gen.getAbstractSuperTypes().size());
     assertTrue(gen.getAbstractSuperTypes().contains(VertxGenInterfaceInfo));
     List<MethodInfo> methods = gen.getMethods();

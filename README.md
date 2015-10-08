@@ -278,7 +278,7 @@ converting CamelCase to underscores.
 * `referencedTypes` - a list of strings representing the set of user defined types (also annotated with `VertxGen`) which
 are referenced from the current interface
 * `superTypes` - a list of `TypeInfo` representing the set of user defined types which the current interface extends from
-* `concreteSuperTypes` - subset of `superTypes` which are *concrete*
+* `concreteSuperType` - the concrete super type or null
 * `abstractSuperTypes` - subset of `superTypes` which are *abstract*
 * `methodMap` - this is a Map<String, MethodInfo> - which allows you to look up all methods with a given name
 * `importedTypes`- this is a `Set<TypeInfo>` containing the types used by this class

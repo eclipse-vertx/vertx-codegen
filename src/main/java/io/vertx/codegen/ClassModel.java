@@ -93,7 +93,7 @@ public class ClassModel implements Model {
   protected String ifaceComment;
   protected Doc doc;
   protected List<TypeInfo> superTypes = new ArrayList<>();
-  protected List<TypeInfo> concreteSuperTypes = new ArrayList<>();
+  protected TypeInfo concreteSuperType;
   protected List<TypeInfo> abstractSuperTypes = new ArrayList<>();
   protected TypeInfo handlerSuperType;
   // The methods, grouped by name
@@ -195,8 +195,8 @@ public class ClassModel implements Model {
     return superTypes;
   }
 
-  public List<TypeInfo> getConcreteSuperTypes() {
-    return concreteSuperTypes;
+  public TypeInfo getConcreteSuperType() {
+    return concreteSuperType;
   }
 
   public List<TypeInfo> getAbstractSuperTypes() {
@@ -498,7 +498,18 @@ public class ClassModel implements Model {
               case API: {
                 try {
                   TypeInfo.Class.Api superType = (TypeInfo.Class.Api) typeFactory.create(tmSuper).getRaw();
-                  (superType.isConcrete() ? concreteSuperTypes : abstractSuperTypes).add(superTypeInfo);
+                  if (superType.isConcrete()) {
+                    if (concrete) {
+                      if (concreteSuperType != null) {
+                        throw new GenException(elem, "A concrete interface cannot extend more than one concrete interfaces");
+                      }
+                    } else {
+                      throw new GenException(elem, "A abstract interface cannot extend a concrete interface");
+                    }
+                    concreteSuperType = superTypeInfo;
+                  } else {
+                    abstractSuperTypes.add(superTypeInfo);
+                  }
                   superTypes.add(superTypeInfo);
                 } catch (Exception e) {
                   throw new GenException(elem, e.getMessage());
@@ -511,12 +522,6 @@ public class ClassModel implements Model {
             }
             superTypeInfo.collectImports(collectedTypes);
           }
-        }
-        if (concrete && concreteSuperTypes.size() > 1) {
-          throw new GenException(elem, "A concrete interface cannot extend more than one concrete interfaces");
-        }
-        if (!concrete && concreteSuperTypes.size() > 0) {
-          throw new GenException(elem, "A abstract interface cannot extend a concrete interface");
         }
         break;
       }
@@ -796,7 +801,7 @@ public class ClassModel implements Model {
     vars.put("methods", getMethods());
     vars.put("referencedTypes", getReferencedTypes());
     vars.put("superTypes", getSuperTypes());
-    vars.put("concreteSuperTypes", getConcreteSuperTypes());
+    vars.put("concreteSuperType", getConcreteSuperType());
     vars.put("abstractSuperTypes", getAbstractSuperTypes());
     vars.put("handlerSuperType", getHandlerSuperType());
     vars.put("methodsByName", getMethodMap());
