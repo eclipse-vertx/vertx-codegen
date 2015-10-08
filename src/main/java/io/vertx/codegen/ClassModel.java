@@ -336,19 +336,6 @@ public class ClassModel implements Model {
     return false;
   }
 
-  private boolean isLegalListOrSetForHandler(TypeInfo type) {
-    if (type instanceof TypeInfo.Parameterized) {
-      TypeInfo raw = type.getRaw();
-      if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
-        TypeInfo elementType = ((TypeInfo.Parameterized) type).getArgs().get(0);
-        if (elementType.getKind().basic || elementType.getKind().json || isVertxGenInterface(elementType) || isDataObjectTypeWithToJson(elementType)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
   protected boolean isLegalListSetMapParam(TypeInfo type) {
     // List<T> and Set<T> are also legal for params if T = basic type, json, @VertxGen, @DataObject
     // Map<K,V> is also legal for returns and params if K is a String and V is a basic type, json, or a @VertxGen interface
@@ -410,9 +397,7 @@ public class ClassModel implements Model {
   private boolean isLegalHandlerType(TypeInfo type) {
     if (type.getErased().getKind() == ClassKind.HANDLER) {
       TypeInfo eventType = ((TypeInfo.Parameterized) type).getArgs().get(0);
-      if (eventType.getKind().json || eventType.getKind().basic || isVertxGenInterface(eventType) ||
-          isLegalListOrSetForHandler(eventType) || eventType.getKind() == ClassKind.VOID ||
-          eventType.getKind() == ClassKind.THROWABLE || isVariableType(eventType) || isDataObjectTypeWithToJson(eventType)) {
+      if (isLegalCallbackValueType(eventType) || eventType.getKind() == ClassKind.THROWABLE) {
         return true;
       }
     }
@@ -424,14 +409,18 @@ public class ClassModel implements Model {
       TypeInfo eventType = ((TypeInfo.Parameterized) type).getArgs().get(0);
       if (eventType.getErased().getKind() == ClassKind.ASYNC_RESULT) {
         TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getArgs().get(0);
-        if (resultType.getKind().json || resultType.getKind().basic || isVertxGenInterface(resultType) ||
-            isLegalListOrSetForHandler(resultType) || resultType.getKind() == ClassKind.VOID ||
-            isVariableType(resultType) || isDataObjectTypeWithToJson(resultType)) {
+        if (isLegalCallbackValueType(resultType)) {
           return true;
         }
       }
     }
     return false;
+  }
+
+  private boolean isLegalCallbackValueType(TypeInfo type) {
+    return type.getKind().json || type.getKind().basic || isVertxGenInterface(type) ||
+        isLegalListSetMapReturn(type) || type.getKind() == ClassKind.ENUM || type.getKind() == ClassKind.VOID ||
+        isVariableType(type) || isDataObjectTypeWithToJson(type);
   }
 
   private void determineApiTypes() {

@@ -123,11 +123,14 @@ The following set `P` of types are permitted as parameters to any API method:
     * the set `J`
     * `java.lang.Void`
     * `java.lang.Throwable`
-    * any data object class annotated with `@DataObject`
-    * type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
+    * any data object class
+    * any Enum class
+    * type `java.util.List<C>`, `java.util.Set<C>` or `java.util.Map<String, C>` where `C` contains
         * the set `B`
         * the set `V`
         * the set `J`
+        * any data object class
+        * any Enum class
 * `io.vertx.java.core.Handler<H>` where `H` contains
     * the set `HA`
     * `java.lang.Throwable`
