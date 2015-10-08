@@ -369,19 +369,23 @@ public class ClassModel implements Model {
   }
 
   protected boolean isLegalListSetMapReturn(TypeInfo type) {
-    // List<T> and Set<T> are also legal for returns and params if T = basic type, json, or @VertxGen
-    // Map<K,V> is also legal for returns and params if K is a String and V is a basic type, json, or a @VertxGen interface
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
-      TypeInfo argument = ((TypeInfo.Parameterized) type).getArgs().get(0);
-      if (type.getKind() != ClassKind.MAP) {
-        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument) || isDataObjectTypeWithToJson(argument)) {
-          return true;
+      List<TypeInfo> args = ((TypeInfo.Parameterized) type).getArgs();
+      TypeInfo valueType;
+      if (type.getKind() == ClassKind.MAP) {
+        if (args.get(0).getKind() != ClassKind.STRING) {
+          return false;
         }
-      } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
-        argument = ((TypeInfo.Parameterized) type).getArgs().get(1);
-        if (argument.getKind().basic || argument.getKind().json) {
-          return true;
-        }
+        valueType = args.get(1);
+      } else {
+        valueType = args.get(0);
+      }
+      if (valueType.getKind().basic ||
+          valueType.getKind().json ||
+          valueType.getKind() == ClassKind.ENUM ||
+          isVertxGenInterface(valueType) ||
+          isDataObjectTypeWithToJson(valueType)) {
+        return true;
       }
     }
     return false;

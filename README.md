@@ -78,7 +78,6 @@ In order for code generation to work effectively, certain constraints are put on
 The constraints are
 
 * The API must be described as a set of Java interfaces, classes are not permitted
-* Default methods are not permitted
 * Nested interfaces are not permitted
 * All interfaces to have generation performed on them must be annotated with the `io.vertx.codegen.annotations.VertxGen` annotation
 * Fluent methods (methods which return a reference to this) must be annotated with the `io.vertx.codegen.annotations.Fluent` annotation
@@ -135,21 +134,19 @@ The following set `P` of types are permitted as parameters to any API method:
 
 The following set `R` of types are permitted as return types from any API method:
 
-* void
+* `void`
 * the set `B`
 * the set `V`
 * the set `J`
-* any Enum class
+* any enum class
 * any `java.lang.Throwable`
-* any data object class annotated with `@DataObject`
-* type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
+* any data object class
+* type `java.util.List<C>`, `java.util.Set<C>` or `java.util.Map<String, C>` where `C` contains
     * the set `B`
     * the set `J`
     * the set `V`
-    * any data object class annotated with `@DataObject`
-* type `java.util.Map<String, C>` where `C` contains
-    * the set `B`
-    * the set `J`
+    * any Enum class
+    * any data object class
 
 ### Static factory methods
 

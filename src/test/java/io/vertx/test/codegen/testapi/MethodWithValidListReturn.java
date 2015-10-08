@@ -2,6 +2,7 @@ package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.testmodel.TestDataObject;
+import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -30,6 +31,7 @@ public interface MethodWithValidListReturn {
   List<JsonObject> jsonObjectList();
 
   List<TestDataObject> dataObjectList();
+  List<TestEnum> enumList();
 
 
 }

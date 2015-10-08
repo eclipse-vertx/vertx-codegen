@@ -861,9 +861,8 @@ public class ClassTest {
     assertTrue(model.getReferencedTypes().contains(VertxGenClass2Info));
     assertTrue(model.getSuperTypes().isEmpty());
     List<MethodInfo> methods = model.getMethods();
-    assertEquals(14, methods.size());
-    checkMethod(methods.get(0), "byteList", 0, new TypeLiteral<List<Byte>>() {
-    }, MethodKind.OTHER);
+    assertEquals(15, methods.size());
+    checkMethod(methods.get(0), "byteList", 0, new TypeLiteral<List<Byte>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(1), "shortList", 0, new TypeLiteral<List<Short>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(2), "intList", 0, new TypeLiteral<List<Integer>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(3), "longList", 0, new TypeLiteral<List<Long>>() {}, MethodKind.OTHER);
@@ -877,6 +876,7 @@ public class ClassTest {
     checkMethod(methods.get(11), "jsonArrayList", 0, new TypeLiteral<List<JsonArray>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(12), "jsonObjectList", 0, new TypeLiteral<List<JsonObject>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(13), "dataObjectList", 0, new TypeLiteral<List<TestDataObject>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(14), "enumList", 0, new TypeLiteral<List<TestEnum>>() {}, MethodKind.OTHER);
   }
   
   @Test
@@ -889,9 +889,8 @@ public class ClassTest {
     assertTrue(model.getReferencedTypes().contains(VertxGenClass2Info));
     assertTrue(model.getSuperTypes().isEmpty());
     List<MethodInfo> methods = model.getMethods();
-    assertEquals(14, methods.size());
-    checkMethod(methods.get(0), "byteSet", 0, new TypeLiteral<Set<Byte>>() {
-    }, MethodKind.OTHER);
+    assertEquals(15, methods.size());
+    checkMethod(methods.get(0), "byteSet", 0, new TypeLiteral<Set<Byte>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(1), "shortSet", 0, new TypeLiteral<Set<Short>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(2), "intSet", 0, new TypeLiteral<Set<Integer>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(3), "longSet", 0, new TypeLiteral<Set<Long>>() {}, MethodKind.OTHER);
@@ -905,6 +904,7 @@ public class ClassTest {
     checkMethod(methods.get(11), "jsonArraySet", 0, new TypeLiteral<Set<JsonArray>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(12), "jsonObjectSet", 0, new TypeLiteral<Set<JsonObject>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(13), "dataObjectSet", 0, new TypeLiteral<Set<TestDataObject>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(14), "enumSet", 0, new TypeLiteral<Set<TestEnum>>() {}, MethodKind.OTHER);
   }
 
   @Test
@@ -912,10 +912,10 @@ public class ClassTest {
     ClassModel model = new Generator().generateClass(MethodWithValidMapReturn.class);
     assertEquals(MethodWithValidMapReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidMapReturn.class.getSimpleName(), model.getIfaceSimpleName());
-    assertEquals(0, model.getReferencedTypes().size());
+    assertEquals(2, model.getReferencedTypes().size());
     assertTrue(model.getSuperTypes().isEmpty());
     List<MethodInfo> methods = model.getMethods();
-    assertEquals(11, methods.size());
+    assertEquals(15, methods.size());
     checkMethod(methods.get(0), "byteMap", 0, new TypeLiteral<Map<String, Byte>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(1), "shortMap", 0, new TypeLiteral<Map<String, Short>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(2), "intMap", 0, new TypeLiteral<Map<String, Integer>>() {}, MethodKind.OTHER);
@@ -927,6 +927,10 @@ public class ClassTest {
     checkMethod(methods.get(8), "stringMap", 0, new TypeLiteral<Map<String, String>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(9), "jsonArrayMap", 0, new TypeLiteral<Map<String, JsonArray>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(10), "jsonObjectMap", 0, new TypeLiteral<Map<String, JsonObject>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(11), "vertxGen1Map", 0, new TypeLiteral<Map<String, VertxGenClass1>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(12), "vertxGen2Map", 0, new TypeLiteral<Map<String, VertxGenClass2>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(13), "dataObjectMap", 0, new TypeLiteral<Map<String, TestDataObject>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(14), "enumMap", 0, new TypeLiteral<Map<String, TestEnum>>() {}, MethodKind.OTHER);
   }
 
   @Test

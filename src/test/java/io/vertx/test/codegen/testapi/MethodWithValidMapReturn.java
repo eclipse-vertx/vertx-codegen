@@ -1,9 +1,12 @@
 package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.codegen.testmodel.TestDataObject;
+import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,4 +28,9 @@ public interface MethodWithValidMapReturn {
   Map<String, JsonArray> jsonArrayMap();
   Map<String, JsonObject> jsonObjectMap();
 
+  Map<String, VertxGenClass1> vertxGen1Map();
+  Map<String, VertxGenClass2> vertxGen2Map();
+  Map<String, TestDataObject> dataObjectMap();
+
+  Map<String, TestEnum> enumMap();
 }
