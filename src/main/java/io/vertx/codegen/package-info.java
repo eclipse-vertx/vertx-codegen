@@ -4,10 +4,11 @@
  * Vert.x Codegen is an annotation processing tool for processing Vert.x API and create API in different JVM lauguages.
  *
  * Vert.x polyglot langs use code generation for creating https://en.wikipedia.org/wiki/Shim_(computing)[shim] for APIs,
- * that is thin wrappers in front of the API type.
+ * that are thin wrappers in front of the API type.
  *
- * A shim is the adaptation of a Vert.x API in a JVM language. A shim uses code generation to generate
- * the shim in its language from a Vert.x API, code generation is based on Java annotation processing.
+ * A shim is the adaptation of a Vert.x API to a JVM language. A shim uses code generation to generate
+ * wrappers in its own language delegating to the Vert.x API, code generation is based on Java annotation
+ * processing.
  *
  * == Vert.x API
  *
@@ -16,6 +17,15 @@
  * of API types are grouped in modules.
  *
  * === Modules
+ *
+ * A module contains a collection of Vert.x API and data objects declarations, some shim uses modules for organizing
+ * and loading the Vert.x api:
+ *
+ * - the JavaScript shim uses https://en.wikipedia.org/wiki/CommonJS[CommonJS] modules
+ * - the Ruby shim uses Ruby modules
+ * - Ceylon uses Ceylon native modules
+ *
+ * NOTE: so far in Java or Groovy the notion of module is not used because it delegates loading to classloaders.
  *
  * Modules are declared by annotating a Java package with a {@link io.vertx.codegen.annotations.ModuleGen @ModuleGen}
  * annotation.
@@ -29,10 +39,10 @@
  * ----
  *
  * The module _name_ is a namespace for shims that don't support package like naming, like JavaScript `acme-js`
- * or Ruby `acme`, whereas the _group package_ is determines the created package, for instance
- * for Groovy `com.acme.groovy.myservice`. The group package must be a prefix of the annotated module.
+ * or Ruby `acme`, whereas the _group package_ determines the created package, for instance
+ * `com.acme.groovy.myservice` in Groovy. The group package must be a prefix of the annotated module.
  *
- * Vert.x modules uses the reserved name _vertx-XYZ_ and the reserved group package _io.vertx_.
+ * Vert.x modules use the reserved name _vertx-XYZ_ and the reserved group package _io.vertx_.
  *
  * An API module contains various Vert.x types annotated with {@link io.vertx.codegen.annotations.VertxGen}
  * or {@link io.vertx.codegen.annotations.DataObject}.
@@ -42,8 +52,8 @@
  *
  * === Data objects
  *
- * _Data objects_ are Java class whose only purpose are to be data containers of various value types. A data object
- * is mapped in some languages to Json.
+ * A Data object_ is a Java class with the only purpose to be a container for data. They are transformed
+ * to and from Json.
  *
  * In its simplest form, a data object is a Java class following these rules:
  *
@@ -52,11 +62,11 @@
  * 3. provide a constructor with the `io.vertx.core.json.JsonObject` argument
  * 4. provide a copy constructor with the exact same type
  *
- * A data object can be also be an interface annotated with `@DataObject`, this is useful when multiple inheritance
+ * A data object can also be an interface annotated with `@DataObject`, this is useful when multiple inheritance
  * is needed. For instance Vert.x Core defines the `KeyCertOptions` and `TrustOptions` data object interfaces and the
  * `JksOptions` is a data object class that implements both of them because a Java keystore provides support for both.
  *
- * Data object can also inherit other data objects, when it does so it inherits naturally its properties.
+ * Data object can also inherit from other data objects. It inherits from the properties of the parent classes.
  *
  * ==== Data object properties
  *
@@ -80,11 +90,11 @@
  * 5. Java enums
  * 6. another data object
  *
- * In addition a data object can also have multi valued properties as a `java.util.List<V>` or a
+ * In addition a data object can also have multi-valued properties as a `java.util.List<V>` or a
  * `java.util.Map<String, V>` where the `<V>` is a supported single valued type or `java.lang.Object`
  * that stands for anything converted by `io.vertx.core.json.JsonObject` and `io.vertx.core.json.JsonArray`.
  *
- * List multi valued properties can be declared via a _setter_ :
+ * List multi-valued properties can be declared via a _setter_ :
  *
  * .a multi valued setter
  * [source,java]
@@ -106,10 +116,10 @@
  * }
  * ----
  *
- * Map multi valued properties can be declared via a _setter_.
+ * Map properties can only be declared with a _setter_.
  *
  * NOTE: these examples uses a _fluent_ return types for providing a better API, this is not mandatory but
- * encouraged
+ * encouraged.
  *
  * ==== Json conversion
  *
@@ -159,6 +169,20 @@
  *
  * The former should be used in the json constructor, the later in the `toJson` method.
  *
+ * [source,java]
+ * ----
+ * public ContactDetails(JsonObject json) {
+ *   this();
+ *   ContactDetailsConverter.fromJson(json, this);
+ * }
+ *
+ * public JsonObject toJson() {
+ *   JsonObject json = new JsonObject();
+ *   ContactDetailsConverter.toJson(this, json);
+ *   return json;
+ * }
+ * ----
+ *
  * === Building types
  *
  * A few types used throughout Vert.x API are not annotated with `@VertxGen` yet are used for building
@@ -189,16 +213,18 @@
  *
  * 1. the API must be described as a set of Java interfaces, classes are not permitted
  * 2. nested interfaces are not permitted
- * 3. All interfaces to have generation performed on them must be annotated with the `io.vertx.codegen.annotations.VertxGen` annotation
- * 4. fluent methods (methods which return a reference to this) must be annotated with the `io.vertx.codegen.annotations.Fluent` annotation
+ * 3. all interfaces to have generation performed on them must be annotated with the `io.vertx.codegen.annotations.VertxGen` annotation
+ * 4. fluent methods (methods which return a reference to `this`) must be annotated with the `io.vertx.codegen.annotations.Fluent` annotation
  * 5. methods where the return value must be cached in the API shim must be annotated with the `io.vertx.codegen.annotations.CacheReturn` annotation
  * 6. only certain types are allowed as parameter or return value types for any API methods
  * 7. custom enums should be annotated with `@VertxGen`, although this is not mandatory to allow the usage of existing Java enums
+ * 8. nested enums are not permitted
+ * 9. default implementations are allowed
  *
  * An API type can be generic or declare generic methods, type parameters must be unbounded, e.g
  * `<N extends Number>` is forbidden.
  *
- * In the perspective of codegen, Java types can be categories as follow:
+ * In the perspective of codegen, Java types can be categorized as follow:
  *
  * . _basic_ type : any primitive/boxed type or `java.lang.String`
  * . _json_ type : `io.vertx.core.json.JsonObject` or `io.vertx.core.json.JsonArray`
@@ -208,7 +234,7 @@
  * . _collection_ type : `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>`
  *
  * Parameterized types are supported but wildcards are not, that is the following type arguments declarations
- * are forbidden:
+ * are *forbidden*:
  *
  * - `Foo<?>`
  * - `Foo<? extends Number>`
@@ -223,7 +249,7 @@
  *
  * _api_ type can extend other _api_ types.
  *
- * An _api_ type can either be *concrete* or *abstract*, such information is importan for languages not
+ * An _api_ type can either be *concrete* or *abstract*, such information is important for languages not
  * supporting multiple class inheritance like Groovy:
  *
  * - _api_ types annotated with {@link io.vertx.codegen.annotations.VertxGen}`(concrete = false)` are meant to be
@@ -242,7 +268,7 @@
  * . the `java.lang.Throwable` type
  * . any _enum_ type
  * . any _data object_ type
- * . an unbounded type variable
+ * . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
  * . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
  * a _json_ type, an _API_ type, an _enum_ type or a _data object_ type
  *
@@ -256,7 +282,7 @@
  * . the `java.lang.Throwable` type
  * . any _enum_ type
  * . any _data object_ type
- * . an unbounded type variable
+ * . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
  * . `java.lang.Object`
  * . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
  * a _json_ type, an _API_ type, an _enum_ type or a _data object_ type
@@ -271,14 +297,14 @@
  * . the `java.lang.Throwable` type - only for `Handler<R>`
  * . any _enum_ type
  * . any _data object_ type
- * . an unbounded type variable
+ * . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
  * . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
  * a _json_ type, an _API_ type, an _enum_ type or a _data object_ type
  *
  * ==== Method overloading
  *
  * Some languages don't support method overloading at all. Ruby, JavaScript or  Ceylon to name a few of them.
- * However the same restrication for Vert.x API would limit API usability.
+ * However the same restriction for Vert.x API would limit API usability.
  *
  * To accomodate both, overloading is supported when there are no ambiguities between overloaded signatures.
  * When an API is analyzed an _overload check_ is performed to ensure there is no ambiguity.
@@ -292,7 +318,7 @@
  * void add(double x, double y);
  * ----
  *
- * The JavaScript language use the type number in obth case: at runtime there is no possibility for the
+ * The JavaScript language use the type number in both cases: at runtime there is no possibility for the
  * JavaScript shim to know which method to use.
  *
  * === Static methods
@@ -332,7 +358,7 @@
  *
  * == Shim proxies
  *
- * A code generated API create shim proxies that delegates method invocation to the proxied API.
+ * A code generated API creates shim proxies delegating method invocation to the API.
  *
  * .a simplified Buffer API
  * [source,java]
@@ -356,6 +382,7 @@
  * var JBuffer = io.vertx.core.buffer.Buffer;
  * var Buffer = function(j_val) {
  *
+ *   // delegate object
  *   var j_buffer = j_val;
  *   var that = this;
  *
@@ -375,7 +402,7 @@
  * delegates the call to the Java static method and returns a `Buffer` proxy wrapping the returned buffer.
  *
  * The instance `length` method is translated into the `length` method of the proxy instance, this method
- * delgates the call to the Java instance method of the proxied buffer and simply returns the value. The
+ * delegates the call to the Java instance method of the proxied buffer and simply returns the value. The
  * Nashorn interoperability takes care of converting the `int` type to a JavaScript `Number`.
  *
  * === Return values
@@ -563,7 +590,7 @@
  * 5. `ModuleModel`
  * 6. `ProxyModel`
  *
- * Models are processed by _MVEL_ templates, when a template is executed it gets access to implicit properties
+ * Models are processed by https://en.wikisource.org/wiki/MVEL_Language_Guide[MVEL] templates, when a template is executed it gets access to implicit properties
  * (i.e properties that are declared by the model).
  *
  * === Class model
