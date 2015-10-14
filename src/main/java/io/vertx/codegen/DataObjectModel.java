@@ -325,6 +325,9 @@ public class DataObjectModel implements Model {
           boolean jsonifiable;
           switch (propType.getKind()) {
             case OBJECT:
+              if (kind == PropertyKind.VALUE) {
+                return;
+              }
             case PRIMITIVE:
             case BOXED_PRIMITIVE:
             case STRING:

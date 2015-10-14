@@ -70,7 +70,7 @@ public class CodeGeneratorTest {
     assertEquals("io.vertx.test.codegen.testapi.MethodWithValidVertxGenParams", props.remove("ifaceFQCN"));
     assertEquals("[" + VertxGenClass1.class.getName() + ", " + VertxGenClass2.class.getName() + "]", props.remove("referencedTypes"));
     assertEquals("[]", props.remove("superTypes"));
-    assertEquals("[]", props.remove("concreteSuperTypes"));
+    assertEquals("null", props.remove("concreteSuperType"));
     assertEquals("[]", props.remove("abstractSuperTypes"));
     assertEquals("null", props.remove("handlerSuperType"));
     assertEquals("void", props.remove("method.methodWithVertxGenParams(str,myParam1,myParam2)"));

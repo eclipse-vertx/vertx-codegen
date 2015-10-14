@@ -93,7 +93,7 @@ public class ClassModel implements Model {
   protected String ifaceComment;
   protected Doc doc;
   protected List<TypeInfo> superTypes = new ArrayList<>();
-  protected List<TypeInfo> concreteSuperTypes = new ArrayList<>();
+  protected TypeInfo concreteSuperType;
   protected List<TypeInfo> abstractSuperTypes = new ArrayList<>();
   protected TypeInfo handlerSuperType;
   // The methods, grouped by name
@@ -195,8 +195,8 @@ public class ClassModel implements Model {
     return superTypes;
   }
 
-  public List<TypeInfo> getConcreteSuperTypes() {
-    return concreteSuperTypes;
+  public TypeInfo getConcreteSuperType() {
+    return concreteSuperType;
   }
 
   public List<TypeInfo> getAbstractSuperTypes() {
@@ -336,19 +336,6 @@ public class ClassModel implements Model {
     return false;
   }
 
-  private boolean isLegalListOrSetForHandler(TypeInfo type) {
-    if (type instanceof TypeInfo.Parameterized) {
-      TypeInfo raw = type.getRaw();
-      if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
-        TypeInfo elementType = ((TypeInfo.Parameterized) type).getArgs().get(0);
-        if (elementType.getKind().basic || elementType.getKind().json || isVertxGenInterface(elementType) || isDataObjectTypeWithToJson(elementType)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
   protected boolean isLegalListSetMapParam(TypeInfo type) {
     // List<T> and Set<T> are also legal for params if T = basic type, json, @VertxGen, @DataObject
     // Map<K,V> is also legal for returns and params if K is a String and V is a basic type, json, or a @VertxGen interface
@@ -369,19 +356,23 @@ public class ClassModel implements Model {
   }
 
   protected boolean isLegalListSetMapReturn(TypeInfo type) {
-    // List<T> and Set<T> are also legal for returns and params if T = basic type, json, or @VertxGen
-    // Map<K,V> is also legal for returns and params if K is a String and V is a basic type, json, or a @VertxGen interface
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
-      TypeInfo argument = ((TypeInfo.Parameterized) type).getArgs().get(0);
-      if (type.getKind() != ClassKind.MAP) {
-        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument) || isDataObjectTypeWithToJson(argument)) {
-          return true;
+      List<TypeInfo> args = ((TypeInfo.Parameterized) type).getArgs();
+      TypeInfo valueType;
+      if (type.getKind() == ClassKind.MAP) {
+        if (args.get(0).getKind() != ClassKind.STRING) {
+          return false;
         }
-      } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
-        argument = ((TypeInfo.Parameterized) type).getArgs().get(1);
-        if (argument.getKind().basic || argument.getKind().json) {
-          return true;
-        }
+        valueType = args.get(1);
+      } else {
+        valueType = args.get(0);
+      }
+      if (valueType.getKind().basic ||
+          valueType.getKind().json ||
+          valueType.getKind() == ClassKind.ENUM ||
+          isVertxGenInterface(valueType) ||
+          isDataObjectTypeWithToJson(valueType)) {
+        return true;
       }
     }
     return false;
@@ -406,9 +397,7 @@ public class ClassModel implements Model {
   private boolean isLegalHandlerType(TypeInfo type) {
     if (type.getErased().getKind() == ClassKind.HANDLER) {
       TypeInfo eventType = ((TypeInfo.Parameterized) type).getArgs().get(0);
-      if (eventType.getKind().json || eventType.getKind().basic || isVertxGenInterface(eventType) ||
-          isLegalListOrSetForHandler(eventType) || eventType.getKind() == ClassKind.VOID ||
-          eventType.getKind() == ClassKind.THROWABLE || isVariableType(eventType) || isDataObjectTypeWithToJson(eventType)) {
+      if (isLegalCallbackValueType(eventType) || eventType.getKind() == ClassKind.THROWABLE) {
         return true;
       }
     }
@@ -420,14 +409,18 @@ public class ClassModel implements Model {
       TypeInfo eventType = ((TypeInfo.Parameterized) type).getArgs().get(0);
       if (eventType.getErased().getKind() == ClassKind.ASYNC_RESULT) {
         TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getArgs().get(0);
-        if (resultType.getKind().json || resultType.getKind().basic || isVertxGenInterface(resultType) ||
-            isLegalListOrSetForHandler(resultType) || resultType.getKind() == ClassKind.VOID ||
-            isVariableType(resultType) || isDataObjectTypeWithToJson(resultType)) {
+        if (isLegalCallbackValueType(resultType)) {
           return true;
         }
       }
     }
     return false;
+  }
+
+  private boolean isLegalCallbackValueType(TypeInfo type) {
+    return type.getKind().json || type.getKind().basic || isVertxGenInterface(type) ||
+        isLegalListSetMapReturn(type) || type.getKind() == ClassKind.ENUM || type.getKind() == ClassKind.VOID ||
+        isVariableType(type) || isDataObjectTypeWithToJson(type);
   }
 
   private void determineApiTypes() {
@@ -498,7 +491,18 @@ public class ClassModel implements Model {
               case API: {
                 try {
                   TypeInfo.Class.Api superType = (TypeInfo.Class.Api) typeFactory.create(tmSuper).getRaw();
-                  (superType.isConcrete() ? concreteSuperTypes : abstractSuperTypes).add(superTypeInfo);
+                  if (superType.isConcrete()) {
+                    if (concrete) {
+                      if (concreteSuperType != null) {
+                        throw new GenException(elem, "A concrete interface cannot extend more than one concrete interfaces");
+                      }
+                    } else {
+                      throw new GenException(elem, "A abstract interface cannot extend a concrete interface");
+                    }
+                    concreteSuperType = superTypeInfo;
+                  } else {
+                    abstractSuperTypes.add(superTypeInfo);
+                  }
                   superTypes.add(superTypeInfo);
                 } catch (Exception e) {
                   throw new GenException(elem, e.getMessage());
@@ -511,12 +515,6 @@ public class ClassModel implements Model {
             }
             superTypeInfo.collectImports(collectedTypes);
           }
-        }
-        if (concrete && concreteSuperTypes.size() > 1) {
-          throw new GenException(elem, "A concrete interface cannot extend more than one concrete interfaces");
-        }
-        if (!concrete && concreteSuperTypes.size() > 0) {
-          throw new GenException(elem, "A abstract interface cannot extend a concrete interface");
         }
         break;
       }
@@ -796,7 +794,7 @@ public class ClassModel implements Model {
     vars.put("methods", getMethods());
     vars.put("referencedTypes", getReferencedTypes());
     vars.put("superTypes", getSuperTypes());
-    vars.put("concreteSuperTypes", getConcreteSuperTypes());
+    vars.put("concreteSuperType", getConcreteSuperType());
     vars.put("abstractSuperTypes", getAbstractSuperTypes());
     vars.put("handlerSuperType", getHandlerSuperType());
     vars.put("methodsByName", getMethodMap());

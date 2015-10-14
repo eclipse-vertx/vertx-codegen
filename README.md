@@ -4,6 +4,10 @@
 
 This projects contains tools which allow idiomatic other language API shims to be generated from Java APIs.
 
+## Codegen CLI
+
+A Codegen https://github.com/vietj/vertx-codegen-cli[CLI] to help you code generating files.
+
 ## API generator
 
 A code generator consist of an _MVEL_ template declared in a `codegen.json` descriptor:
@@ -120,32 +124,33 @@ The following set `P` of types are permitted as parameters to any API method:
     * the set `J`
     * `java.lang.Void`
     * `java.lang.Throwable`
-    * any data object class annotated with `@DataObject`
-    * type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
+    * any data object class
+    * any Enum class
+    * type `java.util.List<C>`, `java.util.Set<C>` or `java.util.Map<String, C>` where `C` contains
         * the set `B`
         * the set `V`
         * the set `J`
+        * any data object class
+        * any Enum class
 * `io.vertx.java.core.Handler<H>` where `H` contains
     * the set `HA`
     * `java.lang.Throwable`
 
 The following set `R` of types are permitted as return types from any API method:
 
-* void
+* `void`
 * the set `B`
 * the set `V`
 * the set `J`
-* any Enum class
+* any enum class
 * any `java.lang.Throwable`
-* any data object class annotated with `@DataObject`
-* type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
+* any data object class
+* type `java.util.List<C>`, `java.util.Set<C>` or `java.util.Map<String, C>` where `C` contains
     * the set `B`
     * the set `J`
     * the set `V`
-    * any data object class annotated with `@DataObject`
-* type `java.util.Map<String, C>` where `C` contains
-    * the set `B`
-    * the set `J`
+    * any Enum class
+    * any data object class
 
 ### Static factory methods
 
@@ -278,7 +283,7 @@ converting CamelCase to underscores.
 * `referencedTypes` - a list of strings representing the set of user defined types (also annotated with `VertxGen`) which
 are referenced from the current interface
 * `superTypes` - a list of `TypeInfo` representing the set of user defined types which the current interface extends from
-* `concreteSuperTypes` - subset of `superTypes` which are *concrete*
+* `concreteSuperType` - the concrete super type or null
 * `abstractSuperTypes` - subset of `superTypes` which are *abstract*
 * `methodMap` - this is a Map<String, MethodInfo> - which allows you to look up all methods with a given name
 * `importedTypes`- this is a `Set<TypeInfo>` containing the types used by this class
