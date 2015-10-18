@@ -4,9 +4,10 @@
 
 This projects contains tools which allow idiomatic other language API shims to be generated from Java APIs.
 
-## Codegen CLI
+## Helper projects
 
-A Codegen https://github.com/vietj/vertx-codegen-cli[CLI] to help you code generating files.
+- Codegen CLI: a codegen https://github.com/vietj/vertx-codegen-cli[CLI] to help code generating files.
+- Codegen starter: a codegen https://github.com/vietj/vertx-codegen-starter[Starter] that can be forked to create a new Vert.x code generator
 
 ## API generator
 
