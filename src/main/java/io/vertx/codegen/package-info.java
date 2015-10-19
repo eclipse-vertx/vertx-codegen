@@ -270,7 +270,7 @@
  * . any _data object_ type
  * . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
  * . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
- * a _json_ type, an _API_ type, an _enum_ type or a _data object_ type
+ * a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
  *
  * ==== Method parameter types
  *
@@ -285,7 +285,7 @@
  * . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
  * . `java.lang.Object`
  * . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
- * a _json_ type, an _API_ type, an _enum_ type or a _data object_ type
+ * a _json_ type, an _API_ type. For list and set `V` can also be an _enum_ type or a _data object_ type
  *
  * In addition callback parameters are allowed, i.e types declaring `io.vertx.core.Handler<R>` or
  * `io.vertx.core.Handler<io.vertx.core.AsyncResult<R>>` where `<R>` can be:
@@ -299,7 +299,7 @@
  * . any _data object_ type
  * . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
  * . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
- * a _json_ type, an _API_ type, an _enum_ type or a _data object_ type
+ * a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
  *
  * ==== Method overloading
  *

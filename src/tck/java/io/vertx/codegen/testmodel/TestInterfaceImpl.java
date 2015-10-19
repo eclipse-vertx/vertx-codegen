@@ -59,7 +59,7 @@ public class TestInterfaceImpl implements TestInterface {
                                           Handler<Float> floatHandler, Handler<Double> doubleHandler,
                                           Handler<Boolean> booleanHandler, Handler<Character> charHandler,
                                           Handler<String> stringHandler) {
-    byteHandler.handle((byte)123);
+    byteHandler.handle((byte) 123);
     shortHandler.handle((short) 12345);
     intHandler.handle(1234567);
     longHandler.handle(1265615234l);
@@ -254,16 +254,16 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
-  public void methodWithListParams(List<String> listString, List<Byte> listByte, List<Short> listShort, List<Integer> listInt, List<Long> listLong, List<JsonObject> listJsonObject, List<JsonArray> listJsonArray, List<RefedInterface1> listVertxGen, List<TestDataObject> listDataObject) {
+  public void methodWithListParams(List<String> listString, List<Byte> listByte, List<Short> listShort, List<Integer> listInt, List<Long> listLong, List<JsonObject> listJsonObject, List<JsonArray> listJsonArray, List<RefedInterface1> listVertxGen, List<TestDataObject> listDataObject, List<TestEnum> listEnum) {
     assertEquals("foo", listString.get(0));
     assertEquals("bar", listString.get(1));
-    assertEquals((byte)2, listByte.get(0).byteValue());
-    assertEquals((byte)3, listByte.get(1).byteValue());
-    assertEquals((short)12, listShort.get(0).shortValue());
-    assertEquals((short)13, listShort.get(1).shortValue());
-    assertEquals((int)1234, listInt.get(0).intValue());
-    assertEquals((int)1345, listInt.get(1).intValue());
-    System.out.println("entry type is " + ((List)listLong).get(0).getClass().getName());
+    assertEquals((byte) 2, listByte.get(0).byteValue());
+    assertEquals((byte) 3, listByte.get(1).byteValue());
+    assertEquals((short) 12, listShort.get(0).shortValue());
+    assertEquals((short) 13, listShort.get(1).shortValue());
+    assertEquals((int) 1234, listInt.get(0).intValue());
+    assertEquals((int) 1345, listInt.get(1).intValue());
+    System.out.println("entry type is " + ((List) listLong).get(0).getClass().getName());
     assertEquals(123l, listLong.get(0).longValue());
     assertEquals(456l, listLong.get(1).longValue());
     assertEquals(new JsonObject().put("foo", "bar"), listJsonObject.get(0));
@@ -274,10 +274,11 @@ public class TestInterfaceImpl implements TestInterface {
     assertEquals("bar", listVertxGen.get(1).getString());
     assertEquals(new JsonObject().put("foo", "String 1").put("bar", 1).put("wibble", 1.1), listDataObject.get(0).toJson());
     assertEquals(new JsonObject().put("foo", "String 2").put("bar", 2).put("wibble", 2.2), listDataObject.get(1).toJson());
+    assertEquals(Arrays.asList(TestEnum.JULIEN, TestEnum.TIM), new ArrayList<>(listEnum));
   }
 
   @Override
-  public void methodWithSetParams(Set<String> setString, Set<Byte> setByte, Set<Short> setShort, Set<Integer> setInt, Set<Long> setLong, Set<JsonObject> setJsonObject, Set<JsonArray> setJsonArray, Set<RefedInterface1> setVertxGen, Set<TestDataObject> setDataObject) {
+  public void methodWithSetParams(Set<String> setString, Set<Byte> setByte, Set<Short> setShort, Set<Integer> setInt, Set<Long> setLong, Set<JsonObject> setJsonObject, Set<JsonArray> setJsonArray, Set<RefedInterface1> setVertxGen, Set<TestDataObject> setDataObject, Set<TestEnum> setEnum) {
     assertTrue(setString.contains("foo"));
     assertTrue(setString.contains("bar"));
     assertTrue(setByte.contains((byte) 2));
@@ -298,6 +299,9 @@ public class TestInterfaceImpl implements TestInterface {
     Set<JsonObject> setDataObjectJson = setDataObject.stream().map(d -> d.toJson()).collect(Collectors.toSet());
     assertTrue(setDataObjectJson.contains(new JsonObject().put("foo", "String 1").put("bar", 1).put("wibble", 1.1)));
     assertTrue(setDataObjectJson.contains(new JsonObject().put("foo", "String 2").put("bar", 2).put("wibble", 2.2)));
+    assertEquals(2, setEnum.size());
+    assertTrue(setEnum.contains(TestEnum.JULIEN));
+    assertTrue(setEnum.contains(TestEnum.TIM));
   }
 
   @Override
@@ -483,6 +487,16 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public void methodWithHandlerListEnum(Handler<List<TestEnum>> listHandler) {
+    listHandler.handle(Arrays.asList(TestEnum.TIM, TestEnum.JULIEN));
+  }
+
+  @Override
+  public void methodWithHandlerSetEnum(Handler<Set<TestEnum>> setHandler) {
+    setHandler.handle(new LinkedHashSet<>(Arrays.asList(TestEnum.TIM, TestEnum.JULIEN)));
+  }
+
+  @Override
   public void methodWithHandlerAsyncResultListVertxGen(Handler<AsyncResult<List<RefedInterface1>>> listHandler) {
     List<RefedInterface1> list = Arrays.asList(new RefedInterface1Impl().setString("foo"), new RefedInterface1Impl().setString("bar"));
     listHandler.handle(Future.succeededFuture(list));
@@ -602,6 +616,16 @@ public class TestInterfaceImpl implements TestInterface {
   public void methodWithHandlerAsyncResultSetNullDataObject(Handler<AsyncResult<Set<TestDataObject>>> setHandler) {
     Set<TestDataObject> set = Collections.singleton(null);
     setHandler.handle(Future.succeededFuture(set));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultListEnum(Handler<AsyncResult<List<TestEnum>>> listHandler) {
+    listHandler.handle(Future.succeededFuture(Arrays.asList(TestEnum.TIM, TestEnum.JULIEN)));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultSetEnum(Handler<AsyncResult<Set<TestEnum>>> setHandler) {
+    setHandler.handle(Future.succeededFuture(new LinkedHashSet<>(Arrays.asList(TestEnum.TIM, TestEnum.JULIEN))));
   }
 
   @Override
@@ -1165,6 +1189,11 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public List<TestEnum> methodWithListEnumReturn() {
+    return Arrays.asList(TestEnum.JULIEN, TestEnum.TIM);
+  }
+
+  @Override
   public List<String> methodWithNullListReturn() {
     return null;
   }
@@ -1202,6 +1231,11 @@ public class TestInterfaceImpl implements TestInterface {
   @Override
   public Set<TestDataObject> methodWithSetDataObjectReturn() {
     return new LinkedHashSet<>(methodWithListDataObjectReturn());
+  }
+
+  @Override
+  public Set<TestEnum> methodWithSetEnumReturn() {
+    return new LinkedHashSet<>(methodWithListEnumReturn());
   }
 
   @Override
@@ -1423,6 +1457,36 @@ public class TestInterfaceImpl implements TestInterface {
      */
     @Override
     public JsonArray put(String key, JsonArray value) {
+      return super.put(key, value);
+    }
+  }
+
+  private static class DataObjectHandlerTestMap extends HandlerTestMap<TestDataObject> {
+    public DataObjectHandlerTestMap(Handler<String> handler) {
+      super(handler);
+    }
+
+    /**
+     * This method exists on purpose. On a put, this force a cast to JsonArray allowing us to test
+     * that values are converted properly.
+     */
+    @Override
+    public TestDataObject put(String key, TestDataObject value) {
+      return super.put(key, value);
+    }
+  }
+
+  private static class EnumHandlerTestMap extends HandlerTestMap<TestEnum> {
+    public EnumHandlerTestMap(Handler<String> handler) {
+      super(handler);
+    }
+
+    /**
+     * This method exists on purpose. On a put, this force a cast to JsonArray allowing us to test
+     * that values are converted properly.
+     */
+    @Override
+    public TestEnum put(String key, TestEnum value) {
       return super.put(key, value);
     }
   }
