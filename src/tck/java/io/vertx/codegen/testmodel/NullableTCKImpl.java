@@ -815,6 +815,209 @@ public class NullableTCKImpl implements NullableTCK {
   }
 
   @Override
+  public boolean methodWithNonNullableSetByteParam(Set<Byte> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableSetByteParam(boolean expectNull, Set<Byte> param) {
+    assertEquals(methodWithNullableSetByteReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableSetByteHandler(boolean notNull, Handler<@Nullable Set<Byte>> handler) {
+    handler.handle(methodWithNullableSetByteReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableSetByteHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Set<Byte>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableSetByteReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Set<Byte> methodWithNullableSetByteReturn(boolean notNull) {
+    if (notNull) {
+      return new LinkedHashSet<>(Arrays.asList((byte)1, (byte)2, (byte)3));
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableSetShortParam(Set<Short> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableSetShortParam(boolean expectNull, Set<Short> param) {
+    assertEquals(methodWithNullableSetShortReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableSetShortHandler(boolean notNull, Handler<@Nullable Set<Short>> handler) {
+    handler.handle(methodWithNullableSetShortReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableSetShortHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Set<Short>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableSetShortReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Set<Short> methodWithNullableSetShortReturn(boolean notNull) {
+    if (notNull) {
+      return new LinkedHashSet<>(Arrays.asList((short)1, (short)2, (short)3));
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableSetIntegerParam(Set<Integer> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableSetIntegerParam(boolean expectNull, Set<Integer> param) {
+    assertEquals(methodWithNullableSetIntegerReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableSetIntegerHandler(boolean notNull, Handler<@Nullable Set<Integer>> handler) {
+    handler.handle(methodWithNullableSetIntegerReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableSetIntegerHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Set<Integer>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableSetIntegerReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Set<Integer> methodWithNullableSetIntegerReturn(boolean notNull) {
+    if (notNull) {
+      return new LinkedHashSet<>(Arrays.asList(1, 2, 3));
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableSetLongParam(Set<Long> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableSetLongParam(boolean expectNull, Set<Long> param) {
+    assertEquals(methodWithNullableSetLongReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableSetLongHandler(boolean notNull, Handler<@Nullable Set<Long>> handler) {
+    handler.handle(methodWithNullableSetLongReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableSetLongHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Set<Long>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableSetLongReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Set<Long> methodWithNullableSetLongReturn(boolean notNull) {
+    if (notNull) {
+      return new LinkedHashSet<>(Arrays.asList(1L, 2L, 3L));
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableSetFloatParam(Set<Float> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableSetFloatParam(boolean expectNull, Set<Float> param) {
+    assertEquals(methodWithNullableSetFloatReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableSetFloatHandler(boolean notNull, Handler<@Nullable Set<Float>> handler) {
+    handler.handle(methodWithNullableSetFloatReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableSetFloatHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Set<Float>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableSetFloatReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Set<Float> methodWithNullableSetFloatReturn(boolean notNull) {
+    if (notNull) {
+      return new LinkedHashSet<>(Arrays.asList(1.1f, 2.2f, 3.3f));
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableSetDoubleParam(Set<Double> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableSetDoubleParam(boolean expectNull, Set<Double> param) {
+    assertEquals(methodWithNullableSetDoubleReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableSetDoubleHandler(boolean notNull, Handler<@Nullable Set<Double>> handler) {
+    handler.handle(methodWithNullableSetDoubleReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableSetDoubleHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Set<Double>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableSetDoubleReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Set<Double> methodWithNullableSetDoubleReturn(boolean notNull) {
+    if (notNull) {
+      return new LinkedHashSet<>(Arrays.asList(1.11d, 2.22d, 3.33d));
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableSetBooleanParam(Set<Boolean> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableSetBooleanParam(boolean expectNull, Set<Boolean> param) {
+    assertEquals(methodWithNullableSetBooleanReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableSetBooleanHandler(boolean notNull, Handler<@Nullable Set<Boolean>> handler) {
+    handler.handle(methodWithNullableSetBooleanReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableSetBooleanHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Set<Boolean>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableSetBooleanReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Set<Boolean> methodWithNullableSetBooleanReturn(boolean notNull) {
+    if (notNull) {
+      return new LinkedHashSet<>(Arrays.asList(true, null, false));
+    } else {
+      return null;
+    }
+  }
+
+  @Override
   public boolean methodWithNonNullableSetStringParam(Set<String> param) {
     return param == null;
   }
@@ -841,6 +1044,172 @@ public class NullableTCKImpl implements NullableTCK {
     } else {
       return null;
     }
+  }
+
+  @Override
+  public boolean methodWithNonNullableSetCharParam(Set<Character> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableSetCharParam(boolean expectNull, Set<Character> param) {
+    assertEquals(methodWithNullableSetCharReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableSetCharHandler(boolean notNull, Handler<@Nullable Set<Character>> handler) {
+    handler.handle(methodWithNullableSetCharReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableSetCharHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Set<Character>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableSetCharReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Set<Character> methodWithNullableSetCharReturn(boolean notNull) {
+    if (notNull) {
+      return new LinkedHashSet<>(Arrays.asList('x', 'y', 'z'));
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableSetJsonObjectParam(Set<JsonObject> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableSetJsonObjectParam(boolean expectNull, Set<JsonObject> param) {
+    assertEquals(methodWithNullableSetJsonObjectReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableSetJsonObjectHandler(boolean notNull, Handler<@Nullable Set<JsonObject>> handler) {
+    handler.handle(methodWithNullableSetJsonObjectReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableSetJsonObjectHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Set<JsonObject>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableSetJsonObjectReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Set<JsonObject> methodWithNullableSetJsonObjectReturn(boolean notNull) {
+    if (notNull) {
+      return new LinkedHashSet<>(Arrays.asList(new JsonObject().put("foo", "bar"), new JsonObject().put("juu", 3)));
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableSetJsonArrayParam(Set<JsonArray> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableSetJsonArrayParam(boolean expectNull, Set<JsonArray> param) {
+    assertEquals(methodWithNullableSetJsonArrayReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableSetJsonArrayHandler(boolean notNull, Handler<@Nullable Set<JsonArray>> handler) {
+    handler.handle(methodWithNullableSetJsonArrayReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableSetJsonArrayHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Set<JsonArray>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableSetJsonArrayReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Set<JsonArray> methodWithNullableSetJsonArrayReturn(boolean notNull) {
+    if (notNull) {
+      return new LinkedHashSet<>(Arrays.asList(new JsonArray().add("foo").add("bar"), new JsonArray().add("juu")));
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableSetApiParam(Set<RefedInterface1> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableSetApiParam(boolean expectNull, Set<RefedInterface1> param) {
+    assertEquals(methodWithNullableSetApiReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableSetApiHandler(boolean notNull, Handler<@Nullable Set<RefedInterface1>> handler) {
+    handler.handle(methodWithNullableSetApiReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableSetApiHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Set<RefedInterface1>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableSetApiReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Set<RefedInterface1> methodWithNullableSetApiReturn(boolean notNull) {
+    return notNull ? new LinkedHashSet<>(Arrays.asList(new RefedInterface1Impl().setString("refed_is_here"))) : null;
+  }
+
+  @Override
+  public boolean methodWithNonNullableSetDataObjectParam(Set<TestDataObject> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableSetDataObjectParam(boolean expectNull, Set<TestDataObject> param) {
+    if (expectNull) {
+      assertEquals(null, param);
+    } else {
+      assertEquals(methodWithNullableSetDataObjectReturn(true).stream().map(TestDataObject::toJson).collect(Collectors.toSet()), param.stream().map(TestDataObject::toJson).collect(Collectors.toSet()));
+    }
+  }
+
+  @Override
+  public void methodWithNullableSetDataObjectHandler(boolean notNull, Handler<@Nullable Set<TestDataObject>> handler) {
+    handler.handle(methodWithNullableSetDataObjectReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableSetDataObjectHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Set<TestDataObject>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableSetDataObjectReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Set<TestDataObject> methodWithNullableSetDataObjectReturn(boolean notNull) {
+    return notNull ? new LinkedHashSet<>(Arrays.asList(new TestDataObject().setFoo("foo_value").setBar(12345).setWibble(5.6))) : null;
+  }
+
+  @Override
+  public boolean methodWithNonNullableSetEnumParam(Set<TestEnum> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableSetEnumParam(boolean expectNull, Set<TestEnum> param) {
+    assertEquals(methodWithNullableSetEnumReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableSetEnumHandler(boolean notNull, Handler<@Nullable Set<TestEnum>> handler) {
+    handler.handle(methodWithNullableSetEnumReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableSetEnumHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Set<TestEnum>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableSetEnumReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Set<TestEnum> methodWithNullableSetEnumReturn(boolean notNull) {
+    return notNull ? new LinkedHashSet<>(Arrays.asList(TestEnum.TIM,TestEnum.JULIEN)) : null;
   }
 
   @Override
