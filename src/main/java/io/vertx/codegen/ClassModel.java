@@ -362,21 +362,24 @@ public class ClassModel implements Model {
   protected boolean isLegalListSetMapReturn(TypeInfo type) {
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
       List<TypeInfo> args = ((TypeInfo.Parameterized) type).getArgs();
-      TypeInfo valueType;
       if (type.getKind() == ClassKind.MAP) {
         if (args.get(0).getKind() != ClassKind.STRING) {
           return false;
         }
-        valueType = args.get(1);
+        TypeInfo valueType = args.get(1);
+        if (valueType.getKind().basic ||
+            valueType.getKind().json) {
+          return true;
+        }
       } else {
-        valueType = args.get(0);
-      }
-      if (valueType.getKind().basic ||
-          valueType.getKind().json ||
-          valueType.getKind() == ClassKind.ENUM ||
-          isVertxGenInterface(valueType) ||
-          isDataObjectTypeWithToJson(valueType)) {
-        return true;
+        TypeInfo valueType = args.get(0);
+        if (valueType.getKind().basic ||
+            valueType.getKind().json ||
+            valueType.getKind() == ClassKind.ENUM ||
+            isVertxGenInterface(valueType) ||
+            isDataObjectTypeWithToJson(valueType)) {
+          return true;
+        }
       }
     }
     return false;

@@ -56,7 +56,4 @@ public interface MethodWithNullableTypeArgReturn {
   Map<String, @Nullable String> mapNullableStringReturn();
   Map<String, @Nullable JsonObject> mapNullableJsonObjectReturn();
   Map<String, @Nullable JsonArray> mapNullableJsonArrayReturn();
-  Map<String, @Nullable TestEnum> mapNullableEnumReturn();
-  Map<String, @Nullable TestDataObject> mapNullableDataObjectReturn();
-  Map<String, @Nullable VertxGenClass1> mapNullableApiReturn();
 }

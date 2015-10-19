@@ -40,6 +40,5 @@ public interface MethodWithValidHandlerAsyncResultParams {
   void methodWithMapHandlerParams(Handler<AsyncResult<Map<String,Byte>>> mapByteHandler, Handler<AsyncResult<Map<String,Short>>> mapShortHandler, Handler<AsyncResult<Map<String,Integer>>> mapIntHandler,
                                   Handler<AsyncResult<Map<String,Long>>> mapLongHandler, Handler<AsyncResult<Map<String,Float>>> mapFloatHandler, Handler<AsyncResult<Map<String,Double>>> mapDoubleHandler,
                                   Handler<AsyncResult<Map<String,Boolean>>> mapBooleanHandler, Handler<AsyncResult<Map<String,Character>>> mapCharHandler, Handler<AsyncResult<Map<String,String>>> mapStrHandler,
-                                  Handler<AsyncResult<Map<String,VertxGenClass1>>> mapVertxGenHandler, Handler<AsyncResult<Map<String,JsonObject>>> mapJsonObjectHandler, Handler<AsyncResult<Map<String,JsonArray>>> mapJsonArrayHandler,
-                                  Handler<AsyncResult<Map<String,TestDataObject>>> mapDataObjectHandler, Handler<AsyncResult<Map<String,TestEnum>>> mapEnumHandler);
+                                  Handler<AsyncResult<Map<String,JsonObject>>> mapJsonObjectHandler, Handler<AsyncResult<Map<String,JsonArray>>> mapJsonArrayHandler);
 }

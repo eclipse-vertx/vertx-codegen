@@ -72,7 +72,4 @@ public interface MethodWithNullableReturn {
   @Nullable Map<String, String> nullableMapStringReturn();
   @Nullable Map<String, JsonObject> nullableMapJsonObjectReturn();
   @Nullable Map<String, JsonArray> nullableMapJsonArrayReturn();
-  @Nullable Map<String, TestEnum> nullableMapEnumReturn();
-  @Nullable Map<String, TestDataObject> nullableMapDataObjectReturn();
-  @Nullable Map<String, VertxGenClass1> nullableMapApiReturn();
 }

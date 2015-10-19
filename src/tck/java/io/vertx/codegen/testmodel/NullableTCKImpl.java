@@ -13,6 +13,7 @@ import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -1213,6 +1215,209 @@ public class NullableTCKImpl implements NullableTCK {
   }
 
   @Override
+  public boolean methodWithNonNullableMapByteParam(Map<String, Byte> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableMapByteParam(boolean expectNull, Map<String, Byte> param) {
+    assertEquals(methodWithNullableMapByteReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableMapByteHandler(boolean notNull, Handler<@Nullable Map<String, Byte>> handler) {
+    handler.handle(methodWithNullableMapByteReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableMapByteHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Map<String, Byte>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableMapByteReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Map<String, Byte> methodWithNullableMapByteReturn(boolean notNull) {
+    if (notNull) {
+      return map((byte)1, (byte)2, (byte)3);
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableMapShortParam(Map<String, Short> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableMapShortParam(boolean expectNull, Map<String, Short> param) {
+    assertEquals(methodWithNullableMapShortReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableMapShortHandler(boolean notNull, Handler<@Nullable Map<String, Short>> handler) {
+    handler.handle(methodWithNullableMapShortReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableMapShortHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Map<String, Short>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableMapShortReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Map<String, Short> methodWithNullableMapShortReturn(boolean notNull) {
+    if (notNull) {
+      return map((short) 1, (short) 2, (short) 3);
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableMapIntegerParam(Map<String, Integer> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableMapIntegerParam(boolean expectNull, Map<String, Integer> param) {
+    assertEquals(methodWithNullableMapIntegerReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableMapIntegerHandler(boolean notNull, Handler<@Nullable Map<String, Integer>> handler) {
+    handler.handle(methodWithNullableMapIntegerReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableMapIntegerHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Map<String, Integer>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableMapIntegerReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Map<String, Integer> methodWithNullableMapIntegerReturn(boolean notNull) {
+    if (notNull) {
+      return map(1, 2, 3);
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableMapLongParam(Map<String, Long> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableMapLongParam(boolean expectNull, Map<String, Long> param) {
+    assertEquals(methodWithNullableMapLongReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableMapLongHandler(boolean notNull, Handler<@Nullable Map<String, Long>> handler) {
+    handler.handle(methodWithNullableMapLongReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableMapLongHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Map<String, Long>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableMapLongReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Map<String, Long> methodWithNullableMapLongReturn(boolean notNull) {
+    if (notNull) {
+      return map(1L, 2L, 3L);
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableMapFloatParam(Map<String, Float> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableMapFloatParam(boolean expectNull, Map<String, Float> param) {
+    assertEquals(methodWithNullableMapFloatReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableMapFloatHandler(boolean notNull, Handler<@Nullable Map<String, Float>> handler) {
+    handler.handle(methodWithNullableMapFloatReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableMapFloatHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Map<String, Float>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableMapFloatReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Map<String, Float> methodWithNullableMapFloatReturn(boolean notNull) {
+    if (notNull) {
+      return map(1.1f, 2.2f, 3.3f);
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableMapDoubleParam(Map<String, Double> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableMapDoubleParam(boolean expectNull, Map<String, Double> param) {
+    assertEquals(methodWithNullableMapDoubleReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableMapDoubleHandler(boolean notNull, Handler<@Nullable Map<String, Double>> handler) {
+    handler.handle(methodWithNullableMapDoubleReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableMapDoubleHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Map<String, Double>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableMapDoubleReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Map<String, Double> methodWithNullableMapDoubleReturn(boolean notNull) {
+    if (notNull) {
+      return map(1.11d, 2.22d, 3.33d);
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableMapBooleanParam(Map<String, Boolean> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableMapBooleanParam(boolean expectNull, Map<String, Boolean> param) {
+    assertEquals(methodWithNullableMapBooleanReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableMapBooleanHandler(boolean notNull, Handler<@Nullable Map<String, Boolean>> handler) {
+    handler.handle(methodWithNullableMapBooleanReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableMapBooleanHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Map<String, Boolean>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableMapBooleanReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Map<String, Boolean> methodWithNullableMapBooleanReturn(boolean notNull) {
+    if (notNull) {
+      return map(true, false, true);
+    } else {
+      return null;
+    }
+  }
+
+  @Override
   public boolean methodWithNonNullableMapStringParam(Map<String, String> param) {
     return param == null;
   }
@@ -1235,14 +1440,111 @@ public class NullableTCKImpl implements NullableTCK {
   @Override
   public @Nullable Map<String, String> methodWithNullableMapStringReturn(boolean notNull) {
     if (notNull) {
-      Map<String, String> map = new LinkedHashMap<>();
-      map.put("1", "first");
-      map.put("2", "second");
-      map.put("3", "third");
-      return map;
+      return map("first", "second", "third");
     } else {
       return null;
     }
+  }
+
+  @Override
+  public boolean methodWithNonNullableMapCharParam(Map<String, Character> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableMapCharParam(boolean expectNull, Map<String, Character> param) {
+    assertEquals(methodWithNullableMapCharReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableMapCharHandler(boolean notNull, Handler<@Nullable Map<String, Character>> handler) {
+    handler.handle(methodWithNullableMapCharReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableMapCharHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Map<String, Character>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableMapCharReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Map<String, Character> methodWithNullableMapCharReturn(boolean notNull) {
+    if (notNull) {
+      return map('x', 'y', 'z');
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableMapJsonObjectParam(Map<String, JsonObject> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableMapJsonObjectParam(boolean expectNull, Map<String, JsonObject> param) {
+    assertEquals(methodWithNullableMapJsonObjectReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableMapJsonObjectHandler(boolean notNull, Handler<@Nullable Map<String, JsonObject>> handler) {
+    handler.handle(methodWithNullableMapJsonObjectReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableMapJsonObjectHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Map<String, JsonObject>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableMapJsonObjectReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Map<String, JsonObject> methodWithNullableMapJsonObjectReturn(boolean notNull) {
+    if (notNull) {
+      return map(new JsonObject().put("foo", "bar"), new JsonObject().put("juu", 3));
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableMapJsonArrayParam(Map<String, JsonArray> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableMapJsonArrayParam(boolean expectNull, Map<String, JsonArray> param) {
+    assertEquals(methodWithNullableMapJsonArrayReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableMapJsonArrayHandler(boolean notNull, Handler<@Nullable Map<String, JsonArray>> handler) {
+    handler.handle(methodWithNullableMapJsonArrayReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableMapJsonArrayHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Map<String, JsonArray>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableMapJsonArrayReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Map<String, JsonArray> methodWithNullableMapJsonArrayReturn(boolean notNull) {
+    if (notNull) {
+      return map(new JsonArray().add("foo").add("bar"), new JsonArray().add("juu"));
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableMapApiParam(Map<String, RefedInterface1> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableMapApiParam(boolean expectNull, Map<String, RefedInterface1> param) {
+    assertEquals(methodWithNullableMapApiReturn(!expectNull), param);
+  }
+
+  private Map<String, RefedInterface1> methodWithNullableMapApiReturn(boolean notNull) {
+    return notNull ? map(new RefedInterface1Impl().setString("refed_is_here")) : null;
   }
 
   @Override
@@ -1265,7 +1567,7 @@ public class NullableTCKImpl implements NullableTCK {
     ArrayList<Byte> ret = new ArrayList<>();
     ret.add((byte)12);
     ret.add(null);
-    ret.add((byte)24);
+    ret.add((byte) 24);
     return ret;
   }
 
@@ -1289,7 +1591,7 @@ public class NullableTCKImpl implements NullableTCK {
     ArrayList<Short> ret = new ArrayList<>();
     ret.add((short)520);
     ret.add(null);
-    ret.add((short)1040);
+    ret.add((short) 1040);
     return ret;
   }
 
@@ -1599,5 +1901,13 @@ public class NullableTCKImpl implements NullableTCK {
     } else {
       handler.handle(Future.succeededFuture(methodWithNullableStringReturn(true)));
     }
+  }
+
+  private static <V> Map<String, V> map(V... vs) {
+    Map<String, V> map = new HashMap<>();
+    Stream.of(vs).forEach(v -> {
+      map.put("" + (1 + map.size()), v);
+    });
+    return map;
   }
 }

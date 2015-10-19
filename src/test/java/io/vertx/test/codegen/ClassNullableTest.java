@@ -330,7 +330,7 @@ public class ClassNullableTest extends ClassTestBase {
     TypeLiteral<T> typeLiteral = new TypeLiteral<T>() {};
     generateClass(model -> {
       List<MethodInfo> methods = model.getMethods();
-      assertEquals(53, methods.size());
+      assertEquals(50, methods.size());
       checkMethod(methods.get(0), "nullableByteReturn", 0, new TypeLiteral<Byte>() {}, MethodKind.OTHER);
       checkMethod(methods.get(1), "nullableShortReturn", 0, new TypeLiteral<Short>() {}, MethodKind.OTHER);
       checkMethod(methods.get(2), "nullableIntegerReturn", 0, new TypeLiteral<Integer>() {}, MethodKind.OTHER);
@@ -381,9 +381,6 @@ public class ClassNullableTest extends ClassTestBase {
       checkMethod(methods.get(47), "nullableMapStringReturn", 0, new TypeLiteral<Map<String, String>>() {}, MethodKind.OTHER);
       checkMethod(methods.get(48), "nullableMapJsonObjectReturn", 0, new TypeLiteral<Map<String, JsonObject>>() {}, MethodKind.OTHER);
       checkMethod(methods.get(49), "nullableMapJsonArrayReturn", 0, new TypeLiteral<Map<String, JsonArray>>() {}, MethodKind.OTHER);
-      checkMethod(methods.get(50), "nullableMapEnumReturn", 0, new TypeLiteral<Map<String, TestEnum>>() {}, MethodKind.OTHER);
-      checkMethod(methods.get(51), "nullableMapDataObjectReturn", 0, new TypeLiteral<Map<String, TestDataObject>>() {}, MethodKind.OTHER);
-      checkMethod(methods.get(52), "nullableMapApiReturn", 0, new TypeLiteral<Map<String, VertxGenClass1>>() {}, MethodKind.OTHER);
       if (!checkModel.compareAndSet(false, true)) {
         // nullableTypeVariableReturn does not pass with model api
         methods.remove(10);
@@ -398,7 +395,7 @@ public class ClassNullableTest extends ClassTestBase {
   public void testMethodWithNullableTypeArgReturn() throws Exception {
     ClassModel model = new Generator().generateClass(MethodWithNullableTypeArgReturn.class);
     List<MethodInfo> methods = model.getMethods();
-    assertEquals(39, methods.size());
+    assertEquals(36, methods.size());
     checkMethod(methods.get(0), "listNullableByteReturn", 0, new TypeLiteral<List<Byte>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(1), "listNullableShortReturn", 0, new TypeLiteral<List<Short>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(2), "listNullableIntegerReturn", 0, new TypeLiteral<List<Integer>>() {}, MethodKind.OTHER);
@@ -435,9 +432,6 @@ public class ClassNullableTest extends ClassTestBase {
     checkMethod(methods.get(33), "mapNullableStringReturn", 0, new TypeLiteral<Map<String, String>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(34), "mapNullableJsonObjectReturn", 0, new TypeLiteral<Map<String, JsonObject>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(35), "mapNullableJsonArrayReturn", 0, new TypeLiteral<Map<String, JsonArray>>() {}, MethodKind.OTHER);
-    checkMethod(methods.get(36), "mapNullableEnumReturn", 0, new TypeLiteral<Map<String, TestEnum>>() {}, MethodKind.OTHER);
-    checkMethod(methods.get(37), "mapNullableDataObjectReturn", 0, new TypeLiteral<Map<String, TestDataObject>>() {}, MethodKind.OTHER);
-    checkMethod(methods.get(38), "mapNullableApiReturn", 0, new TypeLiteral<Map<String, VertxGenClass1>>() {}, MethodKind.OTHER);
 
     methods.forEach(m -> {
       assertFalse("Expects " + m.getName() + " to have nullable return type", m.isNullableReturn());

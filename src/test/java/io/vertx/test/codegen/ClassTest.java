@@ -66,6 +66,9 @@ import io.vertx.test.codegen.testapi.MethodWithHandlerParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidExceptionParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerAsyncResultDataObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerDataObjectParam;
+import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn3;
+import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn4;
+import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn5;
 import io.vertx.test.codegen.testapi.MethodWithInvalidNestedEnumParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidListParams1;
 import io.vertx.test.codegen.testapi.MethodWithInvalidListParams2;
@@ -496,12 +499,16 @@ public class ClassTest extends ClassTestBase {
     checkMethod(method, methodName, 7, "void", MethodKind.OTHER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "setString", new TypeLiteral<Set<String>>(){});
-    checkParam(params.get(1), "setLong", new TypeLiteral<Set<Long>>(){});
+    checkParam(params.get(1), "setLong", new TypeLiteral<Set<Long>>() {
+    });
     checkParam(params.get(2), "setJsonObject", new TypeLiteral<Set<JsonObject>>() {});
-    checkParam(params.get(3), "setJsonArray", new TypeLiteral<Set<JsonArray>>() {});
-    checkParam(params.get(4), "setVertxGen", new TypeLiteral<Set<VertxGenClass1>>(){});
+    checkParam(params.get(3), "setJsonArray", new TypeLiteral<Set<JsonArray>>() {
+    });
+    checkParam(params.get(4), "setVertxGen", new TypeLiteral<Set<VertxGenClass1>>() {
+    });
     checkParam(params.get(5), "setDataObject", new TypeLiteral<Set<TestDataObject>>(){});
-    checkParam(params.get(6), "setEnum", new TypeLiteral<Set<TestEnum>>(){});
+    checkParam(params.get(6), "setEnum", new TypeLiteral<Set<TestEnum>>() {
+    });
   }
 
   @Test
@@ -592,7 +599,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(13), "setEnumHandler",  new TypeLiteral<Handler<Set<TestEnum>>>(){});
 
     method = model.getMethods().get(3);
-    checkMethod(method, "methodWithMapHandlerParams", 14, "void", MethodKind.HANDLER);
+    checkMethod(method, "methodWithMapHandlerParams", 11, "void", MethodKind.HANDLER);
     params = method.getParams();
     checkParam(params.get(0), "mapByteHandler", new TypeLiteral<Handler<Map<String, Byte>>>(){});
     checkParam(params.get(1), "mapShortHandler", new TypeLiteral<Handler<Map<String, Short>>>(){});
@@ -603,11 +610,8 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(6), "mapBooleanHandler", new TypeLiteral<Handler<Map<String, Boolean>>>(){});
     checkParam(params.get(7), "mapCharHandler", new TypeLiteral<Handler<Map<String, Character>>>(){});
     checkParam(params.get(8), "mapStrHandler", new TypeLiteral<Handler<Map<String, String>>>(){});
-    checkParam(params.get(9), "mapVertxGenHandler", new TypeLiteral<Handler<Map<String, VertxGenClass1>>>(){});
-    checkParam(params.get(10), "mapJsonObjectHandler", new TypeLiteral<Handler<Map<String, JsonObject>>>(){});
-    checkParam(params.get(11), "mapJsonArrayHandler",  new TypeLiteral<Handler<Map<String, JsonArray>>>(){});
-    checkParam(params.get(12), "mapDataObjectHandler",  new TypeLiteral<Handler<Map<String, TestDataObject>>>(){});
-    checkParam(params.get(13), "mapEnumHandler",  new TypeLiteral<Handler<Map<String, TestEnum>>>(){});
+    checkParam(params.get(9), "mapJsonObjectHandler", new TypeLiteral<Handler<Map<String, JsonObject>>>(){});
+    checkParam(params.get(10), "mapJsonArrayHandler",  new TypeLiteral<Handler<Map<String, JsonArray>>>(){});
   }
 
   @Test
@@ -678,7 +682,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(13), "setEnumHandler", new TypeLiteral<Handler<AsyncResult<Set<TestEnum>>>>(){});
 
     method = model.getMethods().get(3);
-    checkMethod(method, "methodWithMapHandlerParams", 14, "void", MethodKind.FUTURE);
+    checkMethod(method, "methodWithMapHandlerParams", 11, "void", MethodKind.FUTURE);
     params = method.getParams();
     checkParam(params.get(0), "mapByteHandler", new TypeLiteral<Handler<AsyncResult<Map<String,Byte>>>>(){});
     checkParam(params.get(1), "mapShortHandler", new TypeLiteral<Handler<AsyncResult<Map<String,Short>>>>(){});
@@ -689,11 +693,8 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(6), "mapBooleanHandler", new TypeLiteral<Handler<AsyncResult<Map<String,Boolean>>>>(){});
     checkParam(params.get(7), "mapCharHandler", new TypeLiteral<Handler<AsyncResult<Map<String,Character>>>>(){});
     checkParam(params.get(8), "mapStrHandler", new TypeLiteral<Handler<AsyncResult<Map<String,String>>>>(){});
-    checkParam(params.get(9), "mapVertxGenHandler", new TypeLiteral<Handler<AsyncResult<Map<String,VertxGenClass1>>>>(){});
-    checkParam(params.get(10), "mapJsonObjectHandler", new TypeLiteral<Handler<AsyncResult<Map<String,JsonObject>>>>(){});
-    checkParam(params.get(11), "mapJsonArrayHandler", new TypeLiteral<Handler<AsyncResult<Map<String,JsonArray>>>>(){});
-    checkParam(params.get(12), "mapDataObjectHandler", new TypeLiteral<Handler<AsyncResult<Map<String,TestDataObject>>>>(){});
-    checkParam(params.get(13), "mapEnumHandler", new TypeLiteral<Handler<AsyncResult<Map<String,TestEnum>>>>(){});
+    checkParam(params.get(9), "mapJsonObjectHandler", new TypeLiteral<Handler<AsyncResult<Map<String,JsonObject>>>>(){});
+    checkParam(params.get(10), "mapJsonArrayHandler", new TypeLiteral<Handler<AsyncResult<Map<String,JsonArray>>>>(){});
   }
 
   @Test
@@ -972,10 +973,10 @@ public class ClassTest extends ClassTestBase {
     ClassModel model = new Generator().generateClass(MethodWithValidMapReturn.class);
     assertEquals(MethodWithValidMapReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidMapReturn.class.getSimpleName(), model.getIfaceSimpleName());
-    assertEquals(2, model.getReferencedTypes().size());
+    assertEquals(0, model.getReferencedTypes().size());
     assertTrue(model.getSuperTypes().isEmpty());
     List<MethodInfo> methods = model.getMethods();
-    assertEquals(15, methods.size());
+    assertEquals(11, methods.size());
     checkMethod(methods.get(0), "byteMap", 0, new TypeLiteral<Map<String, Byte>>() {
     }, MethodKind.OTHER);
     checkMethod(methods.get(1), "shortMap", 0, new TypeLiteral<Map<String, Short>>() {}, MethodKind.OTHER);
@@ -988,10 +989,6 @@ public class ClassTest extends ClassTestBase {
     checkMethod(methods.get(8), "stringMap", 0, new TypeLiteral<Map<String, String>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(9), "jsonArrayMap", 0, new TypeLiteral<Map<String, JsonArray>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(10), "jsonObjectMap", 0, new TypeLiteral<Map<String, JsonObject>>() {}, MethodKind.OTHER);
-    checkMethod(methods.get(11), "vertxGen1Map", 0, new TypeLiteral<Map<String, VertxGenClass1>>() {}, MethodKind.OTHER);
-    checkMethod(methods.get(12), "vertxGen2Map", 0, new TypeLiteral<Map<String, VertxGenClass2>>() {}, MethodKind.OTHER);
-    checkMethod(methods.get(13), "dataObjectMap", 0, new TypeLiteral<Map<String, TestDataObject>>() {}, MethodKind.OTHER);
-    checkMethod(methods.get(14), "enumMap", 0, new TypeLiteral<Map<String, TestEnum>>() {}, MethodKind.OTHER);
   }
 
   @Test
@@ -1310,8 +1307,10 @@ public class ClassTest extends ClassTestBase {
     checkMethod(methods.get(2), "juu", 1, "void", MethodKind.FUTURE);
     checkMethod(methods.get(3), "daa", 1, "void", MethodKind.HANDLER);
     checkMethod(methods.get(4), "collargol", 1, "void", MethodKind.OTHER);
-    checkParam(methods.get(2).getParams().get(0), "handler", new TypeLiteral<Handler<AsyncResult<String>>>(){});
-    checkParam(methods.get(3).getParams().get(0), "handler", new TypeLiteral<Handler<String>>(){});
+    checkParam(methods.get(2).getParams().get(0), "handler", new TypeLiteral<Handler<AsyncResult<String>>>() {
+    });
+    checkParam(methods.get(3).getParams().get(0), "handler", new TypeLiteral<Handler<String>>() {
+    });
     checkParam(methods.get(4).getParams().get(0), "t", String.class);
   }
 
@@ -1443,7 +1442,8 @@ public class ClassTest extends ClassTestBase {
     assertEquals(1, methods.size());
     checkMethod(methods.get(0), "methodWithJsonHandlers", 2, "void", MethodKind.HANDLER);
     checkParam(model.getMethods().get(0).getParams().get(0), "jsonObjectHandler", new TypeLiteral<Handler<JsonObject>>(){});
-    checkParam(model.getMethods().get(0).getParams().get(1), "jsonArrayHandler", new TypeLiteral<Handler<JsonArray>>(){});
+    checkParam(model.getMethods().get(0).getParams().get(1), "jsonArrayHandler", new TypeLiteral<Handler<JsonArray>>() {
+    });
   }
 
   @Test
@@ -1457,8 +1457,10 @@ public class ClassTest extends ClassTestBase {
     assertEquals(1, methods.size());
     checkMethod(methods.get(0), "methodwithJsonHandlersAsyncResult", 2, "void", MethodKind.FUTURE);
     checkMethod(model.getMethods().get(0), "methodwithJsonHandlersAsyncResult", 2, "void", MethodKind.FUTURE);
-    checkParam(model.getMethods().get(0).getParams().get(0), "jsonObjectHandler", new TypeLiteral<Handler<AsyncResult<JsonObject>>>() {});
-    checkParam(model.getMethods().get(0).getParams().get(1), "jsonArrayHandler", new TypeLiteral<Handler<AsyncResult<JsonArray>>>(){});
+    checkParam(model.getMethods().get(0).getParams().get(0), "jsonObjectHandler", new TypeLiteral<Handler<AsyncResult<JsonObject>>>() {
+    });
+    checkParam(model.getMethods().get(0).getParams().get(1), "jsonArrayHandler", new TypeLiteral<Handler<AsyncResult<JsonArray>>>() {
+    });
   }
 
   @Test
@@ -1507,6 +1509,21 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testMethodInvalidMapReturn2() throws Exception {
     assertGenFail(MethodWithInvalidMapReturn2.class, "Invalid Map return should fail");
+  }
+
+  @Test
+  public void testMethodInvalidMapReturn3() throws Exception {
+    assertGenFail(MethodWithInvalidMapReturn3.class, "Invalid Map return should fail");
+  }
+
+  @Test
+  public void testMethodInvalidMapReturn4() throws Exception {
+    assertGenFail(MethodWithInvalidMapReturn4.class, "Invalid Map return should fail");
+  }
+
+  @Test
+  public void testMethodInvalidMapReturn5() throws Exception {
+    assertGenFail(MethodWithInvalidMapReturn5.class, "Invalid Map return should fail");
   }
 
   @Test
