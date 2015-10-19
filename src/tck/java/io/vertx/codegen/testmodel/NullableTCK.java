@@ -123,12 +123,47 @@ public interface NullableTCK {
   <T> void methodWithNullableTypeVariableHandlerAsyncResult(boolean notNull, T value, Handler<AsyncResult<T>> handler);
   <T> @Nullable T methodWithNullableTypeVariableReturn(boolean notNull, T value);
 
+  // Test @Nullable List<Byte> type
+  boolean methodWithNonNullableListByteParam(List<Byte> param);
+  void methodWithNullableListByteParam(boolean expectNull, @Nullable List<Byte> param);
+  void methodWithNullableListByteHandler(boolean notNull, Handler<@Nullable List<Byte>> handler);
+  void methodWithNullableListByteHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<Byte>>> handler);
+  @Nullable List<Byte> methodWithNullableListByteReturn(boolean notNull);
+
+  // Test @Nullable List<Short> type
+  boolean methodWithNonNullableListShortParam(List<Short> param);
+  void methodWithNullableListShortParam(boolean expectNull, @Nullable List<Short> param);
+  void methodWithNullableListShortHandler(boolean notNull, Handler<@Nullable List<Short>> handler);
+  void methodWithNullableListShortHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<Short>>> handler);
+  @Nullable List<Short> methodWithNullableListShortReturn(boolean notNull);
+
   // Test @Nullable List<Integer> type
   boolean methodWithNonNullableListIntegerParam(List<Integer> param);
   void methodWithNullableListIntegerParam(boolean expectNull, @Nullable List<Integer> param);
   void methodWithNullableListIntegerHandler(boolean notNull, Handler<@Nullable List<Integer>> handler);
   void methodWithNullableListIntegerHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<Integer>>> handler);
   @Nullable List<Integer> methodWithNullableListIntegerReturn(boolean notNull);
+
+  // Test @Nullable List<Long> type
+  boolean methodWithNonNullableListLongParam(List<Long> param);
+  void methodWithNullableListLongParam(boolean expectNull, @Nullable List<Long> param);
+  void methodWithNullableListLongHandler(boolean notNull, Handler<@Nullable List<Long>> handler);
+  void methodWithNullableListLongHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<Long>>> handler);
+  @Nullable List<Long> methodWithNullableListLongReturn(boolean notNull);
+
+  // Test @Nullable List<Float> type
+  boolean methodWithNonNullableListFloatParam(List<Float> param);
+  void methodWithNullableListFloatParam(boolean expectNull, @Nullable List<Float> param);
+  void methodWithNullableListFloatHandler(boolean notNull, Handler<@Nullable List<Float>> handler);
+  void methodWithNullableListFloatHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<Float>>> handler);
+  @Nullable List<Float> methodWithNullableListFloatReturn(boolean notNull);
+
+  // Test @Nullable List<Double> type
+  boolean methodWithNonNullableListDoubleParam(List<Double> param);
+  void methodWithNullableListDoubleParam(boolean expectNull, @Nullable List<Double> param);
+  void methodWithNullableListDoubleHandler(boolean notNull, Handler<@Nullable List<Double>> handler);
+  void methodWithNullableListDoubleHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<Double>>> handler);
+  @Nullable List<Double> methodWithNullableListDoubleReturn(boolean notNull);
 
   // Test @Nullable List<Boolean> type
   boolean methodWithNonNullableListBooleanParam(List<Boolean> param);
@@ -143,6 +178,13 @@ public interface NullableTCK {
   void methodWithNullableListStringHandler(boolean notNull, Handler<@Nullable List<String>> handler);
   void methodWithNullableListStringHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<String>>> handler);
   @Nullable List<String> methodWithNullableListStringReturn(boolean notNull);
+
+  // Test @Nullable List<Character> type
+  boolean methodWithNonNullableListCharParam(List<Character> param);
+  void methodWithNullableListCharParam(boolean expectNull, @Nullable List<Character> param);
+  void methodWithNullableListCharHandler(boolean notNull, Handler<@Nullable List<Character>> handler);
+  void methodWithNullableListCharHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<Character>>> handler);
+  @Nullable List<Character> methodWithNullableListCharReturn(boolean notNull);
 
   // Test @Nullable List<JsonObject> type
   boolean methodWithNonNullableListJsonObjectParam(List<JsonObject> param);

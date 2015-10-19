@@ -417,6 +417,64 @@ public class NullableTCKImpl implements NullableTCK {
   }
 
   @Override
+  public boolean methodWithNonNullableListByteParam(List<Byte> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableListByteParam(boolean expectNull, List<Byte> param) {
+    assertEquals(methodWithNullableListByteReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableListByteHandler(boolean notNull, Handler<@Nullable List<Byte>> handler) {
+    handler.handle(methodWithNullableListByteReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableListByteHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<Byte>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableListByteReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable List<Byte> methodWithNullableListByteReturn(boolean notNull) {
+    if (notNull) {
+      return Arrays.asList((byte)1, (byte)2, (byte)3);
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableListShortParam(List<Short> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableListShortParam(boolean expectNull, List<Short> param) {
+    assertEquals(methodWithNullableListShortReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableListShortHandler(boolean notNull, Handler<@Nullable List<Short>> handler) {
+    handler.handle(methodWithNullableListShortReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableListShortHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<Short>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableListShortReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable List<Short> methodWithNullableListShortReturn(boolean notNull) {
+    if (notNull) {
+      return Arrays.asList((short)1, (short)2, (short)3);
+    } else {
+      return null;
+    }
+  }
+
+  @Override
   public boolean methodWithNonNullableListIntegerParam(List<Integer> param) {
     return param == null;
   }
@@ -440,6 +498,93 @@ public class NullableTCKImpl implements NullableTCK {
   public @Nullable List<Integer> methodWithNullableListIntegerReturn(boolean notNull) {
     if (notNull) {
       return Arrays.asList(1, 2, 3);
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableListLongParam(List<Long> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableListLongParam(boolean expectNull, List<Long> param) {
+    assertEquals(methodWithNullableListLongReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableListLongHandler(boolean notNull, Handler<@Nullable List<Long>> handler) {
+    handler.handle(methodWithNullableListLongReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableListLongHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<Long>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableListLongReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable List<Long> methodWithNullableListLongReturn(boolean notNull) {
+    if (notNull) {
+      return Arrays.asList(1L, 2L, 3L);
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableListFloatParam(List<Float> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableListFloatParam(boolean expectNull, List<Float> param) {
+    assertEquals(methodWithNullableListFloatReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableListFloatHandler(boolean notNull, Handler<@Nullable List<Float>> handler) {
+    handler.handle(methodWithNullableListFloatReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableListFloatHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<Float>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableListFloatReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable List<Float> methodWithNullableListFloatReturn(boolean notNull) {
+    if (notNull) {
+      return Arrays.asList(1.1f, 2.2f, 3.3f);
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableListDoubleParam(List<Double> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableListDoubleParam(boolean expectNull, List<Double> param) {
+    assertEquals(methodWithNullableListDoubleReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableListDoubleHandler(boolean notNull, Handler<@Nullable List<Double>> handler) {
+    handler.handle(methodWithNullableListDoubleReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableListDoubleHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<Double>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableListDoubleReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable List<Double> methodWithNullableListDoubleReturn(boolean notNull) {
+    if (notNull) {
+      return Arrays.asList(1.11d, 2.22d, 3.33d);
     } else {
       return null;
     }
@@ -498,6 +643,35 @@ public class NullableTCKImpl implements NullableTCK {
   public @Nullable List<String> methodWithNullableListStringReturn(boolean notNull) {
     if (notNull) {
       return Arrays.asList("first", "second", "third");
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public boolean methodWithNonNullableListCharParam(List<Character> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableListCharParam(boolean expectNull, List<Character> param) {
+    assertEquals(methodWithNullableListCharReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableListCharHandler(boolean notNull, Handler<@Nullable List<Character>> handler) {
+    handler.handle(methodWithNullableListCharReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableListCharHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<Character>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableListCharReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable List<Character> methodWithNullableListCharReturn(boolean notNull) {
+    if (notNull) {
+      return Arrays.asList('x', 'y', 'z');
     } else {
       return null;
     }
