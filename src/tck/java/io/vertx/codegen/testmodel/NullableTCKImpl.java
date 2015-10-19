@@ -18,6 +18,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -552,6 +553,54 @@ public class NullableTCKImpl implements NullableTCK {
   }
 
   @Override
+  public void methodWithListNullableIntegerParam(List<@Nullable Integer> param) {
+    assertEquals(param, methodWithListNullableIntegerReturn());
+  }
+
+  @Override
+  public void methodWithListNullableIntegerHandler(Handler<List<@Nullable Integer>> handler) {
+    handler.handle(methodWithListNullableIntegerReturn());
+  }
+
+  @Override
+  public void methodWithListNullableIntegerHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Integer>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithListNullableIntegerReturn()));
+  }
+
+  @Override
+  public List<@Nullable Integer> methodWithListNullableIntegerReturn() {
+    ArrayList<Integer> ret = new ArrayList<>();
+    ret.add(12345);
+    ret.add(null);
+    ret.add(54321);
+    return ret;
+  }
+
+  @Override
+  public void methodWithListNullableBooleanParam(List<@Nullable Boolean> param) {
+    assertEquals(param, methodWithListNullableBooleanReturn());
+  }
+
+  @Override
+  public void methodWithListNullableBooleanHandler(Handler<List<@Nullable Boolean>> handler) {
+    handler.handle(methodWithListNullableBooleanReturn());
+  }
+
+  @Override
+  public void methodWithListNullableBooleanHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Boolean>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithListNullableBooleanReturn()));
+  }
+
+  @Override
+  public List<@Nullable Boolean> methodWithListNullableBooleanReturn() {
+    ArrayList<Boolean> ret = new ArrayList<>();
+    ret.add(true);
+    ret.add(null);
+    ret.add(false);
+    return ret;
+  }
+
+  @Override
   public void methodWithListNullableStringParam(List<@Nullable String> param) {
     assertEquals(param, methodWithListNullableStringReturn());
   }
@@ -572,6 +621,128 @@ public class NullableTCKImpl implements NullableTCK {
     ret.add("first");
     ret.add(null);
     ret.add("third");
+    return ret;
+  }
+
+
+  @Override
+  public void methodWithListNullableJsonObjectParam(List<@Nullable JsonObject> param) {
+    assertEquals(param, methodWithListNullableJsonObjectReturn());
+  }
+
+  @Override
+  public void methodWithListNullableJsonObjectHandler(Handler<List<@Nullable JsonObject>> handler) {
+    handler.handle(methodWithListNullableJsonObjectReturn());
+  }
+
+  @Override
+  public void methodWithListNullableJsonObjectHandlerAsyncResult(Handler<AsyncResult<List<@Nullable JsonObject>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithListNullableJsonObjectReturn()));
+  }
+
+  @Override
+  public List<@Nullable JsonObject> methodWithListNullableJsonObjectReturn() {
+    ArrayList<JsonObject> ret = new ArrayList<>();
+    ret.add(new JsonObject().put("foo", "bar"));
+    ret.add(null);
+    ret.add(new JsonObject().put("juu", 3));
+    return ret;
+  }
+
+  @Override
+  public void methodWithListNullableJsonArrayParam(List<@Nullable JsonArray> param) {
+    assertEquals(param, methodWithListNullableJsonArrayReturn());
+  }
+
+  @Override
+  public void methodWithListNullableJsonArrayHandler(Handler<List<@Nullable JsonArray>> handler) {
+    handler.handle(methodWithListNullableJsonArrayReturn());
+  }
+
+  @Override
+  public void methodWithListNullableJsonArrayHandlerAsyncResult(Handler<AsyncResult<List<@Nullable JsonArray>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithListNullableJsonArrayReturn()));
+  }
+
+  @Override
+  public List<@Nullable JsonArray> methodWithListNullableJsonArrayReturn() {
+    ArrayList<JsonArray> ret = new ArrayList<>();
+    ret.add(new JsonArray().add("foo").add("bar"));
+    ret.add(null);
+    ret.add(new JsonArray().add("juu"));
+    return ret;
+  }
+
+  @Override
+  public void methodWithListNullableApiParam(List<@Nullable RefedInterface1> param) {
+    assertEquals(param, methodWithListNullableApiReturn());
+  }
+
+  @Override
+  public void methodWithListNullableApiHandler(Handler<List<@Nullable RefedInterface1>> handler) {
+    handler.handle(methodWithListNullableApiReturn());
+  }
+
+  @Override
+  public void methodWithListNullableApiHandlerAsyncResult(Handler<AsyncResult<List<@Nullable RefedInterface1>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithListNullableApiReturn()));
+  }
+
+  @Override
+  public List<@Nullable RefedInterface1> methodWithListNullableApiReturn() {
+    ArrayList<RefedInterface1> ret = new ArrayList<>();
+    ret.add(new RefedInterface1Impl().setString("first"));
+    ret.add(null);
+    ret.add(new RefedInterface1Impl().setString("third"));
+    return ret;
+  }
+
+  @Override
+  public void methodWithListNullableDataObjectParam(List<@Nullable TestDataObject> param) {
+    Function<@Nullable TestDataObject, JsonObject> conv = obj -> (obj != null) ? obj.toJson() : null;
+    assertEquals(param.stream().map(conv).collect(Collectors.toList()), methodWithListNullableDataObjectReturn().stream().map(conv).collect(Collectors.toList()));
+  }
+
+  @Override
+  public void methodWithListNullableDataObjectHandler(Handler<List<@Nullable TestDataObject>> handler) {
+    handler.handle(methodWithListNullableDataObjectReturn());
+  }
+
+  @Override
+  public void methodWithListNullableDataObjectHandlerAsyncResult(Handler<AsyncResult<List<@Nullable TestDataObject>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithListNullableDataObjectReturn()));
+  }
+
+  @Override
+  public List<@Nullable TestDataObject> methodWithListNullableDataObjectReturn() {
+    ArrayList<TestDataObject> ret = new ArrayList<>();
+    ret.add(new TestDataObject().setFoo("first").setBar(1).setWibble(1.1));
+    ret.add(null);
+    ret.add(new TestDataObject().setFoo("third").setBar(3).setWibble(3.3));
+    return ret;
+  }
+
+  @Override
+  public void methodWithListNullableEnumParam(List<@Nullable TestEnum> param) {
+    assertEquals(param, methodWithListNullableEnumReturn());
+  }
+
+  @Override
+  public void methodWithListNullableEnumHandler(Handler<List<@Nullable TestEnum>> handler) {
+    handler.handle(methodWithListNullableEnumReturn());
+  }
+
+  @Override
+  public void methodWithListNullableEnumHandlerAsyncResult(Handler<AsyncResult<List<@Nullable TestEnum>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithListNullableEnumReturn()));
+  }
+
+  @Override
+  public List<@Nullable TestEnum> methodWithListNullableEnumReturn() {
+    ArrayList<TestEnum> ret = new ArrayList<>();
+    ret.add(TestEnum.TIM);
+    ret.add(null);
+    ret.add(TestEnum.JULIEN);
     return ret;
   }
 

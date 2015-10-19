@@ -151,11 +151,53 @@ public interface NullableTCK {
   void methodWithNullableMapStringHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Map<String, String>>> handler);
   @Nullable Map<String, String> methodWithNullableMapStringReturn(boolean notNull);
 
+  // Test List<@Nullable Integer> type
+  void methodWithListNullableIntegerParam(List<@Nullable Integer> param);
+  void methodWithListNullableIntegerHandler(Handler<List<@Nullable Integer>> handler);
+  void methodWithListNullableIntegerHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Integer>>> handler);
+  List<@Nullable Integer> methodWithListNullableIntegerReturn();
+
+  // Test List<@Nullable Boolean> type
+  void methodWithListNullableBooleanParam(List<@Nullable Boolean> param);
+  void methodWithListNullableBooleanHandler(Handler<List<@Nullable Boolean>> handler);
+  void methodWithListNullableBooleanHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Boolean>>> handler);
+  List<@Nullable Boolean> methodWithListNullableBooleanReturn();
+
   // Test List<@Nullable String> type
   void methodWithListNullableStringParam(List<@Nullable String> param);
   void methodWithListNullableStringHandler(Handler<List<@Nullable String>> handler);
   void methodWithListNullableStringHandlerAsyncResult(Handler<AsyncResult<List<@Nullable String>>> handler);
   List<@Nullable String> methodWithListNullableStringReturn();
+
+  // Test List<@Nullable JsonObject> type
+  void methodWithListNullableJsonObjectParam(List<@Nullable JsonObject> param);
+  void methodWithListNullableJsonObjectHandler(Handler<List<@Nullable JsonObject>> handler);
+  void methodWithListNullableJsonObjectHandlerAsyncResult(Handler<AsyncResult<List<@Nullable JsonObject>>> handler);
+  List<@Nullable JsonObject> methodWithListNullableJsonObjectReturn();
+
+  // Test List<@Nullable String> type
+  void methodWithListNullableJsonArrayParam(List<@Nullable JsonArray> param);
+  void methodWithListNullableJsonArrayHandler(Handler<List<@Nullable JsonArray>> handler);
+  void methodWithListNullableJsonArrayHandlerAsyncResult(Handler<AsyncResult<List<@Nullable JsonArray>>> handler);
+  List<@Nullable JsonArray> methodWithListNullableJsonArrayReturn();
+
+  // Test List<@Nullable Api> type
+  void methodWithListNullableApiParam(List<@Nullable RefedInterface1> param);
+  void methodWithListNullableApiHandler(Handler<List<@Nullable RefedInterface1>> handler);
+  void methodWithListNullableApiHandlerAsyncResult(Handler<AsyncResult<List<@Nullable RefedInterface1>>> handler);
+  List<@Nullable RefedInterface1> methodWithListNullableApiReturn();
+
+  // Test List<@Nullable DataObject> type
+  void methodWithListNullableDataObjectParam(List<@Nullable TestDataObject> param);
+  void methodWithListNullableDataObjectHandler(Handler<List<@Nullable TestDataObject>> handler);
+  void methodWithListNullableDataObjectHandlerAsyncResult(Handler<AsyncResult<List<@Nullable TestDataObject>>> handler);
+  List<@Nullable TestDataObject> methodWithListNullableDataObjectReturn();
+
+  // Test List<@Nullable Enum> type
+  void methodWithListNullableEnumParam(List<@Nullable TestEnum> param);
+  void methodWithListNullableEnumHandler(Handler<List<@Nullable TestEnum>> handler);
+  void methodWithListNullableEnumHandlerAsyncResult(Handler<AsyncResult<List<@Nullable TestEnum>>> handler);
+  List<@Nullable TestEnum> methodWithListNullableEnumReturn();
 
   // Test @Nullable handlers
   void methodWithNullableHandler(boolean expectNull, @Nullable Handler<String> handler);
