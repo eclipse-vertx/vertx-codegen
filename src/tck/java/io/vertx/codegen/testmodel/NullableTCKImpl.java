@@ -877,6 +877,54 @@ public class NullableTCKImpl implements NullableTCK {
   }
 
   @Override
+  public void methodWithListNullableByteParam(List<@Nullable Byte> param) {
+    assertEquals(param, methodWithListNullableByteReturn());
+  }
+
+  @Override
+  public void methodWithListNullableByteHandler(Handler<List<@Nullable Byte>> handler) {
+    handler.handle(methodWithListNullableByteReturn());
+  }
+
+  @Override
+  public void methodWithListNullableByteHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Byte>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithListNullableByteReturn()));
+  }
+
+  @Override
+  public List<@Nullable Byte> methodWithListNullableByteReturn() {
+    ArrayList<Byte> ret = new ArrayList<>();
+    ret.add((byte)12);
+    ret.add(null);
+    ret.add((byte)24);
+    return ret;
+  }
+
+  @Override
+  public void methodWithListNullableShortParam(List<@Nullable Short> param) {
+    assertEquals(param, methodWithListNullableShortReturn());
+  }
+
+  @Override
+  public void methodWithListNullableShortHandler(Handler<List<@Nullable Short>> handler) {
+    handler.handle(methodWithListNullableShortReturn());
+  }
+
+  @Override
+  public void methodWithListNullableShortHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Short>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithListNullableShortReturn()));
+  }
+
+  @Override
+  public List<@Nullable Short> methodWithListNullableShortReturn() {
+    ArrayList<Short> ret = new ArrayList<>();
+    ret.add((short)520);
+    ret.add(null);
+    ret.add((short)1040);
+    return ret;
+  }
+
+  @Override
   public void methodWithListNullableIntegerParam(List<@Nullable Integer> param) {
     assertEquals(param, methodWithListNullableIntegerReturn());
   }
@@ -901,6 +949,78 @@ public class NullableTCKImpl implements NullableTCK {
   }
 
   @Override
+  public void methodWithListNullableLongParam(List<@Nullable Long> param) {
+    assertEquals(param, methodWithListNullableLongReturn());
+  }
+
+  @Override
+  public void methodWithListNullableLongHandler(Handler<List<@Nullable Long>> handler) {
+    handler.handle(methodWithListNullableLongReturn());
+  }
+
+  @Override
+  public void methodWithListNullableLongHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Long>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithListNullableLongReturn()));
+  }
+
+  @Override
+  public List<@Nullable Long> methodWithListNullableLongReturn() {
+    ArrayList<Long> ret = new ArrayList<>();
+    ret.add(123456789L);
+    ret.add(null);
+    ret.add(987654321L);
+    return ret;
+  }
+
+  @Override
+  public void methodWithListNullableFloatParam(List<@Nullable Float> param) {
+    assertEquals(param, methodWithListNullableFloatReturn());
+  }
+
+  @Override
+  public void methodWithListNullableFloatHandler(Handler<List<@Nullable Float>> handler) {
+    handler.handle(methodWithListNullableFloatReturn());
+  }
+
+  @Override
+  public void methodWithListNullableFloatHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Float>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithListNullableFloatReturn()));
+  }
+
+  @Override
+  public List<@Nullable Float> methodWithListNullableFloatReturn() {
+    ArrayList<Float> ret = new ArrayList<>();
+    ret.add(1.1f);
+    ret.add(null);
+    ret.add(3.3f);
+    return ret;
+  }
+
+  @Override
+  public void methodWithListNullableDoubleParam(List<@Nullable Double> param) {
+    assertEquals(param, methodWithListNullableDoubleReturn());
+  }
+
+  @Override
+  public void methodWithListNullableDoubleHandler(Handler<List<@Nullable Double>> handler) {
+    handler.handle(methodWithListNullableDoubleReturn());
+  }
+
+  @Override
+  public void methodWithListNullableDoubleHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Double>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithListNullableDoubleReturn()));
+  }
+
+  @Override
+  public List<@Nullable Double> methodWithListNullableDoubleReturn() {
+    ArrayList<Double> ret = new ArrayList<>();
+    ret.add(1.11);
+    ret.add(null);
+    ret.add(3.33);
+    return ret;
+  }
+
+  @Override
   public void methodWithListNullableBooleanParam(List<@Nullable Boolean> param) {
     assertEquals(param, methodWithListNullableBooleanReturn());
   }
@@ -921,6 +1041,30 @@ public class NullableTCKImpl implements NullableTCK {
     ret.add(true);
     ret.add(null);
     ret.add(false);
+    return ret;
+  }
+
+  @Override
+  public void methodWithListNullableCharParam(List<@Nullable Character> param) {
+    assertEquals(param, methodWithListNullableCharReturn());
+  }
+
+  @Override
+  public void methodWithListNullableCharHandler(Handler<List<@Nullable Character>> handler) {
+    handler.handle(methodWithListNullableCharReturn());
+  }
+
+  @Override
+  public void methodWithListNullableCharHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Character>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithListNullableCharReturn()));
+  }
+
+  @Override
+  public List<@Nullable Character> methodWithListNullableCharReturn() {
+    ArrayList<Character> ret = new ArrayList<>();
+    ret.add('F');
+    ret.add(null);
+    ret.add('R');
     return ret;
   }
 

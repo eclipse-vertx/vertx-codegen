@@ -235,11 +235,29 @@ public interface NullableTCK {
   void methodWithNullableMapStringHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Map<String, String>>> handler);
   @Nullable Map<String, String> methodWithNullableMapStringReturn(boolean notNull);
 
+  // Test List<@Nullable Byte> type
+  void methodWithListNullableByteParam(List<@Nullable Byte> param);
+  void methodWithListNullableByteHandler(Handler<List<@Nullable Byte>> handler);
+  void methodWithListNullableByteHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Byte>>> handler);
+  List<@Nullable Byte> methodWithListNullableByteReturn();
+
+  // Test List<@Nullable Short> type
+  void methodWithListNullableShortParam(List<@Nullable Short> param);
+  void methodWithListNullableShortHandler(Handler<List<@Nullable Short>> handler);
+  void methodWithListNullableShortHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Short>>> handler);
+  List<@Nullable Short> methodWithListNullableShortReturn();
+
   // Test List<@Nullable Integer> type
   void methodWithListNullableIntegerParam(List<@Nullable Integer> param);
   void methodWithListNullableIntegerHandler(Handler<List<@Nullable Integer>> handler);
   void methodWithListNullableIntegerHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Integer>>> handler);
   List<@Nullable Integer> methodWithListNullableIntegerReturn();
+
+  // Test List<@Nullable Long> type
+  void methodWithListNullableLongParam(List<@Nullable Long> param);
+  void methodWithListNullableLongHandler(Handler<List<@Nullable Long>> handler);
+  void methodWithListNullableLongHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Long>>> handler);
+  List<@Nullable Long> methodWithListNullableLongReturn();
 
   // Test List<@Nullable Boolean> type
   void methodWithListNullableBooleanParam(List<@Nullable Boolean> param);
@@ -247,11 +265,29 @@ public interface NullableTCK {
   void methodWithListNullableBooleanHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Boolean>>> handler);
   List<@Nullable Boolean> methodWithListNullableBooleanReturn();
 
+  // Test List<@Nullable Float> type
+  void methodWithListNullableFloatParam(List<@Nullable Float> param);
+  void methodWithListNullableFloatHandler(Handler<List<@Nullable Float>> handler);
+  void methodWithListNullableFloatHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Float>>> handler);
+  List<@Nullable Float> methodWithListNullableFloatReturn();
+
+  // Test List<@Nullable Double> type
+  void methodWithListNullableDoubleParam(List<@Nullable Double> param);
+  void methodWithListNullableDoubleHandler(Handler<List<@Nullable Double>> handler);
+  void methodWithListNullableDoubleHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Double>>> handler);
+  List<@Nullable Double> methodWithListNullableDoubleReturn();
+
   // Test List<@Nullable String> type
   void methodWithListNullableStringParam(List<@Nullable String> param);
   void methodWithListNullableStringHandler(Handler<List<@Nullable String>> handler);
   void methodWithListNullableStringHandlerAsyncResult(Handler<AsyncResult<List<@Nullable String>>> handler);
   List<@Nullable String> methodWithListNullableStringReturn();
+
+  // Test List<@Nullable Character> type
+  void methodWithListNullableCharParam(List<@Nullable Character> param);
+  void methodWithListNullableCharHandler(Handler<List<@Nullable Character>> handler);
+  void methodWithListNullableCharHandlerAsyncResult(Handler<AsyncResult<List<@Nullable Character>>> handler);
+  List<@Nullable Character> methodWithListNullableCharReturn();
 
   // Test List<@Nullable JsonObject> type
   void methodWithListNullableJsonObjectParam(List<@Nullable JsonObject> param);
