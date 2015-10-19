@@ -1011,7 +1011,7 @@ public class NullableTCKImpl implements NullableTCK {
   @Override
   public @Nullable Set<Boolean> methodWithNullableSetBooleanReturn(boolean notNull) {
     if (notNull) {
-      return new LinkedHashSet<>(Arrays.asList(true, null, false));
+      return new LinkedHashSet<>(Arrays.asList(true, false));
     } else {
       return null;
     }
