@@ -484,6 +484,90 @@ public interface NullableTCK {
   void methodWithListNullableEnumHandlerAsyncResult(Handler<AsyncResult<List<@Nullable TestEnum>>> handler);
   List<@Nullable TestEnum> methodWithListNullableEnumReturn();
 
+  // Test Set<@Nullable Byte> type
+  void methodWithSetNullableByteParam(Set<@Nullable Byte> param);
+  void methodWithSetNullableByteHandler(Handler<Set<@Nullable Byte>> handler);
+  void methodWithSetNullableByteHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable Byte>>> handler);
+  Set<@Nullable Byte> methodWithSetNullableByteReturn();
+
+  // Test Set<@Nullable Short> type
+  void methodWithSetNullableShortParam(Set<@Nullable Short> param);
+  void methodWithSetNullableShortHandler(Handler<Set<@Nullable Short>> handler);
+  void methodWithSetNullableShortHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable Short>>> handler);
+  Set<@Nullable Short> methodWithSetNullableShortReturn();
+
+  // Test Set<@Nullable Integer> type
+  void methodWithSetNullableIntegerParam(Set<@Nullable Integer> param);
+  void methodWithSetNullableIntegerHandler(Handler<Set<@Nullable Integer>> handler);
+  void methodWithSetNullableIntegerHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable Integer>>> handler);
+  Set<@Nullable Integer> methodWithSetNullableIntegerReturn();
+
+  // Test Set<@Nullable Long> type
+  void methodWithSetNullableLongParam(Set<@Nullable Long> param);
+  void methodWithSetNullableLongHandler(Handler<Set<@Nullable Long>> handler);
+  void methodWithSetNullableLongHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable Long>>> handler);
+  Set<@Nullable Long> methodWithSetNullableLongReturn();
+
+  // Test Set<@Nullable Boolean> type
+  void methodWithSetNullableBooleanParam(Set<@Nullable Boolean> param);
+  void methodWithSetNullableBooleanHandler(Handler<Set<@Nullable Boolean>> handler);
+  void methodWithSetNullableBooleanHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable Boolean>>> handler);
+  Set<@Nullable Boolean> methodWithSetNullableBooleanReturn();
+
+  // Test Set<@Nullable Float> type
+  void methodWithSetNullableFloatParam(Set<@Nullable Float> param);
+  void methodWithSetNullableFloatHandler(Handler<Set<@Nullable Float>> handler);
+  void methodWithSetNullableFloatHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable Float>>> handler);
+  Set<@Nullable Float> methodWithSetNullableFloatReturn();
+
+  // Test Set<@Nullable Double> type
+  void methodWithSetNullableDoubleParam(Set<@Nullable Double> param);
+  void methodWithSetNullableDoubleHandler(Handler<Set<@Nullable Double>> handler);
+  void methodWithSetNullableDoubleHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable Double>>> handler);
+  Set<@Nullable Double> methodWithSetNullableDoubleReturn();
+
+  // Test Set<@Nullable String> type
+  void methodWithSetNullableStringParam(Set<@Nullable String> param);
+  void methodWithSetNullableStringHandler(Handler<Set<@Nullable String>> handler);
+  void methodWithSetNullableStringHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable String>>> handler);
+  Set<@Nullable String> methodWithSetNullableStringReturn();
+
+  // Test Set<@Nullable Character> type
+  void methodWithSetNullableCharParam(Set<@Nullable Character> param);
+  void methodWithSetNullableCharHandler(Handler<Set<@Nullable Character>> handler);
+  void methodWithSetNullableCharHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable Character>>> handler);
+  Set<@Nullable Character> methodWithSetNullableCharReturn();
+
+  // Test Set<@Nullable JsonObject> type
+  void methodWithSetNullableJsonObjectParam(Set<@Nullable JsonObject> param);
+  void methodWithSetNullableJsonObjectHandler(Handler<Set<@Nullable JsonObject>> handler);
+  void methodWithSetNullableJsonObjectHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable JsonObject>>> handler);
+  Set<@Nullable JsonObject> methodWithSetNullableJsonObjectReturn();
+
+  // Test Set<@Nullable String> type
+  void methodWithSetNullableJsonArrayParam(Set<@Nullable JsonArray> param);
+  void methodWithSetNullableJsonArrayHandler(Handler<Set<@Nullable JsonArray>> handler);
+  void methodWithSetNullableJsonArrayHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable JsonArray>>> handler);
+  Set<@Nullable JsonArray> methodWithSetNullableJsonArrayReturn();
+
+  // Test Set<@Nullable Api> type
+  void methodWithSetNullableApiParam(Set<@Nullable RefedInterface1> param);
+  void methodWithSetNullableApiHandler(Handler<Set<@Nullable RefedInterface1>> handler);
+  void methodWithSetNullableApiHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable RefedInterface1>>> handler);
+  Set<@Nullable RefedInterface1> methodWithSetNullableApiReturn();
+
+  // Test Set<@Nullable DataObject> type
+  void methodWithSetNullableDataObjectParam(Set<@Nullable TestDataObject> param);
+  void methodWithSetNullableDataObjectHandler(Handler<Set<@Nullable TestDataObject>> handler);
+  void methodWithSetNullableDataObjectHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable TestDataObject>>> handler);
+  Set<@Nullable TestDataObject> methodWithSetNullableDataObjectReturn();
+
+  // Test Set<@Nullable Enum> type
+  void methodWithSetNullableEnumParam(Set<@Nullable TestEnum> param);
+  void methodWithSetNullableEnumHandler(Handler<Set<@Nullable TestEnum>> handler);
+  void methodWithSetNullableEnumHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable TestEnum>>> handler);
+  Set<@Nullable TestEnum> methodWithSetNullableEnumReturn();
+
   // Test @Nullable handlers
   void methodWithNullableHandler(boolean expectNull, @Nullable Handler<String> handler);
   void methodWithNullableHandlerAsyncResult(boolean expectNull, @Nullable Handler<AsyncResult<String>> handler);
