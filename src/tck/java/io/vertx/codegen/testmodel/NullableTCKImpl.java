@@ -27,6 +27,56 @@ import java.util.stream.Collectors;
 public class NullableTCKImpl implements NullableTCK {
 
   @Override
+  public boolean methodWithNonNullableByteParam(Byte param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableByteParam(boolean expectNull, Byte param) {
+    assertEquals(methodWithNullableByteReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableByteHandler(boolean notNull, Handler<@Nullable Byte> handler) {
+    handler.handle(methodWithNullableByteReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableByteHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Byte>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableByteReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Byte methodWithNullableByteReturn(boolean notNull) {
+    return notNull ? (byte)67 : null;
+  }
+
+  @Override
+  public boolean methodWithNonNullableShortParam(Short param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableShortParam(boolean expectNull, Short param) {
+    assertEquals(methodWithNullableShortReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableShortHandler(boolean notNull, Handler<@Nullable Short> handler) {
+    handler.handle(methodWithNullableShortReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableShortHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Short>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableShortReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Short methodWithNullableShortReturn(boolean notNull) {
+    return notNull ? (short)1024 : null;
+  }
+
+  @Override
   public boolean methodWithNonNullableIntegerParam(Integer param) {
     return param == null;
   }
@@ -49,6 +99,81 @@ public class NullableTCKImpl implements NullableTCK {
   @Override
   public @Nullable Integer methodWithNullableIntegerReturn(boolean notNull) {
     return notNull ? 1234567 : null;
+  }
+
+  @Override
+  public boolean methodWithNonNullableLongParam(Long param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableLongParam(boolean expectNull, Long param) {
+    assertEquals(methodWithNullableLongReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableLongHandler(boolean notNull, Handler<@Nullable Long> handler) {
+    handler.handle(methodWithNullableLongReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableLongHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Long>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableLongReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Long methodWithNullableLongReturn(boolean notNull) {
+    return notNull ? 9876543210L : null;
+  }
+
+  @Override
+  public boolean methodWithNonNullableFloatParam(Float param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableFloatParam(boolean expectNull, Float param) {
+    assertEquals(methodWithNullableFloatReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableFloatHandler(boolean notNull, Handler<@Nullable Float> handler) {
+    handler.handle(methodWithNullableFloatReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableFloatHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Float>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableFloatReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Float methodWithNullableFloatReturn(boolean notNull) {
+    return notNull ? 3.14f : null;
+  }
+
+  @Override
+  public boolean methodWithNonNullableDoubleParam(Double param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableDoubleParam(boolean expectNull, Double param) {
+    assertEquals(methodWithNullableDoubleReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableDoubleHandler(boolean notNull, Handler<@Nullable Double> handler) {
+    handler.handle(methodWithNullableDoubleReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableDoubleHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Double>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableDoubleReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Double methodWithNullableDoubleReturn(boolean notNull) {
+    return notNull ? 3.1415926D : null;
   }
 
   @Override
@@ -99,6 +224,31 @@ public class NullableTCKImpl implements NullableTCK {
   @Override
   public @Nullable String methodWithNullableStringReturn(boolean notNull) {
     return notNull ? "the_string_value" : null;
+  }
+
+  @Override
+  public boolean methodWithNonNullableCharParam(Character param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableCharParam(boolean expectNull, Character param) {
+    assertEquals(methodWithNullableCharReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableCharHandler(boolean notNull, Handler<@Nullable Character> handler) {
+    handler.handle(methodWithNullableCharReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableCharHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Character>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableCharReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Character methodWithNullableCharReturn(boolean notNull) {
+    return notNull ? 'f' : null;
   }
 
   @Override

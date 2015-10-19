@@ -19,12 +19,47 @@ import java.util.Set;
 @VertxGen
 public interface NullableTCK {
 
+  // Test @Nullable Byte type
+  boolean methodWithNonNullableByteParam(Byte param);
+  void methodWithNullableByteParam(boolean expectNull, @Nullable Byte param);
+  void methodWithNullableByteHandler(boolean notNull, Handler<@Nullable Byte> handler);
+  void methodWithNullableByteHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Byte>> handler);
+  @Nullable Byte methodWithNullableByteReturn(boolean notNull);
+
+  // Test @Nullable Short type
+  boolean methodWithNonNullableShortParam(Short param);
+  void methodWithNullableShortParam(boolean expectNull, @Nullable Short param);
+  void methodWithNullableShortHandler(boolean notNull, Handler<@Nullable Short> handler);
+  void methodWithNullableShortHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Short>> handler);
+  @Nullable Short methodWithNullableShortReturn(boolean notNull);
+
   // Test @Nullable Integer type
   boolean methodWithNonNullableIntegerParam(Integer param);
   void methodWithNullableIntegerParam(boolean expectNull, @Nullable Integer param);
   void methodWithNullableIntegerHandler(boolean notNull, Handler<@Nullable Integer> handler);
   void methodWithNullableIntegerHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Integer>> handler);
   @Nullable Integer methodWithNullableIntegerReturn(boolean notNull);
+
+  // Test @Nullable Long type
+  boolean methodWithNonNullableLongParam(Long param);
+  void methodWithNullableLongParam(boolean expectNull, @Nullable Long param);
+  void methodWithNullableLongHandler(boolean notNull, Handler<@Nullable Long> handler);
+  void methodWithNullableLongHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Long>> handler);
+  @Nullable Long methodWithNullableLongReturn(boolean notNull);
+
+  // Test @Nullable Float type
+  boolean methodWithNonNullableFloatParam(Float param);
+  void methodWithNullableFloatParam(boolean expectNull, @Nullable Float param);
+  void methodWithNullableFloatHandler(boolean notNull, Handler<@Nullable Float> handler);
+  void methodWithNullableFloatHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Float>> handler);
+  @Nullable Float methodWithNullableFloatReturn(boolean notNull);
+
+  // Test @Nullable Double type
+  boolean methodWithNonNullableDoubleParam(Double param);
+  void methodWithNullableDoubleParam(boolean expectNull, @Nullable Double param);
+  void methodWithNullableDoubleHandler(boolean notNull, Handler<@Nullable Double> handler);
+  void methodWithNullableDoubleHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Double>> handler);
+  @Nullable Double methodWithNullableDoubleReturn(boolean notNull);
 
   // Test @Nullable Boolean type
   boolean methodWithNonNullableBooleanParam(Boolean param);
@@ -39,6 +74,13 @@ public interface NullableTCK {
   void methodWithNullableStringHandler(boolean notNull, Handler<@Nullable String> handler);
   void methodWithNullableStringHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable String>> handler);
   @Nullable String methodWithNullableStringReturn(boolean notNull);
+
+  // Test @Nullable Char type
+  boolean methodWithNonNullableCharParam(Character param);
+  void methodWithNullableCharParam(boolean expectNull, @Nullable Character param);
+  void methodWithNullableCharHandler(boolean notNull, Handler<@Nullable Character> handler);
+  void methodWithNullableCharHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Character>> handler);
+  @Nullable Character methodWithNullableCharReturn(boolean notNull);
 
   // Test @Nullable JsonObject type
   boolean methodWithNonNullableJsonObjectParam(JsonObject param);
