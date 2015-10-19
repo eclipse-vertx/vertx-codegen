@@ -18,6 +18,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -441,7 +442,11 @@ public class NullableTCKImpl implements NullableTCK {
 
   @Override
   public void methodWithNullableListDataObjectParam(boolean expectNull, List<TestDataObject> param) {
-    assertEquals(methodWithNullableListDataObjectReturn(!expectNull), param);
+    if (expectNull) {
+      assertEquals(null, param);
+    } else {
+      assertEquals(methodWithNullableListDataObjectReturn(true).stream().map(TestDataObject::toJson).collect(Collectors.toList()), param.stream().map(TestDataObject::toJson).collect(Collectors.toList()));
+    }
   }
 
   @Override
