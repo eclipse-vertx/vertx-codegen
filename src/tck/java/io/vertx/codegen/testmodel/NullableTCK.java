@@ -68,7 +68,7 @@ public interface NullableTCK {
   void methodWithNullableDataObjectHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable TestDataObject>> handler);
   @Nullable TestDataObject methodWithNullableDataObjectReturn(boolean notNull);
 
-  // Test @Nullable DataObject type
+  // Test @Nullable Enum type
   boolean methodWithNonNullableEnumParam(TestEnum param);
   void methodWithNullableEnumParam(boolean expectNull, @Nullable TestEnum param);
   void methodWithNullableEnumHandler(boolean notNull, Handler<@Nullable TestEnum> handler);
