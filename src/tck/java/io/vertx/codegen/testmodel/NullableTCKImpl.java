@@ -14,7 +14,6 @@ import io.vertx.core.json.JsonObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -2221,6 +2220,236 @@ public class NullableTCKImpl implements NullableTCK {
     ret.add(null);
     ret.add(TestEnum.JULIEN);
     return ret;
+  }
+
+  @Override
+  public void methodWithMapNullableByteParam(Map<String, @Nullable Byte> param) {
+    assertEquals(new HashMap<>(param), methodWithMapNullableByteReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableByteHandler(Handler<Map<String, @Nullable Byte>> handler) {
+    handler.handle(methodWithMapNullableByteReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableByteHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable Byte>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithMapNullableByteReturn()));
+  }
+
+  @Override
+  public Map<String, @Nullable Byte> methodWithMapNullableByteReturn() {
+    return map((byte)12, null, (byte) 24);
+  }
+
+  @Override
+  public void methodWithMapNullableShortParam(Map<String, @Nullable Short> param) {
+    assertEquals(new HashMap<>(param), methodWithMapNullableShortReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableShortHandler(Handler<Map<String, @Nullable Short>> handler) {
+    handler.handle(methodWithMapNullableShortReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableShortHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable Short>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithMapNullableShortReturn()));
+  }
+
+  @Override
+  public Map<String, @Nullable Short> methodWithMapNullableShortReturn() {
+    return map((short)520, null, (short) 1040);
+  }
+
+  @Override
+  public void methodWithMapNullableIntegerParam(Map<String, @Nullable Integer> param) {
+    assertEquals(new HashMap<>(param), methodWithMapNullableIntegerReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableIntegerHandler(Handler<Map<String, @Nullable Integer>> handler) {
+    handler.handle(methodWithMapNullableIntegerReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableIntegerHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable Integer>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithMapNullableIntegerReturn()));
+  }
+
+  @Override
+  public Map<String, @Nullable Integer> methodWithMapNullableIntegerReturn() {
+    return map(12345,null,54321);
+  }
+
+  @Override
+  public void methodWithMapNullableLongParam(Map<String, @Nullable Long> param) {
+    assertEquals(new HashMap<>(param), methodWithMapNullableLongReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableLongHandler(Handler<Map<String, @Nullable Long>> handler) {
+    handler.handle(methodWithMapNullableLongReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableLongHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable Long>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithMapNullableLongReturn()));
+  }
+
+  @Override
+  public Map<String, @Nullable Long> methodWithMapNullableLongReturn() {
+    return map(123456789L,null,987654321L);
+  }
+
+  @Override
+  public void methodWithMapNullableFloatParam(Map<String, @Nullable Float> param) {
+    assertEquals(new HashMap<>(param), methodWithMapNullableFloatReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableFloatHandler(Handler<Map<String, @Nullable Float>> handler) {
+    handler.handle(methodWithMapNullableFloatReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableFloatHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable Float>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithMapNullableFloatReturn()));
+  }
+
+  @Override
+  public Map<String, @Nullable Float> methodWithMapNullableFloatReturn() {
+    return map(1.1f, null,3.3f);
+  }
+
+  @Override
+  public void methodWithMapNullableDoubleParam(Map<String, @Nullable Double> param) {
+    assertEquals(new HashMap<>(param), methodWithMapNullableDoubleReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableDoubleHandler(Handler<Map<String, @Nullable Double>> handler) {
+    handler.handle(methodWithMapNullableDoubleReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableDoubleHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable Double>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithMapNullableDoubleReturn()));
+  }
+
+  @Override
+  public Map<String, @Nullable Double> methodWithMapNullableDoubleReturn() {
+    return map(1.11, null,3.33);
+  }
+
+  @Override
+  public void methodWithMapNullableBooleanParam(Map<String, @Nullable Boolean> param) {
+    assertEquals(new HashMap<>(param), methodWithMapNullableBooleanReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableBooleanHandler(Handler<Map<String, @Nullable Boolean>> handler) {
+    handler.handle(methodWithMapNullableBooleanReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableBooleanHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable Boolean>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithMapNullableBooleanReturn()));
+  }
+
+  @Override
+  public Map<String, @Nullable Boolean> methodWithMapNullableBooleanReturn() {
+    return map(true,null,false);
+  }
+
+  @Override
+  public void methodWithMapNullableCharParam(Map<String, @Nullable Character> param) {
+    assertEquals(new HashMap<>(param), methodWithMapNullableCharReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableCharHandler(Handler<Map<String, @Nullable Character>> handler) {
+    handler.handle(methodWithMapNullableCharReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableCharHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable Character>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithMapNullableCharReturn()));
+  }
+
+  @Override
+  public Map<String, @Nullable Character> methodWithMapNullableCharReturn() {
+    return map('F', null,'R');
+  }
+
+  @Override
+  public void methodWithMapNullableStringParam(Map<String, @Nullable String> param) {
+    assertEquals(new HashMap<>(param), methodWithMapNullableStringReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableStringHandler(Handler<Map<String, @Nullable String>> handler) {
+    handler.handle(methodWithMapNullableStringReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableStringHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable String>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithMapNullableStringReturn()));
+  }
+
+  @Override
+  public Map<String, @Nullable String> methodWithMapNullableStringReturn() {
+    return map("first", null, "third");
+  }
+
+
+  @Override
+  public void methodWithMapNullableJsonObjectParam(Map<String, @Nullable JsonObject> param) {
+    assertEquals(new HashMap<>(param), methodWithMapNullableJsonObjectReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableJsonObjectHandler(Handler<Map<String, @Nullable JsonObject>> handler) {
+    handler.handle(methodWithMapNullableJsonObjectReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableJsonObjectHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable JsonObject>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithMapNullableJsonObjectReturn()));
+  }
+
+  @Override
+  public Map<String, @Nullable JsonObject> methodWithMapNullableJsonObjectReturn() {
+    return map(new JsonObject().put("foo", "bar"),null,new JsonObject().put("juu", 3));
+  }
+
+  @Override
+  public void methodWithMapNullableJsonArrayParam(Map<String, @Nullable JsonArray> param) {
+    assertEquals(new HashMap<>(param), methodWithMapNullableJsonArrayReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableJsonArrayHandler(Handler<Map<String, @Nullable JsonArray>> handler) {
+    handler.handle(methodWithMapNullableJsonArrayReturn());
+  }
+
+  @Override
+  public void methodWithMapNullableJsonArrayHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable JsonArray>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithMapNullableJsonArrayReturn()));
+  }
+
+  @Override
+  public Map<String, @Nullable JsonArray> methodWithMapNullableJsonArrayReturn() {
+    return map(new JsonArray().add("foo").add("bar"), null, new JsonArray().add("juu"));
+  }
+
+  @Override
+  public void methodWithMapNullableApiParam(Map<String, @Nullable RefedInterface1> param) {
+    assertEquals(new HashMap<>(param), methodWithMapNullableApiReturn());
+  }
+
+  private Map<String, @Nullable RefedInterface1> methodWithMapNullableApiReturn() {
+    return map(new RefedInterface1Impl().setString("first"), null, new RefedInterface1Impl().setString("third"));
   }
 
   @Override

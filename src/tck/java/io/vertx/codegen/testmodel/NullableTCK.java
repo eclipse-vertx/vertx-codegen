@@ -568,6 +568,75 @@ public interface NullableTCK {
   void methodWithSetNullableEnumHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable TestEnum>>> handler);
   Set<@Nullable TestEnum> methodWithSetNullableEnumReturn();
 
+  // Test Map<String, @Nullable Byte> type
+  void methodWithMapNullableByteParam(Map<String, @Nullable Byte> param);
+  void methodWithMapNullableByteHandler(Handler<Map<String, @Nullable Byte>> handler);
+  void methodWithMapNullableByteHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable Byte>>> handler);
+  Map<String, @Nullable Byte> methodWithMapNullableByteReturn();
+
+  // Test Map<String, @Nullable Short> type
+  void methodWithMapNullableShortParam(Map<String, @Nullable Short> param);
+  void methodWithMapNullableShortHandler(Handler<Map<String, @Nullable Short>> handler);
+  void methodWithMapNullableShortHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable Short>>> handler);
+  Map<String, @Nullable Short> methodWithMapNullableShortReturn();
+
+  // Test Map<String, @Nullable Integer> type
+  void methodWithMapNullableIntegerParam(Map<String, @Nullable Integer> param);
+  void methodWithMapNullableIntegerHandler(Handler<Map<String, @Nullable Integer>> handler);
+  void methodWithMapNullableIntegerHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable Integer>>> handler);
+  Map<String, @Nullable Integer> methodWithMapNullableIntegerReturn();
+
+  // Test Map<String, @Nullable Long> type
+  void methodWithMapNullableLongParam(Map<String, @Nullable Long> param);
+  void methodWithMapNullableLongHandler(Handler<Map<String, @Nullable Long>> handler);
+  void methodWithMapNullableLongHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable Long>>> handler);
+  Map<String, @Nullable Long> methodWithMapNullableLongReturn();
+
+  // Test Map<String, @Nullable Boolean> type
+  void methodWithMapNullableBooleanParam(Map<String, @Nullable Boolean> param);
+  void methodWithMapNullableBooleanHandler(Handler<Map<String, @Nullable Boolean>> handler);
+  void methodWithMapNullableBooleanHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable Boolean>>> handler);
+  Map<String, @Nullable Boolean> methodWithMapNullableBooleanReturn();
+
+  // Test Map<String, @Nullable Float> type
+  void methodWithMapNullableFloatParam(Map<String, @Nullable Float> param);
+  void methodWithMapNullableFloatHandler(Handler<Map<String, @Nullable Float>> handler);
+  void methodWithMapNullableFloatHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable Float>>> handler);
+  Map<String, @Nullable Float> methodWithMapNullableFloatReturn();
+
+  // Test Map<String, @Nullable Double> type
+  void methodWithMapNullableDoubleParam(Map<String, @Nullable Double> param);
+  void methodWithMapNullableDoubleHandler(Handler<Map<String, @Nullable Double>> handler);
+  void methodWithMapNullableDoubleHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable Double>>> handler);
+  Map<String, @Nullable Double> methodWithMapNullableDoubleReturn();
+
+  // Test Map<String, @Nullable String> type
+  void methodWithMapNullableStringParam(Map<String, @Nullable String> param);
+  void methodWithMapNullableStringHandler(Handler<Map<String, @Nullable String>> handler);
+  void methodWithMapNullableStringHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable String>>> handler);
+  Map<String, @Nullable String> methodWithMapNullableStringReturn();
+
+  // Test Map<String, @Nullable Character> type
+  void methodWithMapNullableCharParam(Map<String, @Nullable Character> param);
+  void methodWithMapNullableCharHandler(Handler<Map<String, @Nullable Character>> handler);
+  void methodWithMapNullableCharHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable Character>>> handler);
+  Map<String, @Nullable Character> methodWithMapNullableCharReturn();
+
+  // Test Map<String, @Nullable JsonObject> type
+  void methodWithMapNullableJsonObjectParam(Map<String, @Nullable JsonObject> param);
+  void methodWithMapNullableJsonObjectHandler(Handler<Map<String, @Nullable JsonObject>> handler);
+  void methodWithMapNullableJsonObjectHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable JsonObject>>> handler);
+  Map<String, @Nullable JsonObject> methodWithMapNullableJsonObjectReturn();
+
+  // Test Map<String, @Nullable String> type
+  void methodWithMapNullableJsonArrayParam(Map<String, @Nullable JsonArray> param);
+  void methodWithMapNullableJsonArrayHandler(Handler<Map<String, @Nullable JsonArray>> handler);
+  void methodWithMapNullableJsonArrayHandlerAsyncResult(Handler<AsyncResult<Map<String, @Nullable JsonArray>>> handler);
+  Map<String, @Nullable JsonArray> methodWithMapNullableJsonArrayReturn();
+
+  // Test Map<String, @Nullable Api> type
+  void methodWithMapNullableApiParam(Map<String, @Nullable RefedInterface1> param);
+
   // Test @Nullable handlers
   void methodWithNullableHandler(boolean expectNull, @Nullable Handler<String> handler);
   void methodWithNullableHandlerAsyncResult(boolean expectNull, @Nullable Handler<AsyncResult<String>> handler);
