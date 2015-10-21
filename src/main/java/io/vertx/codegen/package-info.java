@@ -32,7 +32,7 @@
  *
  * [source,java]
  * ----
- * ModuleGen(name = "acme", groupPackage="com.acme")
+ * &#64;ModuleGen(name = "acme", groupPackage="com.acme")
  * package com.acme.myservice;
  *
  * import io.vertx.codegen.annotations.ModuleGen;
@@ -337,17 +337,17 @@
  *
  * [source,java]
  * ----
- * Nullable String getAttribute(String name);
+ * &#64;Nullable String getAttribute(String name);
  * ----
  *
  * As well as method parameter type:
  *
  * [source,java]
  * ----
- * void close(Nullable Handler<Void> closeHandler);
+ * void close(&#64;Nullable Handler<Void> closeHandler);
  * ----
  *
- * WARNING: type validation is a non goal for this feature, its purpose is to give hints to the shim
+ * WARNING: type validation is a non goal of this feature, its purpose is to give hints to the shim
  * for generating correct code.
  *
  * These rules apply to {@link io.vertx.codegen.annotations.Nullable} types:
@@ -375,16 +375,16 @@
  *
  * [source,java]
  * ----
- * void write(Nullable String s);
- * void write(Nullable Buffer s);
+ * void write(&#64;Nullable String s);
+ * void write(&#64;Nullable Buffer s);
  * ----
  *
  * is not permitted, however:
  *
  * [source,java]
  * ----
- * void write(Nullable String s);
- * void write(Nullable String s, String encoding);
+ * void write(&#64;Nullable String s);
+ * void write(&#64;Nullable String s, String encoding);
  * ----
  *
  * is permitted because the number of parameters differs.
@@ -431,7 +431,7 @@
  * .a simplified Buffer API
  * [source,java]
  * ----
- * VertxGen
+ * &#64;VertxGen
  * public interface Buffer {
  *
  *   static Buffer buffer(String s) {

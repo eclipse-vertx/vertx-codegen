@@ -31,7 +31,7 @@ annotation.
 
 [source,java]
 ----
-ModuleGen(name = "acme", groupPackage="com.acme")
+@ModuleGen(name = "acme", groupPackage="com.acme")
 package com.acme.myservice;
 
 import io.vertx.codegen.annotations.ModuleGen;
@@ -336,17 +336,17 @@ Method return type can be `link:../../apidocs/io/vertx/codegen/annotations/Nulla
 
 [source,java]
 ----
-Nullable String getAttribute(String name);
+@Nullable String getAttribute(String name);
 ----
 
 As well as method parameter type:
 
 [source,java]
 ----
-void close(Nullable Handler<Void> closeHandler);
+void close(@Nullable Handler<Void> closeHandler);
 ----
 
-WARNING: type validation is a non goal for this feature, its purpose is to give hints to the shim
+WARNING: type validation is a non goal of this feature, its purpose is to give hints to the shim
 for generating correct code.
 
 These rules apply to `link:../../apidocs/io/vertx/codegen/annotations/Nullable.html[@Nullable]` types:
@@ -374,16 +374,16 @@ of method parameters is the same, e.g:
 
 [source,java]
 ----
-void write(Nullable String s);
-void write(Nullable Buffer s);
+void write(@Nullable String s);
+void write(@Nullable Buffer s);
 ----
 
 is not permitted, however:
 
 [source,java]
 ----
-void write(Nullable String s);
-void write(Nullable String s, String encoding);
+void write(@Nullable String s);
+void write(@Nullable String s, String encoding);
 ----
 
 is permitted because the number of parameters differs.
@@ -430,7 +430,7 @@ A code generated API creates shim proxies delegating method invocation to the AP
 .a simplified Buffer API
 [source,java]
 ----
-VertxGen
+@VertxGen
 public interface Buffer {
 
   static Buffer buffer(String s) {
