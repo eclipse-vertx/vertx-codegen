@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-abstract class TypeUse {
+public abstract class TypeUse {
 
   private static final String NULLABLE = Nullable.class.getName();
 
