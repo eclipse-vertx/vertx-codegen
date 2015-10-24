@@ -117,6 +117,13 @@ public interface NullableTCK {
   void methodWithNullableEnumHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable TestEnum>> handler);
   @Nullable TestEnum methodWithNullableEnumReturn(boolean notNull);
 
+  // Test @Nullable Enum type
+  boolean methodWithNonNullableGenEnumParam(TestGenEnum param);
+  void methodWithNullableGenEnumParam(boolean expectNull, @Nullable TestGenEnum param);
+  void methodWithNullableGenEnumHandler(boolean notNull, Handler<@Nullable TestGenEnum> handler);
+  void methodWithNullableGenEnumHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable TestGenEnum>> handler);
+  @Nullable TestGenEnum methodWithNullableGenEnumReturn(boolean notNull);
+
   // Test @Nullable type variable
   <T> void methodWithNullableTypeVariableParam(boolean expectNull, T param);
   <T> void methodWithNullableTypeVariableHandler(boolean notNull, T value, Handler<T> handler);
@@ -221,6 +228,13 @@ public interface NullableTCK {
   void methodWithNullableListEnumHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<TestEnum>>> handler);
   @Nullable List<TestEnum> methodWithNullableListEnumReturn(boolean notNull);
 
+  // Test @Nullable List<GenEnum> type
+  boolean methodWithNonNullableListGenEnumParam(List<TestGenEnum> param);
+  void methodWithNullableListGenEnumParam(boolean expectNull, @Nullable List<TestGenEnum> param);
+  void methodWithNullableListGenEnumHandler(boolean notNull, Handler<@Nullable List<TestGenEnum>> handler);
+  void methodWithNullableListGenEnumHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<TestGenEnum>>> handler);
+  @Nullable List<TestGenEnum> methodWithNullableListGenEnumReturn(boolean notNull);
+
   // Test @Nullable Set<Byte> type
   boolean methodWithNonNullableSetByteParam(Set<Byte> param);
   void methodWithNullableSetByteParam(boolean expectNull, @Nullable Set<Byte> param);
@@ -318,6 +332,13 @@ public interface NullableTCK {
   void methodWithNullableSetEnumHandler(boolean notNull, Handler<@Nullable Set<TestEnum>> handler);
   void methodWithNullableSetEnumHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Set<TestEnum>>> handler);
   @Nullable Set<TestEnum> methodWithNullableSetEnumReturn(boolean notNull);
+
+  // Test @Nullable Set<GenEnum> type
+  boolean methodWithNonNullableSetGenEnumParam(Set<TestGenEnum> param);
+  void methodWithNullableSetGenEnumParam(boolean expectNull, @Nullable Set<TestGenEnum> param);
+  void methodWithNullableSetGenEnumHandler(boolean notNull, Handler<@Nullable Set<TestGenEnum>> handler);
+  void methodWithNullableSetGenEnumHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Set<TestGenEnum>>> handler);
+  @Nullable Set<TestGenEnum> methodWithNullableSetGenEnumReturn(boolean notNull);
 
   // Test @Nullable Map<String, Byte> type
   boolean methodWithNonNullableMapByteParam(Map<String, Byte> param);
@@ -484,6 +505,12 @@ public interface NullableTCK {
   void methodWithListNullableEnumHandlerAsyncResult(Handler<AsyncResult<List<@Nullable TestEnum>>> handler);
   List<@Nullable TestEnum> methodWithListNullableEnumReturn();
 
+  // Test List<@Nullable GenEnum> type
+  void methodWithListNullableGenEnumParam(List<@Nullable TestGenEnum> param);
+  void methodWithListNullableGenEnumHandler(Handler<List<@Nullable TestGenEnum>> handler);
+  void methodWithListNullableGenEnumHandlerAsyncResult(Handler<AsyncResult<List<@Nullable TestGenEnum>>> handler);
+  List<@Nullable TestGenEnum> methodWithListNullableGenEnumReturn();
+
   // Test Set<@Nullable Byte> type
   void methodWithSetNullableByteParam(Set<@Nullable Byte> param);
   void methodWithSetNullableByteHandler(Handler<Set<@Nullable Byte>> handler);
@@ -567,6 +594,12 @@ public interface NullableTCK {
   void methodWithSetNullableEnumHandler(Handler<Set<@Nullable TestEnum>> handler);
   void methodWithSetNullableEnumHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable TestEnum>>> handler);
   Set<@Nullable TestEnum> methodWithSetNullableEnumReturn();
+
+  // Test Set<@Nullable GenEnum> type
+  void methodWithSetNullableGenEnumParam(Set<@Nullable TestGenEnum> param);
+  void methodWithSetNullableGenEnumHandler(Handler<Set<@Nullable TestGenEnum>> handler);
+  void methodWithSetNullableGenEnumHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable TestGenEnum>>> handler);
+  Set<@Nullable TestGenEnum> methodWithSetNullableGenEnumReturn();
 
   // Test Map<String, @Nullable Byte> type
   void methodWithMapNullableByteParam(Map<String, @Nullable Byte> param);

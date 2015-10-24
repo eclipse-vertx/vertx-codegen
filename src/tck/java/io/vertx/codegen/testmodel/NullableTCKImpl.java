@@ -386,6 +386,31 @@ public class NullableTCKImpl implements NullableTCK {
   }
 
   @Override
+  public boolean methodWithNonNullableGenEnumParam(TestGenEnum param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableGenEnumParam(boolean expectNull, TestGenEnum param) {
+    assertEquals(methodWithNullableGenEnumReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableGenEnumHandler(boolean notNull, Handler<TestGenEnum> handler) {
+    handler.handle(methodWithNullableGenEnumReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableGenEnumHandlerAsyncResult(boolean notNull, Handler<AsyncResult<TestGenEnum>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableGenEnumReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable TestGenEnum methodWithNullableGenEnumReturn(boolean notNull) {
+    return notNull ? TestGenEnum.MIKE : null;
+  }
+
+  @Override
   public <T> void methodWithNullableTypeVariableParam(boolean expectNull, T param) {
     if (expectNull) {
       assertNull(param);
@@ -816,6 +841,31 @@ public class NullableTCKImpl implements NullableTCK {
   }
 
   @Override
+  public boolean methodWithNonNullableListGenEnumParam(List<TestGenEnum> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableListGenEnumParam(boolean expectNull, List<TestGenEnum> param) {
+    assertEquals(methodWithNullableListGenEnumReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableListGenEnumHandler(boolean notNull, Handler<@Nullable List<TestGenEnum>> handler) {
+    handler.handle(methodWithNullableListGenEnumReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableListGenEnumHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable List<TestGenEnum>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableListGenEnumReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable List<TestGenEnum> methodWithNullableListGenEnumReturn(boolean notNull) {
+    return notNull ? Arrays.asList(TestGenEnum.BOB,TestGenEnum.LELAND) : null;
+  }
+
+  @Override
   public boolean methodWithNonNullableSetByteParam(Set<Byte> param) {
     return param == null;
   }
@@ -1211,6 +1261,31 @@ public class NullableTCKImpl implements NullableTCK {
   @Override
   public @Nullable Set<TestEnum> methodWithNullableSetEnumReturn(boolean notNull) {
     return notNull ? new LinkedHashSet<>(Arrays.asList(TestEnum.TIM,TestEnum.JULIEN)) : null;
+  }
+
+  @Override
+  public boolean methodWithNonNullableSetGenEnumParam(Set<TestGenEnum> param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableSetGenEnumParam(boolean expectNull, Set<TestGenEnum> param) {
+    assertEquals(methodWithNullableSetGenEnumReturn(!expectNull), param);
+  }
+
+  @Override
+  public void methodWithNullableSetGenEnumHandler(boolean notNull, Handler<@Nullable Set<TestGenEnum>> handler) {
+    handler.handle(methodWithNullableSetGenEnumReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableSetGenEnumHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable Set<TestGenEnum>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableSetGenEnumReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable Set<TestGenEnum> methodWithNullableSetGenEnumReturn(boolean notNull) {
+    return notNull ? new LinkedHashSet<>(Arrays.asList(TestGenEnum.BOB,TestGenEnum.LELAND)) : null;
   }
 
   @Override
@@ -1885,6 +1960,30 @@ public class NullableTCKImpl implements NullableTCK {
   }
 
   @Override
+  public void methodWithListNullableGenEnumParam(List<@Nullable TestGenEnum> param) {
+    assertEquals(param, methodWithListNullableGenEnumReturn());
+  }
+
+  @Override
+  public void methodWithListNullableGenEnumHandler(Handler<List<@Nullable TestGenEnum>> handler) {
+    handler.handle(methodWithListNullableGenEnumReturn());
+  }
+
+  @Override
+  public void methodWithListNullableGenEnumHandlerAsyncResult(Handler<AsyncResult<List<@Nullable TestGenEnum>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithListNullableGenEnumReturn()));
+  }
+
+  @Override
+  public List<@Nullable TestGenEnum> methodWithListNullableGenEnumReturn() {
+    ArrayList<TestGenEnum> ret = new ArrayList<>();
+    ret.add(TestGenEnum.BOB);
+    ret.add(null);
+    ret.add(TestGenEnum.LELAND);
+    return ret;
+  }
+
+  @Override
   public void methodWithSetNullableByteParam(Set<@Nullable Byte> param) {
     assertEquals(param, methodWithSetNullableByteReturn());
   }
@@ -2219,6 +2318,30 @@ public class NullableTCKImpl implements NullableTCK {
     ret.add(TestEnum.TIM);
     ret.add(null);
     ret.add(TestEnum.JULIEN);
+    return ret;
+  }
+
+  @Override
+  public void methodWithSetNullableGenEnumParam(Set<@Nullable TestGenEnum> param) {
+    assertEquals(param, methodWithSetNullableGenEnumReturn());
+  }
+
+  @Override
+  public void methodWithSetNullableGenEnumHandler(Handler<Set<@Nullable TestGenEnum>> handler) {
+    handler.handle(methodWithSetNullableGenEnumReturn());
+  }
+
+  @Override
+  public void methodWithSetNullableGenEnumHandlerAsyncResult(Handler<AsyncResult<Set<@Nullable TestGenEnum>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithSetNullableGenEnumReturn()));
+  }
+
+  @Override
+  public Set<@Nullable TestGenEnum> methodWithSetNullableGenEnumReturn() {
+    LinkedHashSet<TestGenEnum> ret = new LinkedHashSet<>();
+    ret.add(TestGenEnum.BOB);
+    ret.add(null);
+    ret.add(TestGenEnum.LELAND);
     return ret;
   }
 
