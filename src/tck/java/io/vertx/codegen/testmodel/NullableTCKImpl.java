@@ -465,7 +465,7 @@ public class NullableTCKImpl implements NullableTCK {
   @Override
   public @Nullable List<Byte> methodWithNullableListByteReturn(boolean notNull) {
     if (notNull) {
-      return Arrays.asList((byte)1, (byte)2, (byte)3);
+      return Arrays.asList((byte)12, (byte)24, (byte)-12);
     } else {
       return null;
     }
@@ -494,7 +494,7 @@ public class NullableTCKImpl implements NullableTCK {
   @Override
   public @Nullable List<Short> methodWithNullableListShortReturn(boolean notNull) {
     if (notNull) {
-      return Arrays.asList((short)1, (short)2, (short)3);
+      return Arrays.asList((short)520, (short)1040, (short)-520);
     } else {
       return null;
     }
@@ -523,7 +523,7 @@ public class NullableTCKImpl implements NullableTCK {
   @Override
   public @Nullable List<Integer> methodWithNullableListIntegerReturn(boolean notNull) {
     if (notNull) {
-      return Arrays.asList(1, 2, 3);
+      return Arrays.asList(12345, 54321, -12345);
     } else {
       return null;
     }
@@ -552,7 +552,7 @@ public class NullableTCKImpl implements NullableTCK {
   @Override
   public @Nullable List<Long> methodWithNullableListLongReturn(boolean notNull) {
     if (notNull) {
-      return Arrays.asList(1L, 2L, 3L);
+      return Arrays.asList(123456789L, 987654321L, -123456789L);
     } else {
       return null;
     }
@@ -888,7 +888,7 @@ public class NullableTCKImpl implements NullableTCK {
   @Override
   public @Nullable Set<Byte> methodWithNullableSetByteReturn(boolean notNull) {
     if (notNull) {
-      return new LinkedHashSet<>(Arrays.asList((byte)1, (byte)2, (byte)3));
+      return new LinkedHashSet<>(Arrays.asList((byte)12, (byte)24, (byte)-12));
     } else {
       return null;
     }
@@ -917,7 +917,7 @@ public class NullableTCKImpl implements NullableTCK {
   @Override
   public @Nullable Set<Short> methodWithNullableSetShortReturn(boolean notNull) {
     if (notNull) {
-      return new LinkedHashSet<>(Arrays.asList((short)1, (short)2, (short)3));
+      return new LinkedHashSet<>(Arrays.asList((short)520, (short)1040, (short)-520));
     } else {
       return null;
     }
@@ -946,7 +946,7 @@ public class NullableTCKImpl implements NullableTCK {
   @Override
   public @Nullable Set<Integer> methodWithNullableSetIntegerReturn(boolean notNull) {
     if (notNull) {
-      return new LinkedHashSet<>(Arrays.asList(1, 2, 3));
+      return new LinkedHashSet<>(Arrays.asList(12345, 54321, -12345));
     } else {
       return null;
     }
@@ -975,7 +975,7 @@ public class NullableTCKImpl implements NullableTCK {
   @Override
   public @Nullable Set<Long> methodWithNullableSetLongReturn(boolean notNull) {
     if (notNull) {
-      return new LinkedHashSet<>(Arrays.asList(1L, 2L, 3L));
+      return new LinkedHashSet<>(Arrays.asList(123456789L, 987654321L, -123456789L));
     } else {
       return null;
     }
