@@ -196,7 +196,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
     if (typeParams.size() > 0) {
       for (int i = 0;i < typeParams.size();i++) {
         sb.append(i > 0 ? ", " : "<");
-        sb.append(typeParams.get(i));
+        sb.append(typeParams.get(i).getName());
       }
       sb.append("> ");
     }
