@@ -21,6 +21,7 @@ import io.vertx.test.codegen.testapi.nullable.MethodWithInvalidNullableTypeArgum
 import io.vertx.test.codegen.testapi.nullable.MethodWithInvalidNullableTypeArgumentParam;
 import io.vertx.test.codegen.testapi.nullable.MethodWithInvalidNullableTypeArgumentReturn;
 import io.vertx.test.codegen.testapi.nullable.MethodWithListNullableParamOverride;
+import io.vertx.test.codegen.testapi.nullable.MethodWithNullableNonAnnotatedObjectParam;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableNonAnnotatedTypeVariableHandlerAsyncResult;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableNonAnnotatedTypeVariableHandler;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableNonAnnotatedTypeVariableParam;
@@ -255,6 +256,17 @@ public class ClassNullableTest extends ClassTestBase {
       checkMethod(mi1, "method", 1, "void", MethodKind.OTHER);
       assertTrue(mi1.getParams().get(0).isNullable());
     }, MethodWithNullableNonAnnotatedTypeVariableParam.class);
+  }
+
+  @Test
+  public void testMethodWithNullableNonAnnotatedObjectParam() throws Exception {
+    generateClass(model -> {
+      List<MethodInfo> methods = model.getMethods();
+      assertEquals(1, methods.size());
+      MethodInfo mi1 = methods.get(0);
+      checkMethod(mi1, "method", 1, "void", MethodKind.OTHER);
+      assertTrue(mi1.getParams().get(0).isNullable());
+    }, MethodWithNullableNonAnnotatedObjectParam.class);
   }
 
   @Test

@@ -130,6 +130,9 @@ public interface NullableTCK {
   <T> void methodWithNullableTypeVariableHandlerAsyncResult(boolean notNull, T value, Handler<AsyncResult<T>> handler);
   <T> @Nullable T methodWithNullableTypeVariableReturn(boolean notNull, T value);
 
+  // Test @Nullable Object
+  void methodWithNullableObjectParam(boolean expectNull, Object param);
+
   // Test @Nullable List<Byte> type
   boolean methodWithNonNullableListByteParam(List<Byte> param);
   void methodWithNullableListByteParam(boolean expectNull, @Nullable List<Byte> param);

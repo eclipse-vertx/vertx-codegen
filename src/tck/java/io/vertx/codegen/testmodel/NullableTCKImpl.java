@@ -443,6 +443,11 @@ public class NullableTCKImpl implements NullableTCK {
   }
 
   @Override
+  public void methodWithNullableObjectParam(boolean expectNull, Object param) {
+    assertEquals("object_param", expectNull ? null : param);
+  }
+
+  @Override
   public boolean methodWithNonNullableListByteParam(List<Byte> param) {
     return param == null;
   }

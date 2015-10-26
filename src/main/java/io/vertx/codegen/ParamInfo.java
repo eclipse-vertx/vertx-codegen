@@ -57,7 +57,7 @@ public class ParamInfo {
    * @return true when the param is nullable
    */
   public boolean isNullable() {
-    return type instanceof TypeInfo.Variable || type.isNullable();
+    return type.getKind() == ClassKind.OBJECT || type.isNullable();
   }
 
   /**
