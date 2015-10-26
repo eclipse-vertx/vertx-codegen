@@ -202,17 +202,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
     }
     sb.append(returnType.getName());
     sb.append(' ');
-    sb.append(name);
-    sb.append('(');
-    if (params.size() > 0) {
-      for (int i = 0;i < params.size();i++) {
-        if (i > 0) {
-          sb.append(", ");
-        }
-        sb.append(params.get(i).getType().getName()).append(" ").append(params.get(i).getName());
-      }
-    }
-    sb.append(')');
+    sb.append(getSignature().toString());
     return sb.toString();
   }
 }
