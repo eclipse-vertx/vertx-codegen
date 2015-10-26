@@ -444,7 +444,7 @@ public class NullableTCKImpl implements NullableTCK {
 
   @Override
   public void methodWithNullableObjectParam(boolean expectNull, Object param) {
-    assertEquals("object_param", expectNull ? null : param);
+    assertEquals(expectNull ? null : "object_param", param);
   }
 
   @Override
