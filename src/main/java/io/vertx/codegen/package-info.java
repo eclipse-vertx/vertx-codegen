@@ -360,7 +360,8 @@
  * . `io.vertx.core.Handler<io.vertx.core.AsyncResult>` type argument can be {@link io.vertx.codegen.annotations.Nullable}
  * but not for `java.lang.Void`
  * . the `java.lang.Object` type is always nullable
- * . the `<T>` in `<T>` parameter/return, `Handler<T>` or `Handler<AsyncResult<T>>` is always nullable
+ * . the `<T>` in `<T>` parameter/return, `Handler<T>` or `Handler<AsyncResult<T>>` is implicitly nullable
+ * . the `java.lang.Object` parameter is implicitly nullable
  * . a method overriding another method `inherits` the {@link io.vertx.codegen.annotations.Nullable} usage of the overriden method
  * . a method overriding another method cannot declare {@link io.vertx.codegen.annotations.Nullable} in its types
  *
