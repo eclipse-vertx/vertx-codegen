@@ -18,6 +18,7 @@ package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.testmodel.TestDataObject;
+import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -30,5 +31,5 @@ import java.util.Set;
 public interface MethodWithValidSetParams {
 
   void methodWithSetParams(Set<String> setString, Set<Long> setLong, Set<JsonObject> setJsonObject, Set<JsonArray> setJsonArray, Set<VertxGenClass1> setVertxGen,
-      Set<TestDataObject> setDataObject);
+      Set<TestDataObject> setDataObject, Set<TestEnum> setEnum);
 }

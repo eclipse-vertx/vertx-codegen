@@ -39,6 +39,5 @@ public interface MethodWithValidHandlerParams {
   void methodWithMapHandlerParams(Handler<Map<String,Byte>> mapByteHandler, Handler<Map<String,Short>> mapShortHandler, Handler<Map<String,Integer>> mapIntHandler,
                                   Handler<Map<String,Long>> mapLongHandler, Handler<Map<String,Float>> mapFloatHandler, Handler<Map<String,Double>> mapDoubleHandler,
                                   Handler<Map<String,Boolean>> mapBooleanHandler, Handler<Map<String,Character>> mapCharHandler, Handler<Map<String,String>> mapStrHandler,
-                                  Handler<Map<String,VertxGenClass1>> mapVertxGenHandler, Handler<Map<String,JsonObject>> mapJsonObjectHandler, Handler<Map<String,JsonArray>> mapJsonArrayHandler,
-                                  Handler<Map<String,TestDataObject>> mapDataObjectHandler, Handler<Map<String,TestEnum>> mapEnumHandler);
+                                  Handler<Map<String,JsonObject>> mapJsonObjectHandler, Handler<Map<String,JsonArray>> mapJsonArrayHandler);
 }

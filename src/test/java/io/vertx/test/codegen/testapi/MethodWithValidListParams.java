@@ -18,6 +18,7 @@ package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.testmodel.TestDataObject;
+import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -30,5 +31,5 @@ import java.util.List;
 public interface MethodWithValidListParams {
 
   void methodWithListParams(List<String> listString, List<Long> listLong, List<JsonObject> listJsonObject, List<JsonArray> listJsonArray, List<VertxGenClass1> listVertxGen,
-      List<TestDataObject> listDataObject);
+      List<TestDataObject> listDataObject, List<TestEnum> listEnum);
 }

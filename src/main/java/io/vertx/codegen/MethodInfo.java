@@ -118,6 +118,13 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return cacheReturn;
   }
 
+  /**
+   * @return true if the method has a nullable return
+   */
+  public boolean isNullableReturn() {
+    return returnType instanceof TypeInfo.Variable || returnType.isNullable();
+  }
+
   public List<ParamInfo> getParams() {
     return params;
   }
@@ -189,23 +196,13 @@ public class MethodInfo implements Comparable<MethodInfo> {
     if (typeParams.size() > 0) {
       for (int i = 0;i < typeParams.size();i++) {
         sb.append(i > 0 ? ", " : "<");
-        sb.append(typeParams.get(i));
+        sb.append(typeParams.get(i).getName());
       }
       sb.append("> ");
     }
     sb.append(returnType.getName());
     sb.append(' ');
-    sb.append(name);
-    sb.append('(');
-    if (params.size() > 0) {
-      for (int i = 0;i < params.size();i++) {
-        if (i > 0) {
-          sb.append(", ");
-        }
-        sb.append(params.get(i).getType().getName()).append(" ").append(params.get(i).getName());
-      }
-    }
-    sb.append(')');
+    sb.append(getSignature().toString());
     return sb.toString();
   }
 }

@@ -24,11 +24,20 @@ import io.vertx.codegen.ClassKind;
 public class SimpleParam {
   public final String name;
   public final ClassKind classKind;
+  public final boolean nullable;
   public final String typeName;
 
   public SimpleParam(String name, ClassKind classKind, String typeName) {
     this.name = name;
     this.classKind = classKind;
+    this.nullable = false;
+    this.typeName = typeName;
+  }
+
+  public SimpleParam(String name, ClassKind classKind, boolean nullable, String typeName) {
+    this.name = name;
+    this.classKind = classKind;
+    this.nullable = nullable;
     this.typeName = typeName;
   }
 }

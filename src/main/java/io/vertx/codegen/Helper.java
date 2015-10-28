@@ -29,6 +29,7 @@ import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
@@ -37,8 +38,10 @@ import javax.lang.model.util.Types;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -90,10 +93,10 @@ public class Helper {
     }
   };
 
-  public static ClassKind getKind(AnnotationResolver annotations, String fqcn) {
-    if (annotations.get(DataObject.class) != null) {
+  public static ClassKind getKind(String fqcn, boolean isDataObjectAnnotated, boolean isVertxGenAnnotated) {
+    if (isDataObjectAnnotated) {
       return ClassKind.DATA_OBJECT;
-    } else if (annotations.get(VertxGen.class) != null) {
+    } else if (isVertxGenAnnotated) {
       return ClassKind.API;
     } else if (fqcn.equals(ClassModel.VERTX_HANDLER)) {
       return ClassKind.HANDLER;
@@ -711,5 +714,114 @@ public class Helper {
     if (!f.getParentFile().exists()) {
       f.getParentFile().mkdirs();
     }
+  }
+
+  /**
+   * Compute the string representation of a type mirror.
+   *
+   * @param mirror the type mirror
+   * @return the string representation
+   */
+  static String toString(TypeMirror mirror) {
+    StringBuilder buffer = new StringBuilder();
+    toString(mirror, buffer);
+    return buffer.toString();
+  }
+
+  /**
+   * Compute the string representation of a type mirror.
+   *
+   * @param mirror the type mirror
+   * @param buffer the buffer appended with the string representation
+   */
+  static void toString(TypeMirror mirror, StringBuilder buffer) {
+    if (mirror instanceof DeclaredType) {
+      DeclaredType dt = (DeclaredType) mirror;
+      TypeElement elt = (TypeElement) dt.asElement();
+      buffer.append(elt.getQualifiedName().toString());
+      List<? extends TypeMirror> args = dt.getTypeArguments();
+      if (args.size() > 0) {
+        buffer.append("<");
+        for (int i = 0;i < args.size();i++) {
+          if (i > 0) {
+            buffer.append(",");
+          }
+          toString(args.get(i), buffer);
+        }
+        buffer.append(">");
+      }
+    } else if (mirror instanceof PrimitiveType) {
+      PrimitiveType pm = (PrimitiveType) mirror;
+      buffer.append(pm.getKind().name().toLowerCase());
+    } else if (mirror instanceof javax.lang.model.type.WildcardType) {
+      javax.lang.model.type.WildcardType wt = (javax.lang.model.type.WildcardType) mirror;
+      buffer.append("?");
+      if (wt.getSuperBound() != null) {
+        buffer.append(" super ");
+        toString(wt.getSuperBound(), buffer);
+      } else if (wt.getExtendsBound() != null) {
+        buffer.append(" extends ");
+        toString(wt.getExtendsBound(), buffer);
+      }
+    } else if (mirror instanceof javax.lang.model.type.TypeVariable) {
+      javax.lang.model.type.TypeVariable tv = (TypeVariable) mirror;
+      TypeParameterElement elt = (TypeParameterElement) tv.asElement();
+      buffer.append(elt.getSimpleName().toString());
+      if (tv.getUpperBound() != null && !tv.getUpperBound().toString().equals("java.lang.Object")) {
+        buffer.append(" extends ");
+        toString(tv.getUpperBound(), buffer);
+      } else if (tv.getLowerBound() != null && tv.getLowerBound().getKind() != TypeKind.NULL) {
+        buffer.append(" super ");
+        toString(tv.getUpperBound(), buffer);
+      }
+    } else {
+      throw new UnsupportedOperationException("todo " + mirror + " " + mirror.getKind());
+    }
+  }
+
+  /**
+   * Returns a {@link Method } corresponding to the {@literal methodElt} parameter. Obviously this work
+   * only when the corresponding method is available on the classpath using java lang reflection.
+   *
+   * @param modelMethod the model method element
+   * @return the method or null if not found
+   */
+  static Method getReflectMethod(ExecutableElement modelMethod) {
+    TypeElement typeElt = (TypeElement) modelMethod.getEnclosingElement();
+    Method method = null;
+    try {
+      Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(typeElt.getQualifiedName().toString());
+      StringBuilder sb = new StringBuilder(modelMethod.getSimpleName());
+      sb.append("(");
+      List<? extends VariableElement> params = modelMethod.getParameters();
+      for (int i = 0;i < params.size();i++) {
+        if (i > 0) {
+          sb.append(",");
+        }
+        VariableElement param = params.get(i);
+        toString(param.asType(), sb);
+      }
+      sb.append(")");
+      String s = sb.toString();
+      for (Method m : clazz.getMethods()) {
+        String sign = m.toGenericString();
+        int pos = sign.indexOf('(');
+        pos = sign.lastIndexOf('.', pos) + 1;
+        sign = sign.substring(pos);
+        sign = sign.replace(", ", ","); // Remove space between arguments
+        if (sign.equals(s)) {
+          // Test this case
+          if (method != null) {
+            if (method.getReturnType().isAssignableFrom(m.getReturnType())) {
+              method = m;
+            }
+          } else {
+            method = m;
+          }
+        }
+      }
+    } catch (ClassNotFoundException e) {
+    }
+    return method;
   }
 }
