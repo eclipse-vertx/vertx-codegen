@@ -1,5 +1,7 @@
 package io.vertx.codegen;
 
+import io.vertx.codegen.annotations.VertxGen;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Parameterizable;
 import javax.lang.model.element.TypeElement;
@@ -20,8 +22,10 @@ public abstract class TypeParamInfo {
     for (int index = 0;index < typeParams.length;index++) {
       if (typeParams[index].equals(typeVariable)) {
         if (decl instanceof java.lang.Class) {
-          java.lang.Class classDecl = (java.lang.Class) decl;
-          return new Class(classDecl.getName(), index, typeVariable.getName(), Collections.emptySet());
+          java.lang.Class<?> classDecl = (java.lang.Class<?>) decl;
+          VertxGen genAnn = classDecl.getAnnotation(VertxGen.class);
+          boolean concreteType = genAnn == null || genAnn.concrete();
+          return new Class(classDecl.getName(), index, typeVariable.getName(), Collections.emptySet(), concreteType);
         } else if (decl instanceof java.lang.reflect.Method) {
           java.lang.reflect.Method methodDecl = (java.lang.reflect.Method) decl;
           return new Method(methodDecl.getDeclaringClass().getName(), methodDecl.getName(), index, typeVariable.getName());
@@ -39,9 +43,10 @@ public abstract class TypeParamInfo {
     switch (genericElt.getKind()) {
       case INTERFACE: {
         TypeElement typeElt = (TypeElement) genericElt;
+        boolean concreteType = Helper.isConcreteType(typeElt);
         return new TypeParamInfo.Class(
             typeElt.getQualifiedName().toString(), index,
-            paramElt.getSimpleName().toString(), Collections.emptySet());
+            paramElt.getSimpleName().toString(), Collections.emptySet(), concreteType);
       }
       case METHOD: {
         ExecutableElement methodElt = (ExecutableElement) genericElt;
@@ -67,11 +72,17 @@ public abstract class TypeParamInfo {
 
     private final String typeName;
     private final Set<Variance> siteVariances;
+    private final boolean concreteType;
 
-    public Class(String typeName, int index, String name, Set<Variance> siteVariances) {
+    public Class(String typeName, int index, String name, Set<Variance> siteVariances, boolean concreteType) {
       super(index, name);
       this.typeName = typeName;
       this.siteVariances = siteVariances;
+      this.concreteType = concreteType;
+    }
+
+    public boolean isConcreteType() {
+      return concreteType;
     }
 
     public boolean isSiteCovariant() {

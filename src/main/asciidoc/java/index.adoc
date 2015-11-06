@@ -359,7 +359,8 @@ These rules apply to `link:../../apidocs/io/vertx/codegen/annotations/Nullable.h
 . `io.vertx.core.Handler<io.vertx.core.AsyncResult>` type argument can be `link:../../apidocs/io/vertx/codegen/annotations/Nullable.html[@Nullable]`
 but not for `java.lang.Void`
 . the `java.lang.Object` type is always nullable
-. the `<T>` in `<T>` parameter/return, `Handler<T>` or `Handler<AsyncResult<T>>` is always nullable
+. the `<T>` in `<T>` parameter/return, `Handler<T>` or `Handler<AsyncResult<T>>` is implicitly nullable
+. the `java.lang.Object` parameter is implicitly nullable
 . a method overriding another method `inherits` the `link:../../apidocs/io/vertx/codegen/annotations/Nullable.html[@Nullable]` usage of the overriden method
 . a method overriding another method cannot declare `link:../../apidocs/io/vertx/codegen/annotations/Nullable.html[@Nullable]` in its types
 

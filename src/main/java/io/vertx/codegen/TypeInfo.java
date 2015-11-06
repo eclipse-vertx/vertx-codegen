@@ -80,7 +80,7 @@ public abstract class TypeInfo {
           List<TypeParamInfo.Class> typeParams = new ArrayList<>();
           int index = 0;
           for (java.lang.reflect.TypeVariable<? extends java.lang.Class<?>> var : classType.getTypeParameters()) {
-            typeParams.add(new TypeParamInfo.Class(classType.getName(), index++, var.getName(), Collections.<Variance>emptySet()));
+            typeParams.add(new TypeParamInfo.Class(classType.getName(), index++, var.getName(), Collections.<Variance>emptySet(), true));
           }
           if (kind == ClassKind.API) {
             java.lang.reflect.TypeVariable<java.lang.Class<ReadStream>> classTypeVariable = ReadStream.class.getTypeParameters()[0];
@@ -224,8 +224,9 @@ public abstract class TypeInfo {
 
     private List<TypeParamInfo.Class> createTypeParams(DeclaredType type) {
       List<TypeParamInfo.Class> typeParams = new ArrayList<>();
-      TypeElement elt = (TypeElement) type.asElement();
-      List<? extends TypeParameterElement> typeParamElts = elt.getTypeParameters();
+      TypeElement typeElt = (TypeElement) type.asElement();
+      List<? extends TypeParameterElement> typeParamElts = typeElt.getTypeParameters();
+      boolean concreteType = Helper.isConcreteType(typeElt);
       for (int index = 0;index < typeParamElts.size();index++) {
         TypeParameterElement typeParamElt = typeParamElts.get(index);
         Set<Variance> siteVariance = EnumSet.noneOf(Variance.class);
@@ -234,7 +235,7 @@ public abstract class TypeInfo {
             siteVariance.add(variance);
           }
         }
-        typeParams.add(new TypeParamInfo.Class(elt.getQualifiedName().toString(), index, typeParamElt.getSimpleName().toString(), siteVariance));
+        typeParams.add(new TypeParamInfo.Class(typeElt.getQualifiedName().toString(), index, typeParamElt.getSimpleName().toString(), siteVariance, concreteType));
       }
       return typeParams;
     }

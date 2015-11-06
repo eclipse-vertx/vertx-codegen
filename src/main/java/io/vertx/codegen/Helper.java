@@ -93,6 +93,11 @@ public class Helper {
     }
   };
 
+  public static boolean isConcreteType(TypeElement typeElt) {
+    VertxGen genAnn = typeElt.getAnnotation(VertxGen.class);
+    return genAnn == null || genAnn.concrete();
+  }
+
   public static ClassKind getKind(String fqcn, boolean isDataObjectAnnotated, boolean isVertxGenAnnotated) {
     if (isDataObjectAnnotated) {
       return ClassKind.DATA_OBJECT;
