@@ -17,9 +17,11 @@ public class CaseTest {
     formatCamelCase("", "");
     formatCamelCase("Foo", "foo");
     formatCamelCase("Foo", "Foo");
+    formatCamelCase("FOO", "FOO");
     formatCamelCase("FooBar", "Foo", "Bar");
     formatCamelCase("FooBar", "Foo", "bar");
     formatCamelCase("FooBar", "Foo", "", "Bar");
+    formatCamelCase("FOOBar", "FOO", "", "Bar");
   }
 
   @Test
@@ -33,6 +35,18 @@ public class CaseTest {
     parseCamelCase("testSomething", "test", "Something");
     parseCamelCase("testURL", "test", "URL");
     parseCamelCase("test123", "test123");
+  }
+
+  @Test
+  public void testFormatLowerCamelCase() {
+    formatLowerCamelCase("", "");
+    formatLowerCamelCase("foo", "foo");
+    formatLowerCamelCase("foo", "Foo");
+    formatLowerCamelCase("foo", "FOO");
+    formatLowerCamelCase("fooBar", "Foo", "Bar");
+    formatLowerCamelCase("fooBar", "Foo", "bar");
+    formatLowerCamelCase("fooBar", "Foo", "", "Bar");
+    formatLowerCamelCase("fooBar", "FOO", "", "Bar");
   }
 
   @Test
@@ -120,6 +134,10 @@ public class CaseTest {
 
   private void formatCamelCase(String expected, String... atoms) {
     assertCase(Case.CAMEL, expected, atoms);
+  }
+
+  private void formatLowerCamelCase(String expected, String... atoms) {
+    assertCase(Case.LOWER_CAMEL, expected, atoms);
   }
 
   private void formatQualifiedCase(String expected, String... atoms) {

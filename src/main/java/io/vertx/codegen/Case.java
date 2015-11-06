@@ -12,6 +12,11 @@ import java.util.Map;
 public abstract class Case {
 
   /**
+   * Camel case starting with a lower case, for instance {@literal fooBar}.
+   */
+  public static final Case LOWER_CAMEL = new LowerCamelCase();
+
+  /**
    * Camel case, for instance {@literal FooBar}.
    */
   public static final Case CAMEL = new CamelCase();
@@ -74,7 +79,7 @@ public abstract class Case {
    */
   public static Map<String, Case> vars() {
     HashMap<String, Case> vars = new HashMap<>();
-    for (Case _case : Arrays.asList(CAMEL, QUALIFIED, SNAKE, KEBAB)) {
+    for (Case _case : Arrays.asList(CAMEL, QUALIFIED, SNAKE, KEBAB, LOWER_CAMEL)) {
       vars.put("CASE_" + _case.name(), _case);
     }
     return vars;
