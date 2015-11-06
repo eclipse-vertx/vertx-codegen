@@ -157,6 +157,7 @@ public class CodeGenProcessor extends AbstractProcessor {
               vars.put("module", model.getModule());
               vars.put("model", model);
               vars.putAll(model.getVars());
+              vars.putAll(Case.vars());
               for (CodeGenerator codeGenerator : codeGenerators) {
                 if (codeGenerator.kind.equals(model.getKind())) {
                   String relativeName = (String) MVEL.executeExpression(codeGenerator.filenameExpr, vars);
