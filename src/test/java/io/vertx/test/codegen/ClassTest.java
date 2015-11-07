@@ -830,12 +830,12 @@ public class ClassTest extends ClassTestBase {
     assertTrue(model.getSuperTypes().isEmpty());
     List<MethodInfo> methods = model.getMethods();
     assertEquals(2, methods.size());
-    TypeInfo.Variable t = (TypeInfo.Variable) ((TypeInfo.Parameterized) model.getType()).getArgs().get(0);
+    TypeParamInfo t = model.getType().getParams().get(0);
     checkMethod(methods.get(0), "methodWithClassTypeParam", 3, "T", MethodKind.OTHER);
     List<ParamInfo> params1 = methods.get(0).getParams();
     checkParam(params1.get(0), "t", new TypeLiteral<T>(){});
     assertTrue(params1.get(0).getType() instanceof TypeInfo.Variable);
-    assertEquals(t, params1.get(0).getType());
+    assertEquals(t, ((TypeInfo.Variable)params1.get(0).getType()).getParam());
     checkParam(params1.get(1), "handler", new TypeLiteral<Handler<T>>(){});
     checkParam(params1.get(2), "asyncResultHandler", new TypeLiteral<Handler<AsyncResult<T>>>(){});
     checkMethod(methods.get(1), "someGenericMethod", 3, new TypeLiteral<GenericInterface<R>>(){}, MethodKind.OTHER);

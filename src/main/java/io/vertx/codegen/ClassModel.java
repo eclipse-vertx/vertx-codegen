@@ -90,7 +90,7 @@ public class ClassModel implements Model {
   protected Set<TypeInfo.Class.Api> referencedTypes = new HashSet<>();
   protected Set<TypeInfo.Class> referencedDataObjectTypes = new HashSet<>();
   protected boolean concrete;
-  protected TypeInfo type;
+  protected TypeInfo.Class type;
   protected String ifaceSimpleName;
   protected String ifaceFQCN;
   protected String ifacePackageName;
@@ -187,7 +187,7 @@ public class ClassModel implements Model {
     return doc;
   }
 
-  public TypeInfo getType() {
+  public TypeInfo.Class getType() {
     return type;
   }
 
@@ -480,7 +480,7 @@ public class ClassModel implements Model {
         if (ifaceFQCN != null) {
           throw new GenException(elem, "Can only have one interface per file");
         }
-        type = typeFactory.create(elem.asType());
+        type = (TypeInfo.Class) typeFactory.create(elem.asType()).getRaw();
         Helper.checkUnderModule(this, "@VertxGen");
         ifaceFQCN = elem.asType().toString();
         ifaceSimpleName = elem.getSimpleName().toString();
