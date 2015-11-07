@@ -48,7 +48,7 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
   void methodWithListOfDataObjectsParam(List<TestDataObject> dataObjects);
   void methodWithSetOfDataObjectsParam(Set<TestDataObject> dataObjects);
 
-  void methodWithNullDataObjectParam(TestDataObject dataObject);
+  void methodWithNullDataObjectParam(@Nullable TestDataObject dataObject);
 
   void methodWithListParams(List<String> listString, List<Byte> listByte, List<Short> listShort, List<Integer> listInt, List<Long> listLong, List<JsonObject> listJsonObject, List<JsonArray> listJsonArray, List<RefedInterface1> listVertxGen, List<TestDataObject> listDataObject, List<TestEnum> listEnum);
 
