@@ -139,18 +139,43 @@ public class DataObjectWithMaps {
   }
 
   public JsonObject toJson() {
-    return new JsonObject().
-        put("booleanValues", toObject(booleanValues)).
-        put("shortValues", toObject(shortValues)).
-        put("integerValues", toObject(integerValues)).
-        put("longValues", toObject(longValues)).
-        put("floatValues", toObject(floatValues)).
-        put("doubleValues", toObject(doubleValues)).
-        put("stringValues", toObject(stringValues)).
-        put("jsonObjectValues", toObject(jsonObjectValues)).
-        put("jsonArrayValues", toObject(jsonArrayValues)).
-        put("dataObjectValues", toObject(dataObjectValues, TestDataObject::toJson)).
-        put("enumValues", toObject(enumValues)).
-        put("genEnumValues", toObject(genEnumValues));
+    JsonObject json = new JsonObject();
+    if (booleanValues != null) {
+      json.put("booleanValues", toObject(booleanValues));
+    }
+    if (shortValues != null) {
+      json.put("shortValues", toObject(shortValues));
+    }
+    if (integerValues != null) {
+      json.put("integerValues", toObject(integerValues));
+    }
+    if (longValues != null) {
+      json.put("longValues", toObject(longValues));
+    }
+    if (floatValues != null) {
+      json.put("floatValues", toObject(floatValues));
+    }
+    if (doubleValues != null) {
+      json.put("doubleValues", toObject(doubleValues));
+    }
+    if (stringValues != null) {
+      json.put("stringValues", toObject(stringValues));
+    }
+    if (jsonObjectValues != null) {
+      json.put("jsonObjectValues", toObject(jsonObjectValues));
+    }
+    if (jsonArrayValues != null) {
+      json.put("jsonArrayValues", toObject(jsonArrayValues));
+    }
+    if (dataObjectValues != null) {
+      json.put("dataObjectValues", toObject(dataObjectValues, TestDataObject::toJson));
+    }
+    if (enumValues != null) {
+      json.put("enumValues", toObject(enumValues));
+    }
+    if (genEnumValues != null) {
+      json.put("genEnumValues", toObject(genEnumValues));
+    }
+    return json;
   }
 }

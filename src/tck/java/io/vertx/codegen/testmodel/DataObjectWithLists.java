@@ -132,18 +132,43 @@ public class DataObjectWithLists {
   }
 
   public JsonObject toJson() {
-    return new JsonObject().
-        put("booleanValues", toArray(booleanValues)).
-        put("shortValues", toArray(shortValues)).
-        put("integerValues", toArray(integerValues)).
-        put("longValues", toArray(longValues)).
-        put("floatValues", toArray(floatValues)).
-        put("doubleValues", toArray(doubleValues)).
-        put("stringValues", toArray(stringValues)).
-        put("jsonObjectValues", toArray(jsonObjectValues)).
-        put("jsonArrayValues", toArray(jsonArrayValues)).
-        put("dataObjectValues", toArray(dataObjectValues.stream().map(o -> o.toJson().getMap()).collect(Collectors.toList()))).
-        put("enumValues", toArray(enumValues)).
-        put("genEnumValues", toArray(genEnumValues));
+    JsonObject json = new JsonObject();
+    if (booleanValues != null) {
+      json.put("booleanValues", toArray(booleanValues));
+    }
+    if (shortValues != null) {
+      json.put("shortValues", toArray(shortValues));
+    }
+    if (integerValues != null) {
+      json.put("integerValues", toArray(integerValues));
+    }
+    if (longValues != null) {
+      json.put("longValues", toArray(longValues));
+    }
+    if (floatValues != null) {
+      json.put("floatValues", toArray(floatValues));
+    }
+    if (doubleValues != null) {
+      json.put("doubleValues", toArray(doubleValues));
+    }
+    if (stringValues != null) {
+      json.put("stringValues", toArray(stringValues));
+    }
+    if (jsonObjectValues != null) {
+      json.put("jsonObjectValues", toArray(jsonObjectValues));
+    }
+    if (jsonArrayValues != null) {
+      json.put("jsonArrayValues", toArray(jsonArrayValues));
+    }
+    if (dataObjectValues != null) {
+      json.put("dataObjectValues", toArray(dataObjectValues.stream().map(o -> o.toJson().getMap()).collect(Collectors.toList())));
+    }
+    if (enumValues != null) {
+      json.put("enumValues", toArray(enumValues));
+    }
+    if (genEnumValues != null) {
+      json.put("genEnumValues", toArray(genEnumValues));
+    }
+    return json;
   }
 }
