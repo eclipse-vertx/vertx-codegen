@@ -157,6 +157,8 @@ public class CodeGenProcessor extends AbstractProcessor {
               vars.put("module", model.getModule());
               vars.put("model", model);
               vars.putAll(model.getVars());
+              vars.putAll(ClassKind.vars());
+              vars.putAll(MethodKind.vars());
               vars.putAll(Case.vars());
               for (CodeGenerator codeGenerator : codeGenerators) {
                 if (codeGenerator.kind.equals(model.getKind())) {

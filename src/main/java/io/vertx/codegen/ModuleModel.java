@@ -48,7 +48,6 @@ public class ModuleModel implements Model {
     vars.put("fqn", info.getPackageName());
     vars.put("name", info.getName());
     vars.put("module", getModule());
-    vars.putAll(Case.vars());
     return vars;
   }
 

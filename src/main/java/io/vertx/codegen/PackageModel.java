@@ -37,7 +37,6 @@ public class PackageModel implements Model {
     HashMap<String, Object> vars = new HashMap<>();
     vars.put("fqn", fqn);
     vars.put("module", module);
-    vars.putAll(Case.vars());
     return vars;
   }
 

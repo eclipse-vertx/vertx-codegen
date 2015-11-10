@@ -138,6 +138,9 @@ public class Template {
   public String render(Model model, Map<String, Object> vars) {
     vars.put("options", options);
     vars.putAll(model.getVars());
+    vars.putAll(ClassKind.vars());
+    vars.putAll(MethodKind.vars());
+    vars.putAll(Case.vars());
 
     TemplateRegistry registry = new SimpleTemplateRegistry() {
       @Override
