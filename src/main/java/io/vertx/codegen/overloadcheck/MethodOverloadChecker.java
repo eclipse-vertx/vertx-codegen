@@ -18,7 +18,7 @@ package io.vertx.codegen.overloadcheck;
 
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.ParamInfo;
-import io.vertx.codegen.TypeInfo;
+import io.vertx.codegen.type.TypeInfo;
 
 import java.io.IOException;
 import java.io.InputStream;

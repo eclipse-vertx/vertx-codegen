@@ -16,8 +16,7 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
-import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.codegen.type.Variance;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -41,7 +40,6 @@ import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -92,47 +90,6 @@ public class Helper {
       return Stream.empty();
     }
   };
-
-  public static ClassKind getKind(String fqcn, boolean isDataObjectAnnotated, boolean isVertxGenAnnotated) {
-    if (isDataObjectAnnotated) {
-      return ClassKind.DATA_OBJECT;
-    } else if (isVertxGenAnnotated) {
-      return ClassKind.API;
-    } else if (fqcn.equals(ClassModel.VERTX_HANDLER)) {
-      return ClassKind.HANDLER;
-    } else if (fqcn.equals(ClassModel.VERTX_ASYNC_RESULT)) {
-      return ClassKind.ASYNC_RESULT;
-    } else if (fqcn.equals(ClassModel.JSON_ARRAY)) {
-      return ClassKind.JSON_ARRAY;
-    } else if (fqcn.equals(ClassModel.JSON_OBJECT)) {
-      return ClassKind.JSON_OBJECT;
-    } else if (fqcn.equals(Object.class.getName())) {
-      return ClassKind.OBJECT;
-    } else if (fqcn.equals(String.class.getName())) {
-      return ClassKind.STRING;
-    } else if (fqcn.equals(List.class.getName())) {
-      return ClassKind.LIST;
-    } else if (fqcn.equals(Set.class.getName())) {
-      return ClassKind.SET;
-    } else if (fqcn.equals(Map.class.getName())) {
-      return ClassKind.MAP;
-    } else if (fqcn.equals(Throwable.class.getName())) {
-      return ClassKind.THROWABLE;
-    } else if (fqcn.equals(Void.class.getName())) {
-      return ClassKind.VOID;
-    } else if (fqcn.equals(Integer.class.getName()) ||
-        fqcn.equals(Long.class.getName()) ||
-        fqcn.equals(Boolean.class.getName()) ||
-        fqcn.equals(Double.class.getName()) ||
-        fqcn.equals(Float.class.getName()) ||
-        fqcn.equals(Short.class.getName()) ||
-        fqcn.equals(Character.class.getName()) ||
-        fqcn.equals(Byte.class.getName())) {
-      return ClassKind.BOXED_PRIMITIVE;
-    } else {
-      return ClassKind.OTHER;
-    }
-  }
 
   /**
    * Normalize a property name:<br/>

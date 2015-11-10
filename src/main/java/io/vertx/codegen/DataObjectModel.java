@@ -3,6 +3,11 @@ package io.vertx.codegen;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.doc.Doc;
+import io.vertx.codegen.type.ClassKind;
+import io.vertx.codegen.type.ClassTypeInfo;
+import io.vertx.codegen.type.TypeMirrorFactory;
+import io.vertx.codegen.type.ParameterizedTypeInfo;
+import io.vertx.codegen.type.TypeInfo;
 import io.vertx.core.json.JsonObject;
 
 import javax.annotation.processing.Messager;
@@ -40,7 +45,7 @@ public class DataObjectModel implements Model {
   private final Elements elementUtils;
   private final Types typeUtils;
   private final Doc.Factory docFactory;
-  private final TypeInfo.Factory typeFactory;
+  private final TypeMirrorFactory typeFactory;
   private final TypeElement modelElt;
   private boolean processed = false;
   private boolean concrete;
@@ -48,18 +53,18 @@ public class DataObjectModel implements Model {
   private boolean generateConverter;
   private boolean inheritConverter;
   private final Map<String, PropertyInfo> propertyMap = new LinkedHashMap<>();
-  private final Set<TypeInfo.Class> superTypes = new LinkedHashSet<>();
-  private TypeInfo.Class superType;
-  private final Set<TypeInfo.Class> abstractSuperTypes = new LinkedHashSet<>();
-  private final Set<TypeInfo.Class> importedTypes = new LinkedHashSet<>();
-  private TypeInfo.Class type;
+  private final Set<ClassTypeInfo> superTypes = new LinkedHashSet<>();
+  private ClassTypeInfo superType;
+  private final Set<ClassTypeInfo> abstractSuperTypes = new LinkedHashSet<>();
+  private final Set<ClassTypeInfo> importedTypes = new LinkedHashSet<>();
+  private ClassTypeInfo type;
   private Doc doc;
   private boolean jsonifiable;
 
   public DataObjectModel(Elements elementUtils, Types typeUtils, TypeElement modelElt, Messager messager) {
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
-    this.typeFactory = new TypeInfo.Factory(elementUtils, typeUtils);
+    this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils);
     this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, typeFactory, modelElt);
     this.modelElt = modelElt;
   }
@@ -79,7 +84,7 @@ public class DataObjectModel implements Model {
     return type.getName();
   }
 
-  public TypeInfo.Class getType() {
+  public ClassTypeInfo getType() {
     return type;
   }
 
@@ -95,7 +100,7 @@ public class DataObjectModel implements Model {
     return concrete;
   }
 
-  public Set<TypeInfo.Class> getImportedTypes() {
+  public Set<ClassTypeInfo> getImportedTypes() {
     return importedTypes;
   }
 
@@ -103,15 +108,15 @@ public class DataObjectModel implements Model {
     return propertyMap;
   }
 
-  public TypeInfo.Class getSuperType() {
+  public ClassTypeInfo getSuperType() {
     return superType;
   }
 
-  public Set<TypeInfo.Class> getAbstractSuperTypes() {
+  public Set<ClassTypeInfo> getAbstractSuperTypes() {
     return abstractSuperTypes;
   }
 
-  public Set<TypeInfo.Class> getSuperTypes() {
+  public Set<ClassTypeInfo> getSuperTypes() {
     return superTypes;
   }
 
@@ -174,7 +179,7 @@ public class DataObjectModel implements Model {
     this.isClass = modelElt.getKind() == ElementKind.CLASS;
     this.concrete = isClass && !modelElt.getModifiers().contains(Modifier.ABSTRACT);
     try {
-      this.type = (TypeInfo.Class) typeFactory.create(modelElt.asType());
+      this.type = (ClassTypeInfo) typeFactory.create(modelElt.asType());
     } catch (ClassCastException e) {
       throw new GenException(modelElt, "Data object must be a plain java class with no type parameters");
     }
@@ -187,13 +192,13 @@ public class DataObjectModel implements Model {
 
     modelElt.getInterfaces().stream()
       .filter(superTM -> superTM instanceof DeclaredType && ((DeclaredType) superTM).asElement().getAnnotation(DataObject.class) != null)
-      .map(e -> (TypeInfo.Class) typeFactory.create(e)).forEach(abstractSuperTypes::add);
+      .map(e -> (ClassTypeInfo) typeFactory.create(e)).forEach(abstractSuperTypes::add);
 
     superTypes.addAll(abstractSuperTypes);
 
     TypeMirror superClass = modelElt.getSuperclass();
     if (superClass instanceof DeclaredType && ((DeclaredType) superClass).asElement().getAnnotation(DataObject.class) != null) {
-      superType = (TypeInfo.Class) typeFactory.create(superClass);
+      superType = (ClassTypeInfo) typeFactory.create(superClass);
       superTypes.add(superType);
     }
 
@@ -244,8 +249,8 @@ public class DataObjectModel implements Model {
       property.type.collectImports(importedTypes);
     }
     importedTypes.addAll(superTypes.stream().collect(toList()));
-    for (Iterator<TypeInfo.Class> i = importedTypes.iterator();i.hasNext();) {
-      TypeInfo.Class importedType = i.next();
+    for (Iterator<ClassTypeInfo> i = importedTypes.iterator();i.hasNext();) {
+      ClassTypeInfo importedType = i.next();
       if (importedType.getPackageName().equals(type.getPackageName())) {
         i.remove();
       }
@@ -263,9 +268,9 @@ public class DataObjectModel implements Model {
         } else {
           if (size == 1) {
             TypeInfo ti = typeFactory.create(parameters.get(0).asType());
-            if (ti instanceof TypeInfo.Class) {
-              TypeInfo.Class cl = (TypeInfo.Class) ti;
-              if (cl.name.equals(getFqn())) {
+            if (ti instanceof ClassTypeInfo) {
+              ClassTypeInfo cl = (ClassTypeInfo) ti;
+              if (cl.getName().equals(getFqn())) {
                 return 4;
               } else if (cl.getKind() == ClassKind.JSON_OBJECT) {
                 return 8;
@@ -306,11 +311,11 @@ public class DataObjectModel implements Model {
           } else {
             switch (propType.getKind()) {
               case LIST:
-                propType = ((TypeInfo.Parameterized) propType).getArgs().get(0);
+                propType = ((ParameterizedTypeInfo) propType).getArgs().get(0);
                 kind = PropertyKind.LIST;
                 break;
               case MAP:
-                propType = ((TypeInfo.Parameterized) propType).getArgs().get(1);
+                propType = ((ParameterizedTypeInfo) propType).getArgs().get(1);
                 kind = PropertyKind.MAP;
                 break;
               default:

@@ -16,7 +16,7 @@
 
 package io.vertx.codegen.overloadcheck;
 
-import io.vertx.codegen.ClassKind;
+import io.vertx.codegen.type.ClassKind;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>

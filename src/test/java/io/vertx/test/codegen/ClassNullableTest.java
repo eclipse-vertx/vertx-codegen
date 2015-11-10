@@ -1,11 +1,12 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.ClassKind;
+import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.ClassModel;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.MethodKind;
-import io.vertx.codegen.TypeInfo;
+import io.vertx.codegen.type.ParameterizedTypeInfo;
+import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.core.json.JsonArray;
@@ -224,7 +225,7 @@ public class ClassNullableTest extends ClassTestBase {
     List<MethodInfo> methods = model.getMethods();
     assertEquals(1, methods.size());
     MethodInfo mi2 = methods.get(0);
-    assertTrue(((TypeInfo.Parameterized) mi2.getParams().get(0).getType()).getArg(0).isNullable());
+    assertTrue(((ParameterizedTypeInfo) mi2.getParams().get(0).getType()).getArg(0).isNullable());
   }
 
   @Test
@@ -233,7 +234,7 @@ public class ClassNullableTest extends ClassTestBase {
     List<MethodInfo> methods = model.getMethods();
     assertEquals(1, methods.size());
     MethodInfo mi1 = methods.get(0);
-    assertTrue(((TypeInfo.Parameterized) mi1.getParams().get(0).getType()).getArg(0).isNullable());
+    assertTrue(((ParameterizedTypeInfo) mi1.getParams().get(0).getType()).getArg(0).isNullable());
   }
 
   @Test
@@ -447,7 +448,7 @@ public class ClassNullableTest extends ClassTestBase {
 
     methods.forEach(m -> {
       assertFalse("Expects " + m.getName() + " to have nullable return type", m.isNullableReturn());
-      List<TypeInfo> args = ((TypeInfo.Parameterized) m.getReturnType()).getArgs();
+      List<TypeInfo> args = ((ParameterizedTypeInfo) m.getReturnType()).getArgs();
       assertTrue("Expects " + m.getName() + " to have nullable return type", args.get(args.size() - 1).isNullable());
     });
   }

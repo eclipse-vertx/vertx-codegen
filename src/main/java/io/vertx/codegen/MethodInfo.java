@@ -18,6 +18,9 @@ package io.vertx.codegen;
 
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Text;
+import io.vertx.codegen.type.ClassTypeInfo;
+import io.vertx.codegen.type.TypeInfo;
+import io.vertx.codegen.type.TypeVariableInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,10 +45,10 @@ public class MethodInfo implements Comparable<MethodInfo> {
   final boolean staticMethod;
   final boolean defaultMethod;
   List<TypeParamInfo.Method> typeParams;
-  LinkedHashSet<TypeInfo.Class> ownerTypes;
+  LinkedHashSet<ClassTypeInfo> ownerTypes;
   List<ParamInfo> params;
 
-  public MethodInfo(Set<TypeInfo.Class> ownerTypes, String name, MethodKind kind,
+  public MethodInfo(Set<ClassTypeInfo> ownerTypes, String name, MethodKind kind,
                     TypeInfo returnType, Text returnDescription, boolean fluent,  boolean cacheReturn,
                     List<ParamInfo> params, String comment, Doc doc, boolean staticMethod, boolean defaultMethod,
                     List<TypeParamInfo.Method> typeParams) {
@@ -86,7 +89,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return returnDescription;
   }
 
-  public Set<TypeInfo.Class> getOwnerTypes() {
+  public Set<ClassTypeInfo> getOwnerTypes() {
     return ownerTypes;
   }
 
@@ -106,7 +109,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
    * @param owner the tested type
    * @return true when this method is owned by the <code>owner</code> argument
    */
-  public boolean isOwnedBy(TypeInfo.Class owner) {
+  public boolean isOwnedBy(ClassTypeInfo owner) {
     return ownerTypes.contains(owner) && ownerTypes.size() == 1;
   }
 
@@ -122,7 +125,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
    * @return true if the method has a nullable return
    */
   public boolean isNullableReturn() {
-    return returnType instanceof TypeInfo.Variable || returnType.isNullable();
+    return returnType instanceof TypeVariableInfo || returnType.isNullable();
   }
 
   public List<ParamInfo> getParams() {
@@ -160,7 +163,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
     }
   }
 
-  public void collectImports(Collection<TypeInfo.Class> imports) {
+  public void collectImports(Collection<ClassTypeInfo> imports) {
     params.stream().map(ParamInfo::getType).forEach(a -> a.collectImports(imports));
   }
 

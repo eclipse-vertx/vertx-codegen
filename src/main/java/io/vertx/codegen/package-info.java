@@ -581,58 +581,58 @@
  *
  * == Codegen types
  *
- * The {@link io.vertx.codegen.TypeInfo} provides a codegen view of the Java type system.
+ * The {@link io.vertx.codegen.type.TypeInfo} provides a codegen view of the Java type system.
  *
- * A type info has a {@link io.vertx.codegen.ClassKind} usually used to determine the conversion to apply:
+ * A type info has a {@link io.vertx.codegen.type.ClassKind} usually used to determine the conversion to apply:
  *
  * [cols="1,4"]
  * .Class kinds
  * |===
- * | {@link io.vertx.codegen.ClassKind#STRING}
+ * | {@link io.vertx.codegen.type.ClassKind#STRING}
  * | `java.lang.String`
- * | {@link io.vertx.codegen.ClassKind#PRIMITIVE}
+ * | {@link io.vertx.codegen.type.ClassKind#PRIMITIVE}
  * | any Java primitive type
- * | {@link io.vertx.codegen.ClassKind#BOXED_PRIMITIVE}
+ * | {@link io.vertx.codegen.type.ClassKind#BOXED_PRIMITIVE}
  * | any Java boxed primitive type
- * | {@link io.vertx.codegen.ClassKind#ENUM}
+ * | {@link io.vertx.codegen.type.ClassKind#ENUM}
  * | any Java enum
- * | {@link io.vertx.codegen.ClassKind#JSON_OBJECT}
+ * | {@link io.vertx.codegen.type.ClassKind#JSON_OBJECT}
  * | `io.vertx.core.json.JsonObject`
- * | {@link io.vertx.codegen.ClassKind#JSON_ARRAY}
+ * | {@link io.vertx.codegen.type.ClassKind#JSON_ARRAY}
  * | `io.vertx.core.json.JsonArray`
- * | {@link io.vertx.codegen.ClassKind#THROWABLE}
+ * | {@link io.vertx.codegen.type.ClassKind#THROWABLE}
  * | `java.lang.Throwable`
- * | {@link io.vertx.codegen.ClassKind#VOID}
+ * | {@link io.vertx.codegen.type.ClassKind#VOID}
  * | `java.lang.Void`
- * | {@link io.vertx.codegen.ClassKind#OBJECT}
+ * | {@link io.vertx.codegen.type.ClassKind#OBJECT}
  * | `java.lang.Object` or an unbounded type variable
- * | {@link io.vertx.codegen.ClassKind#LIST}
+ * | {@link io.vertx.codegen.type.ClassKind#LIST}
  * | `java.util.List<V>`
- * | {@link io.vertx.codegen.ClassKind#SET}
+ * | {@link io.vertx.codegen.type.ClassKind#SET}
  * | `java.util.Set<V>`
- * | {@link io.vertx.codegen.ClassKind#MAP}
+ * | {@link io.vertx.codegen.type.ClassKind#MAP}
  * | `java.util.Map<String,V>`
- * | {@link io.vertx.codegen.ClassKind#API}
+ * | {@link io.vertx.codegen.type.ClassKind#API}
  * | any _api_ type
- * | {@link io.vertx.codegen.ClassKind#DATA_OBJECT}
+ * | {@link io.vertx.codegen.type.ClassKind#DATA_OBJECT}
  * | any _data object_ type
- * | {@link io.vertx.codegen.ClassKind#HANDLER}
+ * | {@link io.vertx.codegen.type.ClassKind#HANDLER}
  * | `io.vertx.core.Handler<E>`
- * | {@link io.vertx.codegen.ClassKind#ASYNC_RESULT}
+ * | {@link io.vertx.codegen.type.ClassKind#ASYNC_RESULT}
  * | `io.vertx.core.AsyncResult<E>`
- * | {@link io.vertx.codegen.ClassKind#OTHER}
+ * | {@link io.vertx.codegen.type.ClassKind#OTHER}
  * | anything else
  * |===
  *
  * The `TypeInfo` base class provides common type information
  *
- * - {@link io.vertx.codegen.TypeInfo#getKind} the type {@link io.vertx.codegen.ClassKind}
- * - {@link io.vertx.codegen.TypeInfo#getName()} the type name
- * - {@link io.vertx.codegen.TypeInfo#getSimpleName()} the simple name
- * - {@link io.vertx.codegen.TypeInfo#getErased()} returns the corresponding erased type
- * - {@link io.vertx.codegen.TypeInfo#getRaw()} returns the raw type of a parameter type or this type
+ * - {@link io.vertx.codegen.type.TypeInfo#getKind} the type {@link io.vertx.codegen.type.ClassKind}
+ * - {@link io.vertx.codegen.type.TypeInfo#getName()} the type name
+ * - {@link io.vertx.codegen.type.TypeInfo#getSimpleName()} the simple name
+ * - {@link io.vertx.codegen.type.TypeInfo#getErased()} returns the corresponding erased type
+ * - {@link io.vertx.codegen.type.TypeInfo#getRaw()} returns the raw type of a parameter type or this type
  *
- * Besides it provides the {@link io.vertx.codegen.TypeInfo#translateName(java.lang.String)} method to
+ * Besides it provides the {@link io.vertx.codegen.type.TypeInfo#translateName(java.lang.String)} method to
  * translate the type name using a shim identifier, this is useful for shim using a hierarchical naming, for
  * instance the translated name of `io.vertx.core.eventbus.EventBus` for the `groovy` identifier is
  * `io.vertx.groovy.core.eventbus.EventBus`. The position where the identifier is applied is
@@ -640,13 +640,13 @@
  *
  * Several subclasses of `TypeInfo` provides specialization when needed:
  *
- * - {@link io.vertx.codegen.TypeInfo.Class} : a java class
- * - {@link io.vertx.codegen.TypeInfo.Class.Api} : `TypeInfo.Class` specialization for _api_ types
- * - {@link io.vertx.codegen.TypeInfo.Class.Enum} : `TypeInfo.Class` specialization for _enum_ types
- * - {@link io.vertx.codegen.TypeInfo.Parameterized} : a parameterized type
- * - {@link io.vertx.codegen.TypeInfo.Primitive} : a primitive type
- * - {@link io.vertx.codegen.TypeInfo.Void} : `void` (and not `java.lang.Void`)
- * - {@link io.vertx.codegen.TypeInfo.Variable} : an unbounded type variable
+ * - {@link io.vertx.codegen.type.ClassTypeInfo} : a java class
+ * - {@link io.vertx.codegen.type.ApiTypeInfo} : `TypeInfo.Class` specialization for _api_ types
+ * - {@link io.vertx.codegen.type.EnumTypeInfo} : `TypeInfo.Class` specialization for _enum_ types
+ * - {@link io.vertx.codegen.type.ParameterizedTypeInfo} : a parameterized type
+ * - {@link io.vertx.codegen.type.PrimitiveTypeInfo} : a primitive type
+ * - {@link io.vertx.codegen.type.VoidTypeInfo} : `void` (and not `java.lang.Void`)
+ * - {@link io.vertx.codegen.type.TypeVariableInfo} : an unbounded type variable
  *
  * == Codegen models
  *
@@ -670,13 +670,13 @@
  * .Template properties
  * |===
  * | `importedTypes`
- * | the full list of used types including `java.lang.*` types as `{@link io.vertx.codegen.TypeInfo.Class}` that are not in the same package
+ * | the full list of used types including `java.lang.*` types as `{@link io.vertx.codegen.type.ClassTypeInfo}` that are not in the same package
  * | `referencedTypes`
- * | the full list of used types including `java.lang.*` types as `{@link io.vertx.codegen.TypeInfo.Class}`
+ * | the full list of used types including `java.lang.*` types as `{@link io.vertx.codegen.type.ClassTypeInfo}`
  * | `referencedDataObjectTypes`
- * | the full list of used _data object_ types as `{@link io.vertx.codegen.TypeInfo.Class}`
+ * | the full list of used _data object_ types as `{@link io.vertx.codegen.type.ClassTypeInfo}`
  * | `type`
- * | the type `{@link io.vertx.codegen.TypeInfo.Class}` or `{@link io.vertx.codegen.TypeInfo.Parameterized}`
+ * | the type `{@link io.vertx.codegen.type.ClassTypeInfo}` or `{@link io.vertx.codegen.type.ParameterizedTypeInfo}`
  * | `typeParams`
  * | the list of class type params as `List<`{@link io.vertx.codegen.TypeParamInfo.Class}`>`
  * | `concrete`

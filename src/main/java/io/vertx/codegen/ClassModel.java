@@ -25,6 +25,8 @@ import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.doc.Text;
 import io.vertx.codegen.doc.Token;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
+import io.vertx.codegen.type.*;
+import io.vertx.codegen.type.VoidTypeInfo;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
@@ -46,7 +48,6 @@ import javax.tools.Diagnostic;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -77,7 +78,7 @@ public class ClassModel implements Model {
 
   protected final MethodOverloadChecker methodOverloadChecker;
   protected final Messager messager;
-  protected final TypeInfo.Factory typeFactory;
+  protected final TypeMirrorFactory typeFactory;
   protected final Doc.Factory docFactory;
   protected final Map<String, TypeElement> sources;
   protected final TypeElement modelElt;
@@ -85,12 +86,12 @@ public class ClassModel implements Model {
   protected final Types typeUtils;
   protected boolean processed = false;
   protected LinkedHashMap<ExecutableElement, MethodInfo> methods = new LinkedHashMap<>();
-  protected Set<TypeInfo.Class> collectedTypes = new HashSet<>();
-  protected Set<TypeInfo.Class> importedTypes = new HashSet<>();
-  protected Set<TypeInfo.Class.Api> referencedTypes = new HashSet<>();
-  protected Set<TypeInfo.Class> referencedDataObjectTypes = new HashSet<>();
+  protected Set<ClassTypeInfo> collectedTypes = new HashSet<>();
+  protected Set<ClassTypeInfo> importedTypes = new HashSet<>();
+  protected Set<ApiTypeInfo> referencedTypes = new HashSet<>();
+  protected Set<ClassTypeInfo> referencedDataObjectTypes = new HashSet<>();
   protected boolean concrete;
-  protected TypeInfo.Class type;
+  protected ClassTypeInfo type;
   protected String ifaceSimpleName;
   protected String ifaceFQCN;
   protected String ifacePackageName;
@@ -107,7 +108,7 @@ public class ClassModel implements Model {
                     Messager messager,  Map<String, TypeElement> sources, Elements elementUtils,
                     Types typeUtils, TypeElement modelElt) {
     this.methodOverloadChecker = methodOverloadChecker;
-    this.typeFactory = new TypeInfo.Factory(elementUtils, typeUtils);
+    this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils);
     this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, typeFactory, modelElt);
     this.messager = messager;
     this.sources = sources;
@@ -149,21 +150,21 @@ public class ClassModel implements Model {
   /**
    * @return all classes that are not in the same package
    */
-  public Set<TypeInfo.Class> getImportedTypes() {
+  public Set<ClassTypeInfo> getImportedTypes() {
     return importedTypes;
   }
 
   /**
    * @return all the referenced api types
    */
-  public Set<TypeInfo.Class.Api> getReferencedTypes() {
+  public Set<ApiTypeInfo> getReferencedTypes() {
     return referencedTypes;
   }
 
   /**
    * @return all the referenced data object types
    */
-  public Set<TypeInfo.Class> getReferencedDataObjectTypes() {
+  public Set<ClassTypeInfo> getReferencedDataObjectTypes() {
     return referencedDataObjectTypes;
   }
 
@@ -187,7 +188,7 @@ public class ClassModel implements Model {
     return doc;
   }
 
-  public TypeInfo.Class getType() {
+  public ClassTypeInfo getType() {
     return type;
   }
 
@@ -268,7 +269,7 @@ public class ClassModel implements Model {
     // Basic types, int, long, String etc
     // JsonObject or JsonArray
     // void
-    if (type.getKind().basic || type instanceof TypeInfo.Void || type.getKind().json) {
+    if (type.getKind().basic || type instanceof VoidTypeInfo || type.getKind().json) {
       return;
     }
     // We also allow enums as return types
@@ -315,7 +316,7 @@ public class ClassModel implements Model {
   }
 
   private boolean isVariableType(TypeInfo type) {
-    return type instanceof TypeInfo.Variable;
+    return type instanceof TypeVariableInfo;
   }
 
   private boolean isDataObjectType(TypeInfo type) {
@@ -344,13 +345,13 @@ public class ClassModel implements Model {
     // List<T> and Set<T> are also legal for params if T = basic type, json, @VertxGen, @DataObject
     // Map<K,V> is also legal for returns and params if K is a String and V is a basic type, json, or a @VertxGen interface
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
-      TypeInfo argument = ((TypeInfo.Parameterized) type).getArgs().get(0);
+      TypeInfo argument = ((ParameterizedTypeInfo) type).getArgs().get(0);
       if (type.getKind() != ClassKind.MAP) {
         if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument) || isDataObjectType(argument) || argument.getKind() == ClassKind.ENUM) {
           return true;
         }
       } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
-        argument = ((TypeInfo.Parameterized) type).getArgs().get(1);
+        argument = ((ParameterizedTypeInfo) type).getArgs().get(1);
         if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument)) {
           return true;
         }
@@ -361,7 +362,7 @@ public class ClassModel implements Model {
 
   protected boolean isLegalListSetMapReturn(TypeInfo type) {
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
-      List<TypeInfo> args = ((TypeInfo.Parameterized) type).getArgs();
+      List<TypeInfo> args = ((ParameterizedTypeInfo) type).getArgs();
       if (type.getKind() == ClassKind.MAP) {
         if (args.get(0).getKind() != ClassKind.STRING) {
           return false;
@@ -388,10 +389,10 @@ public class ClassModel implements Model {
 
   private boolean isVertxGenInterface(TypeInfo type) {
     if (type.getKind() == ClassKind.API) {
-      if (type instanceof TypeInfo.Parameterized) {
-        TypeInfo.Parameterized parameterized = (TypeInfo.Parameterized) type;
+      if (type instanceof ParameterizedTypeInfo) {
+        ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
         for (TypeInfo param : parameterized.getArgs()) {
-          if (!(param instanceof TypeInfo.Variable || param.getKind() == ClassKind.VOID)) {
+          if (!(param instanceof TypeVariableInfo || param.getKind() == ClassKind.VOID)) {
             return false;
           }
           if (param.isNullable()) {
@@ -406,7 +407,7 @@ public class ClassModel implements Model {
 
   private boolean isLegalHandlerType(TypeInfo type) {
     if (type.getErased().getKind() == ClassKind.HANDLER) {
-      TypeInfo eventType = ((TypeInfo.Parameterized) type).getArgs().get(0);
+      TypeInfo eventType = ((ParameterizedTypeInfo) type).getArgs().get(0);
       ClassKind eventKind = eventType.getKind();
       if (eventKind == ClassKind.VOID && eventType.isNullable()) {
         return false;
@@ -420,9 +421,9 @@ public class ClassModel implements Model {
 
   private boolean isLegalHandlerAsyncResultType(TypeInfo type) {
     if (type.getErased().getKind() == ClassKind.HANDLER) {
-      TypeInfo eventType = ((TypeInfo.Parameterized) type).getArgs().get(0);
+      TypeInfo eventType = ((ParameterizedTypeInfo) type).getArgs().get(0);
       if (eventType.getErased().getKind() == ClassKind.ASYNC_RESULT && !eventType.isNullable()) {
-        TypeInfo resultType = ((TypeInfo.Parameterized) eventType).getArgs().get(0);
+        TypeInfo resultType = ((ParameterizedTypeInfo) eventType).getArgs().get(0);
         ClassKind resultKind = resultType.getKind();
         if (resultKind == ClassKind.VOID && resultType.isNullable()) {
           return false;
@@ -443,18 +444,18 @@ public class ClassModel implements Model {
 
   private void determineApiTypes() {
     collectedTypes.stream().
-        map(TypeInfo.Class::getRaw).
-        flatMap(Helper.instanceOf(TypeInfo.Class.class)).
+        map(ClassTypeInfo::getRaw).
+        flatMap(Helper.instanceOf(ClassTypeInfo.class)).
         filter(t -> !t.getPackageName().equals(ifaceFQCN)).
         forEach(importedTypes::add);
     collectedTypes.stream().
-        map(TypeInfo.Class::getRaw).
-        flatMap(Helper.instanceOf(TypeInfo.Class.Api.class)).
+        map(ClassTypeInfo::getRaw).
+        flatMap(Helper.instanceOf(ApiTypeInfo.class)).
         filter(t -> !t.equals(type.getRaw())).
         forEach(referencedTypes::add);
     collectedTypes.stream().
-        map(TypeInfo.Class::getRaw).
-        flatMap(Helper.instanceOf(TypeInfo.Class.class)).
+        map(ClassTypeInfo::getRaw).
+        flatMap(Helper.instanceOf(ClassTypeInfo.class)).
         filter(t -> t.getKind() == ClassKind.DATA_OBJECT).
         forEach(referencedDataObjectTypes::add);
   }
@@ -480,7 +481,7 @@ public class ClassModel implements Model {
         if (ifaceFQCN != null) {
           throw new GenException(elem, "Can only have one interface per file");
         }
-        type = (TypeInfo.Class) typeFactory.create(elem.asType()).getRaw();
+        type = (ClassTypeInfo) typeFactory.create(elem.asType()).getRaw();
         Helper.checkUnderModule(this, "@VertxGen");
         ifaceFQCN = elem.asType().toString();
         ifaceSimpleName = elem.getSimpleName().toString();
@@ -508,7 +509,7 @@ public class ClassModel implements Model {
             switch (superTypeInfo.getKind()) {
               case API: {
                 try {
-                  TypeInfo.Class.Api superType = (TypeInfo.Class.Api) typeFactory.create(tmSuper).getRaw();
+                  ApiTypeInfo superType = (ApiTypeInfo) typeFactory.create(tmSuper).getRaw();
                   if (superType.isConcrete()) {
                     if (concrete) {
                       if (concreteSuperType != null) {
@@ -597,7 +598,7 @@ public class ClassModel implements Model {
       TypeInfo declaringType = typeFactory.create(declaringElt.asType());
       switch (declaringType.getKind()) {
         case API: {
-          TypeInfo.Class.Api declaringApiType = (TypeInfo.Class.Api) declaringType.getRaw();
+          ApiTypeInfo declaringApiType = (ApiTypeInfo) declaringType.getRaw();
           if (declaringApiType.isConcrete()) {
             return;
           }
@@ -611,7 +612,7 @@ public class ClassModel implements Model {
       }
     }
 
-    TypeInfo.Class type = typeFactory.create(declaringElt.asType()).getRaw();
+    ClassTypeInfo type = typeFactory.create(declaringElt.asType()).getRaw();
 
     boolean isDefault = mods.contains(Modifier.DEFAULT);
     boolean isStatic = mods.contains(Modifier.STATIC);
@@ -645,7 +646,7 @@ public class ClassModel implements Model {
     }
 
     // Owner types
-    Set<TypeInfo.Class> ownerTypes = new HashSet<>();
+    Set<ClassTypeInfo> ownerTypes = new HashSet<>();
     ownerTypes.add(type);
 
     ArrayList<DeclaredType> ancestors = new ArrayList<>(Helper.resolveAncestorTypes(modelElt, true, true));
@@ -745,7 +746,7 @@ public class ClassModel implements Model {
       throw genEx;
     }
     returnType.collectImports(collectedTypes);
-    if (isCacheReturn && returnType instanceof TypeInfo.Void) {
+    if (isCacheReturn && returnType instanceof VoidTypeInfo) {
       throw new GenException(modelMethod, "void method can't be marked with @CacheReturn");
     }
     String methodName = modelMethod.getSimpleName().toString();
@@ -760,10 +761,10 @@ public class ClassModel implements Model {
     // Determine method kind + validate
     MethodKind kind = MethodKind.OTHER;
     int lastParamIndex = mParams.size() - 1;
-    if (lastParamIndex >= 0 && (returnType instanceof TypeInfo.Void || isFluent)) {
+    if (lastParamIndex >= 0 && (returnType instanceof VoidTypeInfo || isFluent)) {
       TypeInfo lastParamType = mParams.get(lastParamIndex).type;
       if (lastParamType.getKind() == ClassKind.HANDLER) {
-        TypeInfo typeArg = ((TypeInfo.Parameterized) lastParamType).getArgs().get(0);
+        TypeInfo typeArg = ((ParameterizedTypeInfo) lastParamType).getArgs().get(0);
         if (typeArg.getKind() == ClassKind.ASYNC_RESULT) {
           kind = MethodKind.FUTURE;
         } else {
@@ -802,7 +803,7 @@ public class ClassModel implements Model {
   }
 
   // This is a hook to allow a specific type of method to be created
-  protected MethodInfo createMethodInfo(Set<TypeInfo.Class> ownerTypes, String methodName, String comment, Doc doc, MethodKind kind, TypeInfo returnType,
+  protected MethodInfo createMethodInfo(Set<ClassTypeInfo> ownerTypes, String methodName, String comment, Doc doc, MethodKind kind, TypeInfo returnType,
                                         Text returnDescription,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
                                         ExecutableElement methodElt, boolean isStatic, boolean isDefault, ArrayList<TypeParamInfo.Method> typeParams,
@@ -886,7 +887,7 @@ public class ClassModel implements Model {
   }
 
   private static boolean rawTypeIs(TypeInfo type, Class<?>... classes) {
-    if (type instanceof TypeInfo.Parameterized) {
+    if (type instanceof ParameterizedTypeInfo) {
       String rawClassName = type.getRaw().getName();
       for (Class<?> c : classes) {
         if (rawClassName.equals(c.getName())) {

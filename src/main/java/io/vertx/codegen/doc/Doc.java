@@ -1,7 +1,6 @@
 package io.vertx.codegen.doc;
 
-import io.vertx.codegen.Helper;
-import io.vertx.codegen.TypeInfo;
+import io.vertx.codegen.type.TypeMirrorFactory;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
@@ -146,10 +145,10 @@ public class Doc {
     private final Messager messager;
     private final Elements elementUtils;
     private final Types typeUtils;
-    private final TypeInfo.Factory typeFactory;
+    private final TypeMirrorFactory typeFactory;
     private final TypeElement ownerElt;
 
-    public Factory(Messager messager, Elements elementUtils, Types typeUtils, TypeInfo.Factory typeFactory, TypeElement ownerElt) {
+    public Factory(Messager messager, Elements elementUtils, Types typeUtils, TypeMirrorFactory typeFactory, TypeElement ownerElt) {
       this.messager = messager;
       this.elementUtils = elementUtils;
       this.typeUtils = typeUtils;

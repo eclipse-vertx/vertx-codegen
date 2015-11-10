@@ -16,7 +16,7 @@
 
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.ClassKind;
+import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
 import io.vertx.codegen.overloadcheck.SimpleMethod;
 import io.vertx.codegen.overloadcheck.SimpleParam;

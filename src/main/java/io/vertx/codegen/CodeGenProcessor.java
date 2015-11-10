@@ -8,6 +8,7 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.codegen.type.ClassKind;
 import org.mvel2.MVEL;
 
 import javax.annotation.processing.AbstractProcessor;

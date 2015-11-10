@@ -1,4 +1,4 @@
-package io.vertx.codegen;
+package io.vertx.codegen.type;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>

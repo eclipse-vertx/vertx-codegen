@@ -1,6 +1,8 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.doc.Doc;
+import io.vertx.codegen.type.EnumTypeInfo;
+import io.vertx.codegen.type.TypeMirrorFactory;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
@@ -25,13 +27,13 @@ public class EnumModel implements Model  {
   protected final Elements elementUtils;
   protected final Types typeUtils;
   protected final TypeElement modelElt;
-  protected TypeInfo.Class.Enum type;
+  protected EnumTypeInfo type;
   private Doc doc;
   private List<EnumValueInfo> values;
   private boolean processed;
 
   public EnumModel(Messager messager, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
-    this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, new TypeInfo.Factory(elementUtils, typeUtils), modelElt);
+    this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, new TypeMirrorFactory(elementUtils, typeUtils), modelElt);
     this.typeUtils = typeUtils;
     this.elementUtils = elementUtils;
     this.modelElt = modelElt;
@@ -43,7 +45,7 @@ public class EnumModel implements Model  {
         throw new GenException(modelElt, "@VertxGen can only be used with interfaces or enums" + modelElt.asType().toString());
       }
       doc = docFactory.createDoc(modelElt);
-      type = (TypeInfo.Class.Enum) new TypeInfo.Factory(elementUtils, typeUtils).create(modelElt.asType());
+      type = (EnumTypeInfo) new TypeMirrorFactory(elementUtils, typeUtils).create(modelElt.asType());
       Helper.checkUnderModule(this, "@VertxGen");
       values = elementUtils.
           getAllMembers(modelElt).
@@ -65,7 +67,7 @@ public class EnumModel implements Model  {
   /**
    * @return the type of this enum model
    */
-  public TypeInfo.Class.Enum getType() {
+  public EnumTypeInfo getType() {
     return type;
   }
 

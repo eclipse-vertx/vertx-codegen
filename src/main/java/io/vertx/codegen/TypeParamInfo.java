@@ -1,5 +1,7 @@
 package io.vertx.codegen;
 
+import io.vertx.codegen.type.Variance;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Parameterizable;
 import javax.lang.model.element.TypeElement;
@@ -14,7 +16,7 @@ import java.util.Set;
  */
 public abstract class TypeParamInfo {
 
-  static TypeParamInfo create(java.lang.reflect.TypeVariable typeVariable) {
+  public static TypeParamInfo create(java.lang.reflect.TypeVariable typeVariable) {
     GenericDeclaration decl = typeVariable.getGenericDeclaration();
     TypeVariable<?>[] typeParams = decl.getTypeParameters();
     for (int index = 0;index < typeParams.length;index++) {
@@ -33,7 +35,7 @@ public abstract class TypeParamInfo {
     throw new AssertionError();
   }
 
-  static TypeParamInfo create(TypeParameterElement paramElt) {
+  public static TypeParamInfo create(TypeParameterElement paramElt) {
     Parameterizable genericElt = (Parameterizable) paramElt.getGenericElement();
     int index = genericElt.getTypeParameters().indexOf(paramElt);
     switch (genericElt.getKind()) {

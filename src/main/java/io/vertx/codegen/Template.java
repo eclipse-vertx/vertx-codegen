@@ -1,5 +1,6 @@
 package io.vertx.codegen;
 
+import io.vertx.codegen.type.ClassKind;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.SimpleTemplateRegistry;

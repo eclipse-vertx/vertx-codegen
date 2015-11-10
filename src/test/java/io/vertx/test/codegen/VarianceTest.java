@@ -2,7 +2,7 @@ package io.vertx.test.codegen;
 
 import io.vertx.codegen.Compiler;
 import io.vertx.codegen.Helper;
-import io.vertx.codegen.Variance;
+import io.vertx.codegen.type.Variance;
 import io.vertx.test.codegen.testvariance.Analyze;
 import io.vertx.test.codegen.testvariance.ExtendWithVarAsCoParam;
 import io.vertx.test.codegen.testvariance.ExtendWithVarAsContraParam;

@@ -1,6 +1,6 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.ClassKind;
+import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.ClassModel;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.GenException;
@@ -10,11 +10,17 @@ import io.vertx.codegen.MethodKind;
 import io.vertx.codegen.ParamInfo;
 import io.vertx.codegen.Signature;
 import io.vertx.codegen.doc.Tag;
-import io.vertx.codegen.TypeInfo;
+import io.vertx.codegen.type.ApiTypeInfo;
+import io.vertx.codegen.type.ClassTypeInfo;
+import io.vertx.codegen.type.EnumTypeInfo;
+import io.vertx.codegen.type.ParameterizedTypeInfo;
+import io.vertx.codegen.type.PrimitiveTypeInfo;
+import io.vertx.codegen.type.TypeReflectionFactory;
 import io.vertx.codegen.TypeParamInfo;
 import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.codegen.testmodel.TestGenEnum;
+import io.vertx.codegen.type.TypeVariableInfo;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
@@ -174,10 +180,10 @@ import static org.junit.Assert.*;
  */
 public class ClassTest extends ClassTestBase {
 
-  static final TypeInfo.Class GenericInterfaceInfo = (TypeInfo.Class) TypeInfo.create(GenericInterface.class);
-  static final TypeInfo.Class VertxGenClass1Info = (TypeInfo.Class) TypeInfo.create(VertxGenClass1.class);
-  static final TypeInfo.Class VertxGenClass2Info = (TypeInfo.Class) TypeInfo.create(VertxGenClass2.class);
-  static final TypeInfo.Class VertxGenInterfaceInfo = (TypeInfo.Class) TypeInfo.create(VertxGenInterface.class);
+  static final ClassTypeInfo GenericInterfaceInfo = (ClassTypeInfo) TypeReflectionFactory.create(GenericInterface.class);
+  static final ClassTypeInfo VertxGenClass1Info = (ClassTypeInfo) TypeReflectionFactory.create(VertxGenClass1.class);
+  static final ClassTypeInfo VertxGenClass2Info = (ClassTypeInfo) TypeReflectionFactory.create(VertxGenClass2.class);
+  static final ClassTypeInfo VertxGenInterfaceInfo = (ClassTypeInfo) TypeReflectionFactory.create(VertxGenInterface.class);
 
   public ClassTest() {
   }
@@ -407,14 +413,14 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(6), "bool", boolean.class);
     checkParam(params.get(7), "ch", char.class);
     checkParam(params.get(8), "str", String.class);
-    assertEquals("java.lang.Byte", ((TypeInfo.Primitive) params.get(0).getType()).getBoxed().getName());
-    assertEquals("java.lang.Short", ((TypeInfo.Primitive) params.get(1).getType()).getBoxed().getName());
-    assertEquals("java.lang.Integer", ((TypeInfo.Primitive) params.get(2).getType()).getBoxed().getName());
-    assertEquals("java.lang.Long", ((TypeInfo.Primitive) params.get(3).getType()).getBoxed().getName());
-    assertEquals("java.lang.Float", ((TypeInfo.Primitive) params.get(4).getType()).getBoxed().getName());
-    assertEquals("java.lang.Double", ((TypeInfo.Primitive) params.get(5).getType()).getBoxed().getName());
-    assertEquals("java.lang.Boolean", ((TypeInfo.Primitive) params.get(6).getType()).getBoxed().getName());
-    assertEquals("java.lang.Character", ((TypeInfo.Primitive) params.get(7).getType()).getBoxed().getName());
+    assertEquals("java.lang.Byte", ((PrimitiveTypeInfo) params.get(0).getType()).getBoxed().getName());
+    assertEquals("java.lang.Short", ((PrimitiveTypeInfo) params.get(1).getType()).getBoxed().getName());
+    assertEquals("java.lang.Integer", ((PrimitiveTypeInfo) params.get(2).getType()).getBoxed().getName());
+    assertEquals("java.lang.Long", ((PrimitiveTypeInfo) params.get(3).getType()).getBoxed().getName());
+    assertEquals("java.lang.Float", ((PrimitiveTypeInfo) params.get(4).getType()).getBoxed().getName());
+    assertEquals("java.lang.Double", ((PrimitiveTypeInfo) params.get(5).getType()).getBoxed().getName());
+    assertEquals("java.lang.Boolean", ((PrimitiveTypeInfo) params.get(6).getType()).getBoxed().getName());
+    assertEquals("java.lang.Character", ((PrimitiveTypeInfo) params.get(7).getType()).getBoxed().getName());
   }
 
   @Test
@@ -455,9 +461,9 @@ public class ClassTest extends ClassTestBase {
     assertEquals(1, model.getMethods().size());
     MethodInfo mi = model.getMethods().get(0);
     assertEquals("foo", mi.getName());
-    assertEquals(new TypeInfo.Parameterized(new TypeInfo.Class(ClassKind.API, GenericInterface.class.getName(), null, false, false, Collections.emptyList()), false, Arrays.asList(TypeInfo.create(Void.class))), mi.getParams().get(0).getType());
-    TypeInfo.Parameterized genericType = (TypeInfo.Parameterized) mi.getParams().get(0).getType();
-    TypeInfo.Class voidType = (TypeInfo.Class) genericType.getArgs().get(0);
+    assertEquals(new ParameterizedTypeInfo(new ClassTypeInfo(ClassKind.API, GenericInterface.class.getName(), null, false, false, Collections.emptyList()), false, Arrays.asList(TypeReflectionFactory.create(Void.class))), mi.getParams().get(0).getType());
+    ParameterizedTypeInfo genericType = (ParameterizedTypeInfo) mi.getParams().get(0).getType();
+    ClassTypeInfo voidType = (ClassTypeInfo) genericType.getArgs().get(0);
     assertEquals(ClassKind.VOID, voidType.getKind());
   }
 
@@ -753,7 +759,7 @@ public class ClassTest extends ClassTestBase {
     ClassModel model = new Generator().generateClass(MethodWithEnumParam.class);
     assertEquals(MethodWithEnumParam.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithEnumParam.class.getSimpleName(), model.getIfaceSimpleName());
-    assertTrue(model.getImportedTypes().contains(TypeInfo.create(TestEnum.class)));
+    assertTrue(model.getImportedTypes().contains(TypeReflectionFactory.create(TestEnum.class)));
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
     assertEquals(2, model.getMethods().size());
@@ -762,7 +768,7 @@ public class ClassTest extends ClassTestBase {
     checkMethod(method, "methodWithEnumParam", 1, "void", MethodKind.OTHER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "weirdo", TestEnum.class);
-    TypeInfo.Class.Enum enumType = (TypeInfo.Class.Enum) params.get(0).getType();
+    EnumTypeInfo enumType = (EnumTypeInfo) params.get(0).getType();
     assertFalse(enumType.isGen());
     assertEquals(Arrays.asList("TIM", "JULIEN", "NICK", "WESTON"), enumType.getValues());
 
@@ -770,7 +776,7 @@ public class ClassTest extends ClassTestBase {
     checkMethod(method, "methodWithGenEnumParam", 1, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "weirdo", TestGenEnum.class);
-    enumType = (TypeInfo.Class.Enum) params.get(0).getType();
+    enumType = (EnumTypeInfo) params.get(0).getType();
     assertTrue(enumType.isGen());
     assertEquals(Arrays.asList("LAURA", "BOB", "MIKE", "LELAND"), enumType.getValues());
   }
@@ -780,7 +786,7 @@ public class ClassTest extends ClassTestBase {
     ClassModel model = new Generator().generateClass(MethodWithEnumReturn.class);
     assertEquals(MethodWithEnumReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithEnumReturn.class.getSimpleName(), model.getIfaceSimpleName());
-    assertTrue(model.getImportedTypes().contains(TypeInfo.create(TestEnum.class)));
+    assertTrue(model.getImportedTypes().contains(TypeReflectionFactory.create(TestEnum.class)));
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
     assertEquals(2, model.getMethods().size());
@@ -826,7 +832,7 @@ public class ClassTest extends ClassTestBase {
     ClassModel model = new Generator().generateClass(GenericInterface.class);
     assertEquals(GenericInterface.class.getName() + "<T>", model.getIfaceFQCN());
     assertEquals(GenericInterface.class.getSimpleName(), model.getIfaceSimpleName());
-    assertEquals(Collections.<TypeInfo.Class>emptySet(), model.getReferencedTypes());
+    assertEquals(Collections.<ClassTypeInfo>emptySet(), model.getReferencedTypes());
     assertTrue(model.getSuperTypes().isEmpty());
     List<MethodInfo> methods = model.getMethods();
     assertEquals(2, methods.size());
@@ -834,15 +840,15 @@ public class ClassTest extends ClassTestBase {
     checkMethod(methods.get(0), "methodWithClassTypeParam", 3, "T", MethodKind.OTHER);
     List<ParamInfo> params1 = methods.get(0).getParams();
     checkParam(params1.get(0), "t", new TypeLiteral<T>(){});
-    assertTrue(params1.get(0).getType() instanceof TypeInfo.Variable);
-    assertEquals(t, ((TypeInfo.Variable)params1.get(0).getType()).getParam());
+    assertTrue(params1.get(0).getType() instanceof TypeVariableInfo);
+    assertEquals(t, ((TypeVariableInfo)params1.get(0).getType()).getParam());
     checkParam(params1.get(1), "handler", new TypeLiteral<Handler<T>>(){});
     checkParam(params1.get(2), "asyncResultHandler", new TypeLiteral<Handler<AsyncResult<T>>>(){});
     checkMethod(methods.get(1), "someGenericMethod", 3, new TypeLiteral<GenericInterface<R>>(){}, MethodKind.OTHER);
     List<ParamInfo> params2 = methods.get(1).getParams();
     checkParam(params2.get(0), "r", new TypeLiteral<R>(){});
-    assertTrue(params2.get(0).getType() instanceof TypeInfo.Variable);
-    assertEquals(methods.get(1).getTypeParams().get(0), ((TypeInfo.Variable) params2.get(0).getType()).getParam());
+    assertTrue(params2.get(0).getType() instanceof TypeVariableInfo);
+    assertEquals(methods.get(1).getTypeParams().get(0), ((TypeVariableInfo) params2.get(0).getType()).getParam());
     checkParam(params2.get(1), "handler", new TypeLiteral<Handler<R>>(){});
     checkParam(params2.get(2), "asyncResultHandler", new TypeLiteral<Handler<AsyncResult<R>>>(){});
   }
@@ -1024,8 +1030,8 @@ public class ClassTest extends ClassTestBase {
     ClassModel model = new Generator().generateClass(InterfaceWithFluentMethodOverrideFromConcrete.class);
     assertEquals(InterfaceWithFluentMethodOverrideFromConcrete.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithFluentMethodOverrideFromConcrete.class.getSimpleName(), model.getIfaceSimpleName());
-    assertEquals(Collections.singleton((TypeInfo.Class) TypeInfo.create(ConcreteInterfaceWithFluentMethods.class)), model.getReferencedTypes());
-    assertEquals(Collections.singletonList(TypeInfo.create(ConcreteInterfaceWithFluentMethods.class)), model.getSuperTypes());
+    assertEquals(Collections.singleton((ClassTypeInfo) TypeReflectionFactory.create(ConcreteInterfaceWithFluentMethods.class)), model.getReferencedTypes());
+    assertEquals(Collections.singletonList(TypeReflectionFactory.create(ConcreteInterfaceWithFluentMethods.class)), model.getSuperTypes());
     List<MethodInfo> methods = model.getMethods();
     assertEquals(2, methods.size());
     checkMethod(methods.get(0), "foo", 1, InterfaceWithFluentMethodOverrideFromConcrete.class, MethodKind.OTHER, MethodCheck.FLUENT);
@@ -1039,8 +1045,8 @@ public class ClassTest extends ClassTestBase {
     assertEquals(0, gen.getDiagnostics().size());
     assertEquals(InterfaceWithFluentMethodOverrideFromAbstract.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithFluentMethodOverrideFromAbstract.class.getSimpleName(), model.getIfaceSimpleName());
-    assertEquals(Collections.singleton((TypeInfo.Class) TypeInfo.create(AbstractInterfaceWithFluentMethods.class)), model.getReferencedTypes());
-    assertEquals(Collections.singletonList(TypeInfo.create(AbstractInterfaceWithFluentMethods.class)), model.getSuperTypes());
+    assertEquals(Collections.singleton((ClassTypeInfo) TypeReflectionFactory.create(AbstractInterfaceWithFluentMethods.class)), model.getReferencedTypes());
+    assertEquals(Collections.singletonList(TypeReflectionFactory.create(AbstractInterfaceWithFluentMethods.class)), model.getSuperTypes());
     List<MethodInfo> methods = model.getMethods();
     assertEquals(2, methods.size());
     checkMethod(methods.get(0), "foo", 1, InterfaceWithFluentMethodOverrideFromAbstract.class, MethodKind.OTHER, MethodCheck.FLUENT);
@@ -1103,7 +1109,7 @@ public class ClassTest extends ClassTestBase {
     assertEquals(1, model.getReferencedTypes().size());
     assertTrue(model.getReferencedTypes().contains(GenericInterfaceInfo));
     assertEquals(1, model.getSuperTypes().size());
-    assertTrue(model.getSuperTypes().contains(TypeInfo.create(InterfaceWithParameterizedDeclaredSupertype.class.getGenericInterfaces()[0])));
+    assertTrue(model.getSuperTypes().contains(TypeReflectionFactory.create(InterfaceWithParameterizedDeclaredSupertype.class.getGenericInterfaces()[0])));
   }
 
   @Test
@@ -1114,7 +1120,7 @@ public class ClassTest extends ClassTestBase {
     assertEquals(1, model.getReferencedTypes().size());
     assertTrue(model.getReferencedTypes().contains(GenericInterfaceInfo));
     assertEquals(1, model.getSuperTypes().size());
-    assertTrue(model.getSuperTypes().contains(TypeInfo.create(InterfaceWithParameterizedVariableSupertype.class.getGenericInterfaces()[0])));
+    assertTrue(model.getSuperTypes().contains(TypeReflectionFactory.create(InterfaceWithParameterizedVariableSupertype.class.getGenericInterfaces()[0])));
   }
 
   @Test
@@ -1225,7 +1231,7 @@ public class ClassTest extends ClassTestBase {
     ClassModel model = new Generator().generateClass(InterfaceWithSuperStaticMethods.class);
     assertEquals(InterfaceWithSuperStaticMethods.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithSuperStaticMethods.class.getSimpleName(), model.getIfaceSimpleName());
-    assertEquals(Collections.singletonList(TypeInfo.create(InterfaceWithStaticMethods.class)), model.getSuperTypes());
+    assertEquals(Collections.singletonList(TypeReflectionFactory.create(InterfaceWithStaticMethods.class)), model.getSuperTypes());
     assertEquals(0, model.getMethods().size());
   }
 
@@ -1255,8 +1261,8 @@ public class ClassTest extends ClassTestBase {
     assertEquals(1, methods.size());
     checkMethod(methods.get(0), "bar", 1, "void", MethodKind.OTHER);
     assertEquals(set(
-        TypeInfo.create(InterfaceWithMethodOverride.class),
-        TypeInfo.create(VertxGenInterface.class)
+        TypeReflectionFactory.create(InterfaceWithMethodOverride.class),
+        TypeReflectionFactory.create(VertxGenInterface.class)
     ), methods.get(0).getOwnerTypes());
     checkParam(methods.get(0).getParams().get(0), "str", String.class);
   }
@@ -1268,8 +1274,8 @@ public class ClassTest extends ClassTestBase {
     assertEquals(1, methods.size());
     checkMethod(methods.get(0), "bar", 1, "void", MethodKind.OTHER);
     assertEquals(set(
-        TypeInfo.create(InterfaceWithMethodOverrideParameterRenamed.class),
-        TypeInfo.create(VertxGenInterface.class)
+        TypeReflectionFactory.create(InterfaceWithMethodOverrideParameterRenamed.class),
+        TypeReflectionFactory.create(VertxGenInterface.class)
     ), methods.get(0).getOwnerTypes());
     checkParam(methods.get(0).getParams().get(0), "str_renamed", String.class);
   }
@@ -1286,8 +1292,8 @@ public class ClassTest extends ClassTestBase {
     checkMethod(methods.get(4), "collargol", 1, "void", MethodKind.OTHER);
     for (int i = 0;i < 5;i++) {
       assertEquals(set(
-          TypeInfo.create(InterfaceWithGenericMethodOverride.class),
-          TypeInfo.create(GenericAbstractInterface.class)
+          TypeReflectionFactory.create(InterfaceWithGenericMethodOverride.class),
+          TypeReflectionFactory.create(GenericAbstractInterface.class)
       ), methods.get(i).getOwnerTypes());
     }
     checkParam(methods.get(2).getParams().get(0), "handler", new TypeLiteral<Handler<AsyncResult<String>>>() {
@@ -1321,8 +1327,8 @@ public class ClassTest extends ClassTestBase {
     assertEquals(1, methods.size());
     checkMethod(methods.get(0), "foo", 0, InterfaceWithTypeVariableArgument3.class, MethodKind.OTHER);
     assertEquals(set(
-        TypeInfo.create(InterfaceWithTypeVariableArgument1.class),
-        TypeInfo.create(InterfaceWithTypeVariableArgument2.class)
+        TypeReflectionFactory.create(InterfaceWithTypeVariableArgument1.class),
+        TypeReflectionFactory.create(InterfaceWithTypeVariableArgument2.class)
     ), methods.get(0).getOwnerTypes());
   }
 
@@ -1332,7 +1338,7 @@ public class ClassTest extends ClassTestBase {
     List<MethodInfo> methods = model.getMethods();
     assertEquals(1, methods.size());
     checkMethod(methods.get(0), "foo", 0, "U", MethodKind.OTHER);
-    assertEquals(set(TypeInfo.create(SameSignatureMethod1.class), TypeInfo.create(SameSignatureMethod2.class)), methods.get(0).getOwnerTypes());
+    assertEquals(set(TypeReflectionFactory.create(SameSignatureMethod1.class), TypeReflectionFactory.create(SameSignatureMethod2.class)), methods.get(0).getOwnerTypes());
   }
 
   @Test
@@ -1341,7 +1347,7 @@ public class ClassTest extends ClassTestBase {
     List<MethodInfo> methods = model.getMethods();
     assertEquals(1, methods.size());
     checkMethod(methods.get(0), "foo", 0, "U", MethodKind.OTHER);
-    assertEquals(set(TypeInfo.create(DiamondMethod1.class), TypeInfo.create(DiamondMethod2.class), TypeInfo.create(DiamondMethod3.class)), methods.get(0).getOwnerTypes());
+    assertEquals(set(TypeReflectionFactory.create(DiamondMethod1.class), TypeReflectionFactory.create(DiamondMethod2.class), TypeReflectionFactory.create(DiamondMethod3.class)), methods.get(0).getOwnerTypes());
   }
 
   @Test
@@ -1534,9 +1540,9 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testInterfaceExtendingReadStream() throws Exception {
     ClassModel model = new Generator().generateClass(InterfaceExtentingReadStream.class);
-    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
+    ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
     assertTrue(apiType.isReadStream());
-    assertEquals(TypeInfo.create(String.class), apiType.getReadStreamArg());
+    assertEquals(TypeReflectionFactory.create(String.class), apiType.getReadStreamArg());
     assertFalse(apiType.isWriteStream());
     assertNull(apiType.getWriteStreamArg());
     assertFalse(apiType.isHandler());
@@ -1545,9 +1551,9 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testGenericInterfaceExtendingReadStream() throws Exception {
     ClassModel model = new Generator().generateClass(GenericInterfaceExtentingReadStream.class);
-    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType().getRaw();
+    ApiTypeInfo apiType = (ApiTypeInfo) model.getType().getRaw();
     assertTrue(apiType.isReadStream());
-    TypeInfo.Variable readStreamArg = (TypeInfo.Variable) apiType.getReadStreamArg();
+    TypeVariableInfo readStreamArg = (TypeVariableInfo) apiType.getReadStreamArg();
     assertEquals("U", readStreamArg.getName());
     assertFalse(apiType.isWriteStream());
     assertNull(apiType.getWriteStreamArg());
@@ -1557,22 +1563,22 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testInterfaceExtendingWriteStream() throws Exception {
     ClassModel model = new Generator().generateClass(InterfaceExtentingWriteStream.class);
-    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
+    ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
     assertFalse(apiType.isReadStream());
     assertNull(apiType.getReadStreamArg());
     assertTrue(apiType.isWriteStream());
-    assertEquals(TypeInfo.create(String.class), apiType.getWriteStreamArg());
+    assertEquals(TypeReflectionFactory.create(String.class), apiType.getWriteStreamArg());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testGenericInterfaceExtendingWriteStream() throws Exception {
     ClassModel model = new Generator().generateClass(GenericInterfaceExtentingWriteStream.class);
-    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType().getRaw();
+    ApiTypeInfo apiType = (ApiTypeInfo) model.getType().getRaw();
     assertFalse(apiType.isReadStream());
     assertNull(apiType.getReadStreamArg());
     assertTrue(apiType.isWriteStream());
-    TypeInfo.Variable writeStreamArg = (TypeInfo.Variable) apiType.getWriteStreamArg();
+    TypeVariableInfo writeStreamArg = (TypeVariableInfo) apiType.getWriteStreamArg();
     assertEquals("U", writeStreamArg.getName());
     assertFalse(apiType.isHandler());
   }
@@ -1580,23 +1586,23 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testInterfaceExtendingReadStreamAndWriteStream() throws Exception {
     ClassModel model = new Generator().generateClass(InterfaceExtentingReadStreamAndWriteStream.class);
-    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
+    ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
     assertTrue(apiType.isReadStream());
-    assertEquals(TypeInfo.create(String.class), apiType.getReadStreamArg());
+    assertEquals(TypeReflectionFactory.create(String.class), apiType.getReadStreamArg());
     assertTrue(apiType.isWriteStream());
-    assertEquals(TypeInfo.create(String.class), apiType.getWriteStreamArg());
+    assertEquals(TypeReflectionFactory.create(String.class), apiType.getWriteStreamArg());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testGenericInterfaceExtendingReadStreamAndWriteStream() throws Exception {
     ClassModel model = new Generator().generateClass(GenericInterfaceExtentingReadStreamAndWriteStream.class);
-    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType().getRaw();
+    ApiTypeInfo apiType = (ApiTypeInfo) model.getType().getRaw();
     assertTrue(apiType.isReadStream());
-    TypeInfo.Variable readStreamArg = (TypeInfo.Variable) apiType.getReadStreamArg();
+    TypeVariableInfo readStreamArg = (TypeVariableInfo) apiType.getReadStreamArg();
     assertEquals("U", readStreamArg.getName());
     assertTrue(apiType.isWriteStream());
-    TypeInfo.Variable writeStreamArg = (TypeInfo.Variable) apiType.getWriteStreamArg();
+    TypeVariableInfo writeStreamArg = (TypeVariableInfo) apiType.getWriteStreamArg();
     assertEquals("U", writeStreamArg.getName());
     assertFalse(apiType.isHandler());
   }
@@ -1604,9 +1610,9 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testInterfaceSubtypingReadStream() throws Exception {
     ClassModel model = new Generator().generateClass(InterfaceSubtypingReadStream.class);
-    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
+    ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
     assertTrue(apiType.isReadStream());
-    assertEquals(TypeInfo.create(String.class), apiType.getReadStreamArg());
+    assertEquals(TypeReflectionFactory.create(String.class), apiType.getReadStreamArg());
     assertFalse(apiType.isWriteStream());
     assertNull(apiType.getWriteStreamArg());
     assertFalse(apiType.isHandler());
@@ -1615,10 +1621,10 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testReadStreamWithParameterizedTypeArg() throws Exception {
     ClassModel model = new Generator().generateClass(ReadStreamWithParameterizedTypeArg.class);
-    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType().getRaw();
+    ApiTypeInfo apiType = (ApiTypeInfo) model.getType().getRaw();
     assertTrue(apiType.isReadStream());
-    TypeInfo.Parameterized readStreamArg = (TypeInfo.Parameterized) apiType.getReadStreamArg();
-    assertEquals(TypeInfo.create(List.class), readStreamArg.getRaw());
+    ParameterizedTypeInfo readStreamArg = (ParameterizedTypeInfo) apiType.getReadStreamArg();
+    assertEquals(TypeReflectionFactory.create(List.class), readStreamArg.getRaw());
     assertEquals(1, readStreamArg.getArgs().size());
     assertEquals("T", readStreamArg.getArgs().get(0).getName());
     assertFalse(apiType.isWriteStream());
@@ -1629,12 +1635,12 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testInterfaceExtendingHandlerStringSubtype() throws Exception {
     ClassModel model = new Generator().generateClass(InterfaceExtendingHandlerStringSubtype.class);
-    TypeInfo.Parameterized handlerSuperType = (TypeInfo.Parameterized) model.getHandlerSuperType();
+    ParameterizedTypeInfo handlerSuperType = (ParameterizedTypeInfo) model.getHandlerSuperType();
     assertEquals(1, handlerSuperType.getArgs().size());
-    assertEquals(TypeInfo.create(String.class), handlerSuperType.getArgs().get(0));
-    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
+    assertEquals(TypeReflectionFactory.create(String.class), handlerSuperType.getArgs().get(0));
+    ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
     assertTrue(apiType.isHandler());
-    assertEquals(TypeInfo.create(String.class), apiType.getHandlerArg());
+    assertEquals(TypeReflectionFactory.create(String.class), apiType.getHandlerArg());
     assertFalse(apiType.isReadStream());
     assertFalse(apiType.isWriteStream());
     assertEquals(1, model.getMethodMap().size());
@@ -1645,12 +1651,12 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testInterfaceExtendingHandlerVertxGenSubtype() throws Exception {
     ClassModel model = new Generator().generateClass(InterfaceExtendingHandlerVertxGenSubtype.class, VertxGenClass1.class);
-    TypeInfo.Parameterized handlerSuperType = (TypeInfo.Parameterized) model.getHandlerSuperType();
+    ParameterizedTypeInfo handlerSuperType = (ParameterizedTypeInfo) model.getHandlerSuperType();
     assertEquals(1, handlerSuperType.getArgs().size());
-    assertEquals(TypeInfo.create(VertxGenClass1.class), handlerSuperType.getArgs().get(0));
-    TypeInfo.Class.Api apiType = (TypeInfo.Class.Api) model.getType();
+    assertEquals(TypeReflectionFactory.create(VertxGenClass1.class), handlerSuperType.getArgs().get(0));
+    ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
     assertTrue(apiType.isHandler());
-    assertEquals(TypeInfo.create(VertxGenClass1.class), apiType.getHandlerArg());
+    assertEquals(TypeReflectionFactory.create(VertxGenClass1.class), apiType.getHandlerArg());
     assertFalse(apiType.isReadStream());
     assertFalse(apiType.isWriteStream());
     assertEquals(1, model.getMethodMap().size());

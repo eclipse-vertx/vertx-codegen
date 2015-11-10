@@ -1,13 +1,13 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.ClassKind;
+import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.GenException;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.MethodKind;
 import io.vertx.codegen.ProxyMethodInfo;
 import io.vertx.codegen.ProxyModel;
-import io.vertx.codegen.TypeInfo;
+import io.vertx.codegen.type.ParameterizedTypeInfo;
 import io.vertx.test.codegen.proxytestapi.InvalidClose1;
 import io.vertx.test.codegen.proxytestapi.InvalidClose2;
 import io.vertx.test.codegen.proxytestapi.InvalidClose3;
@@ -156,8 +156,8 @@ public class ProxyTest {
     ProxyModel model = new Generator().generateProxyModel(ValidProxyCloseWithFuture.class);
     assertEquals(1, model.getMethods().size());
     assertEquals(MethodKind.FUTURE, model.getMethods().get(0).getKind());
-    TypeInfo.Parameterized handlerType = (TypeInfo.Parameterized) model.getMethods().get(0).getParams().get(0).getType();
-    TypeInfo.Parameterized asyncResultType = (TypeInfo.Parameterized) handlerType.getArgs().get(0);
+    ParameterizedTypeInfo handlerType = (ParameterizedTypeInfo) model.getMethods().get(0).getParams().get(0).getType();
+    ParameterizedTypeInfo asyncResultType = (ParameterizedTypeInfo) handlerType.getArgs().get(0);
     assertEquals(ClassKind.VOID, asyncResultType.getArgs().get(0).getKind());
   }
 

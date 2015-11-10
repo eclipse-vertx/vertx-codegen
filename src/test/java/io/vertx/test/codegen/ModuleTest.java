@@ -5,7 +5,7 @@ import io.vertx.codegen.GenException;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.ModuleModel;
 import io.vertx.codegen.DataObjectModel;
-import io.vertx.codegen.TypeInfo;
+import io.vertx.codegen.type.ApiTypeInfo;
 import io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedApi;
 import io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedDataObject;
 import io.vertx.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubApi;
@@ -99,7 +99,7 @@ public class ModuleTest {
     assertEquals(ModuleScopedApi.class.getName(), model.getIfaceFQCN());
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getPackageName());
     assertEquals("simple", model.getModule().getName());
-    TypeInfo.Class.Api type = (TypeInfo.Class.Api) model.getType();
+    ApiTypeInfo type = (ApiTypeInfo) model.getType();
     assertEquals("io.vertx.test.groovy.codegen.testmodule.modulescoped.ModuleScopedApi", type.translateName("groovy"));
   }
 
@@ -109,7 +109,7 @@ public class ModuleTest {
     assertEquals(ModuleScopedSubApi.class.getName(), model.getFqn());
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getPackageName());
     assertEquals("simple", model.getModule().getName());
-    TypeInfo.Class.Api type = (TypeInfo.Class.Api) model.getType();
+    ApiTypeInfo type = (ApiTypeInfo) model.getType();
     assertEquals("io.vertx.test.groovy.codegen.testmodule.modulescoped.sub.ModuleScopedSubApi", type.translateName("groovy"));
   }
 

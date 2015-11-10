@@ -1,6 +1,7 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.doc.Doc;
+import io.vertx.codegen.type.TypeInfo;
 
 /**
  * Describes a property of a {@link io.vertx.codegen.DataObjectModel data object model}.

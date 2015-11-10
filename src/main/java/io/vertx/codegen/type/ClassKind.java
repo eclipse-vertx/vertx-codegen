@@ -1,7 +1,11 @@
-package io.vertx.codegen;
+package io.vertx.codegen.type;
+
+import io.vertx.codegen.ClassModel;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -67,5 +71,46 @@ public enum ClassKind {
       vars.put("CLASS_" + classKind.name(), classKind);
     }
     return vars;
+  }
+
+  public static ClassKind getKind(String fqcn, boolean isDataObjectAnnotated, boolean isVertxGenAnnotated) {
+    if (isDataObjectAnnotated) {
+      return DATA_OBJECT;
+    } else if (isVertxGenAnnotated) {
+      return API;
+    } else if (fqcn.equals(ClassModel.VERTX_HANDLER)) {
+      return HANDLER;
+    } else if (fqcn.equals(ClassModel.VERTX_ASYNC_RESULT)) {
+      return ASYNC_RESULT;
+    } else if (fqcn.equals(ClassModel.JSON_ARRAY)) {
+      return JSON_ARRAY;
+    } else if (fqcn.equals(ClassModel.JSON_OBJECT)) {
+      return JSON_OBJECT;
+    } else if (fqcn.equals(Object.class.getName())) {
+      return OBJECT;
+    } else if (fqcn.equals(String.class.getName())) {
+      return STRING;
+    } else if (fqcn.equals(List.class.getName())) {
+      return LIST;
+    } else if (fqcn.equals(Set.class.getName())) {
+      return SET;
+    } else if (fqcn.equals(Map.class.getName())) {
+      return MAP;
+    } else if (fqcn.equals(Throwable.class.getName())) {
+      return THROWABLE;
+    } else if (fqcn.equals(Void.class.getName())) {
+      return VOID;
+    } else if (fqcn.equals(Integer.class.getName()) ||
+        fqcn.equals(Long.class.getName()) ||
+        fqcn.equals(Boolean.class.getName()) ||
+        fqcn.equals(Double.class.getName()) ||
+        fqcn.equals(Float.class.getName()) ||
+        fqcn.equals(Short.class.getName()) ||
+        fqcn.equals(Character.class.getName()) ||
+        fqcn.equals(Byte.class.getName())) {
+      return BOXED_PRIMITIVE;
+    } else {
+      return OTHER;
+    }
   }
 }

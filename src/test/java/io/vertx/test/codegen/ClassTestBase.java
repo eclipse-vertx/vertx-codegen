@@ -5,7 +5,8 @@ import io.vertx.codegen.Generator;
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.MethodKind;
 import io.vertx.codegen.ParamInfo;
-import io.vertx.codegen.TypeInfo;
+import io.vertx.codegen.type.TypeReflectionFactory;
+import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.doc.Doc;
 
 import java.lang.reflect.Type;
@@ -74,7 +75,7 @@ public abstract class ClassTestBase {
 
   void checkParam(ParamInfo param, String name, Type expectedType) {
     assertEquals(name, param.getName());
-    TypeInfo expectedTypeInfo = TypeInfo.create(expectedType);
+    TypeInfo expectedTypeInfo = TypeReflectionFactory.create(expectedType);
     assertEquals(expectedTypeInfo.getName(), param.getType().getName());
     assertEquals(expectedTypeInfo.getKind(), param.getType().getKind());
   }

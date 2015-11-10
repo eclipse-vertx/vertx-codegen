@@ -17,8 +17,10 @@ package io.vertx.codegen;
  */
 
 import io.vertx.codegen.doc.Text;
-
-import javax.lang.model.type.TypeVariable;
+import io.vertx.codegen.type.ClassKind;
+import io.vertx.codegen.type.ClassTypeInfo;
+import io.vertx.codegen.type.ParameterizedTypeInfo;
+import io.vertx.codegen.type.TypeInfo;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -68,12 +70,12 @@ public class ParamInfo {
   public Boolean isNullableCallback() {
     switch (type.getKind()) {
       case HANDLER:
-        TypeInfo handler = ((TypeInfo.Parameterized)type).getArg(0);
+        TypeInfo handler = ((ParameterizedTypeInfo)type).getArg(0);
         switch (handler.getKind()) {
           case OBJECT:
             return true;
           case ASYNC_RESULT:
-            TypeInfo asyncResult = ((TypeInfo.Parameterized)handler).getArg(0);
+            TypeInfo asyncResult = ((ParameterizedTypeInfo)handler).getArg(0);
             switch (asyncResult.getKind()) {
               case OBJECT:
                 return true;
@@ -93,7 +95,7 @@ public class ParamInfo {
   }
 
   public boolean isDataObject() {
-    return type instanceof TypeInfo.Class && (type).getKind() == ClassKind.DATA_OBJECT;
+    return type instanceof ClassTypeInfo && (type).getKind() == ClassKind.DATA_OBJECT;
   }
 
   @Override

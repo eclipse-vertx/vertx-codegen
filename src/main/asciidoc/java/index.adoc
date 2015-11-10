@@ -580,58 +580,58 @@ todo provide example ?
 
 == Codegen types
 
-The `link:../../apidocs/io/vertx/codegen/TypeInfo.html[TypeInfo]` provides a codegen view of the Java type system.
+The `link:../../apidocs/io/vertx/codegen/type/TypeInfo.html[TypeInfo]` provides a codegen view of the Java type system.
 
-A type info has a `link:../../apidocs/io/vertx/codegen/ClassKind.html[ClassKind]` usually used to determine the conversion to apply:
+A type info has a `link:../../apidocs/io/vertx/codegen/type/ClassKind.html[ClassKind]` usually used to determine the conversion to apply:
 
 [cols="1,4"]
 .Class kinds
 |===
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#STRING[STRING]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#STRING[STRING]`
 | `java.lang.String`
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#PRIMITIVE[PRIMITIVE]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#PRIMITIVE[PRIMITIVE]`
 | any Java primitive type
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#BOXED_PRIMITIVE[BOXED_PRIMITIVE]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#BOXED_PRIMITIVE[BOXED_PRIMITIVE]`
 | any Java boxed primitive type
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#ENUM[ENUM]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#ENUM[ENUM]`
 | any Java enum
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#JSON_OBJECT[JSON_OBJECT]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#JSON_OBJECT[JSON_OBJECT]`
 | `io.vertx.core.json.JsonObject`
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#JSON_ARRAY[JSON_ARRAY]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#JSON_ARRAY[JSON_ARRAY]`
 | `io.vertx.core.json.JsonArray`
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#THROWABLE[THROWABLE]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#THROWABLE[THROWABLE]`
 | `java.lang.Throwable`
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#VOID[VOID]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#VOID[VOID]`
 | `java.lang.Void`
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#OBJECT[OBJECT]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#OBJECT[OBJECT]`
 | `java.lang.Object` or an unbounded type variable
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#LIST[LIST]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#LIST[LIST]`
 | `java.util.List<V>`
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#SET[SET]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#SET[SET]`
 | `java.util.Set<V>`
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#MAP[MAP]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#MAP[MAP]`
 | `java.util.Map<String,V>`
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#API[API]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#API[API]`
 | any _api_ type
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#DATA_OBJECT[DATA_OBJECT]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#DATA_OBJECT[DATA_OBJECT]`
 | any _data object_ type
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#HANDLER[HANDLER]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#HANDLER[HANDLER]`
 | `io.vertx.core.Handler<E>`
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#ASYNC_RESULT[ASYNC_RESULT]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#ASYNC_RESULT[ASYNC_RESULT]`
 | `io.vertx.core.AsyncResult<E>`
-| `link:../../apidocs/io/vertx/codegen/ClassKind.html#OTHER[OTHER]`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#OTHER[OTHER]`
 | anything else
 |===
 
 The `TypeInfo` base class provides common type information
 
-- `link:../../apidocs/io/vertx/codegen/TypeInfo.html#getKind--[getKind]` the type `link:../../apidocs/io/vertx/codegen/ClassKind.html[ClassKind]`
-- `link:../../apidocs/io/vertx/codegen/TypeInfo.html#getName--[getName]` the type name
-- `link:../../apidocs/io/vertx/codegen/TypeInfo.html#getSimpleName--[getSimpleName]` the simple name
-- `link:../../apidocs/io/vertx/codegen/TypeInfo.html#getErased--[getErased]` returns the corresponding erased type
-- `link:../../apidocs/io/vertx/codegen/TypeInfo.html#getRaw--[getRaw]` returns the raw type of a parameter type or this type
+- `link:../../apidocs/io/vertx/codegen/type/TypeInfo.html#getKind--[getKind]` the type `link:../../apidocs/io/vertx/codegen/type/ClassKind.html[ClassKind]`
+- `link:../../apidocs/io/vertx/codegen/type/TypeInfo.html#getName--[getName]` the type name
+- `link:../../apidocs/io/vertx/codegen/type/TypeInfo.html#getSimpleName--[getSimpleName]` the simple name
+- `link:../../apidocs/io/vertx/codegen/type/TypeInfo.html#getErased--[getErased]` returns the corresponding erased type
+- `link:../../apidocs/io/vertx/codegen/type/TypeInfo.html#getRaw--[getRaw]` returns the raw type of a parameter type or this type
 
-Besides it provides the `link:../../apidocs/io/vertx/codegen/TypeInfo.html#translateName-java.lang.String-[translateName]` method to
+Besides it provides the `link:../../apidocs/io/vertx/codegen/type/TypeInfo.html#translateName-java.lang.String-[translateName]` method to
 translate the type name using a shim identifier, this is useful for shim using a hierarchical naming, for
 instance the translated name of `io.vertx.core.eventbus.EventBus` for the `groovy` identifier is
 `io.vertx.groovy.core.eventbus.EventBus`. The position where the identifier is applied is
@@ -639,13 +639,13 @@ determined by the `link:../../apidocs/io/vertx/codegen/annotations/ModuleGen.htm
 
 Several subclasses of `TypeInfo` provides specialization when needed:
 
-- `link:../../apidocs/io/vertx/codegen/TypeInfo/Class.html[Class]` : a java class
-- `link:../../apidocs/io/vertx/codegen/TypeInfo/Class/Api.html[Api]` : `TypeInfo.Class` specialization for _api_ types
-- `link:../../apidocs/io/vertx/codegen/TypeInfo/Class/Enum.html[Enum]` : `TypeInfo.Class` specialization for _enum_ types
-- `link:../../apidocs/io/vertx/codegen/TypeInfo/Parameterized.html[Parameterized]` : a parameterized type
-- `link:../../apidocs/io/vertx/codegen/TypeInfo/Primitive.html[Primitive]` : a primitive type
-- `link:../../apidocs/io/vertx/codegen/TypeInfo/Void.html[Void]` : `void` (and not `java.lang.Void`)
-- `link:../../apidocs/io/vertx/codegen/TypeInfo/Variable.html[Variable]` : an unbounded type variable
+- `link:../../apidocs/io/vertx/codegen/type/ClassTypeInfo.html[ClassTypeInfo]` : a java class
+- `link:../../apidocs/io/vertx/codegen/type/ApiTypeInfo.html[ApiTypeInfo]` : `TypeInfo.Class` specialization for _api_ types
+- `link:../../apidocs/io/vertx/codegen/type/EnumTypeInfo.html[EnumTypeInfo]` : `TypeInfo.Class` specialization for _enum_ types
+- `link:../../apidocs/io/vertx/codegen/type/ParameterizedTypeInfo.html[ParameterizedTypeInfo]` : a parameterized type
+- `link:../../apidocs/io/vertx/codegen/type/PrimitiveTypeInfo.html[PrimitiveTypeInfo]` : a primitive type
+- `link:../../apidocs/io/vertx/codegen/type/VoidTypeInfo.html[VoidTypeInfo]` : `void` (and not `java.lang.Void`)
+- `link:../../apidocs/io/vertx/codegen/type/TypeVariableInfo.html[TypeVariableInfo]` : an unbounded type variable
 
 == Codegen models
 
@@ -669,13 +669,13 @@ For each Java interface annotated with `link:../../apidocs/io/vertx/codegen/anno
 .Template properties
 |===
 | `importedTypes`
-| the full list of used types including `java.lang.*` types as ``link:../../apidocs/io/vertx/codegen/TypeInfo/Class.html[Class]`` that are not in the same package
+| the full list of used types including `java.lang.*` types as ``link:../../apidocs/io/vertx/codegen/type/ClassTypeInfo.html[ClassTypeInfo]`` that are not in the same package
 | `referencedTypes`
-| the full list of used types including `java.lang.*` types as ``link:../../apidocs/io/vertx/codegen/TypeInfo/Class.html[Class]``
+| the full list of used types including `java.lang.*` types as ``link:../../apidocs/io/vertx/codegen/type/ClassTypeInfo.html[ClassTypeInfo]``
 | `referencedDataObjectTypes`
-| the full list of used _data object_ types as ``link:../../apidocs/io/vertx/codegen/TypeInfo/Class.html[Class]``
+| the full list of used _data object_ types as ``link:../../apidocs/io/vertx/codegen/type/ClassTypeInfo.html[ClassTypeInfo]``
 | `type`
-| the type ``link:../../apidocs/io/vertx/codegen/TypeInfo/Class.html[Class]`` or ``link:../../apidocs/io/vertx/codegen/TypeInfo/Parameterized.html[Parameterized]``
+| the type ``link:../../apidocs/io/vertx/codegen/type/ClassTypeInfo.html[ClassTypeInfo]`` or ``link:../../apidocs/io/vertx/codegen/type/ParameterizedTypeInfo.html[ParameterizedTypeInfo]``
 | `typeParams`
 | the list of class type params as `List<``link:../../apidocs/io/vertx/codegen/TypeParamInfo/Class.html[Class]``>`
 | `concrete`

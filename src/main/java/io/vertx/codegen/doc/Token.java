@@ -1,7 +1,7 @@
 package io.vertx.codegen.doc;
 
 import io.vertx.codegen.Helper;
-import io.vertx.codegen.TypeInfo;
+import io.vertx.codegen.type.TypeMirrorFactory;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -155,7 +155,7 @@ public abstract class Token {
    */
   public static Function<Token, Token> tagMapper(
       Elements elementUtils, Types typeUtils, TypeElement ownerElt) {
-    TypeInfo.Factory typeFactory = new TypeInfo.Factory(elementUtils, typeUtils);
+    TypeMirrorFactory typeFactory = new TypeMirrorFactory(elementUtils, typeUtils);
     return token -> {
       if (token.isInlineTag()) {
         Tag tag = ((Token.InlineTag) token).getTag();

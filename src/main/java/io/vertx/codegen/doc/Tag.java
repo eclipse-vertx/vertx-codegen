@@ -1,7 +1,7 @@
 package io.vertx.codegen.doc;
 
 import io.vertx.codegen.Helper;
-import io.vertx.codegen.TypeInfo;
+import io.vertx.codegen.type.TypeInfo;
 
 import javax.lang.model.element.Element;
 import java.util.regex.Matcher;

@@ -1,9 +1,9 @@
-package io.vertx.codegen;
+package io.vertx.codegen.type;
 
+import io.vertx.codegen.Helper;
 import io.vertx.codegen.annotations.Nullable;
 
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
@@ -32,10 +32,10 @@ public abstract class TypeUse {
    * @param reflectTypes the annotated types
    * @return the created type use
    */
-  static TypeUse createTypeUse(AnnotatedType... reflectTypes) {
+  public static TypeUse createTypeUse(AnnotatedType... reflectTypes) {
     return new TypeUse() {
 
-      TypeUse getArg(int index) {
+      public TypeUse getArg(int index) {
 
         AnnotatedType arg = ((AnnotatedParameterizedType) reflectTypes[0]).getAnnotatedActualTypeArguments()[index];
         List<AnnotatedType> argAnnotatedTypes = new ArrayList<>();
@@ -69,7 +69,7 @@ public abstract class TypeUse {
         return createTypeUse(argAnnotatedTypes.toArray(new AnnotatedType[argAnnotatedTypes.size()]));
       }
 
-      boolean isNullable() {
+      public boolean isNullable() {
         boolean nullable = false;
         for (int index = 0;index < reflectTypes.length;index++) {
           if (isNullable(index)) {
@@ -100,16 +100,16 @@ public abstract class TypeUse {
    * @param modelTypes the annotated types
    * @return the created type use
    */
-  static TypeUse createTypeUse(TypeMirror... modelTypes) {
+  public static TypeUse createTypeUse(TypeMirror... modelTypes) {
     return new TypeUse() {
       @Override
-      TypeUse getArg(int index) {
+      public TypeUse getArg(int index) {
         // Only use the current types as the other types won't have the info anyway
         return createTypeUse(((DeclaredType) modelTypes[0]).getTypeArguments().get(index));
       }
 
       @Override
-      boolean isNullable() {
+      public boolean isNullable() {
         boolean nullable = false;
         for (int index = 0;index < modelTypes.length;index++) {
           if (isNullable(index)) {
@@ -142,11 +142,11 @@ public abstract class TypeUse {
    * @param index the argument index
    * @return the type use
    */
-  abstract TypeUse getArg(int index);
+  public abstract TypeUse getArg(int index);
 
   /**
    * @return true if the type is nullable
    */
-  abstract  boolean isNullable();
+  public abstract  boolean isNullable();
 
 }
