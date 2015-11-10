@@ -1,5 +1,8 @@
 package io.vertx.codegen;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The kind of property.
  *
@@ -53,5 +56,16 @@ public enum PropertyKind {
    */
   public boolean isAdder() {
     return this == LIST_ADD;
+  }
+
+  /**
+   * Useful for testing the type property kind, allows to do prop.kind == PROP_VALUE instead of prop.kind.name() == "VALUE"
+   */
+  public static Map<String, PropertyKind> vars() {
+    HashMap<String, PropertyKind> vars = new HashMap<>();
+    for (PropertyKind propKind : PropertyKind.values()) {
+      vars.put("PROP_" + propKind.name(), propKind);
+    }
+    return vars;
   }
 }

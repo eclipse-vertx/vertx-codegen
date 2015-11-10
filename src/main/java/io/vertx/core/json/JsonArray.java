@@ -8,6 +8,12 @@ import java.util.List;
  */
 public class JsonArray implements Iterable<Object> {
 
+  public JsonArray() {
+  }
+
+  public JsonArray(List list) {
+  }
+
   public int size() { throw new UnsupportedOperationException(); }
   public String getString(final int index) { throw new UnsupportedOperationException(); }
   public JsonArray add(String str) { throw new UnsupportedOperationException(); }
