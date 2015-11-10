@@ -47,6 +47,7 @@ public class CaseTest {
     formatLowerCamelCase("fooBar", "Foo", "bar");
     formatLowerCamelCase("fooBar", "Foo", "", "Bar");
     formatLowerCamelCase("fooBar", "FOO", "", "Bar");
+    formatLowerCamelCase("fooBarJuu", "Foo", "Bar", "Juu");
   }
 
   @Test

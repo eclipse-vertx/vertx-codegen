@@ -33,7 +33,6 @@ public class LowerCamelCase extends Case {
         } else {
           sb.append(atom);
         }
-        break;
       }
     }
     return sb.toString();
