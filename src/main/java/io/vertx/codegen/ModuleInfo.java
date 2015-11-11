@@ -14,12 +14,12 @@ public class ModuleInfo {
 
   private final String packageName;
   private final String name;
-  private final String groupPackageName;
+  private final String groupPackage;
 
-  public ModuleInfo(String packageName, String name, String groupPackageName) {
+  public ModuleInfo(String packageName, String name, String groupPackage) {
     this.packageName = packageName;
     this.name = name;
-    this.groupPackageName = groupPackageName;
+    this.groupPackage = groupPackage;
   }
 
   /**
@@ -72,8 +72,8 @@ public class ModuleInfo {
    * @return the translated qualified name
    */
   public String translateQualifiedName(String qualifiedName, String lang) {
-    if (qualifiedName.startsWith(groupPackageName)) {
-      return groupPackageName + "." + lang + qualifiedName.substring(groupPackageName.length(), qualifiedName.length());
+    if (qualifiedName.startsWith(groupPackage)) {
+      return groupPackage + "." + lang + qualifiedName.substring(groupPackage.length(), qualifiedName.length());
     }
     return qualifiedName;
   }
