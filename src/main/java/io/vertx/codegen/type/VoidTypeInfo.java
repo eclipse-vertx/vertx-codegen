@@ -20,4 +20,9 @@ public class VoidTypeInfo extends TypeInfo {
   public String format(boolean qualified) {
     return "void";
   }
+
+  @Override
+  public boolean isVoid() {
+    return true;
+  }
 }

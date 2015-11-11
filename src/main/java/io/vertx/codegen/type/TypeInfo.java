@@ -99,6 +99,13 @@ public abstract class TypeInfo {
   }
 
   /**
+   * @return true if the type <i>void</i>
+   */
+  public boolean isVoid() {
+    return false;
+  }
+
+  /**
    * Renders the type name.
    *
    * @param qualified true when class fqcn should be used, otherwise simple names will be used
