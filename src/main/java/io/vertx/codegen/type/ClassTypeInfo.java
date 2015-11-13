@@ -111,8 +111,12 @@ public class ClassTypeInfo extends TypeInfo {
     return module == null ? packageName : module.translateQualifiedName(packageName, id);
   }
 
-  public String translateName(String lang) {
-    return module == null ? name : module.translateQualifiedName(name, lang);
+  @Override
+  public String translateName(TypeNameTranslator translator) {
+    return module == null ? name : translator.translate(module, name);
   }
 
+  public String translatePackageName(TypeNameTranslator translator) {
+    return module == null ? packageName : translator.translate(module, packageName);
+  }
 }

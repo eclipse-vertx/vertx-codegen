@@ -9,6 +9,7 @@ import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.type.ClassKind;
+import io.vertx.codegen.type.TypeNameTranslator;
 import org.mvel2.MVEL;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -99,7 +100,7 @@ public class CodeGenProcessor extends AbstractProcessor {
               Template compiledTemplate = new Template(templateFileName);
               compiledTemplate.setOptions(processingEnv.getOptions());
               List<CodeGenerator> generators = codeGenerators.computeIfAbsent(name, abc -> new ArrayList<>());
-              generators.add(new CodeGenerator(kind, incremental, fileNameExpression, compiledTemplate));
+              generators.add(new CodeGenerator(name, kind, incremental, fileNameExpression, compiledTemplate));
               log.info("Loaded " + name + " code generator");
             }
           }
@@ -162,6 +163,8 @@ public class CodeGenProcessor extends AbstractProcessor {
               vars.putAll(MethodKind.vars());
               vars.putAll(Case.vars());
               for (CodeGenerator codeGenerator : codeGenerators) {
+                Map<String, Object> translators = TypeNameTranslator.vars(codeGenerator.name);
+                vars.putAll(translators);
                 if (codeGenerator.kind.equals(model.getKind())) {
                   String relativeName = (String) MVEL.executeExpression(codeGenerator.filenameExpr, vars);
                   if (relativeName != null) {
@@ -173,7 +176,7 @@ public class CodeGenProcessor extends AbstractProcessor {
                         continue;
                       }
                       JavaFileObject target = processingEnv.getFiler().createSourceFile(fqn);
-                      String output = codeGenerator.transformTemplate.render(model);
+                      String output = codeGenerator.transformTemplate.render(model, translators);
                       try (Writer writer = target.openWriter()) {
                         writer.append(output);
                       }
@@ -183,7 +186,7 @@ public class CodeGenProcessor extends AbstractProcessor {
                         List<ModelProcessing> processings = generatedFiles.computeIfAbsent(target, GeneratedFile::new);
                         processings.add(new ModelProcessing(model, codeGenerator));
                       } else {
-                        codeGenerator.transformTemplate.apply(model, target);
+                        codeGenerator.transformTemplate.apply(model, target, translators);
                       }
                     }
                     log.info("Generated model " + model.getFqn() + ": " + relativeName);
@@ -243,11 +246,13 @@ public class CodeGenProcessor extends AbstractProcessor {
   }
 
   private static class CodeGenerator {
+    final String name;
     final String kind;
     final boolean incremental;
     final Serializable filenameExpr;
     final Template transformTemplate;
-    CodeGenerator(String kind, boolean incremental, Serializable filenameExpr, Template transformTemplate) {
+    CodeGenerator(String name, String kind, boolean incremental, Serializable filenameExpr, Template transformTemplate) {
+      this.name = name;
       this.kind = kind;
       this.filenameExpr = filenameExpr;
       this.transformTemplate = transformTemplate;

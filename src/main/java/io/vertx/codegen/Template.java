@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -124,7 +125,11 @@ public class Template {
   }
 
   public void apply(Model model, File outputFile) throws Exception {
-    String output = render(model, new HashMap<>());
+    apply(model, outputFile, Collections.emptyMap());
+  }
+
+  public void apply(Model model, File outputFile, Map<String, Object> vars) throws Exception {
+    String output = render(model, vars);
     Helper.ensureParentDir(outputFile);
     try (PrintStream outStream = new PrintStream(new FileOutputStream(outputFile))) {
       outStream.print(output);
@@ -133,10 +138,11 @@ public class Template {
   }
 
   public String render(Model model) {
-    return render(model, new HashMap<>());
+    return render(model, Collections.emptyMap());
   }
 
   public String render(Model model, Map<String, Object> vars) {
+    vars = new HashMap<>(vars);
     vars.put("options", options);
     vars.putAll(model.getVars());
     vars.putAll(ClassKind.vars());

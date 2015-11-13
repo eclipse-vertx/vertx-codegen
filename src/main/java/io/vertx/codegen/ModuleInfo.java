@@ -1,9 +1,12 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.ModuleGen;
+import io.vertx.codegen.type.TypeNameTranslator;
 
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.util.Elements;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Describes a module.
@@ -46,6 +49,10 @@ public class ModuleInfo {
     return null;
   }
 
+  public String getGroupPackage() {
+    return groupPackage;
+  }
+
   /**
    * @return the module package name, i.e the name of the package annotated with the {@link ModuleGen} annotation
    */
@@ -72,10 +79,7 @@ public class ModuleInfo {
    * @return the translated qualified name
    */
   public String translateQualifiedName(String qualifiedName, String lang) {
-    if (qualifiedName.startsWith(groupPackage)) {
-      return groupPackage + "." + lang + qualifiedName.substring(groupPackage.length(), qualifiedName.length());
-    }
-    return qualifiedName;
+    return TypeNameTranslator.hierarchical(lang).translate(this, qualifiedName);
   }
 
   /**

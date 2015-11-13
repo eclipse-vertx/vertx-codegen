@@ -83,14 +83,14 @@ public class ParameterizedTypeInfo extends TypeInfo {
   }
 
   @Override
-  public String translateName(String lang) {
-    StringBuilder buf = new StringBuilder(raw.translateName(lang)).append('<');
+  public String translateName(TypeNameTranslator translator) {
+    StringBuilder buf = new StringBuilder(raw.translateName(translator)).append('<');
     for (int i = 0; i < args.size(); i++) {
       TypeInfo typeArgument = args.get(i);
       if (i > 0) {
         buf.append(',');
       }
-      buf.append(typeArgument.translateName(lang));
+      buf.append(typeArgument.translateName(translator));
     }
     buf.append('>');
     return buf.toString();

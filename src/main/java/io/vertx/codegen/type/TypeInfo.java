@@ -68,6 +68,10 @@ public abstract class TypeInfo {
    * @return the translated name
    */
   public String translateName(String lang) {
+    return translateName(TypeNameTranslator.hierarchical(lang));
+  }
+
+  public String translateName(TypeNameTranslator translator) {
     return getName();
   }
 
