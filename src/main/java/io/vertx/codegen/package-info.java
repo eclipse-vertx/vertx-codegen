@@ -70,11 +70,15 @@
  *
  * ==== Data object properties
  *
- * DataObject properties are declared via _setters_:
+ * DataObject properties are declared via _getters_, _setters_ or _adders_:
  *
- * .a setter
+ * .a getter and a setter
  * [source,java]
  * ----
+ * public String getHost() {
+ *   return host;
+ * }
+ *
  * public WebServerOptions setHost(String host) {
  *   this.host = host;
  *   return this;
@@ -90,11 +94,11 @@
  * 5. Java enums
  * 6. another data object
  *
- * In addition a data object can also have multi-valued properties as a `java.util.List<V>` or a
+ * In addition a data object can also have multi-valued properties as a `java.util.List<V>`/`java.util.Set<V>` or a
  * `java.util.Map<String, V>` where the `<V>` is a supported single valued type or `java.lang.Object`
  * that stands for anything converted by `io.vertx.core.json.JsonObject` and `io.vertx.core.json.JsonArray`.
  *
- * List multi-valued properties can be declared via a _setter_ :
+ * List/set multi-valued properties can be declared via a _setter_ :
  *
  * .a multi valued setter
  * [source,java]

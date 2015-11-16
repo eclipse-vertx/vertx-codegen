@@ -1,5 +1,8 @@
 package io.vertx.codegen;
 
+import io.vertx.codegen.type.ClassKind;
+import io.vertx.codegen.type.TypeInfo;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +24,11 @@ public enum PropertyKind {
   LIST,
 
   /**
+   * The property is a list with a setter and optionally a getter.
+   */
+  SET,
+
+  /**
    * The property is a map with a setter and optionally a getter.
    */
   MAP;
@@ -30,6 +38,13 @@ public enum PropertyKind {
    */
   public boolean isList() {
     return this == LIST;
+  }
+
+  /**
+   * @return true if the property kind is a set
+   */
+  public boolean isSet() {
+    return this == SET;
   }
 
   /**
@@ -55,5 +70,18 @@ public enum PropertyKind {
       vars.put("PROP_" + propKind.name(), propKind);
     }
     return vars;
+  }
+
+  static PropertyKind forType(ClassKind kind) {
+    switch (kind) {
+      case LIST:
+        return PropertyKind.LIST;
+      case SET:
+        return PropertyKind.SET;
+      case MAP:
+        return PropertyKind.MAP;
+      default:
+        return PropertyKind.VALUE;
+    }
   }
 }

@@ -78,7 +78,7 @@ public class PropertyInfo {
 
   /**
    * @return the name of the Java method that will update the state of this property on the data object, the nature of the method
-   * depends on the {@link #isAdder()} and {@link #isArray()} values.
+   * depends on the {@link #isAdder()} and {@link #isList()} values.
    */
   public String getSetterMethod() {
     return setterMethod;
@@ -98,8 +98,15 @@ public class PropertyInfo {
   /**
    * @return true if the property is managed by a {@code java.util.List<T>}
    */
-  public boolean isArray() {
+  public boolean isList() {
     return kind == PropertyKind.LIST;
+  }
+
+  /**
+   * @return true if the property is managed by a {@code java.util.Set<T>}
+   */
+  public boolean isSet() {
+    return kind == PropertyKind.SET;
   }
 
   /**

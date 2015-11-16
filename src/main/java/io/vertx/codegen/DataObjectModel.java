@@ -24,6 +24,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -338,7 +339,6 @@ public class DataObjectModel implements Model {
 
   private void processMethod(String name, ExecutableElement getterElt, ExecutableElement setterElt, ExecutableElement adderElt) {
 
-    ExecutableElement methodElt = null;
     PropertyKind propKind = null;
     TypeInfo propType = null;
     TypeMirror propTypeMirror = null;
@@ -348,20 +348,48 @@ public class DataObjectModel implements Model {
       VariableElement paramElt = setterElt.getParameters().get(0);
       propTypeMirror = paramElt.asType();
       propType = typeFactory.create(propTypeMirror);
-      switch (propType.getKind()) {
+      propKind = PropertyKind.forType(propType.getKind());
+      switch (propKind) {
         case LIST:
+        case SET:
           propType = ((ParameterizedTypeInfo) propType).getArgs().get(0);
-          propKind = PropertyKind.LIST;
+          propTypeMirror = ((DeclaredType)propTypeMirror).getTypeArguments().get(0);
           break;
         case MAP:
           propType = ((ParameterizedTypeInfo) propType).getArgs().get(1);
-          propKind = PropertyKind.MAP;
-          break;
-        default:
-          propKind = PropertyKind.VALUE;
+          propTypeMirror = ((DeclaredType)propTypeMirror).getTypeArguments().get(1);
           break;
       }
-      methodElt = setterElt;
+    }
+
+    //
+    if (getterElt != null) {
+      TypeMirror getterTypeMirror = getterElt.getReturnType();
+      TypeInfo getterType = typeFactory.create(getterTypeMirror);
+      PropertyKind getterKind = PropertyKind.forType(getterType.getKind());
+      switch (getterKind) {
+        case LIST:
+        case SET:
+          getterType = ((ParameterizedTypeInfo) getterType).getArgs().get(0);
+          getterTypeMirror = ((DeclaredType)getterTypeMirror).getTypeArguments().get(0);
+          break;
+        case MAP:
+          getterType = ((ParameterizedTypeInfo) getterType).getArgs().get(1);
+          getterTypeMirror = ((DeclaredType)getterTypeMirror).getTypeArguments().get(1);
+          break;
+      }
+      if (propType != null) {
+        if (propKind != getterKind) {
+          throw new GenException(getterElt, name + " getter " + getterKind + " does not match the setter " + propKind);
+        }
+        if (!getterType.equals(propType)) {
+          throw new GenException(getterElt, name + " getter type " + getterType + " does not match the setter type " + propType);
+        }
+      } else {
+        propTypeMirror = getterTypeMirror;
+        propType = getterType;
+        propKind = getterKind;
+      }
     }
 
     //
@@ -370,50 +398,16 @@ public class DataObjectModel implements Model {
       TypeMirror adderTypeMirror = paramElt.asType();
       TypeInfo adderType = typeFactory.create(adderTypeMirror);
       if (propTypeMirror != null) {
-        if (propKind != PropertyKind.LIST) {
-          throw new GenException(adderElt, "Adder type does not match the setter type");
+        if (propKind != PropertyKind.LIST && propKind != PropertyKind.SET) {
+          throw new GenException(adderElt, name + "adder does not correspond to non list/set");
         }
         if (!adderType.equals(propType)) {
-          throw new GenException(adderElt, "Adder type does not match the setter type");
+          throw new GenException(adderElt, name + " adder type " + adderType + "  does not match the property type " + propType);
         }
       } else {
         propTypeMirror = adderTypeMirror;
         propType = adderType;
         propKind = PropertyKind.LIST;
-        methodElt = adderElt;
-      }
-    }
-
-    //
-    if (getterElt != null) {
-      TypeMirror getterTypeMirror = getterElt.getReturnType();
-      TypeInfo getterType = typeFactory.create(getterTypeMirror);
-      PropertyKind getterKind;
-      switch (getterType.getKind()) {
-        case LIST:
-          getterType = ((ParameterizedTypeInfo) getterType).getArgs().get(0);
-          getterKind = PropertyKind.LIST;
-          break;
-        case MAP:
-          getterType = ((ParameterizedTypeInfo) getterType).getArgs().get(1);
-          getterKind = PropertyKind.MAP;
-          break;
-        default:
-          getterKind = PropertyKind.VALUE;
-          break;
-      }
-      if (propType != null) {
-        if (propKind != getterKind) {
-          throw new GenException(getterElt, "Getter type does not match the modified type");
-        }
-        if (!getterType.equals(propType)) {
-          throw new GenException(getterElt, "Getter type does not match the modifier type");
-        }
-      } else {
-        propTypeMirror = getterTypeMirror;
-        propType = getterType;
-        propKind = getterKind;
-        methodElt = getterElt;
       }
     }
 
@@ -447,39 +441,50 @@ public class DataObjectModel implements Model {
         return;
     }
 
-    // A stream that list all overriden methods from super types
-    // the boolean control whether or not we want to filter only annotated
-    // data objects
-    ExecutableElement abc = methodElt;
-    Function<Boolean, Stream<ExecutableElement>> overridenMeths = (annotated) -> {
-      Set<DeclaredType> ancestorTypes = Helper.resolveAncestorTypes(modelElt, true, true);
-      return ancestorTypes.
-          stream().
-          map(DeclaredType::asElement).
-          filter(elt -> !annotated || elt.getAnnotation(DataObject.class) != null).
-          flatMap(Helper.cast(TypeElement.class)).
-          flatMap(elt -> elementUtils.getAllMembers(elt).stream()).
-          flatMap(Helper.instanceOf(ExecutableElement.class)).
-          filter(executableElt -> executableElt.getKind() == ElementKind.METHOD && elementUtils.overrides(abc, executableElt, modelElt));
-    };
+    boolean declared = false;
+    Doc doc = null;
+    for (ExecutableElement methodElt : Arrays.asList(getterElt, setterElt, adderElt)) {
+      if (methodElt != null) {
 
-    boolean declared;
-    Element ownerElt = methodElt.getEnclosingElement();
-    if (ownerElt.equals(modelElt)) {
-      Object[] arr = overridenMeths.apply(true).limit(1).filter(elt -> !elt.getModifiers().contains(Modifier.ABSTRACT)).toArray();
-      // Handle the case where this methods overrides from another data object
-      declared = arr.length == 0;
-    } else {
-      declared = ownerElt.getAnnotation(DataObject.class) == null;
-    }
+        // A stream that list all overriden methods from super types
+        // the boolean control whether or not we want to filter only annotated
+        // data objects
+        Function<Boolean, Stream<ExecutableElement>> overridenMeths = (annotated) -> {
+          Set<DeclaredType> ancestorTypes = Helper.resolveAncestorTypes(modelElt, true, true);
+          return ancestorTypes.
+              stream().
+              map(DeclaredType::asElement).
+              filter(elt -> !annotated || elt.getAnnotation(DataObject.class) != null).
+              flatMap(Helper.cast(TypeElement.class)).
+              flatMap(elt -> elementUtils.getAllMembers(elt).stream()).
+              flatMap(Helper.instanceOf(ExecutableElement.class)).
+              filter(executableElt -> executableElt.getKind() == ElementKind.METHOD && elementUtils.overrides(methodElt, executableElt, modelElt));
+        };
 
-    Doc doc = docFactory.createDoc(methodElt);
-    if (doc == null) {
-      Optional<Doc> first = overridenMeths.apply(false).
-          map(docFactory::createDoc).
-          filter(d -> d != null).
-          findFirst();
-      doc = first.orElse(null);
+        //
+        if (doc == null) {
+          doc = docFactory.createDoc(methodElt);
+          if (doc == null) {
+            Optional<Doc> first = overridenMeths.apply(false).
+                map(docFactory::createDoc).
+                filter(d -> d != null).
+                findFirst();
+            doc = first.orElse(null);
+          }
+        }
+
+        //
+        if (!declared) {
+          Element ownerElt = methodElt.getEnclosingElement();
+          if (ownerElt.equals(modelElt)) {
+            Object[] arr = overridenMeths.apply(true).limit(1).filter(elt -> !elt.getModifiers().contains(Modifier.ABSTRACT)).toArray();
+            // Handle the case where this methods overrides from another data object
+            declared = arr.length == 0;
+          } else {
+            declared = ownerElt.getAnnotation(DataObject.class) == null;
+          }
+        }
+      }
     }
 
     PropertyInfo property = new PropertyInfo(declared, name, doc, propType,
