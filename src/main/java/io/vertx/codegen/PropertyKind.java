@@ -21,11 +21,6 @@ public enum PropertyKind {
   LIST,
 
   /**
-   * The property is a list with an adder and optionally a getter.
-   */
-  LIST_ADD,
-
-  /**
    * The property is a map with a setter and optionally a getter.
    */
   MAP;
@@ -34,7 +29,7 @@ public enum PropertyKind {
    * @return true if the property kind is a list
    */
   public boolean isList() {
-    return this == LIST || this == LIST_ADD;
+    return this == LIST;
   }
 
   /**
@@ -49,13 +44,6 @@ public enum PropertyKind {
    */
   public boolean isValue() {
     return this == VALUE;
-  }
-
-  /**
-   * @return true if the property kind is list adder
-   */
-  public boolean isAdder() {
-    return this == LIST_ADD;
   }
 
   /**

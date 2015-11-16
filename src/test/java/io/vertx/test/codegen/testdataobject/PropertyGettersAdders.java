@@ -24,16 +24,10 @@ public interface PropertyGettersAdders {
   PropertyGettersAdders addString(String s);
   List<Integer> getBoxedIntegers();
   PropertyGettersAdders addBoxedInteger(Integer i);
-  List<Integer> getPrimitiveIntegers();
-  PropertyGettersAdders addPrimitiveInteger(int i);
   List<Boolean> getBoxedBooleans();
   PropertyGettersAdders addBoxedBoolean(Boolean b);
-  List<Boolean> getPrimitiveBooleans();
-  PropertyGettersAdders addPrimitiveBoolean(boolean b);
   List<Long> getBoxedLongs();
   PropertyGettersAdders addBoxedLong(Long b);
-  List<Long> getPrimitiveLongs();
-  PropertyGettersAdders addPrimitiveLong(long b);
 
   List<ApiObject> getApiObjects();
   PropertyGettersAdders addApiObject(ApiObject s);

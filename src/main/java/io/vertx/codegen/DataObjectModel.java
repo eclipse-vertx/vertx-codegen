@@ -19,12 +19,14 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -203,6 +205,7 @@ public class DataObjectModel implements Model {
     }
 
     int result = 0;
+    List<ExecutableElement> methodsElt = new ArrayList<>();
     for (Element enclosedElt : elementUtils.getAllMembers(modelElt)) {
       switch (enclosedElt.getKind()) {
         case CONSTRUCTOR:
@@ -217,12 +220,15 @@ public class DataObjectModel implements Model {
             jsonifiable = true;
           }
           if (methodElt.getAnnotation(GenIgnore.class) == null) {
-            processMethod(methodElt);
+            methodsElt.add(methodElt);
           }
           break;
         }
       }
     }
+
+    processMethods(methodsElt);
+
     boolean hasDefaultConstructor = (result & 2) == 2;
     boolean hasCopyConstructor = (result & 4) == 4;
     boolean hasJsonConstructor = (result & 8) == 8;
@@ -284,139 +290,204 @@ public class DataObjectModel implements Model {
     return 0;
   }
 
-  private void processMethod(ExecutableElement methodElt) {
-    String mutatorMethod = methodElt.getSimpleName().toString();
-    if (mutatorMethod.length() > 3) {
-      String prefix = mutatorMethod.substring(0, 3);
-      String abc = mutatorMethod.substring(3);
-      String name = Helper.normalizePropertyName(abc);
-      List<? extends VariableElement> parameters = methodElt.getParameters();
-      PropertyKind kind;
-      switch (prefix) {
-        case "add":
-        case "set": {
-          if (parameters.size() != 1) {
-            return;
-          }
-          VariableElement paramElt = parameters.get(0);
-          TypeMirror propTypeMirror = paramElt.asType();
-          TypeInfo propType = typeFactory.create(propTypeMirror);
-          if ("add".equals(prefix)) {
-            if (name.endsWith("s")) {
-              throw new GenException(methodElt, "Option adder name must not terminate with 's' char");
-            } else {
-              name += "s";
-            }
-            kind = PropertyKind.LIST_ADD;
+  private void processMethods(List<ExecutableElement> methodsElt) {
+
+    Map<String, ExecutableElement> getters = new HashMap<>();
+    Map<String, ExecutableElement> setters = new HashMap<>();
+    Map<String, ExecutableElement> adders = new HashMap<>();
+
+    while (methodsElt.size() > 0) {
+      ExecutableElement methodElt = methodsElt.remove(0);
+      if (((TypeElement)methodElt.getEnclosingElement()).getQualifiedName().toString().equals("java.lang.Object")) {
+        continue;
+      }
+      String methodName = methodElt.getSimpleName().toString();
+      if (methodName.startsWith("get") && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) && methodElt.getParameters().isEmpty() && methodElt.getReturnType().getKind() != TypeKind.VOID) {
+        String name = Helper.normalizePropertyName(methodName.substring(3));
+        getters.put(name, methodElt);
+      } else if (methodName.startsWith("is") && methodName.length() > 2 && Character.isUpperCase(methodName.charAt(2)) && methodElt.getParameters().isEmpty() && methodElt.getReturnType().getKind() != TypeKind.VOID) {
+        String name = Helper.normalizePropertyName(methodName.substring(2));
+        getters.put(name, methodElt);
+      } else if ((methodName.startsWith("set") || methodName.startsWith("add")) && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) && methodElt.getParameters().size() == 1) {
+        String prefix = methodName.substring(0, 3);
+        String name = Helper.normalizePropertyName(methodName.substring(3));
+        if ("add".equals(prefix)) {
+          if (name.endsWith("s")) {
+            throw new GenException(methodElt, "Option adder name must not terminate with 's' char");
           } else {
-            switch (propType.getKind()) {
-              case LIST:
-                propType = ((ParameterizedTypeInfo) propType).getArgs().get(0);
-                kind = PropertyKind.LIST;
-                break;
-              case MAP:
-                propType = ((ParameterizedTypeInfo) propType).getArgs().get(1);
-                kind = PropertyKind.MAP;
-                break;
-              default:
-                kind = PropertyKind.VALUE;
-                break;
-            }
+            name += "s";
           }
-
-          boolean jsonifiable;
-          switch (propType.getKind()) {
-            case OBJECT:
-              if (kind == PropertyKind.VALUE) {
-                return;
-              }
-            case PRIMITIVE:
-            case BOXED_PRIMITIVE:
-            case STRING:
-            case API:
-            case JSON_OBJECT:
-            case JSON_ARRAY:
-            case ENUM:
-              jsonifiable = true;
-              break;
-            case DATA_OBJECT:
-              TypeMirror jsonType = elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType();
-              Element propTypeElt = typeUtils.asElement(propTypeMirror);
-              jsonifiable = propTypeElt.getAnnotation(DataObject.class) == null ||
-                  elementUtils.getAllMembers(
-                      (TypeElement) propTypeElt).stream().
-                      flatMap(Helper.FILTER_METHOD).
-                      filter(exeElt -> exeElt.getSimpleName().toString().equals("toJson") && typeUtils.isSameType(jsonType, exeElt.getReturnType())).
-                      count() > 0;
-              break;
-            default:
-              return;
-          }
-
-          String readerMethod;
-          if ((propType.getName().equals("boolean") || propType.getName().equals("java.lang.Boolean")) && kind == PropertyKind.VALUE) {
-            readerMethod = "is" + abc;
-          } else {
-            readerMethod = "get" + abc + (kind.isAdder() ? "s" : "");
-          }
-
-          TypeMirror readerType;
-          if (kind.isAdder()) {
-            TypeElement listType = elementUtils.getTypeElement("java.util.List");
-            TypeMirror eltType = propTypeMirror;
-            if (eltType instanceof PrimitiveType) {
-              eltType = typeUtils.boxedClass((PrimitiveType) eltType).asType();
-            }
-            readerType = typeUtils.getDeclaredType(listType, eltType);
-          } else {
-            readerType = propTypeMirror;
-          }
-          boolean hasReader = elementUtils.getAllMembers(modelElt).
-              stream().
-              flatMap(Helper.FILTER_METHOD).
-              filter(elt -> elt.getSimpleName().toString().equals(readerMethod)).
-              filter(elt -> typeUtils.isSameType(elt.getReturnType(), readerType)).
-              count() > 0;
-
-          // A stream that list all overriden methods from super types
-          // the boolean control whether or not we want to filter only annotated
-          // data objects
-          Function<Boolean, Stream<ExecutableElement>> overridenMeths = (annotated) -> {
-            Set<DeclaredType> ancestorTypes = Helper.resolveAncestorTypes(modelElt, true, true);
-            return ancestorTypes.
-                stream().
-                map(DeclaredType::asElement).
-                filter(elt -> !annotated || elt.getAnnotation(DataObject.class) != null).
-                flatMap(Helper.cast(TypeElement.class)).
-                flatMap(elt -> elementUtils.getAllMembers(elt).stream()).
-                flatMap(Helper.instanceOf(ExecutableElement.class)).
-                filter(executableElt -> executableElt.getKind() == ElementKind.METHOD && elementUtils.overrides(methodElt, executableElt, modelElt));
-          };
-
-          boolean declared;
-          Element ownerElt = methodElt.getEnclosingElement();
-          if (ownerElt.equals(modelElt)) {
-            Object[] arr = overridenMeths.apply(true).limit(1).filter(elt -> !elt.getModifiers().contains(Modifier.ABSTRACT)).toArray();
-            // Handle the case where this methods overrides from another data object
-            declared = arr.length == 0;
-          } else {
-            declared = ownerElt.getAnnotation(DataObject.class) == null;
-          }
-
-          Doc doc = docFactory.createDoc(methodElt);
-          if (doc == null) {
-            Optional<Doc> first = overridenMeths.apply(false).
-                map(docFactory::createDoc).
-                filter(d -> d != null).
-                findFirst();
-            doc = first.orElse(null);
-          }
-
-          PropertyInfo property = new PropertyInfo(declared, name, doc, propType, mutatorMethod, hasReader ? readerMethod : null, kind, jsonifiable);
-          propertyMap.put(property.name, property);
+          adders.put(name, methodElt);
+        } else {
+          setters.put(name, methodElt);
         }
       }
     }
+
+    Set<String> names = new HashSet<>();
+    names.addAll(getters.keySet());
+    names.addAll(setters.keySet());
+    names.addAll(adders.keySet());
+
+    for (String name : names) {
+      processMethod(name, getters.get(name), setters.get(name), adders.get(name));
+    }
+
+
+  }
+
+  private void processMethod(String name, ExecutableElement getterElt, ExecutableElement setterElt, ExecutableElement adderElt) {
+
+    ExecutableElement methodElt = null;
+    PropertyKind propKind = null;
+    TypeInfo propType = null;
+    TypeMirror propTypeMirror = null;
+
+    //
+    if (setterElt != null) {
+      VariableElement paramElt = setterElt.getParameters().get(0);
+      propTypeMirror = paramElt.asType();
+      propType = typeFactory.create(propTypeMirror);
+      switch (propType.getKind()) {
+        case LIST:
+          propType = ((ParameterizedTypeInfo) propType).getArgs().get(0);
+          propKind = PropertyKind.LIST;
+          break;
+        case MAP:
+          propType = ((ParameterizedTypeInfo) propType).getArgs().get(1);
+          propKind = PropertyKind.MAP;
+          break;
+        default:
+          propKind = PropertyKind.VALUE;
+          break;
+      }
+      methodElt = setterElt;
+    }
+
+    //
+    if (adderElt != null) {
+      VariableElement paramElt = adderElt.getParameters().get(0);
+      TypeMirror adderTypeMirror = paramElt.asType();
+      TypeInfo adderType = typeFactory.create(adderTypeMirror);
+      if (propTypeMirror != null) {
+        if (propKind != PropertyKind.LIST) {
+          throw new GenException(adderElt, "Adder type does not match the setter type");
+        }
+        if (!adderType.equals(propType)) {
+          throw new GenException(adderElt, "Adder type does not match the setter type");
+        }
+      } else {
+        propTypeMirror = adderTypeMirror;
+        propType = adderType;
+        propKind = PropertyKind.LIST;
+        methodElt = adderElt;
+      }
+    }
+
+    //
+    if (getterElt != null) {
+      TypeMirror getterTypeMirror = getterElt.getReturnType();
+      TypeInfo getterType = typeFactory.create(getterTypeMirror);
+      PropertyKind getterKind;
+      switch (getterType.getKind()) {
+        case LIST:
+          getterType = ((ParameterizedTypeInfo) getterType).getArgs().get(0);
+          getterKind = PropertyKind.LIST;
+          break;
+        case MAP:
+          getterType = ((ParameterizedTypeInfo) getterType).getArgs().get(1);
+          getterKind = PropertyKind.MAP;
+          break;
+        default:
+          getterKind = PropertyKind.VALUE;
+          break;
+      }
+      if (propType != null) {
+        if (propKind != getterKind) {
+          throw new GenException(getterElt, "Getter type does not match the modified type");
+        }
+        if (!getterType.equals(propType)) {
+          throw new GenException(getterElt, "Getter type does not match the modifier type");
+        }
+      } else {
+        propTypeMirror = getterTypeMirror;
+        propType = getterType;
+        propKind = getterKind;
+        methodElt = getterElt;
+      }
+    }
+
+    //
+    boolean jsonifiable;
+    switch (propType.getKind()) {
+      case OBJECT:
+        if (propKind == PropertyKind.VALUE) {
+          return;
+        }
+      case PRIMITIVE:
+      case BOXED_PRIMITIVE:
+      case STRING:
+      case API:
+      case JSON_OBJECT:
+      case JSON_ARRAY:
+      case ENUM:
+        jsonifiable = true;
+        break;
+      case DATA_OBJECT:
+        TypeMirror jsonType = elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType();
+        Element propTypeElt = typeUtils.asElement(propTypeMirror);
+        jsonifiable = propTypeElt.getAnnotation(DataObject.class) == null ||
+            elementUtils.getAllMembers(
+                (TypeElement) propTypeElt).stream().
+                flatMap(Helper.FILTER_METHOD).
+                filter(exeElt -> exeElt.getSimpleName().toString().equals("toJson") && typeUtils.isSameType(jsonType, exeElt.getReturnType())).
+                count() > 0;
+        break;
+      default:
+        return;
+    }
+
+    // A stream that list all overriden methods from super types
+    // the boolean control whether or not we want to filter only annotated
+    // data objects
+    ExecutableElement abc = methodElt;
+    Function<Boolean, Stream<ExecutableElement>> overridenMeths = (annotated) -> {
+      Set<DeclaredType> ancestorTypes = Helper.resolveAncestorTypes(modelElt, true, true);
+      return ancestorTypes.
+          stream().
+          map(DeclaredType::asElement).
+          filter(elt -> !annotated || elt.getAnnotation(DataObject.class) != null).
+          flatMap(Helper.cast(TypeElement.class)).
+          flatMap(elt -> elementUtils.getAllMembers(elt).stream()).
+          flatMap(Helper.instanceOf(ExecutableElement.class)).
+          filter(executableElt -> executableElt.getKind() == ElementKind.METHOD && elementUtils.overrides(abc, executableElt, modelElt));
+    };
+
+    boolean declared;
+    Element ownerElt = methodElt.getEnclosingElement();
+    if (ownerElt.equals(modelElt)) {
+      Object[] arr = overridenMeths.apply(true).limit(1).filter(elt -> !elt.getModifiers().contains(Modifier.ABSTRACT)).toArray();
+      // Handle the case where this methods overrides from another data object
+      declared = arr.length == 0;
+    } else {
+      declared = ownerElt.getAnnotation(DataObject.class) == null;
+    }
+
+    Doc doc = docFactory.createDoc(methodElt);
+    if (doc == null) {
+      Optional<Doc> first = overridenMeths.apply(false).
+          map(docFactory::createDoc).
+          filter(d -> d != null).
+          findFirst();
+      doc = first.orElse(null);
+    }
+
+    PropertyInfo property = new PropertyInfo(declared, name, doc, propType,
+        setterElt != null ? setterElt.getSimpleName().toString() : null,
+        adderElt != null ? adderElt.getSimpleName().toString() : null,
+        getterElt != null ? getterElt.getSimpleName().toString() : null,
+        propKind, jsonifiable);
+    propertyMap.put(property.name, property);
   }
 
 

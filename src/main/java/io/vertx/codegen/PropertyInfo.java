@@ -15,19 +15,21 @@ public class PropertyInfo {
   final String name;
   final Doc doc;
   final TypeInfo type;
-  final String writerMethod;
-  final String readerMethod;
+  final String setterMethod;
+  final String adderMethod;
+  final String getterMethod;
   final boolean jsonifiable;
 
-  public PropertyInfo(boolean declared, String name, Doc doc, TypeInfo type, String writerMethod, String readerMethod,
+  public PropertyInfo(boolean declared, String name, Doc doc, TypeInfo type, String setterMethod, String adderMethod, String getterMethod,
                       PropertyKind kind, boolean jsonifiable) {
     this.kind = kind;
     this.declared = declared;
     this.name = name;
     this.doc = doc;
     this.type = type;
-    this.writerMethod = writerMethod;
-    this.readerMethod = readerMethod;
+    this.adderMethod = adderMethod;
+    this.setterMethod = setterMethod;
+    this.getterMethod = getterMethod;
     this.jsonifiable = jsonifiable;
   }
 
@@ -70,16 +72,20 @@ public class PropertyInfo {
   /**
    * @return the name of the Java method that can read the state of this property on the data object.
    */
-  public String getReaderMethod() {
-    return readerMethod;
+  public String getGetterMethod() {
+    return getterMethod;
   }
 
   /**
    * @return the name of the Java method that will update the state of this property on the data object, the nature of the method
    * depends on the {@link #isAdder()} and {@link #isArray()} values.
    */
-  public String getWriterMethod() {
-    return writerMethod;
+  public String getSetterMethod() {
+    return setterMethod;
+  }
+
+  public String getAdderMethod() {
+    return adderMethod;
   }
 
   /**
@@ -93,7 +99,7 @@ public class PropertyInfo {
    * @return true if the property is managed by a {@code java.util.List<T>}
    */
   public boolean isArray() {
-    return kind == PropertyKind.LIST || kind == PropertyKind.LIST_ADD;
+    return kind == PropertyKind.LIST;
   }
 
   /**
@@ -104,10 +110,17 @@ public class PropertyInfo {
   }
 
   /**
-   * @return true if the property is using an adder
+   * @return true if the property has a setter method
+   */
+  public boolean isSetter() {
+    return setterMethod != null;
+  }
+
+  /**
+   * @return true if the property has an adder method
    */
   public boolean isAdder() {
-    return kind == PropertyKind.LIST_ADD;
+    return adderMethod != null;
   }
 
   /**
