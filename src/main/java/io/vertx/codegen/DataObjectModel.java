@@ -443,7 +443,7 @@ public class DataObjectModel implements Model {
 
     boolean declared = false;
     Doc doc = null;
-    for (ExecutableElement methodElt : Arrays.asList(getterElt, setterElt, adderElt)) {
+    for (ExecutableElement methodElt : Arrays.asList(setterElt, adderElt, getterElt)) {
       if (methodElt != null) {
 
         // A stream that list all overriden methods from super types

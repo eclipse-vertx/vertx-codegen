@@ -510,9 +510,12 @@ public class DataObjectTest {
   @Test
   public void testCommentedProperty() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(CommentedProperty.class);
-    PropertyInfo propertyInfo = model.getPropertyMap().get("theProperty");
-    Doc propertyDoc = propertyInfo.getDoc();
-    assertEquals(" The property description.\n", propertyDoc.getFirstSentence().getValue());
+    PropertyInfo setterProperty = model.getPropertyMap().get("setterProperty");
+    assertEquals(" Setter setter property description.\n", setterProperty.getDoc().getFirstSentence().getValue());
+    PropertyInfo getterProperty = model.getPropertyMap().get("getterProperty");
+    assertEquals(" Getter getter property description.\n", getterProperty.getDoc().getFirstSentence().getValue());
+    PropertyInfo getterAndSetterProperty = model.getPropertyMap().get("getterAndSetterProperty");
+    assertEquals(" GetterAndSetter setter property description.\n", getterAndSetterProperty.getDoc().getFirstSentence().getValue());
   }
 
   @Test
