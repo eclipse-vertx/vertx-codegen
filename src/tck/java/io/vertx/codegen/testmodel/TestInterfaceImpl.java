@@ -172,6 +172,19 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public Handler<AsyncResult<String>> methodWithHandlerAsyncResultStringReturn(String expected, boolean fail) {
+    return ar -> {
+      if (!fail) {
+        assertTrue(ar.succeeded());
+        assertEquals(expected, ar.result());
+      } else {
+        assertEquals(false, ar.succeeded());
+        assertEquals(expected, ar.cause().getMessage());
+      }
+    };
+  }
+
+  @Override
   public void methodWithUserTypes(RefedInterface1 refed) {
     assertEquals("aardvarks", refed.getString());
   }

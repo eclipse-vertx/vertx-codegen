@@ -15,6 +15,7 @@ import io.vertx.codegen.type.ClassTypeInfo;
 import io.vertx.codegen.type.EnumTypeInfo;
 import io.vertx.codegen.type.ParameterizedTypeInfo;
 import io.vertx.codegen.type.PrimitiveTypeInfo;
+import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.type.TypeReflectionFactory;
 import io.vertx.codegen.TypeParamInfo;
 import io.vertx.codegen.testmodel.TestEnum;
@@ -308,11 +309,6 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testGenerateMethodWithReturnHandlerNonVertxGen() throws Exception {
     assertGenInvalid(MethodWithHandlerNonVertxGenReturn.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithReturnAsyncResultHandler() throws Exception {
-    assertGenInvalid(MethodWithHandlerAsyncResultReturn.class);
   }
 
   @Test
@@ -779,6 +775,22 @@ public class ClassTest extends ClassTestBase {
     enumType = (EnumTypeInfo) params.get(0).getType();
     assertTrue(enumType.isGen());
     assertEquals(Arrays.asList("LAURA", "BOB", "MIKE", "LELAND"), enumType.getValues());
+  }
+
+  @Test
+  public void testValidHandlerAsyncResult() throws Exception {
+    ClassModel model = new Generator().generateClass(MethodWithHandlerAsyncResultReturn.class);
+    assertEquals(MethodWithHandlerAsyncResultReturn.class.getName(), model.getIfaceFQCN());
+    assertEquals(MethodWithHandlerAsyncResultReturn.class.getSimpleName(), model.getIfaceSimpleName());
+    assertTrue(model.getReferencedTypes().isEmpty());
+    assertTrue(model.getSuperTypes().isEmpty());
+    assertEquals(1, model.getMethods().size());
+
+    checkMethod(model.getMethods().get(0), "methodWithHandlerAsyncResultStringReturn", 0, new TypeLiteral<Handler<AsyncResult<String>>>() {}, MethodKind.OTHER);
+    TypeInfo returnType = model.getMethods().get(0).getReturnType();
+    assertEquals(ClassKind.HANDLER, returnType.getKind());
+    assertEquals(ClassKind.ASYNC_RESULT, ((ParameterizedTypeInfo)returnType).getArg(0).getKind());
+    assertEquals(ClassKind.STRING, ((ParameterizedTypeInfo)((ParameterizedTypeInfo)returnType).getArg(0)).getArg(0).getKind());
   }
 
   @Test

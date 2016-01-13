@@ -10,5 +10,5 @@ import io.vertx.codegen.annotations.VertxGen;
 @VertxGen
 public interface MethodWithHandlerAsyncResultReturn {
 
-  Handler<AsyncResult<String>> foo(String param);
+  Handler<AsyncResult<String>> methodWithHandlerAsyncResultStringReturn();
 }

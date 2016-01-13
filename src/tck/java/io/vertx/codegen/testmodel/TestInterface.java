@@ -40,6 +40,8 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
   void methodWithHandlerAsyncResultString(boolean sendFailure, Handler<AsyncResult<String>> handler);
   void methodWithHandlerAsyncResultDataObject(boolean sendFailure, Handler<AsyncResult<TestDataObject>> handler);
 
+  Handler<AsyncResult<String>> methodWithHandlerAsyncResultStringReturn(String expected, boolean fail);
+
   void methodWithUserTypes(RefedInterface1 refed);
 
   void methodWithObjectParam(String str, Object obj);

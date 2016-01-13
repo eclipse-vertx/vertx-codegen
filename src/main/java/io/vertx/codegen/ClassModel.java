@@ -300,6 +300,14 @@ public class ClassModel implements Model {
       return;
     }
 
+    // Check legal handlers
+    if (isLegalHandlerType(type)) {
+      return;
+    }
+    if (isLegalHandlerAsyncResultType(type)) {
+      return;
+    }
+
     throw new GenException(elem, "type " + type + " is not legal for use for a return type in code generation");
   }
 
