@@ -72,6 +72,17 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
   @Override
+  public Handler<String> methodWithHandlerStringReturn(String expected) {
+    return event -> assertEquals(expected, event);
+  }
+
+  @Override
+  public <T> Handler<T> methodWithHandlerGenericReturn(Handler<T> handler) {
+    // Does a bidirectionnal conversion on purpose
+    return handler::handle;
+  }
+
+  @Override
   public void methodWithHandlerAsyncResultByte(boolean sendFailure, Handler<AsyncResult<Byte>> handler) {
     if (sendFailure) {
       Exception e = new Exception("foobar!");
@@ -182,6 +193,12 @@ public class TestInterfaceImpl implements TestInterface {
         assertEquals(expected, ar.cause().getMessage());
       }
     };
+  }
+
+  @Override
+  public <T> Handler<AsyncResult<T>> methodWithHandlerAsyncResultGenericReturn(Handler<AsyncResult<T>> handler) {
+    // Does a bidirectionnal conversion on purpose
+    return handler::handle;
   }
 
   @Override

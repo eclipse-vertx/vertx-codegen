@@ -70,6 +70,7 @@ import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultParam;
 import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerNonVertxGenReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerParam;
+import io.vertx.test.codegen.testapi.MethodWithHandlerReturn;
 import io.vertx.test.codegen.testapi.MethodWithInvalidExceptionParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerAsyncResultDataObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerDataObjectParam;
@@ -778,7 +779,22 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
-  public void testValidHandlerAsyncResult() throws Exception {
+  public void testValidHandlerReturn() throws Exception {
+    ClassModel model = new Generator().generateClass(MethodWithHandlerReturn.class);
+    assertEquals(MethodWithHandlerReturn.class.getName(), model.getIfaceFQCN());
+    assertEquals(MethodWithHandlerReturn.class.getSimpleName(), model.getIfaceSimpleName());
+    assertTrue(model.getReferencedTypes().isEmpty());
+    assertTrue(model.getSuperTypes().isEmpty());
+    assertEquals(1, model.getMethods().size());
+
+    checkMethod(model.getMethods().get(0), "methodWithHandlerStringReturn", 0, new TypeLiteral<Handler<String>>() {}, MethodKind.OTHER);
+    TypeInfo returnType = model.getMethods().get(0).getReturnType();
+    assertEquals(ClassKind.HANDLER, returnType.getKind());
+    assertEquals(ClassKind.STRING, ((ParameterizedTypeInfo)returnType).getArg(0).getKind());
+  }
+
+  @Test
+  public void testValidHandlerAsyncResultReturn() throws Exception {
     ClassModel model = new Generator().generateClass(MethodWithHandlerAsyncResultReturn.class);
     assertEquals(MethodWithHandlerAsyncResultReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithHandlerAsyncResultReturn.class.getSimpleName(), model.getIfaceSimpleName());
