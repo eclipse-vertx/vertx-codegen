@@ -260,21 +260,6 @@ extended by *concrete* interfaces an can inherit from *abstract* interfaces only
 - _api_ types annotated with `link:../../apidocs/io/vertx/codegen/annotations/VertxGen.html[@VertxGen]` or `link:../../apidocs/io/vertx/codegen/annotations/VertxGen.html[@VertxGen]``(concrete = true)`
 are implemented directly by Vertx and can inherit at most one other *concrete* interface and any *abstract* interface
 
-==== Method return type
-
-The following return types are allowed:
-
-. `void` type
-. any _basic_ type
-. any _api_ type or parameterized _api_ type having type variable parameters
-. any _json_ type
-. the `java.lang.Throwable` type
-. any _enum_ type
-. any _data object_ type
-. an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
-. a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
-a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
-
 ==== Method parameter types
 
 The following method parameter types are allowed:
@@ -303,6 +288,23 @@ In addition callback parameters are allowed, i.e types declaring `io.vertx.core.
 . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
 . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
 a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
+
+==== Method return type
+
+The following return types are allowed:
+
+. `void` type
+. any _basic_ type
+. any _api_ type or parameterized _api_ type having type variable parameters
+. any _json_ type
+. the `java.lang.Throwable` type
+. any _enum_ type
+. any _data object_ type
+. an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
+. a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
+a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
+. an `Handler<T>` where T is is a among the method parameter types
+. an `Handler<AsyncResult<T>>` where T is is a among the method parameter types
 
 ==== Method overloading
 
@@ -489,6 +491,11 @@ A shim implements several strategies when returning values from the Vert.x API:
 6. a _collection_ is usually translated to the shim equivalent
 7. a `java.lang.Throwable` is usually translated to the shim equivalent
 8. a type variable is converted dynamically converted to a _basic_ type or a _json_ type
+9. an `Handler<T>` value is what is used in the target language to represent an handler, when this handler is called
+it invokes the handler with the value converted using the argument value rules
+10. an `Handler<AsyncResult<T>>` value is what is used in the target language to represent an async result handler, when this handler
+is _succeeded_ it invokes the handler with the `AsyncResult<T>` wrapping the converted value using the argument value rules,
+otherwise it invokes the handler with the `AsyncResult<T>` wrapping the throwable
 
 === Argument values
 
