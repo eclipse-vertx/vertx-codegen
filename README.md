@@ -6,8 +6,8 @@ This projects contains tools which allow idiomatic other language API shims to b
 
 ## Helper projects
 
-- Codegen CLI: a codegen https://github.com/vietj/vertx-codegen-cli[CLI] to help code generating files.
-- Codegen starter: a codegen https://github.com/vietj/vertx-codegen-starter[Starter] that can be forked to create a new Vert.x code generator
+- Codegen CLI: a codegen [CLI](https://github.com/vietj/vertx-codegen-cli) to help code generating files.
+- Codegen starter: a codegen [Starter](https://github.com/vietj/vertx-codegen-starter) that can be forked to create a new Vert.x code generator
 
 ## API generator
 
