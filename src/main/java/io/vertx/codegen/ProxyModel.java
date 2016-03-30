@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -71,7 +72,9 @@ public class ProxyModel extends ClassModel {
     // We also allow data object as parameter types if they have a 'public JsonObject toJson()' method
     if (typeInfo.getKind() == ClassKind.DATA_OBJECT) {
       if (type instanceof DeclaredType) {
-        List<TypeInfo> list = ((DeclaredType) type).asElement().getEnclosedElements().stream()
+        List<DeclaredType> directSupertypes = (List<DeclaredType>) this.typeUtils.directSupertypes(type);
+        List<Element> superTypeElements = directSupertypes.stream().map(superType -> superType.asElement()).flatMap(element -> element.getEnclosedElements().stream()).collect(Collectors.toList());
+        List<TypeInfo> list = Stream.concat(((DeclaredType) type).asElement().getEnclosedElements().stream(),superTypeElements.stream())
           .filter(e -> e.getKind() == ElementKind.METHOD)
           .map(e -> (ExecutableElement) e)
           .filter(e -> e.getParameters().size() == 0 && e.getSimpleName().toString().equals("toJson"))
