@@ -210,6 +210,9 @@ public class CodeGenProcessor extends AbstractProcessor {
         File file = generated.file;
         Helper.ensureParentDir(file);
         try (FileWriter fileWriter = new FileWriter(file)) {
+          Collections.sort(generated, (o1, o2) ->
+                  o1.model.getElement().getSimpleName().toString().compareTo(
+                  o2.model.getElement().getSimpleName().toString()));
           for (int i = 0; i < generated.size(); i++) {
             ModelProcessing processing = generated.get(i);
             Map<String, Object> vars = new HashMap<>();
