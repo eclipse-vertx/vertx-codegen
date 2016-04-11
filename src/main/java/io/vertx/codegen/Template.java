@@ -94,7 +94,7 @@ public class Template {
     // before parsing.
     // So use tabs for indentation that YOU want to see in the template but won't be in the final output
     // And use spaces for indentation that WILL be in the final output
-    template = template.replace("\n", "").replace("\\n", "\n").replace("\t", "");
+    template = template.replace("\n", "").replace("\r", "").replace("\\n", System.getProperty("line.separator")).replace("\t", "");
 
     // Be sure to have mvel classloader as parent during evaluation as it will need mvel classes
     // when generating code
