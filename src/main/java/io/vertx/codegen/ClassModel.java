@@ -237,7 +237,7 @@ public class ClassModel implements Model {
       return;
     }
     // We also allow enums as parameter types
-    if (isLegalEnum(type)) {
+    if (isLegalEnum(typeInfo)) {
       return;
     }
     // Check legal handlers
@@ -273,7 +273,7 @@ public class ClassModel implements Model {
       return;
     }
     // We also allow enums as return types
-    if (isLegalEnum(typeMirror)) {
+    if (isLegalEnum(type)) {
       return;
     }
 
@@ -311,16 +311,8 @@ public class ClassModel implements Model {
     throw new GenException(elem, "type " + type + " is not legal for use for a return type in code generation");
   }
 
-  private boolean isLegalEnum(TypeMirror type) {
-    if (type.getKind() != TypeKind.DECLARED) {
-      return false;
-    }
-    Element typeElt = ((DeclaredType) type).asElement();
-    if (typeElt.getKind() != ElementKind.ENUM) {
-      return false;
-    }
-    Element enclosing = typeElt.getEnclosingElement();
-    return enclosing.getKind() == ElementKind.PACKAGE;
+  private boolean isLegalEnum(TypeInfo info) {
+    return info.getKind() == ClassKind.ENUM;
   }
 
   private boolean isVariableType(TypeInfo type) {
