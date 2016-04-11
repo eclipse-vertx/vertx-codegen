@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -42,6 +43,9 @@ public enum ClassKind {
 
   // Handler
   HANDLER(false, false, false),
+
+  // Function
+  FUNCTION(false, false, false),
 
   // AsyncResult
   ASYNC_RESULT(false, false, false),
@@ -100,6 +104,8 @@ public enum ClassKind {
       return THROWABLE;
     } else if (fqcn.equals(Void.class.getName())) {
       return VOID;
+    } else if (fqcn.equals(Function.class.getName())) {
+      return FUNCTION;
     } else if (fqcn.equals(Integer.class.getName()) ||
         fqcn.equals(Long.class.getName()) ||
         fqcn.equals(Boolean.class.getName()) ||

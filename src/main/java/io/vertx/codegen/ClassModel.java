@@ -227,17 +227,7 @@ public class ClassModel implements Model {
   }
 
   protected void checkParamType(Element elem, TypeMirror type, TypeInfo typeInfo, int pos, int numParams) {
-
-    // Basic types, int, long, String etc
-    // JsonObject or JsonArray
-    // Throwable
-    // Also can use Object as a param type (e.g. for EventBus)
-    if (typeInfo.getKind().basic || typeInfo.getKind().json ||
-        typeInfo.getKind() == ClassKind.OBJECT || typeInfo.getKind() == ClassKind.THROWABLE) {
-      return;
-    }
-    // We also allow enums as parameter types
-    if (isLegalEnum(typeInfo)) {
+    if (isLegalNonCallbackParam(typeInfo)) {
       return;
     }
     // Check legal handlers
@@ -247,19 +237,7 @@ public class ClassModel implements Model {
     if (isLegalHandlerAsyncResultType(typeInfo)) {
       return;
     }
-    if (isLegalListSetMapParam(typeInfo)) {
-      return;
-    }
-    // Another user defined interface with the @VertxGen annotation is OK
-    if (isVertxGenInterface(typeInfo)) {
-      return;
-    }
-    // Can also specify option classes (which aren't VertxGen)
-    if (isDataObjectType(typeInfo)) {
-      return;
-    }
-    // We also allow type parameters for param types
-    if (isVariableType(typeInfo)) {
+    if (isLegalFunctionType(typeInfo)) {
       return;
     }
     throw new GenException(elem, "type " + typeInfo + " is not legal for use for a parameter in code generation");
@@ -313,6 +291,34 @@ public class ClassModel implements Model {
 
   private boolean isLegalEnum(TypeInfo info) {
     return info.getKind() == ClassKind.ENUM;
+  }
+
+  private boolean isLegalNonCallbackParam(TypeInfo typeInfo) {
+    // Basic types, int, long, String etc
+    // JsonObject or JsonArray
+    // Throwable
+    // Also can use Object as a param type (e.g. for EventBus)
+    if (typeInfo.getKind().basic || typeInfo.getKind().json ||
+        typeInfo.getKind() == ClassKind.OBJECT || typeInfo.getKind() == ClassKind.THROWABLE) {
+      return true;
+    }
+    // We also allow enums as parameter types
+    if (isLegalEnum(typeInfo)) {
+      return true;
+    }
+    if (isLegalListSetMapParam(typeInfo)) {
+      return true;
+    }
+    // Another user defined interface with the @VertxGen annotation is OK
+    if (isVertxGenInterface(typeInfo)) {
+      return true;
+    }
+    // Can also specify option classes (which aren't VertxGen)
+    if (isDataObjectType(typeInfo)) {
+      return true;
+    }
+    // We also allow type parameters for param types
+    return isVariableType(typeInfo);
   }
 
   private boolean isVariableType(TypeInfo type) {
@@ -405,13 +411,20 @@ public class ClassModel implements Model {
     return false;
   }
 
+  private boolean isLegalFunctionType(TypeInfo typeInfo) {
+    if (typeInfo.getErased().getKind() == ClassKind.FUNCTION) {
+      TypeInfo paramType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(0);
+      if (isLegalCallbackValueType(paramType) || paramType.getKind() == ClassKind.THROWABLE) {
+        TypeInfo returnType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(1);
+        return isLegalNonCallbackParam(returnType);
+      }
+    }
+    return false;
+  }
+
   private boolean isLegalHandlerType(TypeInfo type) {
     if (type.getErased().getKind() == ClassKind.HANDLER) {
       TypeInfo eventType = ((ParameterizedTypeInfo) type).getArgs().get(0);
-      ClassKind eventKind = eventType.getKind();
-      if (eventKind == ClassKind.VOID && eventType.isNullable()) {
-        return false;
-      }
       if (isLegalCallbackValueType(eventType) || eventType.getKind() == ClassKind.THROWABLE) {
         return true;
       }
@@ -424,10 +437,6 @@ public class ClassModel implements Model {
       TypeInfo eventType = ((ParameterizedTypeInfo) type).getArgs().get(0);
       if (eventType.getErased().getKind() == ClassKind.ASYNC_RESULT && !eventType.isNullable()) {
         TypeInfo resultType = ((ParameterizedTypeInfo) eventType).getArgs().get(0);
-        ClassKind resultKind = resultType.getKind();
-        if (resultKind == ClassKind.VOID && resultType.isNullable()) {
-          return false;
-        }
         if (isLegalCallbackValueType(resultType)) {
           return true;
         }
@@ -437,9 +446,12 @@ public class ClassModel implements Model {
   }
 
   private boolean isLegalCallbackValueType(TypeInfo type) {
+    if (type.getKind() == ClassKind.VOID && type.isNullable()) {
+      return false;
+    }
     return type.getKind().json || type.getKind().basic || isVertxGenInterface(type) ||
         isLegalListSetMapReturn(type) || type.getKind() == ClassKind.ENUM || type.getKind() == ClassKind.VOID ||
-        isVariableType(type) || isDataObjectTypeWithToJson(type);
+        isVariableType(type) || type.getKind() == ClassKind.OBJECT || isDataObjectTypeWithToJson(type);
   }
 
   private void determineApiTypes() {
@@ -481,7 +493,7 @@ public class ClassModel implements Model {
         if (ifaceFQCN != null) {
           throw new GenException(elem, "Can only have one interface per file");
         }
-        type = (ClassTypeInfo) typeFactory.create(elem.asType()).getRaw();
+        type = typeFactory.create(elem.asType()).getRaw();
         Helper.checkUnderModule(this, "@VertxGen");
         ifaceFQCN = elem.asType().toString();
         ifaceSimpleName = elem.getSimpleName().toString();
