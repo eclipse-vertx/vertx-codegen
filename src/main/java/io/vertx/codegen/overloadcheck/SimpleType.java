@@ -8,9 +8,9 @@ public class SimpleType {
   private static final String ALL_TYPE = "ALL";
 
   final String name;
-  final String nullable;
+  final boolean nullable;
 
-  public SimpleType(String value, String nullable) {
+  public SimpleType(String value, boolean nullable) {
     this.name = value;
     this.nullable = nullable;
   }
@@ -29,6 +29,6 @@ public class SimpleType {
   }
 
   public boolean matches(SimpleType other) {
-    return name.equals(other.name) || isAll() || other.isAll() || (nullable != null && nullable.equals(other.nullable));
+    return name.equals(other.name) || isAll() || other.isAll() || (nullable && other.nullable);
   }
 }

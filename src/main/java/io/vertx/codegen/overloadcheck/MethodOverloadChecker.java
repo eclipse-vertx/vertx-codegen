@@ -131,11 +131,7 @@ public class MethodOverloadChecker {
           throw new IllegalStateException("No type mapping found for param type " + lhs);
         }
       }
-      String nullable = null;
-      if (param.nullable) {
-        nullable = typeMapping.get("NULL");
-      }
-      langParamTypes.add(new SimpleType(langType, nullable));
+      langParamTypes.add(new SimpleType(langType, param.nullable));
     }
     return langParamTypes;
   }
