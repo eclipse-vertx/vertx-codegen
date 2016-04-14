@@ -66,12 +66,22 @@ import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument3;
 import io.vertx.test.codegen.testapi.MethodWithDiamond;
 import io.vertx.test.codegen.testapi.MethodWithEnumParam;
 import io.vertx.test.codegen.testapi.MethodWithEnumReturn;
+import io.vertx.test.codegen.testapi.MethodWithFunctionInHandler;
+import io.vertx.test.codegen.testapi.MethodWithFunctionInHandlerAsyncResult;
 import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultParam;
 import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerNonVertxGenReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerParam;
 import io.vertx.test.codegen.testapi.MethodWithHandlerReturn;
 import io.vertx.test.codegen.testapi.MethodWithInvalidExceptionParam;
+import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam1;
+import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam2;
+import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam3;
+import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam4;
+import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam5;
+import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam6;
+import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam7;
+import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam8;
 import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerAsyncResultDataObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerDataObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn3;
@@ -113,6 +123,7 @@ import io.vertx.test.codegen.testapi.MethodWithValidBasicBoxedParams;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicParams;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidDataObjectReturn;
+import io.vertx.test.codegen.testapi.MethodWithValidFunctionParams;
 import io.vertx.test.codegen.testapi.MethodWithValidHandlerAsyncResultJSON;
 import io.vertx.test.codegen.testapi.MethodWithValidHandlerAsyncResultParams;
 import io.vertx.test.codegen.testapi.MethodWithValidHandlerJSON;
@@ -172,6 +183,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static io.vertx.test.codegen.Utils.*;
@@ -261,6 +273,16 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testGenerateMethodWithNonVertxGenInHandlerAsyncResult() throws Exception {
     assertGenInvalid(MethodWithNotVertxGenObjectInHandlerAsyncResult.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithFunctionInHandler() throws Exception {
+    assertGenInvalid(MethodWithFunctionInHandler.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithFunctionInHandlerAsyncResult() throws Exception {
+    assertGenInvalid(MethodWithFunctionInHandlerAsyncResult.class);
   }
 
   // TODO Handler and Handler<AsyncResult> of List/String with non basic types
@@ -615,6 +637,96 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(8), "mapStrHandler", new TypeLiteral<Handler<Map<String, String>>>(){});
     checkParam(params.get(9), "mapJsonObjectHandler", new TypeLiteral<Handler<Map<String, JsonObject>>>(){});
     checkParam(params.get(10), "mapJsonArrayHandler",  new TypeLiteral<Handler<Map<String, JsonArray>>>(){});
+  }
+
+  @Test
+  public <T> void testValidFunctionParams() throws Exception {
+    ClassModel model = new Generator().generateClass(MethodWithValidFunctionParams.class);
+
+    MethodInfo method = model.getMethods().get(0);
+    checkMethod(method, "methodWithFunctionParams", 18, "void", MethodKind.OTHER);
+    List<ParamInfo> params = method.getParams();
+    checkParam(params.get(0), "byteFunction", new TypeLiteral<Function<Byte, Byte>>() {});
+    checkParam(params.get(1), "shortFunction", new TypeLiteral<Function<Short, Short>>() {});
+    checkParam(params.get(2), "intFunction", new TypeLiteral<Function<Integer, Integer>>() {});
+    checkParam(params.get(3), "longFunction", new TypeLiteral<Function<Long, Long>>(){});
+    checkParam(params.get(4), "floatFunction", new TypeLiteral<Function<Float, Float>>(){});
+    checkParam(params.get(5), "doubleFunction", new TypeLiteral<Function<Double, Double>>(){});
+    checkParam(params.get(6), "booleanFunction", new TypeLiteral<Function<Boolean, Boolean>>(){});
+    checkParam(params.get(7), "charFunction", new TypeLiteral<Function<Character, Character>>(){});
+    checkParam(params.get(8), "strFunction", new TypeLiteral<Function<String, String>>(){});
+    checkParam(params.get(9), "gen1Function", new TypeLiteral<Function<VertxGenClass1, VertxGenClass1>>(){});
+    checkParam(params.get(10), "gen2Function", new TypeLiteral<Function<VertxGenClass2, VertxGenClass2>>(){});
+    checkParam(params.get(11), "voidFunction",  new TypeLiteral<Function<Void, String>>(){});
+    checkParam(params.get(12), "throwableFunction",  new TypeLiteral<Function<Throwable, Throwable>>(){});
+    checkParam(params.get(13), "dataObjectFunction", new TypeLiteral<Function<TestDataObject, TestDataObject>>(){});
+    checkParam(params.get(14), "enumFunction", new TypeLiteral<Function<TestEnum, TestEnum>>(){});
+    checkParam(params.get(15), "objectFunction", new TypeLiteral<Function<Object, Object>>(){});
+    checkParam(params.get(16), "genericFunction", new TypeLiteral<Function<T, T>>(){});
+    checkParam(params.get(17), "genericUserTypeFunction", new TypeLiteral<Function<GenericInterface<T>, GenericInterface<T>>>(){});
+
+    method = model.getMethods().get(1);
+    checkMethod(method, "methodWithListFunctionParams", 14, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "listByteFunction", new TypeLiteral<Function<List<Byte>, List<Byte>>>(){});
+    checkParam(params.get(1), "listShortFunction", new TypeLiteral<Function<List<Short>, List<Short>>>() {});
+    checkParam(params.get(2), "listIntFunction", new TypeLiteral<Function<List<Integer>, List<Integer>>>(){});
+    checkParam(params.get(3), "listLongFunction", new TypeLiteral<Function<List<Long>, List<Long>>>(){});
+    checkParam(params.get(4), "listFloatFunction",  new TypeLiteral<Function<List<Float>, List<Float>>>(){});
+    checkParam(params.get(5), "listDoubleFunction", new TypeLiteral<Function<List<Double>, List<Double>>>(){});
+    checkParam(params.get(6), "listBooleanFunction", new TypeLiteral<Function<List<Boolean>, List<Boolean>>>(){});
+    checkParam(params.get(7), "listCharFunction", new TypeLiteral<Function<List<Character>, List<Character>>>(){});
+    checkParam(params.get(8), "listStrFunction", new TypeLiteral<Function<List<String>, List<String>>>(){});
+    checkParam(params.get(9), "listVertxGenFunction", new TypeLiteral<Function<List<VertxGenClass1>, List<VertxGenClass1>>>(){});
+    checkParam(params.get(10), "listJsonObjectFunction", new TypeLiteral<Function<List<JsonObject>, List<JsonObject>>>(){});
+    checkParam(params.get(11), "listJsonArrayFunction", new TypeLiteral<Function<List<JsonArray>, List<JsonArray>>>(){});
+    checkParam(params.get(12), "listDataObjectFunction", new TypeLiteral<Function<List<TestDataObject>, List<TestDataObject>>>(){});
+    checkParam(params.get(13), "listEnumFunction", new TypeLiteral<Function<List<TestEnum>, List<TestEnum>>>(){});
+
+    method = model.getMethods().get(2);
+    checkMethod(method, "methodWithSetFunctionParams", 14, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "setByteFunction", new TypeLiteral<Function<Set<Byte>, Set<Byte>>>(){});
+    checkParam(params.get(1), "setShortFunction", new TypeLiteral<Function<Set<Short>, Set<Short>>>(){});
+    checkParam(params.get(2), "setIntFunction", new TypeLiteral<Function<Set<Integer>, Set<Integer>>>(){});
+    checkParam(params.get(3), "setLongFunction", new TypeLiteral<Function<Set<Long>, Set<Long>>>(){});
+    checkParam(params.get(4), "setFloatFunction", new TypeLiteral<Function<Set<Float>, Set<Float>>>(){});
+    checkParam(params.get(5), "setDoubleFunction", new TypeLiteral<Function<Set<Double>, Set<Double>>>(){});
+    checkParam(params.get(6), "setBooleanFunction", new TypeLiteral<Function<Set<Boolean>, Set<Boolean>>>(){});
+    checkParam(params.get(7), "setCharFunction", new TypeLiteral<Function<Set<Character>, Set<Character>>>(){});
+    checkParam(params.get(8), "setStrFunction", new TypeLiteral<Function<Set<String>, Set<String>>>(){});
+    checkParam(params.get(9), "setVertxGenFunction", new TypeLiteral<Function<Set<VertxGenClass1>, Set<VertxGenClass1>>>(){});
+    checkParam(params.get(10), "setJsonObjectFunction", new TypeLiteral<Function<Set<JsonObject>, Set<JsonObject>>>(){});
+    checkParam(params.get(11), "setJsonArrayFunction",  new TypeLiteral<Function<Set<JsonArray>, Set<JsonArray>>>(){});
+    checkParam(params.get(12), "setDataObjectFunction",  new TypeLiteral<Function<Set<TestDataObject>, Set<TestDataObject>>>(){});
+    checkParam(params.get(13), "setEnumFunction",  new TypeLiteral<Function<Set<TestEnum>, Set<TestEnum>>>(){});
+
+    method = model.getMethods().get(3);
+    checkMethod(method, "methodWithMapFunctionParams", 11, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "mapByteFunction", new TypeLiteral<Function<Map<String, Byte>, Map<String, Byte>>>(){});
+    checkParam(params.get(1), "mapShortFunction", new TypeLiteral<Function<Map<String, Short>, Map<String, Short>>>(){});
+    checkParam(params.get(2), "mapIntFunction", new TypeLiteral<Function<Map<String, Integer>, Map<String, Integer>>>(){});
+    checkParam(params.get(3), "mapLongFunction", new TypeLiteral<Function<Map<String, Long>, Map<String, Long>>>(){});
+    checkParam(params.get(4), "mapFloatFunction", new TypeLiteral<Function<Map<String, Float>, Map<String, Float>>>(){});
+    checkParam(params.get(5), "mapDoubleFunction", new TypeLiteral<Function<Map<String, Double>, Map<String, Double>>>(){});
+    checkParam(params.get(6), "mapBooleanFunction", new TypeLiteral<Function<Map<String, Boolean>, Map<String, Boolean>>>(){});
+    checkParam(params.get(7), "mapCharFunction", new TypeLiteral<Function<Map<String, Character>, Map<String, Character>>>(){});
+    checkParam(params.get(8), "mapStrFunction", new TypeLiteral<Function<Map<String, String>, Map<String, String>>>(){});
+    checkParam(params.get(9), "mapJsonObjectFunction", new TypeLiteral<Function<Map<String, JsonObject>, Map<String, JsonObject>>>(){});
+    checkParam(params.get(10), "mapJsonArrayFunction",  new TypeLiteral<Function<Map<String, JsonArray>, Map<String, JsonArray>>>(){});
+  }
+
+  @Test
+  public void testMethodWithInvalidFunctionParams() throws Exception {
+    assertGenInvalid(MethodWithInvalidFunctionParam1.class);
+    assertGenInvalid(MethodWithInvalidFunctionParam2.class);
+    assertGenInvalid(MethodWithInvalidFunctionParam3.class);
+    assertGenInvalid(MethodWithInvalidFunctionParam4.class);
+    assertGenInvalid(MethodWithInvalidFunctionParam5.class);
+    assertGenInvalid(MethodWithInvalidFunctionParam6.class);
+    assertGenInvalid(MethodWithInvalidFunctionParam7.class);
+    assertGenInvalid(MethodWithInvalidFunctionParam8.class);
   }
 
   @Test

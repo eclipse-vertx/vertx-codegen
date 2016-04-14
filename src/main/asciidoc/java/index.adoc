@@ -192,6 +192,7 @@ A few types used throughout Vert.x API are not annotated with `@VertxGen` yet ar
 the API:
 
 - `io.vertx.core.Handler`
+- `java.util.function.Function`
 - `io.vertx.core.AsyncResult`
 - `io.vertx.core.json.JsonObject`
 - `io.vertx.core.json.JsonArray`
@@ -275,8 +276,8 @@ The following method parameter types are allowed:
 . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
 a _json_ type, an _API_ type. For list and set `V` can also be an _enum_ type or a _data object_ type
 
-In addition callback parameters are allowed, i.e types declaring `io.vertx.core.Handler<R>` or
-`io.vertx.core.Handler<io.vertx.core.AsyncResult<R>>` where `<R>` can be:
+Callback parameters are allowed, i.e types declaring `io.vertx.core.Handler<E>` or
+`io.vertx.core.Handler<io.vertx.core.AsyncResult<E>>` where `<E>` can be:
 
 . the `java.lang.Void` type
 . any _basic_ type
@@ -286,6 +287,19 @@ In addition callback parameters are allowed, i.e types declaring `io.vertx.core.
 . any _enum_ type
 . any _data object_ type
 . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
+. a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
+a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
+
+Function parameters are allowed, i.e types declaring `java.util.function.Function<E, R>` where `<E>` is defined to
+be same than for handlers and `<R>` can be:
+
+. any _basic_ type
+. any _API_ type
+. any _json_ type
+. the `java.lang.Throwable` type
+. any _enum_ type
+. any _data object_ type
+. an unbounded type variable
 . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
 a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
 
@@ -578,6 +592,11 @@ server.listen(80, "localhost", function(result, err) {
 });
 ----
 
+=== Argument function
+
+Function arguments are `java.util.function.Function` instances, they are usually mapped to the function
+type in the target language or an equivalent.
+
 === Exceptions
 
 todo
@@ -628,6 +647,8 @@ A type info has a `link:../../apidocs/io/vertx/codegen/type/ClassKind.html[Class
 | any _data object_ type
 | `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#HANDLER[HANDLER]`
 | `io.vertx.core.Handler<E>`
+| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#FUNCTION[FUNCTION]`
+| `java.util.function.Function<E, R>`
 | `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#ASYNC_RESULT[ASYNC_RESULT]`
 | `io.vertx.core.AsyncResult<E>`
 | `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#OTHER[OTHER]`
