@@ -16,6 +16,7 @@
 
 package io.vertx.codegen.overloadcheck;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -24,6 +25,11 @@ import java.util.List;
 public class SimpleMethod {
   public final String name;
   public final List<SimpleParam> params;
+
+  public SimpleMethod(String name, SimpleParam... params) {
+    this.name = name;
+    this.params = Arrays.asList(params);
+  }
 
   public SimpleMethod(String name, List<SimpleParam> params) {
     this.name = name;

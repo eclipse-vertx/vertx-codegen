@@ -1,16 +1,19 @@
 package io.vertx.codegen.overloadcheck;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class SimpleType {
 
-  private static final String ALL_TYPE = "ALL";
+  private static final Set<String> ALL_TYPE = new HashSet<>();
 
-  final String name;
+  final Set<String> name;
   final boolean nullable;
 
-  public SimpleType(String value, boolean nullable) {
+  public SimpleType(Set<String> value, boolean nullable) {
     this.name = value;
     this.nullable = nullable;
   }
@@ -29,6 +32,8 @@ public class SimpleType {
   }
 
   public boolean matches(SimpleType other) {
-    return name.equals(other.name) || isAll() || other.isAll() || (nullable && other.nullable);
+    Set<String> intersection = new HashSet<>(name);
+    intersection.retainAll(other.name);
+    return intersection.size() > 0 || isAll() || other.isAll() || (nullable && other.nullable);
   }
 }

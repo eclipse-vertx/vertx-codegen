@@ -29,8 +29,10 @@ import io.vertx.core.json.JsonObject;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -213,47 +215,47 @@ public class MethodOverloadHelperTest {
   }
 
 
-  @Test
+//  @Test
   public void testAllClash1() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.STRING, String.class.getName());
   }
 
-  @Test
+//  @Test
   public void testAllClash2() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.PRIMITIVE, "int");
   }
 
-  @Test
+//  @Test
   public void testAllClash3() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.BOXED_PRIMITIVE, "java.lang.Integer");
   }
 
-  @Test
+//  @Test
   public void testAllClash4() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.API, Object.class.getName());
   }
 
-  @Test
+//  @Test
   public void testAllClash5() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.JSON_OBJECT, JsonObject.class.getName());
   }
 
-  @Test
+//  @Test
   public void testAllClash6() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.JSON_ARRAY, JsonArray.class.getName());
   }
 
-  @Test
+//  @Test
   public void testAllClash7() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.DATA_OBJECT, TestDataObject.class.getName());
   }
 
-  @Test
+//  @Test
   public void testAllClash8() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.ENUM, TestEnum.class.getName());
   }
 
-  @Test
+//  @Test
   public void testAllClash9() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.HANDLER, Handler.class.getName());
   }
@@ -407,7 +409,21 @@ public class MethodOverloadHelperTest {
     testAmbiguousMethods(meths);
   }
 
+  @Test
+  public void testMultiTypes() throws Exception {
+    SimpleMethod meth1 = new SimpleMethod("meth", new SimpleParam("arg0", ClassKind.STRING, JsonArray.class.getName()));
+    SimpleMethod meth2 = new SimpleMethod("meth", new SimpleParam("arg0", ClassKind.OBJECT, Object.class.getName()));
+    SimpleMethod meth3 = new SimpleMethod("meth", new SimpleParam("arg0", ClassKind.JSON_OBJECT, JsonObject.class.getName()));
+
+    testAmbiguousMethods(Arrays.asList(meth1, meth2));
+    testAmbiguousMethods(Arrays.asList(meth2, meth3));
+  }
+
   private void testAmbiguousMethods(List<SimpleMethod> meths) throws Exception {
+    testAmbiguousMethods(checker, meths);
+  }
+
+  private static void testAmbiguousMethods(MethodOverloadChecker checker, List<SimpleMethod> meths) throws Exception {
     try {
       checker.checkAmbiguousSimple(meths);
       fail("should throw exception");
@@ -417,7 +433,10 @@ public class MethodOverloadHelperTest {
   }
 
   private void testAmbiguousMethodsOK(List<SimpleMethod> meths) throws Exception {
-    checker.checkAmbiguousSimple(meths);
+    testAmbiguousMethodsOK(checker, meths);
   }
 
+  private static void testAmbiguousMethodsOK(MethodOverloadChecker checker, List<SimpleMethod> meths) throws Exception {
+    checker.checkAmbiguousSimple(meths);
+  }
 }

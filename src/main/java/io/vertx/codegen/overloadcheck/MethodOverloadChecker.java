@@ -23,10 +23,13 @@ import io.vertx.codegen.type.TypeInfo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  *
@@ -34,10 +37,14 @@ import java.util.Properties;
  */
 public class MethodOverloadChecker {
 
-  private final Map<String, Map<String, String>> typeMappingsMap = new HashMap<>();
+  private final Map<String, Map<String, Set<String>>> typeMappingsMap = new HashMap<>();
 
   public MethodOverloadChecker() {
     loadTypeMappings();
+  }
+
+  public MethodOverloadChecker(Properties props) {
+    loadTypeMappings(props);
   }
 
   public void checkAmbiguous(List<MethodInfo> meths) {
@@ -61,7 +68,7 @@ public class MethodOverloadChecker {
       if (list.size() == 1) {
         // Ignore - no overloaded methods
       } else {
-        for (Map.Entry<String, Map<String, String>> mappingEntry: typeMappingsMap.entrySet()) {
+        for (Map.Entry<String, Map<String, Set<String>>> mappingEntry: typeMappingsMap.entrySet()) {
           checkMethodList(mappingEntry.getKey(), list, mappingEntry.getValue());
         }
       }
@@ -82,7 +89,7 @@ public class MethodOverloadChecker {
     return simpleMethods;
   }
 
-  private void checkMethodList(String targetLang, List<SimpleMethod> meths, Map<String, String> typeMapping) {
+  private void checkMethodList(String targetLang, List<SimpleMethod> meths, Map<String, Set<String>> typeMapping) {
     List<List<SimpleType>> paramsTypesList = new ArrayList<>();
     for (SimpleMethod meth: meths) {
       // For each meth, convert it to the param types it would have in each lang
@@ -119,10 +126,10 @@ public class MethodOverloadChecker {
     }
   }
   
-  private List<SimpleType> convertToLangParamTypes(SimpleMethod meth, Map<String, String> typeMapping) {
+  private List<SimpleType> convertToLangParamTypes(SimpleMethod meth, Map<String, Set<String>> typeMapping) {
     List<SimpleType> langParamTypes = new ArrayList<>();
     for (SimpleParam param: meth.params) {
-      String langType = typeMapping.get(param.classKind.toString());
+      Set<String> langType = typeMapping.get(param.classKind.toString());
       if (langType == null) {
         // Try with type name appended
         String lhs = param.classKind.toString() + "." + param.typeName;
@@ -140,24 +147,26 @@ public class MethodOverloadChecker {
     try (InputStream is = MethodOverloadChecker.class.getClassLoader().getResourceAsStream("lang-type-mapping.properties")) {
       Properties props = new Properties();
       props.load(is);
-      for (Map.Entry<Object, Object> entry: props.entrySet()) {
-        String lhs = (String)entry.getKey();
-        String rhs = (String)entry.getValue();
-        int pos = lhs.indexOf('.');
-        String lang = lhs.substring(0, pos);
-        String key = lhs.substring(pos + 1);
-        Map<String, String> typeMapping = typeMappingsMap.get(lang);
-        if (typeMapping == null) {
-          typeMapping = new HashMap<>();
-          typeMappingsMap.put(lang, typeMapping);
-        }
-        typeMapping.put(key, rhs);
-      }
-
+      loadTypeMappings(props);
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
   }
 
-
+  private void loadTypeMappings(Properties props) {
+    for (Map.Entry<Object, Object> entry: props.entrySet()) {
+      String lhs = (String)entry.getKey();
+      String rhs = (String)entry.getValue();
+      int pos = lhs.indexOf('.');
+      String lang = lhs.substring(0, pos);
+      String key = lhs.substring(pos + 1);
+      Map<String, Set<String>> typeMapping = typeMappingsMap.get(lang);
+      if (typeMapping == null) {
+        typeMapping = new HashMap<>();
+        typeMappingsMap.put(lang, typeMapping);
+      }
+      Set<String> types = new HashSet<>(Arrays.asList(rhs.split("\\s*,\\s*")));;
+      typeMapping.put(key, types);
+    }
+  }
 }
