@@ -215,53 +215,48 @@ public class MethodOverloadHelperTest {
   }
 
 
-//  @Test
+  @Test
   public void testAllClash1() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.STRING, String.class.getName());
   }
 
-//  @Test
+  @Test
   public void testAllClash2() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.PRIMITIVE, "int");
   }
 
-//  @Test
+  @Test
   public void testAllClash3() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.BOXED_PRIMITIVE, "java.lang.Integer");
   }
 
-//  @Test
+  @Test
   public void testAllClash4() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.API, Object.class.getName());
   }
 
-//  @Test
+  @Test
   public void testAllClash5() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.JSON_OBJECT, JsonObject.class.getName());
   }
 
-//  @Test
+  @Test
   public void testAllClash6() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.JSON_ARRAY, JsonArray.class.getName());
   }
 
-//  @Test
+  @Test
   public void testAllClash7() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.DATA_OBJECT, TestDataObject.class.getName());
   }
 
-//  @Test
+  @Test
   public void testAllClash8() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.ENUM, TestEnum.class.getName());
   }
 
-//  @Test
-  public void testAllClash9() throws Exception {
-    testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.HANDLER, Handler.class.getName());
-  }
-
   @Test
-  public void testAllClash10() throws Exception {
+  public void testAllClash9() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.OBJECT, TestEnum.class.getName());
   }
 
