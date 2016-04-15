@@ -230,16 +230,8 @@ public class DataObjectModel implements Model {
 
     processMethods(methodsElt);
 
-    boolean hasDefaultConstructor = (result & 2) == 2;
-    boolean hasCopyConstructor = (result & 4) == 4;
     boolean hasJsonConstructor = (result & 8) == 8;
 
-    if (concrete && !hasDefaultConstructor) {
-      throw new GenException(modelElt, "Data object " + modelElt + " class does not have a default constructor");
-    }
-    if (concrete && !hasCopyConstructor) {
-      throw new GenException(modelElt, "Data object " + modelElt + " class does not have a constructor " + modelElt.getSimpleName() + "(" + modelElt.getSimpleName() + ") ");
-    }
     if (concrete && !hasJsonConstructor) {
       throw new GenException(modelElt, "Data object " + modelElt + " class does not have a constructor " + modelElt.getSimpleName() + "(" + JsonObject.class.getSimpleName() + ")");
     }

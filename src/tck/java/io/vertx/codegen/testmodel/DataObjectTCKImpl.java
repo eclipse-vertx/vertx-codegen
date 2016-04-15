@@ -5,7 +5,6 @@ import io.vertx.core.json.JsonObject;
 import org.junit.Assert;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -160,5 +159,11 @@ public class DataObjectTCKImpl implements DataObjectTCK {
     assertEquals(2.2, dataObject.dataObjectValues.get("2").getWibble(), 0.01);
     assertMap(dataObject.enumValues, TestEnum.TIM, TestEnum.JULIEN);
     assertMap(dataObject.genEnumValues, TestGenEnum.BOB, TestGenEnum.LAURA);
+  }
+
+  @Override
+  public void methodWithOnlyJsonObjectConstructorDataObject(
+      DataObjectWithOnlyJsonObjectConstructor dataObject) {
+    assertEquals(dataObject.toJson(), new JsonObject().put("foo", "bar"));
   }
 }

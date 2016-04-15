@@ -23,4 +23,6 @@ public interface DataObjectTCK {
 
   void setDataObjectWithMaps(DataObjectWithMaps dataObject);
 
+  void methodWithOnlyJsonObjectConstructorDataObject(DataObjectWithOnlyJsonObjectConstructor dataObject);
+
 }

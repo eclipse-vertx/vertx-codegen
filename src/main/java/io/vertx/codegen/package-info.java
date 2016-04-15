@@ -58,9 +58,7 @@
  * In its simplest form, a data object is a Java class following these rules:
  *
  * 1. the class is annotated with {@link io.vertx.codegen.annotations.DataObject}
- * 2. provide a zero argument constructor
- * 3. provide a constructor with the `io.vertx.core.json.JsonObject` argument
- * 4. provide a copy constructor with the exact same type
+ * 2. provide a constructor with the `io.vertx.core.json.JsonObject` argument
  *
  * A data object can also be an interface annotated with `@DataObject`, this is useful when multiple inheritance
  * is needed. For instance Vert.x Core defines the `KeyCertOptions` and `TrustOptions` data object interfaces and the

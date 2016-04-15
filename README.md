@@ -221,8 +221,6 @@ Maven _artifactId_ and the group package corresponding to the `groupId`.
 
 A data object is a plain Java public class annotated with `@DataObject` that follows these minimum requirements:
 
-* A public no arg constructor
-* A copy constructor
 * A constructor with `io.vertx.core.json.JsonObject` parameter type
 
 Optionally a data object can define a public `io.vertx.core.json.JsonObject toJson()` method: such method makes the 
