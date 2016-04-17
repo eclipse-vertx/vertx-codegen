@@ -9,9 +9,7 @@ import java.lang.annotation.Target;
  * Declares a data object, such object must provide at least:
  *
  * <ul>
- *   <li>a constructor with no arguments</li>
  *   <li>a constructor with {@link io.vertx.core.json.JsonObject}</li>
- *   <li>a copy constructor</li>
  * </ul>
  * <p/>
  *

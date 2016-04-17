@@ -12,8 +12,6 @@ import io.vertx.codegen.doc.Doc;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.testapi.DataObjectInterface;
-import io.vertx.test.codegen.testapi.DataObjectWithNoCopyConstructor;
-import io.vertx.test.codegen.testapi.DataObjectWithNoDefaultConstructor;
 import io.vertx.test.codegen.testapi.DataObjectWithNoJsonObjectConstructor;
 import io.vertx.test.codegen.testdataobject.Abstract;
 import io.vertx.test.codegen.testdataobject.AbstractCommentedProperty;
@@ -78,16 +76,6 @@ import static org.junit.Assert.*;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class DataObjectTest {
-
-  @Test
-  public void testDataObjectsWithNoDefaultConstructor() throws Exception {
-    assertInvalidDataObject(DataObjectWithNoDefaultConstructor.class);
-  }
-
-  @Test
-  public void testDataObjectWithNoCopyConstructor() throws Exception {
-    assertInvalidDataObject(DataObjectWithNoCopyConstructor.class);
-  }
 
   @Test
   public void testDataObjectWithNoJsonObjectConstructor() throws Exception {
