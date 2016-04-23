@@ -11,8 +11,8 @@ import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.test.codegen.testapi.DataObjectInterface;
 import io.vertx.test.codegen.testapi.DataObjectWithNoJsonObjectConstructor;
+import io.vertx.test.codegen.testapi.InterfaceDataObject;
 import io.vertx.test.codegen.testdataobject.Abstract;
 import io.vertx.test.codegen.testdataobject.AbstractCommentedProperty;
 import io.vertx.test.codegen.testdataobject.AbstractInheritsAbstract;
@@ -84,7 +84,7 @@ public class DataObjectTest {
 
   @Test
   public void testDataObjectInterface() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(DataObjectInterface.class);
+    DataObjectModel model = new Generator().generateDataObject(InterfaceDataObject.class);
     assertNotNull(model);
     assertFalse(model.isClass());
   }

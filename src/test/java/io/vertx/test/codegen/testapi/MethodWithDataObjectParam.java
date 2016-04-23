@@ -1,7 +1,6 @@
 package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.net.NetServerOptions;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -9,5 +8,5 @@ import io.vertx.core.net.NetServerOptions;
 @VertxGen
 public interface MethodWithDataObjectParam {
 
-  void methodWithDataObjectParam(NetServerOptions dataObject);
+  void methodWithDataObjectParam(PlainDataObject dataObject);
 }

@@ -8,6 +8,7 @@ import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.streams.ReadStream;
 
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -74,6 +75,9 @@ public class TypeReflectionFactory {
             java.lang.reflect.TypeVariable<Class<ReadStream>> classTypeVariable = ReadStream.class.getTypeParameters()[0];
             Type readStreamArg = Helper.resolveTypeParameter(type, classTypeVariable);
             return new ApiTypeInfo(fqcn, true, typeParams, readStreamArg != null ? create(readStreamArg) : null, null, null, module, false, false);
+          } else if (kind == ClassKind.DATA_OBJECT) {
+            boolean _abstract = Modifier.isAbstract(classType.getModifiers());
+            return new DataObjectTypeInfo(kind, fqcn, module, _abstract, false, false, typeParams);
           } else {
             return new ClassTypeInfo(kind, fqcn, module, false, false, typeParams);
           }

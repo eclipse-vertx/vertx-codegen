@@ -1,4 +1,4 @@
-package io.vertx.core.net;
+package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
@@ -7,9 +7,8 @@ import io.vertx.core.json.JsonObject;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @DataObject
-public interface NetServerOptions {
+public interface InterfaceDataObjectWithToJson {
 
-  static NetServerOptions optionsFromJson(JsonObject json) {
-    throw new UnsupportedOperationException();
-  }
+  JsonObject toJson();
+
 }

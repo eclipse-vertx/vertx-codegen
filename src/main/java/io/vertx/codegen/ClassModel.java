@@ -269,7 +269,7 @@ public class ClassModel implements Model {
       return;
     }
 
-    if (isDataObjectTypeWithToJson(type)) {
+    if (isLegalDataObjectTypeReturn(type)) {
       return;
     }
 
@@ -314,7 +314,7 @@ public class ClassModel implements Model {
       return true;
     }
     // Can also specify option classes (which aren't VertxGen)
-    if (isDataObjectType(typeInfo)) {
+    if (isLegalDataObjectTypeParam(typeInfo)) {
       return true;
     }
     // We also allow type parameters for param types
@@ -325,11 +325,15 @@ public class ClassModel implements Model {
     return type instanceof TypeVariableInfo;
   }
 
-  private boolean isDataObjectType(TypeInfo type) {
-    return type.getKind() == ClassKind.DATA_OBJECT;
+  private boolean isLegalDataObjectTypeParam(TypeInfo type) {
+    if (type.getKind() == ClassKind.DATA_OBJECT) {
+      DataObjectTypeInfo classType = (DataObjectTypeInfo) type;
+      return !classType.isAbstract();
+    }
+    return false;
   }
 
-  protected boolean isDataObjectTypeWithToJson(TypeInfo type) {
+  protected boolean isLegalDataObjectTypeReturn(TypeInfo type) {
     if (type.getKind() == ClassKind.DATA_OBJECT) {
       TypeElement typeElt = elementUtils.getTypeElement(type.getName());
       if (typeElt != null) {
@@ -353,7 +357,7 @@ public class ClassModel implements Model {
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
       TypeInfo argument = ((ParameterizedTypeInfo) type).getArgs().get(0);
       if (type.getKind() != ClassKind.MAP) {
-        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument) || isDataObjectType(argument) || argument.getKind() == ClassKind.ENUM) {
+        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument) || isLegalDataObjectTypeParam(argument) || argument.getKind() == ClassKind.ENUM) {
           return true;
         }
       } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
@@ -384,7 +388,7 @@ public class ClassModel implements Model {
             valueType.getKind().json ||
             valueType.getKind() == ClassKind.ENUM ||
             isVertxGenInterface(valueType) ||
-            isDataObjectTypeWithToJson(valueType)) {
+            isLegalDataObjectTypeReturn(valueType)) {
           return true;
         }
       }
@@ -451,7 +455,7 @@ public class ClassModel implements Model {
     }
     return type.getKind().json || type.getKind().basic || isVertxGenInterface(type) ||
         isLegalListSetMapReturn(type) || type.getKind() == ClassKind.ENUM || type.getKind() == ClassKind.VOID ||
-        isVariableType(type) || type.getKind() == ClassKind.OBJECT || isDataObjectTypeWithToJson(type);
+        isVariableType(type) || type.getKind() == ClassKind.OBJECT || isLegalDataObjectTypeReturn(type);
   }
 
   private void determineApiTypes() {

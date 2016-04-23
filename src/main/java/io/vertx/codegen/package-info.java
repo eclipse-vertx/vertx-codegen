@@ -269,7 +269,7 @@
  * . any _json_ type
  * . the `java.lang.Throwable` type
  * . any _enum_ type
- * . any _data object_ type
+ * . any _data object_ type that is a non abstract class
  * . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
  * . `java.lang.Object`
  * . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
@@ -284,7 +284,7 @@
  * . any _json_ type
  * . the `java.lang.Throwable` type - only for `Handler<R>`
  * . any _enum_ type
- * . any _data object_ type
+ * . any _data object_ type with a `toJson` method
  * . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
  * . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
  * a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
@@ -297,7 +297,7 @@
  * . any _json_ type
  * . the `java.lang.Throwable` type
  * . any _enum_ type
- * . any _data object_ type
+ * . any _data object_ type that is a non abstract class
  * . an unbounded type variable
  * . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
  * a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
@@ -312,7 +312,7 @@
  * . any _json_ type
  * . the `java.lang.Throwable` type
  * . any _enum_ type
- * . any _data object_ type
+ * . any _data object_ type with a `toJson` method
  * . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
  * . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
  * a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type

@@ -10,6 +10,7 @@ import io.vertx.codegen.annotations.VertxGen;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
@@ -116,6 +117,9 @@ public class TypeMirrorFactory {
             return null;
           }).toArray(TypeInfo[]::new);
           raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, args[0], args[1], args[2], module, nullable, proxyGen);
+        } else if (kind == ClassKind.DATA_OBJECT) {
+          boolean _abstract = elt.getModifiers().contains(Modifier.ABSTRACT);
+          raw = new DataObjectTypeInfo(kind, fqcn, module, _abstract, nullable, proxyGen, typeParams);
         } else {
           raw = new ClassTypeInfo(kind, fqcn, module, nullable, proxyGen, typeParams);
         }

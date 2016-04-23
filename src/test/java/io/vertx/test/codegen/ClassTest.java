@@ -26,7 +26,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.net.NetServerOptions;
+import io.vertx.test.codegen.testapi.AbstractDataObjectWithToJson;
 import io.vertx.test.codegen.testapi.AbstractInterfaceWithConcreteSuperInterface;
 import io.vertx.test.codegen.testapi.AbstractInterfaceWithStaticMethod;
 import io.vertx.test.codegen.testapi.CacheReturnMethodWithVoidReturn;
@@ -37,6 +37,7 @@ import io.vertx.test.codegen.testapi.DiamondMethod3;
 import io.vertx.test.codegen.testapi.GenericAbstractInterface;
 import io.vertx.test.codegen.testapi.GenericInterface;
 import io.vertx.test.codegen.testapi.GenericInterfaceWithUpperBound;
+import io.vertx.test.codegen.testapi.InterfaceDataObjectWithToJson;
 import io.vertx.test.codegen.testapi.InterfaceWithCacheReturnMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithComments;
 import io.vertx.test.codegen.testapi.InterfaceWithDefaultMethod;
@@ -73,6 +74,7 @@ import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerNonVertxGenReturn;
 import io.vertx.test.codegen.testapi.MethodWithHandlerParam;
 import io.vertx.test.codegen.testapi.MethodWithHandlerReturn;
+import io.vertx.test.codegen.testapi.MethodWithInvalidAbstractDataObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidExceptionParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam1;
 import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam2;
@@ -84,6 +86,7 @@ import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam7;
 import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam8;
 import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerAsyncResultDataObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerDataObjectParam;
+import io.vertx.test.codegen.testapi.MethodWithInvalidInterfaceDataObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn3;
 import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn4;
 import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn5;
@@ -148,6 +151,8 @@ import io.vertx.test.codegen.testapi.NestedInterface;
 import io.vertx.test.codegen.testapi.NoVertxGen;
 import io.vertx.test.codegen.testapi.NotInterface;
 import io.vertx.test.codegen.testapi.OverloadedMethodsWithDifferentReturnType;
+import io.vertx.test.codegen.testapi.PlainDataObject;
+import io.vertx.test.codegen.testapi.PlainDataObjectWithToJson;
 import io.vertx.test.codegen.testapi.SameSignatureMethod1;
 import io.vertx.test.codegen.testapi.SameSignatureMethod2;
 import io.vertx.test.codegen.testapi.VertxGenClass1;
@@ -962,7 +967,13 @@ public class ClassTest extends ClassTestBase {
     MethodInfo method = model.getMethods().get(0);
     checkMethod(method, methodName, 1, "void", MethodKind.OTHER);
     List<ParamInfo> params = method.getParams();
-    checkParam(params.get(0), "dataObject", NetServerOptions.class);
+    checkParam(params.get(0), "dataObject", PlainDataObject.class);
+  }
+
+  @Test
+  public void testInvalidDataObjectsParam() throws Exception {
+    assertGenInvalid(MethodWithInvalidAbstractDataObjectParam.class);
+    assertGenInvalid(MethodWithInvalidInterfaceDataObjectParam.class);
   }
 
   // Valid returns
@@ -1051,9 +1062,10 @@ public class ClassTest extends ClassTestBase {
     assertEquals(MethodWithValidDataObjectReturn.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(1, model.getMethods().size());
-    String methodName = "methodWithDataObjectReturn";
-    checkMethod(model.getMethods().get(0), methodName, 0, TestDataObject.class.getName(), MethodKind.OTHER);
+    assertEquals(3, model.getMethods().size());
+    checkMethod(model.getMethods().get(0), "methodWithDataObjectReturn", 0, PlainDataObjectWithToJson.class.getName(), MethodKind.OTHER);
+    checkMethod(model.getMethods().get(1), "methodWithAbstractDataObjectReturn", 0, AbstractDataObjectWithToJson.class.getName(), MethodKind.OTHER);
+    checkMethod(model.getMethods().get(2), "methodWithInterfaceDataObjectReturn", 0, InterfaceDataObjectWithToJson.class.getName(), MethodKind.OTHER);
   }
 
   @Test
