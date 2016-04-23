@@ -96,7 +96,7 @@ public class TypeMirrorFactory {
       if (kind == ClassKind.BOXED_PRIMITIVE) {
         raw = ClassTypeInfo.PRIMITIVES.get(fqcn);
         if (nullable) {
-          raw = new ClassTypeInfo(raw.kind, raw.name, raw.module, true, raw.proxyGen, raw.params);
+          raw = new ClassTypeInfo(raw.kind, raw.name, raw.module, true, raw.params);
         }
       } else {
         List<TypeParamInfo.Class> typeParams = createTypeParams(type);
@@ -121,7 +121,7 @@ public class TypeMirrorFactory {
           boolean _abstract = elt.getModifiers().contains(Modifier.ABSTRACT);
           raw = new DataObjectTypeInfo(kind, fqcn, module, _abstract, nullable, proxyGen, typeParams);
         } else {
-          raw = new ClassTypeInfo(kind, fqcn, module, nullable, proxyGen, typeParams);
+          raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams);
         }
       }
       List<? extends TypeMirror> typeArgs = type.getTypeArguments();

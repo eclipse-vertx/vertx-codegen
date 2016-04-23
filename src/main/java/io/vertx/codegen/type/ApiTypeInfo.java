@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class ApiTypeInfo extends ClassTypeInfo {
 
+  final boolean proxyGen;
   final boolean concrete;
   final TypeInfo readStreamArg;
   final TypeInfo writeStreamArg;
@@ -25,11 +26,16 @@ public class ApiTypeInfo extends ClassTypeInfo {
       ModuleInfo module,
       boolean nullable,
       boolean proxyGen) {
-    super(ClassKind.API, fqcn, module, nullable, proxyGen, params);
+    super(ClassKind.API, fqcn, module, nullable, params);
     this.concrete = concrete;
+    this.proxyGen = proxyGen;
     this.readStreamArg = readStreamArg;
     this.writeStreamArg = writeStreamArg;
     this.handlerArg = handlerArg;
+  }
+
+  public boolean isProxyGen() {
+    return proxyGen;
   }
 
   public boolean isConcrete() {

@@ -13,7 +13,7 @@ public class DataObjectTypeInfo extends ClassTypeInfo {
   final boolean _abstract;
 
   public DataObjectTypeInfo(ClassKind kind, String name, ModuleInfo module, boolean _abstract, boolean nullable, boolean proxyGen, List<TypeParamInfo.Class> params) {
-    super(kind, name, module, nullable, proxyGen, params);
+    super(kind, name, module, nullable, params);
 
     this._abstract = _abstract;
   }

@@ -79,7 +79,7 @@ public class TypeReflectionFactory {
             boolean _abstract = Modifier.isAbstract(classType.getModifiers());
             return new DataObjectTypeInfo(kind, fqcn, module, _abstract, false, false, typeParams);
           } else {
-            return new ClassTypeInfo(kind, fqcn, module, false, false, typeParams);
+            return new ClassTypeInfo(kind, fqcn, module, false, typeParams);
           }
         }
       }

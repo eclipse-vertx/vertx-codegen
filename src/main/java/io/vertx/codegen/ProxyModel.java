@@ -165,7 +165,7 @@ public class ProxyModel extends ClassModel {
           return true;
         }
         if (resultType.getKind() == ClassKind.API) {
-          ClassTypeInfo cla = (ClassTypeInfo)resultType;
+          ApiTypeInfo cla = (ApiTypeInfo)resultType;
           if (cla.isProxyGen()) {
             return true;
           }

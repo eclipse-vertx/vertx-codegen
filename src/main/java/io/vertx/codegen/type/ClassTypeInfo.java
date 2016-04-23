@@ -22,7 +22,7 @@ public class ClassTypeInfo extends TypeInfo {
         Float.class, Double.class, Character.class};
     for (Class<?> boxe : boxes) {
       String name = boxe.getName();
-      PRIMITIVES.put(name, new io.vertx.codegen.type.ClassTypeInfo(ClassKind.BOXED_PRIMITIVE, name, null, false, false, Collections.emptyList()));
+      PRIMITIVES.put(name, new io.vertx.codegen.type.ClassTypeInfo(ClassKind.BOXED_PRIMITIVE, name, null, false, Collections.emptyList()));
     }
   }
 
@@ -32,17 +32,15 @@ public class ClassTypeInfo extends TypeInfo {
   final String packageName;
   final ModuleInfo module;
   final boolean nullable;
-  final boolean proxyGen;
   final List<TypeParamInfo.Class> params;
 
-  public ClassTypeInfo(ClassKind kind, String name, ModuleInfo module, boolean nullable, boolean proxyGen, List<TypeParamInfo.Class> params) {
+  public ClassTypeInfo(ClassKind kind, String name, ModuleInfo module, boolean nullable, List<TypeParamInfo.Class> params) {
     this.kind = kind;
     this.name = name;
     this.simpleName = Helper.getSimpleName(name);
     this.packageName = Helper.getPackageName(name);
     this.module = module;
     this.nullable = nullable;
-    this.proxyGen = proxyGen;
     this.params = params;
   }
 
@@ -78,10 +76,6 @@ public class ClassTypeInfo extends TypeInfo {
 
   public String getSimpleName(Case _case) {
     return _case.format(Case.CAMEL.parse(simpleName));
-  }
-
-  public boolean isProxyGen() {
-    return proxyGen;
   }
 
   @Override
