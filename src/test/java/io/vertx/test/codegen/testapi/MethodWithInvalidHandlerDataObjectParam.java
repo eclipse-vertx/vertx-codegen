@@ -25,6 +25,6 @@ import io.vertx.core.Handler;
 @VertxGen
 public interface MethodWithInvalidHandlerDataObjectParam {
 
-  void methodWithInvalidHandlerDataObjectParam(Handler<DataObjectWithNoToJsonMethod> handler);
+  void methodWithInvalidHandlerDataObjectParam(Handler<PlainDataObjectWithNoToJsonMethod> handler);
 
 }

@@ -26,6 +26,6 @@ import io.vertx.core.Handler;
 @VertxGen
 public interface MethodWithInvalidHandlerAsyncResultDataObjectParam {
 
-  void methodWithInvalidHandlerAsyncResultDataObjectParam(Handler<AsyncResult<DataObjectWithNoToJsonMethod>> handler);
+  void methodWithInvalidHandlerAsyncResultDataObjectParam(Handler<AsyncResult<PlainDataObjectWithNoToJsonMethod>> handler);
 
 }

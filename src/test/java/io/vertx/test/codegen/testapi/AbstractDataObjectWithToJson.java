@@ -9,9 +9,6 @@ import io.vertx.core.json.JsonObject;
 @DataObject
 public abstract class AbstractDataObjectWithToJson {
 
-  public AbstractDataObjectWithToJson(JsonObject json) {
-  }
-
   public JsonObject toJson() {
     throw new UnsupportedOperationException();
   }

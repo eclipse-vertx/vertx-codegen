@@ -8,13 +8,6 @@ import io.vertx.core.json.JsonObject;
  */
 @DataObject
 public class EmptyDataObject {
-
-  public EmptyDataObject() {
-  }
-
-  public EmptyDataObject(EmptyDataObject other) {
-  }
-
   public EmptyDataObject(JsonObject json) {
   }
 }

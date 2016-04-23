@@ -230,7 +230,7 @@ public class DataObjectModel implements Model {
 
     processMethods(methodsElt);
 
-    boolean hasJsonConstructor = (result & 8) == 8;
+    boolean hasJsonConstructor = (result & 2) == 2;
 
     if (concrete && !hasJsonConstructor) {
       throw new GenException(modelElt, "Data object " + modelElt + " class does not have a constructor " + modelElt.getSimpleName() + "(" + JsonObject.class.getSimpleName() + ")");
@@ -262,18 +262,12 @@ public class DataObjectModel implements Model {
       if (ownerElt.equals(modelElt)) {
         List<? extends VariableElement> parameters = constrElt.getParameters();
         int size = parameters.size();
-        if (size == 0) {
-          return 2;
-        } else {
-          if (size == 1) {
-            TypeInfo ti = typeFactory.create(parameters.get(0).asType());
-            if (ti instanceof ClassTypeInfo) {
-              ClassTypeInfo cl = (ClassTypeInfo) ti;
-              if (cl.getName().equals(getFqn())) {
-                return 4;
-              } else if (cl.getKind() == ClassKind.JSON_OBJECT) {
-                return 8;
-              }
+        if (size == 1) {
+          TypeInfo ti = typeFactory.create(parameters.get(0).asType());
+          if (ti instanceof ClassTypeInfo) {
+            ClassTypeInfo cl = (ClassTypeInfo) ti;
+            if (cl.getKind() == ClassKind.JSON_OBJECT) {
+              return 2;
             }
           }
         }

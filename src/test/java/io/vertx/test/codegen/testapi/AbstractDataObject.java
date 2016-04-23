@@ -8,8 +8,4 @@ import io.vertx.core.json.JsonObject;
  */
 @DataObject
 public abstract class AbstractDataObject {
-
-  public AbstractDataObject(JsonObject json) {
-  }
-
 }
