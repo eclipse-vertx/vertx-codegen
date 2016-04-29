@@ -107,6 +107,16 @@
             </additionalClasspathElements>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <configuration>
+            <excludes>
+              <exclude>io/vertx/core/**</exclude>
+              <exclude>examples/**</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
