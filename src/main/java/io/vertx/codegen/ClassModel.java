@@ -494,6 +494,9 @@ public class ClassModel implements Model {
         ifaceFQCN = elem.asType().toString();
         ifaceSimpleName = elem.getSimpleName().toString();
         ifacePackageName = elementUtils.getPackageOf(elem).toString();
+        if (ifacePackageName.startsWith("package ")) {
+          ifacePackageName = ifacePackageName.substring(8);
+        }
         ifaceComment = elementUtils.getDocComment(elem);
         doc = docFactory.createDoc(elem);
         concrete = elem.getAnnotation(VertxGen.class) == null || elem.getAnnotation(VertxGen.class).concrete();
