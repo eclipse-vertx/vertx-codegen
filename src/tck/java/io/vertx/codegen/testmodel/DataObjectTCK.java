@@ -25,4 +25,6 @@ public interface DataObjectTCK {
 
   void methodWithOnlyJsonObjectConstructorDataObject(DataObjectWithOnlyJsonObjectConstructor dataObject);
 
+  void setDataObjectWithBuffer(DataObjectWithBuffer dataObject);
+
 }

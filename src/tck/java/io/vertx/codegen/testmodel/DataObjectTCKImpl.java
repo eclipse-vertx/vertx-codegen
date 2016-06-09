@@ -166,4 +166,12 @@ public class DataObjectTCKImpl implements DataObjectTCK {
       DataObjectWithOnlyJsonObjectConstructor dataObject) {
     assertEquals(dataObject.toJson(), new JsonObject().put("foo", "bar"));
   }
+
+  @Override
+  public void setDataObjectWithBuffer(DataObjectWithBuffer dataObject) {
+    assertEquals("Hello World", new String(dataObject.getBuffer().getBytes()));
+    assertEquals("Bye World", new String(dataObject.getNested().getBuffer().getBytes()));
+    assertEquals("one", new String(dataObject.getBuffers().get(0).getBytes()));
+    assertEquals("two", new String(dataObject.getBuffers().get(1).getBytes()));
+  }
 }
