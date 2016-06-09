@@ -18,7 +18,6 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -295,18 +294,25 @@ public class DataObjectModel implements Model {
       } else if (methodName.startsWith("is") && methodName.length() > 2 && Character.isUpperCase(methodName.charAt(2)) && methodElt.getParameters().isEmpty() && methodElt.getReturnType().getKind() != TypeKind.VOID) {
         String name = Helper.normalizePropertyName(methodName.substring(2));
         getters.put(name, methodElt);
-      } else if ((methodName.startsWith("set") || methodName.startsWith("add")) && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) && methodElt.getParameters().size() == 1) {
+      } else if ((methodName.startsWith("set") || methodName.startsWith("add")) && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3))) {
         String prefix = methodName.substring(0, 3);
         String name = Helper.normalizePropertyName(methodName.substring(3));
+        int numParams = methodElt.getParameters().size();
         if ("add".equals(prefix)) {
           if (name.endsWith("s")) {
             throw new GenException(methodElt, "Option adder name must not terminate with 's' char");
           } else {
             name += "s";
           }
-          adders.put(name, methodElt);
+          TypeMirror t= methodElt.getParameters().get(0).asType();
+          if (numParams == 1 || (numParams == 2 && t.getKind() == TypeKind.DECLARED &&
+              ((TypeElement)((DeclaredType)t).asElement()).getQualifiedName().toString().equals("java.lang.String"))) {
+            adders.put(name, methodElt);
+          }
         } else {
-          setters.put(name, methodElt);
+          if (numParams == 1) {
+            setters.put(name, methodElt);
+          }
         }
       }
     }
@@ -380,20 +386,43 @@ public class DataObjectModel implements Model {
 
     //
     if (adderElt != null) {
-      VariableElement paramElt = adderElt.getParameters().get(0);
-      TypeMirror adderTypeMirror = paramElt.asType();
-      TypeInfo adderType = typeFactory.create(adderTypeMirror);
-      if (propTypeMirror != null) {
-        if (propKind != PropertyKind.LIST && propKind != PropertyKind.SET) {
-          throw new GenException(adderElt, name + "adder does not correspond to non list/set");
+      switch (adderElt.getParameters().size()) {
+        case 1: {
+          VariableElement paramElt = adderElt.getParameters().get(0);
+          TypeMirror adderTypeMirror = paramElt.asType();
+          TypeInfo adderType = typeFactory.create(adderTypeMirror);
+          if (propTypeMirror != null) {
+            if (propKind != PropertyKind.LIST && propKind != PropertyKind.SET) {
+              throw new GenException(adderElt, name + "adder does not correspond to non list/set");
+            }
+            if (!adderType.equals(propType)) {
+              throw new GenException(adderElt, name + " adder type " + adderType + "  does not match the property type " + propType);
+            }
+          } else {
+            propTypeMirror = adderTypeMirror;
+            propType = adderType;
+            propKind = PropertyKind.LIST;
+          }
+          break;
         }
-        if (!adderType.equals(propType)) {
-          throw new GenException(adderElt, name + " adder type " + adderType + "  does not match the property type " + propType);
+        case 2: {
+          VariableElement paramElt = adderElt.getParameters().get(1);
+          TypeMirror adderTypeMirror = paramElt.asType();
+          TypeInfo adderType = typeFactory.create(adderTypeMirror);
+          if (propTypeMirror != null) {
+            if (propKind != PropertyKind.MAP) {
+              throw new GenException(adderElt, name + "adder does not correspond to non map");
+            }
+            if (!adderType.equals(propType)) {
+              throw new GenException(adderElt, name + " adder type " + adderType + "  does not match the property type " + propType);
+            }
+          } else {
+            propTypeMirror = adderTypeMirror;
+            propType = adderType;
+            propKind = PropertyKind.MAP;
+          }
+          break;
         }
-      } else {
-        propTypeMirror = adderTypeMirror;
-        propType = adderType;
-        propKind = PropertyKind.LIST;
       }
     }
 

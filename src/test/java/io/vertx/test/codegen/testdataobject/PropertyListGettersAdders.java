@@ -10,31 +10,31 @@ import java.util.List;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @DataObject
-public interface PropertyGettersAdders {
+public interface PropertyListGettersAdders {
 
-  public static PropertyGettersAdders dataObject() {
+  public static PropertyListGettersAdders dataObject() {
     throw new UnsupportedOperationException();
   }
 
-  public static PropertyGettersAdders dataObjectFromJson(JsonObject obj) {
+  public static PropertyListGettersAdders dataObjectFromJson(JsonObject obj) {
     throw new UnsupportedOperationException();
   }
 
   List<String> getStrings();
-  PropertyGettersAdders addString(String s);
+  PropertyListGettersAdders addString(String s);
   List<Integer> getBoxedIntegers();
-  PropertyGettersAdders addBoxedInteger(Integer i);
+  PropertyListGettersAdders addBoxedInteger(Integer i);
   List<Boolean> getBoxedBooleans();
-  PropertyGettersAdders addBoxedBoolean(Boolean b);
+  PropertyListGettersAdders addBoxedBoolean(Boolean b);
   List<Long> getBoxedLongs();
-  PropertyGettersAdders addBoxedLong(Long b);
+  PropertyListGettersAdders addBoxedLong(Long b);
 
   List<ApiObject> getApiObjects();
-  PropertyGettersAdders addApiObject(ApiObject s);
+  PropertyListGettersAdders addApiObject(ApiObject s);
   List<EmptyDataObject> getDataObjects();
-  PropertyGettersAdders addDataObject(EmptyDataObject s);
+  PropertyListGettersAdders addDataObject(EmptyDataObject s);
   List<ToJsonDataObject> getToJsonDataObjects();
-  PropertyGettersAdders addToJsonDataObject(ToJsonDataObject s);
+  PropertyListGettersAdders addToJsonDataObject(ToJsonDataObject s);
 
   List<JsonObject> getJsonObjects();
   PropertySetters addJsonObject(JsonObject jsonObject);

@@ -25,11 +25,13 @@ import io.vertx.test.codegen.testdataobject.DataObjectWithObjectProperty;
 import io.vertx.test.codegen.testdataobject.Enumerated;
 import io.vertx.test.codegen.testdataobject.InheritingConverterDataObject;
 import io.vertx.test.codegen.testdataobject.NoConverterDataObject;
-import io.vertx.test.codegen.testdataobject.PropertyAdders;
+import io.vertx.test.codegen.testdataobject.PropertyListAdders;
 import io.vertx.test.codegen.testdataobject.PropertyGetters;
-import io.vertx.test.codegen.testdataobject.PropertyGettersAdders;
+import io.vertx.test.codegen.testdataobject.PropertyListGettersAdders;
 import io.vertx.test.codegen.testdataobject.PropertyGettersSetters;
 import io.vertx.test.codegen.testdataobject.PropertyListGettersSetters;
+import io.vertx.test.codegen.testdataobject.PropertyMapAdders;
+import io.vertx.test.codegen.testdataobject.PropertyMapGettersAdders;
 import io.vertx.test.codegen.testdataobject.PropertyMapGettersSetters;
 import io.vertx.test.codegen.testdataobject.PropertyMapSetters;
 import io.vertx.test.codegen.testdataobject.PropertySetGettersSetters;
@@ -214,6 +216,10 @@ public class DataObjectTest {
   }
 
   @Test
+  public void testPropertyMapGettersAdders() throws Exception {
+
+  }
+  @Test
   public void testPropertyMapGettersSetters() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(PropertyMapGettersSetters.class);
     assertNotNull(model);
@@ -232,6 +238,27 @@ public class DataObjectTest {
   }
 
   @Test
+  public void testPropertyMapAdders() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(PropertyMapAdders.class);
+    assertNotNull(model);
+    assertEquals(14, model.getPropertyMap().size());
+    assertProperty(model.getPropertyMap().get("strings"), "strings", null, "addString", null, TypeReflectionFactory.create(String.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("boxedIntegers"), "boxedIntegers", null, "addBoxedInteger", null, TypeReflectionFactory.create(Integer.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("primitiveIntegers"), "primitiveIntegers", null, "addPrimitiveInteger", null, TypeReflectionFactory.create(int.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("boxedBooleans"), "boxedBooleans", null, "addBoxedBoolean", null, TypeReflectionFactory.create(Boolean.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("primitiveBooleans"), "primitiveBooleans", null, "addPrimitiveBoolean", null, TypeReflectionFactory.create(boolean.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("boxedLongs"), "boxedLongs", null, "addBoxedLong", null, TypeReflectionFactory.create(Long.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("primitiveLongs"), "primitiveLongs", null, "addPrimitiveLong", null, TypeReflectionFactory.create(long.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("apiObjects"), "apiObjects", null, "addApiObject", null, TypeReflectionFactory.create(ApiObject.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("dataObjects"), "dataObjects", null, "addDataObject", null, TypeReflectionFactory.create(EmptyDataObject.class), true, PropertyKind.MAP, false);
+    assertProperty(model.getPropertyMap().get("toJsonDataObjects"), "toJsonDataObjects", null, "addToJsonDataObject", null, TypeReflectionFactory.create(ToJsonDataObject.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("jsonObjects"), "jsonObjects", null, "addJsonObject", null, TypeReflectionFactory.create(JsonObject.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("jsonArrays"), "jsonArrays", null, "addJsonArray", null, TypeReflectionFactory.create(JsonArray.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("enumerateds"), "enumerateds", null, "addEnumerated", null, TypeReflectionFactory.create(Enumerated.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("objects"), "objects", null, "addObject", null, TypeReflectionFactory.create(Object.class), true, PropertyKind.MAP, true);
+  }
+
+  @Test
   public void testPropertyMapSetters() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(PropertyMapSetters.class);
     assertNotNull(model);
@@ -247,6 +274,24 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("jsonArrayMap"), "jsonArrayMap", "setJsonArrayMap", null, null, TypeReflectionFactory.create(JsonArray.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("enumeratedMap"), "enumeratedMap", "setEnumeratedMap", null, null, TypeReflectionFactory.create(Enumerated.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("objectMap"), "objectMap", "setObjectMap", null, null, TypeReflectionFactory.create(Object.class), true, PropertyKind.MAP, true);
+  }
+
+  @Test
+  public void testPropertyMapSetterAdders() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(PropertyMapGettersAdders.class);
+    assertNotNull(model);
+    assertEquals(11, model.getPropertyMap().size());
+    assertProperty(model.getPropertyMap().get("strings"), "strings", null, "addString", "getStrings", TypeReflectionFactory.create(String.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("boxedIntegers"), "boxedIntegers", null, "addBoxedInteger", "getBoxedIntegers", TypeReflectionFactory.create(Integer.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("boxedBooleans"), "boxedBooleans", null, "addBoxedBoolean", "getBoxedBooleans", TypeReflectionFactory.create(Boolean.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("boxedLongs"), "boxedLongs", null, "addBoxedLong", "getBoxedLongs", TypeReflectionFactory.create(Long.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("apiObjects"), "apiObjects", null, "addApiObject", "getApiObjects", TypeReflectionFactory.create(ApiObject.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("dataObjects"), "dataObjects", null, "addDataObject", "getDataObjects", TypeReflectionFactory.create(EmptyDataObject.class), true, PropertyKind.MAP, false);
+    assertProperty(model.getPropertyMap().get("toJsonDataObjects"), "toJsonDataObjects", null, "addToJsonDataObject", "getToJsonDataObjects", TypeReflectionFactory.create(ToJsonDataObject.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("jsonObjects"), "jsonObjects", null, "addJsonObject", "getJsonObjects", TypeReflectionFactory.create(JsonObject.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("jsonArrays"), "jsonArrays", null, "addJsonArray", "getJsonArrays", TypeReflectionFactory.create(JsonArray.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("enumerateds"), "enumerateds", null, "addEnumerated", "getEnumerateds", TypeReflectionFactory.create(Enumerated.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("objects"), "objects", null, "addObject", "getObjects", TypeReflectionFactory.create(Object.class), true, PropertyKind.MAP, true);
   }
 
   @Test
@@ -298,8 +343,8 @@ public class DataObjectTest {
   }
 
   @Test
-  public void testPropertyAdders() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(PropertyAdders.class);
+  public void testPropertyListAdders() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(PropertyListAdders.class);
     assertNotNull(model);
     assertEquals(13, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("strings"), "strings", null, "addString", null, TypeReflectionFactory.create(String.class), true, PropertyKind.LIST, true);
@@ -318,8 +363,8 @@ public class DataObjectTest {
   }
 
   @Test
-  public void testPropertyGettersAdders() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(PropertyGettersAdders.class);
+  public void testPropertyListGettersAdders() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(PropertyListGettersAdders.class);
     assertNotNull(model);
     assertEquals(10, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("strings"), "strings", null, "addString", "getStrings", TypeReflectionFactory.create(String.class), true, PropertyKind.LIST, true);
