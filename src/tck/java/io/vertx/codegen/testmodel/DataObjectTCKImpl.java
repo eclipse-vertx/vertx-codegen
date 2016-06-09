@@ -168,7 +168,7 @@ public class DataObjectTCKImpl implements DataObjectTCK {
   }
 
   @Override
-  public void setDataObjectWithBuffer(DataObjectWithBuffer dataObject) {
+  public void setDataObjectWithBuffer(DataObjectWithNestedBuffer dataObject) {
     assertEquals("Hello World", new String(dataObject.getBuffer().getBytes()));
     assertEquals("Bye World", new String(dataObject.getNested().getBuffer().getBytes()));
     assertEquals("one", new String(dataObject.getBuffers().get(0).getBytes()));
