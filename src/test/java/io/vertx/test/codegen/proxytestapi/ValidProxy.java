@@ -36,7 +36,7 @@ public interface ValidProxy {
   void dataObjectType(ProxyDataObject dataObject);
 
   void dataObjectWithParentType(ProxyDataObjectWithParent dataObject);
-
+  void dataObjectWithParentAndOverride(ProxyDataObjectWithParentOverride dataObject);
 
   void handler0(Handler<AsyncResult<String>> stringHandler);
   void handler1(Handler<AsyncResult<Byte>> byteHandler);
