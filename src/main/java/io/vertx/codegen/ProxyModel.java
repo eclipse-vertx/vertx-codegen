@@ -72,20 +72,9 @@ public class ProxyModel extends ClassModel {
     // We also allow data object as parameter types if they have a 'public JsonObject toJson()' method
     if (typeInfo.getKind() == ClassKind.DATA_OBJECT) {
       if (type instanceof DeclaredType) {
-        List<DeclaredType> directSupertypes = (List<DeclaredType>) this.typeUtils.directSupertypes(type);
-        List<Element> superTypeElements = directSupertypes.stream().map(superType -> superType.asElement()).flatMap(element -> element.getEnclosedElements().stream()).collect(Collectors.toList());
-        List<TypeInfo> list = Stream.concat(((DeclaredType) type).asElement().getEnclosedElements().stream(),superTypeElements.stream())
-          .filter(e -> e.getKind() == ElementKind.METHOD)
-          .map(e -> (ExecutableElement) e)
-          .filter(e -> e.getParameters().size() == 0 && e.getSimpleName().toString().equals("toJson"))
-          .map(e -> typeFactory.create(e.getReturnType()))
-          .filter(ti -> ti.getKind() == ClassKind.JSON_OBJECT)
-          .collect(Collectors.toList());
-
-        if (list.size() == 1) { // we have our toJson method
+        if (Helper.isJsonifiable(elementUtils, typeUtils, (TypeElement) ((DeclaredType) type).asElement())) {
           return;
         }
-
         throw new GenException(elem, "type " + typeInfo + " does not have a valid 'public JsonObject toJson()' method.");
       }
     }

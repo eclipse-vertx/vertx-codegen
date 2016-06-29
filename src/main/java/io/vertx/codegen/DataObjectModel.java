@@ -443,14 +443,9 @@ public class DataObjectModel implements Model {
         jsonifiable = true;
         break;
       case DATA_OBJECT:
-        TypeMirror jsonType = elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType();
         Element propTypeElt = typeUtils.asElement(propTypeMirror);
         jsonifiable = propTypeElt.getAnnotation(DataObject.class) == null ||
-            elementUtils.getAllMembers(
-                (TypeElement) propTypeElt).stream().
-                flatMap(Helper.FILTER_METHOD).
-                filter(exeElt -> exeElt.getSimpleName().toString().equals("toJson") && typeUtils.isSameType(jsonType, exeElt.getReturnType())).
-                count() > 0;
+            Helper.isJsonifiable(elementUtils, typeUtils, (TypeElement)propTypeElt);
         break;
       default:
         return;
