@@ -10,8 +10,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -53,112 +51,9 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
   void methodWithObjectParam(String str, Object obj);
 
   void methodWithDataObjectParam(TestDataObject dataObject);
-  void methodWithListOfDataObjectsParam(List<TestDataObject> dataObjects);
-  void methodWithSetOfDataObjectsParam(Set<TestDataObject> dataObjects);
 
+  // Duplicate with NullableTCK
   void methodWithNullDataObjectParam(@Nullable TestDataObject dataObject);
-
-  void methodWithListParams(List<String> listString, List<Byte> listByte, List<Short> listShort, List<Integer> listInt, List<Long> listLong, List<JsonObject> listJsonObject, List<JsonArray> listJsonArray, List<RefedInterface1> listVertxGen, List<TestDataObject> listDataObject, List<TestEnum> listEnum);
-
-  void methodWithSetParams(Set<String> setString, Set<Byte> setByte, Set<Short> setShort, Set<Integer> setInt, Set<Long> setLong, Set<JsonObject> setJsonObject, Set<JsonArray> setJsonArray, Set<RefedInterface1> setVertxGen, Set<TestDataObject> setDataObject, Set<TestEnum> setEnum);
-
-  void methodWithMapParams(Map<String, String> mapString, Map<String, Byte> mapByte, Map<String, Short> mapShort, Map<String, Integer> mapInt, Map<String, Long> mapLong, Map<String, JsonObject> mapJsonObject, Map<String, JsonArray> mapJsonArray, Map<String, RefedInterface1> mapVertxGen);
-
-  void methodWithHandlerListAndSet(Handler<List<String>> listStringHandler, Handler<List<Integer>> listIntHandler,
-                                   Handler<Set<String>> setStringHandler, Handler<Set<Integer>> setIntHandler);
-
-  void methodWithHandlerAsyncResultListString(Handler<AsyncResult<List<String>>> handler);
-  void methodWithHandlerAsyncResultListInteger(Handler<AsyncResult<List<Integer>>> handler);
-  void methodWithHandlerAsyncResultSetString(Handler<AsyncResult<Set<String>>> handler);
-  void methodWithHandlerAsyncResultSetInteger(Handler<AsyncResult<Set<Integer>>> handler);
-
-  void methodWithHandlerListVertxGen(Handler<List<RefedInterface1>> listHandler);
-
-  void methodWithHandlerSetVertxGen(Handler<Set<RefedInterface1>> listHandler);
-
-  void methodWithHandlerListAbstractVertxGen(Handler<List<RefedInterface2>> listHandler);
-
-  void methodWithHandlerSetAbstractVertxGen(Handler<Set<RefedInterface2>> listHandler);
-
-  void methodWithHandlerListJsonObject(Handler<List<JsonObject>> listHandler);
-
-  void methodWithHandlerListNullJsonObject(Handler<List<JsonObject>> listHandler);
-
-  void methodWithHandlerListComplexJsonObject(Handler<List<JsonObject>> listHandler);
-
-  void methodWithHandlerSetJsonObject(Handler<Set<JsonObject>> listHandler);
-
-  void methodWithHandlerSetNullJsonObject(Handler<Set<JsonObject>> listHandler);
-
-  void methodWithHandlerSetComplexJsonObject(Handler<Set<JsonObject>> listHandler);
-
-  void methodWithHandlerListJsonArray(Handler<List<JsonArray>> listHandler);
-
-  void methodWithHandlerListNullJsonArray(Handler<List<JsonArray>> listHandler);
-
-  void methodWithHandlerListComplexJsonArray(Handler<List<JsonArray>> listHandler);
-
-  void methodWithHandlerSetJsonArray(Handler<Set<JsonArray>> listHandler);
-
-  void methodWithHandlerSetNullJsonArray(Handler<Set<JsonArray>> listHandler);
-
-  void methodWithHandlerSetComplexJsonArray(Handler<Set<JsonArray>> setHandler);
-
-  void methodWithHandlerListDataObject(Handler<List<TestDataObject>> listHandler);
-
-  void methodWithHandlerListNullDataObject(Handler<List<TestDataObject>> listHandler);
-
-  void methodWithHandlerSetDataObject(Handler<Set<TestDataObject>> setHandler);
-
-  void methodWithHandlerSetNullDataObject(Handler<Set<TestDataObject>> setHandler);
-
-  void methodWithHandlerListEnum(Handler<List<TestEnum>> listHandler);
-
-  void methodWithHandlerSetEnum(Handler<Set<TestEnum>> setHandler);
-
-  void methodWithHandlerAsyncResultListVertxGen(Handler<AsyncResult<List<RefedInterface1>>> listHandler);
-
-  void methodWithHandlerAsyncResultSetVertxGen(Handler<AsyncResult<Set<RefedInterface1>>> listHandler);
-
-  void methodWithHandlerAsyncResultListAbstractVertxGen(Handler<AsyncResult<List<RefedInterface2>>> listHandler);
-
-  void methodWithHandlerAsyncResultSetAbstractVertxGen(Handler<AsyncResult<Set<RefedInterface2>>> listHandler);
-
-  void methodWithHandlerAsyncResultListJsonObject(Handler<AsyncResult<List<JsonObject>>> listHandler);
-
-  void methodWithHandlerAsyncResultListNullJsonObject(Handler<AsyncResult<List<JsonObject>>> listHandler);
-
-  void methodWithHandlerAsyncResultListComplexJsonObject(Handler<AsyncResult<List<JsonObject>>> listHandler);
-
-  void methodWithHandlerAsyncResultSetJsonObject(Handler<AsyncResult<Set<JsonObject>>> listHandler);
-
-  void methodWithHandlerAsyncResultSetNullJsonObject(Handler<AsyncResult<Set<JsonObject>>> listHandler);
-
-  void methodWithHandlerAsyncResultSetComplexJsonObject(Handler<AsyncResult<Set<JsonObject>>> listHandler);
-
-  void methodWithHandlerAsyncResultListJsonArray(Handler<AsyncResult<List<JsonArray>>> listHandler);
-
-  void methodWithHandlerAsyncResultListNullJsonArray(Handler<AsyncResult<List<JsonArray>>> listHandler);
-
-  void methodWithHandlerAsyncResultListComplexJsonArray(Handler<AsyncResult<List<JsonArray>>> listHandler);
-
-  void methodWithHandlerAsyncResultSetJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler);
-
-  void methodWithHandlerAsyncResultSetNullJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler);
-
-  void methodWithHandlerAsyncResultSetComplexJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler);
-
-  void methodWithHandlerAsyncResultListDataObject(Handler<AsyncResult<List<TestDataObject>>> listHandler);
-
-  void methodWithHandlerAsyncResultListNullDataObject(Handler<AsyncResult<List<TestDataObject>>> listHandler);
-
-  void methodWithHandlerAsyncResultSetDataObject(Handler<AsyncResult<Set<TestDataObject>>> setHandler);
-
-  void methodWithHandlerAsyncResultSetNullDataObject(Handler<AsyncResult<Set<TestDataObject>>> setHandler);
-
-  void methodWithHandlerAsyncResultListEnum(Handler<AsyncResult<List<TestEnum>>> listHandler);
-
-  void methodWithHandlerAsyncResultSetEnum(Handler<AsyncResult<Set<TestEnum>>> setHandler);
 
   void methodWithHandlerUserTypes(Handler<RefedInterface1> handler);
 
@@ -262,6 +157,7 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   void methodWithHandlerJson(Handler<JsonObject> jsonObjectHandler, Handler<JsonArray> jsonArrayHandler);
 
+  // Duplicate with NullableTCK
   void methodWithHandlerNullJson(Handler<JsonObject> jsonObjectHandler, Handler<JsonArray> jsonArrayHandler);
 
   void methodWithHandlerComplexJson(Handler<JsonObject> jsonObjectHandler, Handler<JsonArray> jsonArrayHandler);
@@ -277,78 +173,6 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
   void methodWithHandlerAsyncResultNullJsonArray(Handler<AsyncResult<JsonArray>> handler);
 
   void methodWithHandlerAsyncResultComplexJsonArray(Handler<AsyncResult<JsonArray>> handler);
-
-  Map<String, String> methodWithMapReturn(Handler<String> handler);
-
-  Map<String, String> methodWithMapStringReturn(Handler<String> handler);
-
-  Map<String, Long> methodWithMapLongReturn(Handler<String> handler);
-
-  Map<String, Integer> methodWithMapIntegerReturn(Handler<String> handler);
-
-  Map<String, Short> methodWithMapShortReturn(Handler<String> handler);
-
-  Map<String, Byte> methodWithMapByteReturn(Handler<String> handler);
-
-  Map<String, Character> methodWithMapCharacterReturn(Handler<String> handler);
-
-  Map<String, Boolean> methodWithMapBooleanReturn(Handler<String> handler);
-
-  Map<String, Float> methodWithMapFloatReturn(Handler<String> handler);
-
-  Map<String, Double> methodWithMapDoubleReturn(Handler<String> handler);
-
-  Map<String, JsonObject> methodWithMapJsonObjectReturn(Handler<String> handler);
-
-  Map<String, JsonObject> methodWithMapComplexJsonObjectReturn(Handler<String> handler);
-
-  Map<String, JsonArray> methodWithMapJsonArrayReturn(Handler<String> handler);
-
-  Map<String, JsonArray> methodWithMapComplexJsonArrayReturn(Handler<String> handler);
-
-  Map<String, String> methodWithNullMapReturn();
-
-  List<String> methodWithListStringReturn();
-
-  List<Long> methodWithListLongReturn();
-
-  List<RefedInterface1> methodWithListVertxGenReturn();
-
-  List<JsonObject> methodWithListJsonObjectReturn();
-
-  List<JsonObject> methodWithListComplexJsonObjectReturn();
-
-  List<JsonArray> methodWithListJsonArrayReturn();
-
-  List<JsonArray> methodWithListComplexJsonArrayReturn();
-
-  List<TestDataObject> methodWithListDataObjectReturn();
-
-  List<TestEnum> methodWithListEnumReturn();
-
-  List<String> methodWithNullListReturn();
-
-
-  Set<String> methodWithSetStringReturn();
-
-  Set<Long> methodWithSetLongReturn();
-
-  Set<RefedInterface1> methodWithSetVertxGenReturn();
-
-  Set<JsonObject> methodWithSetJsonObjectReturn();
-
-  Set<JsonObject> methodWithSetComplexJsonObjectReturn();
-
-  Set<JsonArray> methodWithSetJsonArrayReturn();
-
-  Set<JsonArray> methodWithSetComplexJsonArrayReturn();
-
-  Set<TestDataObject> methodWithSetDataObjectReturn();
-
-  Set<TestEnum> methodWithSetEnumReturn();
-
-  Set<String> methodWithNullSetReturn();
-
 
   String methodWithEnumParam(String strVal, TestEnum weirdo);
 
