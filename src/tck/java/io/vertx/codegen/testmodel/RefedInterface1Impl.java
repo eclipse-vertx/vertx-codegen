@@ -20,6 +20,8 @@ public class RefedInterface1Impl implements RefedInterface1 {
 
   @Override
   public boolean equals(Object obj) {
+    if (!(obj instanceof RefedInterface1Impl))
+      return false;
     return ((RefedInterface1Impl) obj).str.equals(str);
   }
 
