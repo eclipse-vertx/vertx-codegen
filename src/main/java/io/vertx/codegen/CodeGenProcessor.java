@@ -61,7 +61,6 @@ public class CodeGenProcessor extends AbstractProcessor {
         VertxGen.class,
         ProxyGen.class,
         DataObject.class,
-        DataObject.class,
         ModuleGen.class
     ).stream().map(Class::getName).collect(Collectors.toSet());
   }
