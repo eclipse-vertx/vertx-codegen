@@ -147,6 +147,7 @@ public class DataObjectModel implements Model {
     HashMap<String, Object> vars = new HashMap<>();
     vars.put("type", type);
     vars.put("doc", doc);
+    vars.put("helper", new Helper());
     vars.put("generateConverter", generateConverter);
     vars.put("inheritConverter", inheritConverter);
     vars.put("concrete", concrete);
