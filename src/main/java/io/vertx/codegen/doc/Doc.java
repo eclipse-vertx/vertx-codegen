@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  */
 public class Doc {
 
-  private static final Pattern TAG_START = Pattern.compile("\n\\p{javaWhitespace}*@([^\\p{javaWhitespace}]+)", Pattern.MULTILINE);
+  private static final Pattern TAG_START = Pattern.compile("(^|\n)\\p{javaWhitespace}*@([^\\p{javaWhitespace}]+)", Pattern.MULTILINE);
   private static final Pattern BODY_START = Pattern.compile("\n{2,}");
 
   /**
@@ -43,7 +43,7 @@ public class Doc {
     if (matcher.find()) {
       first = javadoc.substring(0, matcher.start());
       while (true) {
-        String name = matcher.group(1);
+        String name = matcher.group(2);
         int prev = matcher.end() + 1;
         if (matcher.find()) {
           blockTags.add(new Tag(name, javadoc.substring(prev, matcher.start())));
