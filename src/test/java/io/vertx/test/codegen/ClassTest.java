@@ -41,6 +41,7 @@ import io.vertx.test.codegen.testapi.InterfaceDataObjectWithToJson;
 import io.vertx.test.codegen.testapi.InterfaceWithCacheReturnMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithComments;
 import io.vertx.test.codegen.testapi.InterfaceWithDefaultMethod;
+import io.vertx.test.codegen.testapi.InterfaceWithMethodOverloadedFromParent;
 import io.vertx.test.codegen.testapi.InterfaceWithOnlyDefaultMethod;
 import io.vertx.test.codegen.testapi.InterfaceWithGenericMethodOverride;
 import io.vertx.test.codegen.testapi.InterfaceWithIgnoredMethods;
@@ -1255,13 +1256,19 @@ public class ClassTest extends ClassTestBase {
 
   @Test
   public void testParameterizedClassSuperType() throws Exception {
-    ClassModel model = new Generator().generateClass(InterfaceWithParameterizedDeclaredSupertype.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithParameterizedDeclaredSupertype.class, GenericInterface.class);
     assertEquals(InterfaceWithParameterizedDeclaredSupertype.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithParameterizedDeclaredSupertype.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(1, model.getReferencedTypes().size());
     assertTrue(model.getReferencedTypes().contains(GenericInterfaceInfo));
     assertEquals(1, model.getSuperTypes().size());
     assertTrue(model.getSuperTypes().contains(TypeReflectionFactory.create(InterfaceWithParameterizedDeclaredSupertype.class.getGenericInterfaces()[0])));
+    List<MethodInfo> methods = model.getMethods();
+    assertEquals(1, methods.size());
+    checkMethod(methods.get(0), "methodWithClassTypeParam", 3, "java.lang.String", MethodKind.OTHER);
+    checkParam(methods.get(0).getParam(0), "t", String.class);
+    checkParam(methods.get(0).getParam(1), "handler", new TypeLiteral<Handler<String>>() {});
+    checkParam(methods.get(0).getParam(2), "asyncResultHandler", new TypeLiteral<Handler<AsyncResult<String>>>() {});
   }
 
   @Test
@@ -1568,6 +1575,19 @@ public class ClassTest extends ClassTestBase {
     Signature fooSignature = foos.get(1).getSignature();
     fooSignature.getParams().remove(1);
     assertEquals(foos.get(0).getSignature(), fooSignature);
+  }
+
+  @Test
+  public void testOverloadedFromParent() throws Exception {
+    ClassModel model = new Generator().generateClass(InterfaceWithMethodOverloadedFromParent.class);
+    List<MethodInfo> methods = model.getMethods();
+    assertEquals(1, methods.size());
+    checkMethod(methods.get(0), "foo", 1, "void", MethodKind.OTHER);
+    checkParam(methods.get(0).getParam(0), "str", String.class);
+    methods = model.getMethodMap().get("foo");
+    assertEquals(2, methods.size());
+    checkMethod(methods.get(0), "foo", 0, "void", MethodKind.OTHER);
+    checkMethod(methods.get(1), "foo", 1, "void", MethodKind.OTHER);
   }
 
   @Test

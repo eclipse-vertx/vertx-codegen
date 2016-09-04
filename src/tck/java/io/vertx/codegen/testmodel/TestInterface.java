@@ -362,4 +362,6 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   String methodWithThrowableParam(Throwable t);
 
+  int superMethodOverloadedBySubclass(String s);
+
 }

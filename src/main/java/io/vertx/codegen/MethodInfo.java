@@ -132,6 +132,10 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return params;
   }
 
+  public ParamInfo getParam(int index) {
+    return params.get(index);
+  }
+
   public String getComment() {
     return comment;
   }

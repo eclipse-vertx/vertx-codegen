@@ -1323,6 +1323,16 @@ public class TestInterfaceImpl implements TestInterface {
     return t.getMessage();
   }
 
+  @Override
+  public int superMethodOverloadedBySubclass(String s) {
+    return 1;
+  }
+
+  @Override
+  public int superMethodOverloadedBySubclass() {
+    return 0;
+  }
+
   private static class HandlerTestMap<V> implements Map<String, V> {
     private Handler<String> handler;
     private Map<String, V> map;
