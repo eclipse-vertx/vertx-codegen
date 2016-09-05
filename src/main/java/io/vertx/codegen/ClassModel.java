@@ -610,22 +610,10 @@ public class ClassModel implements Model {
     }
 
     TypeElement declaringElt = (TypeElement) modelMethod.getEnclosingElement();
-    if (!declaringElt.equals(modelElt)) {
-      TypeInfo declaringType = typeFactory.create(declaringElt.asType());
-      switch (declaringType.getKind()) {
-        case API: {
-          ApiTypeInfo declaringApiType = (ApiTypeInfo) declaringType.getRaw();
-          if (declaringApiType.isConcrete()) {
-            return;
-          }
-          break;
-        }
-        case HANDLER: {
-          break;
-        }
-        default:
-          return;
-      }
+    TypeInfo declaringType = typeFactory.create(declaringElt.asType());
+
+    if (!declaringElt.equals(modelElt) && (declaringType.getKind() != ClassKind.API && declaringType.getKind() != ClassKind.HANDLER)) {
+      return;
     }
 
     ClassTypeInfo type = typeFactory.create(declaringElt.asType()).getRaw();
@@ -814,8 +802,17 @@ public class ClassModel implements Model {
       methodMap.put(methodInfo.getName(), methodsByName);
     }
     methodsByName.add(methodInfo);
-    methods.put(modelMethod, methodInfo);
     methodInfo.collectImports(collectedTypes);
+
+    if (!declaringElt.equals(modelElt) && declaringType.getKind() == ClassKind.API) {
+      ApiTypeInfo declaringApiType = (ApiTypeInfo) declaringType.getRaw();
+      if (declaringApiType.isConcrete()) {
+        if (typeUtils.isSameType(methodType, modelMethod.asType())) {
+          return;
+        }
+      }
+    }
+    methods.put(modelMethod, methodInfo);
   }
 
   // This is a hook to allow a specific type of method to be created
