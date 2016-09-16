@@ -3,6 +3,8 @@ package io.vertx.codegen.testmodel;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
+import java.util.Objects;
+
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
@@ -53,6 +55,15 @@ public class TestDataObject {
   public TestDataObject setWibble(double wibble) {
     this.wibble = wibble;
     return this;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof TestDataObject) {
+      TestDataObject that = (TestDataObject) obj;
+      return Objects.equals(foo, that.foo) && bar == that.bar && wibble == that.wibble;
+    }
+    return false;
   }
 
   public JsonObject toJson() {
