@@ -14,7 +14,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -280,11 +279,6 @@ public class TestInterfaceImpl implements TestInterface {
     assertEquals("hello", dataObject.getFoo());
     assertEquals(123, dataObject.getBar());
     assertEquals(1.23, dataObject.getWibble(), 0);
-  }
-
-  @Override
-  public void methodWithNullDataObjectParam(TestDataObject dataObject) {
-    assertNull(dataObject);
   }
 
   @Override
@@ -631,14 +625,6 @@ public class TestInterfaceImpl implements TestInterface {
     assertNotNull(jsonArrayHandler);
     jsonObjectHandler.handle(new JsonObject().put("cheese", "stilton"));
     jsonArrayHandler.handle(new JsonArray().add("socks").add("shoes"));
-  }
-
-  @Override
-  public void methodWithHandlerNullJson(Handler<JsonObject> jsonObjectHandler, Handler<JsonArray> jsonArrayHandler) {
-    assertNotNull(jsonObjectHandler);
-    assertNotNull(jsonArrayHandler);
-    jsonObjectHandler.handle(null);
-    jsonArrayHandler.handle(null);
   }
 
   @Override

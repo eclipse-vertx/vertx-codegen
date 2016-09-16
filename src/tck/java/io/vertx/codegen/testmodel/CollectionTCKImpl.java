@@ -9,7 +9,6 @@ import io.vertx.core.json.JsonObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -24,21 +23,6 @@ import static org.junit.Assert.assertTrue;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class CollectionTCKImpl implements CollectionTCK {
-
-  @Override
-  public void methodWithListOfDataObjectsParam(List<TestDataObject> dataObjects) {
-    assertEquals(2, dataObjects.size());
-    assertEquals("hello", dataObjects.get(0).getFoo());
-    assertEquals("world", dataObjects.get(1).getFoo());
-  }
-
-  @Override
-  public void methodWithSetOfDataObjectsParam(Set<TestDataObject> dataObjects) {
-    assertEquals(2, dataObjects.size());
-    List<String> strings = dataObjects.stream().map(TestDataObject::getFoo).collect(Collectors.toList());
-    assertTrue(strings.contains("hello"));
-    assertTrue(strings.contains("world"));
-  }
 
   @Override
   public void methodWithListParams(List<String> listString, List<Byte> listByte, List<Short> listShort, List<Integer> listInt, List<Long> listLong, List<JsonObject> listJsonObject, List<JsonArray> listJsonArray, List<RefedInterface1> listVertxGen, List<TestDataObject> listDataObject, List<TestEnum> listEnum) {
@@ -181,12 +165,6 @@ public class CollectionTCKImpl implements CollectionTCK {
   }
 
   @Override
-  public void methodWithHandlerListNullJsonObject(Handler<List<JsonObject>> listHandler) {
-    List<JsonObject> list = Collections.singletonList(null);
-    listHandler.handle(list);
-  }
-
-  @Override
   public void methodWithHandlerListComplexJsonObject(Handler<List<JsonObject>> listHandler) {
     List<JsonObject> list = Arrays.asList(new JsonObject().put("outer", new JsonObject().put("socks", "tartan")).put("list", new JsonArray().add("yellow").add("blue")));
     listHandler.handle(list);
@@ -195,12 +173,6 @@ public class CollectionTCKImpl implements CollectionTCK {
   @Override
   public void methodWithHandlerSetJsonObject(Handler<Set<JsonObject>> setHandler) {
     Set<JsonObject> set = new LinkedHashSet<>(Arrays.asList(new JsonObject().put("cheese", "stilton"), new JsonObject().put("socks", "tartan")));
-    setHandler.handle(set);
-  }
-
-  @Override
-  public void methodWithHandlerSetNullJsonObject(Handler<Set<JsonObject>> setHandler) {
-    Set<JsonObject> set = Collections.singleton(null);
     setHandler.handle(set);
   }
 
@@ -217,12 +189,6 @@ public class CollectionTCKImpl implements CollectionTCK {
   }
 
   @Override
-  public void methodWithHandlerListNullJsonArray(Handler<List<JsonArray>> listHandler) {
-    List<JsonArray> list = Collections.singletonList(null);
-    listHandler.handle(list);
-  }
-
-  @Override
   public void methodWithHandlerListComplexJsonArray(Handler<List<JsonArray>> listHandler) {
     List<JsonArray> list = Arrays.asList(new JsonArray().add(new JsonObject().put("foo", "hello")), new JsonArray().add(new JsonObject().put("bar", "bye")));
     listHandler.handle(list);
@@ -231,12 +197,6 @@ public class CollectionTCKImpl implements CollectionTCK {
   @Override
   public void methodWithHandlerSetJsonArray(Handler<Set<JsonArray>> listHandler) {
     Set<JsonArray> set = new LinkedHashSet<>(Arrays.asList(new JsonArray().add("green").add("blue"), new JsonArray().add("yellow").add("purple")));
-    listHandler.handle(set);
-  }
-
-  @Override
-  public void methodWithHandlerSetNullJsonArray(Handler<Set<JsonArray>> listHandler) {
-    Set<JsonArray> set = Collections.singleton(null);
     listHandler.handle(set);
   }
 
@@ -255,21 +215,9 @@ public class CollectionTCKImpl implements CollectionTCK {
   }
 
   @Override
-  public void methodWithHandlerListNullDataObject(Handler<List<TestDataObject>> listHandler) {
-    List<TestDataObject> list = Collections.singletonList(null);
-    listHandler.handle(list);
-  }
-
-  @Override
   public void methodWithHandlerSetDataObject(Handler<Set<TestDataObject>> setHandler) {
     Set<TestDataObject> set =
         new LinkedHashSet<>(Arrays.asList(new TestDataObject().setFoo("String 1").setBar(1).setWibble(1.1), new TestDataObject().setFoo("String 2").setBar(2).setWibble(2.2)));
-    setHandler.handle(set);
-  }
-
-  @Override
-  public void methodWithHandlerSetNullDataObject(Handler<Set<TestDataObject>> setHandler) {
-    Set<TestDataObject> set = Collections.singleton(null);
     setHandler.handle(set);
   }
 
@@ -314,12 +262,6 @@ public class CollectionTCKImpl implements CollectionTCK {
   }
 
   @Override
-  public void methodWithHandlerAsyncResultListNullJsonObject(Handler<AsyncResult<List<JsonObject>>> listHandler) {
-    List<JsonObject> list = Collections.singletonList(null);
-    listHandler.handle(Future.succeededFuture(list));
-  }
-
-  @Override
   public void methodWithHandlerAsyncResultListComplexJsonObject(Handler<AsyncResult<List<JsonObject>>> listHandler) {
     List<JsonObject> list = Arrays.asList(new JsonObject().put("outer", new JsonObject().put("socks", "tartan")).put("list", new JsonArray().add("yellow").add("blue")));
     listHandler.handle(Future.succeededFuture(list));
@@ -328,12 +270,6 @@ public class CollectionTCKImpl implements CollectionTCK {
   @Override
   public void methodWithHandlerAsyncResultSetJsonObject(Handler<AsyncResult<Set<JsonObject>>> setHandler) {
     Set<JsonObject> set = new LinkedHashSet<>(Arrays.asList(new JsonObject().put("cheese", "stilton"), new JsonObject().put("socks", "tartan")));
-    setHandler.handle(Future.succeededFuture(set));
-  }
-
-  @Override
-  public void methodWithHandlerAsyncResultSetNullJsonObject(Handler<AsyncResult<Set<JsonObject>>> setHandler) {
-    Set<JsonObject> set = Collections.singleton(null);
     setHandler.handle(Future.succeededFuture(set));
   }
 
@@ -350,12 +286,6 @@ public class CollectionTCKImpl implements CollectionTCK {
   }
 
   @Override
-  public void methodWithHandlerAsyncResultListNullJsonArray(Handler<AsyncResult<List<JsonArray>>> listHandler) {
-    List<JsonArray> list = Collections.singletonList(null);
-    listHandler.handle(Future.succeededFuture(list));
-  }
-
-  @Override
   public void methodWithHandlerAsyncResultListComplexJsonArray(Handler<AsyncResult<List<JsonArray>>> listHandler) {
     List<JsonArray> list = Arrays.asList(new JsonArray().add(new JsonObject().put("foo", "hello")), new JsonArray().add(new JsonObject().put("bar", "bye")));
     listHandler.handle(Future.succeededFuture(list));
@@ -364,12 +294,6 @@ public class CollectionTCKImpl implements CollectionTCK {
   @Override
   public void methodWithHandlerAsyncResultSetJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler) {
     Set<JsonArray> set = new LinkedHashSet<>(Arrays.asList(new JsonArray().add("green").add("blue"), new JsonArray().add("yellow").add("purple")));
-    listHandler.handle(Future.succeededFuture(set));
-  }
-
-  @Override
-  public void methodWithHandlerAsyncResultSetNullJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler) {
-    Set<JsonArray> set = Collections.singleton(null);
     listHandler.handle(Future.succeededFuture(set));
   }
 
@@ -387,21 +311,9 @@ public class CollectionTCKImpl implements CollectionTCK {
   }
 
   @Override
-  public void methodWithHandlerAsyncResultListNullDataObject(Handler<AsyncResult<List<TestDataObject>>> listHandler) {
-    List<TestDataObject> list = Collections.singletonList(null);
-    listHandler.handle(Future.succeededFuture(list));
-  }
-
-  @Override
   public void methodWithHandlerAsyncResultSetDataObject(Handler<AsyncResult<Set<TestDataObject>>> setHandler) {
     Set<TestDataObject> set =
         new LinkedHashSet<>(Arrays.asList(new TestDataObject().setFoo("String 1").setBar(1).setWibble(1.1), new TestDataObject().setFoo("String 2").setBar(2).setWibble(2.2)));
-    setHandler.handle(Future.succeededFuture(set));
-  }
-
-  @Override
-  public void methodWithHandlerAsyncResultSetNullDataObject(Handler<AsyncResult<Set<TestDataObject>>> setHandler) {
-    Set<TestDataObject> set = Collections.singleton(null);
     setHandler.handle(Future.succeededFuture(set));
   }
 
@@ -423,12 +335,6 @@ public class CollectionTCKImpl implements CollectionTCK {
   @Override
   public Set<String> methodWithSetStringReturn() {
     return new LinkedHashSet<>( Arrays.asList("foo", "bar", "wibble"));
-  }
-
-  @Override
-  public Map<String, String> methodWithMapReturn(Handler<String> handler) {
-    Map<String, String> map = new HandlerTestMap<>(handler);
-    return map;
   }
 
   @Override
@@ -523,12 +429,6 @@ public class CollectionTCKImpl implements CollectionTCK {
   }
 
   @Override
-  public Map<String, String> methodWithNullMapReturn() {
-    return null;
-  }
-
-
-  @Override
   public List<Long> methodWithListLongReturn() {
     return Arrays.asList(123l, 456l);
   }
@@ -569,11 +469,6 @@ public class CollectionTCKImpl implements CollectionTCK {
   }
 
   @Override
-  public List<String> methodWithNullListReturn() {
-    return null;
-  }
-
-  @Override
   public Set<Long> methodWithSetLongReturn() {
     return new LinkedHashSet<>(Arrays.asList(123l, 456l));
   }
@@ -611,11 +506,6 @@ public class CollectionTCKImpl implements CollectionTCK {
   @Override
   public Set<TestEnum> methodWithSetEnumReturn() {
     return new LinkedHashSet<>(methodWithListEnumReturn());
-  }
-
-  @Override
-  public Set<String> methodWithNullSetReturn() {
-    return null;
   }
 
   private static class HandlerTestMap<V> implements Map<String, V> {

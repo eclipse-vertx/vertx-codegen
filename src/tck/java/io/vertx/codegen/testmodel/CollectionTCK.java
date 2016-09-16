@@ -22,12 +22,6 @@ public interface CollectionTCK {
 
   void methodWithMapParams(Map<String, String> mapString, Map<String, Byte> mapByte, Map<String, Short> mapShort, Map<String, Integer> mapInt, Map<String, Long> mapLong, Map<String, JsonObject> mapJsonObject, Map<String, JsonArray> mapJsonArray, Map<String, RefedInterface1> mapVertxGen);
 
-  // Remove this is duplicate with methodWithListParams
-  void methodWithListOfDataObjectsParam(List<TestDataObject> dataObjects);
-
-  // Remove this is duplicate with methodWithSetParams
-  void methodWithSetOfDataObjectsParam(Set<TestDataObject> dataObjects);
-
   void methodWithHandlerListAndSet(Handler<List<String>> listStringHandler, Handler<List<Integer>> listIntHandler,
                                    Handler<Set<String>> setStringHandler, Handler<Set<Integer>> setIntHandler);
 
@@ -53,24 +47,6 @@ public interface CollectionTCK {
   void methodWithHandlerSetDataObject(Handler<Set<TestDataObject>> setHandler);
   void methodWithHandlerSetEnum(Handler<Set<TestEnum>> setHandler);
 
-  // Remove this is duplicate
-  void methodWithHandlerListNullJsonObject(Handler<List<JsonObject>> listHandler);
-
-  // Remove this is duplicate
-  void methodWithHandlerSetNullJsonObject(Handler<Set<JsonObject>> listHandler);
-
-  // Remove this is duplicate
-  void methodWithHandlerListNullJsonArray(Handler<List<JsonArray>> listHandler);
-
-  // Remove this is duplicate
-  void methodWithHandlerSetNullJsonArray(Handler<Set<JsonArray>> listHandler);
-
-  // Remove this is duplicate
-  void methodWithHandlerListNullDataObject(Handler<List<TestDataObject>> listHandler);
-
-  // Remove this is duplicate
-  void methodWithHandlerSetNullDataObject(Handler<Set<TestDataObject>> setHandler);
-
   void methodWithHandlerAsyncResultListVertxGen(Handler<AsyncResult<List<RefedInterface1>>> listHandler);
   void methodWithHandlerAsyncResultListAbstractVertxGen(Handler<AsyncResult<List<RefedInterface2>>> listHandler);
   void methodWithHandlerAsyncResultListJsonObject(Handler<AsyncResult<List<JsonObject>>> listHandler);
@@ -89,25 +65,6 @@ public interface CollectionTCK {
   void methodWithHandlerAsyncResultSetDataObject(Handler<AsyncResult<Set<TestDataObject>>> setHandler);
   void methodWithHandlerAsyncResultSetEnum(Handler<AsyncResult<Set<TestEnum>>> setHandler);
 
-  // Remove this is duplicate
-  void methodWithHandlerAsyncResultListNullJsonObject(Handler<AsyncResult<List<JsonObject>>> listHandler);
-
-  // Remove this is duplicate
-  void methodWithHandlerAsyncResultSetNullJsonObject(Handler<AsyncResult<Set<JsonObject>>> listHandler);
-
-  // Remove this is duplicate
-  void methodWithHandlerAsyncResultListNullJsonArray(Handler<AsyncResult<List<JsonArray>>> listHandler);
-
-  // Remove this is duplicate
-  void methodWithHandlerAsyncResultSetNullJsonArray(Handler<AsyncResult<Set<JsonArray>>> listHandler);
-
-  // Remove this is duplicate
-  void methodWithHandlerAsyncResultListNullDataObject(Handler<AsyncResult<List<TestDataObject>>> listHandler);
-
-  // Remove this is duplicate
-  void methodWithHandlerAsyncResultSetNullDataObject(Handler<AsyncResult<Set<TestDataObject>>> setHandler);
-
-  Map<String, String> methodWithMapReturn(Handler<String> handler); // Duplicate ?
   Map<String, String> methodWithMapStringReturn(Handler<String> handler);
   Map<String, Long> methodWithMapLongReturn(Handler<String> handler);
   Map<String, Integer> methodWithMapIntegerReturn(Handler<String> handler);
@@ -122,9 +79,6 @@ public interface CollectionTCK {
   Map<String, JsonArray> methodWithMapJsonArrayReturn(Handler<String> handler);
   Map<String, JsonArray> methodWithMapComplexJsonArrayReturn(Handler<String> handler);
 
-  // Remove this is duplicate
-  Map<String, String> methodWithNullMapReturn();
-
   List<String> methodWithListStringReturn();
   List<Long> methodWithListLongReturn();
   List<RefedInterface1> methodWithListVertxGenReturn();
@@ -135,9 +89,6 @@ public interface CollectionTCK {
   List<TestDataObject> methodWithListDataObjectReturn();
   List<TestEnum> methodWithListEnumReturn();
 
-  // Remove this is duplicate
-  List<String> methodWithNullListReturn();
-
   Set<String> methodWithSetStringReturn();
   Set<Long> methodWithSetLongReturn();
   Set<RefedInterface1> methodWithSetVertxGenReturn();
@@ -147,7 +98,4 @@ public interface CollectionTCK {
   Set<JsonArray> methodWithSetComplexJsonArrayReturn();
   Set<TestDataObject> methodWithSetDataObjectReturn();
   Set<TestEnum> methodWithSetEnumReturn();
-
-  // Remove this is duplicate
-  Set<String> methodWithNullSetReturn();
 }

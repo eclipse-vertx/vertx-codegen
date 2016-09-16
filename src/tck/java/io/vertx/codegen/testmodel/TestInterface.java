@@ -2,7 +2,6 @@ package io.vertx.codegen.testmodel;
 
 import io.vertx.codegen.annotations.CacheReturn;
 import io.vertx.codegen.annotations.Fluent;
-import io.vertx.codegen.annotations.Nullable;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -51,9 +50,6 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
   void methodWithObjectParam(String str, Object obj);
 
   void methodWithDataObjectParam(TestDataObject dataObject);
-
-  // Duplicate with NullableTCK
-  void methodWithNullDataObjectParam(@Nullable TestDataObject dataObject);
 
   void methodWithHandlerUserTypes(Handler<RefedInterface1> handler);
 
@@ -156,9 +152,6 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
   void methodWithNullJsonParams(JsonObject jsonObject, JsonArray jsonArray);
 
   void methodWithHandlerJson(Handler<JsonObject> jsonObjectHandler, Handler<JsonArray> jsonArrayHandler);
-
-  // Duplicate with NullableTCK
-  void methodWithHandlerNullJson(Handler<JsonObject> jsonObjectHandler, Handler<JsonArray> jsonArrayHandler);
 
   void methodWithHandlerComplexJson(Handler<JsonObject> jsonObjectHandler, Handler<JsonArray> jsonArrayHandler);
 
