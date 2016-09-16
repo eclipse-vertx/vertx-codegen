@@ -338,6 +338,12 @@ public class CollectionTCKImpl implements CollectionTCK {
   }
 
   @Override
+  public Map<String, String> methodWithMapReturn(Handler<String> handler) {
+    Map<String, String> map = new HandlerTestMap<>(handler);
+    return map;
+  }
+
+  @Override
   public Map<String, String> methodWithMapStringReturn(Handler<String> handler) {
     Map<String, String> map = new StringHandlerTestMap(handler);
     map.put("foo", "bar");

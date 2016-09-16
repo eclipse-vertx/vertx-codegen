@@ -65,6 +65,7 @@ public interface CollectionTCK {
   void methodWithHandlerAsyncResultSetDataObject(Handler<AsyncResult<Set<TestDataObject>>> setHandler);
   void methodWithHandlerAsyncResultSetEnum(Handler<AsyncResult<Set<TestEnum>>> setHandler);
 
+  Map<String, String> methodWithMapReturn(Handler<String> handler);
   Map<String, String> methodWithMapStringReturn(Handler<String> handler);
   Map<String, Long> methodWithMapLongReturn(Handler<String> handler);
   Map<String, Integer> methodWithMapIntegerReturn(Handler<String> handler);
