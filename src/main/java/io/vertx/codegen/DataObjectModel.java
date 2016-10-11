@@ -144,7 +144,7 @@ public class DataObjectModel implements Model {
 
   @Override
   public Map<String, Object> getVars() {
-    HashMap<String, Object> vars = new HashMap<>();
+    Map<String, Object> vars = Model.super.getVars();
     vars.put("type", type);
     vars.put("doc", doc);
     vars.put("generateConverter", generateConverter);

@@ -34,7 +34,7 @@ public class PackageModel implements Model {
 
   @Override
   public Map<String, Object> getVars() {
-    HashMap<String, Object> vars = new HashMap<>();
+    Map<String, Object> vars = Model.super.getVars();
     vars.put("fqn", fqn);
     vars.put("module", module);
     return vars;

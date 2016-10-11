@@ -44,7 +44,7 @@ public class ModuleModel implements Model {
 
   @Override
   public Map<String, Object> getVars() {
-    Map<String, Object> vars = new HashMap<>();
+    Map<String, Object> vars = Model.super.getVars();
     vars.put("fqn", info.getPackageName());
     vars.put("name", info.getName());
     vars.put("module", getModule());

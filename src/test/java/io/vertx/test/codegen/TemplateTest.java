@@ -36,10 +36,6 @@ public class TemplateTest {
       throw new UnsupportedOperationException();
     }
 
-    public Map<String, Object> getVars() {
-      return new HashMap<>();
-    }
-
     @Override
     public ModuleInfo getModule() {
       throw new UnsupportedOperationException();

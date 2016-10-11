@@ -875,7 +875,7 @@ public class ClassModel implements Model {
 
   @Override
   public Map<String, Object> getVars() {
-    Map<String, Object> vars = new HashMap<>();
+    Map<String, Object> vars = Model.super.getVars();
     vars.put("importedTypes", getImportedTypes());
     vars.put("concrete", isConcrete());
     vars.put("type", getType());
@@ -884,7 +884,6 @@ public class ClassModel implements Model {
     vars.put("ifaceFQCN", getIfaceFQCN());
     vars.put("ifaceComment", getIfaceComment());
     vars.put("doc", doc);
-    vars.put("helper", new Helper());
     vars.put("methods", getMethods());
     vars.put("referencedTypes", getReferencedTypes());
     vars.put("superTypes", getSuperTypes());

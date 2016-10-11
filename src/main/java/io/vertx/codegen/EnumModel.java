@@ -102,10 +102,9 @@ public class EnumModel implements Model  {
 
   @Override
   public Map<String, Object> getVars() {
-    Map<String, Object> vars = new HashMap<>();
+    Map<String, Object> vars = Model.super.getVars();
     vars.put("type", getType());
     vars.put("doc", doc);
-    vars.put("helper", new Helper());
     vars.put("values", values);
     return vars;
   }
