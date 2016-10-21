@@ -50,6 +50,9 @@ public enum ClassKind {
   // AsyncResult
   ASYNC_RESULT(false, false, false),
 
+  // Type literal, e.g Class<T>
+  TYPE_LITERAL(false, false, false),
+
   // Anything else
   OTHER(false, false, false);
 
@@ -77,11 +80,16 @@ public enum ClassKind {
     return vars;
   }
 
-  public static ClassKind getKind(String fqcn, boolean isDataObjectAnnotated, boolean isVertxGenAnnotated) {
+  public static ClassKind getKind(
+      String fqcn,
+      boolean isDataObjectAnnotated,
+      boolean isVertxGenAnnotated) {
     if (isDataObjectAnnotated) {
       return DATA_OBJECT;
     } else if (isVertxGenAnnotated) {
       return API;
+    } else if (fqcn.equals("java.lang.Class")) {
+      return TYPE_LITERAL;
     } else if (fqcn.equals(ClassModel.VERTX_HANDLER)) {
       return HANDLER;
     } else if (fqcn.equals(ClassModel.VERTX_ASYNC_RESULT)) {

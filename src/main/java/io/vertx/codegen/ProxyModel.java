@@ -53,7 +53,7 @@ public class ProxyModel extends ClassModel {
   }
 
   @Override
-  protected void checkParamType(Element elem, TypeMirror type, TypeInfo typeInfo, int pos, int numParams) {
+  protected void checkParamType(ExecutableElement elem, TypeMirror type, TypeInfo typeInfo, int pos, int numParams) {
     // Basic types, int, long, String etc
     // JsonObject or JsonArray
     if (typeInfo.getKind().basic || typeInfo.getKind().json) {

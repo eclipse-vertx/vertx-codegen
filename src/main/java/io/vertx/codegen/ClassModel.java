@@ -226,8 +226,11 @@ public class ClassModel implements Model {
     }
   }
 
-  protected void checkParamType(Element elem, TypeMirror type, TypeInfo typeInfo, int pos, int numParams) {
+  protected void checkParamType(ExecutableElement elem, TypeMirror type, TypeInfo typeInfo, int pos, int numParams) {
     if (isLegalNonCallableParam(typeInfo)) {
+      return;
+    }
+    if (isLegalTypeLiteralParam(elem, typeInfo)) {
       return;
     }
     if (isLegalHandlerType(typeInfo)) {
@@ -342,6 +345,22 @@ public class ClassModel implements Model {
     return false;
   }
 
+  private boolean isLegalTypeLiteralParam(ExecutableElement elt, TypeInfo type) {
+    if (type.getKind() == ClassKind.TYPE_LITERAL && type.isParameterized()) {
+      ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
+      TypeInfo arg = parameterized.getArg(0);
+      if (arg.isVariable()) {
+        TypeVariableInfo variable = (TypeVariableInfo) arg;
+        for (TypeParameterElement typeParamElt : elt.getTypeParameters()) {
+          if (typeParamElt.getSimpleName().toString().equals(variable.getName())) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   protected boolean isLegalDataObjectTypeReturn(TypeInfo type) {
     if (type.getKind() == ClassKind.DATA_OBJECT) {
       TypeElement typeElt = elementUtils.getTypeElement(type.getName());
@@ -411,11 +430,13 @@ public class ClassModel implements Model {
       if (type.isParameterized()) {
         if (allowParameterized) {
           ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
-          for (TypeInfo param : parameterized.getArgs()) {
-            if (!(param instanceof TypeVariableInfo || param.getKind() == ClassKind.VOID)) {
+          for (TypeInfo paramType : parameterized.getArgs()) {
+            ClassKind kind = paramType.getKind();
+            if (!(paramType instanceof ApiTypeInfo || paramType.isVariable() || kind == ClassKind.VOID
+              || kind.basic || kind.json || kind == ClassKind.DATA_OBJECT || kind == ClassKind.ENUM )) {
               return false;
             }
-            if (param.isNullable()) {
+            if (paramType.isNullable()) {
               return false;
             }
           }

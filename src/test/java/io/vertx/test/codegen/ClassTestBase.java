@@ -10,8 +10,11 @@ import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.doc.Doc;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -96,5 +99,9 @@ public abstract class ClassTestBase {
     } catch (GenException e) {
       // pass
     }
+  }
+
+  static <T> Set<T> set(T... values) {
+    return new HashSet<T>(Arrays.asList(values));
   }
 }
