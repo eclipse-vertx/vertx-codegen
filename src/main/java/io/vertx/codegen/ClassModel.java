@@ -243,6 +243,9 @@ public class ClassModel implements Model {
   }
 
   protected void checkReturnType(ExecutableElement elem, TypeInfo type, TypeMirror typeMirror) {
+    if (type instanceof VoidTypeInfo) {
+      return;
+    }
     if (isLegalNonCallableReturnType(type)) {
       return;
     }
@@ -256,12 +259,9 @@ public class ClassModel implements Model {
   }
 
   /**
-   * The <i>Return</i> set.
+   * The <i>Return</i> set but not `void`.
    */
   private boolean isLegalNonCallableReturnType(TypeInfo type) {
-    if (type instanceof VoidTypeInfo) {
-      return true;
-    }
     if (type.getKind().basic) {
       return true;
     }
@@ -280,7 +280,10 @@ public class ClassModel implements Model {
     if (isTypeVariable(type)) {
       return true;
     }
-    if (isVertxGenInterface(type)) {
+    if (type.getKind() == ClassKind.OBJECT) {
+      return true;
+    }
+    if (isVertxGenInterface(type, true)) {
       return true;
     }
     if (isLegalContainerReturn(type)) {
@@ -318,7 +321,7 @@ public class ClassModel implements Model {
     if (typeInfo.getKind() == ClassKind.OBJECT) {
       return true;
     }
-    if (isVertxGenInterface(typeInfo)) {
+    if (isVertxGenInterface(typeInfo, true)) {
       return true;
     }
     if (isLegalContainerParam(typeInfo)) {
@@ -363,12 +366,12 @@ public class ClassModel implements Model {
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
       TypeInfo argument = ((ParameterizedTypeInfo) type).getArgs().get(0);
       if (type.getKind() != ClassKind.MAP) {
-        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument) || isLegalDataObjectTypeParam(argument) || argument.getKind() == ClassKind.ENUM) {
+        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument, false) || isLegalDataObjectTypeParam(argument) || argument.getKind() == ClassKind.ENUM) {
           return true;
         }
       } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
         argument = ((ParameterizedTypeInfo) type).getArgs().get(1);
-        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument)) {
+        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument, false)) {
           return true;
         }
       }
@@ -393,7 +396,7 @@ public class ClassModel implements Model {
         if (valueType.getKind().basic ||
             valueType.getKind().json ||
             valueType.getKind() == ClassKind.ENUM ||
-            isVertxGenInterface(valueType) ||
+            isVertxGenInterface(valueType, false) ||
             isLegalDataObjectTypeReturn(valueType)) {
           return true;
         }
@@ -403,20 +406,26 @@ public class ClassModel implements Model {
   }
 
 
-  private boolean isVertxGenInterface(TypeInfo type) {
+  private boolean isVertxGenInterface(TypeInfo type, boolean allowParameterized) {
     if (type.getKind() == ClassKind.API) {
-      if (type instanceof ParameterizedTypeInfo) {
-        ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
-        for (TypeInfo param : parameterized.getArgs()) {
-          if (!(param instanceof TypeVariableInfo || param.getKind() == ClassKind.VOID)) {
-            return false;
+      if (type.isParameterized()) {
+        if (allowParameterized) {
+          ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
+          for (TypeInfo param : parameterized.getArgs()) {
+            if (!(param instanceof TypeVariableInfo || param.getKind() == ClassKind.VOID)) {
+              return false;
+            }
+            if (param.isNullable()) {
+              return false;
+            }
           }
-          if (param.isNullable()) {
-            return false;
-          }
+          return true;
+        } else {
+          return false;
         }
+      } else {
+        return true;
       }
-      return true;
     }
     return false;
   }
@@ -456,12 +465,10 @@ public class ClassModel implements Model {
   }
 
   private boolean isLegalCallbackValueType(TypeInfo type) {
-    if (type.getKind() == ClassKind.VOID && type.isNullable()) {
-      return false;
+    if (type.getKind() == ClassKind.VOID) {
+      return !type.isNullable();
     }
-    return type.getKind().json || type.getKind().basic || isVertxGenInterface(type) ||
-        isLegalContainerReturn(type) || type.getKind() == ClassKind.ENUM || type.getKind() == ClassKind.VOID ||
-        isTypeVariable(type) || type.getKind() == ClassKind.OBJECT || isLegalDataObjectTypeReturn(type);
+    return isLegalNonCallableReturnType(type);
   }
 
   private void determineApiTypes() {

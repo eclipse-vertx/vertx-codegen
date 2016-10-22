@@ -148,6 +148,7 @@ The following set _`Return`_ of types are permitted as return types from any API
 * any enum class
 * the type `java.lang.Throwable`
 * the set _`TypeVar`_
+* `java.lang.Object`
 * the set _`Api`_
 * the set _`Parameterized`_
 * type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
@@ -191,7 +192,6 @@ In addition any API method can have as parameter:
 
 Notes:
 
-* `java.lang.Object` could also be part of _`Return`_ and would bring consistency ?
 * Why no support for data object in `Map` param values ?
 
 ### Static factory methods

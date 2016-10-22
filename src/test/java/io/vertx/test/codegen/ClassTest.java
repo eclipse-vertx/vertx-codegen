@@ -321,11 +321,6 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
-  public void testGenerateMethodWithObjectReturn() throws Exception {
-    assertGenInvalid(MethodWithObjectReturn.class);
-  }
-
-  @Test
   public void testGenerateMethodWithReturnSetNonBasicType() throws Exception {
     assertGenInvalid(MethodWithSetNonBasicTypeReturn.class);
   }
@@ -1070,6 +1065,17 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
+  public void testValidObjectReturn() throws Exception {
+    ClassModel model = new Generator().generateClass(MethodWithObjectReturn.class);
+    assertEquals(MethodWithObjectReturn.class.getName(), model.getIfaceFQCN());
+    assertEquals(MethodWithObjectReturn.class.getSimpleName(), model.getIfaceSimpleName());
+    assertTrue(model.getReferencedTypes().isEmpty());
+    assertTrue(model.getSuperTypes().isEmpty());
+    assertEquals(1, model.getMethods().size());
+    checkMethod(model.getMethods().get(0), "foo", 0, "java.lang.Object", MethodKind.OTHER);
+  }
+
+  @Test
   public void testValidListReturn() throws Exception {
     ClassModel model = new Generator().generateClass(MethodWithValidListReturn.class);
     assertEquals(MethodWithValidListReturn.class.getName(), model.getIfaceFQCN());
@@ -1097,7 +1103,7 @@ public class ClassTest extends ClassTestBase {
     checkMethod(methods.get(13), "dataObjectList", 0, new TypeLiteral<List<TestDataObject>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(14), "enumList", 0, new TypeLiteral<List<TestEnum>>() {}, MethodKind.OTHER);
   }
-  
+
   @Test
   public void testValidSetReturn() throws Exception {
     ClassModel model = new Generator().generateClass(MethodWithValidSetReturn.class);

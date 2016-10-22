@@ -8,5 +8,5 @@ import io.vertx.codegen.annotations.VertxGen;
 @VertxGen
 public interface MethodWithObjectReturn {
 
-  Object foo(String param);
+  Object foo();
 }
