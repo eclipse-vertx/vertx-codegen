@@ -122,66 +122,77 @@ The constraints are
 
 ### Permitted types
 
-We define the following set `B` of basic types:
+We define the following set _`Basic`_ of basic types:
 
 * any primitive type
 * any boxed primitive type
 * `java.lang.String`
 
-We define `J` as the set of types `io.vertx.core.json.JsonObject` and `io.vertx.core.json.JsonArray`
+We define _`Json`_ as the set of types `io.vertx.core.json.JsonObject` and `io.vertx.core.json.JsonArray`
 
-We define `V` as the set of user defined API types which are defined in its own interface and annotated with `@VertxGen`
+We define _`DataObject`_ as the set of user defined API types which are defined in its own class and annotated with `@DataObject`
 
-The following set `P` of types are permitted as parameters to any API method:
+We define _`TypeVar`_ as the set of of types variables where the variable is either declared by its generic method or its generic type
 
-* the set `B`
-* `java.lang.Object`
-* the set `V`
-* the set `J`
-* any data object class annotated with `@DataObject`
-* type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
-    * the set `B`
-    * the set `V`
-    * the set `J`
-* type `java.util.Map<String, C>` where `C` contains
-    * the set `B`
-    * the set `J`
-    * the set `V`    
-* any Enum class
-* the exact `java.lang.Throwable` class, for instance `java.lang.Exception` is not supported
-* `io.vertx.java.core.Handler<io.vertx.java.core.AsyncResult<HA>>` where `HA` contains
-    * the set `B`
-    * the set `V`
-    * the set `J`
-    * `java.lang.Void`
-    * `java.lang.Throwable`
-    * any data object class
-    * any Enum class
-    * type `java.util.List<C>`, `java.util.Set<C>` or `java.util.Map<String, C>` where `C` contains
-        * the set `B`
-        * the set `V`
-        * the set `J`
-        * any data object class
-        * any Enum class
-* `io.vertx.java.core.Handler<H>` where `H` contains
-    * the set `HA`
-    * `java.lang.Throwable`
+We define _`Api`_ as the set of user defined API types which are defined in its own interface and annotated with `@VertxGen`
 
-The following set `R` of types are permitted as return types from any API method:
+We define _`Parameterized`_ as the set of user defined API types which are defined in its own interface and annotated with
+`@VertxGen` where the type parameters are type variables or `java.lang.Void`
+
+The following set _`Return`_ of types are permitted as return types from any API method:
 
 * `void`
-* the set `B`
-* the set `V`
-* the set `J`
+* the set _`Basic`_
+* the set _`Json`_
+* the set _`DataObject`_
 * any enum class
-* any `java.lang.Throwable`
-* any data object class
-* type `java.util.List<C>`, `java.util.Set<C>` or `java.util.Map<String, C>` where `C` contains
-    * the set `B`
-    * the set `J`
-    * the set `V`
-    * any Enum class
-    * any data object class
+* the type `java.lang.Throwable`
+* the set _`TypeVar`_
+* the set _`Api`_
+* the set _`Parameterized`_
+* type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
+    * the set _`Basic`_
+    * the set _`Json`_
+    * any enum class
+    * the set _`Api`_
+    * the set _`DataObject`_
+* `java.util.Map<String, C>` where `C` contains
+    * the set _`Basic`_
+    * the set _`Json`_
+
+The following set _`Param`_ of types are permitted as parameters to any API method:
+
+* the set _`Basic`_
+* the set _`Json`_
+* the set _`DataObject`_
+* any enum class
+* the type `java.lang.Throwable`
+* the set _`TypeVar`_
+* `java.lang.Object`
+* the set _`Api`_
+* the set _`Parameterized`_
+* type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
+    * the set _`Basic`_
+    * the set _`Json`_
+    * the set _`DataObject`_
+    * the set _`Api`_
+* type `java.util.Map<String, C>` where `C` contains
+    * the set _`Basic`_
+    * the set _`Json`_
+    * the set _`Api`_
+
+In addition any API method can have as parameter:
+
+* `io.vertx.java.core.Handler<io.vertx.java.core.AsyncResult<HA>>` where `HA` contains
+    * the set _`Return`_ where `void` is interpreted as `java.lang.Void` minus `java.lang.Throwable`
+* `io.vertx.java.core.Handler<H>` where `H` contains
+    * the set _`Return`_ where `void` is interpreted as `java.lang.Void`
+* `java.util.Function<T, R>` where  `T` contains _`Return`_ and `R` contains _`Param`_
+
+Notes:
+
+* `java.lang.Object` could also be part of _`Return`_ and would bring consistency ?
+* Why no support for data object in `Map` param values ?
 
 ### Static factory methods
 

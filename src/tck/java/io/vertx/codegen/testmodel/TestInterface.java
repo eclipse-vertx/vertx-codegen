@@ -101,6 +101,8 @@ public interface TestInterface extends SuperInterface1, SuperInterface2 {
 
   TestDataObject methodWithDataObjectNullReturn();
 
+  <U> GenericRefedInterface<U> methodWithGenericUserTypeReturn(U value);
+
   String overloadedMethod(String str, Handler<String> handler);
 
   String overloadedMethod(String str, RefedInterface1 refed);

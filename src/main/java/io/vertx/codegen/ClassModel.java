@@ -227,10 +227,9 @@ public class ClassModel implements Model {
   }
 
   protected void checkParamType(Element elem, TypeMirror type, TypeInfo typeInfo, int pos, int numParams) {
-    if (isLegalNonCallbackParam(typeInfo)) {
+    if (isLegalNonCallableParam(typeInfo)) {
       return;
     }
-    // Check legal handlers
     if (isLegalHandlerType(typeInfo)) {
       return;
     }
@@ -244,84 +243,91 @@ public class ClassModel implements Model {
   }
 
   protected void checkReturnType(ExecutableElement elem, TypeInfo type, TypeMirror typeMirror) {
-    // Basic types, int, long, String etc
-    // JsonObject or JsonArray
-    // void
-    if (type.getKind().basic || type instanceof VoidTypeInfo || type.getKind().json) {
+    if (isLegalNonCallableReturnType(type)) {
       return;
     }
-    // We also allow enums as return types
-    if (isLegalEnum(type)) {
-      return;
-    }
-
-    // We allow Throwable returns
-    if (type.getKind() == ClassKind.THROWABLE) {
-      return;
-    }
-
-    if (isLegalListSetMapReturn(type)) {
-      return;
-    }
-
-    // Another user defined interface with the @VertxGen annotation is OK
-    if (isVertxGenInterface(type)) {
-      return;
-    }
-
-    if (isLegalDataObjectTypeReturn(type)) {
-      return;
-    }
-
-    // Variable type is ok
-    if (isVariableType(type)) {
-      return;
-    }
-
-    // Check legal handlers
     if (isLegalHandlerType(type)) {
       return;
     }
     if (isLegalHandlerAsyncResultType(type)) {
       return;
     }
-
     throw new GenException(elem, "type " + type + " is not legal for use for a return type in code generation");
+  }
+
+  /**
+   * The <i>Return</i> set.
+   */
+  private boolean isLegalNonCallableReturnType(TypeInfo type) {
+    if (type instanceof VoidTypeInfo) {
+      return true;
+    }
+    if (type.getKind().basic) {
+      return true;
+    }
+    if (type.getKind().json) {
+      return true;
+    }
+    if (isLegalDataObjectTypeReturn(type)) {
+      return true;
+    }
+    if (isLegalEnum(type)) {
+      return true;
+    }
+    if (type.getKind() == ClassKind.THROWABLE) {
+      return true;
+    }
+    if (isTypeVariable(type)) {
+      return true;
+    }
+    if (isVertxGenInterface(type)) {
+      return true;
+    }
+    if (isLegalContainerReturn(type)) {
+      return true;
+    }
+    return false;
   }
 
   private boolean isLegalEnum(TypeInfo info) {
     return info.getKind() == ClassKind.ENUM;
   }
 
-  private boolean isLegalNonCallbackParam(TypeInfo typeInfo) {
-    // Basic types, int, long, String etc
-    // JsonObject or JsonArray
-    // Throwable
-    // Also can use Object as a param type (e.g. for EventBus)
-    if (typeInfo.getKind().basic || typeInfo.getKind().json ||
-        typeInfo.getKind() == ClassKind.OBJECT || typeInfo.getKind() == ClassKind.THROWABLE) {
+  /**
+   * The set <i>Param</i>
+   */
+  private boolean isLegalNonCallableParam(TypeInfo typeInfo) {
+    if (typeInfo.getKind().basic) {
       return true;
     }
-    // We also allow enums as parameter types
-    if (isLegalEnum(typeInfo)) {
+    if (typeInfo.getKind().json) {
       return true;
     }
-    if (isLegalListSetMapParam(typeInfo)) {
-      return true;
-    }
-    // Another user defined interface with the @VertxGen annotation is OK
-    if (isVertxGenInterface(typeInfo)) {
-      return true;
-    }
-    // Can also specify option classes (which aren't VertxGen)
     if (isLegalDataObjectTypeParam(typeInfo)) {
       return true;
     }
-    // We also allow type parameters for param types
-    return isVariableType(typeInfo);
+    if (isLegalEnum(typeInfo)) {
+      return true;
+    }
+    if (typeInfo.getKind() == ClassKind.THROWABLE) {
+      return true;
+    }
+    if (isTypeVariable(typeInfo)) {
+      return true;
+    }
+    if (typeInfo.getKind() == ClassKind.OBJECT) {
+      return true;
+    }
+    if (isVertxGenInterface(typeInfo)) {
+      return true;
+    }
+    if (isLegalContainerParam(typeInfo)) {
+      return true;
+    }
+    return false;
   }
 
-  private boolean isVariableType(TypeInfo type) {
+  private boolean isTypeVariable(TypeInfo type) {
     return type instanceof TypeVariableInfo;
   }
 
@@ -351,7 +357,7 @@ public class ClassModel implements Model {
     return false;
   }
 
-  protected boolean isLegalListSetMapParam(TypeInfo type) {
+  protected boolean isLegalContainerParam(TypeInfo type) {
     // List<T> and Set<T> are also legal for params if T = basic type, json, @VertxGen, @DataObject
     // Map<K,V> is also legal for returns and params if K is a String and V is a basic type, json, or a @VertxGen interface
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
@@ -370,7 +376,7 @@ public class ClassModel implements Model {
     return false;
   }
 
-  protected boolean isLegalListSetMapReturn(TypeInfo type) {
+  protected boolean isLegalContainerReturn(TypeInfo type) {
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
       List<TypeInfo> args = ((ParameterizedTypeInfo) type).getArgs();
       if (type.getKind() == ClassKind.MAP) {
@@ -420,7 +426,7 @@ public class ClassModel implements Model {
       TypeInfo paramType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(0);
       if (isLegalCallbackValueType(paramType) || paramType.getKind() == ClassKind.THROWABLE) {
         TypeInfo returnType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(1);
-        return isLegalNonCallbackParam(returnType);
+        return isLegalNonCallableParam(returnType);
       }
     }
     return false;
@@ -454,8 +460,8 @@ public class ClassModel implements Model {
       return false;
     }
     return type.getKind().json || type.getKind().basic || isVertxGenInterface(type) ||
-        isLegalListSetMapReturn(type) || type.getKind() == ClassKind.ENUM || type.getKind() == ClassKind.VOID ||
-        isVariableType(type) || type.getKind() == ClassKind.OBJECT || isLegalDataObjectTypeReturn(type);
+        isLegalContainerReturn(type) || type.getKind() == ClassKind.ENUM || type.getKind() == ClassKind.VOID ||
+        isTypeVariable(type) || type.getKind() == ClassKind.OBJECT || isLegalDataObjectTypeReturn(type);
   }
 
   private void determineApiTypes() {

@@ -342,16 +342,19 @@ public class TestInterfaceImpl implements TestInterface {
 
   @Override
   public <U> void methodWithHandlerGenericUserType(U value, Handler<GenericRefedInterface<U>> handler) {
-    GenericRefedInterfaceImpl<U> userObj = new GenericRefedInterfaceImpl<>();
-    userObj.setValue(value);
-    handler.handle(userObj);
+    handler.handle(methodWithGenericUserTypeReturn(value));
   }
 
   @Override
   public <U> void methodWithHandlerAsyncResultGenericUserType(U value, Handler<AsyncResult<GenericRefedInterface<U>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithGenericUserTypeReturn(value)));
+  }
+
+  @Override
+  public <U> GenericRefedInterface<U> methodWithGenericUserTypeReturn(U value) {
     GenericRefedInterfaceImpl<U> userObj = new GenericRefedInterfaceImpl<>();
     userObj.setValue(value);
-    handler.handle(Future.succeededFuture(userObj));
+    return userObj;
   }
 
   @Override
@@ -652,7 +655,7 @@ public class TestInterfaceImpl implements TestInterface {
     assertNotNull(handler);
     handler.handle(Future.succeededFuture(new JsonObject().put("outer", new JsonObject().put("socks", "tartan")).put("list", new JsonArray().add("yellow").add("blue"))));
   }
-  
+
   @Override
   public void methodWithHandlerAsyncResultJsonArray(Handler<AsyncResult<JsonArray>> handler) {
     assertNotNull(handler);

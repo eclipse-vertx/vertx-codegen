@@ -26,7 +26,6 @@ import io.vertx.codegen.type.*;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -38,8 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -66,7 +63,7 @@ public class ProxyModel extends ClassModel {
     if (typeInfo.getKind() == ClassKind.ENUM) {
       return;
     }
-    if (isLegalListSetMapParam(typeInfo)) {
+    if (isLegalContainerParam(typeInfo)) {
       return;
     }
     // We also allow data object as parameter types if they have a 'public JsonObject toJson()' method
@@ -178,7 +175,7 @@ public class ProxyModel extends ClassModel {
 
   // TODO should we allow enums/Data objects in List/Set/Map params
 
-  protected boolean isLegalListSetMapParam(TypeInfo type) {
+  protected boolean isLegalContainerParam(TypeInfo type) {
     TypeInfo raw = type.getRaw();
     if (raw.getName().equals(List.class.getName()) || raw.getName().equals(Set.class.getName())) {
       TypeInfo argument = ((ParameterizedTypeInfo) type).getArgs().get(0);
