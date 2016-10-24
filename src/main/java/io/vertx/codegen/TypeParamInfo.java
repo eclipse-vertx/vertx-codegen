@@ -65,6 +65,12 @@ public abstract class TypeParamInfo {
     this.name = name;
   }
 
+  public abstract boolean isMethod();
+
+  public boolean isClass() {
+    return !isMethod();
+  }
+
   public static class Class extends TypeParamInfo {
 
     private final String typeName;
@@ -82,6 +88,11 @@ public abstract class TypeParamInfo {
 
     public boolean isSiteContravariant() {
       return siteVariances.size() == 1 && siteVariances.contains(Variance.CONTRAVARIANT);
+    }
+
+    @Override
+    public boolean isMethod() {
+      return false;
     }
 
     @Override
@@ -109,6 +120,11 @@ public abstract class TypeParamInfo {
 
       this.typeName = typeName;
       this.methodName = methodName;
+    }
+
+    @Override
+    public boolean isMethod() {
+      return true;
     }
 
     @Override

@@ -105,7 +105,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
           if (param.getType().getKind() == ClassKind.TYPE_LITERAL &&
               param.getType().isParameterized()) {
             TypeInfo arg_ = ((ParameterizedTypeInfo) param.getType()).getArg(0);
-            if (arg_.isVariable() && typeVar.getName().equals(typeParam.getName())) {
+            if (arg_.isVariable() && typeVar.getName().equals(arg_.getName())) {
               return param;
             }
           }

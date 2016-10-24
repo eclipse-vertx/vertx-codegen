@@ -38,6 +38,7 @@ import io.vertx.test.codegen.testapi.GenericAbstractInterface;
 import io.vertx.test.codegen.testapi.GenericInterface;
 import io.vertx.test.codegen.testapi.GenericInterfaceWithUpperBound;
 import io.vertx.test.codegen.testapi.InterfaceDataObjectWithToJson;
+import io.vertx.test.codegen.testapi.InterfaceExtendingGenericInterface;
 import io.vertx.test.codegen.testapi.InterfaceWithCacheReturnMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithComments;
 import io.vertx.test.codegen.testapi.InterfaceWithDefaultMethod;
@@ -1483,6 +1484,16 @@ public class ClassTest extends ClassTestBase {
     checkParam(methods.get(3).getParams().get(0), "handler", new TypeLiteral<Handler<String>>() {
     });
     checkParam(methods.get(4).getParams().get(0), "t", String.class);
+  }
+
+  @Test
+  public void testInterfaceExtendingGenericInterface() throws Exception {
+    ClassModel model = new Generator().generateClass(InterfaceExtendingGenericInterface.class, GenericInterface.class);
+    List<MethodInfo> methods = model.getMethods();
+    List<TypeInfo> fooBar = model.getSuperTypeArguments();
+    assertEquals(1, fooBar.size());
+    ClassTypeInfo a = (ClassTypeInfo) fooBar.get(0);
+    assertEquals(ClassKind.STRING, a.getKind());
   }
 
   @Test

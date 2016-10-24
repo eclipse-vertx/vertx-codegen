@@ -64,4 +64,8 @@ public interface GenericsTCK {
   <U> void methodWithHandlerClassTypeParameterized(Class<U> type, Handler<GenericRefedInterface<U>> handler);
   <U> void methodWithHandlerAsyncResultClassTypeParameterized(Class<U> type, Handler<AsyncResult<GenericRefedInterface<U>>> handler);
 
+  InterfaceWithApiArg interfaceWithApiArg(RefedInterface1 value);
+  InterfaceWithStringArg interfaceWithStringArg(String value);
+  <T, U> InterfaceWithVariableArg<T, U> interfaceWithVariableArg(T value1, Class<U> type, U value2);
+
 }

@@ -301,4 +301,64 @@ public class GenericsTCKImpl implements GenericsTCK {
     obj.setValue(val);
     return obj;
   }
+
+  @Override
+  public InterfaceWithApiArg interfaceWithApiArg(RefedInterface1 value) {
+    return new InterfaceWithApiArg() {
+      private RefedInterface1 val = value;
+      @Override
+      public void meth() {
+      }
+      @Override
+      public void setValue(RefedInterface1 value) {
+        val = value;
+      }
+      @Override
+      public RefedInterface1 getValue() {
+        return val;
+      }
+    };
+  }
+
+  @Override
+  public InterfaceWithStringArg interfaceWithStringArg(String value) {
+    return new InterfaceWithStringArg() {
+      private String val = value;
+      @Override
+      public void meth() {
+      }
+      @Override
+      public void setValue(String value) {
+        val = value;
+      }
+      @Override
+      public String getValue() {
+        return val;
+      }
+    };
+  }
+
+  @Override
+  public <T, U> InterfaceWithVariableArg<T, U> interfaceWithVariableArg(T value1, Class<U> type, U value2) {
+    return new InterfaceWithVariableArg<T, U>() {
+      private T val1 = value1;
+      private U val2 = value2;
+      @Override
+      public void setOtherValue(T value) {
+        val1 = value;
+      }
+      @Override
+      public T getOtherValue() {
+        return val1;
+      }
+      @Override
+      public void setValue(U value) {
+        val2 = value;
+      }
+      @Override
+      public U getValue() {
+        return val2;
+      }
+    };
+  }
 }
