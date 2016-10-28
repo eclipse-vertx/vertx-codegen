@@ -1,0 +1,16 @@
+@if{incrementalIndex == 0}
+package testgen2;\n
+\n
+import java.util.*;\n
+import java.util.concurrent.Callable;\n
+\n
+public class incremental_class implements Callable<Set<String>> {\n
+  public Set<String> call() throws Exception {\n
+    Set<String> strings = new HashSet<>();\n
+@end{}
+    strings.add("@{type.name}");\n
+@if{incrementalIndex==incrementalSize-1}
+    return strings;\n
+  }\n
+}\n
+@end{}

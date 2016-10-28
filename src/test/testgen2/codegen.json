@@ -4,11 +4,16 @@
     "kind": "class",
     "incremental": true,
     "fileName": "model.type.raw.module.packageName.replace('.', '_') + '.properties'",
-    "templateFileName": "templates/incrementalClassGen.templ"
+    "templateFileName": "templates/dynamic_gen.templ"
   },{
     "kind": "class",
     "incremental": true,
     "fileName": "'dir/in_sub_dir.txt'",
-    "templateFileName": "templates/static.templ"
+    "templateFileName": "templates/static_gen.templ"
+  },{
+    "kind": "class",
+    "incremental": true,
+    "fileName": "'testgen2.incremental_class.java'",
+    "templateFileName": "templates/class_gen.templ"
   }]
 }

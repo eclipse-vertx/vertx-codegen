@@ -22,10 +22,14 @@ import org.junit.rules.TestName;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
@@ -143,5 +147,14 @@ public class CodeGeneratorTest {
         "1/2",
         "[io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedApi, io.vertx.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubApi]"
     ), lines);
+    File classes = compiler.getClassOutput();
+    ClassLoader loader = new URLClassLoader(new URL[]{classes.toURI().toURL()});
+    Class clazz = loader.loadClass("testgen2.incremental_class");
+    Callable<Set<String>> callable = (Callable<Set<String>>) clazz.newInstance();
+    Set<String> result = callable.call();
+    HashSet<String> expected = new HashSet<>();
+    expected.add("io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedApi");
+    expected.add("io.vertx.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubApi");
+    assertEquals(expected, result);
   }
 }

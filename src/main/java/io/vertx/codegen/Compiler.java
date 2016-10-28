@@ -30,6 +30,7 @@ public class Compiler {
   private Processor processor;
   private DiagnosticListener<JavaFileObject> diagnosticListener;
   private List<String> options = new ArrayList<>();
+  private File classOutput;
 
   public Compiler(Processor processor) {
     this(processor, new DiagnosticCollector<>());
@@ -51,6 +52,14 @@ public class Compiler {
   public Compiler addOption(String option) {
     options.add(option);
     return this;
+  }
+
+  public File getClassOutput() {
+    return classOutput;
+  }
+
+  public void setClassOutput(File classOutput) {
+    this.classOutput = classOutput;
   }
 
   public boolean compile(Class... types) throws Exception {
@@ -88,9 +97,12 @@ public class Compiler {
   public boolean compile(File... sourceFiles) throws Exception {
     JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     StandardJavaFileManager fm = compiler.getStandardFileManager(diagnosticListener, null, null);
-    File tmp = Files.createTempDirectory("codegen").toFile();
-    tmp.deleteOnExit();
-    fm.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(tmp));
+    if (classOutput == null) {
+      File tmp = Files.createTempDirectory("codegen").toFile();
+      tmp.deleteOnExit();
+      classOutput = tmp;
+    }
+    fm.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singletonList(classOutput));
     Iterable<? extends JavaFileObject> fileObjects = fm.getJavaFileObjects(sourceFiles);
     Writer out = new NullWriter();
     JavaCompiler.CompilationTask task = compiler.getTask(out, fm, diagnosticListener, options, null, fileObjects);
