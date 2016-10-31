@@ -32,7 +32,7 @@ public class TypeVariableInfo extends TypeInfo {
   }
 
   public boolean isMethodParam() {
-    return param.isClass();
+    return !isClassParam();
   }
 
   @Override
