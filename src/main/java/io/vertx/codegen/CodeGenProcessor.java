@@ -53,7 +53,7 @@ public class CodeGenProcessor extends AbstractProcessor {
   private static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
   private File outputDirectory;
   private Map<String, List<CodeGenerator>> codeGenerators;
-  Map<File, GeneratedFile> generatedFiles = new HashMap<>();
+  Map<String, GeneratedFile> generatedFiles = new HashMap<>();
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
@@ -145,6 +145,7 @@ public class CodeGenProcessor extends AbstractProcessor {
 
       if (!roundEnv.errorRaised()) {
         CodeGen codegen = new CodeGen(processingEnv, roundEnv);
+        Map<String, GeneratedFile> generatedClasses = new HashMap<>();
 
         // Generate source code
         codegen.getModels().forEach(entry -> {
@@ -169,24 +170,27 @@ public class CodeGenProcessor extends AbstractProcessor {
                   String relativeName = (String) MVEL.executeExpression(codeGenerator.filenameExpr, vars);
                   if (relativeName != null) {
                     if (relativeName.endsWith(".java") && !relativeName.contains("/")) {
+
                       // Special handling for .java
                       String fqn = relativeName.substring(0, relativeName.length() - ".java".length());
                       // Avoid to recreate the same file (this may happen as we unzip and recompile source trees)
                       if (processingEnv.getElementUtils().getTypeElement(fqn) != null) {
                         continue;
                       }
-                      JavaFileObject target = processingEnv.getFiler().createSourceFile(fqn);
-                      String output = codeGenerator.transformTemplate.render(model, translators);
-                      try (Writer writer = target.openWriter()) {
-                        writer.append(output);
-                      }
+
+
+                      List<ModelProcessing> processings = generatedClasses.computeIfAbsent(fqn, GeneratedFile::new);
+                      processings.add(new ModelProcessing(model, codeGenerator));
+
+
+
                     } else {
-                      File target = new File(outputDirectory, relativeName).getAbsoluteFile();
+                      String target = new File(outputDirectory, relativeName).getAbsoluteFile().getAbsolutePath();
                       if (codeGenerator.incremental) {
                         List<ModelProcessing> processings = generatedFiles.computeIfAbsent(target, GeneratedFile::new);
                         processings.add(new ModelProcessing(model, codeGenerator));
                       } else {
-                        codeGenerator.transformTemplate.apply(model, target, translators);
+                        codeGenerator.transformTemplate.apply(model, new File(target), translators);
                       }
                     }
                     log.info("Generated model " + model.getFqn() + ": " + relativeName);
@@ -202,32 +206,30 @@ public class CodeGenProcessor extends AbstractProcessor {
             reportException(e, entry.getKey());
           }
         });
+        generatedClasses.values().forEach(generated -> {
+          try {
+            JavaFileObject target = processingEnv.getFiler().createSourceFile(generated.uri);
+            try (Writer writer = target.openWriter()) {
+              generated.writeTo(writer);
+            }
+          } catch (GenException e) {
+            reportGenException(e);
+          } catch (Exception e) {
+            reportException(e, generated.get(0).model.getElement());
+          }
+        });
+
       }
     } else {
 
       // Incremental post processing
       generatedFiles.values().forEach(generated -> {
-        File file = generated.file;
+        File file = new File(generated.uri);
         Helper.ensureParentDir(file);
         try (FileWriter fileWriter = new FileWriter(file)) {
-          Collections.sort(generated, (o1, o2) ->
-                  o1.model.getElement().getSimpleName().toString().compareTo(
-                  o2.model.getElement().getSimpleName().toString()));
-          for (int i = 0; i < generated.size(); i++) {
-            ModelProcessing processing = generated.get(i);
-            Map<String, Object> vars = new HashMap<>();
-            vars.put("incrementalIndex", i);
-            vars.put("incrementalSize", generated.size());
-            vars.put("session", generated.session);
-            try {
-              String part = processing.generator.transformTemplate.render(processing.model, vars);
-              fileWriter.append(part);
-            } catch (GenException e) {
-              reportGenException(e);
-            } catch (Exception e) {
-              reportException(e, processing.model.getElement());
-            }
-          }
+          generated.writeTo(fileWriter);
+        } catch (GenException e) {
+          reportGenException(e);
         } catch (Exception e) {
           reportException(e, generated.get(0).model.getElement());
         }
@@ -273,11 +275,32 @@ public class CodeGenProcessor extends AbstractProcessor {
   }
 
   private static class GeneratedFile extends ArrayList<ModelProcessing> {
-    final File file;
+    final String uri;
     final Map<String, Object> session = new HashMap<>();
-    public GeneratedFile(File file) {
+    public GeneratedFile(String uri) {
       super();
-      this.file = file;
+      this.uri = uri;
+    }
+
+    void writeTo(Writer writer) throws IOException {
+      Collections.sort(this, (o1, o2) ->
+        o1.model.getElement().getSimpleName().toString().compareTo(
+          o2.model.getElement().getSimpleName().toString()));
+      for (int i = 0; i < size(); i++) {
+        ModelProcessing processing = get(i);
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("incrementalIndex", i);
+        vars.put("incrementalSize", size());
+        vars.put("session", session);
+        try {
+          String part = processing.generator.transformTemplate.render(processing.model, vars);
+          writer.append(part);
+        } catch (GenException e) {
+          throw e;
+        } catch (Exception e) {
+          throw new GenException(processing.model.getElement(), e.getMessage());
+        }
+      }
     }
   }
 }
