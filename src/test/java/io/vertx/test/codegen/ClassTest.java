@@ -1479,21 +1479,24 @@ public class ClassTest extends ClassTestBase {
     checkMethod(methods.get(2), "juu", 1, "void", MethodKind.FUTURE);
     checkMethod(methods.get(3), "daa", 1, "void", MethodKind.HANDLER);
     checkMethod(methods.get(4), "collargol", 1, "void", MethodKind.OTHER);
-    checkParam(methods.get(2).getParams().get(0), "handler", new TypeLiteral<Handler<AsyncResult<String>>>() {
-    });
-    checkParam(methods.get(3).getParams().get(0), "handler", new TypeLiteral<Handler<String>>() {
-    });
+    checkParam(methods.get(2).getParams().get(0), "handler", new TypeLiteral<Handler<AsyncResult<String>>>() {});
+    checkParam(methods.get(3).getParams().get(0), "handler", new TypeLiteral<Handler<String>>() {});
     checkParam(methods.get(4).getParams().get(0), "t", String.class);
   }
 
   @Test
-  public void testInterfaceExtendingGenericInterface() throws Exception {
+  public <R> void testInterfaceExtendingGenericInterface() throws Exception {
     ClassModel model = new Generator().generateClass(InterfaceExtendingGenericInterface.class, GenericInterface.class);
+    List<TypeInfo> superTypeArgs = model.getSuperTypeArguments();
+    assertEquals(1, superTypeArgs.size());
+    ClassTypeInfo superTypeArg = (ClassTypeInfo) superTypeArgs.get(0);
+    assertEquals(ClassKind.STRING, superTypeArg.getKind());
     List<MethodInfo> methods = model.getMethods();
-    List<TypeInfo> fooBar = model.getSuperTypeArguments();
-    assertEquals(1, fooBar.size());
-    ClassTypeInfo a = (ClassTypeInfo) fooBar.get(0);
-    assertEquals(ClassKind.STRING, a.getKind());
+    assertEquals(1, methods.size());
+    checkMethod(methods.get(0), "methodWithClassTypeParam", 3, String.class, MethodKind.OTHER);
+    checkParam(methods.get(0).getParam(0), "t", String.class);
+    checkParam(methods.get(0).getParam(1), "handler", new TypeLiteral<Handler<String>>() {});
+    checkParam(methods.get(0).getParam(2), "asyncResultHandler", new TypeLiteral<Handler<AsyncResult<String>>>() {});
   }
 
   @Test
