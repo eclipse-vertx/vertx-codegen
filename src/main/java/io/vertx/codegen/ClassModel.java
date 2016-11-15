@@ -254,7 +254,7 @@ public class ClassModel implements Model {
     if (isLegalNonCallableParam(typeInfo)) {
       return;
     }
-    if (isLegalTypeLiteralParam(elem, typeInfo)) {
+    if (isLegalClassTypeParam(elem, typeInfo)) {
       return;
     }
     if (isLegalHandlerType(typeInfo)) {
@@ -369,8 +369,8 @@ public class ClassModel implements Model {
     return false;
   }
 
-  private boolean isLegalTypeLiteralParam(ExecutableElement elt, TypeInfo type) {
-    if (type.getKind() == ClassKind.TYPE_LITERAL && type.isParameterized()) {
+  private boolean isLegalClassTypeParam(ExecutableElement elt, TypeInfo type) {
+    if (type.getKind() == ClassKind.CLASS_TYPE && type.isParameterized()) {
       ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
       TypeInfo arg = parameterized.getArg(0);
       if (arg.isVariable()) {

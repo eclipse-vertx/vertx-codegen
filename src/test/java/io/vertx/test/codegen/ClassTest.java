@@ -127,6 +127,7 @@ import io.vertx.test.codegen.testapi.MethodWithTypeParameterUpperBound;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicBoxedParams;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicParams;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicReturn;
+import io.vertx.test.codegen.testapi.MethodWithValidClassTypeParams;
 import io.vertx.test.codegen.testapi.MethodWithValidDataObjectReturn;
 import io.vertx.test.codegen.testapi.MethodWithValidFunctionParams;
 import io.vertx.test.codegen.testapi.MethodWithValidHandlerAsyncResultJSON;
@@ -556,6 +557,21 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(2), "mapJsonObject", new TypeLiteral<Map<String, JsonObject>>(){});
     checkParam(params.get(3), "mapJsonArray", new TypeLiteral<Map<String, JsonArray>>(){});
     checkParam(params.get(4), "mapVertxGen", new TypeLiteral<Map<String, VertxGenClass1>>(){});
+  }
+
+  @Test
+  public void testValidClassTypeParams() throws Exception {
+    ClassModel model = new Generator().generateClass(MethodWithValidClassTypeParams.class);
+    List<MethodInfo> methods = model.getMethods();
+    assertEquals(2, methods.size());
+    MethodInfo methodParam = methods.get(0);
+    checkMethod(methodParam, "methodParam", 2, "void", MethodKind.OTHER);
+    ParamInfo resolved = methodParam.resolveClassTypeParam((TypeVariableInfo) methodParam.getParam(0).getType());
+    assertSame(resolved, methodParam.getParam(1));
+    MethodInfo returnParam = methods.get(1);
+    checkMethod(returnParam, "returnParam", 1, "T", MethodKind.OTHER);
+    resolved = methodParam.resolveClassTypeParam((TypeVariableInfo) returnParam.getReturnType());
+    assertSame(resolved, methodParam.getParam(1));
   }
 
   @Test
@@ -991,6 +1007,7 @@ public class ClassTest extends ClassTestBase {
     assertEquals(t, ((TypeVariableInfo)params1.get(0).getType()).getParam());
     assertTrue(((TypeVariableInfo)params1.get(0).getType()).isClassParam());
     assertFalse(((TypeVariableInfo)params1.get(0).getType()).isMethodParam());
+    assertNull(methods.get(0).resolveClassTypeParam((TypeVariableInfo) params1.get(0).getType()));
     checkParam(params1.get(1), "handler", new TypeLiteral<Handler<T>>(){});
     checkParam(params1.get(2), "asyncResultHandler", new TypeLiteral<Handler<AsyncResult<T>>>(){});
     checkMethod(methods.get(1), "someGenericMethod", 3, new TypeLiteral<GenericInterface<R>>(){}, MethodKind.OTHER);
@@ -1000,6 +1017,7 @@ public class ClassTest extends ClassTestBase {
     assertEquals(methods.get(1).getTypeParams().get(0), ((TypeVariableInfo) params2.get(0).getType()).getParam());
     assertFalse(((TypeVariableInfo) params2.get(0).getType()).isClassParam());
     assertTrue(((TypeVariableInfo) params2.get(0).getType()).isMethodParam());
+    assertNull(methods.get(1).resolveClassTypeParam((TypeVariableInfo) params2.get(0).getType()));
     checkParam(params2.get(1), "handler", new TypeLiteral<Handler<R>>(){});
     checkParam(params2.get(2), "asyncResultHandler", new TypeLiteral<Handler<AsyncResult<R>>>(){});
   }

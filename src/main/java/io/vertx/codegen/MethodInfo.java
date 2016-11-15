@@ -88,7 +88,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   }
 
   /**
-   * Resolve the method parameter that is a type literal and that matches the specified type variable e.g:<br/>
+   * Resolve the method parameter that is of kind {@link ClassKind#CLASS_TYPE} and that matches the specified type variable e.g:<br/>
    * <br/>
    * {@code <U> Map.Entry<String, U> getEntry(String s, Class<U> type);}
    * <br/>
@@ -98,11 +98,11 @@ public class MethodInfo implements Comparable<MethodInfo> {
    * @param typeVar the type variable to check
    * @return the matching method parameter or null
    */
-  public ParamInfo resolveTypeLiteralParam(TypeVariableInfo typeVar) {
+  public ParamInfo resolveClassTypeParam(TypeVariableInfo typeVar) {
     for (TypeParamInfo.Method typeParam : typeParams) {
       if (typeParam.getName().equals(typeVar.getName())) {
         for (ParamInfo param : params) {
-          if (param.getType().getKind() == ClassKind.TYPE_LITERAL &&
+          if (param.getType().getKind() == ClassKind.CLASS_TYPE &&
               param.getType().isParameterized()) {
             TypeInfo arg_ = ((ParameterizedTypeInfo) param.getType()).getArg(0);
             if (arg_.isVariable() && typeVar.getName().equals(arg_.getName())) {

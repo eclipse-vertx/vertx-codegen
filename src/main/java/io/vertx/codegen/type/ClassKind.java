@@ -50,8 +50,8 @@ public enum ClassKind {
   // AsyncResult
   ASYNC_RESULT(false, false, false),
 
-  // Type literal, e.g Class<T>
-  TYPE_LITERAL(false, false, false),
+  // Class type, e.g Class<T>
+  CLASS_TYPE(false, false, false),
 
   // Anything else
   OTHER(false, false, false);
@@ -89,7 +89,7 @@ public enum ClassKind {
     } else if (isVertxGenAnnotated) {
       return API;
     } else if (fqcn.equals("java.lang.Class")) {
-      return TYPE_LITERAL;
+      return CLASS_TYPE;
     } else if (fqcn.equals(ClassModel.VERTX_HANDLER)) {
       return HANDLER;
     } else if (fqcn.equals(ClassModel.VERTX_ASYNC_RESULT)) {
