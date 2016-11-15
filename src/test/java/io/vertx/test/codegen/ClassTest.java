@@ -38,7 +38,6 @@ import io.vertx.test.codegen.testapi.GenericAbstractInterface;
 import io.vertx.test.codegen.testapi.GenericInterface;
 import io.vertx.test.codegen.testapi.GenericInterfaceWithUpperBound;
 import io.vertx.test.codegen.testapi.InterfaceDataObjectWithToJson;
-import io.vertx.test.codegen.testapi.InterfaceExtendingGenericInterface;
 import io.vertx.test.codegen.testapi.InterfaceWithCacheReturnMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithComments;
 import io.vertx.test.codegen.testapi.InterfaceWithDefaultMethod;
@@ -1495,7 +1494,7 @@ public class ClassTest extends ClassTestBase {
 
   @Test
   public <R> void testInterfaceExtendingGenericInterface() throws Exception {
-    ClassModel model = new Generator().generateClass(InterfaceExtendingGenericInterface.class, GenericInterface.class);
+    ClassModel model = new Generator().generateClass(InterfaceWithParameterizedDeclaredSupertype.class, GenericInterface.class);
     List<TypeInfo> superTypeArgs = model.getSuperTypeArguments();
     assertEquals(1, superTypeArgs.size());
     ClassTypeInfo superTypeArg = (ClassTypeInfo) superTypeArgs.get(0);
