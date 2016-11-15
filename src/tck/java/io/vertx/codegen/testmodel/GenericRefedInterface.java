@@ -1,5 +1,6 @@
 package io.vertx.codegen.testmodel;
 
+import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
 
 /**
@@ -8,7 +9,8 @@ import io.vertx.codegen.annotations.VertxGen;
 @VertxGen
 public interface GenericRefedInterface<T> {
 
-  void setValue(T value);
+  @Fluent
+  GenericRefedInterface<T> setValue(T value);
 
   T getValue();
 

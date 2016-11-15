@@ -6,6 +6,8 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.util.function.Function;
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
@@ -237,6 +239,81 @@ public class GenericsTCKImpl implements GenericsTCK {
   }
 
   @Override
+  public void methodWithFunctionParamByteParameterized(Function<GenericRefedInterface<Byte>, String> handler) {
+    handler.apply(methodWithByteParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamShortParameterized(Function<GenericRefedInterface<Short>, String> handler) {
+    handler.apply(methodWithShortParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamIntegerParameterized(Function<GenericRefedInterface<Integer>, String> handler) {
+    handler.apply(methodWithIntegerParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamLongParameterized(Function<GenericRefedInterface<Long>, String> handler) {
+    handler.apply(methodWithLongParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamFloatParameterized(Function<GenericRefedInterface<Float>, String> handler) {
+    handler.apply(methodWithFloatParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamDoubleParameterized(Function<GenericRefedInterface<Double>, String> handler) {
+    handler.apply(methodWithDoubleParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamBooleanParameterized(Function<GenericRefedInterface<Boolean>, String> handler) {
+    handler.apply(methodWithBooleanParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamCharacterParameterized(Function<GenericRefedInterface<Character>, String> handler) {
+    handler.apply(methodWithCharacterParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamStringParameterized(Function<GenericRefedInterface<String>, String> handler) {
+    handler.apply(methodWithStringParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamJsonObjectParameterized(Function<GenericRefedInterface<JsonObject>, String> handler) {
+    handler.apply(methodWithJsonObjectParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamJsonArrayParameterized(Function<GenericRefedInterface<JsonArray>, String> handler) {
+    handler.apply(methodWithJsonArrayParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamDataObjectParameterized(Function<GenericRefedInterface<TestDataObject>, String> handler) {
+    handler.apply(methodWithDataObjectParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamEnumParameterized(Function<GenericRefedInterface<TestEnum>, String> handler) {
+    handler.apply(methodWithEnumParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamGenEnumParameterized(Function<GenericRefedInterface<TestGenEnum>, String> handler) {
+    handler.apply(methodWithGenEnumParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamUserTypeParameterized(Function<GenericRefedInterface<RefedInterface1>, String> handler) {
+    handler.apply(methodWithUserTypeParameterizedReturn());
+  }
+
+  @Override
   public <U> GenericRefedInterface<U> methodWithClassTypeParameterizedReturn(Class<U> type) {
     if (type == Byte.class) {
       return (GenericRefedInterface<U>) methodWithByteParameterizedReturn();
@@ -287,6 +364,39 @@ public class GenericsTCKImpl implements GenericsTCK {
   }
 
   @Override
+  public <U> U methodWithClassTypeReturn(Class<U> type) {
+    return methodWithClassTypeParameterizedReturn(type).getValue();
+  }
+
+  @Override
+  public <U> void methodWithClassTypeParam(Class<U> type, U u) {
+    GenericRefedInterface<U> gen = methodWithClassTypeParameterizedReturn(type);
+    if (!u.equals(gen.getValue())) {
+      throw new AssertionError("Unexpected value " + u + "/" + u.getClass() + " != " + gen.getValue() + "/" + gen.getValue().getClass());
+    }
+  }
+
+  @Override
+  public <U> void methodWithClassTypeHandler(Class<U> type, Handler<U> f) {
+    f.handle(methodWithClassTypeReturn(type));
+  }
+
+  @Override
+  public <U> void methodWithClassTypeHandlerAsyncResult(Class<U> type, Handler<AsyncResult<U>> f) {
+    f.handle(Future.succeededFuture(methodWithClassTypeReturn(type)));
+  }
+
+  @Override
+  public <U> void methodWithClassTypeFunctionParam(Class<U> type, Function<U, String> f) {
+    f.apply(methodWithClassTypeReturn(type));
+  }
+
+  @Override
+  public <U> void methodWithClassTypeFunctionReturn(Class<U> type, Function<String, U> f) {
+    methodWithClassTypeParam(type, f.apply("whatever"));
+  }
+
+  @Override
   public <U> void methodWithHandlerClassTypeParameterized(Class<U> type, Handler<GenericRefedInterface<U>> handler) {
     handler.handle(methodWithClassTypeParameterizedReturn(type));
   }
@@ -294,6 +404,11 @@ public class GenericsTCKImpl implements GenericsTCK {
   @Override
   public <U> void methodWithHandlerAsyncResultClassTypeParameterized(Class<U> type, Handler<AsyncResult<GenericRefedInterface<U>>> handler) {
     handler.handle(Future.succeededFuture(methodWithClassTypeParameterizedReturn(type)));
+  }
+
+  @Override
+  public <U> void methodWithFunctionParamClassTypeParameterized(Class<U> type, Function<GenericRefedInterface<U>, String> function) {
+    function.apply(methodWithClassTypeParameterizedReturn(type));
   }
 
   private <U> GenericRefedInterface<U> methodWithClassTypeParameterizedReturn(U val) {
@@ -310,8 +425,9 @@ public class GenericsTCKImpl implements GenericsTCK {
       public void meth() {
       }
       @Override
-      public void setValue(RefedInterface1 value) {
+      public GenericRefedInterface<RefedInterface1> setValue(RefedInterface1 value) {
         val = value;
+        return this;
       }
       @Override
       public RefedInterface1 getValue() {
@@ -328,8 +444,9 @@ public class GenericsTCKImpl implements GenericsTCK {
       public void meth() {
       }
       @Override
-      public void setValue(String value) {
+      public GenericRefedInterface<String> setValue(String value) {
         val = value;
+        return this;
       }
       @Override
       public String getValue() {
@@ -352,8 +469,9 @@ public class GenericsTCKImpl implements GenericsTCK {
         return val1;
       }
       @Override
-      public void setValue(U value) {
+      public GenericRefedInterface<U> setValue(U value) {
         val2 = value;
+        return this;
       }
       @Override
       public U getValue() {

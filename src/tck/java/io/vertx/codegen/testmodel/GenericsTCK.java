@@ -6,6 +6,8 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.util.function.Function;
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
@@ -60,9 +62,33 @@ public interface GenericsTCK {
   void methodWithHandlerAsyncResultGenEnumParameterized(Handler<AsyncResult<GenericRefedInterface<TestGenEnum>>> handler);
   void methodWithHandlerAsyncResultUserTypeParameterized(Handler<AsyncResult<GenericRefedInterface<RefedInterface1>>> handler);
 
+  void methodWithFunctionParamByteParameterized(Function<GenericRefedInterface<Byte>, String> handler);
+  void methodWithFunctionParamShortParameterized(Function<GenericRefedInterface<Short>, String> handler);
+  void methodWithFunctionParamIntegerParameterized(Function<GenericRefedInterface<Integer>, String> handler);
+  void methodWithFunctionParamLongParameterized(Function<GenericRefedInterface<Long>, String> handler);
+  void methodWithFunctionParamFloatParameterized(Function<GenericRefedInterface<Float>, String> handler);
+  void methodWithFunctionParamDoubleParameterized(Function<GenericRefedInterface<Double>, String> handler);
+  void methodWithFunctionParamBooleanParameterized(Function<GenericRefedInterface<Boolean>, String> handler);
+  void methodWithFunctionParamCharacterParameterized(Function<GenericRefedInterface<Character>, String> handler);
+  void methodWithFunctionParamStringParameterized(Function<GenericRefedInterface<String>, String> handler);
+  void methodWithFunctionParamJsonObjectParameterized(Function<GenericRefedInterface<JsonObject>, String> handler);
+  void methodWithFunctionParamJsonArrayParameterized(Function<GenericRefedInterface<JsonArray>, String> handler);
+  void methodWithFunctionParamDataObjectParameterized(Function<GenericRefedInterface<TestDataObject>, String> handler);
+  void methodWithFunctionParamEnumParameterized(Function<GenericRefedInterface<TestEnum>, String> handler);
+  void methodWithFunctionParamGenEnumParameterized(Function<GenericRefedInterface<TestGenEnum>, String> handler);
+  void methodWithFunctionParamUserTypeParameterized(Function<GenericRefedInterface<RefedInterface1>, String> handler);
+
   <U> GenericRefedInterface<U> methodWithClassTypeParameterizedReturn(Class<U> type);
   <U> void methodWithHandlerClassTypeParameterized(Class<U> type, Handler<GenericRefedInterface<U>> handler);
   <U> void methodWithHandlerAsyncResultClassTypeParameterized(Class<U> type, Handler<AsyncResult<GenericRefedInterface<U>>> handler);
+  <U> void methodWithFunctionParamClassTypeParameterized(Class<U> type, Function<GenericRefedInterface<U>, String> handler);
+
+  <U> void methodWithClassTypeParam(Class<U> type, U u);
+  <U> U methodWithClassTypeReturn(Class<U> type);
+  <U> void methodWithClassTypeHandler(Class<U> type, Handler<U> f);
+  <U> void methodWithClassTypeHandlerAsyncResult(Class<U> type, Handler<AsyncResult<U>> f);
+  <U> void methodWithClassTypeFunctionParam(Class<U> type, Function<U, String> f);
+  <U> void methodWithClassTypeFunctionReturn(Class<U> type, Function<String, U> f);
 
   InterfaceWithApiArg interfaceWithApiArg(RefedInterface1 value);
   InterfaceWithStringArg interfaceWithStringArg(String value);
