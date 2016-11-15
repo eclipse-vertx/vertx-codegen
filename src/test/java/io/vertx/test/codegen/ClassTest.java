@@ -1291,6 +1291,11 @@ public class ClassTest extends ClassTestBase {
     assertTrue(model.getReferencedTypes().contains(GenericInterfaceInfo));
     assertEquals(1, model.getSuperTypes().size());
     assertTrue(model.getSuperTypes().contains(TypeReflectionFactory.create(InterfaceWithParameterizedVariableSupertype.class.getGenericInterfaces()[0])));
+    List<TypeInfo> superTypeArgs = model.getSuperTypeArguments();
+    assertEquals(1, superTypeArgs.size());
+    TypeVariableInfo superTypeArg = (TypeVariableInfo) superTypeArgs.get(0);
+    assertEquals("T", superTypeArg.getName());
+    assertTrue(superTypeArg.isClassParam());
   }
 
   @Test
