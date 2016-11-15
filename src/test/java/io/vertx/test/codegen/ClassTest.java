@@ -990,6 +990,8 @@ public class ClassTest extends ClassTestBase {
     checkParam(params1.get(0), "t", new TypeLiteral<T>(){});
     assertTrue(params1.get(0).getType() instanceof TypeVariableInfo);
     assertEquals(t, ((TypeVariableInfo)params1.get(0).getType()).getParam());
+    assertTrue(((TypeVariableInfo)params1.get(0).getType()).isClassParam());
+    assertFalse(((TypeVariableInfo)params1.get(0).getType()).isMethodParam());
     checkParam(params1.get(1), "handler", new TypeLiteral<Handler<T>>(){});
     checkParam(params1.get(2), "asyncResultHandler", new TypeLiteral<Handler<AsyncResult<T>>>(){});
     checkMethod(methods.get(1), "someGenericMethod", 3, new TypeLiteral<GenericInterface<R>>(){}, MethodKind.OTHER);
@@ -997,6 +999,8 @@ public class ClassTest extends ClassTestBase {
     checkParam(params2.get(0), "r", new TypeLiteral<R>(){});
     assertTrue(params2.get(0).getType() instanceof TypeVariableInfo);
     assertEquals(methods.get(1).getTypeParams().get(0), ((TypeVariableInfo) params2.get(0).getType()).getParam());
+    assertFalse(((TypeVariableInfo) params2.get(0).getType()).isClassParam());
+    assertTrue(((TypeVariableInfo) params2.get(0).getType()).isMethodParam());
     checkParam(params2.get(1), "handler", new TypeLiteral<Handler<R>>(){});
     checkParam(params2.get(2), "asyncResultHandler", new TypeLiteral<Handler<AsyncResult<R>>>(){});
   }

@@ -23,16 +23,12 @@ public class TypeVariableInfo extends TypeInfo {
     return param;
   }
 
-  public boolean isMethod() {
-    return param.isMethod();
-  }
-
   public boolean isClassParam() {
     return param.isClass();
   }
 
   public boolean isMethodParam() {
-    return !isClassParam();
+    return param.isMethod();
   }
 
   @Override
