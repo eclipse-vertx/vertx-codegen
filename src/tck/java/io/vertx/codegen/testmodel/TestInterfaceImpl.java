@@ -715,4 +715,3 @@ public class TestInterfaceImpl implements TestInterface {
   }
 
 }
-

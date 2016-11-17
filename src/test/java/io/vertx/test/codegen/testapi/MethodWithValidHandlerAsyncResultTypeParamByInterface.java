@@ -29,10 +29,6 @@ public interface MethodWithValidHandlerAsyncResultTypeParamByInterface {
   void withEnum(Handler<AsyncResult<GenericInterface<TestEnum>>> handler);
   void withGenEnum(Handler<AsyncResult<GenericInterface<TestGenEnum>>> handler);
   void withUserType(Handler<AsyncResult<GenericInterface<VertxGenClass1>>> handler);
-//  void withThrowableType(Handler<AsyncResult<GenericInterface<Throwable>>> handler);
-//  void withVoidType(Handler<AsyncResult<GenericInterface<Void>>> handler);
-//  void withObjectType(Handler<AsyncResult<GenericInterface<Object>>> handler);
-//  <T> void withGenericType(Handler<AsyncResult<GenericInterface<T>>> handler);
   <T> void withClassType(Class<T> classType, Handler<AsyncResult<GenericInterface<T>>> handler);
 
 }
