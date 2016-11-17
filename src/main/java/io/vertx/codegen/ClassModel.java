@@ -220,14 +220,41 @@ public class ClassModel implements Model {
     return type.getRaw().getParams();
   }
 
+  public List<TypeInfo> getSuperTypeArguments() {
+    if (concreteSuperType != null && concreteSuperType.isParameterized()) {
+      DeclaredType tm = (DeclaredType) modelElt.asType();;
+      List<? extends TypeMirror> st = typeUtils.directSupertypes(tm);
+      for (TypeMirror tmSuper: st) {
+        if (tmSuper.getKind() == TypeKind.DECLARED) {
+          DeclaredType abc = (DeclaredType) tmSuper;
+          TypeElement tt = (TypeElement) abc.asElement();
+          if (tt.getQualifiedName().toString().equals(concreteSuperType.getRaw().getName())) {
+            List<TypeInfo> list = new ArrayList<>();
+            int size = tt.getTypeParameters().size();
+            for (int i = 0; i< size;i++) {
+              TypeMirror q = abc.getTypeArguments().get(i);
+              TypeInfo ti =  typeFactory.create(q);
+              list.add(ti);
+            }
+            return list;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
   private void sortMethodMap(Map<String, List<MethodInfo>> map) {
     for (List<MethodInfo> list: map.values()) {
       list.sort((meth1, meth2) -> meth1.params.size() - meth2.params.size());
     }
   }
 
-  protected void checkParamType(Element elem, TypeMirror type, TypeInfo typeInfo, int pos, int numParams) {
+  protected void checkParamType(ExecutableElement elem, TypeMirror type, TypeInfo typeInfo, int pos, int numParams) {
     if (isLegalNonCallableParam(typeInfo)) {
+      return;
+    }
+    if (isLegalClassTypeParam(elem, typeInfo)) {
       return;
     }
     if (isLegalHandlerType(typeInfo)) {
@@ -342,6 +369,22 @@ public class ClassModel implements Model {
     return false;
   }
 
+  private boolean isLegalClassTypeParam(ExecutableElement elt, TypeInfo type) {
+    if (type.getKind() == ClassKind.CLASS_TYPE && type.isParameterized()) {
+      ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
+      TypeInfo arg = parameterized.getArg(0);
+      if (arg.isVariable()) {
+        TypeVariableInfo variable = (TypeVariableInfo) arg;
+        for (TypeParameterElement typeParamElt : elt.getTypeParameters()) {
+          if (typeParamElt.getSimpleName().toString().equals(variable.getName())) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   protected boolean isLegalDataObjectTypeReturn(TypeInfo type) {
     if (type.getKind() == ClassKind.DATA_OBJECT) {
       TypeElement typeElt = elementUtils.getTypeElement(type.getName());
@@ -411,11 +454,13 @@ public class ClassModel implements Model {
       if (type.isParameterized()) {
         if (allowParameterized) {
           ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
-          for (TypeInfo param : parameterized.getArgs()) {
-            if (!(param instanceof TypeVariableInfo || param.getKind() == ClassKind.VOID)) {
+          for (TypeInfo paramType : parameterized.getArgs()) {
+            ClassKind kind = paramType.getKind();
+            if (!(paramType instanceof ApiTypeInfo || paramType.isVariable() || kind == ClassKind.VOID
+              || kind.basic || kind.json || kind == ClassKind.DATA_OBJECT || kind == ClassKind.ENUM )) {
               return false;
             }
-            if (param.isNullable()) {
+            if (paramType.isNullable()) {
               return false;
             }
           }

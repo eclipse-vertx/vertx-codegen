@@ -18,7 +18,9 @@ package io.vertx.codegen;
 
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Text;
+import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.ClassTypeInfo;
+import io.vertx.codegen.type.ParameterizedTypeInfo;
 import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.type.TypeVariableInfo;
 
@@ -83,6 +85,35 @@ public class MethodInfo implements Comparable<MethodInfo> {
 
   public TypeInfo getReturnType() {
     return returnType;
+  }
+
+  /**
+   * Resolve the method parameter that is of kind {@link ClassKind#CLASS_TYPE} and that matches the specified type variable e.g:<br/>
+   * <br/>
+   * {@code <U> Map.Entry<String, U> getEntry(String s, Class<U> type);}
+   * <br/>
+   * <br/>
+   * returns for {@code <U>} the second method parameter.
+   *
+   * @param typeVar the type variable to check
+   * @return the matching method parameter or null
+   */
+  public ParamInfo resolveClassTypeParam(TypeVariableInfo typeVar) {
+    for (TypeParamInfo.Method typeParam : typeParams) {
+      if (typeParam.getName().equals(typeVar.getName())) {
+        for (ParamInfo param : params) {
+          if (param.getType().getKind() == ClassKind.CLASS_TYPE &&
+              param.getType().isParameterized()) {
+            TypeInfo arg_ = ((ParameterizedTypeInfo) param.getType()).getArg(0);
+            if (arg_.isVariable() && typeVar.getName().equals(arg_.getName())) {
+              return param;
+            }
+          }
+        }
+        return null;
+      }
+    }
+    return null;
   }
 
   public Text getReturnDescription() {

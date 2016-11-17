@@ -713,5 +713,6 @@ public class TestInterfaceImpl implements TestInterface {
   public int superMethodOverloadedBySubclass() {
     return 0;
   }
+
 }
 

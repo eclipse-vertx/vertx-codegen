@@ -1,17 +1,15 @@
 package io.vertx.codegen.testmodel;
 
-import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @VertxGen
-public interface GenericRefedInterface<T> {
+public interface InterfaceWithVariableArg<T, U> extends GenericRefedInterface<U> {
 
-  @Fluent
-  GenericRefedInterface<T> setValue(T value);
+  void setOtherValue(T value);
 
-  T getValue();
+  T getOtherValue();
 
 }

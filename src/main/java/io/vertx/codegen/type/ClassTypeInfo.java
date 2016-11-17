@@ -101,6 +101,10 @@ public class ClassTypeInfo extends TypeInfo {
     return qualified ? name : simpleName;
   }
 
+  public String translateName(String id) {
+    return module == null ? name : module.translateQualifiedName(name, id);
+  }
+
   public String translatePackageName(String id) {
     return module == null ? packageName : module.translateQualifiedName(packageName, id);
   }

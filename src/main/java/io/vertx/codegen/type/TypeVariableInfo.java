@@ -23,6 +23,14 @@ public class TypeVariableInfo extends TypeInfo {
     return param;
   }
 
+  public boolean isClassParam() {
+    return param.isClass();
+  }
+
+  public boolean isMethodParam() {
+    return param.isMethod();
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (obj instanceof io.vertx.codegen.type.TypeVariableInfo) {

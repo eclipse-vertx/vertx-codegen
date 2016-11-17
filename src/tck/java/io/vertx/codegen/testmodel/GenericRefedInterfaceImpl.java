@@ -8,8 +8,9 @@ public class GenericRefedInterfaceImpl<T> implements GenericRefedInterface<T> {
   private T value;
 
   @Override
-  public void setValue(T value) {
+  public GenericRefedInterface<T> setValue(T value) {
     this.value = value;
+    return this;
   }
 
   @Override

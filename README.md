@@ -137,7 +137,14 @@ We define _`TypeVar`_ as the set of of types variables where the variable is eit
 We define _`Api`_ as the set of user defined API types which are defined in its own interface and annotated with `@VertxGen`
 
 We define _`Parameterized`_ as the set of user defined API types which are defined in its own interface and annotated with
-`@VertxGen` where the type parameters are type variables or `java.lang.Void`
+`@VertxGen` where the type parameters belong to:
+* the type `java.lang.Void`
+* the set _`Basic`_
+* the set _`Json`_
+* the set _`DataObject`_
+* any enum type
+* the set _`Api`_
+* the set _`TypeVar`_
 
 The following set _`Return`_ of types are permitted as return types from any API method:
 
@@ -145,8 +152,8 @@ The following set _`Return`_ of types are permitted as return types from any API
 * the set _`Basic`_
 * the set _`Json`_
 * the set _`DataObject`_
-* any enum class
-* the type `java.lang.Throwable`
+* any enum type
+* `java.lang.Throwable`
 * the set _`TypeVar`_
 * `java.lang.Object`
 * the set _`Api`_
@@ -154,9 +161,9 @@ The following set _`Return`_ of types are permitted as return types from any API
 * type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
     * the set _`Basic`_
     * the set _`Json`_
-    * any enum class
+    * any enum type
     * the set _`Api`_
-    * the set _`DataObject`_
+    * the set _`Da  taObject`_
 * `java.util.Map<String, C>` where `C` contains
     * the set _`Basic`_
     * the set _`Json`_
@@ -166,12 +173,16 @@ The following set _`Param`_ of types are permitted as parameters to any API meth
 * the set _`Basic`_
 * the set _`Json`_
 * the set _`DataObject`_
-* any enum class
+* any enum type
 * the type `java.lang.Throwable`
 * the set _`TypeVar`_
 * `java.lang.Object`
 * the set _`Api`_
 * the set _`Parameterized`_
+* the type `java.lang.Class<T>` where `<T>` is among
+    * the set _`Basic`_
+    * the set _`Json`_
+    * the set _`Api`_
 * type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
     * the set _`Basic`_
     * the set _`Json`_
