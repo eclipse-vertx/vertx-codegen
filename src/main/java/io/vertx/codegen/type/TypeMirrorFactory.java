@@ -153,13 +153,7 @@ public class TypeMirrorFactory {
     List<? extends TypeParameterElement> typeParamElts = elt.getTypeParameters();
     for (int index = 0; index < typeParamElts.size(); index++) {
       TypeParameterElement typeParamElt = typeParamElts.get(index);
-      Set<Variance> siteVariance = EnumSet.noneOf(Variance.class);
-      for (Variance variance : Variance.values()) {
-        if (Helper.resolveSiteVariance(typeParamElt, variance)) {
-          siteVariance.add(variance);
-        }
-      }
-      typeParams.add(new TypeParamInfo.Class(elt.getQualifiedName().toString(), index, typeParamElt.getSimpleName().toString(), siteVariance));
+      typeParams.add(new TypeParamInfo.Class(elt.getQualifiedName().toString(), index, typeParamElt.getSimpleName().toString()));
     }
     return typeParams;
   }

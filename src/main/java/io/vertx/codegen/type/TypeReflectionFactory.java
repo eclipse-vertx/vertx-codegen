@@ -69,7 +69,7 @@ public class TypeReflectionFactory {
           List<TypeParamInfo.Class> typeParams = new ArrayList<>();
           int index = 0;
           for (java.lang.reflect.TypeVariable<? extends Class<?>> var : classType.getTypeParameters()) {
-            typeParams.add(new TypeParamInfo.Class(classType.getName(), index++, var.getName(), Collections.<Variance>emptySet()));
+            typeParams.add(new TypeParamInfo.Class(classType.getName(), index++, var.getName()));
           }
           if (kind == ClassKind.API) {
             java.lang.reflect.TypeVariable<Class<ReadStream>> classTypeVariable = ReadStream.class.getTypeParameters()[0];

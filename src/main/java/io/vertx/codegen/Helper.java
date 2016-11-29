@@ -16,13 +16,10 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
-import io.vertx.codegen.type.Variance;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
@@ -43,10 +40,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -201,131 +196,6 @@ public class Helper {
       }
     }
     return comment.substring(0, pos);
-  }
-
-  public static boolean resolveSiteVariance(TypeParameterElement typeParam, Variance variance) {
-
-    return resolveVariance(Collections.emptyMap(), typeParam, variance);
-  }
-
-
-  private static boolean resolveVariance(
-      Map<TypeParameterElement, Variance> wantMap,
-      TypeParameterElement typeParam,
-      Variance variance) {
-
-    //
-    if (wantMap.containsKey(typeParam)) {
-      return wantMap.get(typeParam) == variance;
-    } else {
-      wantMap = new HashMap<>(wantMap);
-      wantMap.put(typeParam, variance);
-    }
-
-    TypeVariable typeVar = (TypeVariable) typeParam.asType();
-    TypeElement genericElt = (TypeElement) typeParam.getGenericElement();
-
-    //
-    for (TypeMirror superInterface : genericElt.getInterfaces()) {
-      if (superInterface.getKind() == TypeKind.DECLARED) {
-        Boolean checked = resolveSiteVariance(wantMap, typeVar, Variance.COVARIANT, superInterface, variance);
-        if (checked != null && !checked) {
-          return checked;
-        }
-      }
-    }
-
-    //
-    for (Element elt : genericElt.getEnclosedElements()) {
-      switch (elt.getKind()) {
-        case METHOD:
-          ExecutableElement methodElt = (ExecutableElement) elt;
-          if (!methodElt.getModifiers().contains(Modifier.STATIC)) {
-
-            // Return type check
-            TypeMirror returnType = methodElt.getReturnType();
-            Boolean checked = resolveSiteVariance(wantMap, typeVar, Variance.COVARIANT, returnType, variance);
-            if (checked != null && !checked) {
-              return checked;
-            }
-
-            // Parameter type check
-            for (VariableElement paramElt : methodElt.getParameters()) {
-              TypeMirror paramType = paramElt.asType();
-              checked = resolveSiteVariance(wantMap, typeVar, Variance.CONTRAVARIANT, paramType, variance);
-              if (checked != null && !checked) {
-                return checked;
-              }
-            }
-          }
-          break;
-        default:
-          // throw new UnsupportedOperationException("" + elt + " with kind " + elt.getKind());
-      }
-    }
-    return true;
-  }
-
-  private static Boolean resolveSiteVariance(
-      Map<TypeParameterElement, Variance> wantMap,
-      TypeVariable typeParam,
-      Variance position,
-      TypeMirror type,
-      Variance variance) {
-
-    if (type.getKind() == TypeKind.TYPEVAR) {
-      if (typeParam.equals(type)) {
-        switch (position) {
-          case COVARIANT:
-            return variance == Variance.COVARIANT;
-          case CONTRAVARIANT:
-            return variance == Variance.CONTRAVARIANT;
-          default:
-            throw new AssertionError();
-        }
-      }
-    } else if (type.getKind() == TypeKind.DECLARED) {
-      DeclaredType declaredType = (DeclaredType) type;
-      TypeElement typeElt = (TypeElement) declaredType.asElement();
-      List<? extends TypeParameterElement> typeParams = typeElt.getTypeParameters();
-      List<? extends TypeMirror> typeArgs = declaredType.getTypeArguments();
-      for (int i = 0;i < typeArgs.size();i++) {
-        TypeParameterElement abc = typeParams.get(i);
-        switch (position) {
-          case COVARIANT:
-            if (resolveVariance(wantMap, abc, Variance.COVARIANT)) {
-              Boolean checked = resolveSiteVariance(wantMap, typeParam, Variance.COVARIANT, typeArgs.get(i), variance);
-              if (checked != null && !checked) {
-                return false;
-              }
-            }
-            if (resolveVariance(wantMap, abc, Variance.CONTRAVARIANT)) {
-              Boolean checked = resolveSiteVariance(wantMap, typeParam, Variance.CONTRAVARIANT, typeArgs.get(i), variance);
-              if (checked != null && !checked) {
-                return false;
-              }
-            }
-            break;
-          case CONTRAVARIANT:
-            if (resolveVariance(wantMap, abc, Variance.COVARIANT)) {
-              Boolean checked = resolveSiteVariance(wantMap, typeParam, Variance.CONTRAVARIANT, typeArgs.get(i), variance);
-              if (checked != null && !checked) {
-                return false;
-              }
-            }
-            if (resolveVariance(wantMap, abc, Variance.CONTRAVARIANT)) {
-              Boolean checked = resolveSiteVariance(wantMap, typeParam, Variance.COVARIANT, typeArgs.get(i), variance);
-              if (checked != null && !checked) {
-                return false;
-              }
-            }
-            break;
-          default:
-            throw new AssertionError();
-        }
-      }
-    }
-    return true;
   }
 
   /**

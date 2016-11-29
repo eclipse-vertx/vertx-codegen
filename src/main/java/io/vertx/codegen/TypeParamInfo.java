@@ -1,15 +1,11 @@
 package io.vertx.codegen;
 
-import io.vertx.codegen.type.Variance;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Parameterizable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.TypeVariable;
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -23,7 +19,7 @@ public abstract class TypeParamInfo {
       if (typeParams[index].equals(typeVariable)) {
         if (decl instanceof java.lang.Class) {
           java.lang.Class classDecl = (java.lang.Class) decl;
-          return new Class(classDecl.getName(), index, typeVariable.getName(), Collections.emptySet());
+          return new Class(classDecl.getName(), index, typeVariable.getName());
         } else if (decl instanceof java.lang.reflect.Method) {
           java.lang.reflect.Method methodDecl = (java.lang.reflect.Method) decl;
           return new Method(methodDecl.getDeclaringClass().getName(), methodDecl.getName(), index, typeVariable.getName());
@@ -43,7 +39,7 @@ public abstract class TypeParamInfo {
         TypeElement typeElt = (TypeElement) genericElt;
         return new TypeParamInfo.Class(
             typeElt.getQualifiedName().toString(), index,
-            paramElt.getSimpleName().toString(), Collections.emptySet());
+            paramElt.getSimpleName().toString());
       }
       case METHOD: {
         ExecutableElement methodElt = (ExecutableElement) genericElt;
@@ -74,20 +70,10 @@ public abstract class TypeParamInfo {
   public static class Class extends TypeParamInfo {
 
     private final String typeName;
-    private final Set<Variance> siteVariances;
 
-    public Class(String typeName, int index, String name, Set<Variance> siteVariances) {
+    public Class(String typeName, int index, String name) {
       super(index, name);
       this.typeName = typeName;
-      this.siteVariances = siteVariances;
-    }
-
-    public boolean isSiteCovariant() {
-      return siteVariances.size() == 1 && siteVariances.contains(Variance.COVARIANT);
-    }
-
-    public boolean isSiteContravariant() {
-      return siteVariances.size() == 1 && siteVariances.contains(Variance.CONTRAVARIANT);
     }
 
     @Override
