@@ -94,4 +94,9 @@ public interface GenericsTCK {
   InterfaceWithStringArg interfaceWithStringArg(String value);
   <T, U> InterfaceWithVariableArg<T, U> interfaceWithVariableArg(T value1, Class<U> type, U value2);
 
+  // Test GenericNullableRefedInterface can return a null value
+  // todo : add other types ?
+  void methodWithHandlerGenericNullableApi(boolean notNull, Handler<GenericNullableRefedInterface<RefedInterface1>> handler);
+  void methodWithHandlerAsyncResultGenericNullableApi(boolean notNull, Handler<AsyncResult<GenericNullableRefedInterface<RefedInterface1>>> handler);
+  GenericNullableRefedInterface<RefedInterface1> methodWithGenericNullableApiReturn(boolean notNull);
 }

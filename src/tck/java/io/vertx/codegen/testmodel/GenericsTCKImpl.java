@@ -479,4 +479,24 @@ public class GenericsTCKImpl implements GenericsTCK {
       }
     };
   }
+
+  @Override
+  public GenericNullableRefedInterface<RefedInterface1> methodWithGenericNullableApiReturn(boolean notNull) {
+    return new GenericNullableRefedInterface<RefedInterface1>() {
+      @Override
+      public RefedInterface1 getValue() {
+        return notNull ? new RefedInterface1Impl().setString("the_string_value") : null;
+      }
+    };
+  }
+
+  @Override
+  public void methodWithHandlerGenericNullableApi(boolean notNull, Handler<GenericNullableRefedInterface<RefedInterface1>> handler) {
+    handler.handle(methodWithGenericNullableApiReturn(notNull));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultGenericNullableApi(boolean notNull, Handler<AsyncResult<GenericNullableRefedInterface<RefedInterface1>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithGenericNullableApiReturn(notNull)));
+  }
 }
