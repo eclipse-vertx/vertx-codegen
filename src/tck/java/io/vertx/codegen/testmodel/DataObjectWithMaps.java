@@ -71,9 +71,9 @@ public class DataObjectWithMaps {
     floatValues = fromObject(json, "floatValues", o -> Float.parseFloat(o.toString()));
     doubleValues = fromObject(json, "doubleValues");
     stringValues = fromObject(json, "stringValues");
-    jsonObjectValues = fromObject(json, "jsonObjectValues", o -> new JsonObject((Map<String, Object>) o));
-    jsonArrayValues = fromObject(json, "jsonArrayValues", o -> new JsonArray((List) o));
-    dataObjectValues = fromObject(json, "dataObjectValues", o -> new TestDataObject(new JsonObject((Map<String, Object>) o)));
+    jsonObjectValues = fromObject(json, "jsonObjectValues", o -> (JsonObject) o);
+    jsonArrayValues = fromObject(json, "jsonArrayValues", o -> (JsonArray) o);
+    dataObjectValues = fromObject(json, "dataObjectValues", o -> new TestDataObject((JsonObject) o));
     enumValues = fromObject(json, "enumValues", o -> TestEnum.valueOf(o.toString()));
     genEnumValues = fromObject(json, "genEnumValues", o -> TestGenEnum.valueOf(o.toString()));
   }
