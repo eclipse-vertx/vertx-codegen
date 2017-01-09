@@ -460,3 +460,12 @@ With `codegen.json`:
 ```
 
 Generates an HTML page with the name of all the API classes.
+
+### Skipping generation
+
+Sometimes a template can skip the generation of the file. Setting the value of
+`skipFile` to true will do that:
+
+```
+@code{skipFile=true}
+```

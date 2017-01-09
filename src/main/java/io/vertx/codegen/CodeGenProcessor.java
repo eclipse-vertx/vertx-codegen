@@ -190,12 +190,18 @@ public class CodeGenProcessor extends AbstractProcessor {
                         continue;
                       }
 
-
-                      List<ModelProcessing> processings = generatedClasses.computeIfAbsent(fqn, GeneratedFile::new);
-                      processings.add(new ModelProcessing(model, codeGenerator));
-
-
-
+                      if (codeGenerator.incremental) {
+                        List<ModelProcessing> processings = generatedClasses.computeIfAbsent(fqn, GeneratedFile::new);
+                        processings.add(new ModelProcessing(model, codeGenerator));
+                      } else {
+                        String result = codeGenerator.transformTemplate.render(model);
+                        if (result != null) {
+                          JavaFileObject target = processingEnv.getFiler().createSourceFile(fqn);
+                          try (Writer w = target.openWriter()) {
+                            w.write(result);
+                          }
+                        }
+                      }
                     } else {
                       String target = new File(outputDirectory, relativeName).getAbsoluteFile().getAbsolutePath();
                       if (codeGenerator.incremental) {
@@ -230,7 +236,6 @@ public class CodeGenProcessor extends AbstractProcessor {
             reportException(e, generated.get(0).model.getElement());
           }
         });
-
       }
     } else {
 
@@ -306,7 +311,9 @@ public class CodeGenProcessor extends AbstractProcessor {
         vars.put("session", session);
         try {
           String part = processing.generator.transformTemplate.render(processing.model, vars);
-          writer.append(part);
+          if (part != null) {
+            writer.append(part);
+          }
         } catch (GenException e) {
           throw e;
         } catch (Exception e) {

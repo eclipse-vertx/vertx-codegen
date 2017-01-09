@@ -1,0 +1,14 @@
+{
+  "name": "testgen3",
+  "generators": [{
+    "kind": "class",
+    "incremental": false,
+    "fileName": "'skip.txt'",
+    "templateFileName": "templates/skip.templ"
+  },{
+    "kind": "class",
+    "incremental": false,
+    "fileName": "'testgen3.' + model.type.simpleName + '.java'",
+    "templateFileName": "templates/class_skip.templ"
+  }]
+}

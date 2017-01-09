@@ -157,4 +157,33 @@ public class CodeGeneratorTest {
     expected.add("io.vertx.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubApi");
     assertEquals(expected, result);
   }
+
+  @Test
+  public void testSkipFileTrue() throws Exception {
+    runTestSkipFile(true);
+  }
+
+  @Test
+  public void testSkipFileFalse() throws Exception {
+    runTestSkipFile(false);
+  }
+
+  private void runTestSkipFile(boolean skipFile) throws Exception {
+    Compiler compiler = new Compiler(new CodeGenProcessor());
+    compiler.addOption("-AshouldSkip=" + skipFile);
+    compiler.addOption("-Acodegen.generators=testgen3");
+    compiler.addOption("-AoutputDirectory=" + testDir.getAbsolutePath());
+    assertTrue(compiler.compile(ModuleScopedApi.class, ModuleScopedSubApi.class));
+    assertEquals(!skipFile, new File(testDir, "skip.txt").exists());
+    File classes = compiler.getClassOutput();
+    ClassLoader loader = new URLClassLoader(new URL[]{classes.toURI().toURL()});
+    for (String fqn : Arrays.asList("testgen3.ModuleScopedApi", "testgen3.ModuleScopedSubApi")) {
+      try {
+        loader.loadClass(fqn);
+        assertFalse(skipFile);
+      } catch (ClassNotFoundException e) {
+        assertTrue(skipFile);
+      }
+    }
+  }
 }

@@ -130,10 +130,12 @@ public class Template {
 
   public void apply(Model model, File outputFile, Map<String, Object> vars) throws Exception {
     String output = render(model, vars);
-    Helper.ensureParentDir(outputFile);
-    try (PrintStream outStream = new PrintStream(new FileOutputStream(outputFile))) {
-      outStream.print(output);
-      outStream.flush();
+    if (output != null) {
+      Helper.ensureParentDir(outputFile);
+      try (PrintStream outStream = new PrintStream(new FileOutputStream(outputFile))) {
+        outStream.print(output);
+        outStream.flush();
+      }
     }
   }
 
@@ -144,6 +146,7 @@ public class Template {
   public String render(Model model, Map<String, Object> vars) {
     vars = new HashMap<>(vars);
     vars.put("options", options);
+    vars.put("skipFile", false);
     vars.putAll(model.getVars());
     vars.putAll(ClassKind.vars());
     vars.putAll(MethodKind.vars());
@@ -179,7 +182,11 @@ public class Template {
       // when generating code
       Thread.currentThread().setContextClassLoader(TemplateRuntime.class.getClassLoader());
       TemplateRuntime runtime = new TemplateRuntime(compiled.getTemplate(), registry, compiled.getRoot(), ".");
-      return (String) runtime.execute(new StringBuilder(), null, new MapVariableResolverFactory(vars));
+      String blah = (String) runtime.execute(new StringBuilder(), null, new MapVariableResolverFactory(vars));
+      if (Boolean.TRUE.equals(vars.get("skipFile"))) {
+        return null;
+      }
+      return blah;
     } finally {
       Thread.currentThread().setContextClassLoader(currentCL);
     }
