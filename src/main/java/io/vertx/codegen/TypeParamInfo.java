@@ -35,6 +35,7 @@ public abstract class TypeParamInfo {
     Parameterizable genericElt = (Parameterizable) paramElt.getGenericElement();
     int index = genericElt.getTypeParameters().indexOf(paramElt);
     switch (genericElt.getKind()) {
+      case CLASS:
       case INTERFACE: {
         TypeElement typeElt = (TypeElement) genericElt;
         return new TypeParamInfo.Class(
