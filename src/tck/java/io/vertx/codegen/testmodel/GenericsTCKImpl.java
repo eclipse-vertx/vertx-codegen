@@ -499,4 +499,19 @@ public class GenericsTCKImpl implements GenericsTCK {
   public void methodWithHandlerAsyncResultGenericNullableApi(boolean notNull, Handler<AsyncResult<GenericNullableRefedInterface<RefedInterface1>>> handler) {
     handler.handle(Future.succeededFuture(methodWithGenericNullableApiReturn(notNull)));
   }
+
+  @Override
+  public <T> GenericRefedInterface<T> methodWithParamInferedReturn(GenericRefedInterface<T> param) {
+    return param;
+  }
+
+  @Override
+  public <T> void methodWithHandlerParamInfered(GenericRefedInterface<T> param, Handler<GenericRefedInterface<T>> handler) {
+    handler.handle(param);
+  }
+
+  @Override
+  public <T> void methodWithHandlerAsyncResultParamInfered(GenericRefedInterface<T> param, Handler<AsyncResult<GenericRefedInterface<T>>> handler) {
+    handler.handle(Future.succeededFuture(param));
+  }
 }

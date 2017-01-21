@@ -99,4 +99,9 @@ public interface GenericsTCK {
   void methodWithHandlerGenericNullableApi(boolean notNull, Handler<GenericNullableRefedInterface<RefedInterface1>> handler);
   void methodWithHandlerAsyncResultGenericNullableApi(boolean notNull, Handler<AsyncResult<GenericNullableRefedInterface<RefedInterface1>>> handler);
   GenericNullableRefedInterface<RefedInterface1> methodWithGenericNullableApiReturn(boolean notNull);
+
+  <T> GenericRefedInterface<T> methodWithParamInferedReturn(GenericRefedInterface<T> param);
+  <T> void methodWithHandlerParamInfered(GenericRefedInterface<T> param, Handler<GenericRefedInterface<T>> handler);
+  <T> void methodWithHandlerAsyncResultParamInfered(GenericRefedInterface<T> param, Handler<AsyncResult<GenericRefedInterface<T>>> handler);
+
 }
