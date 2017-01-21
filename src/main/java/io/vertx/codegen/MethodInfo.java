@@ -99,14 +99,37 @@ public class MethodInfo implements Comparable<MethodInfo> {
    * @return the matching method parameter or null
    */
   public ParamInfo resolveClassTypeParam(TypeVariableInfo typeVar) {
+    TypeVariableResolution res = resolveTypeVariable(typeVar);
+    if (res instanceof TypeVariableResolution.Class) {
+      return ((TypeVariableResolution.Class) res).getParam();
+    }
+    return null;
+  }
+
+  public TypeVariableResolution resolveTypeVariable(TypeVariableInfo typeVar) {
     for (TypeParamInfo.Method typeParam : typeParams) {
       if (typeParam.getName().equals(typeVar.getName())) {
         for (ParamInfo param : params) {
           if (param.getType().getKind() == ClassKind.CLASS_TYPE &&
-              param.getType().isParameterized()) {
+            param.getType().isParameterized()) {
             TypeInfo arg_ = ((ParameterizedTypeInfo) param.getType()).getArg(0);
-            if (arg_.isVariable() && typeVar.getName().equals(arg_.getName())) {
-              return param;
+            if (arg_.isVariable()) {
+              TypeVariableInfo ttt = (TypeVariableInfo) arg_;
+              if (ttt.getParam().equals(typeParam)) {
+                return new TypeVariableResolution.Class(ttt, param);
+              }
+            }
+          } else if (param.getType().getKind() == ClassKind.API && param.getType().isParameterized()) {
+            ParameterizedTypeInfo type = (ParameterizedTypeInfo) param.getType();
+            int index = 0;
+            for (TypeInfo i : type.getArgs()) {
+              if (i instanceof TypeVariableInfo) {
+                TypeVariableInfo tt = (TypeVariableInfo) i;
+                if (tt.isClassParam() && tt.getParam().equals(typeParam)) {
+                  return new TypeVariableResolution.Parameterized(tt, param, index);
+                }
+              }
+              index++;
             }
           }
         }
