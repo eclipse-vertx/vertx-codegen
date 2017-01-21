@@ -125,8 +125,8 @@ public class MethodInfo implements Comparable<MethodInfo> {
             for (TypeInfo i : type.getArgs()) {
               if (i instanceof TypeVariableInfo) {
                 TypeVariableInfo tt = (TypeVariableInfo) i;
-                if (tt.isClassParam() && tt.getParam().equals(typeParam)) {
-                  return new TypeArgExpression(TypeArgExpression.CLASS_TYPE_ARG, tt, param, index);
+                if (tt.getParam().equals(typeParam)) {
+                  return new TypeArgExpression(TypeArgExpression.API_ARG, tt, param, index);
                 }
               }
               index++;
