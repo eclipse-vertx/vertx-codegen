@@ -45,7 +45,7 @@ import java.util.stream.Stream;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@javax.annotation.processing.SupportedOptions({"outputDirectory","codeGenerators"})
+@javax.annotation.processing.SupportedOptions({"codegen.output","codegen.generators"})
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)
 public class CodeGenProcessor extends AbstractProcessor {
 
@@ -110,7 +110,13 @@ public class CodeGenProcessor extends AbstractProcessor {
           processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg);
         }
       }
-      String outputDirectoryOption = processingEnv.getOptions().get("outputDirectory");
+      String outputDirectoryOption = processingEnv.getOptions().get("codegen.output");
+      if (outputDirectoryOption == null) {
+        outputDirectoryOption = processingEnv.getOptions().get("outputDirectory");
+        if (outputDirectoryOption != null) {
+          log.warning("Please use 'codegen.output' option instead of 'outputDirectory' option");
+        }
+      }
       if (outputDirectoryOption != null) {
         outputDirectory = new File(outputDirectoryOption);
         if (!outputDirectory.exists()) {
@@ -120,7 +126,13 @@ public class CodeGenProcessor extends AbstractProcessor {
           processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " is not a directory");
         }
       }
-      String codeGeneratorsOption = processingEnv.getOptions().get("codeGenerators");
+      String codeGeneratorsOption = processingEnv.getOptions().get("codegen.generators");
+      if (codeGeneratorsOption == null) {
+        codeGeneratorsOption = processingEnv.getOptions().get("codeGenerators");
+        if (codeGeneratorsOption != null) {
+          log.warning("Please use 'codegen.generators' option instead of 'codeGenerators' option");
+        }
+      }
       if (codeGeneratorsOption != null) {
         Set<String> wanted = Stream.of(codeGeneratorsOption.split(",")).map(String::trim).collect(Collectors.toSet());
         if (codeGenerators.keySet().containsAll(wanted)) {
