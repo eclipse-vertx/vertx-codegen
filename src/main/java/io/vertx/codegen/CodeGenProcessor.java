@@ -101,9 +101,9 @@ public class CodeGenProcessor extends AbstractProcessor {
               compiledTemplate.setOptions(processingEnv.getOptions());
               List<CodeGenerator> generators = codeGenerators.computeIfAbsent(name, abc -> new ArrayList<>());
               generators.add(new CodeGenerator(name, kind, incremental, fileNameExpression, compiledTemplate));
-              log.info("Loaded " + name + " code generator");
             }
           }
+          log.info("Loaded " + name + " code generator");
         } catch (Exception e) {
           String msg = "Could not load code generator " + descriptor;
           log.log(Level.SEVERE, msg, e);
