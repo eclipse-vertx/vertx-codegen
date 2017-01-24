@@ -12,7 +12,8 @@ import io.vertx.codegen.doc.Doc;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.testapi.InterfaceDataObject;
-import io.vertx.test.codegen.testapi.PlainDataObjectWithNoJsonObjectConstructor;
+import io.vertx.test.codegen.testdataobject.DataObjectWithEmptyConstructor;
+import io.vertx.test.codegen.testdataobject.DataObjectWithNoJsonObjectConstructor;
 import io.vertx.test.codegen.testdataobject.Abstract;
 import io.vertx.test.codegen.testdataobject.AbstractCommentedProperty;
 import io.vertx.test.codegen.testdataobject.AbstractInheritsAbstract;
@@ -81,7 +82,13 @@ public class DataObjectTest {
 
   @Test
   public void testDataObjectWithNoJsonObjectConstructor() throws Exception {
-    assertInvalidDataObject(PlainDataObjectWithNoJsonObjectConstructor.class);
+    assertInvalidDataObject(DataObjectWithNoJsonObjectConstructor.class);
+  }
+
+  @Test
+  public void testDataObjectWithEmptyConstructor() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(DataObjectWithEmptyConstructor.class);
+    assertTrue(model.hasEmptyConstructor());
   }
 
   @Test

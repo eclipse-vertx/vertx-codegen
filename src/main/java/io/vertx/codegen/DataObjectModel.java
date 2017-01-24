@@ -49,11 +49,12 @@ public class DataObjectModel implements Model {
   private final Doc.Factory docFactory;
   private final TypeMirrorFactory typeFactory;
   private final TypeElement modelElt;
-  private boolean processed = false;
+  private boolean processed;
   private boolean concrete;
   private boolean isClass;
   private boolean generateConverter;
   private boolean inheritConverter;
+  private int constructors;
   private final Map<String, PropertyInfo> propertyMap = new LinkedHashMap<>();
   private final Set<ClassTypeInfo> superTypes = new LinkedHashSet<>();
   private ClassTypeInfo superType;
@@ -142,6 +143,10 @@ public class DataObjectModel implements Model {
     return inheritConverter;
   }
 
+  public boolean hasEmptyConstructor() {
+    return (constructors & 1) == 1;
+  }
+
   @Override
   public Map<String, Object> getVars() {
     Map<String, Object> vars = Model.super.getVars();
@@ -157,6 +162,7 @@ public class DataObjectModel implements Model {
     vars.put("superType", superType);
     vars.put("abstractSuperTypes", abstractSuperTypes);
     vars.put("jsonifiable", jsonifiable);
+    vars.put("hasEmptyConstructor", hasEmptyConstructor());
     return vars;
   }
 
@@ -204,13 +210,12 @@ public class DataObjectModel implements Model {
       superTypes.add(superType);
     }
 
-    int result = 0;
     List<ExecutableElement> methodsElt = new ArrayList<>();
     for (Element enclosedElt : elementUtils.getAllMembers(modelElt)) {
       switch (enclosedElt.getKind()) {
         case CONSTRUCTOR:
           ExecutableElement constrElt = (ExecutableElement) enclosedElt;
-          result |= processConstructor(constrElt);
+          processConstructor(constrElt);
           break;
         case METHOD: {
           ExecutableElement methodElt = (ExecutableElement) enclosedElt;
@@ -229,7 +234,7 @@ public class DataObjectModel implements Model {
 
     processMethods(methodsElt);
 
-    boolean hasJsonConstructor = (result & 2) == 2;
+    boolean hasJsonConstructor = (constructors & 2) == 2;
 
     if (concrete && !hasJsonConstructor) {
       throw new GenException(modelElt, "Data object " + modelElt + " class does not have a constructor " + modelElt.getSimpleName() + "(" + JsonObject.class.getSimpleName() + ")");
@@ -255,7 +260,7 @@ public class DataObjectModel implements Model {
     }
   }
 
-  private int processConstructor(ExecutableElement constrElt) {
+  private void processConstructor(ExecutableElement constrElt) {
     if (constrElt.getModifiers().contains(Modifier.PUBLIC)) {
       Element ownerElt = constrElt.getEnclosingElement();
       if (ownerElt.equals(modelElt)) {
@@ -266,14 +271,14 @@ public class DataObjectModel implements Model {
           if (ti instanceof ClassTypeInfo) {
             ClassTypeInfo cl = (ClassTypeInfo) ti;
             if (cl.getKind() == ClassKind.JSON_OBJECT) {
-              return 2;
+              constructors |= 2;
             }
           }
+        } else if (size == 0) {
+          constructors |= 1;
         }
       }
     }
-
-    return 0;
   }
 
   private void processMethods(List<ExecutableElement> methodsElt) {
