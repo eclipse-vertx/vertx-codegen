@@ -54,8 +54,8 @@ public class CodeGeneratorTest {
 
   private Properties assertCompile(String gen, Class... classes) throws Exception {
     Compiler compiler = new Compiler(new CodeGenProcessor());
-    compiler.addOption("-AcodeGenerators=" + gen);
-    compiler.addOption("-AoutputDirectory=" + testDir.getAbsolutePath());
+    compiler.addOption("-Acodegen.generators=" + gen);
+    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
     assertTrue(compiler.compile(classes));
     File f = new File(testDir, classes[0].getName().replace('.', '_') + ".properties");
     Properties props = new Properties();
@@ -123,8 +123,8 @@ public class CodeGeneratorTest {
   public void testModuleGen() throws Exception {
     URL url = CodeGenProcessor.class.getClassLoader().getResource("io/vertx/test/codegen/testmodule/customgroup/package-info.java");
     Compiler compiler = new Compiler(new CodeGenProcessor());
-    compiler.addOption("-AcodeGenerators=testgen1");
-    compiler.addOption("-AoutputDirectory=" + testDir.getAbsolutePath());
+    compiler.addOption("-Acodegen.generators=testgen1");
+    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
     assertTrue(compiler.compile(new File(url.toURI())));
     File f = new File(testDir, "io_vertx_test_codegen_testmodule_customgroup.properties");
     Properties props = new Properties();
@@ -137,8 +137,8 @@ public class CodeGeneratorTest {
   @Test
   public void testIncrementalClass() throws Exception {
     Compiler compiler = new Compiler(new CodeGenProcessor());
-    compiler.addOption("-AcodeGenerators=testgen2");
-    compiler.addOption("-AoutputDirectory=" + testDir.getAbsolutePath());
+    compiler.addOption("-Acodegen.generators=testgen2");
+    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
     assertTrue(compiler.compile(ModuleScopedApi.class, ModuleScopedSubApi.class));
     File f = new File(testDir, "io_vertx_test_codegen_testmodule_modulescoped.properties");
     List<String> lines = Files.readAllLines(f.toPath());
@@ -172,7 +172,7 @@ public class CodeGeneratorTest {
     Compiler compiler = new Compiler(new CodeGenProcessor());
     compiler.addOption("-AshouldSkip=" + skipFile);
     compiler.addOption("-Acodegen.generators=testgen3");
-    compiler.addOption("-AoutputDirectory=" + testDir.getAbsolutePath());
+    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
     assertTrue(compiler.compile(ModuleScopedApi.class, ModuleScopedSubApi.class));
     assertEquals(!skipFile, new File(testDir, "skip.txt").exists());
     File classes = compiler.getClassOutput();

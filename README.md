@@ -40,7 +40,7 @@ There can be as many generators as you like.
 ## Processor configuration
 
 By default the processor will only validate the source API against the Codegen rules and will not perform code
-generation. Code generation will occur when the processor `outputDirectory` option is configured:
+generation. Code generation will occur when the processor `codegen.output` option is configured:
 
 ~~~~
 <pluginManagement>

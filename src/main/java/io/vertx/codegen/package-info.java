@@ -774,7 +774,7 @@
  *               <annotationProcessor>io.vertx.codegen.CodeGenProcessor</annotationProcessor>
  *             </annotationProcessors>
  *             <compilerArgs>
- *               <arg>-AoutputDirectory=${project.basedir}/src/test</arg> <1>
+ *               <arg>-Acodegen.output=${project.basedir}/src/test</arg> <1>
  *             </compilerArgs>
  *           </configuration>
  *         </execution>
