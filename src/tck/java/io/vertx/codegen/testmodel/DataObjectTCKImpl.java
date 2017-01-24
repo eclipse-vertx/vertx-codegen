@@ -174,4 +174,14 @@ public class DataObjectTCKImpl implements DataObjectTCK {
     assertEquals("one", new String(dataObject.getBuffers().get(0).getBytes()));
     assertEquals("two", new String(dataObject.getBuffers().get(1).getBytes()));
   }
+
+  @Override
+  public void setDataObjectWithListAdders(DataObjectWithListAdders dataObject) {
+    setDataObjectWithLists(dataObject.value);
+  }
+
+  @Override
+  public void setDataObjectWithMapAdders(DataObjectWithMapAdders dataObject) {
+    setDataObjectWithMaps(dataObject.value);
+  }
 }

@@ -27,4 +27,8 @@ public interface DataObjectTCK {
 
   void setDataObjectWithBuffer(DataObjectWithNestedBuffer dataObject);
 
+  void setDataObjectWithListAdders(DataObjectWithListAdders dataObject);
+
+  void setDataObjectWithMapAdders(DataObjectWithMapAdders dataObject);
+
 }
