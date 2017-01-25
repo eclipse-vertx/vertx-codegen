@@ -184,4 +184,12 @@ public class DataObjectTCKImpl implements DataObjectTCK {
   public void setDataObjectWithMapAdders(DataObjectWithMapAdders dataObject) {
     setDataObjectWithMaps(dataObject.value);
   }
+
+  @Override
+  public void setDataObjectWithRecursion(DataObjectWithRecursion dataObject) {
+    assertEquals("first", dataObject.getData());
+    assertEquals("second", dataObject.getNext().getData());
+    assertEquals("third", dataObject.getNext().getNext().getData());
+    assertEquals(null, dataObject.getNext().getNext().getNext());
+  }
 }

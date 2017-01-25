@@ -31,4 +31,6 @@ public interface DataObjectTCK {
 
   void setDataObjectWithMapAdders(DataObjectWithMapAdders dataObject);
 
+  void setDataObjectWithRecursion(DataObjectWithRecursion dataObject);
+
 }
