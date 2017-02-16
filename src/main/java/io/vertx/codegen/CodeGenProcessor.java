@@ -53,6 +53,7 @@ public class CodeGenProcessor extends AbstractProcessor {
   private File outputDirectory;
   private List<CodeGenerator> codeGenerators;
   Map<String, GeneratedFile> generatedFiles = new HashMap<>();
+  private Map<String, String> relocations = new HashMap<>();
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
@@ -135,6 +136,16 @@ public class CodeGenProcessor extends AbstractProcessor {
         Set<String> wanted = Stream.of(codeGeneratorsOption.split(",")).map(String::trim).collect(Collectors.toSet());
         generators = generators.stream().filter(cg -> wanted.contains(cg.name)).collect(Collectors.toList());
       }
+
+      relocations = processingEnv.getOptions()
+        .entrySet()
+        .stream()
+        .filter(e -> e.getKey().startsWith("codegen.output."))
+        .collect(Collectors.toMap(
+          e -> e.getKey().substring("codegen.output.".length()),
+          Map.Entry::getValue)
+        );
+
       codeGenerators = generators;
     }
     return codeGenerators;
@@ -172,6 +183,15 @@ public class CodeGenProcessor extends AbstractProcessor {
                 if (codeGenerator.kind.equals(model.getKind())) {
                   String relativeName = (String) MVEL.executeExpression(codeGenerator.filenameExpr, vars);
                   if (relativeName != null) {
+
+                    if (relativeName.endsWith(".java") && !relativeName.contains("/")) {
+                      String relocation = relocations.get(codeGenerator.name);
+                      if (relocation != null) {
+                        relativeName = relocation + '/' +
+                          relativeName.substring(0, relativeName.length() - ".java".length()).replace('.', '/') + ".java";
+                      }
+                    }
+
                     if (relativeName.endsWith(".java") && !relativeName.contains("/")) {
 
                       // Special handling for .java

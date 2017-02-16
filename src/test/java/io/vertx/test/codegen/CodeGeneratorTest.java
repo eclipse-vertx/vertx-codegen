@@ -186,4 +186,16 @@ public class CodeGeneratorTest {
       }
     }
   }
+
+  @Test
+  public void testRelocation() throws Exception {
+    Compiler compiler = new Compiler(new CodeGenProcessor());
+    compiler.addOption("-Acodegen.generators=testgen4");
+    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
+    compiler.addOption("-Acodegen.output.testgen4=foo/bar");
+    assertTrue(compiler.compile(MethodWithValidVertxGenParams.class, VertxGenClass1.class, VertxGenClass2.class));
+    File f = new File(testDir, "foo/bar/io/vertx/test/codegen/testapi/MethodWithValidVertxGenParams_Other.java".replace('/', File.separatorChar));
+    assertTrue(f.exists());
+    assertTrue(f.isFile());
+  }
 }

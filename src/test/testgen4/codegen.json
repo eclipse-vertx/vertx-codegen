@@ -1,0 +1,9 @@
+{
+  "name": "testgen4",
+  "generators": [{
+    "kind": "class",
+    "incremental": false,
+    "fileName": "ifaceFQCN + '_Other.java'",
+    "templateFileName": "templates/class.templ"
+  }]
+}
