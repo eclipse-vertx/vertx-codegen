@@ -1,0 +1,14 @@
+{
+  "name": "Cheatsheet",
+  "generators": [{
+    "kind": "dataObject",
+    "incremental": true,
+    "fileName": "'asciidoc/dataobjects.adoc'",
+    "templateFileName": "vertx-java/template/dataObjectCheatsheetIndex.templ"
+  },{
+    "kind": "enum",
+    "incremental": true,
+    "fileName": "'asciidoc/enums.adoc'",
+    "templateFileName": "vertx-java/template/enumCheatsheetIndex.templ"
+  }]
+}
