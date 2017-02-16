@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -52,7 +51,7 @@ public class CodeGenProcessor extends AbstractProcessor {
   private final static ObjectMapper mapper = new ObjectMapper();
   private static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
   private File outputDirectory;
-  private Map<String, List<CodeGenerator>> codeGenerators;
+  private List<CodeGenerator> codeGenerators;
   Map<String, GeneratedFile> generatedFiles = new HashMap<>();
 
   @Override
@@ -74,7 +73,7 @@ public class CodeGenProcessor extends AbstractProcessor {
 
   private Collection<CodeGenerator> getCodeGenerators() {
     if (codeGenerators == null) {
-      Map<String, List<CodeGenerator>> codeGenerators = new LinkedHashMap<>();
+      List<CodeGenerator> generators = new ArrayList<>();
       Enumeration<URL> descriptors = Collections.emptyEnumeration();
       try {
         descriptors = CodeGenProcessor.class.getClassLoader().getResources("codegen.json");
@@ -99,7 +98,6 @@ public class CodeGenProcessor extends AbstractProcessor {
               Serializable fileNameExpression = MVEL.compileExpression(fileName);
               Template compiledTemplate = new Template(templateFileName);
               compiledTemplate.setOptions(processingEnv.getOptions());
-              List<CodeGenerator> generators = codeGenerators.computeIfAbsent(name, abc -> new ArrayList<>());
               generators.add(new CodeGenerator(name, kind, incremental, fileNameExpression, compiledTemplate));
             }
           }
@@ -135,18 +133,11 @@ public class CodeGenProcessor extends AbstractProcessor {
       }
       if (codeGeneratorsOption != null) {
         Set<String> wanted = Stream.of(codeGeneratorsOption.split(",")).map(String::trim).collect(Collectors.toSet());
-        if (codeGenerators.keySet().containsAll(wanted)) {
-          codeGenerators.keySet().retainAll(wanted);
-        } else {
-          codeGenerators.clear();
-          processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Code generators " + wanted.removeAll(codeGenerators.keySet()) + " not found");
-        }
+        generators = generators.stream().filter(cg -> wanted.contains(cg.name)).collect(Collectors.toList());
       }
-      this.codeGenerators = codeGenerators;
+      codeGenerators = generators;
     }
-    ArrayList<CodeGenerator> ret = new ArrayList<>();
-    codeGenerators.values().stream().forEach(ret::addAll);
-    return ret;
+    return codeGenerators;
   }
 
   @Override
