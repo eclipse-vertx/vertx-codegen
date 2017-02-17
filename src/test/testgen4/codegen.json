@@ -3,7 +3,7 @@
   "generators": [{
     "kind": "class",
     "incremental": false,
-    "fileName": "ifaceFQCN + '_Other.java'",
-    "templateFileName": "templates/class.templ"
+    "fileName": "'resources/file.txt'",
+    "templateFileName": "the.templ"
   }]
 }

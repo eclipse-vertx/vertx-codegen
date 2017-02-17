@@ -106,6 +106,7 @@
               <additionalClasspathElement>${project.basedir}/src/test/testgen2</additionalClasspathElement>
               <additionalClasspathElement>${project.basedir}/src/test/testgen3</additionalClasspathElement>
               <additionalClasspathElement>${project.basedir}/src/test/testgen4</additionalClasspathElement>
+              <additionalClasspathElement>${project.basedir}/src/test/testgen5</additionalClasspathElement>
             </additionalClasspathElements>
           </configuration>
         </plugin>

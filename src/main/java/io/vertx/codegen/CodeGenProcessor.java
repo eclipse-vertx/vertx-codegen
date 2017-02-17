@@ -13,12 +13,14 @@ import io.vertx.codegen.type.TypeNameTranslator;
 import org.mvel2.MVEL;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.FilerException;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -48,11 +50,13 @@ import java.util.stream.Stream;
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)
 public class CodeGenProcessor extends AbstractProcessor {
 
+  private static final int JAVA= 0, RESOURCE = 1, OTHER = 2;
   private final static ObjectMapper mapper = new ObjectMapper();
   private static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
   private File outputDirectory;
   private List<CodeGenerator> codeGenerators;
-  Map<String, GeneratedFile> generatedFiles = new HashMap<>();
+  private Map<String, GeneratedFile> generatedFiles = new HashMap<>();
+  private Map<String, GeneratedFile> generatedResources = new HashMap<>();
   private Map<String, String> relocations = new HashMap<>();
 
   @Override
@@ -70,6 +74,7 @@ public class CodeGenProcessor extends AbstractProcessor {
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
     generatedFiles.clear();
+    generatedResources.clear();
   }
 
   private Collection<CodeGenerator> getCodeGenerators() {
@@ -184,45 +189,39 @@ public class CodeGenProcessor extends AbstractProcessor {
                   String relativeName = (String) MVEL.executeExpression(codeGenerator.filenameExpr, vars);
                   if (relativeName != null) {
 
+                    int kind;
                     if (relativeName.endsWith(".java") && !relativeName.contains("/")) {
                       String relocation = relocations.get(codeGenerator.name);
                       if (relocation != null) {
+                        kind = OTHER;
                         relativeName = relocation + '/' +
                           relativeName.substring(0, relativeName.length() - ".java".length()).replace('.', '/') + ".java";
+                      } else {
+                        kind = JAVA;
                       }
+                    } else if (relativeName.startsWith("resources/")) {
+                      kind = RESOURCE;
+                    } else {
+                      kind = OTHER;
                     }
-
-                    if (relativeName.endsWith(".java") && !relativeName.contains("/")) {
-
+                    if (kind == JAVA) {
                       // Special handling for .java
                       String fqn = relativeName.substring(0, relativeName.length() - ".java".length());
                       // Avoid to recreate the same file (this may happen as we unzip and recompile source trees)
                       if (processingEnv.getElementUtils().getTypeElement(fqn) != null) {
                         continue;
                       }
-
-                      if (codeGenerator.incremental) {
-                        List<ModelProcessing> processings = generatedClasses.computeIfAbsent(fqn, GeneratedFile::new);
-                        processings.add(new ModelProcessing(model, codeGenerator));
-                      } else {
-                        String result = codeGenerator.transformTemplate.render(model);
-                        if (result != null) {
-                          JavaFileObject target = processingEnv.getFiler().createSourceFile(fqn);
-                          try (Writer w = target.openWriter()) {
-                            w.write(result);
-                          }
-                        }
-                      }
+                      List<ModelProcessing> processings = generatedClasses.computeIfAbsent(fqn, GeneratedFile::new);
+                      processings.add(new ModelProcessing(model, codeGenerator));
+                    } else if (kind == RESOURCE) {
+                      relativeName = relativeName.substring("resources/".length());
+                      List<ModelProcessing> processings = generatedResources.computeIfAbsent(relativeName, GeneratedFile::new);
+                      processings.add(new ModelProcessing(model, codeGenerator));
                     } else {
                       String target = new File(outputDirectory, relativeName).getAbsoluteFile().getAbsolutePath();
-                      if (codeGenerator.incremental) {
-                        List<ModelProcessing> processings = generatedFiles.computeIfAbsent(target, GeneratedFile::new);
-                        processings.add(new ModelProcessing(model, codeGenerator));
-                      } else {
-                        codeGenerator.transformTemplate.apply(model, new File(target), translators);
-                      }
+                      List<ModelProcessing> processings = generatedFiles.computeIfAbsent(target, GeneratedFile::new);
+                      processings.add(new ModelProcessing(model, codeGenerator));
                     }
-                    log.info("Generated model " + model.getFqn() + ": " + relativeName);
                   }
                 }
               }
@@ -235,11 +234,17 @@ public class CodeGenProcessor extends AbstractProcessor {
             reportException(e, entry.getKey());
           }
         });
+
+        // Generate classes
         generatedClasses.values().forEach(generated -> {
           try {
-            JavaFileObject target = processingEnv.getFiler().createSourceFile(generated.uri);
-            try (Writer writer = target.openWriter()) {
-              generated.writeTo(writer);
+            String content = generated.generate();
+            if (content.length() > 0) {
+              JavaFileObject target = processingEnv.getFiler().createSourceFile(generated.uri);
+              try (Writer writer = target.openWriter()) {
+                writer.write(content);
+              }
+              log.info("Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
             }
           } catch (GenException e) {
             reportGenException(e);
@@ -250,16 +255,50 @@ public class CodeGenProcessor extends AbstractProcessor {
       }
     } else {
 
-      // Incremental post processing
-      generatedFiles.values().forEach(generated -> {
-        File file = new File(generated.uri);
-        Helper.ensureParentDir(file);
-        try (FileWriter fileWriter = new FileWriter(file)) {
-          generated.writeTo(fileWriter);
+      // Generate resources
+      for (GeneratedFile generated : generatedResources.values()) {
+        try {
+          String content = generated.generate();
+          if (content.length() > 0) {
+            try (Writer w = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", generated.uri).openWriter()) {
+              w.write(content);
+            }
+            boolean createSource;
+            try {
+              processingEnv.getFiler().getResource(StandardLocation.SOURCE_OUTPUT, "", generated.uri);
+              createSource = true;
+            } catch (FilerException e) {
+              // SOURCE_OUTPUT == CLASS_OUTPUT
+              createSource = false;
+            }
+            if (createSource) {
+              try (Writer w = processingEnv.getFiler().createResource(StandardLocation.SOURCE_OUTPUT, "", generated.uri).openWriter()) {
+                w.write(content);
+              }
+            }
+            log.info("Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
+          }
         } catch (GenException e) {
           reportGenException(e);
         } catch (Exception e) {
           reportException(e, generated.get(0).model.getElement());
+        }
+      }
+
+      // Generate files
+      generatedFiles.values().forEach(generated -> {
+        File file = new File(generated.uri);
+        Helper.ensureParentDir(file);
+        String content = generated.generate();
+        if (content.length() > 0) {
+          try (FileWriter fileWriter = new FileWriter(file)) {
+            fileWriter.write(content);
+          } catch (GenException e) {
+            reportGenException(e);
+          } catch (Exception e) {
+            reportException(e, generated.get(0).model.getElement());
+          }
+          log.info("Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
         }
       });
     }
@@ -310,20 +349,32 @@ public class CodeGenProcessor extends AbstractProcessor {
       this.uri = uri;
     }
 
-    void writeTo(Writer writer) throws IOException {
+    @Override
+    public boolean add(ModelProcessing modelProcessing) {
+      if (!modelProcessing.generator.incremental) {
+        clear();
+      }
+      return super.add(modelProcessing);
+    }
+
+    String generate() {
       Collections.sort(this, (o1, o2) ->
         o1.model.getElement().getSimpleName().toString().compareTo(
           o2.model.getElement().getSimpleName().toString()));
+      int index = 0;
+      StringBuilder buffer = new StringBuilder();
       for (int i = 0; i < size(); i++) {
         ModelProcessing processing = get(i);
         Map<String, Object> vars = new HashMap<>();
-        vars.put("incrementalIndex", i);
-        vars.put("incrementalSize", size());
-        vars.put("session", session);
+        if (processing.generator.incremental) {
+          vars.put("incrementalIndex", index++);
+          vars.put("incrementalSize", size());
+          vars.put("session", session);
+        }
         try {
           String part = processing.generator.transformTemplate.render(processing.model, vars);
           if (part != null) {
-            writer.append(part);
+            buffer.append(part);
           }
         } catch (GenException e) {
           throw e;
@@ -331,6 +382,7 @@ public class CodeGenProcessor extends AbstractProcessor {
           throw new GenException(processing.model.getElement(), e.getMessage());
         }
       }
+      return buffer.toString();
     }
   }
 }

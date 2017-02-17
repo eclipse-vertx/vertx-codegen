@@ -27,10 +27,17 @@ import java.util.Scanner;
  */
 public class Compiler {
 
+  private static File createTempDir() throws IOException {
+    File dir = Files.createTempDirectory("codegen").toFile();
+    dir.deleteOnExit();
+    return dir;
+  }
+
   private Processor processor;
   private DiagnosticListener<JavaFileObject> diagnosticListener;
   private List<String> options = new ArrayList<>();
   private File classOutput;
+  private File sourceOutput;
 
   public Compiler(Processor processor) {
     this(processor, new DiagnosticCollector<>());
@@ -60,6 +67,14 @@ public class Compiler {
 
   public void setClassOutput(File classOutput) {
     this.classOutput = classOutput;
+  }
+
+  public File getSourceOutput() {
+    return sourceOutput;
+  }
+
+  public void setSourceOutput(File sourceOutput) {
+    this.sourceOutput = sourceOutput;
   }
 
   public boolean compile(Class... types) throws Exception {
@@ -98,11 +113,13 @@ public class Compiler {
     JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     StandardJavaFileManager fm = compiler.getStandardFileManager(diagnosticListener, null, null);
     if (classOutput == null) {
-      File tmp = Files.createTempDirectory("codegen").toFile();
-      tmp.deleteOnExit();
-      classOutput = tmp;
+      classOutput = createTempDir();
+    }
+    if (sourceOutput == null) {
+      sourceOutput = createTempDir();
     }
     fm.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singletonList(classOutput));
+    fm.setLocation(StandardLocation.SOURCE_OUTPUT, Collections.singletonList(sourceOutput));
     Iterable<? extends JavaFileObject> fileObjects = fm.getJavaFileObjects(sourceFiles);
     Writer out = new NullWriter();
     JavaCompiler.CompilationTask task = compiler.getTask(out, fm, diagnosticListener, options, null, fileObjects);

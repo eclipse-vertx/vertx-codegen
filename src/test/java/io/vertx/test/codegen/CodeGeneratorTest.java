@@ -1,8 +1,6 @@
 package io.vertx.test.codegen;
 
 import io.vertx.codegen.CodeGenProcessor;
-import io.vertx.codegen.EnumValueInfo;
-import io.vertx.codegen.doc.Doc;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenParams;
@@ -30,9 +28,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
+import static io.vertx.test.codegen.Utils.assertMkDirs;
+import static io.vertx.test.codegen.Utils.assertFile;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -188,11 +187,46 @@ public class CodeGeneratorTest {
   }
 
   @Test
-  public void testRelocation() throws Exception {
+  public void testFileTypes() throws Exception {
     Compiler compiler = new Compiler(new CodeGenProcessor());
+    compiler.setClassOutput(assertMkDirs(new File(testDir, "classes")));
+    compiler.setSourceOutput(assertMkDirs(new File(testDir, "sources")));
     compiler.addOption("-Acodegen.generators=testgen4");
     compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
-    compiler.addOption("-Acodegen.output.testgen4=foo/bar");
+    assertTrue(compiler.compile(VertxGenClass1.class));
+    assertFile("should_not_be_compiled", new File(testDir, "sources/file.txt".replace('/', File.separatorChar)));
+    assertFile("should_not_be_compiled", new File(testDir, "classes/file.txt".replace('/', File.separatorChar)));
+  }
+
+  @Test
+  public void testFileTypesSourceOutputIsClassOutput() throws Exception {
+    Compiler compiler = new Compiler(new CodeGenProcessor());
+    compiler.setClassOutput(assertMkDirs(new File(testDir, "classes")));
+    compiler.setSourceOutput(new File(testDir, "classes"));
+    compiler.addOption("-Acodegen.generators=testgen4");
+    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
+    assertTrue(compiler.compile(VertxGenClass1.class));
+    assertFile("should_not_be_compiled", new File(testDir, "classes/file.txt".replace('/', File.separatorChar)));
+  }
+
+  @Test
+  public void testFileTypesOverwrite() throws Exception {
+    Compiler compiler = new Compiler(new CodeGenProcessor());
+    compiler.setClassOutput(assertMkDirs(new File(testDir, "classes")));
+    compiler.setSourceOutput(assertMkDirs(new File(testDir, "sources")));
+    compiler.addOption("-Acodegen.generators=testgen4");
+    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
+    assertTrue(compiler.compile(VertxGenClass1.class, VertxGenClass2.class));
+    assertFile("should_not_be_compiled", new File(testDir, "sources/file.txt".replace('/', File.separatorChar)));
+    assertFile("should_not_be_compiled", new File(testDir, "classes/file.txt".replace('/', File.separatorChar)));
+  }
+
+  @Test
+  public void testRelocation() throws Exception {
+    Compiler compiler = new Compiler(new CodeGenProcessor());
+    compiler.addOption("-Acodegen.generators=testgen5");
+    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
+    compiler.addOption("-Acodegen.output.testgen5=foo/bar");
     assertTrue(compiler.compile(MethodWithValidVertxGenParams.class, VertxGenClass1.class, VertxGenClass2.class));
     File f = new File(testDir, "foo/bar/io/vertx/test/codegen/testapi/MethodWithValidVertxGenParams_Other.java".replace('/', File.separatorChar));
     assertTrue(f.exists());

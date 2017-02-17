@@ -20,12 +20,25 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class Utils {
+
+  static File assertMkDirs(File f) {
+    assertTrue(f.mkdirs());
+    return f;
+  }
+
+  static void assertFile(String expected, File f) throws IOException {
+    assertTrue(f.exists());
+    assertTrue(f.isFile());
+    String s = new String(Files.readAllBytes(f.toPath()));
+    assertEquals(expected, s);
+  }
 
   static <E> HashSet<E> set(E... elements) {
     HashSet<E> set = new HashSet<>();
