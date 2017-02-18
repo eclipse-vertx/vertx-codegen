@@ -77,43 +77,59 @@ public class CodeGenProcessor extends AbstractProcessor {
     generatedResources.clear();
   }
 
+  /**
+   * Load the generators, subclasses can override this method to return a list of generators.
+   *
+   * @return the generators
+   */
+  protected List<CodeGenerator> loadGenerators() {
+    List<CodeGenerator> generators = new ArrayList<>();
+    Enumeration<URL> descriptors = Collections.emptyEnumeration();
+    try {
+      descriptors = CodeGenProcessor.class.getClassLoader().getResources("codegen.json");
+    } catch (IOException ignore) {
+      processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Could not load code generator descriptors");
+    }
+    Set<String> templates = new HashSet<>();
+    while (descriptors.hasMoreElements()) {
+      URL descriptor = descriptors.nextElement();
+      try (Scanner scanner = new Scanner(descriptor.openStream(), "UTF-8").useDelimiter("\\A")) {
+        String s = scanner.next();
+        ObjectNode obj = (ObjectNode) mapper.readTree(s);
+        String name = obj.get("name").asText();
+        ArrayNode generatorsCfg = (ArrayNode) obj.get("generators");
+        for (JsonNode generator : generatorsCfg) {
+          String kind = generator.get("kind").asText();
+          String templateFilename = generator.get("templateFileName").asText();
+          String filename = generator.get("fileName").asText();
+          boolean incremental = generator.has("incremental") && generator.get("incremental").asBoolean();
+          if (!templates.contains(templateFilename)) {
+            templates.add(templateFilename);
+            generators.add(new CodeGenerator(name, kind, incremental, filename, templateFilename));
+          }
+        }
+      } catch (Exception e) {
+        String msg = "Could not load code generator " + descriptor;
+        log.log(Level.SEVERE, msg, e);
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg);
+      }
+    }
+    String codeGeneratorsOption = processingEnv.getOptions().get("codegen.generators");
+    if (codeGeneratorsOption == null) {
+      codeGeneratorsOption = processingEnv.getOptions().get("codeGenerators");
+      if (codeGeneratorsOption != null) {
+        log.warning("Please use 'codegen.generators' option instead of 'codeGenerators' option");
+      }
+    }
+    if (codeGeneratorsOption != null) {
+      Set<String> wanted = Stream.of(codeGeneratorsOption.split(",")).map(String::trim).collect(Collectors.toSet());
+      generators = generators.stream().filter(cg -> wanted.contains(cg.name)).collect(Collectors.toList());
+    }
+    return generators;
+  }
+
   private Collection<CodeGenerator> getCodeGenerators() {
     if (codeGenerators == null) {
-      List<CodeGenerator> generators = new ArrayList<>();
-      Enumeration<URL> descriptors = Collections.emptyEnumeration();
-      try {
-        descriptors = CodeGenProcessor.class.getClassLoader().getResources("codegen.json");
-      } catch (IOException ignore) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Could not load code generator descriptors");
-      }
-      Set<String> templates = new HashSet<>();
-      while (descriptors.hasMoreElements()) {
-        URL descriptor = descriptors.nextElement();
-        try (Scanner scanner = new Scanner(descriptor.openStream(), "UTF-8").useDelimiter("\\A")) {
-          String s = scanner.next();
-          ObjectNode obj = (ObjectNode) mapper.readTree(s);
-          String name = obj.get("name").asText();
-          ArrayNode generatorsCfg = (ArrayNode) obj.get("generators");
-          for (JsonNode generator : generatorsCfg) {
-            String kind = generator.get("kind").asText();
-            String templateFileName = generator.get("templateFileName").asText();
-            String fileName = generator.get("fileName").asText();
-            boolean incremental = generator.has("incremental") && generator.get("incremental").asBoolean();
-            if (!templates.contains(templateFileName)) {
-              templates.add(templateFileName);
-              Serializable fileNameExpression = MVEL.compileExpression(fileName);
-              Template compiledTemplate = new Template(templateFileName);
-              compiledTemplate.setOptions(processingEnv.getOptions());
-              generators.add(new CodeGenerator(name, kind, incremental, fileNameExpression, compiledTemplate));
-            }
-          }
-          log.info("Loaded " + name + " code generator");
-        } catch (Exception e) {
-          String msg = "Could not load code generator " + descriptor;
-          log.log(Level.SEVERE, msg, e);
-          processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg);
-        }
-      }
       String outputDirectoryOption = processingEnv.getOptions().get("codegen.output");
       if (outputDirectoryOption == null) {
         outputDirectoryOption = processingEnv.getOptions().get("outputDirectory");
@@ -130,18 +146,14 @@ public class CodeGenProcessor extends AbstractProcessor {
           processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " is not a directory");
         }
       }
-      String codeGeneratorsOption = processingEnv.getOptions().get("codegen.generators");
-      if (codeGeneratorsOption == null) {
-        codeGeneratorsOption = processingEnv.getOptions().get("codeGenerators");
-        if (codeGeneratorsOption != null) {
-          log.warning("Please use 'codegen.generators' option instead of 'codeGenerators' option");
-        }
-      }
-      if (codeGeneratorsOption != null) {
-        Set<String> wanted = Stream.of(codeGeneratorsOption.split(",")).map(String::trim).collect(Collectors.toSet());
-        generators = generators.stream().filter(cg -> wanted.contains(cg.name)).collect(Collectors.toList());
-      }
-
+      List<CodeGenerator> generators = loadGenerators();
+      generators.forEach(gen -> {
+        Template template = new Template(gen.templateFilename);
+        template.setOptions(processingEnv.getOptions());
+        gen.template = template;
+        gen.filenameExpr = MVEL.compileExpression(gen.filename);
+        log.info("Loaded " + gen.name + " code generator");
+      });
       relocations = processingEnv.getOptions()
         .entrySet()
         .stream()
@@ -170,63 +182,58 @@ public class CodeGenProcessor extends AbstractProcessor {
         codegen.getModels().forEach(entry -> {
           try {
             Model model = entry.getValue();
-            if (outputDirectory != null) {
-              Map<String, Object> vars = new HashMap<>();
-              vars.put("helper", new Helper());
-              vars.put("options", processingEnv.getOptions());
-              vars.put("fileSeparator", File.separator);
-              vars.put("fqn", model.getFqn());
-              vars.put("module", model.getModule());
-              vars.put("model", model);
-              vars.putAll(model.getVars());
-              vars.putAll(ClassKind.vars());
-              vars.putAll(MethodKind.vars());
-              vars.putAll(Case.vars());
-              for (CodeGenerator codeGenerator : codeGenerators) {
-                Map<String, Object> translators = TypeNameTranslator.vars(codeGenerator.name);
-                vars.putAll(translators);
-                if (codeGenerator.kind.equals(model.getKind())) {
-                  String relativeName = (String) MVEL.executeExpression(codeGenerator.filenameExpr, vars);
-                  if (relativeName != null) {
+            Map<String, Object> vars = new HashMap<>();
+            vars.put("helper", new Helper());
+            vars.put("options", processingEnv.getOptions());
+            vars.put("fileSeparator", File.separator);
+            vars.put("fqn", model.getFqn());
+            vars.put("module", model.getModule());
+            vars.put("model", model);
+            vars.putAll(model.getVars());
+            vars.putAll(ClassKind.vars());
+            vars.putAll(MethodKind.vars());
+            vars.putAll(Case.vars());
+            for (CodeGenerator codeGenerator : codeGenerators) {
+              Map<String, Object> translators = TypeNameTranslator.vars(codeGenerator.name);
+              vars.putAll(translators);
+              if (codeGenerator.kind.equals(model.getKind())) {
+                String relativeName = (String) MVEL.executeExpression(codeGenerator.filenameExpr, vars);
+                if (relativeName != null) {
 
-                    int kind;
-                    if (relativeName.endsWith(".java") && !relativeName.contains("/")) {
-                      String relocation = relocations.get(codeGenerator.name);
-                      if (relocation != null) {
-                        kind = OTHER;
-                        relativeName = relocation + '/' +
-                          relativeName.substring(0, relativeName.length() - ".java".length()).replace('.', '/') + ".java";
-                      } else {
-                        kind = JAVA;
-                      }
-                    } else if (relativeName.startsWith("resources/")) {
-                      kind = RESOURCE;
-                    } else {
+                  int kind;
+                  if (relativeName.endsWith(".java") && !relativeName.contains("/")) {
+                    String relocation = relocations.get(codeGenerator.name);
+                    if (relocation != null) {
                       kind = OTHER;
-                    }
-                    if (kind == JAVA) {
-                      // Special handling for .java
-                      String fqn = relativeName.substring(0, relativeName.length() - ".java".length());
-                      // Avoid to recreate the same file (this may happen as we unzip and recompile source trees)
-                      if (processingEnv.getElementUtils().getTypeElement(fqn) != null) {
-                        continue;
-                      }
-                      List<ModelProcessing> processings = generatedClasses.computeIfAbsent(fqn, GeneratedFile::new);
-                      processings.add(new ModelProcessing(model, codeGenerator));
-                    } else if (kind == RESOURCE) {
-                      relativeName = relativeName.substring("resources/".length());
-                      List<ModelProcessing> processings = generatedResources.computeIfAbsent(relativeName, GeneratedFile::new);
-                      processings.add(new ModelProcessing(model, codeGenerator));
+                      relativeName = relocation + '/' +
+                        relativeName.substring(0, relativeName.length() - ".java".length()).replace('.', '/') + ".java";
                     } else {
-                      String target = new File(outputDirectory, relativeName).getAbsoluteFile().getAbsolutePath();
-                      List<ModelProcessing> processings = generatedFiles.computeIfAbsent(target, GeneratedFile::new);
-                      processings.add(new ModelProcessing(model, codeGenerator));
+                      kind = JAVA;
                     }
+                  } else if (relativeName.startsWith("resources/")) {
+                    kind = RESOURCE;
+                  } else {
+                    kind = OTHER;
+                  }
+                  if (kind == JAVA) {
+                    // Special handling for .java
+                    String fqn = relativeName.substring(0, relativeName.length() - ".java".length());
+                    // Avoid to recreate the same file (this may happen as we unzip and recompile source trees)
+                    if (processingEnv.getElementUtils().getTypeElement(fqn) != null) {
+                      continue;
+                    }
+                    List<ModelProcessing> processings = generatedClasses.computeIfAbsent(fqn, GeneratedFile::new);
+                    processings.add(new ModelProcessing(model, codeGenerator));
+                  } else if (kind == RESOURCE) {
+                    relativeName = relativeName.substring("resources/".length());
+                    List<ModelProcessing> processings = generatedResources.computeIfAbsent(relativeName, GeneratedFile::new);
+                    processings.add(new ModelProcessing(model, codeGenerator));
+                  } else {
+                    List<ModelProcessing> processings = generatedFiles.computeIfAbsent(relativeName, GeneratedFile::new);
+                    processings.add(new ModelProcessing(model, codeGenerator));
                   }
                 }
               }
-            } else {
-              log.info("Validated model " + model.getFqn());
             }
           } catch (GenException e) {
             reportGenException(e);
@@ -284,23 +291,24 @@ public class CodeGenProcessor extends AbstractProcessor {
           reportException(e, generated.get(0).model.getElement());
         }
       }
-
       // Generate files
-      generatedFiles.values().forEach(generated -> {
-        File file = new File(generated.uri);
-        Helper.ensureParentDir(file);
-        String content = generated.generate();
-        if (content.length() > 0) {
-          try (FileWriter fileWriter = new FileWriter(file)) {
-            fileWriter.write(content);
-          } catch (GenException e) {
-            reportGenException(e);
-          } catch (Exception e) {
-            reportException(e, generated.get(0).model.getElement());
+      if (outputDirectory != null) {
+        generatedFiles.values().forEach(generated -> {
+          File file = new File(outputDirectory, generated.uri);
+          Helper.ensureParentDir(file);
+          String content = generated.generate();
+          if (content.length() > 0) {
+            try (FileWriter fileWriter = new FileWriter(file)) {
+              fileWriter.write(content);
+            } catch (GenException e) {
+              reportGenException(e);
+            } catch (Exception e) {
+              reportException(e, generated.get(0).model.getElement());
+            }
+            log.info("Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
           }
-          log.info("Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
-        }
-      });
+        });
+      }
     }
     return true;
   }
@@ -315,21 +323,6 @@ public class CodeGenProcessor extends AbstractProcessor {
     String msg = "Could not generate element for " + elt + ": " + e.getMessage();
     log.log(Level.SEVERE, msg, e);
     processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, elt);
-  }
-
-  private static class CodeGenerator {
-    final String name;
-    final String kind;
-    final boolean incremental;
-    final Serializable filenameExpr;
-    final Template transformTemplate;
-    CodeGenerator(String name, String kind, boolean incremental, Serializable filenameExpr, Template transformTemplate) {
-      this.name = name;
-      this.kind = kind;
-      this.filenameExpr = filenameExpr;
-      this.transformTemplate = transformTemplate;
-      this.incremental = incremental;
-    }
   }
 
   private static class ModelProcessing {
@@ -372,7 +365,7 @@ public class CodeGenProcessor extends AbstractProcessor {
           vars.put("session", session);
         }
         try {
-          String part = processing.generator.transformTemplate.render(processing.model, vars);
+          String part = processing.generator.template.render(processing.model, vars);
           if (part != null) {
             buffer.append(part);
           }
