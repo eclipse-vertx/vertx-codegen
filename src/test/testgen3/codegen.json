@@ -3,12 +3,12 @@
   "generators": [{
     "kind": "class",
     "incremental": false,
-    "fileName": "'skip.txt'",
-    "templateFileName": "templates/skip.templ"
+    "filename": "'skip.txt'",
+    "templateFilename": "templates/skip.templ"
   },{
     "kind": "class",
     "incremental": false,
-    "fileName": "'testgen3.' + model.type.simpleName + '.java'",
-    "templateFileName": "templates/class_skip.templ"
+    "filename": "'testgen3.' + model.type.simpleName + '.java'",
+    "templateFilename": "templates/class_skip.templ"
   }]
 }

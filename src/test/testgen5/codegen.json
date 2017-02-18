@@ -3,12 +3,12 @@
   "generators": [{
     "kind": "class",
     "incremental": false,
-    "fileName": "ifaceFQCN + '_Other.java'",
-    "templateFileName": "templates/class.templ"
+    "filename": "ifaceFQCN + '_Other.java'",
+    "templateFilename": "templates/class.templ"
   },{
     "kind": "class",
     "incremental": false,
-    "fileName": "'resource/' + ifaceFQCN + '_Other.txt'",
-    "templateFileName": "templates/resource.templ"
+    "filename": "'resource/' + ifaceFQCN + '_Other.txt'",
+    "templateFilename": "templates/resource.templ"
   }]
 }

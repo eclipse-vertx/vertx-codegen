@@ -3,7 +3,7 @@
   "generators": [{
     "kind": "class",
     "incremental": false,
-    "fileName": "'resources/file.txt'",
-    "templateFileName": "the.templ"
+    "filename": "'resources/file.txt'",
+    "templateFilename": "the.templ"
   }]
 }

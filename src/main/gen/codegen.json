@@ -3,12 +3,12 @@
   "generators": [{
     "kind": "dataObject",
     "incremental": true,
-    "fileName": "'asciidoc/dataobjects.adoc'",
-    "templateFileName": "vertx-java/template/dataObjectCheatsheetIndex.templ"
+    "filename": "'asciidoc/dataobjects.adoc'",
+    "templateFilename": "vertx-java/template/dataObjectCheatsheetIndex.templ"
   },{
     "kind": "enum",
     "incremental": true,
-    "fileName": "'asciidoc/enums.adoc'",
-    "templateFileName": "vertx-java/template/enumCheatsheetIndex.templ"
+    "filename": "'asciidoc/enums.adoc'",
+    "templateFilename": "vertx-java/template/enumCheatsheetIndex.templ"
   }]
 }

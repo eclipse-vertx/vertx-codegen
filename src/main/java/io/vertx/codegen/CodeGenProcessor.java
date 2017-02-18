@@ -100,8 +100,16 @@ public class CodeGenProcessor extends AbstractProcessor {
         ArrayNode generatorsCfg = (ArrayNode) obj.get("generators");
         for (JsonNode generator : generatorsCfg) {
           String kind = generator.get("kind").asText();
-          String templateFilename = generator.get("templateFileName").asText();
-          String filename = generator.get("fileName").asText();
+          JsonNode templateFilenameNode = generator.get("templateFilename");
+          if (templateFilenameNode == null) {
+            templateFilenameNode = generator.get("templateFileName");
+          }
+          String templateFilename = templateFilenameNode.asText();
+          JsonNode filenameNode = generator.get("filename");
+          if (filenameNode == null) {
+            filenameNode = generator.get("fileName");
+          }
+          String filename = filenameNode.asText();
           boolean incremental = generator.has("incremental") && generator.get("incremental").asBoolean();
           if (!templates.contains(templateFilename)) {
             templates.add(templateFilename);

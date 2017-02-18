@@ -3,17 +3,17 @@
   "generators": [{
     "kind": "class",
     "incremental": true,
-    "fileName": "model.type.raw.module.packageName.replace('.', '_') + '.properties'",
-    "templateFileName": "templates/dynamic_gen.templ"
+    "filename": "model.type.raw.module.packageName.replace('.', '_') + '.properties'",
+    "templateFilename": "templates/dynamic_gen.templ"
   },{
     "kind": "class",
     "incremental": true,
-    "fileName": "'dir/in_sub_dir.txt'",
-    "templateFileName": "templates/static_gen.templ"
+    "filename": "'dir/in_sub_dir.txt'",
+    "templateFilename": "templates/static_gen.templ"
   },{
     "kind": "class",
     "incremental": true,
-    "fileName": "'testgen2.incremental_class.java'",
-    "templateFileName": "templates/class_gen.templ"
+    "filename": "'testgen2.incremental_class.java'",
+    "templateFilename": "templates/class_gen.templ"
   }]
 }

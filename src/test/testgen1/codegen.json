@@ -2,19 +2,19 @@
   "name": "testgen1",
   "generators": [ {
     "kind": "class",
-    "fileName": "model.type.name.replace('.', '_') + '.properties'",
-    "templateFileName": "templates/classGen.templ"
+    "filename": "model.type.name.replace('.', '_') + '.properties'",
+    "templateFilename": "templates/classGen.templ"
   },{
     "kind": "dataObject",
-    "fileName": "model.type.name.replace('.', '_') + '.properties'",
-    "templateFileName": "templates/dataObjectGen.templ"
+    "filename": "model.type.name.replace('.', '_') + '.properties'",
+    "templateFilename": "templates/dataObjectGen.templ"
   },{
     "kind": "enum",
-    "fileName": "model.type.name.replace('.', '_') + '.properties'",
-    "templateFileName": "templates/enumGen.templ"
+    "filename": "model.type.name.replace('.', '_') + '.properties'",
+    "templateFilename": "templates/enumGen.templ"
   },{
     "kind": "module",
-    "fileName": "model.fqn.replace('.', '_') + '.properties'",
-    "templateFileName": "templates/moduleGen.templ"
+    "filename": "model.fqn.replace('.', '_') + '.properties'",
+    "templateFilename": "templates/moduleGen.templ"
   }]
 }
