@@ -156,7 +156,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
           <execution>
-            <id>package-jar</id>
+            <id>package</id>
             <phase>package</phase>
             <goals>
               <goal>single</goal>
@@ -170,7 +170,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>package-tck</id>
+            <id>package-others</id>
             <phase>package</phase>
             <goals>
               <goal>single</goal>
@@ -178,6 +178,7 @@
             <configuration>
               <attach>true</attach>
               <descriptors>
+                <descriptor>src/main/assembly/processor.xml</descriptor>
                 <descriptor>src/main/assembly/tck.xml</descriptor>
                 <descriptor>src/main/assembly/tck-sources.xml</descriptor>
               </descriptors>

@@ -39,8 +39,7 @@ There can be as many generators as you like.
 
 ## Processor configuration
 
-By default the processor will only validate the source API against the Codegen rules and will not perform code
-generation. Code generation will occur when the processor `codegen.output` option is configured:
+You can configure the `CodeGenProcessor` as any Java annotation processor, here is how to do with Maven:
 
 ~~~~
 <pluginManagement>
@@ -101,6 +100,20 @@ sourceSets {
   }
 }
 ```
+
+Besides you can use the `processor` classified dependency that declares the annotation processor as a
+`META-INF/services/javax.annotation.processing.Processor`, if you do so, code generation happens automatically:
+
+```
+<dependency>
+  <groupid>io.vertx</groupId>
+  <artifactId>vertx-codegen</artifactId>
+  <classifier>processor</classifier>
+</dependency>
+```
+
+You still need to configure the `outputDirectory` for generating files non resources/classes as the processors
+requires this option to know where to place them.
 
 ## API constraints
 
