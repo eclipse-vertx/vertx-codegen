@@ -15,14 +15,13 @@ import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -112,6 +111,13 @@ public class TypeMirrorFactory {
             TypeMirror rawType = typeUtils.erasure(parameterizedType);
             if (typeUtils.isSubtype(type, rawType)) {
               TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, parameterizedElt.getTypeParameters().get(0));
+              if (resolved.getKind() == TypeKind.DECLARED) {
+                DeclaredType dt = (DeclaredType) resolved;
+                TypeElement a = (TypeElement) dt.asElement();
+                if (a.getQualifiedName().toString().equals("io.vertx.core.AsyncResult")) {
+                  return null;
+                }
+              }
               return create(resolved);
             }
             return null;

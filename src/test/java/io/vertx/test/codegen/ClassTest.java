@@ -175,6 +175,7 @@ import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFro
 import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromConcrete;
 import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerStringSubtype;
 import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerVertxGenSubtype;
+import io.vertx.test.codegen.testapi.RecursiveFuture;
 import io.vertx.test.codegen.testapi.impl.InterfaceInImplPackage;
 import io.vertx.test.codegen.testapi.impl.sub.InterfaceInImplParentPackage;
 import io.vertx.test.codegen.testapi.simple.InterfaceInImplContainingPackage;
@@ -1995,6 +1996,12 @@ public class ClassTest extends ClassTestBase {
     assertEquals(1, model.getMethodMap().size());
     assertEquals(1, model.getMethodMap().get("handle").size());
     checkMethod(model.getMethodMap().get("handle").get(0), "handle", 1, "void", MethodKind.OTHER);
+  }
+
+  @Test
+  public void testRecursiveFuture() throws Exception {
+    // Check we can build this type
+    ClassModel model = new Generator().generateClass(RecursiveFuture.class);
   }
 
   @Test
