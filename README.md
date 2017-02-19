@@ -171,6 +171,12 @@ Besides you can use the `processor` classified dependency that declares the anno
 You still need to configure the `outputDirectory` for generating files non resources/classes as the processors
 requires this option to know where to place them.
 
+The processor is configured by a few options
+
+- `codegen.output` : where the non Java classes / non resources are stored
+- `codegen.output.<generator-name>` : relocate the output of _<generator-name>_ to another directory
+- `codegen.generators` : a comma separated list of generators, each expression is a regex, allow to filter undesired generators
+
 ## API constraints
 
 In order for code generation to work effectively, certain constraints are put on the Java interfaces.
