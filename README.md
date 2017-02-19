@@ -37,6 +37,62 @@ A code generator consist of an _MVEL_ template declared in a `codegen.json` desc
 
 There can be as many generators as you like.
 
+## Generated output
+
+A generator can create 3 different kinds of output: Java classes, resources and anything else
+
+### Generated Java classes
+
+A generator declaring a filename that matches a Java FQN followed by `.java` suffix will have its content generated
+as a Java class. This class will be automatically compiled by the same compiler (that's a Java compiler feature).
+
+The generated files are handled by the Java compiler (`-s` option), usually build tools configures the compiler to store
+ them in a specific build location, for instance Maven by default uses the `target/generated-sources/annotations` directory.
+
+The following generators use it:
+
+- Data object converters
+- Service proxy and service handler
+- RxJava-ified classes API
+- Groovy extension methods API
+
+### Generated resources
+
+A generator declaring a filename prefixed by `resources/` will have its content generated as a compiler resource. This
+ resource will be stored in the generated sources directory and the generated classes directory.
+
+The generated files are handled by the Java compiler (`-s` option), usually build tools configures the compiler to store
+ them in a specific build location, for instance Maven by default uses the `target/generated-sources/annotations` directory.
+
+ The following generators use it:
+
+- JavaScript generator
+- Ruby generator
+
+### Other generated files
+
+Anything else will be stored in the file system using the filename, when the `filename` is relative (it usually is)
+the target path will be resolved agains the `codegen.output` directory.
+
+The following generators use it:
+
+- Ceylon generator
+- Scala generator
+- Kotlin extension methods
+
+When the `codegen.output` is not specified, the generated files are discarded.
+
+### Relocation
+
+Sometimes you want to have a generator to output its files in another directory, you can do that with the
+`codegen.output.generator-name` compiler option:
+
+```
+<codegen.output.data_object_converters>generated</codegen.output.data_object_converters>
+```
+
+The generator will store its content in the `codegen.output/generated` directory instead as a Java class.
+
 ## Processor configuration
 
 You can configure the `CodeGenProcessor` as any Java annotation processor, here is how to do with Maven:
