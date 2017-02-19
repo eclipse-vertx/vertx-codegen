@@ -38,8 +38,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,11 +79,28 @@ public class CodeGenProcessor extends AbstractProcessor {
     generatedResources.clear();
   }
 
-  /**
-   * Load the generators, subclasses can override this method to return a list of generators.
-   *
-   * @return the generators
-   */
+  protected Predicate<CodeGenerator> filterGenerators() {
+    String generatorsOption = processingEnv.getOptions().get("codegen.generators");
+    if (generatorsOption == null) {
+      generatorsOption = processingEnv.getOptions().get("codeGenerators");
+      if (generatorsOption != null) {
+        log.warning("Please use 'codegen.generators' option instead of 'codeGenerators' option");
+      }
+    }
+    if (generatorsOption != null) {
+      List<Pattern> wanted = Stream.of(generatorsOption.split(","))
+        .map(String::trim)
+        .map(Pattern::compile)
+        .collect(Collectors.toList());
+      return cg -> wanted.stream()
+        .filter(p -> p.matcher(cg.name).matches())
+        .findFirst()
+        .isPresent();
+    } else {
+      return null;
+    }
+  }
+
   protected List<CodeGenerator> loadGenerators() {
     List<CodeGenerator> generators = new ArrayList<>();
     Enumeration<URL> descriptors = Collections.emptyEnumeration();
@@ -122,17 +141,6 @@ public class CodeGenProcessor extends AbstractProcessor {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg);
       }
     }
-    String codeGeneratorsOption = processingEnv.getOptions().get("codegen.generators");
-    if (codeGeneratorsOption == null) {
-      codeGeneratorsOption = processingEnv.getOptions().get("codeGenerators");
-      if (codeGeneratorsOption != null) {
-        log.warning("Please use 'codegen.generators' option instead of 'codeGenerators' option");
-      }
-    }
-    if (codeGeneratorsOption != null) {
-      Set<String> wanted = Stream.of(codeGeneratorsOption.split(",")).map(String::trim).collect(Collectors.toSet());
-      generators = generators.stream().filter(cg -> wanted.contains(cg.name)).collect(Collectors.toList());
-    }
     return generators;
   }
 
@@ -155,6 +163,10 @@ public class CodeGenProcessor extends AbstractProcessor {
         }
       }
       List<CodeGenerator> generators = loadGenerators();
+      Predicate<CodeGenerator> filter = filterGenerators();
+      if (filter != null) {
+        generators = generators.stream().filter(filter).collect(Collectors.toList());
+      }
       generators.forEach(gen -> {
         Template template = new Template(gen.templateFilename);
         template.setOptions(processingEnv.getOptions());
