@@ -23,6 +23,7 @@ import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.codegen.testmodel.TestGenEnum;
 import io.vertx.codegen.type.TypeVariableInfo;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -173,6 +174,7 @@ import io.vertx.test.codegen.testapi.fluent.FluentMethodWithIllegalReturn;
 import io.vertx.test.codegen.testapi.fluent.FluentMethodWithVoidReturn;
 import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromAbstract;
 import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromConcrete;
+import io.vertx.test.codegen.testapi.handler.FutureLike;
 import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerStringSubtype;
 import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerVertxGenSubtype;
 import io.vertx.test.codegen.testapi.RecursiveFuture;
@@ -2002,6 +2004,14 @@ public class ClassTest extends ClassTestBase {
   public void testRecursiveFuture() throws Exception {
     // Check we can build this type
     ClassModel model = new Generator().generateClass(RecursiveFuture.class);
+    assertNull(model.getHandlerSuperType());
+  }
+
+  @Test
+  public void testFutureLike() throws Exception {
+    // Check we can build this type
+    ClassModel model = new Generator().generateClass(FutureLike.class);
+    assertNull(model.getHandlerSuperType());
   }
 
   @Test

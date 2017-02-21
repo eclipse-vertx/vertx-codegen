@@ -603,7 +603,11 @@ public class ClassModel implements Model {
                 break;
               }
               case HANDLER:
-                handlerSuperType = superTypeInfo;
+                ParameterizedTypeInfo handlerType = (ParameterizedTypeInfo) superTypeInfo;
+                TypeInfo eventType = handlerType.getArg(0);
+                if (eventType.getKind() != ClassKind.ASYNC_RESULT) {
+                  handlerSuperType = superTypeInfo;
+                }
                 break;
             }
             superTypeInfo.collectImports(collectedTypes);

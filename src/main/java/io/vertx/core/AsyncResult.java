@@ -7,6 +7,8 @@ public interface AsyncResult<T> {
 
   boolean succeeded();
 
+  boolean failed();
+
   T result();
 
   Throwable cause();
