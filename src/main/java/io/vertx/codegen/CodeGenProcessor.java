@@ -214,8 +214,7 @@ public class CodeGenProcessor extends AbstractProcessor {
             vars.putAll(MethodKind.vars());
             vars.putAll(Case.vars());
             for (CodeGenerator codeGenerator : codeGenerators) {
-              Map<String, Object> translators = TypeNameTranslator.vars(codeGenerator.name);
-              vars.putAll(translators);
+              vars.putAll(TypeNameTranslator.vars(codeGenerator.name));
               if (codeGenerator.kind.equals(model.getKind())) {
                 String relativeName = (String) MVEL.executeExpression(codeGenerator.filenameExpr, vars);
                 if (relativeName != null) {
@@ -379,6 +378,7 @@ public class CodeGenProcessor extends AbstractProcessor {
       for (int i = 0; i < size(); i++) {
         ModelProcessing processing = get(i);
         Map<String, Object> vars = new HashMap<>();
+        vars.putAll(TypeNameTranslator.vars(processing.generator.name));
         if (processing.generator.incremental) {
           vars.put("incrementalIndex", index++);
           vars.put("incrementalSize", size());
