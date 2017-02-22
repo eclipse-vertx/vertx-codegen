@@ -41,13 +41,22 @@ public class CodeGeneratorTest {
   @Rule
   public final TestName name = new TestName();
 
-  File testDir;
+  private File testDir;
 
   @Before
   public void before() throws Exception {
-    testDir = new File(new File("target").getAbsoluteFile(), "testgen_" + name.getMethodName());
-    if (!testDir.exists()) {
-      assertTrue(testDir.mkdir());
+    int count = 0;
+    while (true) {
+      String suffix = "testgen_" + name.getMethodName();
+      if (count > 0) {
+        suffix += "-" + count;
+      }
+      count++;
+      testDir = new File(new File("target").getAbsoluteFile(), suffix);
+      if (!testDir.exists()) {
+        assertTrue(testDir.mkdir());
+        break;
+      }
     }
   }
 
