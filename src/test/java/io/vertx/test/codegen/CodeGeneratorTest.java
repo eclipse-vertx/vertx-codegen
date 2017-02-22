@@ -84,7 +84,7 @@ public class CodeGeneratorTest {
     assertEquals("[]", props.remove("superTypes"));
     assertEquals("null", props.remove("concreteSuperType"));
     assertEquals("[]", props.remove("abstractSuperTypes"));
-    assertEquals("null", props.remove("handlerSuperType"));
+    assertEquals("null", props.remove("handlerType"));
     assertEquals("void", props.remove("method.methodWithVertxGenParams(str,myParam1,myParam2)"));
     assertEquals(new Properties(), props);
   }

@@ -100,7 +100,6 @@ public class ClassModel implements Model {
   protected List<TypeInfo> superTypes = new ArrayList<>();
   protected TypeInfo concreteSuperType;
   protected List<TypeInfo> abstractSuperTypes = new ArrayList<>();
-  protected TypeInfo handlerSuperType;
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
 
@@ -208,8 +207,8 @@ public class ClassModel implements Model {
     return abstractSuperTypes;
   }
 
-  public TypeInfo getHandlerSuperType() {
-    return handlerSuperType;
+  public TypeInfo getHandlerType() {
+    return (type.getKind() == ClassKind.API) ? ((ApiTypeInfo)type).getHandlerArg() : null;
   }
 
   public Map<String, List<MethodInfo>> getMethodMap() {
@@ -602,13 +601,6 @@ public class ClassModel implements Model {
                 }
                 break;
               }
-              case HANDLER:
-                ParameterizedTypeInfo handlerType = (ParameterizedTypeInfo) superTypeInfo;
-                TypeInfo eventType = handlerType.getArg(0);
-                if (eventType.getKind() != ClassKind.ASYNC_RESULT) {
-                  handlerSuperType = superTypeInfo;
-                }
-                break;
             }
             superTypeInfo.collectImports(collectedTypes);
           }
@@ -951,7 +943,7 @@ public class ClassModel implements Model {
     vars.put("superTypes", getSuperTypes());
     vars.put("concreteSuperType", getConcreteSuperType());
     vars.put("abstractSuperTypes", getAbstractSuperTypes());
-    vars.put("handlerSuperType", getHandlerSuperType());
+    vars.put("handlerType", getHandlerType());
     vars.put("methodsByName", getMethodMap());
     vars.put("referencedDataObjectTypes", getReferencedDataObjectTypes());
     vars.put("typeParams", getTypeParams());

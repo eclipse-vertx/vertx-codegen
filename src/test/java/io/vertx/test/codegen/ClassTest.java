@@ -23,7 +23,6 @@ import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.codegen.testmodel.TestGenEnum;
 import io.vertx.codegen.type.TypeVariableInfo;
 import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -1971,9 +1970,8 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testInterfaceExtendingHandlerStringSubtype() throws Exception {
     ClassModel model = new Generator().generateClass(InterfaceExtendingHandlerStringSubtype.class);
-    ParameterizedTypeInfo handlerSuperType = (ParameterizedTypeInfo) model.getHandlerSuperType();
-    assertEquals(1, handlerSuperType.getArgs().size());
-    assertEquals(TypeReflectionFactory.create(String.class), handlerSuperType.getArgs().get(0));
+    TypeInfo handlerSuperType = model.getHandlerType();
+    assertEquals(TypeReflectionFactory.create(String.class), handlerSuperType);
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
     assertTrue(apiType.isHandler());
     assertEquals(TypeReflectionFactory.create(String.class), apiType.getHandlerArg());
@@ -1987,9 +1985,8 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testInterfaceExtendingHandlerVertxGenSubtype() throws Exception {
     ClassModel model = new Generator().generateClass(InterfaceExtendingHandlerVertxGenSubtype.class, VertxGenClass1.class);
-    ParameterizedTypeInfo handlerSuperType = (ParameterizedTypeInfo) model.getHandlerSuperType();
-    assertEquals(1, handlerSuperType.getArgs().size());
-    assertEquals(TypeReflectionFactory.create(VertxGenClass1.class), handlerSuperType.getArgs().get(0));
+    TypeInfo handlerSuperType = model.getHandlerType();
+    assertEquals(TypeReflectionFactory.create(VertxGenClass1.class), handlerSuperType);
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
     assertTrue(apiType.isHandler());
     assertEquals(TypeReflectionFactory.create(VertxGenClass1.class), apiType.getHandlerArg());
@@ -2004,14 +2001,14 @@ public class ClassTest extends ClassTestBase {
   public void testRecursiveFuture() throws Exception {
     // Check we can build this type
     ClassModel model = new Generator().generateClass(RecursiveFuture.class);
-    assertNull(model.getHandlerSuperType());
+    assertNull(model.getHandlerType());
   }
 
   @Test
   public void testFutureLike() throws Exception {
     // Check we can build this type
     ClassModel model = new Generator().generateClass(FutureLike.class);
-    assertNull(model.getHandlerSuperType());
+    assertNull(model.getHandlerType());
   }
 
   @Test
