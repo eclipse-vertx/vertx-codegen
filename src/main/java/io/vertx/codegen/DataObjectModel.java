@@ -3,14 +3,18 @@ package io.vertx.codegen;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.doc.Doc;
+import io.vertx.codegen.type.AnnotationTypeInfo;
+import io.vertx.codegen.type.AnnotationValueTypeInfo;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.ClassTypeInfo;
-import io.vertx.codegen.type.TypeMirrorFactory;
 import io.vertx.codegen.type.ParameterizedTypeInfo;
 import io.vertx.codegen.type.TypeInfo;
+import io.vertx.codegen.type.TypeMirrorFactory;
 import io.vertx.core.json.JsonObject;
 
 import javax.annotation.processing.Messager;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -35,6 +39,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
@@ -220,8 +225,8 @@ public class DataObjectModel implements Model {
         case METHOD: {
           ExecutableElement methodElt = (ExecutableElement) enclosedElt;
           if (methodElt.getSimpleName().toString().equals("toJson") &&
-              methodElt.getParameters().isEmpty() &&
-              typeFactory.create(methodElt.getReturnType()).getKind() == ClassKind.JSON_OBJECT) {
+            methodElt.getParameters().isEmpty() &&
+            typeFactory.create(methodElt.getReturnType()).getKind() == ClassKind.JSON_OBJECT) {
             jsonifiable = true;
           }
           if (methodElt.getAnnotation(GenIgnore.class) == null) {
@@ -252,7 +257,7 @@ public class DataObjectModel implements Model {
       property.type.collectImports(importedTypes);
     }
     importedTypes.addAll(superTypes.stream().collect(toList()));
-    for (Iterator<ClassTypeInfo> i = importedTypes.iterator();i.hasNext();) {
+    for (Iterator<ClassTypeInfo> i = importedTypes.iterator(); i.hasNext(); ) {
       ClassTypeInfo importedType = i.next();
       if (importedType.getPackageName().equals(type.getPackageName())) {
         i.remove();
@@ -281,24 +286,28 @@ public class DataObjectModel implements Model {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private void processMethods(List<ExecutableElement> methodsElt) {
 
     Map<String, ExecutableElement> getters = new HashMap<>();
     Map<String, ExecutableElement> setters = new HashMap<>();
     Map<String, ExecutableElement> adders = new HashMap<>();
+    Map<String, List<AnnotationMirror>> annotations = new HashMap<>();
 
     while (methodsElt.size() > 0) {
       ExecutableElement methodElt = methodsElt.remove(0);
-      if (((TypeElement)methodElt.getEnclosingElement()).getQualifiedName().toString().equals("java.lang.Object")) {
+      if (((TypeElement) methodElt.getEnclosingElement()).getQualifiedName().toString().equals("java.lang.Object")) {
         continue;
       }
       String methodName = methodElt.getSimpleName().toString();
       if (methodName.startsWith("get") && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) && methodElt.getParameters().isEmpty() && methodElt.getReturnType().getKind() != TypeKind.VOID) {
         String name = Helper.normalizePropertyName(methodName.substring(3));
         getters.put(name, methodElt);
+        annotations.put(name, (List<AnnotationMirror>) elementUtils.getAllAnnotationMirrors(methodElt));
       } else if (methodName.startsWith("is") && methodName.length() > 2 && Character.isUpperCase(methodName.charAt(2)) && methodElt.getParameters().isEmpty() && methodElt.getReturnType().getKind() != TypeKind.VOID) {
         String name = Helper.normalizePropertyName(methodName.substring(2));
         getters.put(name, methodElt);
+        annotations.put(name, (List<AnnotationMirror>) elementUtils.getAllAnnotationMirrors(methodElt));
       } else if ((methodName.startsWith("set") || methodName.startsWith("add")) && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3))) {
         String prefix = methodName.substring(0, 3);
         String name = Helper.normalizePropertyName(methodName.substring(3));
@@ -309,14 +318,16 @@ public class DataObjectModel implements Model {
           } else {
             name += "s";
           }
-          TypeMirror t= methodElt.getParameters().get(0).asType();
+          TypeMirror t = methodElt.getParameters().get(0).asType();
           if (numParams == 1 || (numParams == 2 && t.getKind() == TypeKind.DECLARED &&
-              ((TypeElement)((DeclaredType)t).asElement()).getQualifiedName().toString().equals("java.lang.String"))) {
+            ((TypeElement) ((DeclaredType) t).asElement()).getQualifiedName().toString().equals("java.lang.String"))) {
             adders.put(name, methodElt);
+            annotations.put(name, (List<AnnotationMirror>) elementUtils.getAllAnnotationMirrors(methodElt));
           }
         } else {
           if (numParams == 1) {
             setters.put(name, methodElt);
+            annotations.put(name, (List<AnnotationMirror>) elementUtils.getAllAnnotationMirrors(methodElt));
           }
         }
       }
@@ -328,13 +339,20 @@ public class DataObjectModel implements Model {
     names.addAll(adders.keySet());
 
     for (String name : names) {
-      processMethod(name, getters.get(name), setters.get(name), adders.get(name));
+
+      //Check annotations on field
+      getElement().getEnclosedElements().stream()
+        .filter(e -> e.getKind().equals(ElementKind.FIELD) && e.getSimpleName().toString().equals(name))
+        .flatMap(e -> elementUtils.getAllAnnotationMirrors(e).stream())
+        .forEach(a -> annotations.computeIfAbsent(name, k -> new ArrayList<>()).add(a));
+
+      processMethod(name, getters.get(name), setters.get(name), adders.get(name), annotations.get(name));
     }
 
 
   }
 
-  private void processMethod(String name, ExecutableElement getterElt, ExecutableElement setterElt, ExecutableElement adderElt) {
+  private void processMethod(String name, ExecutableElement getterElt, ExecutableElement setterElt, ExecutableElement adderElt, List<AnnotationMirror> annotationMirrors) {
 
     PropertyKind propKind = null;
     TypeInfo propType = null;
@@ -350,11 +368,11 @@ public class DataObjectModel implements Model {
         case LIST:
         case SET:
           propType = ((ParameterizedTypeInfo) propType).getArgs().get(0);
-          propTypeMirror = ((DeclaredType)propTypeMirror).getTypeArguments().get(0);
+          propTypeMirror = ((DeclaredType) propTypeMirror).getTypeArguments().get(0);
           break;
         case MAP:
           propType = ((ParameterizedTypeInfo) propType).getArgs().get(1);
-          propTypeMirror = ((DeclaredType)propTypeMirror).getTypeArguments().get(1);
+          propTypeMirror = ((DeclaredType) propTypeMirror).getTypeArguments().get(1);
           break;
       }
     }
@@ -368,11 +386,11 @@ public class DataObjectModel implements Model {
         case LIST:
         case SET:
           getterType = ((ParameterizedTypeInfo) getterType).getArgs().get(0);
-          getterTypeMirror = ((DeclaredType)getterTypeMirror).getTypeArguments().get(0);
+          getterTypeMirror = ((DeclaredType) getterTypeMirror).getTypeArguments().get(0);
           break;
         case MAP:
           getterType = ((ParameterizedTypeInfo) getterType).getArgs().get(1);
-          getterTypeMirror = ((DeclaredType)getterTypeMirror).getTypeArguments().get(1);
+          getterTypeMirror = ((DeclaredType) getterTypeMirror).getTypeArguments().get(1);
           break;
       }
       if (propType != null) {
@@ -450,7 +468,7 @@ public class DataObjectModel implements Model {
       case DATA_OBJECT:
         Element propTypeElt = typeUtils.asElement(propTypeMirror);
         jsonifiable = propTypeElt.getAnnotation(DataObject.class) == null ||
-            Helper.isJsonifiable(elementUtils, typeUtils, (TypeElement)propTypeElt);
+          Helper.isJsonifiable(elementUtils, typeUtils, (TypeElement) propTypeElt);
         break;
       default:
         return;
@@ -467,13 +485,13 @@ public class DataObjectModel implements Model {
         Function<Boolean, Stream<ExecutableElement>> overridenMeths = (annotated) -> {
           Set<DeclaredType> ancestorTypes = Helper.resolveAncestorTypes(modelElt, true, true);
           return ancestorTypes.
-              stream().
-              map(DeclaredType::asElement).
-              filter(elt -> !annotated || elt.getAnnotation(DataObject.class) != null).
-              flatMap(Helper.cast(TypeElement.class)).
-              flatMap(elt -> elementUtils.getAllMembers(elt).stream()).
-              flatMap(Helper.instanceOf(ExecutableElement.class)).
-              filter(executableElt -> executableElt.getKind() == ElementKind.METHOD && elementUtils.overrides(methodElt, executableElt, modelElt));
+            stream().
+            map(DeclaredType::asElement).
+            filter(elt -> !annotated || elt.getAnnotation(DataObject.class) != null).
+            flatMap(Helper.cast(TypeElement.class)).
+            flatMap(elt -> elementUtils.getAllMembers(elt).stream()).
+            flatMap(Helper.instanceOf(ExecutableElement.class)).
+            filter(executableElt -> executableElt.getKind() == ElementKind.METHOD && elementUtils.overrides(methodElt, executableElt, modelElt));
         };
 
         //
@@ -481,9 +499,9 @@ public class DataObjectModel implements Model {
           doc = docFactory.createDoc(methodElt);
           if (doc == null) {
             Optional<Doc> first = overridenMeths.apply(false).
-                map(docFactory::createDoc).
-                filter(d -> d != null).
-                findFirst();
+              map(docFactory::createDoc).
+              filter(d -> d != null).
+              findFirst();
             doc = first.orElse(null);
           }
         }
@@ -502,14 +520,55 @@ public class DataObjectModel implements Model {
       }
     }
 
+    List<AnnotationTypeInfo> annotationTypeInfos = new ArrayList<>();
+
+    if (annotationMirrors != null) {
+      annotationMirrors.stream().map(this::processAnnotation).forEach(annotationTypeInfos::add);
+    }
+
     PropertyInfo property = new PropertyInfo(declared, name, doc, propType,
-        setterElt != null ? setterElt.getSimpleName().toString() : null,
-        adderElt != null ? adderElt.getSimpleName().toString() : null,
-        getterElt != null ? getterElt.getSimpleName().toString() : null,
-        propKind, jsonifiable);
+      setterElt != null ? setterElt.getSimpleName().toString() : null,
+      adderElt != null ? adderElt.getSimpleName().toString() : null,
+      getterElt != null ? getterElt.getSimpleName().toString() : null,
+      annotationTypeInfos, propKind, jsonifiable);
     propertyMap.put(property.name, property);
   }
 
+  private AnnotationTypeInfo processAnnotation(AnnotationMirror annotation) {
 
+    String fqn = ((TypeElement) annotation.getAnnotationType().asElement()).getQualifiedName().toString();
+    AnnotationTypeInfo owner = new AnnotationTypeInfo(fqn);
+    Map<? extends ExecutableElement, ? extends AnnotationValue> valueMap = elementUtils.getElementValuesWithDefaults(annotation);
+    for (ExecutableElement valueElt : valueMap.keySet().stream().filter(e -> e.getKind().equals(ElementKind.METHOD)).collect(Collectors.toSet())) {
+      owner.addMember(processAnnotationValue(valueElt, valueMap.get(valueElt)));
+    }
+    return owner;
+  }
+
+  @SuppressWarnings("unchecked")
+  private AnnotationValueTypeInfo processAnnotationValue(ExecutableElement valueElt, AnnotationValue value) {
+    String name = valueElt.getSimpleName().toString();
+    Object realValue = value.getValue();
+
+    if (realValue instanceof VariableElement) {
+      realValue = ((VariableElement) realValue).getSimpleName().toString();
+    } else if (realValue instanceof AnnotationMirror) {
+      realValue = processAnnotation((AnnotationMirror) realValue);
+    } else if (realValue instanceof TypeMirror) {
+      realValue = typeFactory.create((TypeMirror) realValue);
+    } else if (realValue instanceof List) {
+      realValue = ((List<AnnotationValue>) realValue).stream().map(AnnotationValue::getValue).collect(Collectors.toList());
+      if (((List) realValue).get(0) instanceof AnnotationMirror) {
+        realValue = ((List<AnnotationMirror>) realValue).stream().map(this::processAnnotation).collect(Collectors.toList());
+      } else if (((List) realValue).get(0) instanceof TypeMirror) {
+        realValue = ((List<TypeMirror>) realValue).stream().map(typeFactory::create).collect(Collectors.toList());
+      } else if (((List) realValue).get(0) instanceof VariableElement) {
+        realValue = ((List<VariableElement>) realValue).stream().map(v -> v.getSimpleName().toString()).collect(Collectors.toList());
+      }
+    }
+
+
+    return new AnnotationValueTypeInfo(name, realValue);
+  }
 
 }
