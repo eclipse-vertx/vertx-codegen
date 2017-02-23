@@ -15,25 +15,25 @@ public class AnnotationTypeInfo {
   private String name;
   private String simpleName;
   private String packageName;
-  private Map<String, AnnotationValueTypeInfo> values;
+  private Map<String, Object> values;
 
   public AnnotationTypeInfo(String name) {
-    this(name, new ArrayList<>());
+    this(name, new HashMap<>());
   }
 
-  public AnnotationTypeInfo(String name, List<AnnotationValueTypeInfo> values) {
+  public AnnotationTypeInfo(String name, Map<String, Object> values) {
     this.name = name;
     this.simpleName = Helper.getSimpleName(name);
     this.packageName = Helper.getPackageName(name);
-    this.values = values != null ? values.stream().collect(HashMap::new, (m, a) -> m.put(a.getName(), a), HashMap::putAll) : new HashMap<>();
+    this.values = values != null ? values : new HashMap<>();
   }
 
   public boolean isEmpty() {
     return values.isEmpty();
   }
 
-  public void addMember(AnnotationValueTypeInfo member) {
-    values.put(member.getName(), member);
+  public void putMember(String memberName, Object memberValue) {
+    values.put(memberName, memberValue);
   }
 
   public String getName() {
@@ -48,11 +48,11 @@ public class AnnotationTypeInfo {
     return packageName;
   }
 
-  public List<AnnotationValueTypeInfo> getMembers() {
-    return new ArrayList<>(values.values());
+  public List<String> getMembersNames() {
+    return new ArrayList<>(values.keySet());
   }
 
-  public AnnotationValueTypeInfo getMember(String name) {
+  public Object getMember(String name) {
     return values.getOrDefault(name, null);
   }
 

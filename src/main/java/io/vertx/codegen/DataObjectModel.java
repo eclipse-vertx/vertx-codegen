@@ -4,7 +4,6 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.type.AnnotationTypeInfo;
-import io.vertx.codegen.type.AnnotationValueTypeInfo;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.ClassTypeInfo;
 import io.vertx.codegen.type.ParameterizedTypeInfo;
@@ -540,14 +539,13 @@ public class DataObjectModel implements Model {
     AnnotationTypeInfo owner = new AnnotationTypeInfo(fqn);
     Map<? extends ExecutableElement, ? extends AnnotationValue> valueMap = elementUtils.getElementValuesWithDefaults(annotation);
     for (ExecutableElement valueElt : valueMap.keySet().stream().filter(e -> e.getKind().equals(ElementKind.METHOD)).collect(Collectors.toSet())) {
-      owner.addMember(processAnnotationValue(valueElt, valueMap.get(valueElt)));
+      owner.putMember(valueElt.getSimpleName().toString(), processAnnotationMemberValue(valueMap.get(valueElt)));
     }
     return owner;
   }
 
   @SuppressWarnings("unchecked")
-  private AnnotationValueTypeInfo processAnnotationValue(ExecutableElement valueElt, AnnotationValue value) {
-    String name = valueElt.getSimpleName().toString();
+  private Object processAnnotationMemberValue(AnnotationValue value) {
     Object realValue = value.getValue();
 
     if (realValue instanceof VariableElement) {
@@ -568,7 +566,7 @@ public class DataObjectModel implements Model {
     }
 
 
-    return new AnnotationValueTypeInfo(name, realValue);
+    return realValue;
   }
 
 }
