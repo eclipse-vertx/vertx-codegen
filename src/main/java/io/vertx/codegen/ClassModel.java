@@ -25,7 +25,17 @@ import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.doc.Text;
 import io.vertx.codegen.doc.Token;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
-import io.vertx.codegen.type.*;
+import io.vertx.codegen.type.AnnotationTypeInfo;
+import io.vertx.codegen.type.AnnotationTypeInfoFactory;
+import io.vertx.codegen.type.ApiTypeInfo;
+import io.vertx.codegen.type.ClassKind;
+import io.vertx.codegen.type.ClassTypeInfo;
+import io.vertx.codegen.type.DataObjectTypeInfo;
+import io.vertx.codegen.type.ParameterizedTypeInfo;
+import io.vertx.codegen.type.TypeInfo;
+import io.vertx.codegen.type.TypeMirrorFactory;
+import io.vertx.codegen.type.TypeUse;
+import io.vertx.codegen.type.TypeVariableInfo;
 import io.vertx.codegen.type.VoidTypeInfo;
 
 import javax.annotation.processing.Messager;
@@ -76,6 +86,7 @@ public class ClassModel implements Model {
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
   public static final String VERTX = "io.vertx.core.Vertx";
 
+  protected final AnnotationTypeInfoFactory annotationTypeInfoFactory;
   protected final MethodOverloadChecker methodOverloadChecker;
   protected final Messager messager;
   protected final TypeMirrorFactory typeFactory;
@@ -103,6 +114,8 @@ public class ClassModel implements Model {
   protected TypeInfo handlerSuperType;
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
+  protected List<AnnotationTypeInfo> annotations = new ArrayList<>();
+  protected Map<String, List<AnnotationTypeInfo>> methodAnnotationsMap = new LinkedHashMap<>();
 
   public ClassModel(MethodOverloadChecker methodOverloadChecker,
                     Messager messager,  Map<String, TypeElement> sources, Elements elementUtils,
@@ -115,6 +128,7 @@ public class ClassModel implements Model {
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
     this.modelElt = modelElt;
+    this.annotationTypeInfoFactory = new AnnotationTypeInfoFactory(elementUtils, typeUtils);
   }
 
   @Override
@@ -242,6 +256,14 @@ public class ClassModel implements Model {
       }
     }
     return null;
+  }
+
+  public List<AnnotationTypeInfo> getAnnotations() {
+    return annotations;
+  }
+
+  public Map<String, List<AnnotationTypeInfo>> getMethodAnnotationsMap() {
+    return methodAnnotationsMap;
   }
 
   private void sortMethodMap(Map<String, List<MethodInfo>> map) {
@@ -613,6 +635,7 @@ public class ClassModel implements Model {
             superTypeInfo.collectImports(collectedTypes);
           }
         }
+        elem.getAnnotationMirrors().stream().map(annotationTypeInfoFactory::processAnnotation).forEach(annotations::add);
         break;
       }
     }
@@ -862,6 +885,7 @@ public class ClassModel implements Model {
     if (methodsByName == null) {
       methodsByName = new ArrayList<>();
       methodMap.put(methodInfo.getName(), methodsByName);
+      methodAnnotationsMap.put(methodInfo.getName(), modelMethod.getAnnotationMirrors().stream().map(annotationTypeInfoFactory::processAnnotation).collect(Collectors.toList()));
     }
     methodsByName.add(methodInfo);
     methodInfo.collectImports(collectedTypes);
@@ -953,6 +977,8 @@ public class ClassModel implements Model {
     vars.put("abstractSuperTypes", getAbstractSuperTypes());
     vars.put("handlerSuperType", getHandlerSuperType());
     vars.put("methodsByName", getMethodMap());
+    vars.put("classAnnotations", getAnnotations());
+    vars.put("annotationsByMethodName", getMethodAnnotationsMap());
     vars.put("referencedDataObjectTypes", getReferencedDataObjectTypes());
     vars.put("typeParams", getTypeParams());
     vars.put("instanceMethods", getInstanceMethods());

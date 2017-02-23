@@ -4,6 +4,7 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.type.AnnotationTypeInfo;
+import io.vertx.codegen.type.AnnotationTypeInfoFactory;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.ClassTypeInfo;
 import io.vertx.codegen.type.ParameterizedTypeInfo;
@@ -13,7 +14,6 @@ import io.vertx.core.json.JsonObject;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
@@ -67,6 +66,7 @@ public class DataObjectModel implements Model {
   private ClassTypeInfo type;
   private Doc doc;
   private boolean jsonifiable;
+  private AnnotationTypeInfoFactory annotationTypeInfoFactory;
 
   public DataObjectModel(Elements elementUtils, Types typeUtils, TypeElement modelElt, Messager messager) {
     this.elementUtils = elementUtils;
@@ -74,6 +74,7 @@ public class DataObjectModel implements Model {
     this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils);
     this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, typeFactory, modelElt);
     this.modelElt = modelElt;
+    this.annotationTypeInfoFactory = new AnnotationTypeInfoFactory(elementUtils, typeUtils);
   }
 
   @Override
@@ -522,7 +523,7 @@ public class DataObjectModel implements Model {
     List<AnnotationTypeInfo> annotationTypeInfos = new ArrayList<>();
 
     if (annotationMirrors != null) {
-      annotationMirrors.stream().map(this::processAnnotation).forEach(annotationTypeInfos::add);
+      annotationMirrors.stream().map(annotationTypeInfoFactory::processAnnotation).forEach(annotationTypeInfos::add);
     }
 
     PropertyInfo property = new PropertyInfo(declared, name, doc, propType,
@@ -531,42 +532,6 @@ public class DataObjectModel implements Model {
       getterElt != null ? getterElt.getSimpleName().toString() : null,
       annotationTypeInfos, propKind, jsonifiable);
     propertyMap.put(property.name, property);
-  }
-
-  private AnnotationTypeInfo processAnnotation(AnnotationMirror annotation) {
-
-    String fqn = ((TypeElement) annotation.getAnnotationType().asElement()).getQualifiedName().toString();
-    AnnotationTypeInfo owner = new AnnotationTypeInfo(fqn);
-    Map<? extends ExecutableElement, ? extends AnnotationValue> valueMap = elementUtils.getElementValuesWithDefaults(annotation);
-    for (ExecutableElement valueElt : valueMap.keySet().stream().filter(e -> e.getKind().equals(ElementKind.METHOD)).collect(Collectors.toSet())) {
-      owner.putMember(valueElt.getSimpleName().toString(), processAnnotationMemberValue(valueMap.get(valueElt)));
-    }
-    return owner;
-  }
-
-  @SuppressWarnings("unchecked")
-  private Object processAnnotationMemberValue(AnnotationValue value) {
-    Object realValue = value.getValue();
-
-    if (realValue instanceof VariableElement) {
-      realValue = ((VariableElement) realValue).getSimpleName().toString();
-    } else if (realValue instanceof AnnotationMirror) {
-      realValue = processAnnotation((AnnotationMirror) realValue);
-    } else if (realValue instanceof TypeMirror) {
-      realValue = typeFactory.create((TypeMirror) realValue);
-    } else if (realValue instanceof List) {
-      realValue = ((List<AnnotationValue>) realValue).stream().map(AnnotationValue::getValue).collect(Collectors.toList());
-      if (((List) realValue).get(0) instanceof AnnotationMirror) {
-        realValue = ((List<AnnotationMirror>) realValue).stream().map(this::processAnnotation).collect(Collectors.toList());
-      } else if (((List) realValue).get(0) instanceof TypeMirror) {
-        realValue = ((List<TypeMirror>) realValue).stream().map(typeFactory::create).collect(Collectors.toList());
-      } else if (((List) realValue).get(0) instanceof VariableElement) {
-        realValue = ((List<VariableElement>) realValue).stream().map(v -> v.getSimpleName().toString()).collect(Collectors.toList());
-      }
-    }
-
-
-    return realValue;
   }
 
 }

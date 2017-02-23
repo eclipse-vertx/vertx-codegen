@@ -2,20 +2,20 @@ package io.vertx.test.codegen.testdataobject;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
-import io.vertx.test.codegen.testdataobject.annotations.AnnotationValueAnnotation;
-import io.vertx.test.codegen.testdataobject.annotations.BooleanValueAnnotation;
-import io.vertx.test.codegen.testdataobject.annotations.ByteValueAnnotation;
-import io.vertx.test.codegen.testdataobject.annotations.CharValueAnnotation;
-import io.vertx.test.codegen.testdataobject.annotations.ClassValueAnnotation;
-import io.vertx.test.codegen.testdataobject.annotations.DoubleValueAnnotation;
-import io.vertx.test.codegen.testdataobject.annotations.EmptyAnnotation;
-import io.vertx.test.codegen.testdataobject.annotations.EnumValueAnnotation;
-import io.vertx.test.codegen.testdataobject.annotations.FloatValuedAnnotation;
-import io.vertx.test.codegen.testdataobject.annotations.IntegerValuedAnnotation;
-import io.vertx.test.codegen.testdataobject.annotations.LongValuedAnnotation;
-import io.vertx.test.codegen.testdataobject.annotations.ShortValueAnnotation;
-import io.vertx.test.codegen.testdataobject.annotations.StringValuedAnnotation;
-import io.vertx.test.codegen.testdataobject.annotations.TestEnum;
+import io.vertx.test.codegen.annotations.AnnotationValueAnnotation;
+import io.vertx.test.codegen.annotations.BooleanValueAnnotation;
+import io.vertx.test.codegen.annotations.ByteValueAnnotation;
+import io.vertx.test.codegen.annotations.CharValueAnnotation;
+import io.vertx.test.codegen.annotations.ClassValueAnnotation;
+import io.vertx.test.codegen.annotations.DoubleValueAnnotation;
+import io.vertx.test.codegen.annotations.EmptyAnnotation;
+import io.vertx.test.codegen.annotations.EnumValueAnnotation;
+import io.vertx.test.codegen.annotations.FloatValuedAnnotation;
+import io.vertx.test.codegen.annotations.IntegerValuedAnnotation;
+import io.vertx.test.codegen.annotations.LongValuedAnnotation;
+import io.vertx.test.codegen.annotations.ShortValueAnnotation;
+import io.vertx.test.codegen.annotations.StringValuedAnnotation;
+import io.vertx.test.codegen.annotations.TestEnum;
 
 /**
  * @author <a href="mailto:cafeinoman@openaliasbox.org>Francois Delalleau</a>

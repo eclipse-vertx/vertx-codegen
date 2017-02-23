@@ -12,6 +12,7 @@ import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.type.TypeReflectionFactory;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.test.codegen.annotations.TestEnum;
 import io.vertx.test.codegen.testapi.InterfaceDataObject;
 import io.vertx.test.codegen.testdataobject.Abstract;
 import io.vertx.test.codegen.testdataobject.AbstractCommentedProperty;
@@ -70,7 +71,6 @@ import io.vertx.test.codegen.testdataobject.ToJsonDataObject;
 import io.vertx.test.codegen.testdataobject.UncommentedProperty;
 import io.vertx.test.codegen.testdataobject.UncommentedPropertyOverridesAncestorSuperCommentedProperty;
 import io.vertx.test.codegen.testdataobject.UncommentedPropertyOverridesSuperCommentedProperty;
-import io.vertx.test.codegen.testdataobject.annotations.TestEnum;
 import io.vertx.test.codegen.testdataobject.imported.Imported;
 import org.junit.Test;
 
