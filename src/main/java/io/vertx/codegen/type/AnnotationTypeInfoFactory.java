@@ -9,6 +9,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,7 +50,9 @@ public class AnnotationTypeInfoFactory {
       realValue = typeFactory.create((TypeMirror) realValue);
     } else if (realValue instanceof List) {
       realValue = ((List<AnnotationValue>) realValue).stream().map(AnnotationValue::getValue).collect(Collectors.toList());
-      if (((List) realValue).get(0) instanceof AnnotationMirror) {
+      if (((List) realValue).isEmpty()) {
+        realValue = Collections.emptyList();
+      } else if (((List) realValue).get(0) instanceof AnnotationMirror) {
         realValue = ((List<AnnotationMirror>) realValue).stream().map(this::processAnnotation).collect(Collectors.toList());
       } else if (((List) realValue).get(0) instanceof TypeMirror) {
         realValue = ((List<TypeMirror>) realValue).stream().map(typeFactory::create).collect(Collectors.toList());
