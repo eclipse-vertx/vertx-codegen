@@ -1,10 +1,12 @@
 package io.vertx.codegen;
 
-import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
+import io.vertx.codegen.type.AnnotationTypeInfo;
+import io.vertx.codegen.type.AnnotationTypeInfoFactory;
 
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -16,10 +18,12 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -169,7 +173,9 @@ public class CodeGen {
       throw new GenException(element, "Invalid group package name " + groupPackage);
     }
     ModuleInfo info = new ModuleInfo(modulePackage, moduleName, groupPackage);
-    return new ModuleModel(element, info);
+    AnnotationTypeInfoFactory annotationFactory = new AnnotationTypeInfoFactory(elementUtils, typeUtils);
+    List<AnnotationTypeInfo> annotationTypeInfos = element.getAnnotationMirrors().stream().map(annotationFactory::processAnnotation).collect(Collectors.toList());
+    return new ModuleModel(element, info, annotationTypeInfos);
   }
 
   public PackageModel getPackageModel(String fqn) {
