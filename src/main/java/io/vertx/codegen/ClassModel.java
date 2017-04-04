@@ -546,10 +546,10 @@ public class ClassModel implements Model {
 
   private void traverseElem(Element elem) {
     switch (elem.getKind()) {
-      case ENUM:
       case CLASS: {
         throw new GenException(elem, "@VertxGen can only be used with interfaces or enums in " + elem.asType().toString());
       }
+      case ENUM:
       case INTERFACE: {
         if (ifaceFQCN != null) {
           throw new GenException(elem, "Can only have one interface per file");
