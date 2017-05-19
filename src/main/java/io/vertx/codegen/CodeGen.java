@@ -5,8 +5,8 @@ import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
-import io.vertx.codegen.type.AnnotationTypeInfo;
 import io.vertx.codegen.type.AnnotationTypeInfoFactory;
+import io.vertx.codegen.type.AnnotationValueInfo;
 
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -174,8 +174,8 @@ public class CodeGen {
     }
     ModuleInfo info = new ModuleInfo(modulePackage, moduleName, groupPackage);
     AnnotationTypeInfoFactory annotationFactory = new AnnotationTypeInfoFactory(elementUtils, typeUtils);
-    List<AnnotationTypeInfo> annotationTypeInfos = element.getAnnotationMirrors().stream().map(annotationFactory::processAnnotation).collect(Collectors.toList());
-    return new ModuleModel(element, info, annotationTypeInfos);
+    List<AnnotationValueInfo> annotationValueInfos = element.getAnnotationMirrors().stream().map(annotationFactory::processAnnotation).collect(Collectors.toList());
+    return new ModuleModel(element, info, annotationValueInfos);
   }
 
   public PackageModel getPackageModel(String fqn) {

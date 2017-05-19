@@ -3,8 +3,8 @@ package io.vertx.codegen;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.doc.Doc;
-import io.vertx.codegen.type.AnnotationTypeInfo;
 import io.vertx.codegen.type.AnnotationTypeInfoFactory;
+import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.ClassTypeInfo;
 import io.vertx.codegen.type.ParameterizedTypeInfo;
@@ -520,17 +520,17 @@ public class DataObjectModel implements Model {
       }
     }
 
-    List<AnnotationTypeInfo> annotationTypeInfos = new ArrayList<>();
+    List<AnnotationValueInfo> annotationValueInfos = new ArrayList<>();
 
     if (annotationMirrors != null) {
-      annotationMirrors.stream().map(annotationTypeInfoFactory::processAnnotation).forEach(annotationTypeInfos::add);
+      annotationMirrors.stream().map(annotationTypeInfoFactory::processAnnotation).forEach(annotationValueInfos::add);
     }
 
     PropertyInfo property = new PropertyInfo(declared, name, doc, propType,
       setterElt != null ? setterElt.getSimpleName().toString() : null,
       adderElt != null ? adderElt.getSimpleName().toString() : null,
       getterElt != null ? getterElt.getSimpleName().toString() : null,
-      annotationTypeInfos, propKind, jsonifiable);
+      annotationValueInfos, propKind, jsonifiable);
     propertyMap.put(property.name, property);
   }
 

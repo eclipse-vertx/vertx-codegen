@@ -10,18 +10,18 @@ import java.util.Map;
 /**
  * @author <a href="mailto:cafeinoman@openaliasbox.org>Francois Delalleau</a>
  */
-public class AnnotationTypeInfo {
+public class AnnotationValueInfo {
 
   private String name;
   private String simpleName;
   private String packageName;
   private Map<String, Object> values;
 
-  public AnnotationTypeInfo(String name) {
+  public AnnotationValueInfo(String name) {
     this(name, new HashMap<>());
   }
 
-  public AnnotationTypeInfo(String name, Map<String, Object> values) {
+  public AnnotationValueInfo(String name, Map<String, Object> values) {
     this.name = name;
     this.simpleName = Helper.getSimpleName(name);
     this.packageName = Helper.getPackageName(name);
@@ -61,7 +61,7 @@ public class AnnotationTypeInfo {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    AnnotationTypeInfo that = (AnnotationTypeInfo) o;
+    AnnotationValueInfo that = (AnnotationValueInfo) o;
 
     if (!name.equals(that.name)) return false;
     return values.equals(that.values);

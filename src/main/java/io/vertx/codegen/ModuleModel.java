@@ -1,6 +1,6 @@
 package io.vertx.codegen;
 
-import io.vertx.codegen.type.AnnotationTypeInfo;
+import io.vertx.codegen.type.AnnotationValueInfo;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
@@ -15,12 +15,12 @@ public class ModuleModel implements Model {
 
   private final PackageElement element;
   private final ModuleInfo info;
-  private final List<AnnotationTypeInfo> annotationTypeInfos;
+  private final List<AnnotationValueInfo> annotationValueInfos;
 
-  public ModuleModel(PackageElement element, ModuleInfo info, List<AnnotationTypeInfo> annotationTypeInfos) {
+  public ModuleModel(PackageElement element, ModuleInfo info, List<AnnotationValueInfo> annotationValueInfos) {
     this.element = element;
     this.info = info;
-    this.annotationTypeInfos = annotationTypeInfos != null ? annotationTypeInfos : Collections.emptyList();
+    this.annotationValueInfos = annotationValueInfos != null ? annotationValueInfos : Collections.emptyList();
   }
 
   public String getName() {
@@ -46,8 +46,8 @@ public class ModuleModel implements Model {
     return info.getPackageName();
   }
 
-  public List<AnnotationTypeInfo> getAnnotationTypeInfos() {
-    return annotationTypeInfos;
+  public List<AnnotationValueInfo> getAnnotationValueInfos() {
+    return annotationValueInfos;
   }
 
   @Override
@@ -56,7 +56,7 @@ public class ModuleModel implements Model {
     vars.put("fqn", info.getPackageName());
     vars.put("name", info.getName());
     vars.put("module", getModule());
-    vars.put("annotations", getAnnotationTypeInfos());
+    vars.put("annotations", getAnnotationValueInfos());
     return vars;
   }
 

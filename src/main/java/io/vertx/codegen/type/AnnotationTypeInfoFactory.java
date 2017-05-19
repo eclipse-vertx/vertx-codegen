@@ -27,10 +27,10 @@ public class AnnotationTypeInfoFactory {
     this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils);
   }
 
-  public AnnotationTypeInfo processAnnotation(AnnotationMirror annotation) {
+  public AnnotationValueInfo processAnnotation(AnnotationMirror annotation) {
 
     String fqn = ((TypeElement) annotation.getAnnotationType().asElement()).getQualifiedName().toString();
-    AnnotationTypeInfo owner = new AnnotationTypeInfo(fqn);
+    AnnotationValueInfo owner = new AnnotationValueInfo(fqn);
     Map<? extends ExecutableElement, ? extends AnnotationValue> valueMap = elementUtils.getElementValuesWithDefaults(annotation);
     for (ExecutableElement valueElt : valueMap.keySet().stream().filter(e -> e.getKind().equals(ElementKind.METHOD)).collect(Collectors.toSet())) {
       owner.putMember(valueElt.getSimpleName().toString(), processAnnotationMemberValue(valueMap.get(valueElt)));

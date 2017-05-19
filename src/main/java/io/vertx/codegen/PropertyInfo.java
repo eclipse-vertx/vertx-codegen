@@ -1,7 +1,7 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.doc.Doc;
-import io.vertx.codegen.type.AnnotationTypeInfo;
+import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.TypeInfo;
 
 import java.util.ArrayList;
@@ -25,10 +25,10 @@ public class PropertyInfo {
   final String adderMethod;
   final String getterMethod;
   final boolean jsonifiable;
-  final Map<String, AnnotationTypeInfo> annotations;
+  final Map<String, AnnotationValueInfo> annotations;
 
   public PropertyInfo(boolean declared, String name, Doc doc, TypeInfo type, String setterMethod, String adderMethod, String getterMethod,
-                      List<AnnotationTypeInfo> annotations, PropertyKind kind, boolean jsonifiable) {
+                      List<AnnotationValueInfo> annotations, PropertyKind kind, boolean jsonifiable) {
     this.kind = kind;
     this.declared = declared;
     this.name = name;
@@ -97,13 +97,13 @@ public class PropertyInfo {
   }
 
   /**
-   * @return the list of {@link AnnotationTypeInfo} for this property
+   * @return the list of {@link AnnotationValueInfo} for this property
    */
-  public List<AnnotationTypeInfo> getAnnotations() {
+  public List<AnnotationValueInfo> getAnnotations() {
     return new ArrayList<>(annotations.values());
   }
 
-  public AnnotationTypeInfo getAnnotation(String annotationName) {
+  public AnnotationValueInfo getAnnotation(String annotationName) {
     return annotations.get(annotationName);
   }
 

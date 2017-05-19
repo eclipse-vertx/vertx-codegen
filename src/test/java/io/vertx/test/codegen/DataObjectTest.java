@@ -6,7 +6,7 @@ import io.vertx.codegen.Generator;
 import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.PropertyKind;
 import io.vertx.codegen.doc.Doc;
-import io.vertx.codegen.type.AnnotationTypeInfo;
+import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.ClassTypeInfo;
 import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.type.TypeReflectionFactory;
@@ -716,14 +716,14 @@ public class DataObjectTest {
   @Test
   public void testAnnotationAnnotated() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(Annotated.class);
-    AnnotationTypeInfo expected = model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().get(0);
+    AnnotationValueInfo expected = model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().get(0);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithAnnotationValue").getAnnotations().size());
     assertEquals(2, model.getPropertyMap().get("annotatedWithAnnotationValue").getAnnotations().get(0).getMembersNames().size());
     assertNotNull(model.getPropertyMap().get("annotatedWithAnnotationValue").getAnnotations().get(0).getMember("value"));
     assertNotNull(model.getPropertyMap().get("annotatedWithAnnotationValue").getAnnotations().get(0).getMember("array"));
     assertEquals(expected, model.getPropertyMap().get("annotatedWithAnnotationValue").getAnnotations().get(0).getMember("value"));
-    assertArrayEquals(new AnnotationTypeInfo[]{expected, expected}, ((List) model.getPropertyMap().get("annotatedWithAnnotationValue").getAnnotations().get(0).getMember("array")).toArray());
+    assertArrayEquals(new AnnotationValueInfo[]{expected, expected}, ((List) model.getPropertyMap().get("annotatedWithAnnotationValue").getAnnotations().get(0).getMember("array")).toArray());
   }
 
   @Test

@@ -25,8 +25,8 @@ import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.doc.Text;
 import io.vertx.codegen.doc.Token;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
-import io.vertx.codegen.type.AnnotationTypeInfo;
 import io.vertx.codegen.type.AnnotationTypeInfoFactory;
+import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.ApiTypeInfo;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.ClassTypeInfo;
@@ -114,8 +114,8 @@ public class ClassModel implements Model {
   protected TypeInfo handlerSuperType;
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
-  protected List<AnnotationTypeInfo> annotations = new ArrayList<>();
-  protected Map<String, List<AnnotationTypeInfo>> methodAnnotationsMap = new LinkedHashMap<>();
+  protected List<AnnotationValueInfo> annotations = new ArrayList<>();
+  protected Map<String, List<AnnotationValueInfo>> methodAnnotationsMap = new LinkedHashMap<>();
 
   public ClassModel(MethodOverloadChecker methodOverloadChecker,
                     Messager messager,  Map<String, TypeElement> sources, Elements elementUtils,
@@ -258,11 +258,11 @@ public class ClassModel implements Model {
     return null;
   }
 
-  public List<AnnotationTypeInfo> getAnnotations() {
+  public List<AnnotationValueInfo> getAnnotations() {
     return annotations;
   }
 
-  public Map<String, List<AnnotationTypeInfo>> getMethodAnnotationsMap() {
+  public Map<String, List<AnnotationValueInfo>> getMethodAnnotationsMap() {
     return methodAnnotationsMap;
   }
 
