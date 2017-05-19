@@ -258,10 +258,16 @@ public class ClassModel implements Model {
     return null;
   }
 
+  /**
+   * @return all the annotations on this class
+   */
   public List<AnnotationValueInfo> getAnnotations() {
     return annotations;
   }
 
+  /**
+   * @return a map of the method's annotations for this class, by method name.
+   */
   public Map<String, List<AnnotationValueInfo>> getMethodAnnotations() {
     return methodAnnotationsMap;
   }
