@@ -2,10 +2,9 @@ package io.vertx.codegen.type;
 
 import io.vertx.codegen.Helper;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:cafeinoman@openaliasbox.org>Francois Delalleau</a>
@@ -48,8 +47,8 @@ public class AnnotationValueInfo {
     return packageName;
   }
 
-  public List<String> getMembersNames() {
-    return new ArrayList<>(values.keySet());
+  public Set<String> getMembersNames() {
+    return values.keySet();
   }
 
   public Object getMember(String name) {
