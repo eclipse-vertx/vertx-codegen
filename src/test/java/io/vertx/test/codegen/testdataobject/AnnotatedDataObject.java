@@ -21,13 +21,13 @@ import io.vertx.test.codegen.annotations.TestEnum;
  * @author <a href="mailto:cafeinoman@openaliasbox.org>Francois Delalleau</a>
  */
 @DataObject
-public class Annotated {
+public class AnnotatedDataObject {
 
-  public Annotated() {
+  public AnnotatedDataObject() {
 
   }
 
-  public Annotated(JsonObject json) {
+  public AnnotatedDataObject(JsonObject json) {
 
   }
 

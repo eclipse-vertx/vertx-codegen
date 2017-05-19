@@ -262,7 +262,7 @@ public class ClassModel implements Model {
     return annotations;
   }
 
-  public Map<String, List<AnnotationValueInfo>> getMethodAnnotationsMap() {
+  public Map<String, List<AnnotationValueInfo>> getMethodAnnotations() {
     return methodAnnotationsMap;
   }
 
@@ -978,7 +978,7 @@ public class ClassModel implements Model {
     vars.put("handlerSuperType", getHandlerSuperType());
     vars.put("methodsByName", getMethodMap());
     vars.put("classAnnotations", getAnnotations());
-    vars.put("annotationsByMethodName", getMethodAnnotationsMap());
+    vars.put("annotationsByMethodName", getMethodAnnotations());
     vars.put("referencedDataObjectTypes", getReferencedDataObjectTypes());
     vars.put("typeParams", getTypeParams());
     vars.put("instanceMethods", getInstanceMethods());

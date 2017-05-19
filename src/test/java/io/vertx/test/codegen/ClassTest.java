@@ -2088,15 +2088,15 @@ public class ClassTest extends ClassTestBase {
     assertEquals(2, model.getAnnotations().size());
     assertEquals(VertxGen.class.getName(), model.getAnnotations().get(0).getName());
     assertEquals(EmptyAnnotation.class.getName(), model.getAnnotations().get(1).getName());
-    assertFalse(model.getMethodAnnotationsMap().values().isEmpty());
-    assertEquals(1, model.getMethodAnnotationsMap().get("stringAnnotated").size());
-    assertEquals(3, model.getMethodAnnotationsMap().get("stringAnnotated").get(0).getMembersNames().size());
-    assertNotNull(model.getMethodAnnotationsMap().get("stringAnnotated").get(0).getMember("value"));
-    assertNotNull(model.getMethodAnnotationsMap().get("stringAnnotated").get(0).getMember("array"));
-    assertNotNull(model.getMethodAnnotationsMap().get("stringAnnotated").get(0).getMember("defaultValue"));
-    assertEquals("aString", model.getMethodAnnotationsMap().get("stringAnnotated").get(0).getMember("value"));
-    assertArrayEquals(new String[]{"one", "two"}, ((List) model.getMethodAnnotationsMap().get("stringAnnotated").get(0).getMember("array")).toArray());
-    assertEquals("defaultString", model.getMethodAnnotationsMap().get("stringAnnotated").get(0).getMember("defaultValue"));
+    assertFalse(model.getMethodAnnotations().values().isEmpty());
+    assertEquals(1, model.getMethodAnnotations().get("stringAnnotated").size());
+    assertEquals(3, model.getMethodAnnotations().get("stringAnnotated").get(0).getMembersNames().size());
+    assertNotNull(model.getMethodAnnotations().get("stringAnnotated").get(0).getMember("value"));
+    assertNotNull(model.getMethodAnnotations().get("stringAnnotated").get(0).getMember("array"));
+    assertNotNull(model.getMethodAnnotations().get("stringAnnotated").get(0).getMember("defaultValue"));
+    assertEquals("aString", model.getMethodAnnotations().get("stringAnnotated").get(0).getMember("value"));
+    assertArrayEquals(new String[]{"one", "two"}, ((List) model.getMethodAnnotations().get("stringAnnotated").get(0).getMember("array")).toArray());
+    assertEquals("defaultString", model.getMethodAnnotations().get("stringAnnotated").get(0).getMember("defaultValue"));
   }
 
   @Test

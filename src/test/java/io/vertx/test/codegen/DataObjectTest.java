@@ -20,7 +20,7 @@ import io.vertx.test.codegen.testdataobject.AbstractInheritsAbstract;
 import io.vertx.test.codegen.testdataobject.AbstractUncommentedProperty;
 import io.vertx.test.codegen.testdataobject.AdderNormalizationRules;
 import io.vertx.test.codegen.testdataobject.AdderWithNestedDataObject;
-import io.vertx.test.codegen.testdataobject.Annotated;
+import io.vertx.test.codegen.testdataobject.AnnotatedDataObject;
 import io.vertx.test.codegen.testdataobject.ApiObject;
 import io.vertx.test.codegen.testdataobject.CommentedDataObject;
 import io.vertx.test.codegen.testdataobject.CommentedProperty;
@@ -645,7 +645,7 @@ public class DataObjectTest {
 
   @Test
   public void testStringAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(Annotated.class);
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().get(0).getMembersNames().size());
@@ -659,7 +659,7 @@ public class DataObjectTest {
 
   @Test
   public void testShortAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(Annotated.class);
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithShortValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithShortValue").getAnnotations().get(0).getMembersNames().size());
@@ -673,7 +673,7 @@ public class DataObjectTest {
 
   @Test
   public void testLongAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(Annotated.class);
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithLongValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithLongValue").getAnnotations().get(0).getMembersNames().size());
@@ -687,7 +687,7 @@ public class DataObjectTest {
 
   @Test
   public void testIntegerAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(Annotated.class);
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithIntegerValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithIntegerValue").getAnnotations().get(0).getMembersNames().size());
@@ -701,7 +701,7 @@ public class DataObjectTest {
 
   @Test
   public void testFloatAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(Annotated.class);
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithFloatValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithFloatValue").getAnnotations().get(0).getMembersNames().size());
@@ -715,7 +715,7 @@ public class DataObjectTest {
 
   @Test
   public void testAnnotationAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(Annotated.class);
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
     AnnotationValueInfo expected = model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().get(0);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithAnnotationValue").getAnnotations().size());
@@ -728,7 +728,7 @@ public class DataObjectTest {
 
   @Test
   public void testBooleanAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(Annotated.class);
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithBooleanValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithBooleanValue").getAnnotations().get(0).getMembersNames().size());
@@ -742,7 +742,7 @@ public class DataObjectTest {
 
   @Test
   public void testEnumAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(Annotated.class);
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithEnumValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithEnumValue").getAnnotations().get(0).getMembersNames().size());
@@ -756,7 +756,7 @@ public class DataObjectTest {
 
   @Test
   public void testByteAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(Annotated.class);
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithByteValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithByteValue").getAnnotations().get(0).getMembersNames().size());
@@ -770,7 +770,7 @@ public class DataObjectTest {
 
   @Test
   public void testCharAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(Annotated.class);
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithCharValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithCharValue").getAnnotations().get(0).getMembersNames().size());
@@ -784,7 +784,7 @@ public class DataObjectTest {
 
   @Test
   public void testClassAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(Annotated.class);
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithClassValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithClassValue").getAnnotations().get(0).getMembersNames().size());
@@ -805,7 +805,7 @@ public class DataObjectTest {
 
   @Test
   public void testDoubleAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(Annotated.class);
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithDoubleValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithDoubleValue").getAnnotations().get(0).getMembersNames().size());
