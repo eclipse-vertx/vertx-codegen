@@ -25,47 +25,17 @@ import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.doc.Text;
 import io.vertx.codegen.doc.Token;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
-import io.vertx.codegen.type.AnnotationTypeInfoFactory;
-import io.vertx.codegen.type.AnnotationValueInfo;
-import io.vertx.codegen.type.ApiTypeInfo;
-import io.vertx.codegen.type.ClassKind;
-import io.vertx.codegen.type.ClassTypeInfo;
-import io.vertx.codegen.type.DataObjectTypeInfo;
-import io.vertx.codegen.type.ParameterizedTypeInfo;
-import io.vertx.codegen.type.TypeInfo;
-import io.vertx.codegen.type.TypeMirrorFactory;
-import io.vertx.codegen.type.TypeUse;
-import io.vertx.codegen.type.TypeVariableInfo;
-import io.vertx.codegen.type.VoidTypeInfo;
+import io.vertx.codegen.type.*;
 
 import javax.annotation.processing.Messager;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
+import javax.lang.model.element.*;
+import javax.lang.model.type.*;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -76,8 +46,6 @@ import java.util.stream.Collectors;
  */
 public class ClassModel implements Model {
 
-  private static final Logger logger = Logger.getLogger(ClassModel.class.getName());
-
   public static final String VERTX_READ_STREAM = "io.vertx.core.streams.ReadStream";
   public static final String VERTX_WRITE_STREAM = "io.vertx.core.streams.WriteStream";
   public static final String VERTX_ASYNC_RESULT = "io.vertx.core.AsyncResult";
@@ -85,8 +53,8 @@ public class ClassModel implements Model {
   public static final String JSON_OBJECT = "io.vertx.core.json.JsonObject";
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
   public static final String VERTX = "io.vertx.core.Vertx";
-
-  protected final AnnotationTypeInfoFactory annotationTypeInfoFactory;
+  private static final Logger logger = Logger.getLogger(ClassModel.class.getName());
+  protected final AnnotationValueInfoFactory annotationValueInfoFactory;
   protected final MethodOverloadChecker methodOverloadChecker;
   protected final Messager messager;
   protected final TypeMirrorFactory typeFactory;
@@ -128,7 +96,20 @@ public class ClassModel implements Model {
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
     this.modelElt = modelElt;
-    this.annotationTypeInfoFactory = new AnnotationTypeInfoFactory(elementUtils, typeUtils);
+    this.annotationValueInfoFactory = new AnnotationValueInfoFactory(elementUtils, typeUtils);
+  }
+
+  private static boolean rawTypeIs(TypeInfo type, Class<?>... classes) {
+    if (type instanceof ParameterizedTypeInfo) {
+      String rawClassName = type.getRaw().getName();
+      for (Class<?> c : classes) {
+        if (rawClassName.equals(c.getName())) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   @Override
@@ -476,7 +457,6 @@ public class ClassModel implements Model {
     return false;
   }
 
-
   private boolean isVertxGenInterface(TypeInfo type, boolean allowParameterized) {
     if (type.getKind() == ClassKind.API) {
       if (type.isParameterized()) {
@@ -641,7 +621,7 @@ public class ClassModel implements Model {
             superTypeInfo.collectImports(collectedTypes);
           }
         }
-        elem.getAnnotationMirrors().stream().map(annotationTypeInfoFactory::processAnnotation).forEach(annotations::add);
+        elem.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).forEach(annotations::add);
         break;
       }
     }
@@ -891,7 +871,7 @@ public class ClassModel implements Model {
     if (methodsByName == null) {
       methodsByName = new ArrayList<>();
       methodMap.put(methodInfo.getName(), methodsByName);
-      methodAnnotationsMap.put(methodInfo.getName(), modelMethod.getAnnotationMirrors().stream().map(annotationTypeInfoFactory::processAnnotation).collect(Collectors.toList()));
+      methodAnnotationsMap.put(methodInfo.getName(), modelMethod.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList()));
     }
     methodsByName.add(methodInfo);
     methodInfo.collectImports(collectedTypes);
@@ -990,18 +970,5 @@ public class ClassModel implements Model {
     vars.put("instanceMethods", getInstanceMethods());
     vars.put("staticMethods", getStaticMethods());
     return vars;
-  }
-
-  private static boolean rawTypeIs(TypeInfo type, Class<?>... classes) {
-    if (type instanceof ParameterizedTypeInfo) {
-      String rawClassName = type.getRaw().getName();
-      for (Class<?> c : classes) {
-        if (rawClassName.equals(c.getName())) {
-          return true;
-        }
-      }
-    }
-
-    return false;
   }
 }

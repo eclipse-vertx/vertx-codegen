@@ -3,44 +3,21 @@ package io.vertx.codegen;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.doc.Doc;
-import io.vertx.codegen.type.AnnotationTypeInfoFactory;
-import io.vertx.codegen.type.AnnotationValueInfo;
-import io.vertx.codegen.type.ClassKind;
-import io.vertx.codegen.type.ClassTypeInfo;
-import io.vertx.codegen.type.ParameterizedTypeInfo;
-import io.vertx.codegen.type.TypeInfo;
-import io.vertx.codegen.type.TypeMirrorFactory;
+import io.vertx.codegen.type.*;
 import io.vertx.core.json.JsonObject;
 
 import javax.annotation.processing.Messager;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -52,21 +29,21 @@ public class DataObjectModel implements Model {
   private final Doc.Factory docFactory;
   private final TypeMirrorFactory typeFactory;
   private final TypeElement modelElt;
+  private final Map<String, PropertyInfo> propertyMap = new LinkedHashMap<>();
+  private final Set<ClassTypeInfo> superTypes = new LinkedHashSet<>();
+  private final Set<ClassTypeInfo> abstractSuperTypes = new LinkedHashSet<>();
+  private final Set<ClassTypeInfo> importedTypes = new LinkedHashSet<>();
   private boolean processed;
   private boolean concrete;
   private boolean isClass;
   private boolean generateConverter;
   private boolean inheritConverter;
   private int constructors;
-  private final Map<String, PropertyInfo> propertyMap = new LinkedHashMap<>();
-  private final Set<ClassTypeInfo> superTypes = new LinkedHashSet<>();
   private ClassTypeInfo superType;
-  private final Set<ClassTypeInfo> abstractSuperTypes = new LinkedHashSet<>();
-  private final Set<ClassTypeInfo> importedTypes = new LinkedHashSet<>();
   private ClassTypeInfo type;
   private Doc doc;
   private boolean jsonifiable;
-  private AnnotationTypeInfoFactory annotationTypeInfoFactory;
+  private AnnotationValueInfoFactory annotationValueInfoFactory;
 
   public DataObjectModel(Elements elementUtils, Types typeUtils, TypeElement modelElt, Messager messager) {
     this.elementUtils = elementUtils;
@@ -74,7 +51,7 @@ public class DataObjectModel implements Model {
     this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils);
     this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, typeFactory, modelElt);
     this.modelElt = modelElt;
-    this.annotationTypeInfoFactory = new AnnotationTypeInfoFactory(elementUtils, typeUtils);
+    this.annotationValueInfoFactory = new AnnotationValueInfoFactory(elementUtils, typeUtils);
   }
 
   @Override
@@ -523,7 +500,7 @@ public class DataObjectModel implements Model {
     List<AnnotationValueInfo> annotationValueInfos = new ArrayList<>();
 
     if (annotationMirrors != null) {
-      annotationMirrors.stream().map(annotationTypeInfoFactory::processAnnotation).forEach(annotationValueInfos::add);
+      annotationMirrors.stream().map(annotationValueInfoFactory::processAnnotation).forEach(annotationValueInfos::add);
     }
 
     PropertyInfo property = new PropertyInfo(declared, name, doc, propType,
