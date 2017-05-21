@@ -1,7 +1,13 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.doc.Doc;
+import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.TypeInfo;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Describes a property of a {@link io.vertx.codegen.DataObjectModel data object model}.
@@ -19,14 +25,16 @@ public class PropertyInfo {
   final String adderMethod;
   final String getterMethod;
   final boolean jsonifiable;
+  final Map<String, AnnotationValueInfo> annotations;
 
   public PropertyInfo(boolean declared, String name, Doc doc, TypeInfo type, String setterMethod, String adderMethod, String getterMethod,
-                      PropertyKind kind, boolean jsonifiable) {
+                      List<AnnotationValueInfo> annotations, PropertyKind kind, boolean jsonifiable) {
     this.kind = kind;
     this.declared = declared;
     this.name = name;
     this.doc = doc;
     this.type = type;
+    this.annotations = annotations.stream().collect(HashMap::new, (m, a) -> m.put(a.getSimpleName(), a), HashMap::putAll);
     this.adderMethod = adderMethod;
     this.setterMethod = setterMethod;
     this.getterMethod = getterMethod;
@@ -35,7 +43,7 @@ public class PropertyInfo {
 
   /**
    * @return true if the property is declared by the its data object, that means it does not override the same property
-   *   from other data object ancestors
+   * from other data object ancestors
    */
   public boolean isDeclared() {
     return declared;
@@ -89,6 +97,17 @@ public class PropertyInfo {
   }
 
   /**
+   * @return the list of {@link AnnotationValueInfo} for this property
+   */
+  public List<AnnotationValueInfo> getAnnotations() {
+    return new ArrayList<>(annotations.values());
+  }
+
+  public AnnotationValueInfo getAnnotation(String annotationName) {
+    return annotations.get(annotationName);
+  }
+
+  /**
    * @return true if the property is managed as a single value
    */
   public boolean isValue() {
@@ -128,6 +147,13 @@ public class PropertyInfo {
    */
   public boolean isAdder() {
     return adderMethod != null;
+  }
+
+  /**
+   * @return true if the property is annotated, either on field or method
+   */
+  public boolean isAnnotated() {
+    return !annotations.isEmpty();
   }
 
   /**

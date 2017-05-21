@@ -1,10 +1,12 @@
 package io.vertx.codegen;
 
-import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
+import io.vertx.codegen.type.AnnotationValueInfo;
+import io.vertx.codegen.type.AnnotationValueInfoFactory;
 
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -16,10 +18,12 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -85,35 +89,6 @@ public class CodeGen {
                         getProxyModels())))));
   }
 
-  private static class ModelEntry<E extends Element, M extends Model> implements Map.Entry<E, M> {
-    private final E key;
-    private final Supplier<M> supplier;
-    private M value;
-
-    private ModelEntry(E key, Supplier<M> supplier) {
-      this.key = key;
-      this.supplier = supplier;
-    }
-
-    @Override
-    public E getKey() {
-      return key;
-    }
-
-    @Override
-    public M getValue() {
-      if (value == null) {
-        value = supplier.get();
-      }
-      return value;
-    }
-
-    @Override
-    public M setValue(M value) {
-      throw new UnsupportedOperationException();
-    }
-  }
-
   public Stream<Map.Entry<TypeElement, ClassModel>> getClassModels() {
     return classes.entrySet().stream().map(entry -> new ModelEntry<>(entry.getValue(), () -> getClassModel(entry.getKey())));
   }
@@ -169,7 +144,9 @@ public class CodeGen {
       throw new GenException(element, "Invalid group package name " + groupPackage);
     }
     ModuleInfo info = new ModuleInfo(modulePackage, moduleName, groupPackage);
-    return new ModuleModel(element, info);
+    AnnotationValueInfoFactory annotationFactory = new AnnotationValueInfoFactory(elementUtils, typeUtils);
+    List<AnnotationValueInfo> annotationValueInfos = element.getAnnotationMirrors().stream().map(annotationFactory::processAnnotation).collect(Collectors.toList());
+    return new ModuleModel(element, info, annotationValueInfos);
   }
 
   public PackageModel getPackageModel(String fqn) {
@@ -217,6 +194,35 @@ public class CodeGen {
       ProxyModel model = new ProxyModel(methodOverloadChecker, messager, classes, elementUtils, typeUtils, element);
       model.process();
       return model;
+    }
+  }
+
+  private static class ModelEntry<E extends Element, M extends Model> implements Map.Entry<E, M> {
+    private final E key;
+    private final Supplier<M> supplier;
+    private M value;
+
+    private ModelEntry(E key, Supplier<M> supplier) {
+      this.key = key;
+      this.supplier = supplier;
+    }
+
+    @Override
+    public E getKey() {
+      return key;
+    }
+
+    @Override
+    public M getValue() {
+      if (value == null) {
+        value = supplier.get();
+      }
+      return value;
+    }
+
+    @Override
+    public M setValue(M value) {
+      throw new UnsupportedOperationException();
     }
   }
 }

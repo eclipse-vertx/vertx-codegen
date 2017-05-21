@@ -691,6 +691,7 @@
  *
  * Models are processed by https://en.wikisource.org/wiki/MVEL_Language_Guide[MVEL] templates, when a template is executed it gets access to implicit properties
  * (i.e properties that are declared by the model).
+ * For ClassModel and DataObjectModel, annotations on class and methods can be accessed too. For ModuleModel, annotations on package can be accessed.
  *
  * === Class model
  *

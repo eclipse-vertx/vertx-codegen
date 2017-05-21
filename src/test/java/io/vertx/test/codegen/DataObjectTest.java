@@ -1,36 +1,62 @@
 package io.vertx.test.codegen;
 
+import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.GenException;
 import io.vertx.codegen.Generator;
-import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.PropertyKind;
-import io.vertx.codegen.type.ClassTypeInfo;
-import io.vertx.codegen.type.TypeReflectionFactory;
-import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.doc.Doc;
+import io.vertx.codegen.type.AnnotationValueInfo;
+import io.vertx.codegen.type.ClassTypeInfo;
+import io.vertx.codegen.type.TypeInfo;
+import io.vertx.codegen.type.TypeReflectionFactory;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.test.codegen.annotations.TestEnum;
 import io.vertx.test.codegen.testapi.InterfaceDataObject;
-import io.vertx.test.codegen.testdataobject.DataObjectWithEmptyConstructor;
-import io.vertx.test.codegen.testdataobject.DataObjectWithNoJsonObjectConstructor;
 import io.vertx.test.codegen.testdataobject.Abstract;
 import io.vertx.test.codegen.testdataobject.AbstractCommentedProperty;
 import io.vertx.test.codegen.testdataobject.AbstractInheritsAbstract;
 import io.vertx.test.codegen.testdataobject.AbstractUncommentedProperty;
 import io.vertx.test.codegen.testdataobject.AdderNormalizationRules;
 import io.vertx.test.codegen.testdataobject.AdderWithNestedDataObject;
+import io.vertx.test.codegen.testdataobject.AnnotatedDataObject;
 import io.vertx.test.codegen.testdataobject.ApiObject;
+import io.vertx.test.codegen.testdataobject.CommentedDataObject;
+import io.vertx.test.codegen.testdataobject.CommentedProperty;
+import io.vertx.test.codegen.testdataobject.CommentedPropertyInheritedFromCommentedProperty;
+import io.vertx.test.codegen.testdataobject.CommentedPropertyOverridesCommentedProperty;
+import io.vertx.test.codegen.testdataobject.CommentedPropertyOverridesUncommentedProperty;
+import io.vertx.test.codegen.testdataobject.Concrete;
+import io.vertx.test.codegen.testdataobject.ConcreteExtendsConcrete;
+import io.vertx.test.codegen.testdataobject.ConcreteImplementsFromDataObject;
+import io.vertx.test.codegen.testdataobject.ConcreteImplementsFromNonDataObject;
+import io.vertx.test.codegen.testdataobject.ConcreteImplementsNonDataObject;
+import io.vertx.test.codegen.testdataobject.ConcreteInheritsAbstract;
+import io.vertx.test.codegen.testdataobject.ConcreteOverridesFromAbstractDataObject;
+import io.vertx.test.codegen.testdataobject.ConcreteOverridesFromDataObject;
+import io.vertx.test.codegen.testdataobject.ConcreteOverridesFromNonDataObject;
 import io.vertx.test.codegen.testdataobject.ConverterDataObject;
+import io.vertx.test.codegen.testdataobject.DataObjectInterfaceWithIgnoredProperty;
+import io.vertx.test.codegen.testdataobject.DataObjectWithEmptyConstructor;
+import io.vertx.test.codegen.testdataobject.DataObjectWithNoJsonObjectConstructor;
 import io.vertx.test.codegen.testdataobject.DataObjectWithObjectProperty;
+import io.vertx.test.codegen.testdataobject.EmptyDataObject;
 import io.vertx.test.codegen.testdataobject.Enumerated;
+import io.vertx.test.codegen.testdataobject.IgnoreMethods;
+import io.vertx.test.codegen.testdataobject.ImportedNested;
+import io.vertx.test.codegen.testdataobject.ImportedSubinterface;
 import io.vertx.test.codegen.testdataobject.InheritingConverterDataObject;
+import io.vertx.test.codegen.testdataobject.JsonObjectAdder;
+import io.vertx.test.codegen.testdataobject.JsonObjectSetter;
 import io.vertx.test.codegen.testdataobject.NoConverterDataObject;
-import io.vertx.test.codegen.testdataobject.PropertyListAdders;
+import io.vertx.test.codegen.testdataobject.Parameterized;
 import io.vertx.test.codegen.testdataobject.PropertyGetters;
-import io.vertx.test.codegen.testdataobject.PropertyListGettersAdders;
 import io.vertx.test.codegen.testdataobject.PropertyGettersSetters;
+import io.vertx.test.codegen.testdataobject.PropertyListAdders;
+import io.vertx.test.codegen.testdataobject.PropertyListGettersAdders;
 import io.vertx.test.codegen.testdataobject.PropertyListGettersSetters;
+import io.vertx.test.codegen.testdataobject.PropertyListSetters;
 import io.vertx.test.codegen.testdataobject.PropertyMapAdders;
 import io.vertx.test.codegen.testdataobject.PropertyMapGettersAdders;
 import io.vertx.test.codegen.testdataobject.PropertyMapGettersSetters;
@@ -38,40 +64,18 @@ import io.vertx.test.codegen.testdataobject.PropertyMapSetters;
 import io.vertx.test.codegen.testdataobject.PropertySetGettersSetters;
 import io.vertx.test.codegen.testdataobject.PropertySetSetters;
 import io.vertx.test.codegen.testdataobject.PropertySetters;
-import io.vertx.test.codegen.testdataobject.CommentedDataObject;
-import io.vertx.test.codegen.testdataobject.CommentedProperty;
-import io.vertx.test.codegen.testdataobject.CommentedPropertyInheritedFromCommentedProperty;
-import io.vertx.test.codegen.testdataobject.CommentedPropertyOverridesCommentedProperty;
-import io.vertx.test.codegen.testdataobject.CommentedPropertyOverridesUncommentedProperty;
-import io.vertx.test.codegen.testdataobject.ConcreteOverridesFromAbstractDataObject;
-import io.vertx.test.codegen.testdataobject.DataObjectInterfaceWithIgnoredProperty;
-import io.vertx.test.codegen.testdataobject.ToJsonDataObject;
-import io.vertx.test.codegen.testdataobject.UncommentedPropertyOverridesSuperCommentedProperty;
-import io.vertx.test.codegen.testdataobject.Concrete;
-import io.vertx.test.codegen.testdataobject.ConcreteInheritsAbstract;
-import io.vertx.test.codegen.testdataobject.ConcreteExtendsConcrete;
-import io.vertx.test.codegen.testdataobject.ConcreteImplementsNonDataObject;
-import io.vertx.test.codegen.testdataobject.ConcreteOverridesFromNonDataObject;
-import io.vertx.test.codegen.testdataobject.ConcreteOverridesFromDataObject;
-import io.vertx.test.codegen.testdataobject.ConcreteImplementsFromNonDataObject;
-import io.vertx.test.codegen.testdataobject.ConcreteImplementsFromDataObject;
-import io.vertx.test.codegen.testdataobject.EmptyDataObject;
-import io.vertx.test.codegen.testdataobject.IgnoreMethods;
-import io.vertx.test.codegen.testdataobject.ImportedNested;
-import io.vertx.test.codegen.testdataobject.ImportedSubinterface;
-import io.vertx.test.codegen.testdataobject.JsonObjectAdder;
-import io.vertx.test.codegen.testdataobject.JsonObjectSetter;
-import io.vertx.test.codegen.testdataobject.PropertyListSetters;
-import io.vertx.test.codegen.testdataobject.UncommentedProperty;
-import io.vertx.test.codegen.testdataobject.Parameterized;
 import io.vertx.test.codegen.testdataobject.SetterNormalizationRules;
 import io.vertx.test.codegen.testdataobject.SetterWithNestedDataObject;
 import io.vertx.test.codegen.testdataobject.SetterWithNonFluentReturnType;
+import io.vertx.test.codegen.testdataobject.ToJsonDataObject;
+import io.vertx.test.codegen.testdataobject.UncommentedProperty;
 import io.vertx.test.codegen.testdataobject.UncommentedPropertyOverridesAncestorSuperCommentedProperty;
+import io.vertx.test.codegen.testdataobject.UncommentedPropertyOverridesSuperCommentedProperty;
 import io.vertx.test.codegen.testdataobject.imported.Imported;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -637,6 +641,180 @@ public class DataObjectTest {
   public void testToJson() throws Exception {
     assertTrue(new Generator().generateDataObject(ToJsonDataObject.class).isJsonifiable());
     assertFalse(new Generator().generateDataObject(EmptyDataObject.class).isJsonifiable());
+  }
+
+  @Test
+  public void testStringAnnotated() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
+    assertEquals(1, model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().size());
+    assertEquals(3, model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().get(0).getMembersNames().size());
+    assertNotNull(model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().get(0).getMember("value"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().get(0).getMember("array"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().get(0).getMember("defaultValue"));
+    assertEquals("aString", model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().get(0).getMember("value"));
+    assertArrayEquals(new String[]{"one", "two"}, ((List) model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().get(0).getMember("array")).toArray());
+    assertEquals("defaultString", model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().get(0).getMember("defaultValue"));
+  }
+
+  @Test
+  public void testShortAnnotated() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
+    assertEquals(1, model.getPropertyMap().get("annotatedWithShortValue").getAnnotations().size());
+    assertEquals(3, model.getPropertyMap().get("annotatedWithShortValue").getAnnotations().get(0).getMembersNames().size());
+    assertNotNull(model.getPropertyMap().get("annotatedWithShortValue").getAnnotations().get(0).getMember("value"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithShortValue").getAnnotations().get(0).getMember("array"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithShortValue").getAnnotations().get(0).getMember("defaultValue"));
+    assertEquals(1, (short) model.getPropertyMap().get("annotatedWithShortValue").getAnnotations().get(0).getMember("value"));
+    assertArrayEquals(new Short[]{1, 2}, ((List) model.getPropertyMap().get("annotatedWithShortValue").getAnnotations().get(0).getMember("array")).toArray());
+    assertEquals(1, (short) model.getPropertyMap().get("annotatedWithShortValue").getAnnotations().get(0).getMember("defaultValue"));
+  }
+
+  @Test
+  public void testLongAnnotated() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
+    assertEquals(1, model.getPropertyMap().get("annotatedWithLongValue").getAnnotations().size());
+    assertEquals(3, model.getPropertyMap().get("annotatedWithLongValue").getAnnotations().get(0).getMembersNames().size());
+    assertNotNull(model.getPropertyMap().get("annotatedWithLongValue").getAnnotations().get(0).getMember("value"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithLongValue").getAnnotations().get(0).getMember("array"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithLongValue").getAnnotations().get(0).getMember("defaultValue"));
+    assertEquals(1, (long) model.getPropertyMap().get("annotatedWithLongValue").getAnnotations().get(0).getMember("value"));
+    assertArrayEquals(new Long[]{1L, 2L}, ((List) model.getPropertyMap().get("annotatedWithLongValue").getAnnotations().get(0).getMember("array")).toArray());
+    assertEquals(1, (long) model.getPropertyMap().get("annotatedWithLongValue").getAnnotations().get(0).getMember("defaultValue"));
+  }
+
+  @Test
+  public void testIntegerAnnotated() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
+    assertEquals(1, model.getPropertyMap().get("annotatedWithIntegerValue").getAnnotations().size());
+    assertEquals(3, model.getPropertyMap().get("annotatedWithIntegerValue").getAnnotations().get(0).getMembersNames().size());
+    assertNotNull(model.getPropertyMap().get("annotatedWithIntegerValue").getAnnotations().get(0).getMember("value"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithIntegerValue").getAnnotations().get(0).getMember("array"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithIntegerValue").getAnnotations().get(0).getMember("defaultValue"));
+    assertEquals(1, (int) model.getPropertyMap().get("annotatedWithIntegerValue").getAnnotations().get(0).getMember("value"));
+    assertArrayEquals(new Integer[]{1, 2}, ((List) model.getPropertyMap().get("annotatedWithIntegerValue").getAnnotations().get(0).getMember("array")).toArray());
+    assertEquals(1, (int) model.getPropertyMap().get("annotatedWithIntegerValue").getAnnotations().get(0).getMember("defaultValue"));
+  }
+
+  @Test
+  public void testFloatAnnotated() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
+    assertEquals(1, model.getPropertyMap().get("annotatedWithFloatValue").getAnnotations().size());
+    assertEquals(3, model.getPropertyMap().get("annotatedWithFloatValue").getAnnotations().get(0).getMembersNames().size());
+    assertNotNull(model.getPropertyMap().get("annotatedWithFloatValue").getAnnotations().get(0).getMember("value"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithFloatValue").getAnnotations().get(0).getMember("array"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithFloatValue").getAnnotations().get(0).getMember("defaultValue"));
+    assertEquals(1.0f, (float) model.getPropertyMap().get("annotatedWithFloatValue").getAnnotations().get(0).getMember("value"), 0);
+    assertArrayEquals(new Float[]{1.0f, 2.0f}, ((List) model.getPropertyMap().get("annotatedWithFloatValue").getAnnotations().get(0).getMember("array")).toArray());
+    assertEquals(1.0f, (float) model.getPropertyMap().get("annotatedWithFloatValue").getAnnotations().get(0).getMember("defaultValue"), 0);
+  }
+
+  @Test
+  public void testAnnotationAnnotated() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    AnnotationValueInfo expected = model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().get(0);
+    assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
+    assertEquals(1, model.getPropertyMap().get("annotatedWithAnnotationValue").getAnnotations().size());
+    assertEquals(2, model.getPropertyMap().get("annotatedWithAnnotationValue").getAnnotations().get(0).getMembersNames().size());
+    assertNotNull(model.getPropertyMap().get("annotatedWithAnnotationValue").getAnnotations().get(0).getMember("value"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithAnnotationValue").getAnnotations().get(0).getMember("array"));
+    assertEquals(expected, model.getPropertyMap().get("annotatedWithAnnotationValue").getAnnotations().get(0).getMember("value"));
+    assertArrayEquals(new AnnotationValueInfo[]{expected, expected}, ((List) model.getPropertyMap().get("annotatedWithAnnotationValue").getAnnotations().get(0).getMember("array")).toArray());
+  }
+
+  @Test
+  public void testBooleanAnnotated() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
+    assertEquals(1, model.getPropertyMap().get("annotatedWithBooleanValue").getAnnotations().size());
+    assertEquals(3, model.getPropertyMap().get("annotatedWithBooleanValue").getAnnotations().get(0).getMembersNames().size());
+    assertNotNull(model.getPropertyMap().get("annotatedWithBooleanValue").getAnnotations().get(0).getMember("value"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithBooleanValue").getAnnotations().get(0).getMember("array"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithBooleanValue").getAnnotations().get(0).getMember("defaultValue"));
+    assertEquals(true, model.getPropertyMap().get("annotatedWithBooleanValue").getAnnotations().get(0).getMember("value"));
+    assertArrayEquals(new Boolean[]{true, true}, ((List) model.getPropertyMap().get("annotatedWithBooleanValue").getAnnotations().get(0).getMember("array")).toArray());
+    assertEquals(true, model.getPropertyMap().get("annotatedWithBooleanValue").getAnnotations().get(0).getMember("defaultValue"));
+  }
+
+  @Test
+  public void testEnumAnnotated() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
+    assertEquals(1, model.getPropertyMap().get("annotatedWithEnumValue").getAnnotations().size());
+    assertEquals(3, model.getPropertyMap().get("annotatedWithEnumValue").getAnnotations().get(0).getMembersNames().size());
+    assertNotNull(model.getPropertyMap().get("annotatedWithEnumValue").getAnnotations().get(0).getMember("value"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithEnumValue").getAnnotations().get(0).getMember("array"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithEnumValue").getAnnotations().get(0).getMember("defaultValue"));
+    assertEquals(TestEnum.TEST.name(), model.getPropertyMap().get("annotatedWithEnumValue").getAnnotations().get(0).getMember("value"));
+    assertArrayEquals(new String[]{TestEnum.TEST.name(), TestEnum.TEST.name()}, ((List) model.getPropertyMap().get("annotatedWithEnumValue").getAnnotations().get(0).getMember("array")).toArray());
+    assertEquals(TestEnum.TEST.name(), model.getPropertyMap().get("annotatedWithEnumValue").getAnnotations().get(0).getMember("defaultValue"));
+  }
+
+  @Test
+  public void testByteAnnotated() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
+    assertEquals(1, model.getPropertyMap().get("annotatedWithByteValue").getAnnotations().size());
+    assertEquals(3, model.getPropertyMap().get("annotatedWithByteValue").getAnnotations().get(0).getMembersNames().size());
+    assertNotNull(model.getPropertyMap().get("annotatedWithByteValue").getAnnotations().get(0).getMember("value"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithByteValue").getAnnotations().get(0).getMember("array"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithByteValue").getAnnotations().get(0).getMember("defaultValue"));
+    assertEquals(1, (byte) model.getPropertyMap().get("annotatedWithByteValue").getAnnotations().get(0).getMember("value"));
+    assertArrayEquals(new Byte[]{0, 1}, ((List) model.getPropertyMap().get("annotatedWithByteValue").getAnnotations().get(0).getMember("array")).toArray());
+    assertEquals(1, (byte) model.getPropertyMap().get("annotatedWithByteValue").getAnnotations().get(0).getMember("defaultValue"));
+  }
+
+  @Test
+  public void testCharAnnotated() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
+    assertEquals(1, model.getPropertyMap().get("annotatedWithCharValue").getAnnotations().size());
+    assertEquals(3, model.getPropertyMap().get("annotatedWithCharValue").getAnnotations().get(0).getMembersNames().size());
+    assertNotNull(model.getPropertyMap().get("annotatedWithCharValue").getAnnotations().get(0).getMember("value"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithCharValue").getAnnotations().get(0).getMember("array"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithCharValue").getAnnotations().get(0).getMember("defaultValue"));
+    assertEquals('a', (char) model.getPropertyMap().get("annotatedWithCharValue").getAnnotations().get(0).getMember("value"));
+    assertArrayEquals(new Character[]{'a', 'b'}, ((List) model.getPropertyMap().get("annotatedWithCharValue").getAnnotations().get(0).getMember("array")).toArray());
+    assertEquals('a', (char) model.getPropertyMap().get("annotatedWithCharValue").getAnnotations().get(0).getMember("defaultValue"));
+  }
+
+  @Test
+  public void testClassAnnotated() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
+    assertEquals(1, model.getPropertyMap().get("annotatedWithClassValue").getAnnotations().size());
+    assertEquals(3, model.getPropertyMap().get("annotatedWithClassValue").getAnnotations().get(0).getMembersNames().size());
+    assertNotNull(model.getPropertyMap().get("annotatedWithClassValue").getAnnotations().get(0).getMember("value"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithClassValue").getAnnotations().get(0).getMember("array"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithClassValue").getAnnotations().get(0).getMember("defaultValue"));
+    assertEquals(String.class, Class.forName(((ClassTypeInfo) model.getPropertyMap().get("annotatedWithClassValue").getAnnotations().get(0).getMember("value")).getName()));
+    assertArrayEquals(new Class[]{String.class, String.class}, ((List) model.getPropertyMap().get("annotatedWithClassValue").getAnnotations().get(0).getMember("array")).stream().map(i -> {
+      try {
+        return Class.forName(((ClassTypeInfo) i).getName());
+      } catch (ClassNotFoundException e) {
+        e.printStackTrace();
+        return null;
+      }
+    }).toArray());
+    assertEquals(String.class, Class.forName(((ClassTypeInfo) model.getPropertyMap().get("annotatedWithClassValue").getAnnotations().get(0).getMember("defaultValue")).getName()));
+  }
+
+  @Test
+  public void testDoubleAnnotated() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
+    assertEquals(1, model.getPropertyMap().get("annotatedWithDoubleValue").getAnnotations().size());
+    assertEquals(3, model.getPropertyMap().get("annotatedWithDoubleValue").getAnnotations().get(0).getMembersNames().size());
+    assertNotNull(model.getPropertyMap().get("annotatedWithDoubleValue").getAnnotations().get(0).getMember("value"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithDoubleValue").getAnnotations().get(0).getMember("array"));
+    assertNotNull(model.getPropertyMap().get("annotatedWithDoubleValue").getAnnotations().get(0).getMember("defaultValue"));
+    assertEquals(1.0, (double) model.getPropertyMap().get("annotatedWithDoubleValue").getAnnotations().get(0).getMember("value"), 0);
+    assertArrayEquals(new Double[]{1.0, 2.0}, ((List) model.getPropertyMap().get("annotatedWithDoubleValue").getAnnotations().get(0).getMember("array")).toArray());
+    assertEquals(1.0, (double) model.getPropertyMap().get("annotatedWithDoubleValue").getAnnotations().get(0).getMember("defaultValue"), 0);
   }
 
   private static void assertProperty(
