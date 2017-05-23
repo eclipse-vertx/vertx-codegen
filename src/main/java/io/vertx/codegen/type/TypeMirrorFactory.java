@@ -7,6 +7,7 @@ import io.vertx.codegen.TypeParamInfo;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.codegen.annotations.GenTypeParams.Param;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -15,6 +16,7 @@ import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
@@ -133,10 +135,11 @@ public class TypeMirrorFactory {
       List<? extends TypeMirror> typeArgs = type.getTypeArguments();
       if (typeArgs.size() > 0) {
         List<TypeInfo> typeArguments;
-        typeArguments = new ArrayList<>(typeArgs.size());
+        typeArguments = new ArrayList<>(typeArgs.size());        
         for (int i = 0; i < typeArgs.size(); i++) {
           TypeUse argUse = use != null ? use.getArg(i) : null;
-          TypeInfo typeArgDesc = create(argUse, typeArgs.get(i));
+          Param annotation = use != null ? use.getUsedAnnotation(typeArgs.get(i).toString()) : null;
+          TypeInfo typeArgDesc = annotation != null ? create(argUse, annotation) : create(argUse, typeArgs.get(i));
           // Need to check it is an interface type
           typeArguments.add(typeArgDesc);
         }
@@ -147,6 +150,19 @@ public class TypeMirrorFactory {
     }
   }
 
+  private TypeInfo create(TypeUse use, Param annotation) {
+    Class<?> gen;
+    try
+    {
+      gen = annotation.generated(); // this should throw
+    }
+    catch( MirroredTypeException mte )
+    {
+        return create(use, mte.getTypeMirror());
+    }
+    return TypeReflectionFactory.create(gen); // can this ever happen ??
+  }
+  
   public TypeVariableInfo create(TypeUse use, TypeVariable type) {
     TypeParameterElement elt = (TypeParameterElement) type.asElement();
     TypeParamInfo param = TypeParamInfo.create(elt);

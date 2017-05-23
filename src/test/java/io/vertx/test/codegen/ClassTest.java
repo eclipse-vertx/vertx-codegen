@@ -168,6 +168,7 @@ import io.vertx.test.codegen.testapi.SameSignatureMethod2;
 import io.vertx.test.codegen.testapi.VertxGenClass1;
 import io.vertx.test.codegen.testapi.VertxGenClass2;
 import io.vertx.test.codegen.testapi.VertxGenInterface;
+import io.vertx.test.codegen.testapi.MethodWithDefinedApiWildcardTypeArg;
 import io.vertx.test.codegen.testapi.fluent.AbstractInterfaceWithFluentMethods;
 import io.vertx.test.codegen.testapi.fluent.ConcreteInterfaceWithFluentMethods;
 import io.vertx.test.codegen.testapi.fluent.FluentMethodOverrideWithSuperType;
@@ -203,7 +204,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
-
+ 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
@@ -412,6 +413,11 @@ public class ClassTest extends ClassTestBase {
     assertGenInvalid(MethodWithInvalidWildcardTypeArg.class);
   }
 
+  @Test
+  public void testValidWildcardTypeArg() throws Exception {
+    new Generator().generateClass(MethodWithDefinedApiWildcardTypeArg.class);
+  }
+  
   // Test valid stuff
   // ----------------
 

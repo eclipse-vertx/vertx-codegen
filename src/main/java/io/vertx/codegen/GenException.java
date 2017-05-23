@@ -16,6 +16,12 @@ public class GenException extends RuntimeException {
     this.msg = msg;
   }
 
+  public GenException(Element element, String msg, Throwable cause) {
+    super(msg, cause);
+    this.element = element;
+    this.msg = msg;
+  }
+  
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
