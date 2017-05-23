@@ -2,6 +2,7 @@ package io.vertx.core.json;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -25,5 +26,7 @@ public class JsonArray implements Iterable<Object> {
   public List getList() {
     throw new UnsupportedOperationException();
   }
-
+  public Stream<Object> stream() {
+    throw new UnsupportedOperationException();
+  }
 }

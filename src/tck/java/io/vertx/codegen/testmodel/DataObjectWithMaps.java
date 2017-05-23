@@ -1,14 +1,13 @@
 package io.vertx.codegen.testmodel;
 
-import io.vertx.codegen.annotations.DataObject;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -35,9 +34,8 @@ public class DataObjectWithMaps {
   private static <T> Map<String, T> fromObject(JsonObject obj, String name, Function<Object, T> converter) {
     JsonObject array = obj.getJsonObject(name);
     if (array != null) {
-      Map<String, Object> map = array.getMap();
-      map.entrySet().forEach(entry -> entry.setValue(converter.apply(entry.getValue())));
-      return (Map<String, T>) map;
+      return array.stream()
+        .collect(Collectors.toMap(entry -> entry.getKey(), entry -> converter.apply(entry.getValue())));
     } else {
       return null;
     }
