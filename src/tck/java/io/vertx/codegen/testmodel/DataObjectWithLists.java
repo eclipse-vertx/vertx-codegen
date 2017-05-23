@@ -29,8 +29,7 @@ public class DataObjectWithLists {
   private static <T> List<T> fromArray(JsonObject obj, String name, Function<Object, T> converter) {
     JsonArray array = obj.getJsonArray(name);
     if (array != null) {
-      List<?> list = array.getList();
-      return list.stream().map(converter).collect(Collectors.toList());
+      return array.stream().map(converter).collect(Collectors.toList());
     } else {
       return null;
     }

@@ -1,6 +1,7 @@
 package io.vertx.core.json;
 
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -38,6 +39,9 @@ public class JsonObject  {
   public JsonArray getJsonArray(String name) { throw new UnsupportedOperationException(); }
   public byte[] getBinary(String name) { throw new UnsupportedOperationException(); }
   public Map<String, Object> getMap() {
+    throw new UnsupportedOperationException();
+  }
+  public Stream<Map.Entry<String, Object>> stream() {
     throw new UnsupportedOperationException();
   }
 }
