@@ -204,6 +204,7 @@
           Import-Package: \
           		  org.mvel2*;resolution:=optional, \
           		  io.vertx.core, \
+          		  io.vertx.core.buffer, \
                   *
                 -exportcontents: !*impl, !examples, *
           ]]></bnd>
