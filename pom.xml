@@ -203,6 +203,7 @@
           <bnd><![CDATA[
           Import-Package: \
           		  org.mvel2*;resolution:=optional, \
+          		  io.vertx.core, \
                   *
                 -exportcontents: !*impl, !examples, *
           ]]></bnd>
