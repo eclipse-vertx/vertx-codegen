@@ -21,6 +21,7 @@ import io.vertx.test.codegen.annotations.TestEnum;
  * @author <a href="mailto:cafeinoman@openaliasbox.org>Francois Delalleau</a>
  */
 @DataObject
+@EmptyAnnotation
 public class AnnotatedDataObject {
 
   @EmptyAnnotation

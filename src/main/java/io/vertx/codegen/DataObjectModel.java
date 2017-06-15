@@ -33,6 +33,7 @@ public class DataObjectModel implements Model {
   private final Set<ClassTypeInfo> superTypes = new LinkedHashSet<>();
   private final Set<ClassTypeInfo> abstractSuperTypes = new LinkedHashSet<>();
   private final Set<ClassTypeInfo> importedTypes = new LinkedHashSet<>();
+  private final AnnotationValueInfoFactory annotationValueInfoFactory;
   private boolean processed;
   private boolean concrete;
   private boolean isClass;
@@ -43,7 +44,7 @@ public class DataObjectModel implements Model {
   private ClassTypeInfo type;
   private Doc doc;
   private boolean jsonifiable;
-  private AnnotationValueInfoFactory annotationValueInfoFactory;
+  private List<AnnotationValueInfo> annotations = new ArrayList<>();
 
   public DataObjectModel(Elements elementUtils, Types typeUtils, TypeElement modelElt, Messager messager) {
     this.elementUtils = elementUtils;
@@ -129,6 +130,10 @@ public class DataObjectModel implements Model {
     return (constructors & 1) == 1;
   }
 
+  public List<AnnotationValueInfo> getAnnotations() {
+    return annotations;
+  }
+
   @Override
   public Map<String, Object> getVars() {
     Map<String, Object> vars = Model.super.getVars();
@@ -145,6 +150,7 @@ public class DataObjectModel implements Model {
     vars.put("abstractSuperTypes", abstractSuperTypes);
     vars.put("jsonifiable", jsonifiable);
     vars.put("hasEmptyConstructor", hasEmptyConstructor());
+    vars.put("annotations",getAnnotations());
     return vars;
   }
 
@@ -213,6 +219,8 @@ public class DataObjectModel implements Model {
         }
       }
     }
+
+    modelElt.getAnnotationMirrors().stream().filter(a -> !a.getAnnotationType().asElement().getSimpleName().contentEquals(DataObject.class.getSimpleName())).map(annotationValueInfoFactory::processAnnotation).forEach(annotations::add);
 
     processMethods(methodsElt);
 

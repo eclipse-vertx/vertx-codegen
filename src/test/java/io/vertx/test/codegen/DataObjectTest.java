@@ -12,6 +12,7 @@ import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.type.TypeReflectionFactory;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.test.codegen.annotations.EmptyAnnotation;
 import io.vertx.test.codegen.annotations.TestEnum;
 import io.vertx.test.codegen.testapi.InterfaceDataObject;
 import io.vertx.test.codegen.testdataobject.Abstract;
@@ -641,6 +642,13 @@ public class DataObjectTest {
   public void testToJson() throws Exception {
     assertTrue(new Generator().generateDataObject(ToJsonDataObject.class).isJsonifiable());
     assertFalse(new Generator().generateDataObject(EmptyDataObject.class).isJsonifiable());
+  }
+
+  @Test
+  public void testAnnotatatedObject() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    assertEquals(1, model.getAnnotations().size());
+    assertEquals(EmptyAnnotation.class.getSimpleName(),model.getAnnotations().get(0).getSimpleName());
   }
 
   @Test
