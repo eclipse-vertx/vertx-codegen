@@ -23,12 +23,24 @@ import io.vertx.test.codegen.annotations.TestEnum;
 @DataObject
 public class AnnotatedDataObject {
 
+  @EmptyAnnotation
+  private String annotatedField;
+
   public AnnotatedDataObject() {
 
   }
 
   public AnnotatedDataObject(JsonObject json) {
 
+  }
+
+  public String getAnnotatedField() {
+    return annotatedField;
+  }
+
+  public AnnotatedDataObject setAnnotatedField(String annotatedField) {
+    this.annotatedField = annotatedField;
+    return this;
   }
 
   @EmptyAnnotation

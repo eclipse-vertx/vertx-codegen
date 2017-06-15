@@ -644,6 +644,14 @@ public class DataObjectTest {
   }
 
   @Test
+  public void testAnnotatedField() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
+    assertEquals(1, model.getPropertyMap().get("annotatedField").getAnnotations().size());
+    assertEquals(0, model.getPropertyMap().get("annotatedField").getAnnotations().get(0).getMembersNames().size());
+  }
+
+  @Test
   public void testStringAnnotated() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
