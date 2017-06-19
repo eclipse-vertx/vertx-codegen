@@ -8,12 +8,14 @@ import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.streams.ReadStream;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,14 +58,26 @@ public class TypeReflectionFactory {
         } finally {
           Thread.currentThread().setContextClassLoader(loader);
         }
+        List<AnnotationValueInfo> annotations = new ArrayList<>();
+        if (classType.getAnnotations().length > 0) {
+          annotations.addAll(Stream.of(classType.getAnnotations()).map(a -> new AnnotationValueInfo(a.annotationType().getName(), Stream.of(a.annotationType().getDeclaredMethods()).collect(HashMap::new, (map, method) -> {
+            try {
+              Annotation annot = classType.getAnnotation(a.annotationType());
+              map.put(method.getName(), method.invoke(annot));
+            } catch (IllegalAccessException | InvocationTargetException e) {
+              throw new RuntimeException(e);
+            }
+          }, HashMap::putAll))).collect(Collectors.toList()));
+        }
         if (classType.isEnum()) {
           return new EnumTypeInfo(
-              fqcn,
-              classType.getDeclaredAnnotation(VertxGen.class) != null,
-              Stream.of(classType.getEnumConstants()).map(Object::toString).collect(Collectors.toList()),
-              module,
-              false,
-              false);
+            fqcn,
+            classType.getDeclaredAnnotation(VertxGen.class) != null,
+            Stream.of(classType.getEnumConstants()).map(Object::toString).collect(Collectors.toList()),
+            module,
+            false,
+            false,
+            annotations);
         } else {
           ClassKind kind = ClassKind.getKind(fqcn, classType.getAnnotation(DataObject.class) != null, classType.getAnnotation(VertxGen.class) != null);
           List<TypeParamInfo.Class> typeParams = new ArrayList<>();
@@ -74,27 +88,27 @@ public class TypeReflectionFactory {
           if (kind == ClassKind.API) {
             java.lang.reflect.TypeVariable<Class<ReadStream>> classTypeVariable = ReadStream.class.getTypeParameters()[0];
             Type readStreamArg = Helper.resolveTypeParameter(type, classTypeVariable);
-            return new ApiTypeInfo(fqcn, true, typeParams, readStreamArg != null ? create(readStreamArg) : null, null, null, module, false, false);
+            return new ApiTypeInfo(fqcn, true, typeParams, annotations, readStreamArg != null ? create(readStreamArg) : null, null, null, module, false, false);
           } else if (kind == ClassKind.DATA_OBJECT) {
             boolean _abstract = Modifier.isAbstract(classType.getModifiers());
-            return new DataObjectTypeInfo(kind, fqcn, module, _abstract, false, false, typeParams);
+            return new DataObjectTypeInfo(kind, fqcn, module, _abstract, false, false, typeParams, annotations);
           } else {
-            return new ClassTypeInfo(kind, fqcn, module, false, typeParams);
+            return new ClassTypeInfo(kind, fqcn, module, false, typeParams, annotations);
           }
         }
       }
     } else if (type instanceof ParameterizedType) {
       ParameterizedType parameterizedType = (ParameterizedType) type;
       List<TypeInfo> args = Arrays.asList(parameterizedType.getActualTypeArguments()).
-          stream().
-          map(TypeReflectionFactory::create).
-          collect(Collectors.toList());
+        stream().
+        map(TypeReflectionFactory::create).
+        collect(Collectors.toList());
       Type raw = parameterizedType.getRawType();
       return new ParameterizedTypeInfo((ClassTypeInfo) create(raw), false, args);
     } else if (type instanceof java.lang.reflect.TypeVariable) {
       java.lang.reflect.TypeVariable typeVar = (java.lang.reflect.TypeVariable) type;
       TypeParamInfo param = TypeParamInfo.create(typeVar);
-      return new TypeVariableInfo(param, false, ((java.lang.reflect.TypeVariable)type).getName());
+      return new TypeVariableInfo(param, false, ((java.lang.reflect.TypeVariable) type).getName());
     } else {
       throw new IllegalArgumentException("Unsupported type " + type);
     }

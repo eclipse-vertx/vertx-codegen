@@ -7,6 +7,7 @@ import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
 import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.AnnotationValueInfoFactory;
+import io.vertx.codegen.type.TypeMirrorFactory;
 
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -144,7 +145,7 @@ public class CodeGen {
       throw new GenException(element, "Invalid group package name " + groupPackage);
     }
     ModuleInfo info = new ModuleInfo(modulePackage, moduleName, groupPackage);
-    AnnotationValueInfoFactory annotationFactory = new AnnotationValueInfoFactory(elementUtils, typeUtils);
+    AnnotationValueInfoFactory annotationFactory = new AnnotationValueInfoFactory(new TypeMirrorFactory(elementUtils,typeUtils));
     List<AnnotationValueInfo> annotationValueInfos = element.getAnnotationMirrors().stream().map(annotationFactory::processAnnotation).collect(Collectors.toList());
     return new ModuleModel(element, info, annotationValueInfos);
   }

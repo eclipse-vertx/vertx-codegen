@@ -95,7 +95,7 @@ public class ClassModel implements Model {
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
     this.modelElt = modelElt;
-    this.annotationValueInfoFactory = new AnnotationValueInfoFactory(elementUtils, typeUtils);
+    this.annotationValueInfoFactory = new AnnotationValueInfoFactory(typeFactory);
   }
 
   private static boolean rawTypeIs(TypeInfo type, Class<?>... classes) {

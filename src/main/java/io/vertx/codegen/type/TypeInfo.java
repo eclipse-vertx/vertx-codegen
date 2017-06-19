@@ -1,6 +1,8 @@
 package io.vertx.codegen.type;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Describes a java type.
@@ -50,6 +52,10 @@ public abstract class TypeInfo {
    */
   public String getName() {
     return format(true);
+  }
+
+  public List<AnnotationValueInfo> getAnnotations(){
+    return Collections.emptyList();
   }
 
   /**

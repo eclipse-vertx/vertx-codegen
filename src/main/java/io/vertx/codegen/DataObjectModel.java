@@ -33,6 +33,7 @@ public class DataObjectModel implements Model {
   private final Set<ClassTypeInfo> superTypes = new LinkedHashSet<>();
   private final Set<ClassTypeInfo> abstractSuperTypes = new LinkedHashSet<>();
   private final Set<ClassTypeInfo> importedTypes = new LinkedHashSet<>();
+  private final AnnotationValueInfoFactory annotationValueInfoFactory;
   private boolean processed;
   private boolean concrete;
   private boolean isClass;
@@ -43,7 +44,6 @@ public class DataObjectModel implements Model {
   private ClassTypeInfo type;
   private Doc doc;
   private boolean jsonifiable;
-  private AnnotationValueInfoFactory annotationValueInfoFactory;
 
   public DataObjectModel(Elements elementUtils, Types typeUtils, TypeElement modelElt, Messager messager) {
     this.elementUtils = elementUtils;
@@ -51,7 +51,7 @@ public class DataObjectModel implements Model {
     this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils);
     this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, typeFactory, modelElt);
     this.modelElt = modelElt;
-    this.annotationValueInfoFactory = new AnnotationValueInfoFactory(elementUtils, typeUtils);
+    this.annotationValueInfoFactory = new AnnotationValueInfoFactory(typeFactory);
   }
 
   @Override
@@ -280,11 +280,11 @@ public class DataObjectModel implements Model {
       if (methodName.startsWith("get") && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) && methodElt.getParameters().isEmpty() && methodElt.getReturnType().getKind() != TypeKind.VOID) {
         String name = Helper.normalizePropertyName(methodName.substring(3));
         getters.put(name, methodElt);
-        annotations.put(name, (List<AnnotationMirror>) elementUtils.getAllAnnotationMirrors(methodElt));
+        annotations.put(name, new ArrayList(elementUtils.getAllAnnotationMirrors(methodElt)));
       } else if (methodName.startsWith("is") && methodName.length() > 2 && Character.isUpperCase(methodName.charAt(2)) && methodElt.getParameters().isEmpty() && methodElt.getReturnType().getKind() != TypeKind.VOID) {
         String name = Helper.normalizePropertyName(methodName.substring(2));
         getters.put(name, methodElt);
-        annotations.put(name, (List<AnnotationMirror>) elementUtils.getAllAnnotationMirrors(methodElt));
+        annotations.put(name, new ArrayList(elementUtils.getAllAnnotationMirrors(methodElt)));
       } else if ((methodName.startsWith("set") || methodName.startsWith("add")) && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3))) {
         String prefix = methodName.substring(0, 3);
         String name = Helper.normalizePropertyName(methodName.substring(3));
@@ -299,12 +299,12 @@ public class DataObjectModel implements Model {
           if (numParams == 1 || (numParams == 2 && t.getKind() == TypeKind.DECLARED &&
             ((TypeElement) ((DeclaredType) t).asElement()).getQualifiedName().toString().equals("java.lang.String"))) {
             adders.put(name, methodElt);
-            annotations.put(name, (List<AnnotationMirror>) elementUtils.getAllAnnotationMirrors(methodElt));
+            annotations.put(name, new ArrayList(elementUtils.getAllAnnotationMirrors(methodElt)));
           }
         } else {
           if (numParams == 1) {
             setters.put(name, methodElt);
-            annotations.put(name, (List<AnnotationMirror>) elementUtils.getAllAnnotationMirrors(methodElt));
+            annotations.put(name, new ArrayList(elementUtils.getAllAnnotationMirrors(methodElt)));
           }
         }
       }
