@@ -44,7 +44,6 @@ public class DataObjectModel implements Model {
   private ClassTypeInfo type;
   private Doc doc;
   private boolean jsonifiable;
-  private List<AnnotationValueInfo> annotations = new ArrayList<>();
 
   public DataObjectModel(Elements elementUtils, Types typeUtils, TypeElement modelElt, Messager messager) {
     this.elementUtils = elementUtils;
@@ -52,7 +51,7 @@ public class DataObjectModel implements Model {
     this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils);
     this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, typeFactory, modelElt);
     this.modelElt = modelElt;
-    this.annotationValueInfoFactory = new AnnotationValueInfoFactory(elementUtils, typeUtils);
+    this.annotationValueInfoFactory = new AnnotationValueInfoFactory(typeFactory);
   }
 
   @Override
@@ -130,10 +129,6 @@ public class DataObjectModel implements Model {
     return (constructors & 1) == 1;
   }
 
-  public List<AnnotationValueInfo> getAnnotations() {
-    return annotations;
-  }
-
   @Override
   public Map<String, Object> getVars() {
     Map<String, Object> vars = Model.super.getVars();
@@ -150,7 +145,6 @@ public class DataObjectModel implements Model {
     vars.put("abstractSuperTypes", abstractSuperTypes);
     vars.put("jsonifiable", jsonifiable);
     vars.put("hasEmptyConstructor", hasEmptyConstructor());
-    vars.put("annotations",getAnnotations());
     return vars;
   }
 
@@ -219,8 +213,6 @@ public class DataObjectModel implements Model {
         }
       }
     }
-
-    modelElt.getAnnotationMirrors().stream().filter(a -> !a.getAnnotationType().asElement().getSimpleName().contentEquals(DataObject.class.getSimpleName())).map(annotationValueInfoFactory::processAnnotation).forEach(annotations::add);
 
     processMethods(methodsElt);
 

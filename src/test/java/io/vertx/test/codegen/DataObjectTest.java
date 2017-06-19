@@ -645,10 +645,10 @@ public class DataObjectTest {
   }
 
   @Test
-  public void testAnnotatatedObject() throws Exception {
+  public void testAnnotatedObject() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
-    assertEquals(1, model.getAnnotations().size());
-    assertEquals(EmptyAnnotation.class.getSimpleName(),model.getAnnotations().get(0).getSimpleName());
+    assertEquals(2, model.getType().getAnnotations().size());
+    assertEquals(EmptyAnnotation.class.getSimpleName(),model.getType().getAnnotations().get(1).getSimpleName());
   }
 
   @Test

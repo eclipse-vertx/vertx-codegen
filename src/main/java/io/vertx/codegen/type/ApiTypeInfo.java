@@ -20,13 +20,14 @@ public class ApiTypeInfo extends ClassTypeInfo {
       String fqcn,
       boolean concrete,
       List<TypeParamInfo.Class> params,
+      List<AnnotationValueInfo> annotations,
       TypeInfo readStreamArg,
       TypeInfo writeStreamArg,
       TypeInfo handlerArg,
       ModuleInfo module,
       boolean nullable,
       boolean proxyGen) {
-    super(ClassKind.API, fqcn, module, nullable, params);
+    super(ClassKind.API, fqcn, module, nullable, params,annotations);
     this.concrete = concrete;
     this.proxyGen = proxyGen;
     this.readStreamArg = readStreamArg;
