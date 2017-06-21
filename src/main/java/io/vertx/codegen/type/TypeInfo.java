@@ -54,6 +54,9 @@ public abstract class TypeInfo {
     return format(true);
   }
 
+  /**
+   * @return the annotations at this type level, or an empty collection if none or non-applicable
+   */
   public List<AnnotationValueInfo> getAnnotations(){
     return Collections.emptyList();
   }
