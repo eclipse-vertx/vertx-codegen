@@ -98,6 +98,9 @@ public class ClassTypeInfo extends TypeInfo {
     return false;
   }
 
+  /**
+   * @return the annotations at this type level, or an empty collection if none or non-applicable
+   */
   @Override
   public List<AnnotationValueInfo> getAnnotations() {
     return annotations;
