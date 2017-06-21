@@ -81,7 +81,6 @@ public class ClassModel implements Model {
   protected List<TypeInfo> abstractSuperTypes = new ArrayList<>();
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
-  protected List<AnnotationValueInfo> annotations = new ArrayList<>();
   protected Map<String, List<AnnotationValueInfo>> methodAnnotationsMap = new LinkedHashMap<>();
 
   public ClassModel(MethodOverloadChecker methodOverloadChecker,
@@ -242,7 +241,7 @@ public class ClassModel implements Model {
    * @return all the annotations on this class
    */
   public List<AnnotationValueInfo> getAnnotations() {
-    return annotations;
+    return type.getAnnotations();
   }
 
   /**
@@ -613,7 +612,6 @@ public class ClassModel implements Model {
             superTypeInfo.collectImports(collectedTypes);
           }
         }
-        elem.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).forEach(annotations::add);
         break;
       }
     }
