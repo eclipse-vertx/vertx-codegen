@@ -47,6 +47,7 @@ import io.vertx.test.codegen.testapi.nullable.MethodWithNullableHandler;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableHandlerAsyncResult;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableParam;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableReturn;
+import io.vertx.test.codegen.testapi.nullable.MethodWithNullableStringHandlerAsyncResult;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableTypeArgReturn;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableTypeVariableHandlerAsyncResult;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableTypeVariableHandler;
@@ -304,6 +305,17 @@ public class ClassNullableTest extends ClassTestBase {
   }
 
   @Test
+  public void testMethodWithNullableStringHandlerAsyncResult() throws Exception {
+    generateClass(model -> {
+      List<MethodInfo> methods = model.getMethods();
+      assertEquals(1, methods.size());
+      MethodInfo mi1 = methods.get(0);
+      checkMethod(mi1, "method", 1, "void", MethodKind.FUTURE);
+      assertTrue(mi1.getParams().get(0).isNullableCallback());
+    }, MethodWithNullableStringHandlerAsyncResult.class);
+  }
+
+  @Test
   public void testMethodWithNullableNonAnnotatedTypeVariableHandlerAsyncResult() throws Exception {
     generateClass(model -> {
       List<MethodInfo> methods = model.getMethods();
@@ -492,8 +504,8 @@ public class ClassNullableTest extends ClassTestBase {
   }
 
   private void generateClass(Consumer<ClassModel> test, Class<?> clazz, Class<?>... rest) throws Exception {
-    ClassModel model = new Generator().generateClass(clazz);
-    test.accept(model);
+//    ClassModel model = new Generator().generateClass(clazz);
+//    test.accept(model);
     Thread thread = Thread.currentThread();
     ClassLoader prev = thread.getContextClassLoader();
     thread.setContextClassLoader(new ClassLoader(prev) {
@@ -505,6 +517,7 @@ public class ClassNullableTest extends ClassTestBase {
         return super.loadClass(name);
       }
     });
+    ClassModel model;
     try {
       model = new Generator().generateClass(clazz, rest);
     } finally {

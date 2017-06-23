@@ -28,6 +28,7 @@ import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
 import io.vertx.codegen.type.*;
 
 import javax.annotation.processing.Messager;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
 import javax.lang.model.type.*;
 import javax.lang.model.util.Elements;
@@ -54,6 +55,8 @@ public class ClassModel implements Model {
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
   public static final String VERTX = "io.vertx.core.Vertx";
   private static final Logger logger = Logger.getLogger(ClassModel.class.getName());
+
+  protected final ProcessingEnvironment env;
   protected final AnnotationValueInfoFactory annotationValueInfoFactory;
   protected final MethodOverloadChecker methodOverloadChecker;
   protected final Messager messager;
@@ -84,9 +87,10 @@ public class ClassModel implements Model {
   protected List<AnnotationValueInfo> annotations = new ArrayList<>();
   protected Map<String, List<AnnotationValueInfo>> methodAnnotationsMap = new LinkedHashMap<>();
 
-  public ClassModel(MethodOverloadChecker methodOverloadChecker,
+  public ClassModel(ProcessingEnvironment env, MethodOverloadChecker methodOverloadChecker,
                     Messager messager,  Map<String, TypeElement> sources, Elements elementUtils,
                     Types typeUtils, TypeElement modelElt) {
+    this.env = env;
     this.methodOverloadChecker = methodOverloadChecker;
     this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils);
     this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, typeFactory, modelElt);
@@ -800,7 +804,8 @@ public class ClassModel implements Model {
     if (reflectMethods != null) {
       returnTypeUse = TypeUse.createTypeUse(reflectMethods.stream().map(Method::getAnnotatedReturnType).toArray(AnnotatedType[]::new));
     } else {
-      returnTypeUse = TypeUse.createTypeUse(modelMethods.stream().map(ExecutableElement::getReturnType).toArray(TypeMirror[]::new));
+//      returnTypeUse = TypeUse.createTypeUse(modelMethods.stream().map(ExecutableElement::getReturnType).toArray(TypeMirror[]::new));
+      returnTypeUse = TypeUse.createReturnTypeUse(env,  modelMethods.toArray(new ExecutableElement[modelMethods.size()]));
     }
 
     ExecutableType methodType = (ExecutableType) typeUtils.asMemberOf((DeclaredType) modelElt.asType(), modelMethod);
@@ -920,7 +925,7 @@ public class ClassModel implements Model {
       if (reflectMethods != null) {
         typeUse = TypeUse.createTypeUse(reflectMethods.stream().map(m -> m.getAnnotatedParameterTypes()[index]).toArray(AnnotatedType[]::new));
       } else {
-        typeUse = TypeUse.createTypeUse(modelMethods.stream().map(m -> m.getParameters().get(index).asType()).toArray(TypeMirror[]::new));
+        typeUse = TypeUse.createParamTypeUse(env, modelMethods.toArray(new ExecutableElement[modelMethods.size()]), index);
       }
       try {
         typeInfo = typeFactory.create(typeUse, type);

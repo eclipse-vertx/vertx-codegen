@@ -613,7 +613,7 @@ public class Helper {
    * @param modelMethod the model method element
    * @return the method or null if not found
    */
-  static Method getReflectMethod(ExecutableElement modelMethod) {
+  public static Method getReflectMethod(ExecutableElement modelMethod) {
     TypeElement typeElt = (TypeElement) modelMethod.getEnclosingElement();
     Method method = null;
     try {

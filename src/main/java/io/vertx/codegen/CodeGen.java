@@ -38,12 +38,14 @@ public class CodeGen {
   private final HashMap<String, TypeElement> enums = new HashMap<>();
   private final HashMap<String, PackageElement> modules = new HashMap<>();
   private final HashMap<String, TypeElement> proxyClasses = new HashMap<>();
+  private final ProcessingEnvironment env;
   private final Elements elementUtils;
   private final Types typeUtils;
   private final Messager messager;
   private final MethodOverloadChecker methodOverloadChecker = new MethodOverloadChecker();
 
   public CodeGen(ProcessingEnvironment env, RoundEnvironment round) {
+    this.env = env;
     this.messager = env.getMessager();
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
@@ -158,7 +160,7 @@ public class CodeGen {
     if (element == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
-      ClassModel model = new ClassModel(methodOverloadChecker, messager, classes, elementUtils, typeUtils, element);
+      ClassModel model = new ClassModel(env, methodOverloadChecker, messager, classes, elementUtils, typeUtils, element);
       model.process();
       return model;
     }
@@ -191,7 +193,7 @@ public class CodeGen {
     if (element == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
-      ProxyModel model = new ProxyModel(methodOverloadChecker, messager, classes, elementUtils, typeUtils, element);
+      ProxyModel model = new ProxyModel(env, methodOverloadChecker, messager, classes, elementUtils, typeUtils, element);
       model.process();
       return model;
     }
