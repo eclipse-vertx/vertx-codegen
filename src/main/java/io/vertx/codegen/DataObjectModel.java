@@ -321,7 +321,11 @@ public class DataObjectModel implements Model {
       getElement().getEnclosedElements().stream()
         .filter(e -> e.getKind().equals(ElementKind.FIELD) && e.getSimpleName().toString().equals(name))
         .flatMap(e -> elementUtils.getAllAnnotationMirrors(e).stream())
-        .forEach(a -> annotations.computeIfAbsent(name, k -> new ArrayList<>()).add(a));
+        .forEach(a -> annotations.computeIfAbsent(name, k -> {
+          List<AnnotationMirror> list = new ArrayList<>();
+          list.add(a);
+          return list;
+        }));
 
       processMethod(name, getters.get(name), setters.get(name), adders.get(name), annotations.get(name));
     }
