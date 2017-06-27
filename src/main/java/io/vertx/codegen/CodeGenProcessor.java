@@ -17,6 +17,7 @@ import javax.annotation.processing.FilerException;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
@@ -333,7 +334,11 @@ public class CodeGenProcessor extends AbstractProcessor {
   }
 
   private void reportGenException(GenException e) {
-    String msg = "Could not generate model for " + e.element + ": " + e.msg;
+    String name = e.element.toString();
+    if (e.element.getKind() == ElementKind.METHOD) {
+      name = e.element.getEnclosingElement() + "#" + name;
+    }
+    String msg = "Could not generate model for " + name + ": " + e.msg;
     log.log(Level.SEVERE, msg, e);
     processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, e.element);
   }
