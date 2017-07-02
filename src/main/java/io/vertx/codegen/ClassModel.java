@@ -278,7 +278,7 @@ public class ClassModel implements Model {
   }
 
   protected void checkReturnType(ExecutableElement elem, TypeInfo type, TypeMirror typeMirror) {
-    if (type instanceof VoidTypeInfo) {
+    if (type.isVoid()) {
       return;
     }
     if (isLegalNonCallableReturnType(type)) {
@@ -813,7 +813,7 @@ public class ClassModel implements Model {
       throw genEx;
     }
     returnType.collectImports(collectedTypes);
-    if (isCacheReturn && returnType instanceof VoidTypeInfo) {
+    if (isCacheReturn && returnType.isVoid()) {
       throw new GenException(modelMethod, "void method can't be marked with @CacheReturn");
     }
     String methodName = modelMethod.getSimpleName().toString();
@@ -828,7 +828,7 @@ public class ClassModel implements Model {
     // Determine method kind + validate
     MethodKind kind = MethodKind.OTHER;
     int lastParamIndex = mParams.size() - 1;
-    if (lastParamIndex >= 0 && (returnType instanceof VoidTypeInfo || isFluent)) {
+    if (lastParamIndex >= 0 && (returnType.isVoid() || isFluent)) {
       TypeInfo lastParamType = mParams.get(lastParamIndex).type;
       if (lastParamType.getKind() == ClassKind.HANDLER) {
         TypeInfo typeArg = ((ParameterizedTypeInfo) lastParamType).getArgs().get(0);

@@ -95,7 +95,7 @@ public class ProxyModel extends ClassModel {
       // Ignore static methods - we won't use them anyway
       return;
     }
-    if (type instanceof VoidTypeInfo) {
+    if (type.isVoid()) {
       return;
     }
 
