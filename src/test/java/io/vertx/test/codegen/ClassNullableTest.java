@@ -326,7 +326,7 @@ public class ClassNullableTest extends ClassTestBase {
       assertEquals(1, methods.size());
       MethodInfo mi1 = methods.get(0);
       checkMethod(mi1, "method", 1, "void", MethodKind.HANDLER);
-      assertTrue(mi1.getParams().get(0).isNullableCallback());
+      assertFalse(mi1.getParams().get(0).isNullableCallback());
     }, MethodWithNullableNonAnnotatedTypeVariableHandler.class);
   }
 
@@ -359,7 +359,7 @@ public class ClassNullableTest extends ClassTestBase {
       assertEquals(1, methods.size());
       MethodInfo mi1 = methods.get(0);
       checkMethod(mi1, "method", 1, "void", MethodKind.FUTURE);
-      assertTrue(mi1.getParams().get(0).isNullableCallback());
+      assertFalse(mi1.getParams().get(0).isNullableCallback());
     }, MethodWithNullableNonAnnotatedTypeVariableHandlerAsyncResult.class);
   }
 
