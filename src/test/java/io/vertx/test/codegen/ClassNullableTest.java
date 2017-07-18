@@ -563,8 +563,8 @@ public class ClassNullableTest extends ClassTestBase {
   }
 
   private void generateClass(Consumer<ClassModel> test, Class<?> clazz, Class<?>... rest) throws Exception {
-//    ClassModel model = new Generator().generateClass(clazz);
-//    test.accept(model);
+    ClassModel model = new Generator().generateClass(clazz);
+    test.accept(model);
     blacklist(clazz, rest, () -> {
       try {
         test.accept(new Generator().generateClass(clazz, rest));
