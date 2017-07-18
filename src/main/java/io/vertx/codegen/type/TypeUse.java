@@ -2,6 +2,7 @@ package io.vertx.codegen.type;
 
 import io.vertx.codegen.Helper;
 import io.vertx.codegen.annotations.Nullable;
+import io.vertx.codegen.annotations.GenTypeParams.Param;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.TypeElement;
@@ -27,12 +28,22 @@ public abstract class TypeUse {
   private static final String NULLABLE = Nullable.class.getName();
 
   /**
+   * Create a type use for reflect type.
+   *
+   * @param reflectType the annotated type
+   * @return the created type use
+   */
+  public static TypeUse createTypeUse(AnnotatedType reflectType, Param[] genTypeParams) {
+    return createTypeUse(new AnnotatedType[]{ reflectType }, genTypeParams);
+  }
+
+  /**
    * Create a type use for reflect types.
    *
    * @param reflectTypes the annotated types
    * @return the created type use
    */
-  public static TypeUse createTypeUse(AnnotatedType... reflectTypes) {
+  public static TypeUse createTypeUse(AnnotatedType[] reflectTypes, Param[] genTypeParams) {
     return new TypeUse() {
 
       public TypeUse getArg(int index) {
@@ -66,7 +77,12 @@ public abstract class TypeUse {
             }
           }
         }
-        return createTypeUse(argAnnotatedTypes.toArray(new AnnotatedType[argAnnotatedTypes.size()]));
+        return createTypeUse(argAnnotatedTypes.toArray(new AnnotatedType[argAnnotatedTypes.size()]), genTypeParams);
+      }
+
+      @Override
+      public Param getUsedAnnotation(String paramName) {
+        return findAnnotation(genTypeParams, paramName);
       }
 
       public boolean isNullable() {
@@ -95,17 +111,35 @@ public abstract class TypeUse {
   }
 
   /**
+   * Create a type use for model type.
+   *
+   * @param modelType the annotated type
+   * @param genTypeParams annotations that force type parameters
+   * @return the created type use
+   */
+  public static TypeUse createTypeUse(TypeMirror modelType, Param[] genTypeParams) {
+    return createTypeUse(new TypeMirror[]{modelType}, genTypeParams);
+  }
+
+  /**
    * Create a type use for model types.
    *
    * @param modelTypes the annotated types
+   * @param genTypeParams annotations that force type parameters
+   * @param
    * @return the created type use
    */
-  public static TypeUse createTypeUse(TypeMirror... modelTypes) {
+  public static TypeUse createTypeUse(TypeMirror[] modelTypes, Param[] genTypeParams) {
     return new TypeUse() {
       @Override
       public TypeUse getArg(int index) {
         // Only use the current types as the other types won't have the info anyway
-        return createTypeUse(((DeclaredType) modelTypes[0]).getTypeArguments().get(index));
+        return createTypeUse(((DeclaredType) modelTypes[0]).getTypeArguments().get(index), genTypeParams);
+      }
+
+      @Override
+      public Param getUsedAnnotation(String paramName) {
+        return findAnnotation(genTypeParams, paramName);
       }
 
       @Override
@@ -144,9 +178,21 @@ public abstract class TypeUse {
    */
   public abstract TypeUse getArg(int index);
 
+  public abstract Param getUsedAnnotation(String paramName);
+
   /**
    * @return true if the type is nullable
    */
   public abstract  boolean isNullable();
+
+  public static Param findAnnotation(Param[] genTypeParams, String typeName) {
+    if(genTypeParams != null) {
+        for (Param genTypeParam : genTypeParams) {
+            if(genTypeParam.name().equals(typeName))
+              return genTypeParam;
+        }
+    }
+    return null;
+  }
 
 }

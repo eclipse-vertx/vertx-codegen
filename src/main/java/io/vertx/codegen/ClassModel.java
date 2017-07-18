@@ -19,6 +19,8 @@ package io.vertx.codegen;
 import io.vertx.codegen.annotations.CacheReturn;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
+import io.vertx.codegen.annotations.GenTypeParams;
+import io.vertx.codegen.annotations.GenTypeParams.Param;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Tag;
@@ -38,6 +40,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A processed source.
@@ -688,13 +691,26 @@ public class ClassModel implements Model {
     }
 
     boolean isCacheReturn = modelMethod.getAnnotation(CacheReturn.class) != null;
+    GenTypeParams genTypeParamsAnnotation = modelMethod.getAnnotation(GenTypeParams.class);
     ArrayList<TypeParamInfo.Method> typeParams = new ArrayList<>();
     for (TypeParameterElement typeParam : modelMethod.getTypeParameters()) {
-      for (TypeMirror bound : typeParam.getBounds()) {
-        if (!isObjectBound(bound)) {
-          throw new GenException(modelMethod, "Type parameter bound not supported " + bound);
+      Param typeParamAnnotation = null;
+      if(genTypeParamsAnnotation != null) {
+        for (Param genTypeParam : genTypeParamsAnnotation.value()) {
+          if(typeParam.getSimpleName().toString().equals(genTypeParam.name())) {
+            typeParamAnnotation = genTypeParam;
+          }
         }
       }
+
+      if(typeParamAnnotation == null) {
+        for (TypeMirror bound : typeParam.getBounds()) {
+          if (!isObjectBound(bound)) {
+              throw new GenException(modelMethod, "Type parameter bound not supported " + bound);
+          }
+        }
+      }
+
       typeParams.add((TypeParamInfo.Method) TypeParamInfo.create(typeParam));
     }
 
@@ -798,9 +814,21 @@ public class ClassModel implements Model {
     //
     TypeUse returnTypeUse;
     if (reflectMethods != null) {
-      returnTypeUse = TypeUse.createTypeUse(reflectMethods.stream().map(Method::getAnnotatedReturnType).toArray(AnnotatedType[]::new));
+      returnTypeUse = TypeUse.createTypeUse(
+          reflectMethods.stream().map(Method::getAnnotatedReturnType).toArray(AnnotatedType[]::new),
+          reflectMethods.stream()
+            .flatMap(m -> extractAnnotation(m.getAnnotation(GenTypeParams.class)))
+            .filter(annotation -> annotation != null)
+            .toArray(Param[]::new)
+          );
     } else {
-      returnTypeUse = TypeUse.createTypeUse(modelMethods.stream().map(ExecutableElement::getReturnType).toArray(TypeMirror[]::new));
+      returnTypeUse = TypeUse.createTypeUse(
+          modelMethods.stream().map(ExecutableElement::getReturnType).toArray(TypeMirror[]::new),
+          modelMethods.stream()
+            .flatMap(m -> extractAnnotation(m.getAnnotation(GenTypeParams.class)))
+            .filter(annotation -> annotation != null)
+            .toArray(Param[]::new)
+          );
     }
 
     ExecutableType methodType = (ExecutableType) typeUtils.asMemberOf((DeclaredType) modelElt.asType(), modelMethod);
@@ -918,14 +946,23 @@ public class ClassModel implements Model {
       int index = i;
       TypeUse typeUse;
       if (reflectMethods != null) {
-        typeUse = TypeUse.createTypeUse(reflectMethods.stream().map(m -> m.getAnnotatedParameterTypes()[index]).toArray(AnnotatedType[]::new));
+        typeUse = TypeUse.createTypeUse(
+            reflectMethods.stream().map(m -> m.getAnnotatedParameterTypes()[index]).toArray(AnnotatedType[]::new),
+            reflectMethods.stream()
+              .flatMap(m -> extractAnnotation(m.getAnnotation(GenTypeParams.class)))
+              .toArray(Param[]::new)
+            );
       } else {
-        typeUse = TypeUse.createTypeUse(modelMethods.stream().map(m -> m.getParameters().get(index).asType()).toArray(TypeMirror[]::new));
+        typeUse = TypeUse.createTypeUse(
+            modelMethods.stream().map(m -> m.getParameters().get(index).asType()).toArray(TypeMirror[]::new),
+            modelMethods.stream()
+            .flatMap(m -> extractAnnotation(m.getAnnotation(GenTypeParams.class)))
+              .toArray(Param[]::new) );
       }
       try {
         typeInfo = typeFactory.create(typeUse, type);
       } catch (Exception e) {
-        throw new GenException(param, e.getMessage());
+        throw new GenException(param, e.getMessage(), e);
       }
       checkParamType(methodElt, type, typeInfo, i, params.size());
       String name = param.getSimpleName().toString();
@@ -935,6 +972,14 @@ public class ClassModel implements Model {
       mParams.add(mParam);
     }
     return mParams;
+  }
+
+  private Stream<Param> extractAnnotation(GenTypeParams methodAnnotation) {
+    if(methodAnnotation != null && methodAnnotation.value() != null) {
+      return Arrays.asList(methodAnnotation.value()).stream();
+    } else {
+      return Stream.empty();
+    }
   }
 
   @Override
