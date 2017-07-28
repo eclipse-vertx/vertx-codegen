@@ -315,19 +315,22 @@ public class DataObjectModel implements Model {
     names.addAll(setters.keySet());
     names.addAll(adders.keySet());
 
+    // Check annotations on field
     for (String name : names) {
-
-      //Check annotations on field
-      getElement().getEnclosedElements().stream()
+      List<AnnotationMirror> list = annotations.get(name);
+      Iterator<? extends AnnotationMirror> it = getElement().getEnclosedElements().stream()
         .filter(e -> e.getKind().equals(ElementKind.FIELD) && e.getSimpleName().toString().equals(name))
-        .flatMap(e -> elementUtils.getAllAnnotationMirrors(e).stream())
-        .forEach(a -> annotations.computeIfAbsent(name, k -> {
-          List<AnnotationMirror> list = new ArrayList<>();
-          list.add(a);
-          return list;
-        }));
-
-      processMethod(name, getters.get(name), setters.get(name), adders.get(name), annotations.get(name));
+        .flatMap(e -> elementUtils.getAllAnnotationMirrors(e).stream()).iterator();
+      while (it.hasNext()) {
+        if (list == null) {
+          list = new ArrayList<>();
+        } else if (!(list instanceof ArrayList<?>)) {
+          // Clone it, the list in the annotations maps are unmodifiable
+          list = new ArrayList<>(list);
+        }
+        list.add(it.next());
+      }
+      processMethod(name, getters.get(name), setters.get(name), adders.get(name), list);
     }
 
 
