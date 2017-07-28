@@ -14,6 +14,9 @@ public class DataObjectWithAnnotatedField {
 
   private String author;
 
+  @SomeAnnotation
+  private String fieldWithMethodAnnotation;
+
   // Mandatory for JPA entities
   protected DataObjectWithAnnotatedField() {
   }
@@ -49,6 +52,15 @@ public class DataObjectWithAnnotatedField {
 
   public void setAuthor(String author) {
     this.author = author;
+  }
+
+  @SomeMethodAnnotation
+  public String getFieldWithMethodAnnotation() {
+    return fieldWithMethodAnnotation;
+  }
+
+  public void setFieldWithMethodAnnotation(String fieldWithMethodAnnotation) {
+    this.fieldWithMethodAnnotation = fieldWithMethodAnnotation;
   }
 
   public JsonObject toJson() {

@@ -34,7 +34,7 @@ public class PropertyInfo {
     this.name = name;
     this.doc = doc;
     this.type = type;
-    this.annotations = annotations.stream().collect(HashMap::new, (m, a) -> m.put(a.getSimpleName(), a), HashMap::putAll);
+    this.annotations = annotations.stream().collect(HashMap::new, (m, a) -> m.put(a.getName(), a), HashMap::putAll);
     this.adderMethod = adderMethod;
     this.setterMethod = setterMethod;
     this.getterMethod = getterMethod;

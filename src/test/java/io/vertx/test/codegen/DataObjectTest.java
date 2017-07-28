@@ -788,6 +788,13 @@ public class DataObjectTest {
     assertNotNull(model);
     assertTrue(model.isClass());
     assertTrue(model.getGenerateConverter());
+    PropertyInfo idModel = model.getPropertyMap().get("id");
+    assertEquals(1, idModel.getAnnotations().size());
+    assertNotNull(idModel.getAnnotation(SomeAnnotation.class.getName()).getName());
+    PropertyInfo fieldWithMethodAnnotationModel = model.getPropertyMap().get("fieldWithMethodAnnotation");
+    assertEquals(2, fieldWithMethodAnnotationModel.getAnnotations().size());
+    assertNotNull(fieldWithMethodAnnotationModel.getAnnotation(SomeAnnotation.class.getName()).getName());
+    assertNotNull(fieldWithMethodAnnotationModel.getAnnotation(SomeMethodAnnotation.class.getName()).getName());
   }
 
   private void assertInvalidDataObject(Class<?> dataObjectClass) throws Exception {
