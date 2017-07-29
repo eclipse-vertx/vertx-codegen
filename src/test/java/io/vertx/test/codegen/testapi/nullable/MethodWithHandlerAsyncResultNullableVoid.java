@@ -25,7 +25,7 @@ import io.vertx.core.Handler;
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @VertxGen
-public interface MethodWithInvalidHandlerAsyncResultNullableVoid {
+public interface MethodWithHandlerAsyncResultNullableVoid {
 
   void method(Handler<AsyncResult<@Nullable Void>> handler);
 

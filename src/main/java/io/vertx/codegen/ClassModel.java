@@ -520,7 +520,7 @@ public class ClassModel implements Model {
 
   private boolean isLegalCallbackValueType(TypeInfo type) {
     if (type.getKind() == ClassKind.VOID) {
-      return !type.isNullable();
+      return true;
     }
     return isLegalNonCallableReturnType(type);
   }

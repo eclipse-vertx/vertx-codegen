@@ -8,7 +8,7 @@ import io.vertx.core.Handler;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @VertxGen
-public interface MethodWithInvalidHandlerNullableVoid {
+public interface MethodWithHandlerNullableVoid {
 
   void method(Handler<@Nullable Void> handler);
 
