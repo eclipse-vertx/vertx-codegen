@@ -889,14 +889,14 @@ public class ClassModel implements Model {
 
   private List<ParamInfo> getParams(List<ExecutableElement> modelMethods, ExecutableElement methodElt, Map<String, String> descs) {
     ExecutableType methodType = (ExecutableType) typeUtils.asMemberOf((DeclaredType) modelElt.asType(), methodElt);
+    ExecutableType methodType2 = (ExecutableType) methodElt.asType();
     List<? extends VariableElement> params = methodElt.getParameters();
     List<ParamInfo> mParams = new ArrayList<>();
     for (int i = 0; i < params.size();i++) {
       VariableElement param = params.get(i);
       TypeMirror type = methodType.getParameterTypes().get(i);
       TypeInfo typeInfo;
-      int index = i;
-      TypeUse typeUse = TypeUse.createParamTypeUse(env, modelMethods.toArray(new ExecutableElement[modelMethods.size()]), index);
+      TypeUse typeUse = TypeUse.createParamTypeUse(env, modelMethods.toArray(new ExecutableElement[modelMethods.size()]), i);
       try {
         typeInfo = typeFactory.create(typeUse, type);
       } catch (Exception e) {
@@ -906,7 +906,13 @@ public class ClassModel implements Model {
       String name = param.getSimpleName().toString();
       String desc = descs.get(name);
       Text text = desc != null ? new Text(desc).map(Token.tagMapper(elementUtils, typeUtils, modelElt)) : null;
-      ParamInfo mParam = new ParamInfo(i, name, text, typeInfo);
+      TypeInfo unresolvedTypeInfo;
+      try {
+        unresolvedTypeInfo = typeFactory.create(typeUse, methodType2.getParameterTypes().get(i));
+      } catch (Exception e) {
+        throw new GenException(param, e.getMessage());
+      }
+      ParamInfo mParam = new ParamInfo(i, name, text, typeInfo, unresolvedTypeInfo);
       mParams.add(mParam);
     }
     return mParams;

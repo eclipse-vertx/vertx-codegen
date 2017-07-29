@@ -397,7 +397,9 @@ public class CodeGenProcessor extends AbstractProcessor {
         } catch (GenException e) {
           throw e;
         } catch (Exception e) {
-          throw new GenException(processing.model.getElement(), e.getMessage());
+          GenException genException = new GenException(processing.model.getElement(), e.getMessage());
+          genException.initCause(e);
+          throw genException;
         }
       }
       return buffer.toString();

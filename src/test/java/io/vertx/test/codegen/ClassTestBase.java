@@ -72,8 +72,8 @@ public abstract class ClassTestBase {
     assertEquals(numParams, meth.getParams().size());
   }
 
-  void checkParam(ParamInfo param, String name, TypeLiteral<?> type) {
-    checkParam(param, name, type.type);
+  void checkParam(ParamInfo param, String name, TypeLiteral<?> expectedType) {
+    checkParam(param, name, expectedType.type);
   }
 
   void checkParam(ParamInfo param, String name, Type expectedType) {
@@ -81,6 +81,17 @@ public abstract class ClassTestBase {
     TypeInfo expectedTypeInfo = TypeReflectionFactory.create(expectedType);
     assertEquals(expectedTypeInfo.getName(), param.getType().getName());
     assertEquals(expectedTypeInfo.getKind(), param.getType().getKind());
+  }
+
+  void checkParam(ParamInfo param, String name, TypeLiteral<?> expectedType, TypeLiteral<?> expectedUnresolvedType) {
+    checkParam(param, name, expectedType.type, expectedUnresolvedType.type);
+  }
+
+  void checkParam(ParamInfo param, String name, Type expectedType, Type expectedUnresolvedType) {
+    checkParam(param, name ,expectedType);
+    TypeInfo expectedUnresolvedTypeInfo = TypeReflectionFactory.create(expectedUnresolvedType);
+    assertEquals(expectedUnresolvedTypeInfo.getName(), param.getUnresolvedType().getName());
+    assertEquals(expectedUnresolvedTypeInfo.getKind(), param.getUnresolvedType().getKind());
   }
 
   void assertGenInvalid(Class<?> c, Class<?>... rest) throws Exception {

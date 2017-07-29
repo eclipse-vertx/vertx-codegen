@@ -1288,7 +1288,7 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
-  public void testParameterizedClassSuperType() throws Exception {
+  public <T> void testParameterizedClassSuperType() throws Exception {
     ClassModel model = new Generator().generateClass(InterfaceWithParameterizedDeclaredSupertype.class, GenericInterface.class);
     assertEquals(InterfaceWithParameterizedDeclaredSupertype.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithParameterizedDeclaredSupertype.class.getSimpleName(), model.getIfaceSimpleName());
@@ -1299,9 +1299,9 @@ public class ClassTest extends ClassTestBase {
     List<MethodInfo> methods = model.getMethods();
     assertEquals(1, methods.size());
     checkMethod(methods.get(0), "methodWithClassTypeParam", 3, "java.lang.String", MethodKind.OTHER);
-    checkParam(methods.get(0).getParam(0), "t", String.class);
-    checkParam(methods.get(0).getParam(1), "handler", new TypeLiteral<Handler<String>>() {});
-    checkParam(methods.get(0).getParam(2), "asyncResultHandler", new TypeLiteral<Handler<AsyncResult<String>>>() {});
+    checkParam(methods.get(0).getParam(0), "t", new TypeLiteral<String>() {}, new TypeLiteral<T>() {});
+    checkParam(methods.get(0).getParam(1), "handler", new TypeLiteral<Handler<String>>() {}, new TypeLiteral<Handler<T>>() {});
+    checkParam(methods.get(0).getParam(2), "asyncResultHandler", new TypeLiteral<Handler<AsyncResult<String>>>() {}, new TypeLiteral<Handler<AsyncResult<T>>>() {});
   }
 
   @Test

@@ -8,8 +8,8 @@ import io.vertx.core.Handler;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @VertxGen
-public interface MethodWithNullableTypeVariableHandler {
+public interface MethodWithNullableTypeVariableHandler<T> {
 
-  <T> void method(Handler<@Nullable T> s);
+  void method(Handler<@Nullable T> s);
 
 }
