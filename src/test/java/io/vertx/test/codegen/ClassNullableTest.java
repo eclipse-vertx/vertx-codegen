@@ -66,7 +66,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -378,7 +377,6 @@ public class ClassNullableTest extends ClassTestBase {
 
   @Test
   public <T> void testMethodWithNullableReturns() throws Exception {
-    AtomicBoolean checkModel = new AtomicBoolean();
     TypeLiteral<T> typeLiteral = new TypeLiteral<T>() {};
     generateClass(model -> {
       List<MethodInfo> methods = model.getMethods();
@@ -433,10 +431,6 @@ public class ClassNullableTest extends ClassTestBase {
       checkMethod(methods.get(47), "nullableMapStringReturn", 0, new TypeLiteral<Map<String, String>>() {}, MethodKind.OTHER);
       checkMethod(methods.get(48), "nullableMapJsonObjectReturn", 0, new TypeLiteral<Map<String, JsonObject>>() {}, MethodKind.OTHER);
       checkMethod(methods.get(49), "nullableMapJsonArrayReturn", 0, new TypeLiteral<Map<String, JsonArray>>() {}, MethodKind.OTHER);
-      if (!checkModel.compareAndSet(false, true)) {
-        // nullableTypeVariableReturn does not pass with model api
-        methods.remove(10);
-      }
       methods.forEach(m -> {
         assertTrue("Expects " + m.getName() + " to have nullable return type", m.isNullableReturn());
       });
