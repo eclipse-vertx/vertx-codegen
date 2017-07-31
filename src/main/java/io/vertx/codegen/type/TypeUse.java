@@ -8,11 +8,13 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +67,7 @@ public class TypeUse {
   }
 
   interface TypeInternal {
+    String rawName();
     boolean isNullable();
     TypeInternal getArgAt(int index);
   }
@@ -110,15 +113,19 @@ public class TypeUse {
   /**
    * Return the type use of a type argument of the underlying type.
    *
+   * @param rawName the name of the raw type for which we want to get the argument
    * @param index the argument index
    * @return the type use
    */
-  public TypeUse getArg(int index) {
-    TypeInternal[] abc = new TypeInternal[types.length];
-    for (int i = 0;i < types.length;i++) {
-      abc[i] = types[i].getArgAt(index);
+  public TypeUse getArg(String rawName, int index) {
+    List<TypeInternal> abc = new ArrayList<>();
+    for (TypeInternal type : types) {
+      if (!rawName.equals(type.rawName())) {
+        break;
+      }
+      abc.add(type.getArgAt(index));
     }
-    return new TypeUse(abc);
+    return new TypeUse(abc.toArray(new TypeInternal[abc.size()]));
   }
 
   /**
@@ -138,17 +145,6 @@ public class TypeUse {
     return nullable;
   }
 
-  static TypeInternal NULL_TYPE_INTERNAL = new TypeInternal() {
-    @Override
-    public boolean isNullable() {
-      return false;
-    }
-    @Override
-    public TypeInternal getArgAt(int index) {
-      return NULL_TYPE_INTERNAL;
-    }
-  };
-
   private static class ReflectType implements TypeInternal {
 
     private final AnnotatedType annotatedType;
@@ -159,17 +155,22 @@ public class TypeUse {
       this.nullable = isNullable(annotated);
     }
 
+    @Override
+    public String rawName() {
+      if (annotatedType instanceof AnnotatedParameterizedType) {
+        return ((ParameterizedType)(annotatedType.getType())).getRawType().getTypeName();
+      } else {
+        return null;
+      }
+    }
+
     public boolean isNullable() {
       return nullable;
     }
 
     public TypeInternal getArgAt(int index) {
-      if (annotatedType instanceof AnnotatedParameterizedType) {
-        AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) annotatedType;
-        return new ReflectType(annotatedParameterizedType.getAnnotatedActualTypeArguments()[index]);
-      } else {
-        return NULL_TYPE_INTERNAL;
-      }
+      AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) annotatedType;
+      return new ReflectType(annotatedParameterizedType.getAnnotatedActualTypeArguments()[index]);
     }
 
     private static boolean isNullable(AnnotatedType type) {
@@ -190,6 +191,15 @@ public class TypeUse {
       this.mirror = mirror;
     }
 
+    @Override
+    public String rawName() {
+      if (mirror.getKind() == TypeKind.DECLARED) {
+        return ((TypeElement)((DeclaredType)mirror).asElement()).getQualifiedName().toString();
+      } else {
+        return null;
+      }
+    }
+
     public boolean isNullable() {
       for (AnnotationMirror annotation : mirror.getAnnotationMirrors()) {
         DeclaredType annotationType = annotation.getAnnotationType();
@@ -203,11 +213,7 @@ public class TypeUse {
 
     public TypeInternal getArgAt(int index) {
       List<? extends TypeMirror> args = ((DeclaredType) mirror).getTypeArguments();
-      if (index < args.size()) {
-        return new MirrorTypeInternal(args.get(index));
-      } else {
-        return NULL_TYPE_INTERNAL;
-      }
+      return new MirrorTypeInternal(args.get(index));
     }
   }
 }

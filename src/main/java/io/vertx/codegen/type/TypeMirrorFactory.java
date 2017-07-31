@@ -135,7 +135,7 @@ public class TypeMirrorFactory {
         List<TypeInfo> typeArguments;
         typeArguments = new ArrayList<>(typeArgs.size());
         for (int i = 0; i < typeArgs.size(); i++) {
-          TypeUse argUse = use != null ? use.getArg(i) : null;
+          TypeUse argUse = use != null ? use.getArg(fqcn, i) : null;
           TypeInfo typeArgDesc = create(argUse, typeArgs.get(i));
           // Need to check it is an interface type
           typeArguments.add(typeArgDesc);

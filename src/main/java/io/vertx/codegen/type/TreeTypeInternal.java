@@ -12,6 +12,8 @@ import com.sun.tools.javac.tree.JCTree;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 /**
@@ -57,13 +59,18 @@ class TreeTypeInternal implements TypeUse.TypeInternal {
     return nullable;
   }
 
-  public TypeUse.TypeInternal getArgAt(int index) {
+  @Override
+  public String rawName() {
     if (type instanceof ParameterizedTypeTree) {
       ParameterizedTypeTree parameterizedType = (ParameterizedTypeTree) type;
-      return new TreeTypeInternal(parameterizedType.getTypeArguments().get(index));
-    } else {
-      return TypeUse.NULL_TYPE_INTERNAL;
+      return ((TypeElement)((JCTree.JCTypeApply) parameterizedType).type.asElement()).getQualifiedName().toString();
     }
+    return null;
+  }
+
+  public TypeUse.TypeInternal getArgAt(int index) {
+    ParameterizedTypeTree parameterizedType = (ParameterizedTypeTree) type;
+    return new TreeTypeInternal(parameterizedType.getTypeArguments().get(index));
   }
 
   private static boolean isNullable(Tree type) {

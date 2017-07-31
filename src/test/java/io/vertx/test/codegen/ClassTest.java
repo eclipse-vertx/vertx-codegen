@@ -27,6 +27,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.streams.WriteStream;
 import io.vertx.test.codegen.annotations.EmptyAnnotation;
 import io.vertx.test.codegen.testapi.AbstractDataObjectWithToJson;
 import io.vertx.test.codegen.testapi.AbstractInterfaceWithConcreteSuperInterface;
@@ -37,6 +38,8 @@ import io.vertx.test.codegen.testapi.ConcreteInterfaceWithTwoConcreteSuperInterf
 import io.vertx.test.codegen.testapi.DiamondMethod1;
 import io.vertx.test.codegen.testapi.DiamondMethod2;
 import io.vertx.test.codegen.testapi.DiamondMethod3;
+import io.vertx.test.codegen.testapi.GenericInterface2;
+import io.vertx.test.codegen.testapi.MethodWithTypeVarParamByGenericType;
 import io.vertx.test.codegen.testapi.GenericAbstractInterface;
 import io.vertx.test.codegen.testapi.GenericInterface;
 import io.vertx.test.codegen.testapi.GenericInterfaceWithUpperBound;
@@ -201,6 +204,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
@@ -996,6 +1000,11 @@ public class ClassTest extends ClassTestBase {
   // Valid returns
 
   @Test
+  public void testFoo() throws Exception {
+    ClassModel model = new Generator().generateClass(MethodWithTypeVarParamByGenericType.class);
+  }
+
+  @Test
   public <T, R> void testGenericInterface() throws Exception {
     ClassModel model = new Generator().generateClass(GenericInterface.class);
     assertEquals(GenericInterface.class.getName() + "<T>", model.getIfaceFQCN());
@@ -1330,6 +1339,29 @@ public class ClassTest extends ClassTestBase {
     List<MethodInfo> methods = model.getMethods();
     assertEquals(1, methods.size());
     checkMethod(methods.get(0), "foo", 1, "void", MethodKind.OTHER);
+  }
+
+  @Test
+  public void testMethodWithTypeVarParamByGenericType() throws Exception {
+    Runnable test = () -> {
+      try {
+        ClassModel model = new Generator().generateClass(MethodWithTypeVarParamByGenericType.class);
+        MethodInfo meth = model.getMethods().get(0);
+        ParamInfo param = meth.getParam(0);
+        ParameterizedTypeInfo handler = (ParameterizedTypeInfo) param.getType();
+        assertEquals(Handler.class.getName(), handler.getRaw().getName());
+        ParameterizedTypeInfo genericInt2 = (ParameterizedTypeInfo) handler.getArg(0);
+        assertEquals(GenericInterface2.class.getName(), genericInt2.getRaw().getName());
+        TypeVariableInfo k = (TypeVariableInfo) genericInt2.getArg(0);
+        assertEquals("K", k.getName());
+        TypeVariableInfo v = (TypeVariableInfo) genericInt2.getArg(1);
+        assertEquals("V", v.getName());
+      } catch (Exception e) {
+        throw new AssertionError(e);
+      }
+    };
+    blacklist(test, Stream.of(WriteStream.class));
+    test.run();
   }
 
   @Test

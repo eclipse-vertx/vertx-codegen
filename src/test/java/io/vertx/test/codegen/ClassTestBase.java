@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -111,6 +112,28 @@ public abstract class ClassTestBase {
       // pass
     }
   }
+
+  static void blacklist(Runnable test, Stream<Class<?>> classes) {
+    Set<String> blacklist = new HashSet<>();
+    classes.map(Class::getName).forEach(blacklist::add);
+    Thread thread = Thread.currentThread();
+    ClassLoader prev = thread.getContextClassLoader();
+    thread.setContextClassLoader(new ClassLoader(prev) {
+      @Override
+      public Class<?> loadClass(String name) throws ClassNotFoundException {
+        if (blacklist.contains(name)) {
+          throw new ClassNotFoundException();
+        }
+        return super.loadClass(name);
+      }
+    });
+    try {
+      test.run();
+    } finally {
+      thread.setContextClassLoader(prev);
+    }
+  }
+
 
   static <T> Set<T> set(T... values) {
     return new HashSet<T>(Arrays.asList(values));

@@ -63,7 +63,6 @@ import io.vertx.test.codegen.testapi.nullable.MethodWithOverloadedNullableParam;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -506,7 +505,6 @@ public class ClassNullableTest extends ClassTestBase {
   @Test
   public void testDiamondFluentNullableReturn() throws Exception {
     ClassModel model = new Generator().generateClass(DiamondGenericBottomFluentNullableParam.class);
-
   }
 
   @Test
@@ -531,48 +529,26 @@ public class ClassNullableTest extends ClassTestBase {
     }, MethodWithNullableNonAnnotatedTypeVariableReturn.class);
   }
 
-  private void blacklist(Class<?> clazz, Class<?>[] rest, Runnable test) {
-    Set<String> blacklist = new HashSet<>();
-    blacklist.add(clazz.getName());
-    Stream.of(rest).map(Class::getName).forEach(blacklist::add);
-    Thread thread = Thread.currentThread();
-    ClassLoader prev = thread.getContextClassLoader();
-    thread.setContextClassLoader(new ClassLoader(prev) {
-      @Override
-      public Class<?> loadClass(String name) throws ClassNotFoundException {
-        if (blacklist.contains(name)) {
-          throw new ClassNotFoundException();
-        }
-        return super.loadClass(name);
-      }
-    });
-    try {
-      test.run();
-    } finally {
-      thread.setContextClassLoader(prev);
-    }
-  }
-
   private void generateClass(Consumer<ClassModel> test, Class<?> clazz, Class<?>... rest) throws Exception {
     ClassModel model = new Generator().generateClass(clazz);
     test.accept(model);
-    blacklist(clazz, rest, () -> {
+    blacklist(() -> {
       try {
         test.accept(new Generator().generateClass(clazz, rest));
       } catch (Exception e) {
         throw new AssertionError(e);
       }
-    });
+    }, Stream.concat(Stream.of(clazz), Stream.of(rest)));
   }
 
   @Override
   void assertGenInvalid(Class<?> c, Class<?>... rest) throws Exception {
-    blacklist(c, rest, () -> {
+    blacklist(() -> {
       try {
         ClassNullableTest.super.assertGenInvalid(c, rest);
       } catch (Exception e) {
         throw new AssertionError(e);
       }
-    });
+    }, Stream.concat(Stream.of(c), Stream.of(rest)));
   }
 }
