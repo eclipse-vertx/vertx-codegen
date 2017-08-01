@@ -15,6 +15,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.lang.annotation.Inherited;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -284,6 +285,16 @@ public class DataObjectModel implements Model {
     Map<String, ExecutableElement> adders = new HashMap<>();
     Map<String, List<AnnotationMirror>> annotations = new HashMap<>();
 
+    BiFunction<List<AnnotationMirror>, List<AnnotationMirror>, List<AnnotationMirror>> merger = (a, b) -> {
+      if (b.size() > 0) {
+        if (!(a instanceof ArrayList)) {
+          a = new ArrayList<>(a);
+        }
+        a.addAll(b);
+      }
+      return a;
+    };
+
     while (methodsElt.size() > 0) {
       ExecutableElement methodElt = methodsElt.remove(0);
       if (((TypeElement) methodElt.getEnclosingElement()).getQualifiedName().toString().equals("java.lang.Object")) {
@@ -293,11 +304,11 @@ public class DataObjectModel implements Model {
       if (methodName.startsWith("get") && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) && methodElt.getParameters().isEmpty() && methodElt.getReturnType().getKind() != TypeKind.VOID) {
         String name = Helper.normalizePropertyName(methodName.substring(3));
         getters.put(name, methodElt);
-        annotations.put(name, new ArrayList(elementUtils.getAllAnnotationMirrors(methodElt)));
+        annotations.merge(name, (List<AnnotationMirror>) elementUtils.getAllAnnotationMirrors(methodElt), merger);
       } else if (methodName.startsWith("is") && methodName.length() > 2 && Character.isUpperCase(methodName.charAt(2)) && methodElt.getParameters().isEmpty() && methodElt.getReturnType().getKind() != TypeKind.VOID) {
         String name = Helper.normalizePropertyName(methodName.substring(2));
         getters.put(name, methodElt);
-        annotations.put(name, new ArrayList(elementUtils.getAllAnnotationMirrors(methodElt)));
+        annotations.merge(name, (List<AnnotationMirror>) elementUtils.getAllAnnotationMirrors(methodElt), merger);
       } else if ((methodName.startsWith("set") || methodName.startsWith("add")) && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3))) {
         String prefix = methodName.substring(0, 3);
         String name = Helper.normalizePropertyName(methodName.substring(3));
@@ -312,12 +323,12 @@ public class DataObjectModel implements Model {
           if (numParams == 1 || (numParams == 2 && t.getKind() == TypeKind.DECLARED &&
             ((TypeElement) ((DeclaredType) t).asElement()).getQualifiedName().toString().equals("java.lang.String"))) {
             adders.put(name, methodElt);
-            annotations.put(name, new ArrayList(elementUtils.getAllAnnotationMirrors(methodElt)));
+            annotations.merge(name, (List<AnnotationMirror>) elementUtils.getAllAnnotationMirrors(methodElt), merger);
           }
         } else {
           if (numParams == 1) {
             setters.put(name, methodElt);
-            annotations.put(name, new ArrayList(elementUtils.getAllAnnotationMirrors(methodElt)));
+            annotations.merge(name, (List<AnnotationMirror>) elementUtils.getAllAnnotationMirrors(methodElt), merger);
           }
         }
       }
