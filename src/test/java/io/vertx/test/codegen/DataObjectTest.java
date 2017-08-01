@@ -13,6 +13,7 @@ import io.vertx.codegen.type.TypeReflectionFactory;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.annotations.EmptyAnnotation;
+import io.vertx.test.codegen.testdataobject.Foo;
 import io.vertx.test.codegen.annotations.TestEnum;
 import io.vertx.test.codegen.testapi.InterfaceDataObject;
 import io.vertx.test.codegen.testdataobject.Abstract;
@@ -647,8 +648,8 @@ public class DataObjectTest {
   @Test
   public void testAnnotatedObject() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
-    assertEquals(2, model.getType().getAnnotations().size());
-    assertEquals(EmptyAnnotation.class.getSimpleName(),model.getType().getAnnotations().get(1).getSimpleName());
+    assertEquals(2, model.getAnnotations().size());
+    assertEquals(EmptyAnnotation.class.getSimpleName(),model.getAnnotations().get(1).getSimpleName());
   }
 
   @Test
@@ -657,6 +658,11 @@ public class DataObjectTest {
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedField").getAnnotations().size());
     assertEquals(0, model.getPropertyMap().get("annotatedField").getAnnotations().get(0).getMembersNames().size());
+  }
+
+  @Test
+  public void testAnnotatatedClassWithAnnotatedValue() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(Foo.class);
   }
 
   @Test

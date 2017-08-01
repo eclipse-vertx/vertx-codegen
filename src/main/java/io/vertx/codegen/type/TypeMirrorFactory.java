@@ -35,12 +35,10 @@ public class TypeMirrorFactory {
 
   final Elements elementUtils;
   final Types typeUtils;
-  final AnnotationValueInfoFactory annotationValueInfoFactory;
 
   public TypeMirrorFactory(Elements elementUtils, Types typeUtils) {
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
-    this.annotationValueInfoFactory = new AnnotationValueInfoFactory(this);
   }
 
   public TypeInfo create(TypeMirror type) {
@@ -91,17 +89,15 @@ public class TypeMirrorFactory {
           values.add(enclosedElt.getSimpleName().toString());
         }
       }
-      List<AnnotationValueInfo> annotations = elementUtils.getAllAnnotationMirrors(elt).stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList());
       boolean gen = elt.getAnnotation(VertxGen.class) != null;
-      return new EnumTypeInfo(fqcn, gen, values, module, nullable, proxyGen,annotations);
+      return new EnumTypeInfo(fqcn, gen, values, module, nullable, proxyGen);
     } else {
       ClassKind kind = ClassKind.getKind(fqcn, elt.getAnnotation(DataObject.class) != null, elt.getAnnotation(VertxGen.class) != null);
-      List<AnnotationValueInfo> annotations = elementUtils.getAllAnnotationMirrors(elt).stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList());
       ClassTypeInfo raw;
       if (kind == ClassKind.BOXED_PRIMITIVE) {
         raw = ClassTypeInfo.PRIMITIVES.get(fqcn);
         if (nullable) {
-          raw = new ClassTypeInfo(raw.kind, raw.name, raw.module, true, raw.params, Collections.emptyList());
+          raw = new ClassTypeInfo(raw.kind, raw.name, raw.module, true, raw.params);
         }
       } else {
         List<TypeParamInfo.Class> typeParams = createTypeParams(type);
@@ -128,12 +124,12 @@ public class TypeMirrorFactory {
             }
             return null;
           }).toArray(TypeInfo[]::new);
-          raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams,annotations, args[0], args[1], args[2], module, nullable, proxyGen);
+          raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, args[0], args[1], args[2], module, nullable, proxyGen);
         } else if (kind == ClassKind.DATA_OBJECT) {
           boolean _abstract = elt.getModifiers().contains(Modifier.ABSTRACT);
-          raw = new DataObjectTypeInfo(kind, fqcn, module, _abstract, nullable, proxyGen, typeParams,annotations);
+          raw = new DataObjectTypeInfo(kind, fqcn, module, _abstract, nullable, proxyGen, typeParams);
         } else {
-          raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams,annotations);
+          raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams);
         }
       }
       List<? extends TypeMirror> typeArgs = type.getTypeArguments();

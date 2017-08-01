@@ -1,7 +1,11 @@
 package io.vertx.codegen;
 
+import io.vertx.codegen.type.AnnotationValueInfo;
+
 import javax.lang.model.element.Element;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,6 +18,10 @@ public interface Model {
   Element getElement();
 
   String getFqn();
+
+  default List<AnnotationValueInfo> getAnnotations() {
+    return Collections.emptyList();
+  }
 
   default Map<String, Object> getVars() {
     HashMap<String, Object> vars = new HashMap<>();

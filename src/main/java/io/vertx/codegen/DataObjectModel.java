@@ -13,8 +13,10 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.lang.annotation.Inherited;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -44,6 +46,7 @@ public class DataObjectModel implements Model {
   private ClassTypeInfo type;
   private Doc doc;
   private boolean jsonifiable;
+  private List<AnnotationValueInfo> annotations;
 
   public DataObjectModel(Elements elementUtils, Types typeUtils, TypeElement modelElt, Messager messager) {
     this.elementUtils = elementUtils;
@@ -91,6 +94,11 @@ public class DataObjectModel implements Model {
 
   public Map<String, PropertyInfo> getPropertyMap() {
     return propertyMap;
+  }
+
+  @Override
+  public List<AnnotationValueInfo> getAnnotations() {
+    return annotations;
   }
 
   public ClassTypeInfo getSuperType() {
@@ -152,6 +160,7 @@ public class DataObjectModel implements Model {
     if (!processed) {
       if (modelElt.getKind() == ElementKind.INTERFACE || modelElt.getKind() == ElementKind.CLASS) {
         traverse();
+        processTypeAnnotations();
         processImportedTypes();
         processed = true;
         return true;
@@ -227,6 +236,10 @@ public class DataObjectModel implements Model {
     Collections.sort(props, (p1, p2) -> p1.name.compareTo(p2.name));
     propertyMap.clear();
     props.forEach(prop -> propertyMap.put(prop.name, prop));
+  }
+
+  private void processTypeAnnotations() {
+    this.annotations = elementUtils.getAllAnnotationMirrors(modelElt).stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList());
   }
 
   private void processImportedTypes() {

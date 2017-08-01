@@ -82,6 +82,7 @@ public class ClassModel implements Model {
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
   protected Map<String, List<AnnotationValueInfo>> methodAnnotationsMap = new LinkedHashMap<>();
+  protected List<AnnotationValueInfo> annotations;
 
   public ClassModel(MethodOverloadChecker methodOverloadChecker,
                     Messager messager,  Map<String, TypeElement> sources, Elements elementUtils,
@@ -241,7 +242,7 @@ public class ClassModel implements Model {
    * @return all the annotations on this class
    */
   public List<AnnotationValueInfo> getAnnotations() {
-    return type.getAnnotations();
+    return annotations;
   }
 
   /**
@@ -544,11 +545,16 @@ public class ClassModel implements Model {
     if (!processed) {
       traverseElem(modelElt);
       determineApiTypes();
+      processTypeAnnotations();
       processed = true;
       return true;
     } else {
       return false;
     }
+  }
+
+  private void processTypeAnnotations() {
+    this.annotations = elementUtils.getAllAnnotationMirrors(modelElt).stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList());
   }
 
   private void traverseElem(Element elem) {

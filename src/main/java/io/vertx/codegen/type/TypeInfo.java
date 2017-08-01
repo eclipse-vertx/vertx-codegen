@@ -55,13 +55,6 @@ public abstract class TypeInfo {
   }
 
   /**
-   * @return the annotations at this type level, or an empty collection if none or non-applicable
-   */
-  public List<AnnotationValueInfo> getAnnotations(){
-    return Collections.emptyList();
-  }
-
-  /**
    * @return true if the type is nullable
    */
   public boolean isNullable() {

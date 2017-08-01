@@ -22,7 +22,7 @@ public class ClassTypeInfo extends TypeInfo {
         Float.class, Double.class, Character.class};
     for (Class<?> boxe : boxes) {
       String name = boxe.getName();
-      PRIMITIVES.put(name, new io.vertx.codegen.type.ClassTypeInfo(ClassKind.BOXED_PRIMITIVE, name, null, false, Collections.emptyList(),Collections.emptyList()));
+      PRIMITIVES.put(name, new io.vertx.codegen.type.ClassTypeInfo(ClassKind.BOXED_PRIMITIVE, name, null, false, Collections.emptyList()));
     }
   }
 
@@ -33,9 +33,8 @@ public class ClassTypeInfo extends TypeInfo {
   final ModuleInfo module;
   final boolean nullable;
   final List<TypeParamInfo.Class> params;
-  final List<AnnotationValueInfo> annotations;
 
-  public ClassTypeInfo(ClassKind kind, String name, ModuleInfo module, boolean nullable, List<TypeParamInfo.Class> params, List<AnnotationValueInfo> annotations) {
+  public ClassTypeInfo(ClassKind kind, String name, ModuleInfo module, boolean nullable, List<TypeParamInfo.Class> params) {
     this.kind = kind;
     this.name = name;
     this.simpleName = Helper.getSimpleName(name);
@@ -43,7 +42,6 @@ public class ClassTypeInfo extends TypeInfo {
     this.module = module;
     this.nullable = nullable;
     this.params = params;
-    this.annotations = annotations;
   }
 
   public List<TypeParamInfo.Class> getParams() {
@@ -96,14 +94,6 @@ public class ClassTypeInfo extends TypeInfo {
       return name.equals(((io.vertx.codegen.type.ClassTypeInfo) obj).name);
     }
     return false;
-  }
-
-  /**
-   * @return the annotations at this type level, or an empty collection if none or non-applicable
-   */
-  @Override
-  public List<AnnotationValueInfo> getAnnotations() {
-    return annotations;
   }
 
   @Override

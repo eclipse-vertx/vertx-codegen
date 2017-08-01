@@ -58,17 +58,6 @@ public class TypeReflectionFactory {
         } finally {
           Thread.currentThread().setContextClassLoader(loader);
         }
-        List<AnnotationValueInfo> annotations = new ArrayList<>();
-        if (classType.getAnnotations().length > 0) {
-          annotations.addAll(Stream.of(classType.getAnnotations()).map(a -> new AnnotationValueInfo(a.annotationType().getName(), Stream.of(a.annotationType().getDeclaredMethods()).collect(HashMap::new, (map, method) -> {
-            try {
-              Annotation annot = classType.getAnnotation(a.annotationType());
-              map.put(method.getName(), method.invoke(annot));
-            } catch (IllegalAccessException | InvocationTargetException e) {
-              throw new RuntimeException(e);
-            }
-          }, HashMap::putAll))).collect(Collectors.toList()));
-        }
         if (classType.isEnum()) {
           return new EnumTypeInfo(
             fqcn,
@@ -76,8 +65,7 @@ public class TypeReflectionFactory {
             Stream.of(classType.getEnumConstants()).map(Object::toString).collect(Collectors.toList()),
             module,
             false,
-            false,
-            annotations);
+            false);
         } else {
           ClassKind kind = ClassKind.getKind(fqcn, classType.getAnnotation(DataObject.class) != null, classType.getAnnotation(VertxGen.class) != null);
           List<TypeParamInfo.Class> typeParams = new ArrayList<>();
@@ -88,12 +76,12 @@ public class TypeReflectionFactory {
           if (kind == ClassKind.API) {
             java.lang.reflect.TypeVariable<Class<ReadStream>> classTypeVariable = ReadStream.class.getTypeParameters()[0];
             Type readStreamArg = Helper.resolveTypeParameter(type, classTypeVariable);
-            return new ApiTypeInfo(fqcn, true, typeParams, annotations, readStreamArg != null ? create(readStreamArg) : null, null, null, module, false, false);
+            return new ApiTypeInfo(fqcn, true, typeParams, readStreamArg != null ? create(readStreamArg) : null, null, null, module, false, false);
           } else if (kind == ClassKind.DATA_OBJECT) {
             boolean _abstract = Modifier.isAbstract(classType.getModifiers());
-            return new DataObjectTypeInfo(kind, fqcn, module, _abstract, false, false, typeParams, annotations);
+            return new DataObjectTypeInfo(kind, fqcn, module, _abstract, false, false, typeParams);
           } else {
-            return new ClassTypeInfo(kind, fqcn, module, false, typeParams, annotations);
+            return new ClassTypeInfo(kind, fqcn, module, false, typeParams);
           }
         }
       }
