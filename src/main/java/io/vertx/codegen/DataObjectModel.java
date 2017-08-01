@@ -13,8 +13,8 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.lang.annotation.Inherited;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -340,13 +340,15 @@ public class DataObjectModel implements Model {
     names.addAll(adders.keySet());
 
     for (String name : names) {
-
       //Check annotations on field
-      getElement().getEnclosedElements().stream()
+      List<? extends AnnotationMirror> list = getElement().getEnclosedElements().stream()
         .filter(e -> e.getKind().equals(ElementKind.FIELD) && e.getSimpleName().toString().equals(name))
-        .flatMap(e -> elementUtils.getAllAnnotationMirrors(e).stream())
-        .forEach(a -> annotations.computeIfAbsent(name, k -> new ArrayList<>()).add(a));
-
+        .flatMap(e -> elementUtils.getAllAnnotationMirrors(e).stream()).collect(Collectors.toList());
+      if (list.size() > 0) {
+        annotations.merge(name, (List<AnnotationMirror>) list, merger);
+      }
+    }
+    for (String name : names) {
       processMethod(name, getters.get(name), setters.get(name), adders.get(name), annotations.get(name));
     }
 
