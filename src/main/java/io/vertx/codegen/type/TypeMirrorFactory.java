@@ -150,7 +150,7 @@ public class TypeMirrorFactory {
   public TypeVariableInfo create(TypeUse use, TypeVariable type) {
     TypeParameterElement elt = (TypeParameterElement) type.asElement();
     TypeParamInfo param = TypeParamInfo.create(elt);
-    return new TypeVariableInfo(param, use != null && use.isNullable(), type.toString());
+    return new TypeVariableInfo(param, use != null && use.isNullable(), elt.getSimpleName().toString());
   }
 
   private List<TypeParamInfo.Class> createTypeParams(DeclaredType type) {
