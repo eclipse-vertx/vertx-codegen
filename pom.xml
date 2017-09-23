@@ -223,7 +223,7 @@
 
   <profiles>
     <profile>
-      <id>tools</id>
+      <id>java-8</id>
       <properties>
         <tools.jar>${java.home}/../lib/tools.jar</tools.jar>
       </properties>
