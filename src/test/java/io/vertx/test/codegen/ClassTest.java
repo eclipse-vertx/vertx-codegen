@@ -1237,7 +1237,6 @@ public class ClassTest extends ClassTestBase {
   public void testFluentMethodOverrideFromAbstract() throws Exception {
     Generator gen = new Generator();
     ClassModel model = gen.generateClass(InterfaceWithFluentMethodOverrideFromAbstract.class);
-    assertEquals(0, gen.getDiagnostics().size());
     assertEquals(InterfaceWithFluentMethodOverrideFromAbstract.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithFluentMethodOverrideFromAbstract.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(Collections.singleton((ClassTypeInfo) TypeReflectionFactory.create(AbstractInterfaceWithFluentMethods.class)), model.getReferencedTypes());
