@@ -13,6 +13,7 @@ import javax.lang.model.type.TypeMirror;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
@@ -32,7 +33,11 @@ public class TypeUse {
   static {
     try {
       // Java 8 compiler has incomplete implementation of type use API
-      providers.add(TreeTypeInternal.PROVIDER);
+      String fqn = TypeUse.class.getPackage().getName() + ".TreeTypeInternal";
+      Class<?> clazz = TypeUse.class.getClassLoader().loadClass(fqn);
+      Field getter = clazz.getField("PROVIDER");
+      TypeInternalProvider provider = (TypeInternalProvider) getter.get(null);
+      providers.add(provider);
     } catch (Throwable ignore) {
       // Java 9 compiler - Trees are not available but type use via mirror should work fine
     }
