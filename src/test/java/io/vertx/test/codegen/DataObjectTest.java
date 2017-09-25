@@ -53,7 +53,6 @@ public class DataObjectTest {
     assertTrue(model.isClass());
     assertFalse(model.getGenerateConverter());
     assertFalse(model.getInheritConverter());
-    assertTrue(model.isPublicConverter());
     try {
       EmptyDataObject.class.getConstructor();
       fail();
@@ -568,14 +567,12 @@ public class DataObjectTest {
   public void testConverterDataObject() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(ConverterDataObject.class);
     assertTrue(model.getGenerateConverter());
-    assertFalse(model.isPublicConverter());
   }
 
   @Test
   public void testNoConverterDataObject() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(NoConverterDataObject.class);
     assertFalse(model.getGenerateConverter());
-    assertTrue(model.isPublicConverter());
   }
 
   @Test
@@ -791,7 +788,6 @@ public class DataObjectTest {
     assertNotNull(model);
     assertTrue(model.isClass());
     assertTrue(model.getGenerateConverter());
-    assertTrue(model.isPublicConverter());
     PropertyInfo idModel = model.getPropertyMap().get("id");
     assertEquals(1, idModel.getAnnotations().size());
     assertNotNull(idModel.getAnnotation(SomeAnnotation.class.getName()).getName());

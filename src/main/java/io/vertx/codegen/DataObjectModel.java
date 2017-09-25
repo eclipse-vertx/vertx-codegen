@@ -41,7 +41,6 @@ public class DataObjectModel implements Model {
   private boolean isClass;
   private boolean generateConverter;
   private boolean inheritConverter;
-  private boolean publicConverter;
   private int constructors;
   private ClassTypeInfo superType;
   private ClassTypeInfo type;
@@ -129,10 +128,6 @@ public class DataObjectModel implements Model {
     return inheritConverter;
   }
 
-  public boolean isPublicConverter() {
-    return publicConverter;
-  }
-
   public boolean hasEmptyConstructor() {
     return (constructors & 1) == 1;
   }
@@ -144,7 +139,6 @@ public class DataObjectModel implements Model {
     vars.put("doc", doc);
     vars.put("generateConverter", generateConverter);
     vars.put("inheritConverter", inheritConverter);
-    vars.put("publicConverter", publicConverter);
     vars.put("concrete", concrete);
     vars.put("isClass", isClass);
     vars.put("properties", propertyMap.values());
@@ -174,7 +168,6 @@ public class DataObjectModel implements Model {
   private void traverse() {
     DataObject ann = modelElt.getAnnotation(DataObject.class);
     this.generateConverter = ann.generateConverter();
-    this.publicConverter = ann.publicConverter();
     this.inheritConverter = ann.inheritConverter();
     this.isClass = modelElt.getKind() == ElementKind.CLASS;
     this.concrete = isClass && !modelElt.getModifiers().contains(Modifier.ABSTRACT);
@@ -336,7 +329,7 @@ public class DataObjectModel implements Model {
     names.addAll(getters.keySet());
     names.addAll(setters.keySet());
     names.addAll(adders.keySet());
-
+    
     for (String name : names) {
       //Check annotations on field
       List<? extends AnnotationMirror> list = getElement().getEnclosedElements().stream()

@@ -95,7 +95,6 @@ public class CodeGeneratorTest {
     assertEquals(PropertyGettersSetters.class.getName(), props.remove("type"));
     assertEquals("false", props.remove("generateConverter"));
     assertEquals("false", props.remove("inheritConverter"));
-    assertEquals("true", props.remove("publicConverter"));
     assertEquals("false", props.remove("concrete"));
     assertEquals("false", props.remove("isClass"));
     assertEquals("[" + JsonArray.class.getName() + ", " + JsonObject.class.getName() + ", " + Boolean.class.getName() + ", "
