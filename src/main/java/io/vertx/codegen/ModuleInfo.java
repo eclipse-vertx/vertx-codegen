@@ -5,8 +5,10 @@ import io.vertx.codegen.type.TypeNameTranslator;
 
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.util.Elements;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Set;
+import java.util.function.BiFunction;
 
 /**
  * Describes a module.
@@ -25,6 +27,30 @@ public class ModuleInfo {
     this.groupPackage = groupPackage;
   }
 
+  private static final BiFunction<Elements, String, Set<PackageElement>> getPackageElementJava8 = (elts, fqn) -> {
+    PackageElement elt = elts.getPackageElement(fqn);
+    return elt != null ? Collections.singleton(elt) : Collections.emptySet();
+  };
+
+  private static final BiFunction<Elements, String, Set<PackageElement>> getPackageElement;
+
+  static {
+    BiFunction<Elements, String, Set<PackageElement>> result = getPackageElementJava8;
+    try {
+      Method method = Elements.class.getDeclaredMethod("getAllPackageElements", CharSequence.class);
+      result = (elts, fqn) -> {
+        try {
+          return (Set<PackageElement>) method.invoke(elts, fqn);
+        } catch (Exception e) {
+          return getPackageElementJava8.apply(elts, fqn);
+        }
+      };
+    } catch (NoSuchMethodException e) {
+      // Java 8
+    }
+    getPackageElement = result;
+  }
+
   /**
    * Resolve a module info for the specified {@code pkgElt} argument, returns null for undertermined.
    *
@@ -33,17 +59,21 @@ public class ModuleInfo {
    * @return the module info
    */
   public static ModuleInfo resolve(Elements elementUtils, PackageElement pkgElt) {
-    while (pkgElt != null) {
-      ModuleGen annotation = pkgElt.getAnnotation(ModuleGen.class);
-      if (annotation != null) {
-        return new ModuleInfo(pkgElt.getQualifiedName().toString(), annotation.name(), annotation.groupPackage());
+    String pkgQN = pkgElt.getQualifiedName().toString();
+    while (true) {
+      if (pkgElt != null) {
+        ModuleGen annotation = pkgElt.getAnnotation(ModuleGen.class);
+        if (annotation != null) {
+          return new ModuleInfo(pkgElt.getQualifiedName().toString(), annotation.name(), annotation.groupPackage());
+        }
       }
-      String pkgQN = pkgElt.getQualifiedName().toString();
       int pos = pkgQN.lastIndexOf('.');
       if (pos == -1) {
         break;
       } else {
-        pkgElt = elementUtils.getPackageElement(pkgQN.substring(0, pos));
+        pkgQN = pkgQN.substring(0, pos);
+        Set<PackageElement> pkgElts = getPackageElement.apply(elementUtils, pkgQN);
+        pkgElt = pkgElts.isEmpty() ? null : pkgElts.iterator().next();
       }
     }
     return null;

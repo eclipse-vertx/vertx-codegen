@@ -7,6 +7,7 @@ import io.vertx.codegen.ModuleModel;
 import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.type.ApiTypeInfo;
 import io.vertx.codegen.type.TypeNameTranslator;
+import io.vertx.test.codegen.testmodule.emptypkg.empty.sub.EmptyPkg;
 import io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedApi;
 import io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedDataObject;
 import io.vertx.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubApi;
@@ -105,6 +106,17 @@ public class ModuleTest {
     ApiTypeInfo type = (ApiTypeInfo) model.getType();
     assertEquals("io.vertx.test.groovy.codegen.testmodule.modulescoped.ModuleScopedApi", type.translateName("groovy"));
     assertEquals("io.vertx.test.ceylon.simple.ModuleScopedApi", type.translateName(TypeNameTranslator.composite("ceylon")));
+  }
+
+  @Test
+  public void testEmptyPkg() throws Exception {
+    ClassModel model = new Generator().generateClass(EmptyPkg.class);
+    assertEquals(EmptyPkg.class.getName(), model.getIfaceFQCN());
+    assertEquals("io.vertx.test.codegen.testmodule.emptypkg", model.getModule().getPackageName());
+    assertEquals("simple", model.getModule().getName());
+    ApiTypeInfo type = (ApiTypeInfo) model.getType();
+    assertEquals("io.vertx.test.groovy.codegen.testmodule.emptypkg.empty.sub.EmptyPkg", type.translateName("groovy"));
+    assertEquals("io.vertx.test.ceylon.simple.empty.sub.EmptyPkg", type.translateName(TypeNameTranslator.composite("ceylon")));
   }
 
   @Test
