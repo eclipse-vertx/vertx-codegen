@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.vertx</groupId>
     <artifactId>vertx-parent</artifactId>
-    <version>10</version>
+    <version>11</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -74,6 +74,9 @@
                 <compilerArgs>
                   <arg>-Adocgen.output=${asciidoc.dir}/java</arg>
                 </compilerArgs>
+                <excludes>
+                  <exclude>**/TreeTypeInternal.java</exclude>
+                </excludes>
                 <generatedSourcesDirectory>${generated.dir}</generatedSourcesDirectory>
               </configuration>
             </execution>
@@ -81,6 +84,11 @@
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
+          <configuration>
+            <archive>
+              <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+            </archive>
+          </configuration>
           <executions>
             <execution>
               <id>default-jar</id>
@@ -188,7 +196,7 @@
         </executions>
       </plugin>
       <plugin>
-		<groupId>biz.aQute.bnd</groupId>
+        <groupId>biz.aQute.bnd</groupId>
         <artifactId>bnd-maven-plugin</artifactId>
         <version>3.3.0</version>
         <executions>
@@ -202,37 +210,46 @@
         <configuration>
           <bnd><![CDATA[
           Import-Package: \
-          		  org.mvel2*;resolution:=optional, \
-          		  io.vertx.core, \
-          		  io.vertx.core.buffer, \
+                org.mvel2*;resolution:=optional, \
+                io.vertx.core, \
+                io.vertx.core.buffer, \
                   *
                 -exportcontents: !*impl, !examples, *
           ]]></bnd>
         </configuration>
-  	  </plugin>
-  	  <plugin>
-	    <groupId>org.apache.maven.plugins</groupId>
-	    <artifactId>maven-jar-plugin</artifactId>
-	    <configuration>
-	        <archive>
-	            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-	        </archive>
-	    </configuration>
-	  </plugin>
+      </plugin>
     </plugins>
   </build>
 
   <profiles>
     <profile>
-      <id>tools</id>
+      <id>java-8</id>
       <properties>
         <tools.jar>${java.home}/../lib/tools.jar</tools.jar>
       </properties>
       <activation>
-        <property>
-          <name>!notools</name>
-        </property>
+        <jdk>1.8</jdk>
       </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>default-compile</id>
+                  <configuration>
+                    <excludes>
+                      <exclude>/whatever</exclude>
+                    </excludes>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
       <dependencies>
         <dependency>
           <groupId>com.sun</groupId>

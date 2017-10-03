@@ -13,6 +13,7 @@ import javax.lang.model.type.TypeMirror;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
@@ -31,10 +32,20 @@ public class TypeUse {
 
   static {
     try {
-      // Java 8 compiler has incomplete implementation of type use API
-      providers.add(TreeTypeInternal.PROVIDER);
-    } catch (Throwable ignore) {
-      // Java 9 compiler - Trees are not available but type use via mirror should work fine
+      TypeUse.class.getClassLoader().loadClass("java.lang.invoke.VarHandle");
+      // compiling a codegen project with Java 9 - Trees are not available but type use via mirror should work fine
+    } catch (Throwable ignore1) {
+      // compiling with Java 8, it has incomplete implementation of type use API
+      try {
+        // Add via reflection so the codegen project can be compiled with Java 9 also
+        String fqn = TypeUse.class.getPackage().getName() + ".TreeTypeInternal";
+        Class<?> clazz = TypeUse.class.getClassLoader().loadClass(fqn);
+        Field getter = clazz.getField("PROVIDER");
+        TypeInternalProvider provider = (TypeInternalProvider) getter.get(null);
+        providers.add(provider);
+      } catch (Throwable ignore2) {
+        // Codegen was compiled with Java 9, no TreeTypeInternal
+      }
     }
     providers.add(new TypeInternalProvider() {
       public TypeUse.TypeInternal forParam(ProcessingEnvironment env, ExecutableElement methodElt, int paramIndex) {

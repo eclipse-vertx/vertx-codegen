@@ -79,6 +79,7 @@ public class ClassModel implements Model {
   protected Doc doc;
   protected List<TypeInfo> superTypes = new ArrayList<>();
   protected TypeInfo concreteSuperType;
+  private List<TypeInfo> superTypeArguments;
   protected List<TypeInfo> abstractSuperTypes = new ArrayList<>();
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
@@ -217,27 +218,7 @@ public class ClassModel implements Model {
   }
 
   public List<TypeInfo> getSuperTypeArguments() {
-    if (concreteSuperType != null && concreteSuperType.isParameterized()) {
-      DeclaredType tm = (DeclaredType) modelElt.asType();;
-      List<? extends TypeMirror> st = typeUtils.directSupertypes(tm);
-      for (TypeMirror tmSuper: st) {
-        if (tmSuper.getKind() == TypeKind.DECLARED) {
-          DeclaredType abc = (DeclaredType) tmSuper;
-          TypeElement tt = (TypeElement) abc.asElement();
-          if (tt.getQualifiedName().toString().equals(concreteSuperType.getRaw().getName())) {
-            List<TypeInfo> list = new ArrayList<>();
-            int size = tt.getTypeParameters().size();
-            for (int i = 0; i< size;i++) {
-              TypeMirror q = abc.getTypeArguments().get(i);
-              TypeInfo ti =  typeFactory.create(q);
-              list.add(ti);
-            }
-            return list;
-          }
-        }
-      }
-    }
-    return null;
+    return superTypeArguments;
   }
 
   /**
@@ -613,6 +594,26 @@ public class ClassModel implements Model {
               }
             }
             superTypeInfo.collectImports(collectedTypes);
+          }
+        }
+        if (concreteSuperType != null && concreteSuperType.isParameterized()) {
+          tm = (DeclaredType) modelElt.asType();;
+          st = typeUtils.directSupertypes(tm);
+          for (TypeMirror tmSuper: st) {
+            if (tmSuper.getKind() == TypeKind.DECLARED) {
+              DeclaredType abc = (DeclaredType) tmSuper;
+              TypeElement tt = (TypeElement) abc.asElement();
+              if (tt.getQualifiedName().toString().equals(concreteSuperType.getRaw().getName())) {
+                List<TypeInfo> list = new ArrayList<>();
+                int size = tt.getTypeParameters().size();
+                for (int i = 0; i< size;i++) {
+                  TypeMirror q = abc.getTypeArguments().get(i);
+                  TypeInfo ti =  typeFactory.create(q);
+                  list.add(ti);
+                }
+                superTypeArguments = list;
+              }
+            }
           }
         }
         elem.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).forEach(annotations::add);

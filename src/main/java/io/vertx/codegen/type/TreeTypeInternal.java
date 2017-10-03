@@ -5,7 +5,6 @@ import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.ParameterizedTypeTree;
 import com.sun.source.tree.Tree;
-import com.sun.source.tree.VariableTree;
 import com.sun.source.util.Trees;
 import com.sun.tools.javac.tree.JCTree;
 
@@ -13,7 +12,6 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 /**
@@ -21,7 +19,7 @@ import javax.lang.model.type.TypeMirror;
  */
 class TreeTypeInternal implements TypeUse.TypeInternal {
 
-  static final TypeUse.TypeInternalProvider PROVIDER = new TypeUse.TypeInternalProvider() {
+  public static final TypeUse.TypeInternalProvider PROVIDER = new TypeUse.TypeInternalProvider() {
     public TypeUse.TypeInternal forParam(ProcessingEnvironment env, ExecutableElement methodElt, int paramIndex) {
       Trees trees = Trees.instance(env);
       if (trees == null) {
