@@ -29,18 +29,30 @@ class TreeTypeInternal implements TypeUse.TypeInternal {
       if (tree == null) {
         return null;
       }
-      return new TreeTypeInternal(tree.getParameters().get(paramIndex).getType());
+      Tree type = tree.getParameters().get(paramIndex).getType();
+      return new TreeTypeInternal(type, isNullable(type));
     }
     public TypeUse.TypeInternal forReturn(ProcessingEnvironment env, ExecutableElement methodElt) {
       Trees trees = Trees.instance(env);
       if (trees == null) {
         return null;
       }
-      MethodTree tree = trees.getTree(methodElt);
+      JCTree.JCMethodDecl tree = (JCTree.JCMethodDecl) trees.getTree(methodElt);
       if (tree == null) {
         return null;
       }
-      return new TreeTypeInternal(tree.getReturnType());
+      JCTree type = tree.getReturnType();
+      boolean nullable = isNullable(type);
+      if (!nullable) {
+        JCTree.JCModifiers mods = tree.mods;
+        for (JCTree.JCAnnotation jca : mods.annotations) {
+          if (jca.type.toString().equals(TypeUse.NULLABLE)) {
+            nullable = true;
+            break;
+          }
+        }
+      }
+      return new TreeTypeInternal(type, nullable);
     }
 
   };
@@ -48,9 +60,9 @@ class TreeTypeInternal implements TypeUse.TypeInternal {
   private final Tree type;
   private final boolean nullable;
 
-  private TreeTypeInternal(Tree type) {
+  private TreeTypeInternal(Tree type, boolean nullable) {
     this.type = type;
-    this.nullable = isNullable(type);
+    this.nullable = nullable;
   }
 
   public boolean isNullable() {
@@ -68,7 +80,8 @@ class TreeTypeInternal implements TypeUse.TypeInternal {
 
   public TypeUse.TypeInternal getArgAt(int index) {
     ParameterizedTypeTree parameterizedType = (ParameterizedTypeTree) type;
-    return new TreeTypeInternal(parameterizedType.getTypeArguments().get(index));
+    Tree type = parameterizedType.getTypeArguments().get(index);
+    return new TreeTypeInternal(type, isNullable(type));
   }
 
   private static boolean isNullable(Tree type) {

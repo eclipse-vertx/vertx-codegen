@@ -519,7 +519,7 @@ public class ClassNullableTest extends ClassTestBase {
       assertEquals(1, methods.size());
       MethodInfo mi1 = methods.get(0);
       checkMethod(mi1, "method", 0, "T", MethodKind.OTHER);
-      assertTrue(mi1.isNullableReturn());
+      assertFalse(mi1.isNullableReturn());
     }, MethodWithNullableNonAnnotatedTypeVariableReturn.class);
   }
 
