@@ -179,7 +179,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
    * @return true if the method has a nullable return
    */
   public boolean isNullableReturn() {
-    return returnType instanceof TypeVariableInfo || returnType.isNullable();
+    return returnType.isNullable();
   }
 
   public List<ParamInfo> getParams() {

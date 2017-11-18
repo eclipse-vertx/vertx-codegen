@@ -16,63 +16,7 @@ import io.vertx.test.codegen.annotations.EmptyAnnotation;
 import io.vertx.test.codegen.testdataobject.Foo;
 import io.vertx.test.codegen.annotations.TestEnum;
 import io.vertx.test.codegen.testapi.InterfaceDataObject;
-import io.vertx.test.codegen.testdataobject.Abstract;
-import io.vertx.test.codegen.testdataobject.AbstractCommentedProperty;
-import io.vertx.test.codegen.testdataobject.AbstractInheritsAbstract;
-import io.vertx.test.codegen.testdataobject.AbstractUncommentedProperty;
-import io.vertx.test.codegen.testdataobject.AdderNormalizationRules;
-import io.vertx.test.codegen.testdataobject.AdderWithNestedDataObject;
-import io.vertx.test.codegen.testdataobject.AnnotatedDataObject;
-import io.vertx.test.codegen.testdataobject.ApiObject;
-import io.vertx.test.codegen.testdataobject.CommentedDataObject;
-import io.vertx.test.codegen.testdataobject.CommentedProperty;
-import io.vertx.test.codegen.testdataobject.CommentedPropertyInheritedFromCommentedProperty;
-import io.vertx.test.codegen.testdataobject.CommentedPropertyOverridesCommentedProperty;
-import io.vertx.test.codegen.testdataobject.CommentedPropertyOverridesUncommentedProperty;
-import io.vertx.test.codegen.testdataobject.Concrete;
-import io.vertx.test.codegen.testdataobject.ConcreteExtendsConcrete;
-import io.vertx.test.codegen.testdataobject.ConcreteImplementsFromDataObject;
-import io.vertx.test.codegen.testdataobject.ConcreteImplementsFromNonDataObject;
-import io.vertx.test.codegen.testdataobject.ConcreteImplementsNonDataObject;
-import io.vertx.test.codegen.testdataobject.ConcreteInheritsAbstract;
-import io.vertx.test.codegen.testdataobject.ConcreteOverridesFromAbstractDataObject;
-import io.vertx.test.codegen.testdataobject.ConcreteOverridesFromDataObject;
-import io.vertx.test.codegen.testdataobject.ConcreteOverridesFromNonDataObject;
-import io.vertx.test.codegen.testdataobject.ConverterDataObject;
-import io.vertx.test.codegen.testdataobject.DataObjectInterfaceWithIgnoredProperty;
-import io.vertx.test.codegen.testdataobject.DataObjectWithEmptyConstructor;
-import io.vertx.test.codegen.testdataobject.DataObjectWithNoJsonObjectConstructor;
-import io.vertx.test.codegen.testdataobject.DataObjectWithObjectProperty;
-import io.vertx.test.codegen.testdataobject.EmptyDataObject;
-import io.vertx.test.codegen.testdataobject.Enumerated;
-import io.vertx.test.codegen.testdataobject.IgnoreMethods;
-import io.vertx.test.codegen.testdataobject.ImportedNested;
-import io.vertx.test.codegen.testdataobject.ImportedSubinterface;
-import io.vertx.test.codegen.testdataobject.InheritingConverterDataObject;
-import io.vertx.test.codegen.testdataobject.JsonObjectAdder;
-import io.vertx.test.codegen.testdataobject.JsonObjectSetter;
-import io.vertx.test.codegen.testdataobject.NoConverterDataObject;
-import io.vertx.test.codegen.testdataobject.Parameterized;
-import io.vertx.test.codegen.testdataobject.PropertyGetters;
-import io.vertx.test.codegen.testdataobject.PropertyGettersSetters;
-import io.vertx.test.codegen.testdataobject.PropertyListAdders;
-import io.vertx.test.codegen.testdataobject.PropertyListGettersAdders;
-import io.vertx.test.codegen.testdataobject.PropertyListGettersSetters;
-import io.vertx.test.codegen.testdataobject.PropertyListSetters;
-import io.vertx.test.codegen.testdataobject.PropertyMapAdders;
-import io.vertx.test.codegen.testdataobject.PropertyMapGettersAdders;
-import io.vertx.test.codegen.testdataobject.PropertyMapGettersSetters;
-import io.vertx.test.codegen.testdataobject.PropertyMapSetters;
-import io.vertx.test.codegen.testdataobject.PropertySetGettersSetters;
-import io.vertx.test.codegen.testdataobject.PropertySetSetters;
-import io.vertx.test.codegen.testdataobject.PropertySetters;
-import io.vertx.test.codegen.testdataobject.SetterNormalizationRules;
-import io.vertx.test.codegen.testdataobject.SetterWithNestedDataObject;
-import io.vertx.test.codegen.testdataobject.SetterWithNonFluentReturnType;
-import io.vertx.test.codegen.testdataobject.ToJsonDataObject;
-import io.vertx.test.codegen.testdataobject.UncommentedProperty;
-import io.vertx.test.codegen.testdataobject.UncommentedPropertyOverridesAncestorSuperCommentedProperty;
-import io.vertx.test.codegen.testdataobject.UncommentedPropertyOverridesSuperCommentedProperty;
+import io.vertx.test.codegen.testdataobject.*;
 import io.vertx.test.codegen.testdataobject.imported.Imported;
 import org.junit.Test;
 
@@ -111,6 +55,7 @@ public class DataObjectTest {
     assertTrue(model.isClass());
     assertFalse(model.getGenerateConverter());
     assertFalse(model.getInheritConverter());
+    assertTrue(model.isPublicConverter());
     try {
       EmptyDataObject.class.getConstructor();
       fail();
@@ -625,12 +570,14 @@ public class DataObjectTest {
   public void testConverterDataObject() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(ConverterDataObject.class);
     assertTrue(model.getGenerateConverter());
+    assertFalse(model.isPublicConverter());
   }
 
   @Test
   public void testNoConverterDataObject() throws Exception {
     DataObjectModel model = new Generator().generateDataObject(NoConverterDataObject.class);
     assertFalse(model.getGenerateConverter());
+    assertTrue(model.isPublicConverter());
   }
 
   @Test
@@ -858,6 +805,22 @@ public class DataObjectTest {
     assertEquals(expectedType, property.getType());
     assertEquals(expectedKind, property.getKind());
     assertEquals(expectedJsonifiable, property.isJsonifiable());
+  }
+
+  @Test
+  public void testDataObjectWithAnnotations() throws Exception {
+    DataObjectModel model = new Generator().generateDataObject(DataObjectWithAnnotatedField.class);
+    assertNotNull(model);
+    assertTrue(model.isClass());
+    assertTrue(model.getGenerateConverter());
+    assertTrue(model.isPublicConverter());
+    PropertyInfo idModel = model.getPropertyMap().get("id");
+    assertEquals(1, idModel.getAnnotations().size());
+    assertNotNull(idModel.getAnnotation(SomeAnnotation.class.getName()).getName());
+    PropertyInfo fieldWithMethodAnnotationModel = model.getPropertyMap().get("fieldWithMethodAnnotation");
+    assertEquals(2, fieldWithMethodAnnotationModel.getAnnotations().size());
+    assertNotNull(fieldWithMethodAnnotationModel.getAnnotation(SomeAnnotation.class.getName()).getName());
+    assertNotNull(fieldWithMethodAnnotationModel.getAnnotation(SomeMethodAnnotation.class.getName()).getName());
   }
 
   private void assertInvalidDataObject(Class<?> dataObjectClass) throws Exception {

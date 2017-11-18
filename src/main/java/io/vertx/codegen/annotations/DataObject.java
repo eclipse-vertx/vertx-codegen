@@ -67,4 +67,9 @@ public @interface DataObject {
    * @return true if the converter should handle the state of the ancestors.
    */
   boolean inheritConverter() default false;
+
+  /**
+   * @return wether the generated converter should be public or package private
+   */
+  boolean publicConverter() default true;
 }

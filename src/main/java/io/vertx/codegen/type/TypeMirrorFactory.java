@@ -137,7 +137,7 @@ public class TypeMirrorFactory {
         List<TypeInfo> typeArguments;
         typeArguments = new ArrayList<>(typeArgs.size());
         for (int i = 0; i < typeArgs.size(); i++) {
-          TypeUse argUse = use != null ? use.getArg(i) : null;
+          TypeUse argUse = use != null ? use.getArg(fqcn, i) : null;
           TypeInfo typeArgDesc = create(argUse, typeArgs.get(i));
           // Need to check it is an interface type
           typeArguments.add(typeArgDesc);
@@ -152,7 +152,7 @@ public class TypeMirrorFactory {
   public TypeVariableInfo create(TypeUse use, TypeVariable type) {
     TypeParameterElement elt = (TypeParameterElement) type.asElement();
     TypeParamInfo param = TypeParamInfo.create(elt);
-    return new TypeVariableInfo(param, use != null && use.isNullable(), type.toString());
+    return new TypeVariableInfo(param, use != null && use.isNullable(), elt.getSimpleName().toString());
   }
 
   private List<TypeParamInfo.Class> createTypeParams(DeclaredType type) {

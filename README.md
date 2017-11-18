@@ -108,6 +108,8 @@ You can configure the `CodeGenProcessor` as any Java annotation processor, here 
         <source>1.8</source>
         <target>1.8</target>
         <encoding>${project.build.sourceEncoding}</encoding>
+        <!-- Important: there are issues with apt and incremental compilation in the maven-compiler-plugin -->
+        <useIncrementalCompilation>false</useIncrementalCompilation>
       </configuration>
       <executions>
         <execution>

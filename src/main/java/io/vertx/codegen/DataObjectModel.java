@@ -42,6 +42,7 @@ public class DataObjectModel implements Model {
   private boolean isClass;
   private boolean generateConverter;
   private boolean inheritConverter;
+  private boolean publicConverter;
   private int constructors;
   private ClassTypeInfo superType;
   private ClassTypeInfo type;
@@ -134,6 +135,10 @@ public class DataObjectModel implements Model {
     return inheritConverter;
   }
 
+  public boolean isPublicConverter() {
+    return publicConverter;
+  }
+
   public boolean hasEmptyConstructor() {
     return (constructors & 1) == 1;
   }
@@ -145,6 +150,7 @@ public class DataObjectModel implements Model {
     vars.put("doc", doc);
     vars.put("generateConverter", generateConverter);
     vars.put("inheritConverter", inheritConverter);
+    vars.put("publicConverter", publicConverter);
     vars.put("concrete", concrete);
     vars.put("isClass", isClass);
     vars.put("properties", propertyMap.values());
@@ -175,6 +181,7 @@ public class DataObjectModel implements Model {
   private void traverse() {
     DataObject ann = modelElt.getAnnotation(DataObject.class);
     this.generateConverter = ann.generateConverter();
+    this.publicConverter = ann.publicConverter();
     this.inheritConverter = ann.inheritConverter();
     this.isClass = modelElt.getKind() == ElementKind.CLASS;
     this.concrete = isClass && !modelElt.getModifiers().contains(Modifier.ABSTRACT);
@@ -277,6 +284,8 @@ public class DataObjectModel implements Model {
     }
   }
 
+
+
   @SuppressWarnings("unchecked")
   private void processMethods(List<ExecutableElement> methodsElt) {
 
@@ -351,8 +360,6 @@ public class DataObjectModel implements Model {
     for (String name : names) {
       processMethod(name, getters.get(name), setters.get(name), adders.get(name), annotations.get(name));
     }
-
-
   }
 
   private void processMethod(String name, ExecutableElement getterElt, ExecutableElement setterElt, ExecutableElement adderElt, List<AnnotationMirror> annotationMirrors) {

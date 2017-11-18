@@ -31,12 +31,18 @@ public class ParamInfo {
   final String name;
   final Text description;
   final TypeInfo type;
+  final TypeInfo unresolvedType;
 
   public ParamInfo(int index, String name, Text description, TypeInfo type) {
+    this(index, name, description, type, null);
+  }
+
+  public ParamInfo(int index, String name, Text description, TypeInfo type, TypeInfo unresolvedType) {
     this.index = index;
     this.name = name;
     this.description = description;
     this.type = type;
+    this.unresolvedType = unresolvedType;
   }
 
   public int getIndex() {
@@ -72,16 +78,9 @@ public class ParamInfo {
       case HANDLER:
         TypeInfo handler = ((ParameterizedTypeInfo)type).getArg(0);
         switch (handler.getKind()) {
-          case OBJECT:
-            return true;
           case ASYNC_RESULT:
             TypeInfo asyncResult = ((ParameterizedTypeInfo)handler).getArg(0);
-            switch (asyncResult.getKind()) {
-              case OBJECT:
-                return true;
-              default:
-                return asyncResult.isNullable();
-            }
+            return asyncResult.isNullable();
           default:
             return handler.isNullable();
         }
@@ -92,6 +91,10 @@ public class ParamInfo {
 
   public TypeInfo getType() {
     return type;
+  }
+
+  public TypeInfo getUnresolvedType() {
+    return unresolvedType;
   }
 
   public boolean isDataObject() {
