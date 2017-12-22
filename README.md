@@ -362,19 +362,19 @@ Data object converter can be generated with `@DataObject(generateConverter=true)
  Data object conversion recognize the following types as _member_ of any `@DataObject`:
 
 * the specific `io.vertx.core.Buffer` type
-* the set `B`
-* the set `J`
+* the set _`Basic`_
+* the set _`Json`_
 * any data object class annotated with `@DataObject`
 * type `java.util.List<C>` where `C` contains
     * the specific `io.vertx.core.Buffer` type
-    * the set `B`
-    * the set `J`
+    * the set _`Basic`_
+    * the set _`Json`_
     * any `@DataObject`
     * the Object type : the `List<Object>` acts like a `JsonArray`
 * type `java.util.Map<String, C>` where `C` contains
     * the specific `io.vertx.core.Buffer` type
-    * the set `B`
-    * the set `J`
+    * the set _`Basic`_
+    * the set _`Json`_
     * any `@DataObject`
     * the Object type : the `Map<String, Object>` acts like a `JsonMap`
 
