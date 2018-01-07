@@ -27,7 +27,7 @@ A code generator consist of an _MVEL_ template declared in a `codegen.json` desc
 - `filename` is an _MVEL_ expression for the file name, returning null skips the generation.
 - `templateFilename` is the name of the _MVEL_ template to apply
 - `incremental` true when the template performs incremental processing, false or absent otherwise
-- `kind`: there are several kinds of generators for different use cases
+- `kind`: contains a comma separated list of generator kinds this generator should be used for, there are several kinds of generators for different use cases
     - `class` : applied on each API classes
     - `package` : applied on each Java package
     - `module` : applied on each declared module, a module uniquely identifies an API

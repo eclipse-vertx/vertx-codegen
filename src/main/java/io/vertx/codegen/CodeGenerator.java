@@ -1,13 +1,14 @@
 package io.vertx.codegen;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class CodeGenerator {
   public final String name;
-  public final String kind;
+  public final Set<String> kind;
   public final boolean incremental;
   public final String filename;
   public final String templateFilename;
@@ -16,7 +17,7 @@ public class CodeGenerator {
 
   public CodeGenerator(
     String name,
-    String kind,
+    Set<String> kind,
     boolean incremental,
     String filename,
     String templateFilename) {
