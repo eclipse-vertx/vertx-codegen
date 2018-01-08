@@ -94,9 +94,7 @@ public class CodeGenProcessor extends AbstractProcessor {
         .map(Pattern::compile)
         .collect(Collectors.toList());
       return cg -> wanted.stream()
-        .filter(p -> p.matcher(cg.name).matches())
-        .findFirst()
-        .isPresent();
+        .anyMatch(p -> p.matcher(cg.name).matches());
     } else {
       return null;
     }
