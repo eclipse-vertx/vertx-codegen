@@ -117,10 +117,12 @@ public class CodeGenProcessor extends AbstractProcessor {
         String name = obj.get("name").asText();
         ArrayNode generatorsCfg = (ArrayNode) obj.get("generators");
         for (JsonNode generator : generatorsCfg) {
-          String kindString = generator.get("kind").asText();
           Set<String> kinds = new HashSet<>();
-          for (String kind : kindString.split(",")) {
-            kinds.add(kind.trim());
+          if(generator.get("kind").isArray()) {
+            generator.get("kind").forEach(v -> kinds.add(v.asText()));
+          }
+          else {
+            kinds.add(generator.get("kind").asText());
           }
           JsonNode templateFilenameNode = generator.get("templateFilename");
           if (templateFilenameNode == null) {
