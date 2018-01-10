@@ -94,9 +94,7 @@ public class CodeGenProcessor extends AbstractProcessor {
         .map(Pattern::compile)
         .collect(Collectors.toList());
       return cg -> wanted.stream()
-        .filter(p -> p.matcher(cg.name).matches())
-        .findFirst()
-        .isPresent();
+        .anyMatch(p -> p.matcher(cg.name).matches());
     } else {
       return null;
     }
@@ -119,7 +117,13 @@ public class CodeGenProcessor extends AbstractProcessor {
         String name = obj.get("name").asText();
         ArrayNode generatorsCfg = (ArrayNode) obj.get("generators");
         for (JsonNode generator : generatorsCfg) {
-          String kind = generator.get("kind").asText();
+          Set<String> kinds = new HashSet<>();
+          if(generator.get("kind").isArray()) {
+            generator.get("kind").forEach(v -> kinds.add(v.asText()));
+          }
+          else {
+            kinds.add(generator.get("kind").asText());
+          }
           JsonNode templateFilenameNode = generator.get("templateFilename");
           if (templateFilenameNode == null) {
             templateFilenameNode = generator.get("templateFileName");
@@ -133,7 +137,7 @@ public class CodeGenProcessor extends AbstractProcessor {
           boolean incremental = generator.has("incremental") && generator.get("incremental").asBoolean();
           if (!templates.contains(templateFilename)) {
             templates.add(templateFilename);
-            generators.add(new CodeGenerator(name, kind, incremental, filename, templateFilename));
+            generators.add(new CodeGenerator(name, kinds, incremental, filename, templateFilename));
           }
         }
       } catch (Exception e) {
@@ -216,7 +220,7 @@ public class CodeGenProcessor extends AbstractProcessor {
             vars.putAll(Case.vars());
             for (CodeGenerator codeGenerator : codeGenerators) {
               vars.putAll(TypeNameTranslator.vars(codeGenerator.name));
-              if (codeGenerator.kind.equals(model.getKind())) {
+              if (codeGenerator.kind.contains(model.getKind())) {
                 String relativeName = (String) MVEL.executeExpression(codeGenerator.filenameExpr, vars);
                 if (relativeName != null) {
 

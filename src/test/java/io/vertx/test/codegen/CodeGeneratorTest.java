@@ -6,6 +6,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenParams;
 import io.vertx.test.codegen.testapi.VertxGenClass1;
 import io.vertx.test.codegen.testapi.VertxGenClass2;
+import io.vertx.test.codegen.testdataobject.CommentedDataObject;
 import io.vertx.test.codegen.testdataobject.PropertyGettersSetters;
 import io.vertx.test.codegen.testenum.ValidEnum;
 import io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedApi;
@@ -22,11 +23,7 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 import static org.junit.Assert.*;
@@ -241,5 +238,26 @@ public class CodeGeneratorTest {
     File f = new File(testDir, "foo/bar/io/vertx/test/codegen/testapi/MethodWithValidVertxGenParams_Other.java".replace('/', File.separatorChar));
     assertTrue(f.exists());
     assertTrue(f.isFile());
+  }
+
+  @Test
+  public void testMultipleTypes() throws Exception {
+    Compiler compiler = new Compiler(new CodeGenProcessor());
+    compiler.addOption("-Acodegen.generators=testgen6");
+    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
+    compiler.addOption("-Acodegen.output.testgen6=foo/bar");
+    assertTrue(compiler.compile(CommentedDataObject.class, VertxGenClass1.class, VertxGenClass2.class));
+    File f = new File(testDir, "resource/result.txt".replace('/', File.separatorChar));
+    assertTrue(f.exists());
+    assertTrue(f.isFile());
+    Scanner s = new Scanner(f);
+    Set<String> fileContent = new HashSet<>();
+    while (s.hasNext()){
+      fileContent.add(s.next());
+    }
+    s.close();
+    assertTrue(fileContent.contains(CommentedDataObject.class.getSimpleName()));
+    assertTrue(fileContent.contains(VertxGenClass1.class.getSimpleName()));
+    assertTrue(fileContent.contains(VertxGenClass2.class.getSimpleName()));
   }
 }
