@@ -1208,7 +1208,7 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
-  public void testGenIgnore() throws Exception {
+  public void testIgnore() throws Exception {
     ClassModel model = new Generator().generateClass(InterfaceWithIgnoredElements.class);
     assertEquals(InterfaceWithIgnoredElements.class.getName(), model.getIfaceFQCN());
     assertEquals(InterfaceWithIgnoredElements.class.getSimpleName(), model.getIfaceSimpleName());

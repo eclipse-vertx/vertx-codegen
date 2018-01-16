@@ -623,8 +623,15 @@ public class ClassModel implements Model {
 
     // Traverse nested elements that are not methods (like nested interfaces)
     for (Element enclosedElt : elem.getEnclosedElements()) {
-      if (!isGenIgnore(enclosedElt) && enclosedElt.getKind() != ElementKind.METHOD) {
-        throw new GenException(elem, "@VertxGen can only declare methods and not " + elem.asType().toString());
+      if (!isGenIgnore(enclosedElt)) {
+        switch (enclosedElt.getKind()) {
+          case METHOD:
+          case FIELD:
+            // Allowed
+            break;
+          default:
+            throw new GenException(elem, "@VertxGen can only declare methods and not " + elem.asType().toString());
+        }
       }
     }
 

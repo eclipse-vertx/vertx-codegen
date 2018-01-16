@@ -21,4 +21,7 @@ public interface InterfaceWithIgnoredElements {
 
   @GenIgnore
   class NestedClass {}
+
+  int IMPLICITELY_IGNORED_CONSTANT = 0;
+
 }
