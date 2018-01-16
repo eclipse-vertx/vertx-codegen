@@ -295,7 +295,9 @@ public class DataObjectModel implements Model {
 
     while (methodsElt.size() > 0) {
       ExecutableElement methodElt = methodsElt.remove(0);
-      if (((TypeElement) methodElt.getEnclosingElement()).getQualifiedName().toString().equals("java.lang.Object")) {
+      if (((TypeElement) methodElt.getEnclosingElement()).getQualifiedName().toString().equals("java.lang.Object") ||
+        methodElt.getModifiers().contains(Modifier.STATIC) ||
+        !methodElt.getModifiers().contains(Modifier.PUBLIC)) {
         continue;
       }
       String methodName = methodElt.getSimpleName().toString();
