@@ -7,7 +7,7 @@ import io.vertx.codegen.annotations.VertxGen;
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @VertxGen
-public interface InterfaceWithIgnoredMethods {
+public interface InterfaceWithIgnoredElements {
 
   void foo(String str);
 
@@ -15,4 +15,10 @@ public interface InterfaceWithIgnoredMethods {
 
   @GenIgnore
   void quux(long l);
+
+  @GenIgnore
+  interface NestedInterface {}
+
+  @GenIgnore
+  class NestedClass {}
 }

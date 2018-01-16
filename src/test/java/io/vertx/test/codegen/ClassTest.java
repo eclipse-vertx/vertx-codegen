@@ -49,7 +49,7 @@ import io.vertx.test.codegen.testapi.InterfaceWithCacheReturnMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithComments;
 import io.vertx.test.codegen.testapi.InterfaceWithDefaultMethod;
 import io.vertx.test.codegen.testapi.InterfaceWithGenericMethodOverride;
-import io.vertx.test.codegen.testapi.InterfaceWithIgnoredMethods;
+import io.vertx.test.codegen.testapi.InterfaceWithIgnoredElements;
 import io.vertx.test.codegen.testapi.InterfaceWithInstanceMethods;
 import io.vertx.test.codegen.testapi.InterfaceWithMethodOverloadedFromParent;
 import io.vertx.test.codegen.testapi.InterfaceWithMethodOverride;
@@ -1209,9 +1209,9 @@ public class ClassTest extends ClassTestBase {
 
   @Test
   public void testGenIgnore() throws Exception {
-    ClassModel model = new Generator().generateClass(InterfaceWithIgnoredMethods.class);
-    assertEquals(InterfaceWithIgnoredMethods.class.getName(), model.getIfaceFQCN());
-    assertEquals(InterfaceWithIgnoredMethods.class.getSimpleName(), model.getIfaceSimpleName());
+    ClassModel model = new Generator().generateClass(InterfaceWithIgnoredElements.class);
+    assertEquals(InterfaceWithIgnoredElements.class.getName(), model.getIfaceFQCN());
+    assertEquals(InterfaceWithIgnoredElements.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
     List<MethodInfo> methods = model.getMethods();
