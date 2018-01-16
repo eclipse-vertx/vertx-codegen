@@ -526,7 +526,7 @@ public class ClassModel implements Model {
 
   boolean process() {
     if (!processed) {
-      traverseElem(modelElt);
+      traverseType(modelElt);
       determineApiTypes();
       processed = true;
       return true;
@@ -535,7 +535,7 @@ public class ClassModel implements Model {
     }
   }
 
-  private void traverseElem(Element elem) {
+  private void traverseType(Element elem) {
     switch (elem.getKind()) {
       case ENUM:
       case CLASS: {
@@ -623,8 +623,8 @@ public class ClassModel implements Model {
 
     // Traverse nested elements that are not methods (like nested interfaces)
     for (Element enclosedElt : elem.getEnclosedElements()) {
-      if (enclosedElt.getKind() != ElementKind.METHOD) {
-        traverseElem(enclosedElt);
+      if (!isGenIgnore(enclosedElt) && enclosedElt.getKind() != ElementKind.METHOD) {
+        throw new GenException(elem, "@VertxGen can only declare methods and not " + elem.asType().toString());
       }
     }
 
@@ -665,9 +665,12 @@ public class ClassModel implements Model {
     }
   }
 
+  private static boolean isGenIgnore(Element elt) {
+    return elt.getAnnotation(GenIgnore.class) != null;
+  }
+
   private void addMethod(ExecutableElement modelMethod) {
-    boolean isIgnore = modelMethod.getAnnotation(GenIgnore.class) != null;
-    if (isIgnore) {
+    if (isGenIgnore(modelMethod)) {
       return;
     }
     Set<Modifier> mods = modelMethod.getModifiers();
