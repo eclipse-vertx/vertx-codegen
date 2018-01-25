@@ -48,8 +48,15 @@ public class TypeUse {
       }
     }
     providers.add(new TypeInternalProvider() {
+      private Method getMethod(ProcessingEnvironment env, ExecutableElement methodElt) {
+        Method methodRef = Helper.getReflectMethod(Thread.currentThread().getContextClassLoader(), methodElt);
+        if (methodRef == null) {
+          methodRef = Helper.getReflectMethod(env, methodElt);
+        }
+        return methodRef;
+      }
       public TypeUse.TypeInternal forParam(ProcessingEnvironment env, ExecutableElement methodElt, int paramIndex) {
-        Method methodRef = Helper.getReflectMethod(methodElt);
+        Method methodRef = getMethod(env, methodElt);
         if (methodRef == null) {
           return null;
         }
@@ -57,7 +64,7 @@ public class TypeUse {
         return new ReflectType(annotated);
       }
       public TypeUse.TypeInternal forReturn(ProcessingEnvironment env, ExecutableElement methodElt) {
-        Method methodRef = Helper.getReflectMethod(methodElt);
+        Method methodRef = getMethod(env, methodElt);
         if (methodRef == null) {
           return null;
         }

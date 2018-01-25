@@ -211,12 +211,14 @@ public class ClassNullableTest extends ClassTestBase {
 
   @Test
   public void testInterfaceWithNullableParamOverride() throws Exception {
-    generateClass(model -> {
+    Consumer<ClassModel> test = model -> {
       List<MethodInfo> methods = model.getMethods();
       assertEquals(1, methods.size());
       MethodInfo mi1 = methods.get(0);
       assertTrue(mi1.getParams().get(0).isNullable());
-    }, MethodWithNullableParamOverride.class, MethodWithNullableParam.class);
+    };
+    // generateClass(test, MethodWithNullableParamOverride.class, MethodWithNullableParam.class);
+    generateClass(test, MethodWithNullableParamOverride.class);
   }
 
   @Test

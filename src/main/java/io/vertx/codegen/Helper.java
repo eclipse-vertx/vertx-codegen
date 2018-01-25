@@ -16,6 +16,9 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
+import com.sun.tools.javac.jvm.Code;
+
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -37,13 +40,7 @@ import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -607,17 +604,28 @@ public class Helper {
   }
 
   /**
+   * Like {@link #getReflectMethod(ClassLoader, ExecutableElement)} but using the processing environment context.
+   */
+  public static Method getReflectMethod(ProcessingEnvironment env, ExecutableElement modelMethod) {
+    ClassLoader loader = CodeGen.loaderMap.get(env);
+    if (loader != null) {
+      return getReflectMethod(loader, modelMethod);
+    }
+    return null;
+  }
+
+  /**
    * Returns a {@link Method } corresponding to the {@literal methodElt} parameter. Obviously this work
    * only when the corresponding method is available on the classpath using java lang reflection.
    *
    * @param modelMethod the model method element
    * @return the method or null if not found
    */
-  public static Method getReflectMethod(ExecutableElement modelMethod) {
+  public static Method getReflectMethod(ClassLoader loader, ExecutableElement modelMethod) {
     TypeElement typeElt = (TypeElement) modelMethod.getEnclosingElement();
     Method method = null;
     try {
-      Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(typeElt.getQualifiedName().toString());
+      Class<?> clazz = loader.loadClass(typeElt.getQualifiedName().toString());
       StringBuilder sb = new StringBuilder(modelMethod.getSimpleName());
       sb.append("(");
       List<? extends VariableElement> params = modelMethod.getParameters();

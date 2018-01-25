@@ -200,7 +200,7 @@ public class CodeGenProcessor extends AbstractProcessor {
       Collection<CodeGenerator> codeGenerators = getCodeGenerators();
 
       if (!roundEnv.errorRaised()) {
-        CodeGen codegen = new CodeGen(processingEnv, roundEnv);
+        CodeGen codegen = new CodeGen(processingEnv, roundEnv, getClass().getClassLoader());
         Map<String, GeneratedFile> generatedClasses = new HashMap<>();
 
         // Generate source code
