@@ -198,7 +198,7 @@ public class Generator {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
       if (!roundEnv.processingOver()) {
-        CodeGen codegen = new CodeGen(env, roundEnv);
+        CodeGen codegen = new CodeGen(env, roundEnv, Thread.currentThread().getContextClassLoader());
         result = f.apply(codegen);
       }
       return true;

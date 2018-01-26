@@ -20,6 +20,7 @@ import javax.lang.model.util.Types;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
@@ -32,6 +33,7 @@ import java.util.stream.Stream;
 public class CodeGen {
 
   private static final Logger logger = Logger.getLogger(CodeGen.class.getName());
+  final static Map<ProcessingEnvironment, ClassLoader> loaderMap = new WeakHashMap<>();
 
   private final HashMap<String, TypeElement> dataObjects = new HashMap<>();
   private final HashMap<String, TypeElement> classes = new HashMap<>();
@@ -44,11 +46,12 @@ public class CodeGen {
   private final Messager messager;
   private final MethodOverloadChecker methodOverloadChecker = new MethodOverloadChecker();
 
-  public CodeGen(ProcessingEnvironment env, RoundEnvironment round) {
+  CodeGen(ProcessingEnvironment env, RoundEnvironment round, ClassLoader loader) {
     this.env = env;
     this.messager = env.getMessager();
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
+    loaderMap.put(env, loader);
     Predicate<Element> implFilter = elt -> {
       String fqn = elementUtils.getPackageOf(elt).getQualifiedName().toString();
       if (fqn.contains(".impl.") || fqn.endsWith(".impl"))  {
