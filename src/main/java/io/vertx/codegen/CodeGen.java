@@ -99,10 +99,10 @@ public class CodeGen {
   }
 
   public Stream<Map.Entry<PackageElement, PackageModel>> getPackageModels() {
-    return classes.values().
-        stream().
-        map(elementUtils::getPackageOf).distinct().
-        map(element ->
+    return Stream.of(classes, enums, dataObjects)
+      .flatMap(m -> m.values().stream())
+      .map(elementUtils::getPackageOf).distinct()
+      .map(element ->
             new ModelEntry<>(element, () -> new PackageModel(
                 element.getQualifiedName().toString(),
                 ModuleInfo.resolve(elementUtils, element))
