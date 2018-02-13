@@ -415,6 +415,8 @@ are referenced from the current interface
 * `abstractSuperTypes` - subset of `superTypes` which are *abstract*
 * `methodMap` - this is a Map<String, MethodInfo> - which allows you to look up all methods with a given name
 * `importedTypes`- this is a `Set<TypeInfo>` containing the types used by this class
+* `referencedDataObjectTypes`- this is a `Set<TypeInfo>` containing the `DataObject` types used by this class
+* `referencedEnumTypes`- this is a `Set<TypeInfo>` containing the `Enum` types used by this class
 
 The `TypeInfo` represents a Java type:
 
