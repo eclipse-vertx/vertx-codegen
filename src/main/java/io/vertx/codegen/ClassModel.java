@@ -515,26 +515,29 @@ public class ClassModel implements Model {
   }
 
   private void determineApiTypes() {
-    collectedTypes.stream().
+    importedTypes = collectedTypes.stream().
         map(ClassTypeInfo::getRaw).
         flatMap(Helper.instanceOf(ClassTypeInfo.class)).
         filter(t -> !t.getPackageName().equals(ifaceFQCN)).
-        forEach(importedTypes::add);
-    collectedTypes.stream().
+        collect(Collectors.toSet());
+
+    referencedTypes = collectedTypes.stream().
         map(ClassTypeInfo::getRaw).
         flatMap(Helper.instanceOf(ApiTypeInfo.class)).
         filter(t -> !t.equals(type.getRaw())).
-        forEach(referencedTypes::add);
-    collectedTypes.stream().
+        collect(Collectors.toSet());
+
+    referencedDataObjectTypes = collectedTypes.stream().
         map(ClassTypeInfo::getRaw).
         flatMap(Helper.instanceOf(ClassTypeInfo.class)).
         filter(t -> t.getKind() == ClassKind.DATA_OBJECT).
-        forEach(referencedDataObjectTypes::add);
-    collectedTypes.stream().
+        collect(Collectors.toSet());
+
+    referencedEnumTypes = collectedTypes.stream().
       map(ClassTypeInfo::getRaw).
       flatMap(Helper.instanceOf(EnumTypeInfo.class)).
       filter(t -> t.getKind() == ClassKind.ENUM).
-      forEach(referencedEnumTypes::add);
+      collect(Collectors.toSet());
   }
 
   boolean process() {
