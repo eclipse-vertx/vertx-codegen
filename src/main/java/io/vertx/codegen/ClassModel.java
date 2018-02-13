@@ -70,6 +70,7 @@ public class ClassModel implements Model {
   protected Set<ClassTypeInfo> importedTypes = new HashSet<>();
   protected Set<ApiTypeInfo> referencedTypes = new HashSet<>();
   protected Set<ClassTypeInfo> referencedDataObjectTypes = new HashSet<>();
+  protected Set<EnumTypeInfo> referencedEnumTypes = new HashSet<>();
   protected boolean concrete;
   protected ClassTypeInfo type;
   protected String ifaceSimpleName;
@@ -163,6 +164,13 @@ public class ClassModel implements Model {
    */
   public Set<ClassTypeInfo> getReferencedDataObjectTypes() {
     return referencedDataObjectTypes;
+  }
+
+  /**
+   * @return all the referenced enum types
+   */
+  public Set<EnumTypeInfo> getReferencedEnumTypes() {
+    return referencedEnumTypes;
   }
 
   public String getIfaceSimpleName() {
@@ -507,21 +515,29 @@ public class ClassModel implements Model {
   }
 
   private void determineApiTypes() {
-    collectedTypes.stream().
+    importedTypes = collectedTypes.stream().
         map(ClassTypeInfo::getRaw).
         flatMap(Helper.instanceOf(ClassTypeInfo.class)).
         filter(t -> !t.getPackageName().equals(ifaceFQCN)).
-        forEach(importedTypes::add);
-    collectedTypes.stream().
+        collect(Collectors.toSet());
+
+    referencedTypes = collectedTypes.stream().
         map(ClassTypeInfo::getRaw).
         flatMap(Helper.instanceOf(ApiTypeInfo.class)).
         filter(t -> !t.equals(type.getRaw())).
-        forEach(referencedTypes::add);
-    collectedTypes.stream().
+        collect(Collectors.toSet());
+
+    referencedDataObjectTypes = collectedTypes.stream().
         map(ClassTypeInfo::getRaw).
         flatMap(Helper.instanceOf(ClassTypeInfo.class)).
         filter(t -> t.getKind() == ClassKind.DATA_OBJECT).
-        forEach(referencedDataObjectTypes::add);
+        collect(Collectors.toSet());
+
+    referencedEnumTypes = collectedTypes.stream().
+      map(ClassTypeInfo::getRaw).
+      flatMap(Helper.instanceOf(EnumTypeInfo.class)).
+      filter(t -> t.getKind() == ClassKind.ENUM).
+      collect(Collectors.toSet());
   }
 
   boolean process() {
@@ -950,6 +966,7 @@ public class ClassModel implements Model {
     vars.put("classAnnotations", getAnnotations());
     vars.put("annotationsByMethodName", getMethodAnnotations());
     vars.put("referencedDataObjectTypes", getReferencedDataObjectTypes());
+    vars.put("referencedEnumTypes", getReferencedEnumTypes());
     vars.put("typeParams", getTypeParams());
     vars.put("instanceMethods", getInstanceMethods());
     vars.put("staticMethods", getStaticMethods());
