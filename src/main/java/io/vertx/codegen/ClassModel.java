@@ -167,7 +167,7 @@ public class ClassModel implements Model {
   }
 
   /**
-   * @return all the referenced data object types
+   * @return all the referenced enum types
    */
   public Set<EnumTypeInfo> getReferencedEnumTypes() {
     return referencedEnumTypes;
