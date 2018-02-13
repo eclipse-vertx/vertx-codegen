@@ -16,8 +16,6 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
-import com.sun.tools.javac.jvm.Code;
-
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
