@@ -74,7 +74,8 @@ public class TypeReflectionFactory {
           if (kind == ClassKind.API) {
             java.lang.reflect.TypeVariable<Class<ReadStream>> classTypeVariable = ReadStream.class.getTypeParameters()[0];
             Type readStreamArg = Helper.resolveTypeParameter(type, classTypeVariable);
-            return new ApiTypeInfo(fqcn, true, typeParams, readStreamArg != null ? create(readStreamArg) : null, null, null, module, false, false);
+            boolean autoCloseable = classType.isAssignableFrom(AutoCloseable.class);
+            return new ApiTypeInfo(fqcn, true, typeParams, readStreamArg != null ? create(readStreamArg) : null, null, null, module, false, false, autoCloseable);
           } else if (kind == ClassKind.DATA_OBJECT) {
             boolean _abstract = Modifier.isAbstract(classType.getModifiers());
             return new DataObjectTypeInfo(kind, fqcn, module, _abstract, false, false, typeParams);

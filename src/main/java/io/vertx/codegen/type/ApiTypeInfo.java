@@ -12,6 +12,7 @@ public class ApiTypeInfo extends ClassTypeInfo {
 
   final boolean proxyGen;
   final boolean concrete;
+  final boolean autoCloseable;
   final TypeInfo readStreamArg;
   final TypeInfo writeStreamArg;
   final TypeInfo handlerArg;
@@ -25,10 +26,12 @@ public class ApiTypeInfo extends ClassTypeInfo {
       TypeInfo handlerArg,
       ModuleInfo module,
       boolean nullable,
-      boolean proxyGen) {
+      boolean proxyGen,
+      boolean autoCloseable) {
     super(ClassKind.API, fqcn, module, nullable, params);
     this.concrete = concrete;
     this.proxyGen = proxyGen;
+    this.autoCloseable = autoCloseable;
     this.readStreamArg = readStreamArg;
     this.writeStreamArg = writeStreamArg;
     this.handlerArg = handlerArg;
@@ -44,6 +47,10 @@ public class ApiTypeInfo extends ClassTypeInfo {
 
   public boolean isAbstract() {
     return !concrete;
+  }
+
+  public boolean isAutoCloseable() {
+    return autoCloseable;
   }
 
   public TypeInfo getReadStreamArg() {
