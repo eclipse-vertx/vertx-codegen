@@ -218,6 +218,7 @@ public class CodeGenProcessor extends AbstractProcessor {
             vars.putAll(ClassKind.vars());
             vars.putAll(MethodKind.vars());
             vars.putAll(Case.vars());
+            vars.putAll(PropertyKind.vars());
             for (CodeGenerator codeGenerator : codeGenerators) {
               vars.putAll(TypeNameTranslator.vars(codeGenerator.name));
               if (codeGenerator.kind.contains(model.getKind())) {
