@@ -1,6 +1,7 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.type.ClassKind;
+import io.vertx.codegen.PropertyKind;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.SimpleTemplateRegistry;
@@ -151,6 +152,7 @@ public class Template {
     vars.putAll(ClassKind.vars());
     vars.putAll(MethodKind.vars());
     vars.putAll(Case.vars());
+    vars.putAll(PropertyKind.vars());
 
     TemplateRegistry registry = new SimpleTemplateRegistry() {
       @Override
