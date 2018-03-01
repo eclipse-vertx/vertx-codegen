@@ -94,7 +94,7 @@ public class CodeGeneratorTest {
     assertEquals("true", props.remove("Property.Kind.exists.LIST"));
     assertEquals("true", props.remove("Property.Kind.exists.SET"));
     assertEquals("true", props.remove("Property.Kind.exists.MAP"));
-
+    assertEquals(new Properties(), props);
   }
 
   @Test
