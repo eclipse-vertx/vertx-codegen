@@ -1,23 +1,12 @@
 package io.vertx.codegen.type;
 
-import io.vertx.codegen.Helper;
-import io.vertx.codegen.annotations.Nullable;
-
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedParameterizedType;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.ExecutableElement;
+
+import io.vertx.codegen.annotations.Nullable;
 
 /**
  * What we need to use from type use annotations, wether it uses <i>lang model</i> api
@@ -28,61 +17,7 @@ import java.util.List;
 public class TypeUse {
 
   static final String NULLABLE = Nullable.class.getName();
-  private static final List<TypeInternalProvider> providers = new ArrayList<>();
-
-  static {
-    try {
-      TypeUse.class.getClassLoader().loadClass("java.lang.invoke.VarHandle");
-      // compiling a codegen project with Java 9 - Trees are not available but type use via mirror should work fine
-    } catch (Throwable ignore1) {
-      // compiling with Java 8, it has incomplete implementation of type use API
-      try {
-        // Add via reflection so the codegen project can be compiled with Java 9 also
-        String fqn = TypeUse.class.getPackage().getName() + ".TreeTypeInternal";
-        Class<?> clazz = TypeUse.class.getClassLoader().loadClass(fqn);
-        Field getter = clazz.getField("PROVIDER");
-        TypeInternalProvider provider = (TypeInternalProvider) getter.get(null);
-        providers.add(provider);
-      } catch (Throwable ignore2) {
-        // Codegen was compiled with Java 9, no TreeTypeInternal
-      }
-    }
-    providers.add(new TypeInternalProvider() {
-      private Method getMethod(ProcessingEnvironment env, ExecutableElement methodElt) {
-        Method methodRef = Helper.getReflectMethod(Thread.currentThread().getContextClassLoader(), methodElt);
-        if (methodRef == null) {
-          methodRef = Helper.getReflectMethod(env, methodElt);
-        }
-        return methodRef;
-      }
-      public TypeUse.TypeInternal forParam(ProcessingEnvironment env, ExecutableElement methodElt, int paramIndex) {
-        Method methodRef = getMethod(env, methodElt);
-        if (methodRef == null) {
-          return null;
-        }
-        AnnotatedType annotated = methodRef.getAnnotatedParameterTypes()[paramIndex];
-        return new ReflectType(annotated);
-      }
-      public TypeUse.TypeInternal forReturn(ProcessingEnvironment env, ExecutableElement methodElt) {
-        Method methodRef = getMethod(env, methodElt);
-        if (methodRef == null) {
-          return null;
-        }
-        AnnotatedType annotated = methodRef.getAnnotatedReturnType();
-        return new ReflectType(annotated);
-      }
-    });
-    providers.add(new TypeInternalProvider() {
-      @Override
-      public TypeInternal forParam(ProcessingEnvironment env, ExecutableElement methodElt, int index) {
-        return new MirrorTypeInternal(methodElt.getParameters().get(index).asType());
-      }
-      @Override
-      public TypeInternal forReturn(ProcessingEnvironment env, ExecutableElement methodElt) {
-        return new MirrorTypeInternal(methodElt.getReturnType());
-      }
-    });
-  }
+  private static final List<TypeInternalProvider> providers = TypeInternalProviders.getProviders();
 
   interface TypeInternal {
     String rawName();
@@ -161,77 +96,5 @@ public class TypeUse {
       }
     }
     return nullable;
-  }
-
-  private static class ReflectType implements TypeInternal {
-
-    private final AnnotatedType annotatedType;
-    private final boolean nullable;
-
-    private ReflectType(AnnotatedType annotated) {
-      this.annotatedType = annotated;
-      this.nullable = isNullable(annotated);
-    }
-
-    @Override
-    public String rawName() {
-      if (annotatedType instanceof AnnotatedParameterizedType) {
-        return ((ParameterizedType)(annotatedType.getType())).getRawType().getTypeName();
-      } else {
-        return null;
-      }
-    }
-
-    public boolean isNullable() {
-      return nullable;
-    }
-
-    public TypeInternal getArgAt(int index) {
-      AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType) annotatedType;
-      return new ReflectType(annotatedParameterizedType.getAnnotatedActualTypeArguments()[index]);
-    }
-
-    private static boolean isNullable(AnnotatedType type) {
-      for (Annotation annotation : type.getAnnotations()) {
-        if (annotation.annotationType().getName().equals(NULLABLE)) {
-          return true;
-        }
-      }
-      return false;
-    }
-  }
-
-  private static class MirrorTypeInternal implements TypeInternal {
-
-    final TypeMirror mirror;
-
-    private MirrorTypeInternal(TypeMirror mirror) {
-      this.mirror = mirror;
-    }
-
-    @Override
-    public String rawName() {
-      if (mirror.getKind() == TypeKind.DECLARED) {
-        return ((TypeElement)((DeclaredType)mirror).asElement()).getQualifiedName().toString();
-      } else {
-        return null;
-      }
-    }
-
-    public boolean isNullable() {
-      for (AnnotationMirror annotation : mirror.getAnnotationMirrors()) {
-        DeclaredType annotationType = annotation.getAnnotationType();
-        TypeElement annotationTypeElt = (TypeElement) annotationType.asElement();
-        if (annotationTypeElt.getQualifiedName().toString().equals(NULLABLE)) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-    public TypeInternal getArgAt(int index) {
-      List<? extends TypeMirror> args = ((DeclaredType) mirror).getTypeArguments();
-      return new MirrorTypeInternal(args.get(index));
-    }
   }
 }
