@@ -84,8 +84,8 @@ public class ClassModel implements Model {
   protected List<TypeInfo> abstractSuperTypes = new ArrayList<>();
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
-  protected List<AnnotationValueInfo> annotations = new ArrayList<>();
   protected Map<String, List<AnnotationValueInfo>> methodAnnotationsMap = new LinkedHashMap<>();
+  protected List<AnnotationValueInfo> annotations;
 
   public ClassModel(ProcessingEnvironment env, MethodOverloadChecker methodOverloadChecker,
                     Messager messager,  Map<String, TypeElement> sources, Elements elementUtils,
@@ -99,7 +99,7 @@ public class ClassModel implements Model {
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
     this.modelElt = modelElt;
-    this.annotationValueInfoFactory = new AnnotationValueInfoFactory(elementUtils, typeUtils);
+    this.annotationValueInfoFactory = new AnnotationValueInfoFactory(typeFactory);
   }
 
   private static boolean rawTypeIs(TypeInfo type, Class<?>... classes) {
@@ -544,11 +544,20 @@ public class ClassModel implements Model {
     if (!processed) {
       traverseType(modelElt);
       determineApiTypes();
+      processTypeAnnotations();
       processed = true;
       return true;
     } else {
       return false;
     }
+  }
+
+  private void processTypeAnnotations() {
+    annotations = elementUtils
+      .getAllAnnotationMirrors(modelElt)
+      .stream()
+      .map(annotationValueInfoFactory::processAnnotation)
+      .collect(Collectors.toList());
   }
 
   private void traverseType(Element elem) {
@@ -632,7 +641,6 @@ public class ClassModel implements Model {
             }
           }
         }
-        elem.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).forEach(annotations::add);
         break;
       }
     }

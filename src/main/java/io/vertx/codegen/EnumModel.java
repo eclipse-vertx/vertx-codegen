@@ -1,6 +1,8 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.doc.Doc;
+import io.vertx.codegen.type.AnnotationValueInfo;
+import io.vertx.codegen.type.AnnotationValueInfoFactory;
 import io.vertx.codegen.type.EnumTypeInfo;
 import io.vertx.codegen.type.TypeMirrorFactory;
 
@@ -28,8 +30,10 @@ public class EnumModel implements Model  {
   protected final Types typeUtils;
   protected final TypeElement modelElt;
   protected EnumTypeInfo type;
+  private final AnnotationValueInfoFactory annotationValueInfoFactory;
   private Doc doc;
   private List<EnumValueInfo> values;
+  private List<AnnotationValueInfo> annotations;
   private boolean processed;
 
   public EnumModel(Messager messager, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
@@ -37,6 +41,7 @@ public class EnumModel implements Model  {
     this.typeUtils = typeUtils;
     this.elementUtils = elementUtils;
     this.modelElt = modelElt;
+    this.annotationValueInfoFactory = new AnnotationValueInfoFactory(new TypeMirrorFactory(elementUtils, typeUtils));
   }
 
   boolean process() {
@@ -62,6 +67,10 @@ public class EnumModel implements Model  {
     } else {
       return false;
     }
+  }
+
+  private void processTypeAnnotations() {
+    this.annotations = elementUtils.getAllAnnotationMirrors(modelElt).stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList());
   }
 
   /**

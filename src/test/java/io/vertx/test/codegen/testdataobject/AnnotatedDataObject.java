@@ -21,7 +21,11 @@ import io.vertx.test.codegen.annotations.TestEnum;
  * @author <a href="mailto:cafeinoman@openaliasbox.org>Francois Delalleau</a>
  */
 @DataObject
+@EmptyAnnotation
 public class AnnotatedDataObject {
+
+  @EmptyAnnotation
+  private String annotatedField;
 
   public AnnotatedDataObject() {
 
@@ -29,6 +33,15 @@ public class AnnotatedDataObject {
 
   public AnnotatedDataObject(JsonObject json) {
 
+  }
+
+  public String getAnnotatedField() {
+    return annotatedField;
+  }
+
+  public AnnotatedDataObject setAnnotatedField(String annotatedField) {
+    this.annotatedField = annotatedField;
+    return this;
   }
 
   @EmptyAnnotation

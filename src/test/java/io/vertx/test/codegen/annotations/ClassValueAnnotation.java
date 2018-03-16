@@ -5,9 +5,9 @@ package io.vertx.test.codegen.annotations;
  */
 public @interface ClassValueAnnotation {
 
-  Class<String> value();
+  Class<?> value();
 
-  Class<String>[] array();
+  Class<?>[] array();
 
-  Class<String> defaultValue() default String.class;
+  Class<?> defaultValue() default String.class;
 }

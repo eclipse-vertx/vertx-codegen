@@ -1,6 +1,8 @@
 package io.vertx.codegen.type;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Describes a java type.

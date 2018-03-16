@@ -46,7 +46,7 @@ public class ModuleModel implements Model {
     return info.getPackageName();
   }
 
-  public List<AnnotationValueInfo> getAnnotationValueInfos() {
+  public List<AnnotationValueInfo> getAnnotations() {
     return annotationValueInfos;
   }
 
@@ -56,7 +56,7 @@ public class ModuleModel implements Model {
     vars.put("fqn", info.getPackageName());
     vars.put("name", info.getName());
     vars.put("module", getModule());
-    vars.put("annotations", getAnnotationValueInfos());
+    vars.put("annotations", getAnnotations());
     return vars;
   }
 

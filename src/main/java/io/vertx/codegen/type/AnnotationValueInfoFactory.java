@@ -17,9 +17,9 @@ public class AnnotationValueInfoFactory {
   private final Elements elementUtils;
   private final TypeMirrorFactory typeFactory;
 
-  public AnnotationValueInfoFactory(Elements elementUtils, Types typeUtils) {
-    this.elementUtils = elementUtils;
-    this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils);
+  public AnnotationValueInfoFactory(TypeMirrorFactory typeMirrorFactory) {
+    this.elementUtils = typeMirrorFactory.elementUtils;
+    this.typeFactory = typeMirrorFactory;
   }
 
   public AnnotationValueInfo processAnnotation(AnnotationMirror annotation) {
