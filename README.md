@@ -4,6 +4,13 @@
 
 This projects contains tools which allow idiomatic other language API shims to be generated from Java APIs.
 
+## Render documentation
+
+```
+> mvn clean package -Pdocs
+> open target/docs/vertx-codegen/java/index.html
+```
+
 ## Helper projects
 
 - Codegen CLI: a codegen [CLI](https://github.com/vietj/vertx-codegen-cli) to help code generating files.

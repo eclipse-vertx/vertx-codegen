@@ -26,7 +26,7 @@ and loading the Vert.x api:
 
 NOTE: so far in Java or Groovy the notion of module is not used because it delegates loading to classloaders.
 
-Modules are declared by annotating a Java package with a `link:../../apidocs/io/vertx/codegen/annotations/ModuleGen.html[@ModuleGen]`
+Modules are declared by annotating a Java package with a {@link io.vertx.codegen.annotations.ModuleGen @ModuleGen}
 annotation.
 
 [source,java]
@@ -43,8 +43,8 @@ or Ruby `acme`, whereas the _group package_ determines the created package, for 
 
 Vert.x modules use the reserved name _vertx-XYZ_ and the reserved group package _io.vertx_.
 
-An API module contains various Vert.x types annotated with `link:../../apidocs/io/vertx/codegen/annotations/VertxGen.html[@VertxGen]`
-or `link:../../apidocs/io/vertx/codegen/annotations/DataObject.html[@DataObject]`.
+An API module contains various Vert.x types annotated with {@link io.vertx.codegen.annotations.VertxGen}
+or {@link io.vertx.codegen.annotations.DataObject}.
 
 NOTE: using Maven coordinates for name and group package is encouraged: the name corresponding to the
 Maven _artifactId_ and the group package corresponding to the `groupId`.
@@ -56,7 +56,7 @@ to and from Json.
 
 In its simplest form, a data object is a Java class following these rules:
 
-1. the class is annotated with `link:../../apidocs/io/vertx/codegen/annotations/DataObject.html[@DataObject]`
+1. the class is annotated with {@link io.vertx.codegen.annotations.DataObject}
 2. provide a constructor with the `io.vertx.core.json.JsonObject` argument
 
 A data object can also be an interface annotated with `@DataObject`, this is useful when multiple inheritance
@@ -208,7 +208,7 @@ a block in Ruby, the same `Handler` in Groovy, a function in Ceylon, etc...
 
 === Generated types
 
-An API type is a Java interface annotated with `link:../../apidocs/io/vertx/codegen/annotations/VertxGen.html[@VertxGen]`.
+An API type is a Java interface annotated with {@link io.vertx.codegen.annotations.VertxGen}.
 
 Vert.x provides a async / non blocking / polyglot programming model, code generated API shall follow some
 rules to make this possible:
@@ -254,9 +254,9 @@ _api_ type can extend other _api_ types.
 An _api_ type can either be *concrete* or *abstract*, such information is important for languages not
 supporting multiple class inheritance like Groovy:
 
-- _api_ types annotated with `link:../../apidocs/io/vertx/codegen/annotations/VertxGen.html[@VertxGen]``(concrete = false)` are meant to be
+- _api_ types annotated with {@link io.vertx.codegen.annotations.VertxGen}`(concrete = false)` are meant to be
 extended by *concrete* interfaces an can inherit from *abstract* interfaces only.
-- _api_ types annotated with `link:../../apidocs/io/vertx/codegen/annotations/VertxGen.html[@VertxGen]` or `link:../../apidocs/io/vertx/codegen/annotations/VertxGen.html[@VertxGen]``(concrete = true)`
+- _api_ types annotated with {@link io.vertx.codegen.annotations.VertxGen} or {@link io.vertx.codegen.annotations.VertxGen}`(concrete = true)`
 are implemented directly by Vertx and can inherit at most one other *concrete* interface and any *abstract* interface
 
 ==== Method parameter types
@@ -348,9 +348,9 @@ JavaScript.
 - some shims can leverage this information to provide a better API, for instance an `Optional<String>` Java type or the
 `String?` in Ceylon, etc...
 
-Codegen provides the `link:../../apidocs/io/vertx/codegen/annotations/Nullable.html[@Nullable]` annotations for annotating types.
+Codegen provides the {@link io.vertx.codegen.annotations.Nullable} annotations for annotating types.
 
-Method return type can be `link:../../apidocs/io/vertx/codegen/annotations/Nullable.html[@Nullable]`:
+Method return type can be {@link io.vertx.codegen.annotations.Nullable}:
 
 [source,java]
 ----
@@ -367,28 +367,28 @@ void close(@Nullable Handler<Void> closeHandler);
 WARNING: type validation is a non goal of this feature, its purpose is to give hints to the shim
 for generating correct code.
 
-These rules apply to `link:../../apidocs/io/vertx/codegen/annotations/Nullable.html[@Nullable]` types:
+These rules apply to {@link io.vertx.codegen.annotations.Nullable} types:
 
-. primitive types cannot be `link:../../apidocs/io/vertx/codegen/annotations/Nullable.html[@Nullable]`
-. method parameter type can be `link:../../apidocs/io/vertx/codegen/annotations/Nullable.html[@Nullable]`
-. method return type can be `link:../../apidocs/io/vertx/codegen/annotations/Nullable.html[@Nullable]` but not for `link:../../apidocs/io/vertx/codegen/annotations/Fluent.html[@Fluent]`
-. `io.vertx.core.Handler` type argument can be `link:../../apidocs/io/vertx/codegen/annotations/Nullable.html[@Nullable]` but not for
+. primitive types cannot be {@link io.vertx.codegen.annotations.Nullable}
+. method parameter type can be {@link io.vertx.codegen.annotations.Nullable}
+. method return type can be {@link io.vertx.codegen.annotations.Nullable} but not for {@link io.vertx.codegen.annotations.Fluent}
+. `io.vertx.core.Handler` type argument can be {@link io.vertx.codegen.annotations.Nullable} but not for
 `java.lang.Void` or `io.vertx.core.AsyncResult`
-. `io.vertx.core.Handler<io.vertx.core.AsyncResult>` type argument can be `link:../../apidocs/io/vertx/codegen/annotations/Nullable.html[@Nullable]`
+. `io.vertx.core.Handler<io.vertx.core.AsyncResult>` type argument can be {@link io.vertx.codegen.annotations.Nullable}
 but not for `java.lang.Void`
 . the `java.lang.Object` type is always nullable
 . the `<T>` in `<T>` parameter/return, `Handler<T>` or `Handler<AsyncResult<T>>` is implicitly nullable
 . the `java.lang.Object` parameter is implicitly nullable
-. a method overriding another method `inherits` the `link:../../apidocs/io/vertx/codegen/annotations/Nullable.html[@Nullable]` usage of the overriden method
-. a method overriding another method cannot declare `link:../../apidocs/io/vertx/codegen/annotations/Nullable.html[@Nullable]` in its types
+. a method overriding another method `inherits` the {@link io.vertx.codegen.annotations.Nullable} usage of the overriden method
+. a method overriding another method cannot declare {@link io.vertx.codegen.annotations.Nullable} in its types
 
-In addition these rules apply to `link:../../apidocs/io/vertx/codegen/annotations/Nullable.html[@Nullable]` type arguments:
+In addition these rules apply to {@link io.vertx.codegen.annotations.Nullable} type arguments:
 
 . methods cannot declare generic api types with nullable type arguments, e.g `<T> void method(GenericApi<Nullable T> api)` is not permitted
 . methods can declare nullable collection, e.g `void method(List<Nullable String> list)` is allowed
 
 Besides these rules, nullable types of method parameters have an impact on method overloading: the parameter
-at the same position cannot be `link:../../apidocs/io/vertx/codegen/annotations/Nullable.html[@Nullable]` more than one time when the number
+at the same position cannot be {@link io.vertx.codegen.annotations.Nullable} more than one time when the number
 of method parameters is the same, e.g:
 
 [source,java]
@@ -438,7 +438,7 @@ def buf = io.vertx.groovy.core.Buffer.buffer();
 
 === Ignored methods
 
-Methods annotated with `link:../../apidocs/io/vertx/codegen/annotations/GenIgnore.html[@GenIgnore]` are simply ignored by codegen, this
+Methods annotated with {@link io.vertx.codegen.annotations.GenIgnore} are simply ignored by codegen, this
 is useful when the API provides Java specific methods, for instance a method uses a type not permitted
 by codegen.
 
@@ -608,74 +608,74 @@ todo provide example ?
 
 == Codegen types
 
-The `link:../../apidocs/io/vertx/codegen/type/TypeInfo.html[TypeInfo]` provides a codegen view of the Java type system.
+The {@link io.vertx.codegen.type.TypeInfo} provides a codegen view of the Java type system.
 
-A type info has a `link:../../apidocs/io/vertx/codegen/type/ClassKind.html[ClassKind]` usually used to determine the conversion to apply:
+A type info has a {@link io.vertx.codegen.type.ClassKind} usually used to determine the conversion to apply:
 
 [cols="1,4"]
 .Class kinds
 |===
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#STRING[STRING]`
+| {@link io.vertx.codegen.type.ClassKind#STRING}
 | `java.lang.String`
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#PRIMITIVE[PRIMITIVE]`
+| {@link io.vertx.codegen.type.ClassKind#PRIMITIVE}
 | any Java primitive type
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#BOXED_PRIMITIVE[BOXED_PRIMITIVE]`
+| {@link io.vertx.codegen.type.ClassKind#BOXED_PRIMITIVE}
 | any Java boxed primitive type
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#ENUM[ENUM]`
+| {@link io.vertx.codegen.type.ClassKind#ENUM}
 | any Java enum
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#JSON_OBJECT[JSON_OBJECT]`
+| {@link io.vertx.codegen.type.ClassKind#JSON_OBJECT}
 | `io.vertx.core.json.JsonObject`
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#JSON_ARRAY[JSON_ARRAY]`
+| {@link io.vertx.codegen.type.ClassKind#JSON_ARRAY}
 | `io.vertx.core.json.JsonArray`
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#THROWABLE[THROWABLE]`
+| {@link io.vertx.codegen.type.ClassKind#THROWABLE}
 | `java.lang.Throwable`
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#VOID[VOID]`
+| {@link io.vertx.codegen.type.ClassKind#VOID}
 | `java.lang.Void`
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#OBJECT[OBJECT]`
+| {@link io.vertx.codegen.type.ClassKind#OBJECT}
 | `java.lang.Object` or an unbounded type variable
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#LIST[LIST]`
+| {@link io.vertx.codegen.type.ClassKind#LIST}
 | `java.util.List<V>`
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#SET[SET]`
+| {@link io.vertx.codegen.type.ClassKind#SET}
 | `java.util.Set<V>`
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#MAP[MAP]`
+| {@link io.vertx.codegen.type.ClassKind#MAP}
 | `java.util.Map<String,V>`
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#API[API]`
+| {@link io.vertx.codegen.type.ClassKind#API}
 | any _api_ type
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#DATA_OBJECT[DATA_OBJECT]`
+| {@link io.vertx.codegen.type.ClassKind#DATA_OBJECT}
 | any _data object_ type
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#HANDLER[HANDLER]`
+| {@link io.vertx.codegen.type.ClassKind#HANDLER}
 | `io.vertx.core.Handler<E>`
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#FUNCTION[FUNCTION]`
+| {@link io.vertx.codegen.type.ClassKind#FUNCTION}
 | `java.util.function.Function<E, R>`
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#ASYNC_RESULT[ASYNC_RESULT]`
+| {@link io.vertx.codegen.type.ClassKind#ASYNC_RESULT}
 | `io.vertx.core.AsyncResult<E>`
-| `link:../../apidocs/io/vertx/codegen/type/ClassKind.html#OTHER[OTHER]`
+| {@link io.vertx.codegen.type.ClassKind#OTHER}
 | anything else
 |===
 
 The `TypeInfo` base class provides common type information
 
-- `link:../../apidocs/io/vertx/codegen/type/TypeInfo.html#getKind--[getKind]` the type `link:../../apidocs/io/vertx/codegen/type/ClassKind.html[ClassKind]`
-- `link:../../apidocs/io/vertx/codegen/type/TypeInfo.html#getName--[getName]` the type name
-- `link:../../apidocs/io/vertx/codegen/type/TypeInfo.html#getSimpleName--[getSimpleName]` the simple name
-- `link:../../apidocs/io/vertx/codegen/type/TypeInfo.html#getErased--[getErased]` returns the corresponding erased type
-- `link:../../apidocs/io/vertx/codegen/type/TypeInfo.html#getRaw--[getRaw]` returns the raw type of a parameter type or this type
+- {@link io.vertx.codegen.type.TypeInfo#getKind} the type {@link io.vertx.codegen.type.ClassKind}
+- {@link io.vertx.codegen.type.TypeInfo#getName()} the type name
+- {@link io.vertx.codegen.type.TypeInfo#getSimpleName()} the simple name
+- {@link io.vertx.codegen.type.TypeInfo#getErased()} returns the corresponding erased type
+- {@link io.vertx.codegen.type.TypeInfo#getRaw()} returns the raw type of a parameter type or this type
 
-Besides it provides the `link:../../apidocs/io/vertx/codegen/type/TypeInfo.html#translateName-java.lang.String-[translateName]` method to
+Besides it provides the {@link io.vertx.codegen.type.TypeInfo#translateName(java.lang.String)} method to
 translate the type name using a shim identifier, this is useful for shim using a hierarchical naming, for
 instance the translated name of `io.vertx.core.eventbus.EventBus` for the `groovy` identifier is
 `io.vertx.groovy.core.eventbus.EventBus`. The position where the identifier is applied is
-determined by the `link:../../apidocs/io/vertx/codegen/annotations/ModuleGen.html#groupPackage--[groupPackage]` value.
+determined by the {@link io.vertx.codegen.annotations.ModuleGen#groupPackage()} value.
 
 Several subclasses of `TypeInfo` provides specialization when needed:
 
-- `link:../../apidocs/io/vertx/codegen/type/ClassTypeInfo.html[ClassTypeInfo]` : a java class
-- `link:../../apidocs/io/vertx/codegen/type/ApiTypeInfo.html[ApiTypeInfo]` : `TypeInfo.Class` specialization for _api_ types
-- `link:../../apidocs/io/vertx/codegen/type/EnumTypeInfo.html[EnumTypeInfo]` : `TypeInfo.Class` specialization for _enum_ types
-- `link:../../apidocs/io/vertx/codegen/type/ParameterizedTypeInfo.html[ParameterizedTypeInfo]` : a parameterized type
-- `link:../../apidocs/io/vertx/codegen/type/PrimitiveTypeInfo.html[PrimitiveTypeInfo]` : a primitive type
-- `link:../../apidocs/io/vertx/codegen/type/VoidTypeInfo.html[VoidTypeInfo]` : `void` (and not `java.lang.Void`)
-- `link:../../apidocs/io/vertx/codegen/type/TypeVariableInfo.html[TypeVariableInfo]` : an unbounded type variable
+- {@link io.vertx.codegen.type.ClassTypeInfo} : a java class
+- {@link io.vertx.codegen.type.ApiTypeInfo} : `TypeInfo.Class` specialization for _api_ types
+- {@link io.vertx.codegen.type.EnumTypeInfo} : `TypeInfo.Class` specialization for _enum_ types
+- {@link io.vertx.codegen.type.ParameterizedTypeInfo} : a parameterized type
+- {@link io.vertx.codegen.type.PrimitiveTypeInfo} : a primitive type
+- {@link io.vertx.codegen.type.VoidTypeInfo} : `void` (and not `java.lang.Void`)
+- {@link io.vertx.codegen.type.TypeVariableInfo} : an unbounded type variable
 
 == Codegen models
 
@@ -698,21 +698,21 @@ for `ClassModel`, `DataObjectModel`, `EnumModel` and `ProxyModel`.
 
 === Class model
 
-For each Java interface annotated with `link:../../apidocs/io/vertx/codegen/annotations/VertxGen.html[@VertxGen]` a ``link:../../apidocs/io/vertx/codegen/ClassModel.html[ClassModel]`` is created.
+For each Java interface annotated with {@link io.vertx.codegen.annotations.VertxGen} a `{@link io.vertx.codegen.ClassModel}` is created.
 
 [cols="1,4"]
 .Template properties
 |===
 | `importedTypes`
-| the full list of used types including `java.lang.*` types as ``link:../../apidocs/io/vertx/codegen/type/ClassTypeInfo.html[ClassTypeInfo]`` that are not in the same package
+| the full list of used types including `java.lang.*` types as `{@link io.vertx.codegen.type.ClassTypeInfo}` that are not in the same package
 | `referencedTypes`
-| the full list of used types including `java.lang.*` types as ``link:../../apidocs/io/vertx/codegen/type/ClassTypeInfo.html[ClassTypeInfo]``
+| the full list of used types including `java.lang.*` types as `{@link io.vertx.codegen.type.ClassTypeInfo}`
 | `referencedDataObjectTypes`
-| the full list of used _data object_ types as ``link:../../apidocs/io/vertx/codegen/type/ClassTypeInfo.html[ClassTypeInfo]``
+| the full list of used _data object_ types as `{@link io.vertx.codegen.type.ClassTypeInfo}`
 | `type`
-| the type ``link:../../apidocs/io/vertx/codegen/type/ClassTypeInfo.html[ClassTypeInfo]`` or ``link:../../apidocs/io/vertx/codegen/type/ParameterizedTypeInfo.html[ParameterizedTypeInfo]``
+| the type `{@link io.vertx.codegen.type.ClassTypeInfo}` or `{@link io.vertx.codegen.type.ParameterizedTypeInfo}`
 | `typeParams`
-| the list of class type params as `List<``link:../../apidocs/io/vertx/codegen/TypeParamInfo/Class.html[Class]``>`
+| the list of class type params as `List<`{@link io.vertx.codegen.TypeParamInfo.Class}`>`
 | `concrete`
 | a boolean value indicating if the model is _abstract_ or _concrete_
 | `superTypes`
@@ -724,15 +724,15 @@ For each Java interface annotated with `link:../../apidocs/io/vertx/codegen/anno
 | `handlerSuperType`
 | the type `io.vertx.core.Handler<T>` when the type implements directly the `Handler` interface
 | `methods`
-| all the methods as `List<``link:../../apidocs/io/vertx/codegen/MethodInfo.html[MethodInfo]``>`
+| all the methods as `List<`{@link io.vertx.codegen.MethodInfo}`>`
 | `instanceMethods`
-| all the instance methods as `List<``link:../../apidocs/io/vertx/codegen/MethodInfo.html[MethodInfo]``>`
+| all the instance methods as `List<`{@link io.vertx.codegen.MethodInfo}`>`
 | `staticMethods`
-| all the static methods as `List<``link:../../apidocs/io/vertx/codegen/MethodInfo.html[MethodInfo]``>`
+| all the static methods as `List<`{@link io.vertx.codegen.MethodInfo}`>`
 | `methodsByName`
-| a map of methods keyed by name as `Map<String, List<``link:../../apidocs/io/vertx/codegen/MethodInfo.html[MethodInfo]``>>`
+| a map of methods keyed by name as `Map<String, List<`{@link io.vertx.codegen.MethodInfo}`>>`
 | `doc`
-| the documentation as `link:../../apidocs/io/vertx/codegen/doc/Doc.html[Doc]`
+| the documentation as {@link io.vertx.codegen.doc.Doc}
 |===
 
 todo method info / param info / type param info
@@ -759,7 +759,7 @@ todo
 
 == Code generation
 
-The `link:../../apidocs/io/vertx/codegen/CodeGenProcessor.html[CodeGenProcessor]` is a Java Annotation Processor that validates and applies
+The {@link io.vertx.codegen.CodeGenProcessor} is a Java Annotation Processor that validates and applies
 _code generators_ on codegen models.
 
 The processor is declared in the compiler configuration, here is a typical Maven configuration:

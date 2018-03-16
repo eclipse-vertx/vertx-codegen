@@ -72,7 +72,8 @@
                   <annotationProcessor>io.vertx.docgen.JavaDocGenProcessor</annotationProcessor>
                 </annotationProcessors>
                 <compilerArgs>
-                  <arg>-Adocgen.output=${asciidoc.dir}/java</arg>
+                  <arg>-Adocgen.source=${asciidoc.dir}</arg>
+                  <arg>-Adocgen.output=${project.build.directory}/asciidoc/java</arg>
                 </compilerArgs>
                 <excludes>
                   <exclude>**/TreeTypeInternal.java</exclude>
@@ -194,6 +195,19 @@
               </descriptors>
             </configuration>
           </execution>
+          <execution>
+            <id>package-docs</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <attach>true</attach>
+              <descriptors>
+                <descriptor>src/main/assembly/docs.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -223,6 +237,7 @@
   </build>
 
   <profiles>
+
     <profile>
       <id>java-8</id>
       <properties>
@@ -261,6 +276,45 @@
           <optional>true</optional>
         </dependency>
       </dependencies>
+    </profile>
+
+    <!-- Documentation generation : activate with -Pdocs -->
+    <profile>
+      <id>docs</id>
+      <build>
+        <plugins>
+          <!-- Transform the Asciidoctor to html -->
+          <plugin>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctor-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>process-asciidoc</goal>
+                </goals>
+                <configuration>
+                  <sourceDirectory>${project.build.directory}/asciidoc</sourceDirectory>
+                </configuration>
+                <phase>package</phase>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>javadoc</goal>
+                </goals>
+                <configuration>
+                  <reportOutputDirectory>${project.build.directory}/docs</reportOutputDirectory>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
