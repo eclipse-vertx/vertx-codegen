@@ -124,7 +124,8 @@ public class TypeMirrorFactory {
             }
             return null;
           }).toArray(TypeInfo[]::new);
-          raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, args[0], args[1], args[2], module, nullable, proxyGen);
+          boolean autoCloseable = typeUtils.isSubtype(elt.asType(), elementUtils.getTypeElement("java.lang.AutoCloseable").asType());
+          raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, args[0], args[1], args[2], module, nullable, proxyGen, autoCloseable);
         } else if (kind == ClassKind.DATA_OBJECT) {
           boolean _abstract = elt.getModifiers().contains(Modifier.ABSTRACT);
           raw = new DataObjectTypeInfo(kind, fqcn, module, _abstract, nullable, proxyGen, typeParams);
