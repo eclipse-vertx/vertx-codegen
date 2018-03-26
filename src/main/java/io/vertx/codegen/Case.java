@@ -75,7 +75,7 @@ public abstract class Case {
   }
 
   /**
-   * Useful for testing the method kind, allows to do method.kind == METHOD_HANDLER instead of method.kind.name() == "HANDLER"
+   * Useful for formatting or parsing string, eg:CASE_CAMEL.format(CASE_SNAKE.parse("foo_bar")),it will return fooBar
    */
   public static Map<String, Case> vars() {
     HashMap<String, Case> vars = new HashMap<>();
