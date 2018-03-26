@@ -49,11 +49,12 @@ public class MethodInfo implements Comparable<MethodInfo> {
   List<TypeParamInfo.Method> typeParams;
   LinkedHashSet<ClassTypeInfo> ownerTypes;
   List<ParamInfo> params;
+  boolean deprecated;
 
   public MethodInfo(Set<ClassTypeInfo> ownerTypes, String name, MethodKind kind,
                     TypeInfo returnType, Text returnDescription, boolean fluent,  boolean cacheReturn,
                     List<ParamInfo> params, String comment, Doc doc, boolean staticMethod, boolean defaultMethod,
-                    List<TypeParamInfo.Method> typeParams) {
+                    List<TypeParamInfo.Method> typeParams, boolean deprecated) {
 
 
     this.comment = comment;
@@ -69,6 +70,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
     this.params = params;
     this.typeParams = typeParams;
     this.ownerTypes = new LinkedHashSet<>(ownerTypes);
+    this.deprecated = deprecated;
   }
 
   public String getName() {
@@ -204,6 +206,10 @@ public class MethodInfo implements Comparable<MethodInfo> {
 
   public boolean isDefaultMethod() {
     return defaultMethod;
+  }
+
+  public boolean isDeprecated() {
+    return deprecated;
   }
 
   public List<TypeParamInfo.Method> getTypeParams() {

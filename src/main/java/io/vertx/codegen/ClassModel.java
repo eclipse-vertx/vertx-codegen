@@ -86,6 +86,7 @@ public class ClassModel implements Model {
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
   protected Map<String, List<AnnotationValueInfo>> methodAnnotationsMap = new LinkedHashMap<>();
   protected List<AnnotationValueInfo> annotations;
+  protected boolean deprecated;
 
   public ClassModel(ProcessingEnvironment env, MethodOverloadChecker methodOverloadChecker,
                     Messager messager,  Map<String, TypeElement> sources, Elements elementUtils,
@@ -100,6 +101,7 @@ public class ClassModel implements Model {
     this.typeUtils = typeUtils;
     this.modelElt = modelElt;
     this.annotationValueInfoFactory = new AnnotationValueInfoFactory(typeFactory);
+    this.deprecated = modelElt.getAnnotation(Deprecated.class) != null;
   }
 
   private static boolean rawTypeIs(TypeInfo type, Class<?>... classes) {
@@ -854,9 +856,10 @@ public class ClassModel implements Model {
         }
       }
     }
+    boolean methodDeprecated = modelMethod.getAnnotation(Deprecated.class) != null;
 
     MethodInfo methodInfo = createMethodInfo(ownerTypes, methodName, comment, doc, kind,
-        returnType, returnDesc, isFluent, isCacheReturn, mParams, modelMethod, isStatic, isDefault, typeParams, declaringElt);
+        returnType, returnDesc, isFluent, isCacheReturn, mParams, modelMethod, isStatic, isDefault, typeParams, declaringElt, methodDeprecated);
     checkMethod(methodInfo);
 
     // Check we don't hide another method, we don't check overrides but we are more
@@ -899,9 +902,9 @@ public class ClassModel implements Model {
                                         Text returnDescription,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
                                         ExecutableElement methodElt, boolean isStatic, boolean isDefault, ArrayList<TypeParamInfo.Method> typeParams,
-                                        TypeElement declaringElt) {
+                                        TypeElement declaringElt, boolean methodDeprecated) {
     return new MethodInfo(ownerTypes, methodName, kind, returnType, returnDescription,
-      isFluent, isCacheReturn, mParams, comment, doc, isStatic, isDefault, typeParams);
+      isFluent, isCacheReturn, mParams, comment, doc, isStatic, isDefault, typeParams, methodDeprecated);
   }
 
   // This is a hook to allow different model implementations to check methods in different ways
@@ -953,6 +956,10 @@ public class ClassModel implements Model {
     return mParams;
   }
 
+  public boolean isDeprecated() {
+    return deprecated;
+  }
+
   @Override
   public Map<String, Object> getVars() {
     Map<String, Object> vars = Model.super.getVars();
@@ -978,6 +985,7 @@ public class ClassModel implements Model {
     vars.put("typeParams", getTypeParams());
     vars.put("instanceMethods", getInstanceMethods());
     vars.put("staticMethods", getStaticMethods());
+    vars.put("deprecated", isDeprecated());
     return vars;
   }
 }
