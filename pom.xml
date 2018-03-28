@@ -72,10 +72,9 @@
                 <compilerArgs>
                   <arg>-Adocgen.source=${asciidoc.dir}</arg>
                   <arg>-Adocgen.output=${project.build.directory}/asciidoc/java</arg>
+                  <arg>-J-XaddExports:jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
+                  <arg>-J-XaddExports:jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
                 </compilerArgs>
-                <excludes>
-                  <exclude>**/TreeTypeInternal.java</exclude>
-                </excludes>
                 <generatedSourcesDirectory>${generated.dir}</generatedSourcesDirectory>
               </configuration>
             </execution>
@@ -279,26 +278,6 @@
       <activation>
         <jdk>1.8</jdk>
       </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <executions>
-                <execution>
-                  <id>default-compile</id>
-                  <configuration>
-                    <excludes>
-                      <exclude>/whatever</exclude>
-                    </excludes>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
       <dependencies>
         <dependency>
           <groupId>com.sun</groupId>
