@@ -82,15 +82,15 @@
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <configuration>
-            <archive>
-              <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-            </archive>
-          </configuration>
           <executions>
             <execution>
               <id>default-jar</id>
               <configuration>
+                <archive>
+                  <manifestEntries>
+                    <Multi-Release>true</Multi-Release>
+                  </manifestEntries>
+                </archive>
                 <excludes>
                   <exclude>io/vertx/core/**</exclude>
                   <exclude>io/vertx/codegen/testmodel/**</exclude>
@@ -193,10 +193,54 @@
       </plugin>
 
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>compile-java9</id>
+            <phase>compile</phase>
+            <configuration>
+              <tasks>
+                <mkdir dir="${project.basedir}/src/main/java9" />
+                <mkdir dir="${project.build.directory}/classes9" />
+                <javac srcdir="${project.basedir}/src/main/java9"
+                       destdir="${project.build.directory}/classes9"
+                       classpath="${project.build.outputDirectory}"
+                       includeantruntime="false" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}/META-INF/versions/9</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/classes9</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
           <execution>
-            <id>package</id>
+            <id>package-jar</id>
             <phase>package</phase>
             <goals>
               <goal>single</goal>
@@ -204,9 +248,10 @@
             <configuration>
               <attach>true</attach>
               <appendAssemblyId>false</appendAssemblyId>
+              <mergeManifestMode>merge</mergeManifestMode>
               <archive>
-                    <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
-                </archive>
+                <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
+              </archive>
               <descriptors>
                 <descriptor>src/main/assembly/jar.xml</descriptor>
               </descriptors>
