@@ -86,7 +86,7 @@ public class ClassModel implements Model {
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
   protected Map<String, List<AnnotationValueInfo>> methodAnnotationsMap = new LinkedHashMap<>();
   protected List<AnnotationValueInfo> annotations;
-  protected boolean deprecated;
+  protected final boolean deprecated;
 
   public ClassModel(ProcessingEnvironment env, MethodOverloadChecker methodOverloadChecker,
                     Messager messager,  Map<String, TypeElement> sources, Elements elementUtils,
@@ -956,6 +956,10 @@ public class ClassModel implements Model {
     return mParams;
   }
 
+  /**
+   * true if the class has a @Deprecated annotation
+   * @return
+   */
   public boolean isDeprecated() {
     return deprecated;
   }

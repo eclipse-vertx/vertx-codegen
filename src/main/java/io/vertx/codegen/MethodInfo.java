@@ -49,7 +49,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   List<TypeParamInfo.Method> typeParams;
   LinkedHashSet<ClassTypeInfo> ownerTypes;
   List<ParamInfo> params;
-  boolean deprecated;
+  final boolean deprecated;
 
   public MethodInfo(Set<ClassTypeInfo> ownerTypes, String name, MethodKind kind,
                     TypeInfo returnType, Text returnDescription, boolean fluent,  boolean cacheReturn,
@@ -208,6 +208,10 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return defaultMethod;
   }
 
+  /**
+   *
+   * @return true if the method has a @Deprecated annotation
+   */
   public boolean isDeprecated() {
     return deprecated;
   }
