@@ -210,7 +210,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
 
   /**
    *
-   * @return true if the method has a @Deprecated annotation
+   * @return {@code true} if the method has a {@code @Deprecated} annotation
    */
   public boolean isDeprecated() {
     return deprecated;

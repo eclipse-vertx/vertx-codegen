@@ -145,7 +145,7 @@ public class DataObjectModel implements Model {
     return (constructors & 1) == 1;
   }
   /**
-   * @return true if the class has a @Deprecated annotation
+   * @return {@code true} if the class has a {@code @Deprecated} annotation
    */
   public boolean isDeprecated() {
     return deprecated;

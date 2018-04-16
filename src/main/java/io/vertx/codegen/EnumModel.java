@@ -112,7 +112,7 @@ public class EnumModel implements Model {
   }
 
   /**
-   * @return true if the class has a @Deprecated annotation
+   * @return {@code true} if the class has a {@code @Deprecated} annotation
    */
   public boolean isDeprecated() {
     return deprecated;

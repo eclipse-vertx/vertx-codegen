@@ -33,7 +33,7 @@ public class EnumValueInfo {
     return doc;
   }
   /**
-   * @return true if the enum value has a @Deprecated annotation
+   * @return {@code true} if the enum value has a {@code @Deprecated} annotation
    */
   public boolean isDeprecated() {
     return deprecated;
