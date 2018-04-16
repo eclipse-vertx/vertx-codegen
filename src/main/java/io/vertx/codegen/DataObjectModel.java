@@ -44,7 +44,7 @@ public class DataObjectModel implements Model {
   private boolean inheritConverter;
   private boolean publicConverter;
   private int constructors;
-  protected boolean deprecated;
+  private boolean deprecated;
   private ClassTypeInfo superType;
   private ClassTypeInfo type;
   private Doc doc;

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class EnumModel implements Model  {
+public class EnumModel implements Model {
 
   private final Doc.Factory docFactory;
   protected final Elements elementUtils;
@@ -35,6 +35,7 @@ public class EnumModel implements Model  {
   private List<EnumValueInfo> values;
   private List<AnnotationValueInfo> annotations;
   private boolean processed;
+  private boolean deprecated;
 
   public EnumModel(Messager messager, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
     this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, new TypeMirrorFactory(elementUtils, typeUtils), modelElt);
@@ -42,6 +43,7 @@ public class EnumModel implements Model  {
     this.elementUtils = elementUtils;
     this.modelElt = modelElt;
     this.annotationValueInfoFactory = new AnnotationValueInfoFactory(new TypeMirrorFactory(elementUtils, typeUtils));
+    this.deprecated = modelElt.getAnnotation(Deprecated.class) != null;
   }
 
   boolean process() {
@@ -53,12 +55,12 @@ public class EnumModel implements Model  {
       type = (EnumTypeInfo) new TypeMirrorFactory(elementUtils, typeUtils).create(modelElt.asType());
       Helper.checkUnderModule(this, "@VertxGen");
       values = elementUtils.
-          getAllMembers(modelElt).
-          stream().
-          filter(elt -> elt.getKind() == ElementKind.ENUM_CONSTANT).
-          flatMap(Helper.cast(VariableElement.class)).
-          map(elt -> new EnumValueInfo(elt.getSimpleName().toString(), docFactory.createDoc(elt))).
-          collect(Collectors.toList());
+        getAllMembers(modelElt).
+        stream().
+        filter(elt -> elt.getKind() == ElementKind.ENUM_CONSTANT).
+        flatMap(Helper.cast(VariableElement.class)).
+        map(elt -> new EnumValueInfo(elt.getSimpleName().toString(), docFactory.createDoc(elt), elt.getAnnotation(Deprecated.class) != null)).
+        collect(Collectors.toList());
       if (values.isEmpty()) {
         throw new GenException(modelElt, "No empty enums");
       }
@@ -109,12 +111,20 @@ public class EnumModel implements Model  {
     return modelElt.getQualifiedName().toString();
   }
 
+  /**
+   * @return true if the class has a @Deprecated annotation
+   */
+  public boolean isDeprecated() {
+    return deprecated;
+  }
+
   @Override
   public Map<String, Object> getVars() {
     Map<String, Object> vars = Model.super.getVars();
     vars.put("type", getType());
     vars.put("doc", doc);
     vars.put("values", values);
+    vars.put("deprecated", deprecated);
     return vars;
   }
 

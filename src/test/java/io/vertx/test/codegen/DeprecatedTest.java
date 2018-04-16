@@ -6,6 +6,8 @@ import io.vertx.test.codegen.testapi.DeprecatedInterface;
 import io.vertx.test.codegen.testapi.GenericInterface;
 import io.vertx.test.codegen.testdataobject.DataObjectWithProperty;
 import io.vertx.test.codegen.testdataobject.DeprecatedDataObject;
+import io.vertx.test.codegen.testenum.DeprecatedEnum;
+import io.vertx.test.codegen.testenum.ValidEnum;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -44,6 +46,7 @@ public class DeprecatedTest {
     assertEquals(model.getVars().get("deprecated"), false);
     assertFalse(model.getMethods().get(0).isDeprecated());
   }
+
   @Test
   public void testDataObjectDeprecated() throws Exception {
     DataObjectModel model = generator.generateDataObject(DeprecatedDataObject.class);
@@ -53,6 +56,7 @@ public class DeprecatedTest {
       assertTrue(property.isDeprecated());
     }
   }
+
   @Test
   public void testDataObjectNotDeprecated() throws Exception {
     DataObjectModel model = generator.generateDataObject(DataObjectWithProperty.class);
@@ -61,5 +65,21 @@ public class DeprecatedTest {
     for (PropertyInfo property : model.getPropertyMap().values()) {
       assertFalse(property.isDeprecated());
     }
+  }
+
+  @Test
+  public void testEnumDeprecated() throws Exception {
+    EnumModel model = generator.generateEnum(DeprecatedEnum.class);
+    assertTrue(model.isDeprecated());
+    assertEquals(model.getVars().get("deprecated"), true);
+    assertTrue(model.getValues().get(0).isDeprecated());
+    assertFalse(model.getValues().get(1).isDeprecated());
+  }
+
+  @Test
+  public void testEnumNotDeprecated() throws Exception {
+    EnumModel model = generator.generateEnum(ValidEnum.class);
+    assertFalse(model.isDeprecated());
+    assertEquals(model.getVars().get("deprecated"), false);
   }
 }
