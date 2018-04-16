@@ -44,6 +44,7 @@ public class DataObjectModel implements Model {
   private boolean inheritConverter;
   private boolean publicConverter;
   private int constructors;
+  protected boolean deprecated;
   private ClassTypeInfo superType;
   private ClassTypeInfo type;
   private Doc doc;
@@ -57,6 +58,7 @@ public class DataObjectModel implements Model {
     this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, typeFactory, modelElt);
     this.modelElt = modelElt;
     this.annotationValueInfoFactory = new AnnotationValueInfoFactory(typeFactory);
+    this.deprecated = modelElt.getAnnotation(Deprecated.class) != null;
   }
 
   @Override
