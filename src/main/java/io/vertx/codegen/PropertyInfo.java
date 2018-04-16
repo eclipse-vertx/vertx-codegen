@@ -164,4 +164,12 @@ public class PropertyInfo {
   public boolean isJsonifiable() {
     return jsonifiable;
   }
+
+  /**
+   *
+   * @return true if the method has a @Deprecated annotation
+   */
+  public boolean isDeprecated() {
+    return deprecated;
+  }
 }

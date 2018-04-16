@@ -144,6 +144,12 @@ public class DataObjectModel implements Model {
   public boolean hasEmptyConstructor() {
     return (constructors & 1) == 1;
   }
+  /**
+   * @return true if the class has a @Deprecated annotation
+   */
+  public boolean isDeprecated() {
+    return deprecated;
+  }
 
   @Override
   public Map<String, Object> getVars() {
@@ -162,6 +168,7 @@ public class DataObjectModel implements Model {
     vars.put("abstractSuperTypes", abstractSuperTypes);
     vars.put("jsonifiable", jsonifiable);
     vars.put("hasEmptyConstructor", hasEmptyConstructor());
+    vars.put("deprecated", deprecated);
     return vars;
   }
 

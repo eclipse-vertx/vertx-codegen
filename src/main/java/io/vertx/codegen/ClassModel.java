@@ -957,8 +957,7 @@ public class ClassModel implements Model {
   }
 
   /**
-   * true if the class has a @Deprecated annotation
-   * @return
+   * @return true if the class has a @Deprecated annotation
    */
   public boolean isDeprecated() {
     return deprecated;
