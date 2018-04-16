@@ -371,6 +371,7 @@ public class DataObjectModel implements Model {
     PropertyKind propKind = null;
     TypeInfo propType = null;
     TypeMirror propTypeMirror = null;
+    boolean propertyDeprecated = false;
 
     //
     if (setterElt != null) {
@@ -378,6 +379,7 @@ public class DataObjectModel implements Model {
       propTypeMirror = paramElt.asType();
       propType = typeFactory.create(propTypeMirror);
       propKind = PropertyKind.forType(propType.getKind());
+      propertyDeprecated |= setterElt.getAnnotation(Deprecated.class) != null;
       switch (propKind) {
         case LIST:
         case SET:
@@ -396,6 +398,7 @@ public class DataObjectModel implements Model {
       TypeMirror getterTypeMirror = getterElt.getReturnType();
       TypeInfo getterType = typeFactory.create(getterTypeMirror);
       PropertyKind getterKind = PropertyKind.forType(getterType.getKind());
+      propertyDeprecated |= getterElt.getAnnotation(Deprecated.class) != null;
       switch (getterKind) {
         case LIST:
         case SET:
@@ -423,6 +426,7 @@ public class DataObjectModel implements Model {
 
     //
     if (adderElt != null) {
+      propertyDeprecated |= adderElt.getAnnotation(Deprecated.class) != null;
       switch (adderElt.getParameters().size()) {
         case 1: {
           VariableElement paramElt = adderElt.getParameters().get(0);
@@ -544,7 +548,7 @@ public class DataObjectModel implements Model {
       setterElt != null ? setterElt.getSimpleName().toString() : null,
       adderElt != null ? adderElt.getSimpleName().toString() : null,
       getterElt != null ? getterElt.getSimpleName().toString() : null,
-      annotationValueInfos, propKind, jsonifiable);
+      annotationValueInfos, propKind, jsonifiable, propertyDeprecated);
     propertyMap.put(property.name, property);
   }
 
