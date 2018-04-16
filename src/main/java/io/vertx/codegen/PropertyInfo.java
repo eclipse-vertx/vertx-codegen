@@ -167,7 +167,7 @@ public class PropertyInfo {
 
   /**
    *
-   * @return true if the method has a @Deprecated annotation
+   * @return true if the property has a @Deprecated annotation
    */
   public boolean isDeprecated() {
     return deprecated;
