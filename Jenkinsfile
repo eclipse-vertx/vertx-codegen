@@ -1,3 +1,4 @@
+library "vertx-ci-workflow@master"
 pipeline {
   agent any
   tools {
@@ -13,7 +14,7 @@ pipeline {
       }
       steps {
         sh 'mvn -U -B -Dsurefire.reportNameSuffix=OracleJDK_8 clean deploy -s $MAVEN_SETTINGS_PATH'
-        build job: "/vert.x3-core-pipeline/${env.BRANCH_NAME}", wait: false
+        triggerWorkflow()
       }
       post {
         always {
