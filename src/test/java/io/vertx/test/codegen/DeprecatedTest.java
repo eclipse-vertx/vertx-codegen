@@ -13,7 +13,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class DeprecatedTest {
-  private Generator generator = new Generator();
+  private GeneratorHelper generator = new GeneratorHelper();
 
   @Test
   public void testVertxGenDeprecated() throws Exception {

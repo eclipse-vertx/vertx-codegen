@@ -47,7 +47,7 @@ public class CodeGen {
   private final Messager messager;
   private final MethodOverloadChecker methodOverloadChecker = new MethodOverloadChecker();
 
-  CodeGen(ProcessingEnvironment env, RoundEnvironment round, ClassLoader loader) {
+  public CodeGen(ProcessingEnvironment env, RoundEnvironment round, ClassLoader loader) {
     this.env = env;
     this.messager = env.getMessager();
     this.elementUtils = env.getElementUtils();

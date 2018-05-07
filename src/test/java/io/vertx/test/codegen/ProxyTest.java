@@ -2,7 +2,6 @@ package io.vertx.test.codegen;
 
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.GenException;
-import io.vertx.codegen.Generator;
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.MethodKind;
 import io.vertx.codegen.ProxyMethodInfo;
@@ -39,7 +38,7 @@ public class ProxyTest {
   @Test
   public void testInvalidOverloaded() throws Exception {
     try {
-      new Generator().generateProxyModel(InvalidOverloaded.class);
+      new GeneratorHelper().generateProxyModel(InvalidOverloaded.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
@@ -49,7 +48,7 @@ public class ProxyTest {
   @Test
   public void testInvalidParams1() throws Exception {
     try {
-      new Generator().generateProxyModel(InvalidParams1.class);
+      new GeneratorHelper().generateProxyModel(InvalidParams1.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
@@ -59,7 +58,7 @@ public class ProxyTest {
   @Test
   public void testInvalidParams2() throws Exception {
     try {
-      new Generator().generateProxyModel(InvalidParams2.class);
+      new GeneratorHelper().generateProxyModel(InvalidParams2.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
@@ -69,7 +68,7 @@ public class ProxyTest {
   @Test
   public void testInvalidParams3() throws Exception {
     try {
-      new Generator().generateProxyModel(InvalidParams3.class);
+      new GeneratorHelper().generateProxyModel(InvalidParams3.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
@@ -79,7 +78,7 @@ public class ProxyTest {
   @Test
   public void testInvalidParams4() throws Exception {
     try {
-      new Generator().generateProxyModel(InvalidParams4.class);
+      new GeneratorHelper().generateProxyModel(InvalidParams4.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
@@ -89,7 +88,7 @@ public class ProxyTest {
   @Test
   public void testInvalidParamsDataObject() throws Exception {
     try {
-      new Generator().generateProxyModel(InvalidParamsDataObject.class);
+      new GeneratorHelper().generateProxyModel(InvalidParamsDataObject.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
@@ -99,7 +98,7 @@ public class ProxyTest {
   @Test
   public void testInvalidReturn1() throws Exception {
     try {
-      new Generator().generateProxyModel(InvalidReturn1.class);
+      new GeneratorHelper().generateProxyModel(InvalidReturn1.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
@@ -109,7 +108,7 @@ public class ProxyTest {
   @Test
   public void testInvalidReturn2() throws Exception {
     try {
-      new Generator().generateProxyModel(InvalidReturn2.class);
+      new GeneratorHelper().generateProxyModel(InvalidReturn2.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
@@ -119,7 +118,7 @@ public class ProxyTest {
   @Test
   public void testInvalidReturn3() throws Exception {
     try {
-      new Generator().generateProxyModel(InvalidReturn3.class);
+      new GeneratorHelper().generateProxyModel(InvalidReturn3.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
@@ -128,7 +127,7 @@ public class ProxyTest {
 
   @Test
   public void testValid() throws Exception {
-    ProxyModel model = new Generator().generateProxyModel(ValidProxy.class);
+    ProxyModel model = new GeneratorHelper().generateProxyModel(ValidProxy.class);
     assertEquals(ValidProxy.class.getName(), model.getIfaceFQCN());
     assertEquals(ValidProxy.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getSuperTypes().isEmpty());
@@ -153,7 +152,7 @@ public class ProxyTest {
 
   @Test
   public void testValidCloseWithFuture() throws Exception {
-    ProxyModel model = new Generator().generateProxyModel(ValidProxyCloseWithFuture.class);
+    ProxyModel model = new GeneratorHelper().generateProxyModel(ValidProxyCloseWithFuture.class);
     assertEquals(1, model.getMethods().size());
     assertEquals(MethodKind.FUTURE, model.getMethods().get(0).getKind());
     ParameterizedTypeInfo handlerType = (ParameterizedTypeInfo) model.getMethods().get(0).getParams().get(0).getType();
@@ -164,7 +163,7 @@ public class ProxyTest {
   @Test
   public void testInvalidClose1() throws Exception {
     try {
-      new Generator().generateProxyModel(InvalidClose1.class);
+      new GeneratorHelper().generateProxyModel(InvalidClose1.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
@@ -174,7 +173,7 @@ public class ProxyTest {
   @Test
   public void testInvalidClose2() throws Exception {
     try {
-      new Generator().generateProxyModel(InvalidClose2.class);
+      new GeneratorHelper().generateProxyModel(InvalidClose2.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
@@ -184,7 +183,7 @@ public class ProxyTest {
   @Test
   public void testInvalidClose3() throws Exception {
     try {
-      new Generator().generateProxyModel(InvalidClose3.class);
+      new GeneratorHelper().generateProxyModel(InvalidClose3.class);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK

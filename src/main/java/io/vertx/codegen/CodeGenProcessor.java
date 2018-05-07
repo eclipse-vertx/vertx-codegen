@@ -1,16 +1,12 @@
 package io.vertx.codegen;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.codegen.type.ClassKind;
-import io.vertx.codegen.type.TypeNameTranslator;
-import org.mvel2.MVEL;
+import io.vertx.codegen.generators.cheatsheet.CheatsheetGenLoader;
+import io.vertx.codegen.generators.dataobjecthelper.DataObjectHelperGenLoader;
+import io.vertx.codegen.generators.mvel.MvelCodeGeneratorLoader;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.FilerException;
@@ -24,20 +20,14 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Serializable;
 import java.io.Writer;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -54,10 +44,9 @@ import java.util.stream.Stream;
 public class CodeGenProcessor extends AbstractProcessor {
 
   private static final int JAVA= 0, RESOURCE = 1, OTHER = 2;
-  private final static ObjectMapper mapper = new ObjectMapper();
-  private static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
+  public static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
   private File outputDirectory;
-  private List<CodeGenerator> codeGenerators;
+  private List<? extends Generator> codeGenerators;
   private Map<String, GeneratedFile> generatedFiles = new HashMap<>();
   private Map<String, GeneratedFile> generatedResources = new HashMap<>();
   private Map<String, String> relocations = new HashMap<>();
@@ -80,7 +69,7 @@ public class CodeGenProcessor extends AbstractProcessor {
     generatedResources.clear();
   }
 
-  protected Predicate<CodeGenerator> filterGenerators() {
+  protected Predicate<Generator> filterGenerators() {
     String generatorsOption = processingEnv.getOptions().get("codegen.generators");
     if (generatorsOption == null) {
       generatorsOption = processingEnv.getOptions().get("codeGenerators");
@@ -100,56 +89,7 @@ public class CodeGenProcessor extends AbstractProcessor {
     }
   }
 
-  protected List<CodeGenerator> loadGenerators() {
-    List<CodeGenerator> generators = new ArrayList<>();
-    Enumeration<URL> descriptors = Collections.emptyEnumeration();
-    try {
-      descriptors = CodeGenProcessor.class.getClassLoader().getResources("codegen.json");
-    } catch (IOException ignore) {
-      processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Could not load code generator descriptors");
-    }
-    Set<String> templates = new HashSet<>();
-    while (descriptors.hasMoreElements()) {
-      URL descriptor = descriptors.nextElement();
-      try (Scanner scanner = new Scanner(descriptor.openStream(), "UTF-8").useDelimiter("\\A")) {
-        String s = scanner.next();
-        ObjectNode obj = (ObjectNode) mapper.readTree(s);
-        String name = obj.get("name").asText();
-        ArrayNode generatorsCfg = (ArrayNode) obj.get("generators");
-        for (JsonNode generator : generatorsCfg) {
-          Set<String> kinds = new HashSet<>();
-          if(generator.get("kind").isArray()) {
-            generator.get("kind").forEach(v -> kinds.add(v.asText()));
-          }
-          else {
-            kinds.add(generator.get("kind").asText());
-          }
-          JsonNode templateFilenameNode = generator.get("templateFilename");
-          if (templateFilenameNode == null) {
-            templateFilenameNode = generator.get("templateFileName");
-          }
-          String templateFilename = templateFilenameNode.asText();
-          JsonNode filenameNode = generator.get("filename");
-          if (filenameNode == null) {
-            filenameNode = generator.get("fileName");
-          }
-          String filename = filenameNode.asText();
-          boolean incremental = generator.has("incremental") && generator.get("incremental").asBoolean();
-          if (!templates.contains(templateFilename)) {
-            templates.add(templateFilename);
-            generators.add(new CodeGenerator(name, kinds, incremental, filename, templateFilename));
-          }
-        }
-      } catch (Exception e) {
-        String msg = "Could not load code generator " + descriptor;
-        log.log(Level.SEVERE, msg, e);
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg);
-      }
-    }
-    return generators;
-  }
-
-  private Collection<CodeGenerator> getCodeGenerators() {
+  private Collection<? extends Generator> getCodeGenerators() {
     if (codeGenerators == null) {
       String outputDirectoryOption = processingEnv.getOptions().get("codegen.output");
       if (outputDirectoryOption == null) {
@@ -167,16 +107,15 @@ public class CodeGenProcessor extends AbstractProcessor {
           processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " is not a directory");
         }
       }
-      List<CodeGenerator> generators = loadGenerators();
-      Predicate<CodeGenerator> filter = filterGenerators();
+
+      Stream<GeneratorLoader> loaders = Arrays.asList(new MvelCodeGeneratorLoader(), new CheatsheetGenLoader(), new DataObjectHelperGenLoader()).stream();
+      Stream<Generator<?>> generators = loaders.flatMap(l -> l.loadGenerators(processingEnv));
+      Predicate<Generator> filter = filterGenerators();
       if (filter != null) {
-        generators = generators.stream().filter(filter).collect(Collectors.toList());
+        generators = generators.filter(filter);
       }
-      generators.forEach(gen -> {
-        Template template = new Template(gen.templateFilename);
-        template.setOptions(processingEnv.getOptions());
-        gen.template = template;
-        gen.filenameExpr = MVEL.compileExpression(gen.filename);
+      generators = generators.peek(gen -> {
+        gen.load(processingEnv);
         log.info("Loaded " + gen.name + " code generator");
       });
       relocations = processingEnv.getOptions()
@@ -188,7 +127,7 @@ public class CodeGenProcessor extends AbstractProcessor {
           Map.Entry::getValue)
         );
 
-      codeGenerators = generators;
+      codeGenerators = generators.collect(Collectors.toList());
     }
     return codeGenerators;
   }
@@ -197,7 +136,7 @@ public class CodeGenProcessor extends AbstractProcessor {
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
     if (!roundEnv.processingOver()) {
-      Collection<CodeGenerator> codeGenerators = getCodeGenerators();
+      Collection<? extends Generator> codeGenerators = getCodeGenerators();
 
       if (!roundEnv.errorRaised()) {
         CodeGen codegen = new CodeGen(processingEnv, roundEnv, getClass().getClassLoader());
@@ -207,21 +146,9 @@ public class CodeGenProcessor extends AbstractProcessor {
         codegen.getModels().forEach(entry -> {
           try {
             Model model = entry.getValue();
-            Map<String, Object> vars = new HashMap<>();
-            vars.put("helper", new Helper());
-            vars.put("options", processingEnv.getOptions());
-            vars.put("fileSeparator", File.separator);
-            vars.put("fqn", model.getFqn());
-            vars.put("module", model.getModule());
-            vars.put("model", model);
-            vars.putAll(model.getVars());
-            vars.putAll(ClassKind.vars());
-            vars.putAll(MethodKind.vars());
-            vars.putAll(Case.vars());
-            for (CodeGenerator codeGenerator : codeGenerators) {
-              vars.putAll(TypeNameTranslator.vars(codeGenerator.name));
-              if (codeGenerator.kind.contains(model.getKind())) {
-                String relativeName = (String) MVEL.executeExpression(codeGenerator.filenameExpr, vars);
+            for (Generator codeGenerator : codeGenerators) {
+              if (codeGenerator.kinds.contains(model.getKind())) {
+                String relativeName = codeGenerator.relativeFilename(model);
                 if (relativeName != null) {
 
                   int kind;
@@ -355,16 +282,19 @@ public class CodeGenProcessor extends AbstractProcessor {
 
   private static class ModelProcessing {
     final Model model;
-    final CodeGenerator generator;
-    public ModelProcessing(Model model, CodeGenerator generator) {
+    final Generator generator;
+    public ModelProcessing(Model model, Generator generator) {
       this.model = model;
       this.generator = generator;
     }
   }
 
   private static class GeneratedFile extends ArrayList<ModelProcessing> {
-    final String uri;
-    final Map<String, Object> session = new HashMap<>();
+
+    private final String uri;
+    private final Map<String, Object> session = new HashMap<>();
+
+
     public GeneratedFile(String uri) {
       super();
       this.uri = uri;
@@ -382,19 +312,11 @@ public class CodeGenProcessor extends AbstractProcessor {
       Collections.sort(this, (o1, o2) ->
         o1.model.getElement().getSimpleName().toString().compareTo(
           o2.model.getElement().getSimpleName().toString()));
-      int index = 0;
       StringBuilder buffer = new StringBuilder();
       for (int i = 0; i < size(); i++) {
         ModelProcessing processing = get(i);
-        Map<String, Object> vars = new HashMap<>();
-        vars.putAll(TypeNameTranslator.vars(processing.generator.name));
-        if (processing.generator.incremental) {
-          vars.put("incrementalIndex", index++);
-          vars.put("incrementalSize", size());
-          vars.put("session", session);
-        }
         try {
-          String part = processing.generator.template.render(processing.model, vars);
+          String part = processing.generator.render(processing.model, i, size(), session);
           if (part != null) {
             buffer.append(part);
           }
