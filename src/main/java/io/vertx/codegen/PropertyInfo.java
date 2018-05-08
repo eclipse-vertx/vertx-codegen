@@ -25,10 +25,11 @@ public class PropertyInfo {
   final String adderMethod;
   final String getterMethod;
   final boolean jsonifiable;
+  final boolean deprecated;
   final Map<String, AnnotationValueInfo> annotations;
 
   public PropertyInfo(boolean declared, String name, Doc doc, TypeInfo type, String setterMethod, String adderMethod, String getterMethod,
-                      List<AnnotationValueInfo> annotations, PropertyKind kind, boolean jsonifiable) {
+                      List<AnnotationValueInfo> annotations, PropertyKind kind, boolean jsonifiable, boolean deprecated) {
     this.kind = kind;
     this.declared = declared;
     this.name = name;
@@ -39,6 +40,7 @@ public class PropertyInfo {
     this.setterMethod = setterMethod;
     this.getterMethod = getterMethod;
     this.jsonifiable = jsonifiable;
+    this.deprecated = deprecated;
   }
 
   /**
@@ -161,5 +163,13 @@ public class PropertyInfo {
    */
   public boolean isJsonifiable() {
     return jsonifiable;
+  }
+
+  /**
+   *
+   * @return {@code true} if the property has a {@code @Deprecated} annotation
+   */
+  public boolean isDeprecated() {
+    return deprecated;
   }
 }

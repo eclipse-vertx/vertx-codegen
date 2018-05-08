@@ -44,6 +44,7 @@ public class DataObjectModel implements Model {
   private boolean inheritConverter;
   private boolean publicConverter;
   private int constructors;
+  private boolean deprecated;
   private ClassTypeInfo superType;
   private ClassTypeInfo type;
   private Doc doc;
@@ -57,6 +58,7 @@ public class DataObjectModel implements Model {
     this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, typeFactory, modelElt);
     this.modelElt = modelElt;
     this.annotationValueInfoFactory = new AnnotationValueInfoFactory(typeFactory);
+    this.deprecated = modelElt.getAnnotation(Deprecated.class) != null;
   }
 
   @Override
@@ -142,6 +144,12 @@ public class DataObjectModel implements Model {
   public boolean hasEmptyConstructor() {
     return (constructors & 1) == 1;
   }
+  /**
+   * @return {@code true} if the class has a {@code @Deprecated} annotation
+   */
+  public boolean isDeprecated() {
+    return deprecated;
+  }
 
   @Override
   public Map<String, Object> getVars() {
@@ -160,6 +168,7 @@ public class DataObjectModel implements Model {
     vars.put("abstractSuperTypes", abstractSuperTypes);
     vars.put("jsonifiable", jsonifiable);
     vars.put("hasEmptyConstructor", hasEmptyConstructor());
+    vars.put("deprecated", deprecated);
     return vars;
   }
 
@@ -369,6 +378,7 @@ public class DataObjectModel implements Model {
     PropertyKind propKind = null;
     TypeInfo propType = null;
     TypeMirror propTypeMirror = null;
+    boolean propertyDeprecated = false;
 
     //
     if (setterElt != null) {
@@ -376,6 +386,7 @@ public class DataObjectModel implements Model {
       propTypeMirror = paramElt.asType();
       propType = typeFactory.create(propTypeMirror);
       propKind = PropertyKind.forType(propType.getKind());
+      propertyDeprecated |= setterElt.getAnnotation(Deprecated.class) != null;
       switch (propKind) {
         case LIST:
         case SET:
@@ -394,6 +405,7 @@ public class DataObjectModel implements Model {
       TypeMirror getterTypeMirror = getterElt.getReturnType();
       TypeInfo getterType = typeFactory.create(getterTypeMirror);
       PropertyKind getterKind = PropertyKind.forType(getterType.getKind());
+      propertyDeprecated |= getterElt.getAnnotation(Deprecated.class) != null;
       switch (getterKind) {
         case LIST:
         case SET:
@@ -421,6 +433,7 @@ public class DataObjectModel implements Model {
 
     //
     if (adderElt != null) {
+      propertyDeprecated |= adderElt.getAnnotation(Deprecated.class) != null;
       switch (adderElt.getParameters().size()) {
         case 1: {
           VariableElement paramElt = adderElt.getParameters().get(0);
@@ -542,7 +555,7 @@ public class DataObjectModel implements Model {
       setterElt != null ? setterElt.getSimpleName().toString() : null,
       adderElt != null ? adderElt.getSimpleName().toString() : null,
       getterElt != null ? getterElt.getSimpleName().toString() : null,
-      annotationValueInfos, propKind, jsonifiable);
+      annotationValueInfos, propKind, jsonifiable, propertyDeprecated);
     propertyMap.put(property.name, property);
   }
 

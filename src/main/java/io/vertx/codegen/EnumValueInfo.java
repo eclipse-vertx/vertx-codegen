@@ -11,10 +11,12 @@ public class EnumValueInfo {
 
   private final String identifier;
   private final Doc doc;
+  private final boolean deprecated;
 
-  public EnumValueInfo(String identifier, Doc doc) {
+  public EnumValueInfo(String identifier, Doc doc, boolean deprecated) {
     this.identifier = identifier;
     this.doc = doc;
+    this.deprecated = deprecated;
   }
 
   /**
@@ -29,5 +31,11 @@ public class EnumValueInfo {
    */
   public Doc getDoc() {
     return doc;
+  }
+  /**
+   * @return {@code true} if the enum value has a {@code @Deprecated} annotation
+   */
+  public boolean isDeprecated() {
+    return deprecated;
   }
 }
