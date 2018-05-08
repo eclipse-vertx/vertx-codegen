@@ -8,6 +8,7 @@ import io.vertx.test.codegen.testapi.VertxGenClass1;
 import io.vertx.test.codegen.testapi.VertxGenClass2;
 import io.vertx.test.codegen.testdataobject.CommentedDataObject;
 import io.vertx.test.codegen.testdataobject.PropertyGettersSetters;
+import io.vertx.test.codegen.testdataobject.PropertyKindDataObject;
 import io.vertx.test.codegen.testenum.ValidEnum;
 import io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedApi;
 import io.vertx.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubApi;
@@ -83,6 +84,16 @@ public class CodeGeneratorTest {
     assertEquals("[]", props.remove("abstractSuperTypes"));
     assertEquals("null", props.remove("handlerType"));
     assertEquals("void", props.remove("method.methodWithVertxGenParams(str,myParam1,myParam2)"));
+    assertEquals(new Properties(), props);
+  }
+
+  @Test
+  public void testPropertyKind() throws Exception {
+    Properties props = assertCompile("testgen7", PropertyKindDataObject.class);
+    assertEquals("true", props.remove("Property.Kind.exists.VALUE"));
+    assertEquals("true", props.remove("Property.Kind.exists.LIST"));
+    assertEquals("true", props.remove("Property.Kind.exists.SET"));
+    assertEquals("true", props.remove("Property.Kind.exists.MAP"));
     assertEquals(new Properties(), props);
   }
 

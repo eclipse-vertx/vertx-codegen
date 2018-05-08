@@ -151,6 +151,7 @@ public class Template {
     vars.putAll(ClassKind.vars());
     vars.putAll(MethodKind.vars());
     vars.putAll(Case.vars());
+    vars.putAll(PropertyKind.vars());
 
     TemplateRegistry registry = new SimpleTemplateRegistry() {
       @Override

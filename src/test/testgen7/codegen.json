@@ -1,0 +1,9 @@
+{
+  "name": "testgen7",
+  "generators": [{
+    "kind": "dataObject",
+    "filename": "model.type.name.replace('.', '_') + '.properties'",
+    "templateFilename": "templates/propertyKind.templ"
+  }]
+}
+
