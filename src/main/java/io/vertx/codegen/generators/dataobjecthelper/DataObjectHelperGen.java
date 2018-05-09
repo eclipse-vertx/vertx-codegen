@@ -120,7 +120,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       if (prop.getType().getKind() != ClassKind.PRIMITIVE) {
         writer.print(indent + "if (obj." + prop.getGetterMethod() + "() != null) {\n");
       }
-      writer.print(indent + "json.put(\"" + prop.getName() + "\", " + before + "obj." + prop.getGetterMethod() + "()" + after + ");");;
+      writer.print(indent + "  json.put(\"" + prop.getName() + "\", " + before + "obj." + prop.getGetterMethod() + "()" + after + ");\n");
       if (prop.getType().getKind() != ClassKind.PRIMITIVE) {
         writer.print(indent + "}\n");
       }

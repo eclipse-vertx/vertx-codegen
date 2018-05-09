@@ -32,8 +32,10 @@ public class ChildInheritingDataObjectConverter {
 
   public static void toJson(ChildInheritingDataObject obj, java.util.Map<String, Object> json) {
     if (obj.getChildProperty() != null) {
-    json.put("childProperty", obj.getChildProperty());    }
+      json.put("childProperty", obj.getChildProperty());
+    }
     if (obj.getParentProperty() != null) {
-    json.put("parentProperty", obj.getParentProperty());    }
+      json.put("parentProperty", obj.getParentProperty());
+    }
   }
 }

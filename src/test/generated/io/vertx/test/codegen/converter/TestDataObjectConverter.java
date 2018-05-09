@@ -897,7 +897,8 @@ public class TestDataObjectConverter {
       json.put("addedStringValues", array);
      }
     if (obj.getAggregatedDataObject() != null) {
-    json.put("aggregatedDataObject", obj.getAggregatedDataObject().toJson());    }
+      json.put("aggregatedDataObject", obj.getAggregatedDataObject().toJson());
+    }
     if (obj.getAggregatedDataObjectMap() != null) {
       JsonObject map = new JsonObject();
       obj.getAggregatedDataObjectMap().forEach((key,value) -> map.put(key, value.toJson()));
@@ -913,13 +914,15 @@ public class TestDataObjectConverter {
       obj.getAggregatedDataObjects().forEach(item -> array.add(item.toJson()));
       json.put("aggregatedDataObjects", array);
      }
-    json.put("booleanValue", obj.isBooleanValue());    if (obj.getBoxedBooleanSet() != null) {
+      json.put("booleanValue", obj.isBooleanValue());
+    if (obj.getBoxedBooleanSet() != null) {
       JsonArray array = new JsonArray();
       obj.getBoxedBooleanSet().forEach(item -> array.add(item));
       json.put("boxedBooleanSet", array);
      }
     if (obj.isBoxedBooleanValue() != null) {
-    json.put("boxedBooleanValue", obj.isBoxedBooleanValue());    }
+      json.put("boxedBooleanValue", obj.isBoxedBooleanValue());
+    }
     if (obj.getBoxedBooleanValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBoxedBooleanValueMap().forEach((key,value) -> map.put(key, value));
@@ -936,7 +939,8 @@ public class TestDataObjectConverter {
       json.put("boxedByteSet", array);
      }
     if (obj.getBoxedByteValue() != null) {
-    json.put("boxedByteValue", obj.getBoxedByteValue());    }
+      json.put("boxedByteValue", obj.getBoxedByteValue());
+    }
     if (obj.getBoxedByteValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBoxedByteValueMap().forEach((key,value) -> map.put(key, value));
@@ -953,7 +957,8 @@ public class TestDataObjectConverter {
       json.put("boxedCharSet", array);
      }
     if (obj.getBoxedCharValue() != null) {
-    json.put("boxedCharValue", Character.toString(obj.getBoxedCharValue()));    }
+      json.put("boxedCharValue", Character.toString(obj.getBoxedCharValue()));
+    }
     if (obj.getBoxedCharValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBoxedCharValueMap().forEach((key,value) -> map.put(key, Character.toString(value)));
@@ -970,7 +975,8 @@ public class TestDataObjectConverter {
       json.put("boxedDoubleSet", array);
      }
     if (obj.getBoxedDoubleValue() != null) {
-    json.put("boxedDoubleValue", obj.getBoxedDoubleValue());    }
+      json.put("boxedDoubleValue", obj.getBoxedDoubleValue());
+    }
     if (obj.getBoxedDoubleValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBoxedDoubleValueMap().forEach((key,value) -> map.put(key, value));
@@ -987,7 +993,8 @@ public class TestDataObjectConverter {
       json.put("boxedFloatSet", array);
      }
     if (obj.getBoxedFloatValue() != null) {
-    json.put("boxedFloatValue", obj.getBoxedFloatValue());    }
+      json.put("boxedFloatValue", obj.getBoxedFloatValue());
+    }
     if (obj.getBoxedFloatValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBoxedFloatValueMap().forEach((key,value) -> map.put(key, value));
@@ -1004,7 +1011,8 @@ public class TestDataObjectConverter {
       json.put("boxedIntSet", array);
      }
     if (obj.getBoxedIntValue() != null) {
-    json.put("boxedIntValue", obj.getBoxedIntValue());    }
+      json.put("boxedIntValue", obj.getBoxedIntValue());
+    }
     if (obj.getBoxedIntValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBoxedIntValueMap().forEach((key,value) -> map.put(key, value));
@@ -1021,7 +1029,8 @@ public class TestDataObjectConverter {
       json.put("boxedLongSet", array);
      }
     if (obj.getBoxedLongValue() != null) {
-    json.put("boxedLongValue", obj.getBoxedLongValue());    }
+      json.put("boxedLongValue", obj.getBoxedLongValue());
+    }
     if (obj.getBoxedLongValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBoxedLongValueMap().forEach((key,value) -> map.put(key, value));
@@ -1038,7 +1047,8 @@ public class TestDataObjectConverter {
       json.put("boxedShortSet", array);
      }
     if (obj.getBoxedShortValue() != null) {
-    json.put("boxedShortValue", obj.getBoxedShortValue());    }
+      json.put("boxedShortValue", obj.getBoxedShortValue());
+    }
     if (obj.getBoxedShortValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBoxedShortValueMap().forEach((key,value) -> map.put(key, value));
@@ -1050,7 +1060,8 @@ public class TestDataObjectConverter {
       json.put("boxedShortValues", array);
      }
     if (obj.getBuffer() != null) {
-    json.put("buffer", obj.getBuffer().getBytes());    }
+      json.put("buffer", obj.getBuffer().getBytes());
+    }
     if (obj.getBufferMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBufferMap().forEach((key,value) -> map.put(key, value.getBytes()));
@@ -1066,8 +1077,13 @@ public class TestDataObjectConverter {
       obj.getBuffers().forEach(item -> array.add(item.getBytes()));
       json.put("buffers", array);
      }
-    json.put("byteValue", obj.getByteValue());    json.put("charValue", Character.toString(obj.getCharValue()));    json.put("doubleValue", obj.getDoubleValue());    json.put("floatValue", obj.getFloatValue());    if (obj.getHttpMethod() != null) {
-    json.put("httpMethod", obj.getHttpMethod().name());    }
+      json.put("byteValue", obj.getByteValue());
+      json.put("charValue", Character.toString(obj.getCharValue()));
+      json.put("doubleValue", obj.getDoubleValue());
+      json.put("floatValue", obj.getFloatValue());
+    if (obj.getHttpMethod() != null) {
+      json.put("httpMethod", obj.getHttpMethod().name());
+    }
     if (obj.getHttpMethodMap() != null) {
       JsonObject map = new JsonObject();
       obj.getHttpMethodMap().forEach((key,value) -> map.put(key, value.name()));
@@ -1083,8 +1099,10 @@ public class TestDataObjectConverter {
       obj.getHttpMethods().forEach(item -> array.add(item.name()));
       json.put("httpMethods", array);
      }
-    json.put("intValue", obj.getIntValue());    if (obj.getJsonArray() != null) {
-    json.put("jsonArray", obj.getJsonArray());    }
+      json.put("intValue", obj.getIntValue());
+    if (obj.getJsonArray() != null) {
+      json.put("jsonArray", obj.getJsonArray());
+    }
     if (obj.getJsonArrayMap() != null) {
       JsonObject map = new JsonObject();
       obj.getJsonArrayMap().forEach((key,value) -> map.put(key, value));
@@ -1101,7 +1119,8 @@ public class TestDataObjectConverter {
       json.put("jsonArrays", array);
      }
     if (obj.getJsonObject() != null) {
-    json.put("jsonObject", obj.getJsonObject());    }
+      json.put("jsonObject", obj.getJsonObject());
+    }
     if (obj.getJsonObjectMap() != null) {
       JsonObject map = new JsonObject();
       obj.getJsonObjectMap().forEach((key,value) -> map.put(key, value));
@@ -1192,7 +1211,8 @@ public class TestDataObjectConverter {
       obj.getKeyedStringValues().forEach((key,value) -> map.put(key, value));
       json.put("keyedStringValues", map);
      }
-    json.put("longValue", obj.getLongValue());    if (obj.getObjectMap() != null) {
+      json.put("longValue", obj.getLongValue());
+    if (obj.getObjectMap() != null) {
       JsonObject map = new JsonObject();
       obj.getObjectMap().forEach((key,value) -> map.put(key, value));
       json.put("objectMap", map);
@@ -1207,13 +1227,15 @@ public class TestDataObjectConverter {
       obj.getObjects().forEach(item -> array.add(item));
       json.put("objects", array);
      }
-    json.put("shortValue", obj.getShortValue());    if (obj.getStringSet() != null) {
+      json.put("shortValue", obj.getShortValue());
+    if (obj.getStringSet() != null) {
       JsonArray array = new JsonArray();
       obj.getStringSet().forEach(item -> array.add(item));
       json.put("stringSet", array);
      }
     if (obj.getStringValue() != null) {
-    json.put("stringValue", obj.getStringValue());    }
+      json.put("stringValue", obj.getStringValue());
+    }
     if (obj.getStringValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getStringValueMap().forEach((key,value) -> map.put(key, value));

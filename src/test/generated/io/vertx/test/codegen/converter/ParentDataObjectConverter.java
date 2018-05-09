@@ -27,6 +27,7 @@ public class ParentDataObjectConverter {
 
   public static void toJson(ParentDataObject obj, java.util.Map<String, Object> json) {
     if (obj.getParentProperty() != null) {
-    json.put("parentProperty", obj.getParentProperty());    }
+      json.put("parentProperty", obj.getParentProperty());
+    }
   }
 }
