@@ -117,7 +117,7 @@ public class ProxyModel extends ClassModel {
                                         Text returnDescription,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
                                         ExecutableElement methodElt, boolean isStatic, boolean isDefault, ArrayList<TypeParamInfo.Method> typeParams,
-                                        TypeElement declaringElt, boolean methodDeprecated) {
+                                        TypeElement declaringElt, boolean methodDeprecated, Text methodDeprecatedDesc) {
     AnnotationMirror proxyIgnoreAnnotation = Helper.resolveMethodAnnotation(ProxyIgnore.class, elementUtils, typeUtils, declaringElt, methodElt);
     boolean isProxyIgnore = proxyIgnoreAnnotation != null;
     AnnotationMirror proxyCloseAnnotation = Helper.resolveMethodAnnotation(ProxyClose.class, elementUtils, typeUtils, declaringElt, methodElt);
@@ -138,7 +138,7 @@ public class ProxyModel extends ClassModel {
     }
     return new ProxyMethodInfo(ownerTypes, methodName, kind, returnType, returnDescription,
       isFluent, isCacheReturn, mParams, comment, doc, isStatic, isDefault, typeParams, isProxyIgnore,
-      isProxyClose, methodDeprecated);
+      isProxyClose, methodDeprecated, methodDeprecatedDesc);
   }
 
   private boolean isLegalHandlerAsyncResultType(TypeInfo type) {

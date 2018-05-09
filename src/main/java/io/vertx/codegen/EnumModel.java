@@ -1,6 +1,9 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.doc.Doc;
+import io.vertx.codegen.doc.Tag;
+import io.vertx.codegen.doc.Text;
+import io.vertx.codegen.doc.Token;
 import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.AnnotationValueInfoFactory;
 import io.vertx.codegen.type.EnumTypeInfo;
@@ -16,6 +19,7 @@ import javax.lang.model.util.Types;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -36,6 +40,7 @@ public class EnumModel implements Model {
   private List<AnnotationValueInfo> annotations;
   private boolean processed;
   private boolean deprecated;
+  private Text deprecatedDesc;
 
   public EnumModel(Messager messager, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
     this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, new TypeMirrorFactory(elementUtils, typeUtils), modelElt);
@@ -52,6 +57,9 @@ public class EnumModel implements Model {
         throw new GenException(modelElt, "@VertxGen can only be used with interfaces or enums" + modelElt.asType().toString());
       }
       doc = docFactory.createDoc(modelElt);
+      doc.getBlockTags().stream().filter(tag -> tag.getName().equals("deprecated")).findFirst().ifPresent(tag ->
+        deprecatedDesc = new Text(Helper.normalizeWhitespaces(tag.getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt))
+      );
       type = (EnumTypeInfo) new TypeMirrorFactory(elementUtils, typeUtils).create(modelElt.asType());
       Helper.checkUnderModule(this, "@VertxGen");
       values = elementUtils.
@@ -59,7 +67,21 @@ public class EnumModel implements Model {
         stream().
         filter(elt -> elt.getKind() == ElementKind.ENUM_CONSTANT).
         flatMap(Helper.cast(VariableElement.class)).
-        map(elt -> new EnumValueInfo(elt.getSimpleName().toString(), docFactory.createDoc(elt), elt.getAnnotation(Deprecated.class) != null)).
+        map(elt -> {
+          Doc doc = docFactory.createDoc(elt);
+          Text enumItemDeprecatedDesc = null;
+          if (doc != null) {
+            Optional<Tag> methodDeprecatedTag = doc.
+                getBlockTags().
+                stream().
+                filter(tag -> tag.getName().equals("deprecated")).
+                findFirst();
+            if (methodDeprecatedTag.isPresent()) {
+              enumItemDeprecatedDesc = new Text(Helper.normalizeWhitespaces(methodDeprecatedTag.get().getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt));
+            }
+          }
+          return new EnumValueInfo(elt.getSimpleName().toString(), doc, elt.getAnnotation(Deprecated.class) != null, enumItemDeprecatedDesc);
+        }).
         collect(Collectors.toList());
       if (values.isEmpty()) {
         throw new GenException(modelElt, "No empty enums");
@@ -117,6 +139,12 @@ public class EnumModel implements Model {
   public boolean isDeprecated() {
     return deprecated;
   }
+  /**
+   * @return the description of deprecated
+   */
+  public Text getDeprecatedDesc() {
+    return deprecatedDesc;
+  }
 
   @Override
   public Map<String, Object> getVars() {
@@ -125,6 +153,7 @@ public class EnumModel implements Model {
     vars.put("doc", doc);
     vars.put("values", values);
     vars.put("deprecated", deprecated);
+    vars.put("deprecatedDesc", getDeprecatedDesc());
     return vars;
   }
 

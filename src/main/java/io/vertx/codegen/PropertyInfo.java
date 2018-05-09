@@ -1,6 +1,7 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.doc.Doc;
+import io.vertx.codegen.doc.Text;
 import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.TypeInfo;
 
@@ -26,10 +27,11 @@ public class PropertyInfo {
   final String getterMethod;
   final boolean jsonifiable;
   final boolean deprecated;
+  final Text deprecatedDesc;
   final Map<String, AnnotationValueInfo> annotations;
 
   public PropertyInfo(boolean declared, String name, Doc doc, TypeInfo type, String setterMethod, String adderMethod, String getterMethod,
-                      List<AnnotationValueInfo> annotations, PropertyKind kind, boolean jsonifiable, boolean deprecated) {
+                      List<AnnotationValueInfo> annotations, PropertyKind kind, boolean jsonifiable, boolean deprecated, Text deprecatedDesc) {
     this.kind = kind;
     this.declared = declared;
     this.name = name;
@@ -41,6 +43,7 @@ public class PropertyInfo {
     this.getterMethod = getterMethod;
     this.jsonifiable = jsonifiable;
     this.deprecated = deprecated;
+    this.deprecatedDesc = deprecatedDesc;
   }
 
   /**
@@ -171,5 +174,12 @@ public class PropertyInfo {
    */
   public boolean isDeprecated() {
     return deprecated;
+  }
+
+  /**
+   * @return the description of deprecated
+   */
+  public Text getDeprecatedDesc() {
+    return deprecatedDesc;
   }
 }

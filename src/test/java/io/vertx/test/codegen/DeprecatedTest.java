@@ -20,7 +20,12 @@ public class DeprecatedTest {
     ClassModel model = generator.generateClass(DeprecatedInterface.class);
     assertTrue(model.isDeprecated());
     assertEquals(model.getVars().get("deprecated"), true);
-    assertTrue(model.getMethods().get(0).isDeprecated());
+    assertNotNull(model.getDeprecatedDesc());
+    assertEquals(model.getDeprecatedDesc().getValue(), "deprecated info");
+    MethodInfo method = model.getMethods().get(0);
+    assertTrue(method.isDeprecated());
+    assertNotNull(method.getDeprecatedDesc());
+    assertEquals(method.getDeprecatedDesc().getValue(), "method deprecated info");
   }
 
   @Test
@@ -28,7 +33,12 @@ public class DeprecatedTest {
     ProxyModel model = generator.generateProxyModel(DeprecatedInterface.class);
     assertTrue(model.isDeprecated());
     assertEquals(model.getVars().get("deprecated"), true);
-    assertTrue(model.getMethods().get(0).isDeprecated());
+    assertNotNull(model.getDeprecatedDesc());
+    assertEquals(model.getDeprecatedDesc().getValue(), "deprecated info");
+    MethodInfo method = model.getMethods().get(0);
+    assertTrue(method.isDeprecated());
+    assertNotNull(method.getDeprecatedDesc());
+    assertEquals(method.getDeprecatedDesc().getValue(), "method deprecated info");
   }
 
   @Test
@@ -52,8 +62,12 @@ public class DeprecatedTest {
     DataObjectModel model = generator.generateDataObject(DeprecatedDataObject.class);
     assertTrue(model.isDeprecated());
     assertEquals(model.getVars().get("deprecated"), true);
+    assertNotNull(model.getDeprecatedDesc());
+    assertEquals(model.getDeprecatedDesc().getValue(), "deprecated info");
     for (PropertyInfo property : model.getPropertyMap().values()) {
       assertTrue(property.isDeprecated());
+      assertNotNull(property.getDeprecatedDesc());
+      assertEquals(property.getDeprecatedDesc().getValue(), "property deprecated info");
     }
   }
 
@@ -72,7 +86,11 @@ public class DeprecatedTest {
     EnumModel model = generator.generateEnum(DeprecatedEnum.class);
     assertTrue(model.isDeprecated());
     assertEquals(model.getVars().get("deprecated"), true);
+    assertNotNull(model.getDeprecatedDesc());
+    assertEquals(model.getDeprecatedDesc().getValue(), "deprecated info");
     assertTrue(model.getValues().get(0).isDeprecated());
+    assertNotNull(model.getValues().get(0).getDeprecatedDesc());
+    assertEquals(model.getValues().get(0).getDeprecatedDesc().getValue(), "enum item deprecated info");
     assertFalse(model.getValues().get(1).isDeprecated());
   }
 
