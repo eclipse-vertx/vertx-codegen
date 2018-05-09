@@ -80,7 +80,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
           switch (propKind) {
             case API:
               if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
-                genPropToJson("", ".getBytes()", prop, writer);
+                genPropToJson("java.util.Base64.getEncoder().encodeToString(", ".getBytes())", prop, writer);
               }
               break;
             case ENUM:

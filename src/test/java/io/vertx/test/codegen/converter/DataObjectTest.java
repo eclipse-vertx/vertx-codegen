@@ -517,7 +517,7 @@ public class DataObjectTest {
     assertEquals(boxedDoubleValue, (double) json.get("boxedDoubleValue"), 0.001);
     assertEquals(Character.toString(boxedCharValue), json.get("boxedCharValue"));
     assertEquals(aggregatedDataObject.toJson(), json.get("aggregatedDataObject"));
-    assertEquals(buffer, Buffer.buffer((byte[])json.get("buffer")));
+    assertEquals(buffer, Buffer.buffer(Base64.getDecoder().decode((String)json.get("buffer"))));
     assertEquals(jsonObject, json.get("jsonObject"));
     assertEquals(jsonArray, json.get("jsonArray"));
     assertEquals(httpMethod.name(), json.get("httpMethod"));
@@ -533,7 +533,7 @@ public class DataObjectTest {
     assertEquals(boxedDoubleValue, (double)((JsonArray)json.get("boxedDoubleValues")).getValue(0), 0.001);
     assertEquals(new JsonArray().add(Character.toString(boxedCharValue)), json.get("boxedCharValues"));
     assertEquals(new JsonArray().add(aggregatedDataObject.toJson()), json.get("aggregatedDataObjects"));
-    assertEquals(buffer.getBytes(), (byte[])((JsonArray)json.get("buffers")).getValue(0));
+    assertEquals(Base64.getEncoder().encodeToString(buffer.getBytes()), ((JsonArray)json.get("buffers")).getValue(0));
     assertEquals(new JsonArray().add(jsonObject), json.get("jsonObjects"));
     assertEquals(new JsonArray().add(jsonArray), json.get("jsonArrays"));
     assertEquals(new JsonArray().add(httpMethod.name()), json.get("httpMethods"));
@@ -550,7 +550,7 @@ public class DataObjectTest {
     assertEquals(boxedDoubleValue, (double)((JsonArray)json.get("boxedDoubleSet")).getValue(0), 0.001);
     assertEquals(new JsonArray().add(Character.toString(boxedCharValue)), json.get("boxedCharSet"));
     assertEquals(new JsonArray().add(aggregatedDataObject.toJson()), json.get("aggregatedDataObjectSet"));
-    assertEquals(buffer.getBytes(), ((JsonArray)json.get("bufferSet")).getValue(0));
+    assertEquals(Base64.getEncoder().encodeToString(buffer.getBytes()), ((JsonArray)json.get("bufferSet")).getValue(0));
     assertEquals(new JsonArray().add(jsonObject), json.get("jsonObjectSet"));
     assertEquals(new JsonArray().add(jsonArray), json.get("jsonArraySet"));
     assertEquals(new JsonArray().add(httpMethod.name()), json.get("httpMethodSet"));
@@ -567,7 +567,7 @@ public class DataObjectTest {
     assertEquals(boxedDoubleValue, (double)((JsonObject)json.get("boxedDoubleValueMap")).getValue(key), 0.001);
     assertEquals(new JsonObject().put(key, Character.toString(boxedCharValue)), json.get("boxedCharValueMap"));
     assertEquals(new JsonObject().put(key, aggregatedDataObject.toJson()), json.get("aggregatedDataObjectMap"));
-    assertEquals(buffer.getBytes(), ((JsonObject)json.get("bufferMap")).getValue(key));
+    assertEquals(Base64.getEncoder().encodeToString(buffer.getBytes()), ((JsonObject)json.get("bufferMap")).getValue(key));
     assertEquals(new JsonObject().put(key, jsonObject), json.get("jsonObjectMap"));
     assertEquals(new JsonObject().put(key, jsonArray), json.get("jsonArrayMap"));
     assertEquals(new JsonObject().put(key, httpMethod.name()), json.get("httpMethodMap"));
@@ -584,7 +584,7 @@ public class DataObjectTest {
     assertEquals(boxedDoubleValue, (double)((JsonObject)json.get("keyedBoxedDoubleValues")).getValue(key), 0.001);
     assertEquals(new JsonObject().put(key, Character.toString(boxedCharValue)), json.get("keyedBoxedCharValues"));
     assertEquals(new JsonObject().put(key, aggregatedDataObject.toJson()), json.get("keyedDataObjectValues"));
-    assertEquals(buffer.getBytes(), ((JsonObject)json.get("keyedBufferValues")).getValue(key));
+    assertEquals(Base64.getEncoder().encodeToString(buffer.getBytes()), ((JsonObject)json.get("keyedBufferValues")).getValue(key));
     assertEquals(new JsonObject().put(key, jsonObject), json.get("keyedJsonObjectValues"));
     assertEquals(new JsonObject().put(key, jsonArray), json.get("keyedJsonArrayValues"));
     assertEquals(new JsonObject().put(key, httpMethod.name()), json.get("keyedEnumValues"));

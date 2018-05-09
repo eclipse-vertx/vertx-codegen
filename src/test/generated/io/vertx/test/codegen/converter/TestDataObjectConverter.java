@@ -868,7 +868,7 @@ public class TestDataObjectConverter {
      }
     if (obj.getAddedBuffers() != null) {
       JsonArray array = new JsonArray();
-      obj.getAddedBuffers().forEach(item -> array.add(item.getBytes()));
+      obj.getAddedBuffers().forEach(item -> array.add(java.util.Base64.getEncoder().encodeToString(item.getBytes())));
       json.put("addedBuffers", array);
      }
     if (obj.getAddedHttpMethods() != null) {
@@ -1060,21 +1060,21 @@ public class TestDataObjectConverter {
       json.put("boxedShortValues", array);
      }
     if (obj.getBuffer() != null) {
-      json.put("buffer", obj.getBuffer().getBytes());
+      json.put("buffer", java.util.Base64.getEncoder().encodeToString(obj.getBuffer().getBytes()));
     }
     if (obj.getBufferMap() != null) {
       JsonObject map = new JsonObject();
-      obj.getBufferMap().forEach((key,value) -> map.put(key, value.getBytes()));
+      obj.getBufferMap().forEach((key,value) -> map.put(key, java.util.Base64.getEncoder().encodeToString(value.getBytes())));
       json.put("bufferMap", map);
      }
     if (obj.getBufferSet() != null) {
       JsonArray array = new JsonArray();
-      obj.getBufferSet().forEach(item -> array.add(item.getBytes()));
+      obj.getBufferSet().forEach(item -> array.add(java.util.Base64.getEncoder().encodeToString(item.getBytes())));
       json.put("bufferSet", array);
      }
     if (obj.getBuffers() != null) {
       JsonArray array = new JsonArray();
-      obj.getBuffers().forEach(item -> array.add(item.getBytes()));
+      obj.getBuffers().forEach(item -> array.add(java.util.Base64.getEncoder().encodeToString(item.getBytes())));
       json.put("buffers", array);
      }
       json.put("byteValue", obj.getByteValue());
@@ -1178,7 +1178,7 @@ public class TestDataObjectConverter {
      }
     if (obj.getKeyedBufferValues() != null) {
       JsonObject map = new JsonObject();
-      obj.getKeyedBufferValues().forEach((key,value) -> map.put(key, value.getBytes()));
+      obj.getKeyedBufferValues().forEach((key,value) -> map.put(key, java.util.Base64.getEncoder().encodeToString(value.getBytes())));
       json.put("keyedBufferValues", map);
      }
     if (obj.getKeyedDataObjectValues() != null) {
