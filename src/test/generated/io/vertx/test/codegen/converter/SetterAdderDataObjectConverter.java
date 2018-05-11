@@ -12,16 +12,16 @@ public class SetterAdderDataObjectConverter {
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, SetterAdderDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
       switch (member.getKey()) {
-          case "values":
-           if (member.getValue() instanceof JsonArray) {
-              java.util.ArrayList<java.lang.String> list =  new java.util.ArrayList<>();
-              ((Iterable<Object>)member.getValue()).forEach( item -> {
-                if (item instanceof String)
-                  list.add((String)item);
-              });
-              obj.setValues(list);
-           }
-            break;
+        case "values":
+         if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<java.lang.String> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                list.add((String)item);
+            });
+            obj.setValues(list);
+         }
+          break;
       }
     }
   }
@@ -35,6 +35,6 @@ public class SetterAdderDataObjectConverter {
       JsonArray array = new JsonArray();
       obj.getValues().forEach(item -> array.add(item));
       json.put("values", array);
-     }
+    }
   }
 }

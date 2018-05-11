@@ -12,16 +12,16 @@ public class ChildInheritingDataObjectConverter {
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ChildInheritingDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
       switch (member.getKey()) {
-          case "childProperty":
-            if (member.getValue() instanceof String) {
-              obj.setChildProperty((String)member.getValue());
-            }
-            break;
-          case "parentProperty":
-            if (member.getValue() instanceof String) {
-              obj.setParentProperty((String)member.getValue());
-            }
-            break;
+        case "childProperty":
+          if (member.getValue() instanceof String) {
+            obj.setChildProperty((String)member.getValue());
+          }
+          break;
+        case "parentProperty":
+          if (member.getValue() instanceof String) {
+            obj.setParentProperty((String)member.getValue());
+          }
+          break;
       }
     }
   }
