@@ -1,5 +1,8 @@
-package io.vertx.codegen;
+package io.vertx.codegen.generators.mvel;
 
+import io.vertx.codegen.Case;
+import io.vertx.codegen.MethodKind;
+import io.vertx.codegen.Model;
 import io.vertx.codegen.type.ClassKind;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.mvel2.templates.CompiledTemplate;
@@ -9,11 +12,8 @@ import org.mvel2.templates.TemplateError;
 import org.mvel2.templates.TemplateRegistry;
 import org.mvel2.templates.TemplateRuntime;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
@@ -24,14 +24,14 @@ import java.util.Scanner;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class Template {
+class Template {
 
   private final String baseURI;
-  private final String name;
+  public final String name;
   private final CompiledTemplate compiled;
   private final HashMap<String, String> options = new HashMap<>();
 
-  public Template(URL url) {
+  Template(URL url) {
     String file = url.getFile();
     this.name = file.substring(file.lastIndexOf('/') + 1);
     try {
@@ -42,11 +42,11 @@ public class Template {
     }
   }
 
-  public Template(String name) {
+  Template(String name) {
     this(resolveURL(name));
   }
 
-  public void setOptions(Map<String, String> options) {
+  void setOptions(Map<String, String> options) {
     this.options.clear();
     this.options.putAll(options);
   }
@@ -60,7 +60,7 @@ public class Template {
    * @param templateURL the template url
    * @return the compiled template
    */
-  public static CompiledTemplate loadCompiled(URL templateURL) {
+  private static CompiledTemplate loadCompiled(URL templateURL) {
     CompiledTemplate template = templateCache.get(templateURL);
     if (template == null) {
       InputStream is = null;
@@ -81,7 +81,7 @@ public class Template {
    * @param source the template source
    * @return the compiled template
    */
-  public static CompiledTemplate loadCompiled(InputStream source) {
+  private static CompiledTemplate loadCompiled(InputStream source) {
     // Load the template
     String template;
     try (Scanner scanner = new Scanner(source, "UTF-8").useDelimiter("\\A")) {
@@ -114,29 +114,6 @@ public class Template {
       throw new IllegalArgumentException("Can't find template file on classpath: " + name);
     }
     return url;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void apply(Model model, String outputFileName) throws Exception {
-    apply(model, new File(outputFileName));
-  }
-
-  public void apply(Model model, File outputFile) throws Exception {
-    apply(model, outputFile, Collections.emptyMap());
-  }
-
-  public void apply(Model model, File outputFile, Map<String, Object> vars) throws Exception {
-    String output = render(model, vars);
-    if (output != null) {
-      Helper.ensureParentDir(outputFile);
-      try (PrintStream outStream = new PrintStream(new FileOutputStream(outputFile))) {
-        outStream.print(output);
-        outStream.flush();
-      }
-    }
   }
 
   public String render(Model model) {

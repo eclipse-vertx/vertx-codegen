@@ -32,7 +32,6 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 import java.io.File;
@@ -41,9 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -54,64 +51,7 @@ import java.util.function.Function;
  */
 public class GeneratorHelper {
 
-  Template template; // Global trivial compiled template cache
-  HashMap<String, String> options = new HashMap<>();
   DiagnosticCollector<JavaFileObject> collector = new DiagnosticCollector<>();
-
-  public List<Diagnostic<? extends JavaFileObject>> getDiagnostics() {
-    return collector.getDiagnostics();
-  }
-
-  public void setOption(String name, String value) {
-    options.put(name, value);
-  }
-
-  public void validatePackage(String packageName, Function<String, Boolean> packageMatcher) throws Exception {
-    genAndApply(packageName, packageMatcher, null, null, false);
-  }
-
-  public void genAndApply(String packageName, Function<String, Boolean> packageMatcher,
-                          Function<Class, String> outputFileFunction, String templateFileName) throws Exception {
-    genAndApply(packageName, packageMatcher, outputFileFunction, templateFileName, true);
-  }
-
-  public void genAndApply(Class clazz, Function<Class, String> outputFileFunction, String templateName) throws Exception {
-    ClassModel model = generateClass(clazz);
-    applyTemplate(model, outputFileFunction.apply(clazz), templateName);
-  }
-
-  private void applyTemplate(ClassModel model, String outputFileName, String templateName) throws Exception {
-    if (template != null && !templateName.equals(template.getName())) {
-      template = null;
-    }
-    if (template == null) {
-      template = new Template(templateName);
-      template.setOptions(options);
-    }
-    template.apply(model, outputFileName);
-  }
-
-
-  private void genAndApply(String packageName, Function<String, Boolean> packageMatcher,
-                           Function<Class, String> outputFileFunction, String templateFileName,
-                           boolean apply) throws Exception {
-
-    List<Class<?>> classes = ClassEnumerator.getClassesForPackage(packageName, packageMatcher);
-
-    List<Class<?>> generableClasses = new ArrayList<>();
-    for (Class<?> clazz: classes) {
-      if (clazz.isInterface() && clazz.getAnnotation(VertxGen.class) != null) {
-        generableClasses.add(clazz);
-      }
-    }
-    for (Class<?> clazz: generableClasses) {
-      GeneratorHelper gen = new GeneratorHelper();
-      ClassModel model = gen.generateClass(clazz, generableClasses.toArray(new Class[generableClasses.size()]));
-      if (apply) {
-        applyTemplate(model, outputFileFunction.apply(clazz), templateFileName);
-      }
-    }
-  }
 
   public PackageModel generatePackage(Class clazz) throws Exception {
     URL url = clazz.getClassLoader().getResource(clazz.getName().replace('.', '/') + ".java");

@@ -1,20 +1,12 @@
-package io.vertx.test.codegen;
+package io.vertx.codegen.generators.mvel;
 
 import io.vertx.codegen.Model;
 import io.vertx.codegen.ModuleInfo;
-import io.vertx.codegen.Template;
+import io.vertx.codegen.generators.mvel.Template;
 import org.junit.Test;
-import org.mvel2.integration.impl.MapVariableResolverFactory;
-import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateError;
-import org.mvel2.templates.TemplateRegistry;
-import org.mvel2.templates.TemplateRuntime;
-import org.mvel2.templates.util.io.StandardOutputStream;
 
 import javax.lang.model.element.Element;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -43,14 +35,14 @@ public class TemplateTest {
   };
 
   @Test
-  public void testIncludeNamedResolve() throws Exception {
+  public void testIncludeNamedResolve() {
     Template template = new Template(getClass().getResource("testtemplates/include_named_resolve.templ"));
     String output = template.render(NULL_MODEL);
     assertEquals("hollahello", output);
   }
 
   @Test
-  public void testIncludeNamedNotFound() throws Exception {
+  public void testIncludeNamedNotFound() {
     Template template = new Template(getClass().getResource("testtemplates/include_named_not_found.templ"));
     try {
       template.render(NULL_MODEL);
