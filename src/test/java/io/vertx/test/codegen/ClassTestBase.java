@@ -1,7 +1,6 @@
 package io.vertx.test.codegen;
 
 import io.vertx.codegen.GenException;
-import io.vertx.codegen.Generator;
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.MethodKind;
 import io.vertx.codegen.ParamInfo;
@@ -97,7 +96,7 @@ public abstract class ClassTestBase {
 
   void assertGenInvalid(Class<?> c, Class<?>... rest) throws Exception {
     try {
-      new Generator().generateClass(c, rest);
+      new GeneratorHelper().generateClass(c, rest);
       fail("Should throw exception");
     } catch (GenException e) {
       // OK
@@ -106,7 +105,7 @@ public abstract class ClassTestBase {
 
   void assertGenFail(Class<?> type, String msg) throws Exception {
     try {
-      new Generator().generateClass(type);
+      new GeneratorHelper().generateClass(type);
       fail(msg);
     } catch (GenException e) {
       // pass

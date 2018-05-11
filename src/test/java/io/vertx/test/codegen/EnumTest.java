@@ -20,7 +20,7 @@ public class EnumTest {
 
   @Test
   public void testEnum() throws Exception {
-    EnumModel model = new Generator().generateEnum(ValidEnum.class);
+    EnumModel model = new GeneratorHelper().generateEnum(ValidEnum.class);
     assertEquals(Arrays.asList("RED", "GREEN", "BLUE"), model.getValues().stream().
         map(EnumValueInfo::getIdentifier).
         collect(Collectors.toList()));
@@ -37,7 +37,7 @@ public class EnumTest {
   @Test
   public void testInvalidEmptyEnum() throws Exception {
     try {
-      new Generator().generateEnum(InvalidEmptyEnum.class);
+      new GeneratorHelper().generateEnum(InvalidEmptyEnum.class);
       fail();
     } catch (GenException ignore) {
     }
@@ -45,7 +45,7 @@ public class EnumTest {
 
   @Test
   public void testEnumListingFromApi() throws Exception {
-    ClassModel model = new Generator().generateClass(EnumAsParam.class);
+    ClassModel model = new GeneratorHelper().generateClass(EnumAsParam.class);
     assertTrue(model.getReferencedEnumTypes().size() > 0);
     TypeInfo typeInfo = (TypeInfo) model.getReferencedEnumTypes().toArray()[0];
     assertTrue(typeInfo instanceof EnumTypeInfo);

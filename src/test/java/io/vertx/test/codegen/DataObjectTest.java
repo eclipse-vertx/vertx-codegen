@@ -2,7 +2,6 @@ package io.vertx.test.codegen;
 
 import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.GenException;
-import io.vertx.codegen.Generator;
 import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.PropertyKind;
 import io.vertx.codegen.doc.Doc;
@@ -37,20 +36,20 @@ public class DataObjectTest {
 
   @Test
   public void testDataObjectWithEmptyConstructor() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(DataObjectWithEmptyConstructor.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(DataObjectWithEmptyConstructor.class);
     assertTrue(model.hasEmptyConstructor());
   }
 
   @Test
   public void testDataObjectInterface() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(InterfaceDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(InterfaceDataObject.class);
     assertNotNull(model);
     assertFalse(model.isClass());
   }
 
   @Test
   public void testEmptyDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(EmptyDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(EmptyDataObject.class);
     assertNotNull(model);
     assertTrue(model.isClass());
     assertFalse(model.getGenerateConverter());
@@ -75,7 +74,7 @@ public class DataObjectTest {
 
   @Test
   public void testSetterWithNonFluentReturnType() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(SetterWithNonFluentReturnType.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(SetterWithNonFluentReturnType.class);
     assertNotNull(model);
     assertEquals(2, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("string"), "string", "setString", null, null, TypeReflectionFactory.create(String.class), true, PropertyKind.VALUE, true);
@@ -84,14 +83,14 @@ public class DataObjectTest {
 
   @Test
   public void testObjectProperty() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(DataObjectWithObjectProperty.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(DataObjectWithObjectProperty.class);
     assertNotNull(model);
     assertEquals(0, model.getPropertyMap().size());
   }
 
   @Test
   public void testPropertySetters() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(PropertySetters.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertySetters.class);
     assertNotNull(model);
     assertEquals(13, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("string"), "string", "setString", null, null, TypeReflectionFactory.create(String.class), true, PropertyKind.VALUE, true);
@@ -111,7 +110,7 @@ public class DataObjectTest {
 
   @Test
   public void testSetterNormalizationRules() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(SetterNormalizationRules.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(SetterNormalizationRules.class);
     assertNotNull(model);
     assertEquals(3, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("ha"), "ha", "setHA", null, null, TypeReflectionFactory.create(boolean.class), true, PropertyKind.VALUE, true);
@@ -130,7 +129,7 @@ public class DataObjectTest {
   }
 
   private void testPropertyCollectionSetters(Class<?> dataObjectClass, PropertyKind expectedKind) throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(dataObjectClass);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(dataObjectClass);
     assertNotNull(model);
     assertEquals(11, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("extraClassPath"), "extraClassPath", "setExtraClassPath", null, null, TypeReflectionFactory.create(String.class), true, expectedKind, true);
@@ -157,7 +156,7 @@ public class DataObjectTest {
   }
 
   private void testPropertyCollectionGettersSetters(Class<?> dataObjectClass, PropertyKind expectedKind) throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(dataObjectClass);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(dataObjectClass);
     assertNotNull(model);
     assertEquals(11, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("extraClassPath"), "extraClassPath", "setExtraClassPath", null, "getExtraClassPath", TypeReflectionFactory.create(String.class), true, expectedKind, true);
@@ -179,7 +178,7 @@ public class DataObjectTest {
   }
   @Test
   public void testPropertyMapGettersSetters() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(PropertyMapGettersSetters.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyMapGettersSetters.class);
     assertNotNull(model);
     assertEquals(11, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("stringMap"), "stringMap", "setStringMap", null, "getStringMap", TypeReflectionFactory.create(String.class), true, PropertyKind.MAP, true);
@@ -197,7 +196,7 @@ public class DataObjectTest {
 
   @Test
   public void testPropertyMapAdders() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(PropertyMapAdders.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyMapAdders.class);
     assertNotNull(model);
     assertEquals(14, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("strings"), "strings", null, "addString", null, TypeReflectionFactory.create(String.class), true, PropertyKind.MAP, true);
@@ -218,7 +217,7 @@ public class DataObjectTest {
 
   @Test
   public void testPropertyMapSetters() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(PropertyMapSetters.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyMapSetters.class);
     assertNotNull(model);
     assertEquals(11, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("stringMap"), "stringMap", "setStringMap", null, null, TypeReflectionFactory.create(String.class), true, PropertyKind.MAP, true);
@@ -236,7 +235,7 @@ public class DataObjectTest {
 
   @Test
   public void testPropertyMapSetterAdders() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(PropertyMapGettersAdders.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyMapGettersAdders.class);
     assertNotNull(model);
     assertEquals(11, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("strings"), "strings", null, "addString", "getStrings", TypeReflectionFactory.create(String.class), true, PropertyKind.MAP, true);
@@ -254,7 +253,7 @@ public class DataObjectTest {
 
   @Test
   public void testPropertyGetters() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(PropertyGetters.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyGetters.class);
     assertNotNull(model);
     assertEquals(13, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("string"), "string", null, null, "getString", TypeReflectionFactory.create(String.class), true, PropertyKind.VALUE, true);
@@ -274,7 +273,7 @@ public class DataObjectTest {
 
   @Test
   public void testPropertyGettersSetters() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(PropertyGettersSetters.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyGettersSetters.class);
     assertNotNull(model);
     assertEquals(13, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("string"), "string", "setString", null, "getString", TypeReflectionFactory.create(String.class), true, PropertyKind.VALUE, true);
@@ -294,7 +293,7 @@ public class DataObjectTest {
 
   @Test
   public void testJsonObjectSetter() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(JsonObjectSetter.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(JsonObjectSetter.class);
     assertNotNull(model);
     assertEquals(1, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("jsonObject"), "jsonObject", "setJsonObject", null, null, TypeReflectionFactory.create(JsonObject.class), true, PropertyKind.VALUE, true);
@@ -302,7 +301,7 @@ public class DataObjectTest {
 
   @Test
   public void testPropertyListAdders() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(PropertyListAdders.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyListAdders.class);
     assertNotNull(model);
     assertEquals(13, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("strings"), "strings", null, "addString", null, TypeReflectionFactory.create(String.class), true, PropertyKind.LIST, true);
@@ -322,7 +321,7 @@ public class DataObjectTest {
 
   @Test
   public void testPropertyListGettersAdders() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(PropertyListGettersAdders.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyListGettersAdders.class);
     assertNotNull(model);
     assertEquals(10, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("strings"), "strings", null, "addString", "getStrings", TypeReflectionFactory.create(String.class), true, PropertyKind.LIST, true);
@@ -339,7 +338,7 @@ public class DataObjectTest {
 
   @Test
   public void testAdderNormalizationRules() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AdderNormalizationRules.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AdderNormalizationRules.class);
     assertNotNull(model);
     assertEquals(3, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("urls"), "urls", null, "addURL", null, TypeReflectionFactory.create(boolean.class), true, PropertyKind.LIST, true);
@@ -349,7 +348,7 @@ public class DataObjectTest {
 
   @Test
   public void testJsonObjectAdder() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(JsonObjectAdder.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(JsonObjectAdder.class);
     assertNotNull(model);
     assertEquals(1, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("jsonObjects"), "jsonObjects", null, "addJsonObject", null, TypeReflectionFactory.create(JsonObject.class), true, PropertyKind.LIST, true);
@@ -357,7 +356,7 @@ public class DataObjectTest {
 
   @Test
   public void testNestedDataObjectSetter() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(SetterWithNestedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(SetterWithNestedDataObject.class);
     assertNotNull(model);
     assertEquals(1, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("nested"), "nested", "setNested", null, null, TypeReflectionFactory.create(EmptyDataObject.class), true, PropertyKind.VALUE, false);
@@ -365,7 +364,7 @@ public class DataObjectTest {
 
   @Test
   public void testNestedDataObjectAdder() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AdderWithNestedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AdderWithNestedDataObject.class);
     assertNotNull(model);
     assertEquals(1, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("nesteds"), "nesteds", null, "addNested", null, TypeReflectionFactory.create(EmptyDataObject.class), true, PropertyKind.LIST, false);
@@ -373,14 +372,14 @@ public class DataObjectTest {
 
   @Test
   public void testIgnoreMethods() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(IgnoreMethods.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(IgnoreMethods.class);
     assertNotNull(model);
     assertEquals(0, model.getPropertyMap().size());
   }
 
   @Test
   public void testConcreteInheritsConcrete() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ConcreteExtendsConcrete.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(ConcreteExtendsConcrete.class);
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(0, model.getPropertyMap().size());
@@ -391,7 +390,7 @@ public class DataObjectTest {
 
   @Test
   public void testConcreteImplementsAbstract() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ConcreteInheritsAbstract.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(ConcreteInheritsAbstract.class);
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(0, model.getPropertyMap().size());
@@ -402,7 +401,7 @@ public class DataObjectTest {
 
   @Test
   public void testConcreteImplementsNonDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ConcreteImplementsNonDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(ConcreteImplementsNonDataObject.class);
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(0, model.getPropertyMap().size());
@@ -410,7 +409,7 @@ public class DataObjectTest {
 
   @Test
   public void testConcreteImplementsFromNonDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ConcreteImplementsFromNonDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(ConcreteImplementsFromNonDataObject.class);
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(1, model.getPropertyMap().size());
@@ -420,7 +419,7 @@ public class DataObjectTest {
 
   @Test
   public void testConcreteImplementsFromDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ConcreteImplementsFromDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(ConcreteImplementsFromDataObject.class);
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(1, model.getPropertyMap().size());
@@ -429,7 +428,7 @@ public class DataObjectTest {
 
   @Test
   public void testConcreteOverridesFromDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ConcreteOverridesFromDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(ConcreteOverridesFromDataObject.class);
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(1, model.getPropertyMap().size());
@@ -438,7 +437,7 @@ public class DataObjectTest {
 
   @Test
   public void testConcreteOverridesFromNonDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ConcreteOverridesFromNonDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(ConcreteOverridesFromNonDataObject.class);
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(1, model.getPropertyMap().size());
@@ -448,7 +447,7 @@ public class DataObjectTest {
 
   @Test
   public void testConcreteOverridesFromAbstractDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ConcreteOverridesFromAbstractDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(ConcreteOverridesFromAbstractDataObject.class);
     assertNotNull(model);
     assertTrue(model.isConcrete());
     assertEquals(3, model.getPropertyMap().size());
@@ -459,21 +458,21 @@ public class DataObjectTest {
 
   @Test
   public void testAbstractInheritsConcrete() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(Abstract.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(Abstract.class);
     assertNotNull(model);
     assertTrue(model.isAbstract());
   }
 
   @Test
   public void testAbstract() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(Abstract.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(Abstract.class);
     assertNotNull(model);
     assertTrue(model.isAbstract());
   }
 
   @Test
   public void testAbstractInheritsAbstract() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AbstractInheritsAbstract.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AbstractInheritsAbstract.class);
     assertNotNull(model);
     assertFalse(model.isConcrete());
     assertEquals(0, model.getPropertyMap().size());
@@ -482,35 +481,35 @@ public class DataObjectTest {
 
   @Test
   public void testImportedSubinterface() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ImportedSubinterface.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(ImportedSubinterface.class);
     assertNotNull(model);
     assertEquals(Collections.singleton((ClassTypeInfo) TypeReflectionFactory.create(Imported.class)), model.getImportedTypes());
   }
 
   @Test
   public void testImportedNested() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ImportedNested.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(ImportedNested.class);
     assertNotNull(model);
     assertEquals(Collections.singleton((ClassTypeInfo) TypeReflectionFactory.create(Imported.class)), model.getImportedTypes());
   }
 
   @Test
   public void testCommentedDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(CommentedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(CommentedDataObject.class);
     Doc doc = model.getDoc();
     assertEquals(" The data object comment.\n", doc.getFirstSentence().getValue());
   }
 
   @Test
   public void testUncommentedProperty() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(UncommentedProperty.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(UncommentedProperty.class);
     PropertyInfo propertyInfo = model.getPropertyMap().get("theProperty");
     assertNull(propertyInfo.getDoc());
   }
 
   @Test
   public void testCommentedProperty() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(CommentedProperty.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(CommentedProperty.class);
     PropertyInfo setterProperty = model.getPropertyMap().get("setterProperty");
     assertEquals(" Setter setter property description.\n", setterProperty.getDoc().getFirstSentence().getValue());
     PropertyInfo getterProperty = model.getPropertyMap().get("getterProperty");
@@ -521,7 +520,7 @@ public class DataObjectTest {
 
   @Test
   public void testCommentedPropertyInheritedFromCommentedProperty() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(CommentedPropertyInheritedFromCommentedProperty.class, AbstractCommentedProperty.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(CommentedPropertyInheritedFromCommentedProperty.class, AbstractCommentedProperty.class);
     PropertyInfo propertyInfo = model.getPropertyMap().get("theProperty");
     Doc propertyDoc = propertyInfo.getDoc();
     assertEquals(" The property description.\n", propertyDoc.getFirstSentence().getValue());
@@ -529,7 +528,7 @@ public class DataObjectTest {
 
   @Test
   public void testUncommentedPropertyOverridesCommentedProperty() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(UncommentedPropertyOverridesSuperCommentedProperty.class, AbstractCommentedProperty.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(UncommentedPropertyOverridesSuperCommentedProperty.class, AbstractCommentedProperty.class);
     PropertyInfo propertyInfo = model.getPropertyMap().get("theProperty");
     Doc propertyDoc = propertyInfo.getDoc();
     assertEquals(" The property description.\n", propertyDoc.getFirstSentence().getValue());
@@ -537,7 +536,7 @@ public class DataObjectTest {
 
   @Test
   public void testUncommentedPropertyOverridesAncestorCommentedProperty() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(UncommentedPropertyOverridesAncestorSuperCommentedProperty.class, AbstractCommentedProperty.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(UncommentedPropertyOverridesAncestorSuperCommentedProperty.class, AbstractCommentedProperty.class);
     PropertyInfo propertyInfo = model.getPropertyMap().get("theProperty");
     Doc propertyDoc = propertyInfo.getDoc();
     assertEquals(" The property description.\n", propertyDoc.getFirstSentence().getValue());
@@ -545,7 +544,7 @@ public class DataObjectTest {
 
   @Test
   public void testCommentedPropertyOverridesCommentedProperty() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(CommentedPropertyOverridesCommentedProperty.class, AbstractCommentedProperty.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(CommentedPropertyOverridesCommentedProperty.class, AbstractCommentedProperty.class);
     PropertyInfo propertyInfo = model.getPropertyMap().get("theProperty");
     Doc propertyDoc = propertyInfo.getDoc();
     assertEquals(" The overriden property description.\n", propertyDoc.getFirstSentence().getValue());
@@ -553,7 +552,7 @@ public class DataObjectTest {
 
   @Test
   public void testCommentedPropertyOverridesUncommentedProperty() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(CommentedPropertyOverridesUncommentedProperty.class, AbstractUncommentedProperty.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(CommentedPropertyOverridesUncommentedProperty.class, AbstractUncommentedProperty.class);
     PropertyInfo propertyInfo = model.getPropertyMap().get("theProperty");
     Doc propertyDoc = propertyInfo.getDoc();
     assertEquals(" The overriden property description.\n", propertyDoc.getFirstSentence().getValue());
@@ -561,47 +560,47 @@ public class DataObjectTest {
 
   @Test
   public void testDataObjectWithIgnoredProperty() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(DataObjectInterfaceWithIgnoredProperty.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(DataObjectInterfaceWithIgnoredProperty.class);
     assertNotNull(model);
     assertEquals(0, model.getPropertyMap().size());
   }
 
   @Test
   public void testConverterDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ConverterDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(ConverterDataObject.class);
     assertTrue(model.getGenerateConverter());
     assertFalse(model.isPublicConverter());
   }
 
   @Test
   public void testNoConverterDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(NoConverterDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(NoConverterDataObject.class);
     assertFalse(model.getGenerateConverter());
     assertTrue(model.isPublicConverter());
   }
 
   @Test
   public void testInheritedConverterDataObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(InheritingConverterDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(InheritingConverterDataObject.class);
     assertTrue(model.getInheritConverter());
   }
 
   @Test
   public void testToJson() throws Exception {
-    assertTrue(new Generator().generateDataObject(ToJsonDataObject.class).isJsonifiable());
-    assertFalse(new Generator().generateDataObject(EmptyDataObject.class).isJsonifiable());
+    assertTrue(new GeneratorHelper().generateDataObject(ToJsonDataObject.class).isJsonifiable());
+    assertFalse(new GeneratorHelper().generateDataObject(EmptyDataObject.class).isJsonifiable());
   }
 
   @Test
   public void testAnnotatedObject() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AnnotatedDataObject.class);
     assertEquals(2, model.getAnnotations().size());
     assertEquals(EmptyAnnotation.class.getSimpleName(),model.getAnnotations().get(1).getSimpleName());
   }
 
   @Test
   public void testAnnotatedField() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedField").getAnnotations().size());
     assertEquals(0, model.getPropertyMap().get("annotatedField").getAnnotations().get(0).getMembersNames().size());
@@ -609,12 +608,12 @@ public class DataObjectTest {
 
   @Test
   public void testAnnotatatedClassWithAnnotatedValue() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(Foo.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(Foo.class);
   }
 
   @Test
   public void testStringAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().get(0).getMembersNames().size());
@@ -628,7 +627,7 @@ public class DataObjectTest {
 
   @Test
   public void testShortAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithShortValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithShortValue").getAnnotations().get(0).getMembersNames().size());
@@ -642,7 +641,7 @@ public class DataObjectTest {
 
   @Test
   public void testLongAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithLongValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithLongValue").getAnnotations().get(0).getMembersNames().size());
@@ -656,7 +655,7 @@ public class DataObjectTest {
 
   @Test
   public void testIntegerAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithIntegerValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithIntegerValue").getAnnotations().get(0).getMembersNames().size());
@@ -670,7 +669,7 @@ public class DataObjectTest {
 
   @Test
   public void testFloatAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithFloatValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithFloatValue").getAnnotations().get(0).getMembersNames().size());
@@ -684,7 +683,7 @@ public class DataObjectTest {
 
   @Test
   public void testAnnotationAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AnnotatedDataObject.class);
     AnnotationValueInfo expected = model.getPropertyMap().get("annotatedWithStringValue").getAnnotations().get(0);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithAnnotationValue").getAnnotations().size());
@@ -697,7 +696,7 @@ public class DataObjectTest {
 
   @Test
   public void testBooleanAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithBooleanValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithBooleanValue").getAnnotations().get(0).getMembersNames().size());
@@ -711,7 +710,7 @@ public class DataObjectTest {
 
   @Test
   public void testEnumAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithEnumValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithEnumValue").getAnnotations().get(0).getMembersNames().size());
@@ -725,7 +724,7 @@ public class DataObjectTest {
 
   @Test
   public void testByteAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithByteValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithByteValue").getAnnotations().get(0).getMembersNames().size());
@@ -739,7 +738,7 @@ public class DataObjectTest {
 
   @Test
   public void testCharAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithCharValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithCharValue").getAnnotations().get(0).getMembersNames().size());
@@ -753,7 +752,7 @@ public class DataObjectTest {
 
   @Test
   public void testClassAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithClassValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithClassValue").getAnnotations().get(0).getMembersNames().size());
@@ -774,7 +773,7 @@ public class DataObjectTest {
 
   @Test
   public void testDoubleAnnotated() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(AnnotatedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(AnnotatedDataObject.class);
     assertTrue(model.getPropertyMap().values().stream().allMatch(PropertyInfo::isAnnotated));
     assertEquals(1, model.getPropertyMap().get("annotatedWithDoubleValue").getAnnotations().size());
     assertEquals(3, model.getPropertyMap().get("annotatedWithDoubleValue").getAnnotations().get(0).getMembersNames().size());
@@ -809,7 +808,7 @@ public class DataObjectTest {
 
   @Test
   public void testDataObjectWithAnnotations() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(DataObjectWithAnnotatedField.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(DataObjectWithAnnotatedField.class);
     assertNotNull(model);
     assertTrue(model.isClass());
     assertTrue(model.getGenerateConverter());
@@ -825,7 +824,7 @@ public class DataObjectTest {
 
   private void assertInvalidDataObject(Class<?> dataObjectClass) throws Exception {
     try {
-      new Generator().generateDataObject(dataObjectClass);
+      new GeneratorHelper().generateDataObject(dataObjectClass);
       fail("Was expecting " + dataObjectClass.getName() + " to fail");
     } catch (GenException ignore) {
     }

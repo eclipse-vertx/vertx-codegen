@@ -2,7 +2,6 @@ package io.vertx.test.codegen;
 
 import io.vertx.codegen.ClassModel;
 import io.vertx.codegen.GenException;
-import io.vertx.codegen.Generator;
 import io.vertx.codegen.ModuleModel;
 import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.type.ApiTypeInfo;
@@ -29,7 +28,7 @@ public class ModuleTest {
 
   @Test
   public void testModuleModel() throws Exception {
-    ModuleModel model = new Generator().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.modulescoped");
+    ModuleModel model = new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.modulescoped");
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getFqn());
     assertEquals("simple", model.getName());
     assertEquals("io.vertx.test.groovy.codegen.testmodule.modulescoped", model.translateFqn("groovy"));
@@ -41,14 +40,14 @@ public class ModuleTest {
 
   @Test
   public void testNestedModuleModel() throws Exception {
-    ModuleModel module = new Generator().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.nestingmodule.nestedmodule");
+    ModuleModel module = new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.nestingmodule.nestedmodule");
     assertEquals("io.vertx.test.codegen.testmodule.nestingmodule.nestedmodule", module.getFqn());
     assertEquals("nested", module.getName());
     assertEquals("io.vertx.test.groovy.codegen.testmodule.nestingmodule.nestedmodule", module.translateFqn("groovy"));
-    ClassModel api = new Generator().generateClass(NestedApi.class);
+    ClassModel api = new GeneratorHelper().generateClass(NestedApi.class);
     assertEquals("io.vertx.test.codegen.testmodule.nestingmodule.nestedmodule", api.getModule().getPackageName());
     assertEquals("nested", api.getModule().getName());
-    DataObjectModel dataObj = new Generator().generateDataObject(NestedDataObject.class);
+    DataObjectModel dataObj = new GeneratorHelper().generateDataObject(NestedDataObject.class);
     assertEquals("io.vertx.test.codegen.testmodule.nestingmodule.nestedmodule", dataObj.getModule().getPackageName());
     assertEquals("nested", dataObj.getModule().getName());
   }
@@ -56,7 +55,7 @@ public class ModuleTest {
   @Test
   public void testEmptyNameModuleModel() throws Exception {
     try {
-      new Generator().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.emptynamemodule");
+      new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.emptynamemodule");
       fail();
     } catch (GenException expected) {
     }
@@ -65,7 +64,7 @@ public class ModuleTest {
   @Test
   public void testIllegalNameModuleModel() throws Exception {
     try {
-      new Generator().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.illegalnamemodule");
+      new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.illegalnamemodule");
       fail();
     } catch (GenException expected) {
     }
@@ -73,7 +72,7 @@ public class ModuleTest {
 
   @Test
   public void testCustomGroupModuleModel() throws Exception {
-    ModuleModel model = new Generator().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.customgroup");
+    ModuleModel model = new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.customgroup");
     assertEquals("io.vertx.test.codegen.testmodule.customgroup", model.getFqn());
     assertEquals("custom", model.getName());
     assertEquals("io.vertx.test.codegen.testmodule.groovy.customgroup", model.translateFqn("groovy"));
@@ -82,7 +81,7 @@ public class ModuleTest {
   @Test
   public void testNotPrefixingGroupModuleModel() throws Exception {
     try {
-      new Generator().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.notprefixinggroup");
+      new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.notprefixinggroup");
       fail();
     } catch (GenException expected) {
     }
@@ -91,7 +90,7 @@ public class ModuleTest {
   @Test
   public void testInvalidGroupModuleModel() throws Exception {
     try {
-      new Generator().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.invalidgroup");
+      new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testmodule.invalidgroup");
       fail();
     } catch (GenException expected) {
     }
@@ -99,7 +98,7 @@ public class ModuleTest {
 
   @Test
   public void testModuleScopedApiModel() throws Exception {
-    ClassModel model = new Generator().generateClass(ModuleScopedApi.class);
+    ClassModel model = new GeneratorHelper().generateClass(ModuleScopedApi.class);
     assertEquals(ModuleScopedApi.class.getName(), model.getIfaceFQCN());
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getPackageName());
     assertEquals("simple", model.getModule().getName());
@@ -110,7 +109,7 @@ public class ModuleTest {
 
   @Test
   public void testEmptyPkg() throws Exception {
-    ClassModel model = new Generator().generateClass(EmptyPkg.class);
+    ClassModel model = new GeneratorHelper().generateClass(EmptyPkg.class);
     assertEquals(EmptyPkg.class.getName(), model.getIfaceFQCN());
     assertEquals("io.vertx.test.codegen.testmodule.emptypkg", model.getModule().getPackageName());
     assertEquals("simple", model.getModule().getName());
@@ -121,7 +120,7 @@ public class ModuleTest {
 
   @Test
   public void testModuleScopedSubApiModel() throws Exception {
-    ClassModel model = new Generator().generateClass(ModuleScopedSubApi.class);
+    ClassModel model = new GeneratorHelper().generateClass(ModuleScopedSubApi.class);
     assertEquals(ModuleScopedSubApi.class.getName(), model.getFqn());
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getPackageName());
     assertEquals("simple", model.getModule().getName());
@@ -132,7 +131,7 @@ public class ModuleTest {
 
   @Test
   public void testModuleScopedDataObjectModel() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ModuleScopedDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(ModuleScopedDataObject.class);
     assertEquals(ModuleScopedDataObject.class.getName(), model.getFqn());
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getPackageName());
     assertEquals("simple", model.getModule().getName());
@@ -140,7 +139,7 @@ public class ModuleTest {
 
   @Test
   public void testModuleScopedSubDataObjectModel() throws Exception {
-    DataObjectModel model = new Generator().generateDataObject(ModuleScopedSubDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(ModuleScopedSubDataObject.class);
     assertEquals(ModuleScopedSubDataObject.class.getName(), model.getFqn());
     assertEquals("io.vertx.test.codegen.testmodule.modulescoped", model.getModule().getPackageName());
     assertEquals("simple", model.getModule().getName());
@@ -148,7 +147,7 @@ public class ModuleTest {
 
   @Test
   public void testVertxCoreModuleScopedApiModel() throws Exception {
-    ClassModel model = new Generator().generateClass(VertxCoreModuleScopedApi.class);
+    ClassModel model = new GeneratorHelper().generateClass(VertxCoreModuleScopedApi.class);
     assertEquals(VertxCoreModuleScopedApi.class.getName(), model.getIfaceFQCN());
     assertEquals("io.vertx.test.codegen.testmodule.vertx.core", model.getModule().getPackageName());
     assertEquals("vertx", model.getModule().getName());
@@ -159,7 +158,7 @@ public class ModuleTest {
 
   @Test
   public void testVertxOtherModuleScopedApiModel() throws Exception {
-    ClassModel model = new Generator().generateClass(VertxOtherModuleScopedApi.class);
+    ClassModel model = new GeneratorHelper().generateClass(VertxOtherModuleScopedApi.class);
     assertEquals(VertxOtherModuleScopedApi.class.getName(), model.getIfaceFQCN());
     assertEquals("io.vertx.test.codegen.testmodule.vertx.other", model.getModule().getPackageName());
     assertEquals("vertx-other", model.getModule().getName());
@@ -171,7 +170,7 @@ public class ModuleTest {
   @Test
   public void testNoModuleApiModel() throws Exception {
     try {
-      new Generator().generateClass(NoModuleApi.class);
+      new GeneratorHelper().generateClass(NoModuleApi.class);
       fail();
     } catch (GenException expected) {
     }
@@ -180,7 +179,7 @@ public class ModuleTest {
   @Test
   public void testNoModuleDataObjectModel() throws Exception {
     try {
-      new Generator().generateDataObject(NoModuleDataObject.class);
+      new GeneratorHelper().generateDataObject(NoModuleDataObject.class);
       fail();
     } catch (GenException expected) {
     }

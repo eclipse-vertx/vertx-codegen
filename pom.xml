@@ -135,7 +135,7 @@
         <version>1.9.1</version>
         <executions>
           <execution>
-            <id>add-example-source</id>
+            <id>add-source</id>
             <goals>
               <goal>add-source</goal>
             </goals>
@@ -146,18 +146,52 @@
             </configuration>
           </execution>
           <execution>
-            <id>add-tck-source</id>
+            <id>add-test-source</id>
             <goals>
               <goal>add-test-source</goal>
             </goals>
             <configuration>
               <sources>
                 <source>${basedir}/src/tck/java</source>
+                <source>${basedir}/src/test/generated</source>
               </sources>
             </configuration>
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.bsc.maven</groupId>
+        <artifactId>maven-processor-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <systemProperties>
+            <java.util.logging.SimpleFormatter.format>%4$s: %3$s - %5$s %6$s%n</java.util.logging.SimpleFormatter.format>
+          </systemProperties>
+        </configuration>
+        <executions>
+          <execution>
+            <id>generate-sources</id>
+            <goals>
+              <goal>process-test</goal>
+            </goals>
+            <phase>generate-test-sources</phase>
+            <configuration>
+              <processors>
+                <processor>io.vertx.codegen.CodeGenProcessor</processor>
+              </processors>
+              <optionMap>
+                <codegen.output>${project.basedir}/src/test</codegen.output>
+                <codegen.output.data_object_converters>generated</codegen.output.data_object_converters>
+              </optionMap>
+              <includes>
+                <include>io/vertx/test/codegen/converter/*.java</include>
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>

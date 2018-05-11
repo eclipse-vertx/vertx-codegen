@@ -2,7 +2,6 @@ package io.vertx.test.codegen;
 
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.ClassModel;
-import io.vertx.codegen.Generator;
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.MethodKind;
 import io.vertx.codegen.type.ParameterizedTypeInfo;
@@ -441,7 +440,7 @@ public class ClassNullableTest extends ClassTestBase {
 
   @Test
   public void testMethodWithNullableTypeArgReturn() throws Exception {
-    ClassModel model = new Generator().generateClass(MethodWithNullableTypeArgReturn.class);
+    ClassModel model = new GeneratorHelper().generateClass(MethodWithNullableTypeArgReturn.class);
     List<MethodInfo> methods = model.getMethods();
     assertEquals(36, methods.size());
     checkMethod(methods.get(0), "listNullableByteReturn", 0, new TypeLiteral<List<Byte>>() {}, MethodKind.OTHER);
@@ -500,7 +499,7 @@ public class ClassNullableTest extends ClassTestBase {
 
   @Test
   public void testDiamondFluentNullableReturn() throws Exception {
-    ClassModel model = new Generator().generateClass(DiamondGenericBottomFluentNullableParam.class);
+    ClassModel model = new GeneratorHelper().generateClass(DiamondGenericBottomFluentNullableParam.class);
   }
 
   @Test
@@ -528,14 +527,14 @@ public class ClassNullableTest extends ClassTestBase {
   private void generateClass(Consumer<ClassModel> test, Class<?> clazz, Class<?>... rest) throws Exception {
     blacklist(() -> {
       try {
-        test.accept(new Generator().generateClass(clazz));
+        test.accept(new GeneratorHelper().generateClass(clazz));
       } catch (Exception e) {
         throw new AssertionError(e);
       }
     }, Stream.of(clazz));
     blacklist(() -> {
       try {
-        test.accept(new Generator().generateClass(clazz, rest));
+        test.accept(new GeneratorHelper().generateClass(clazz, rest));
       } catch (Exception e) {
         throw new AssertionError(e);
       }

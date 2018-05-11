@@ -1,4 +1,4 @@
-package io.vertx.codegen;
+package io.vertx.test.codegen;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  */
 public class ClassEnumerator {
 
-  private static final Logger log =   java.util.logging.Logger.getLogger(Generator.class.getName());
+  private static final Logger log =   java.util.logging.Logger.getLogger(GeneratorHelper.class.getName());
 
   private static Class<?> loadClass(String className) {
     try {
