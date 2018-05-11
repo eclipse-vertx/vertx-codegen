@@ -13,14 +13,14 @@ public class SetterAdderDataObjectConverter {
     for (java.util.Map.Entry<String, Object> member : json) {
       switch (member.getKey()) {
         case "values":
-         if (member.getValue() instanceof JsonArray) {
+          if (member.getValue() instanceof JsonArray) {
             java.util.ArrayList<java.lang.String> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
                 list.add((String)item);
             });
             obj.setValues(list);
-         }
+          }
           break;
       }
     }
