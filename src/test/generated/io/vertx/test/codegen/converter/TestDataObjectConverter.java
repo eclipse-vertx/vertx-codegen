@@ -14,111 +14,111 @@ public class TestDataObjectConverter {
       switch (member.getKey()) {
         case "addedAggregatedDataObjects":
           if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                obj.addAddedAggregatedDataObject(new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject) item));
+                obj.addAddedAggregatedDataObject(new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)item));
             });
           }
           break;
         case "addedBoxedBooleanValues":
           if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Boolean)
-                obj.addAddedBoxedBooleanValue((Boolean) item);
+                obj.addAddedBoxedBooleanValue((Boolean)item);
             });
           }
           break;
         case "addedBoxedByteValues":
           if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                obj.addAddedBoxedByteValue(((Number) item).byteValue());
+                obj.addAddedBoxedByteValue(((Number)item).byteValue());
             });
           }
           break;
         case "addedBoxedCharValues":
           if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                obj.addAddedBoxedCharValue(((String) item).charAt(0));
+                obj.addAddedBoxedCharValue(((String)item).charAt(0));
             });
           }
           break;
         case "addedBoxedDoubleValues":
           if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                obj.addAddedBoxedDoubleValue(((Number) item).doubleValue());
+                obj.addAddedBoxedDoubleValue(((Number)item).doubleValue());
             });
           }
           break;
         case "addedBoxedFloatValues":
           if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                obj.addAddedBoxedFloatValue(((Number) item).floatValue());
+                obj.addAddedBoxedFloatValue(((Number)item).floatValue());
             });
           }
           break;
         case "addedBoxedIntValues":
           if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                obj.addAddedBoxedIntValue(((Number) item).intValue());
+                obj.addAddedBoxedIntValue(((Number)item).intValue());
             });
           }
           break;
         case "addedBoxedLongValues":
           if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                obj.addAddedBoxedLongValue(((Number) item).longValue());
+                obj.addAddedBoxedLongValue(((Number)item).longValue());
             });
           }
           break;
         case "addedBoxedShortValues":
           if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                obj.addAddedBoxedShortValue(((Number) item).shortValue());
+                obj.addAddedBoxedShortValue(((Number)item).shortValue());
             });
           }
           break;
         case "addedBuffers":
           if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                obj.addAddedBuffer(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String) item)));
+                obj.addAddedBuffer(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)item)));
             });
           }
           break;
         case "addedHttpMethods":
           if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                obj.addAddedHttpMethod(java.util.concurrent.TimeUnit.valueOf((String) item));
+                obj.addAddedHttpMethod(java.util.concurrent.TimeUnit.valueOf((String)item));
             });
           }
           break;
         case "addedJsonArrays":
           if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonArray)
-                obj.addAddedJsonArray(((JsonArray) item).copy());
+                obj.addAddedJsonArray(((JsonArray)item).copy());
             });
           }
           break;
         case "addedJsonObjects":
           if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                obj.addAddedJsonObject(((JsonObject) item).copy());
+                obj.addAddedJsonObject(((JsonObject)item).copy());
             });
           }
           break;
         case "addedObjects":
           if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Object)
                 obj.addAddedObject(item);
             });
@@ -126,604 +126,604 @@ public class TestDataObjectConverter {
           break;
         case "addedStringValues":
           if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                obj.addAddedStringValue((String) item);
+                obj.addAddedStringValue((String)item);
             });
           }
           break;
         case "aggregatedDataObject":
           if (member.getValue() instanceof JsonObject) {
-            obj.setAggregatedDataObject(new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject) member.getValue()));
+            obj.setAggregatedDataObject(new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)member.getValue()));
           }
           break;
         case "aggregatedDataObjectMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, io.vertx.test.codegen.converter.AggregatedDataObject> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof JsonObject)
-                map.put(entry.getKey(), new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject) entry.getValue()));
+                map.put(entry.getKey(), new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)entry.getValue()));
             });
             obj.setAggregatedDataObjectMap(map);
           }
           break;
         case "aggregatedDataObjectSet":
           if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<io.vertx.test.codegen.converter.AggregatedDataObject> list = new java.util.LinkedHashSet<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.LinkedHashSet<io.vertx.test.codegen.converter.AggregatedDataObject> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                list.add(new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject) item));
+                list.add(new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)item));
             });
             obj.setAggregatedDataObjectSet(list);
           }
           break;
         case "aggregatedDataObjects":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<io.vertx.test.codegen.converter.AggregatedDataObject> list = new java.util.ArrayList<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.ArrayList<io.vertx.test.codegen.converter.AggregatedDataObject> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                list.add(new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject) item));
+                list.add(new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)item));
             });
             obj.setAggregatedDataObjects(list);
           }
           break;
         case "booleanValue":
           if (member.getValue() instanceof Boolean) {
-            obj.setBooleanValue((Boolean) member.getValue());
+            obj.setBooleanValue((Boolean)member.getValue());
           }
           break;
         case "boxedBooleanSet":
           if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<java.lang.Boolean> list = new java.util.LinkedHashSet<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.LinkedHashSet<java.lang.Boolean> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Boolean)
-                list.add((Boolean) item);
+                list.add((Boolean)item);
             });
             obj.setBoxedBooleanSet(list);
           }
           break;
         case "boxedBooleanValue":
           if (member.getValue() instanceof Boolean) {
-            obj.setBoxedBooleanValue((Boolean) member.getValue());
+            obj.setBoxedBooleanValue((Boolean)member.getValue());
           }
           break;
         case "boxedBooleanValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Boolean> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Boolean)
-                map.put(entry.getKey(), (Boolean) entry.getValue());
+                map.put(entry.getKey(), (Boolean)entry.getValue());
             });
             obj.setBoxedBooleanValueMap(map);
           }
           break;
         case "boxedBooleanValues":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Boolean> list = new java.util.ArrayList<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.ArrayList<java.lang.Boolean> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Boolean)
-                list.add((Boolean) item);
+                list.add((Boolean)item);
             });
             obj.setBoxedBooleanValues(list);
           }
           break;
         case "boxedByteSet":
           if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<java.lang.Byte> list = new java.util.LinkedHashSet<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.LinkedHashSet<java.lang.Byte> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                list.add(((Number) item).byteValue());
+                list.add(((Number)item).byteValue());
             });
             obj.setBoxedByteSet(list);
           }
           break;
         case "boxedByteValue":
           if (member.getValue() instanceof Number) {
-            obj.setBoxedByteValue(((Number) member.getValue()).byteValue());
+            obj.setBoxedByteValue(((Number)member.getValue()).byteValue());
           }
           break;
         case "boxedByteValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Byte> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Number)
-                map.put(entry.getKey(), ((Number) entry.getValue()).byteValue());
+                map.put(entry.getKey(), ((Number)entry.getValue()).byteValue());
             });
             obj.setBoxedByteValueMap(map);
           }
           break;
         case "boxedByteValues":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Byte> list = new java.util.ArrayList<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.ArrayList<java.lang.Byte> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                list.add(((Number) item).byteValue());
+                list.add(((Number)item).byteValue());
             });
             obj.setBoxedByteValues(list);
           }
           break;
         case "boxedCharSet":
           if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<java.lang.Character> list = new java.util.LinkedHashSet<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.LinkedHashSet<java.lang.Character> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(((String) item).charAt(0));
+                list.add(((String)item).charAt(0));
             });
             obj.setBoxedCharSet(list);
           }
           break;
         case "boxedCharValue":
           if (member.getValue() instanceof String) {
-            obj.setBoxedCharValue(((String) member.getValue()).charAt(0));
+            obj.setBoxedCharValue(((String)member.getValue()).charAt(0));
           }
           break;
         case "boxedCharValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Character> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                map.put(entry.getKey(), ((String) entry.getValue()).charAt(0));
+                map.put(entry.getKey(), ((String)entry.getValue()).charAt(0));
             });
             obj.setBoxedCharValueMap(map);
           }
           break;
         case "boxedCharValues":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Character> list = new java.util.ArrayList<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.ArrayList<java.lang.Character> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(((String) item).charAt(0));
+                list.add(((String)item).charAt(0));
             });
             obj.setBoxedCharValues(list);
           }
           break;
         case "boxedDoubleSet":
           if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<java.lang.Double> list = new java.util.LinkedHashSet<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.LinkedHashSet<java.lang.Double> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                list.add(((Number) item).doubleValue());
+                list.add(((Number)item).doubleValue());
             });
             obj.setBoxedDoubleSet(list);
           }
           break;
         case "boxedDoubleValue":
           if (member.getValue() instanceof Number) {
-            obj.setBoxedDoubleValue(((Number) member.getValue()).doubleValue());
+            obj.setBoxedDoubleValue(((Number)member.getValue()).doubleValue());
           }
           break;
         case "boxedDoubleValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Double> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Number)
-                map.put(entry.getKey(), ((Number) entry.getValue()).doubleValue());
+                map.put(entry.getKey(), ((Number)entry.getValue()).doubleValue());
             });
             obj.setBoxedDoubleValueMap(map);
           }
           break;
         case "boxedDoubleValues":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Double> list = new java.util.ArrayList<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.ArrayList<java.lang.Double> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                list.add(((Number) item).doubleValue());
+                list.add(((Number)item).doubleValue());
             });
             obj.setBoxedDoubleValues(list);
           }
           break;
         case "boxedFloatSet":
           if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<java.lang.Float> list = new java.util.LinkedHashSet<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.LinkedHashSet<java.lang.Float> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                list.add(((Number) item).floatValue());
+                list.add(((Number)item).floatValue());
             });
             obj.setBoxedFloatSet(list);
           }
           break;
         case "boxedFloatValue":
           if (member.getValue() instanceof Number) {
-            obj.setBoxedFloatValue(((Number) member.getValue()).floatValue());
+            obj.setBoxedFloatValue(((Number)member.getValue()).floatValue());
           }
           break;
         case "boxedFloatValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Float> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Number)
-                map.put(entry.getKey(), ((Number) entry.getValue()).floatValue());
+                map.put(entry.getKey(), ((Number)entry.getValue()).floatValue());
             });
             obj.setBoxedFloatValueMap(map);
           }
           break;
         case "boxedFloatValues":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Float> list = new java.util.ArrayList<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.ArrayList<java.lang.Float> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                list.add(((Number) item).floatValue());
+                list.add(((Number)item).floatValue());
             });
             obj.setBoxedFloatValues(list);
           }
           break;
         case "boxedIntSet":
           if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<java.lang.Integer> list = new java.util.LinkedHashSet<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.LinkedHashSet<java.lang.Integer> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                list.add(((Number) item).intValue());
+                list.add(((Number)item).intValue());
             });
             obj.setBoxedIntSet(list);
           }
           break;
         case "boxedIntValue":
           if (member.getValue() instanceof Number) {
-            obj.setBoxedIntValue(((Number) member.getValue()).intValue());
+            obj.setBoxedIntValue(((Number)member.getValue()).intValue());
           }
           break;
         case "boxedIntValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Integer> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Number)
-                map.put(entry.getKey(), ((Number) entry.getValue()).intValue());
+                map.put(entry.getKey(), ((Number)entry.getValue()).intValue());
             });
             obj.setBoxedIntValueMap(map);
           }
           break;
         case "boxedIntValues":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Integer> list = new java.util.ArrayList<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.ArrayList<java.lang.Integer> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                list.add(((Number) item).intValue());
+                list.add(((Number)item).intValue());
             });
             obj.setBoxedIntValues(list);
           }
           break;
         case "boxedLongSet":
           if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<java.lang.Long> list = new java.util.LinkedHashSet<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.LinkedHashSet<java.lang.Long> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                list.add(((Number) item).longValue());
+                list.add(((Number)item).longValue());
             });
             obj.setBoxedLongSet(list);
           }
           break;
         case "boxedLongValue":
           if (member.getValue() instanceof Number) {
-            obj.setBoxedLongValue(((Number) member.getValue()).longValue());
+            obj.setBoxedLongValue(((Number)member.getValue()).longValue());
           }
           break;
         case "boxedLongValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Long> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Number)
-                map.put(entry.getKey(), ((Number) entry.getValue()).longValue());
+                map.put(entry.getKey(), ((Number)entry.getValue()).longValue());
             });
             obj.setBoxedLongValueMap(map);
           }
           break;
         case "boxedLongValues":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Long> list = new java.util.ArrayList<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.ArrayList<java.lang.Long> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                list.add(((Number) item).longValue());
+                list.add(((Number)item).longValue());
             });
             obj.setBoxedLongValues(list);
           }
           break;
         case "boxedShortSet":
           if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<java.lang.Short> list = new java.util.LinkedHashSet<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.LinkedHashSet<java.lang.Short> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                list.add(((Number) item).shortValue());
+                list.add(((Number)item).shortValue());
             });
             obj.setBoxedShortSet(list);
           }
           break;
         case "boxedShortValue":
           if (member.getValue() instanceof Number) {
-            obj.setBoxedShortValue(((Number) member.getValue()).shortValue());
+            obj.setBoxedShortValue(((Number)member.getValue()).shortValue());
           }
           break;
         case "boxedShortValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Short> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Number)
-                map.put(entry.getKey(), ((Number) entry.getValue()).shortValue());
+                map.put(entry.getKey(), ((Number)entry.getValue()).shortValue());
             });
             obj.setBoxedShortValueMap(map);
           }
           break;
         case "boxedShortValues":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Short> list = new java.util.ArrayList<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.ArrayList<java.lang.Short> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                list.add(((Number) item).shortValue());
+                list.add(((Number)item).shortValue());
             });
             obj.setBoxedShortValues(list);
           }
           break;
         case "buffer":
           if (member.getValue() instanceof String) {
-            obj.setBuffer(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String) member.getValue())));
+            obj.setBuffer(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)member.getValue())));
           }
           break;
         case "bufferMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, io.vertx.core.buffer.Buffer> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                map.put(entry.getKey(), io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String) entry.getValue())));
+                map.put(entry.getKey(), io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)entry.getValue())));
             });
             obj.setBufferMap(map);
           }
           break;
         case "bufferSet":
           if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<io.vertx.core.buffer.Buffer> list = new java.util.LinkedHashSet<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.LinkedHashSet<io.vertx.core.buffer.Buffer> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String) item)));
+                list.add(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)item)));
             });
             obj.setBufferSet(list);
           }
           break;
         case "buffers":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<io.vertx.core.buffer.Buffer> list = new java.util.ArrayList<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.ArrayList<io.vertx.core.buffer.Buffer> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String) item)));
+                list.add(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)item)));
             });
             obj.setBuffers(list);
           }
           break;
         case "byteValue":
           if (member.getValue() instanceof Number) {
-            obj.setByteValue(((Number) member.getValue()).byteValue());
+            obj.setByteValue(((Number)member.getValue()).byteValue());
           }
           break;
         case "charValue":
           if (member.getValue() instanceof String) {
-            obj.setCharValue(((String) member.getValue()).charAt(0));
+            obj.setCharValue(((String)member.getValue()).charAt(0));
           }
           break;
         case "doubleValue":
           if (member.getValue() instanceof Number) {
-            obj.setDoubleValue(((Number) member.getValue()).doubleValue());
+            obj.setDoubleValue(((Number)member.getValue()).doubleValue());
           }
           break;
         case "floatValue":
           if (member.getValue() instanceof Number) {
-            obj.setFloatValue(((Number) member.getValue()).floatValue());
+            obj.setFloatValue(((Number)member.getValue()).floatValue());
           }
           break;
         case "httpMethod":
           if (member.getValue() instanceof String) {
-            obj.setHttpMethod(java.util.concurrent.TimeUnit.valueOf((String) member.getValue()));
+            obj.setHttpMethod(java.util.concurrent.TimeUnit.valueOf((String)member.getValue()));
           }
           break;
         case "httpMethodMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.util.concurrent.TimeUnit> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                map.put(entry.getKey(), java.util.concurrent.TimeUnit.valueOf((String) entry.getValue()));
+                map.put(entry.getKey(), java.util.concurrent.TimeUnit.valueOf((String)entry.getValue()));
             });
             obj.setHttpMethodMap(map);
           }
           break;
         case "httpMethodSet":
           if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<java.util.concurrent.TimeUnit> list = new java.util.LinkedHashSet<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.LinkedHashSet<java.util.concurrent.TimeUnit> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(java.util.concurrent.TimeUnit.valueOf((String) item));
+                list.add(java.util.concurrent.TimeUnit.valueOf((String)item));
             });
             obj.setHttpMethodSet(list);
           }
           break;
         case "httpMethods":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.util.concurrent.TimeUnit> list = new java.util.ArrayList<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.ArrayList<java.util.concurrent.TimeUnit> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(java.util.concurrent.TimeUnit.valueOf((String) item));
+                list.add(java.util.concurrent.TimeUnit.valueOf((String)item));
             });
             obj.setHttpMethods(list);
           }
           break;
         case "intValue":
           if (member.getValue() instanceof Number) {
-            obj.setIntValue(((Number) member.getValue()).intValue());
+            obj.setIntValue(((Number)member.getValue()).intValue());
           }
           break;
         case "jsonArray":
           if (member.getValue() instanceof JsonArray) {
-            obj.setJsonArray(((JsonArray) member.getValue()).copy());
+            obj.setJsonArray(((JsonArray)member.getValue()).copy());
           }
           break;
         case "jsonArrayMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, io.vertx.core.json.JsonArray> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof JsonArray)
-                map.put(entry.getKey(), ((JsonArray) entry.getValue()).copy());
+                map.put(entry.getKey(), ((JsonArray)entry.getValue()).copy());
             });
             obj.setJsonArrayMap(map);
           }
           break;
         case "jsonArraySet":
           if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<io.vertx.core.json.JsonArray> list = new java.util.LinkedHashSet<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.LinkedHashSet<io.vertx.core.json.JsonArray> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonArray)
-                list.add(((JsonArray) item).copy());
+                list.add(((JsonArray)item).copy());
             });
             obj.setJsonArraySet(list);
           }
           break;
         case "jsonArrays":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<io.vertx.core.json.JsonArray> list = new java.util.ArrayList<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.ArrayList<io.vertx.core.json.JsonArray> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonArray)
-                list.add(((JsonArray) item).copy());
+                list.add(((JsonArray)item).copy());
             });
             obj.setJsonArrays(list);
           }
           break;
         case "jsonObject":
           if (member.getValue() instanceof JsonObject) {
-            obj.setJsonObject(((JsonObject) member.getValue()).copy());
+            obj.setJsonObject(((JsonObject)member.getValue()).copy());
           }
           break;
         case "jsonObjectMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, io.vertx.core.json.JsonObject> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof JsonObject)
-                map.put(entry.getKey(), ((JsonObject) entry.getValue()).copy());
+                map.put(entry.getKey(), ((JsonObject)entry.getValue()).copy());
             });
             obj.setJsonObjectMap(map);
           }
           break;
         case "jsonObjectSet":
           if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<io.vertx.core.json.JsonObject> list = new java.util.LinkedHashSet<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.LinkedHashSet<io.vertx.core.json.JsonObject> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                list.add(((JsonObject) item).copy());
+                list.add(((JsonObject)item).copy());
             });
             obj.setJsonObjectSet(list);
           }
           break;
         case "jsonObjects":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<io.vertx.core.json.JsonObject> list = new java.util.ArrayList<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.ArrayList<io.vertx.core.json.JsonObject> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                list.add(((JsonObject) item).copy());
+                list.add(((JsonObject)item).copy());
             });
             obj.setJsonObjects(list);
           }
           break;
         case "keyedBoxedBooleanValues":
           if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Boolean)
-                obj.addKeyedBoxedBooleanValue(entry.getKey(), (Boolean) entry.getValue());
+                obj.addKeyedBoxedBooleanValue(entry.getKey(), (Boolean)entry.getValue());
             });
           }
           break;
         case "keyedBoxedByteValues":
           if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Number)
-                obj.addKeyedBoxedByteValue(entry.getKey(), ((Number) entry.getValue()).byteValue());
+                obj.addKeyedBoxedByteValue(entry.getKey(), ((Number)entry.getValue()).byteValue());
             });
           }
           break;
         case "keyedBoxedCharValues":
           if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                obj.addKeyedBoxedCharValue(entry.getKey(), ((String) entry.getValue()).charAt(0));
+                obj.addKeyedBoxedCharValue(entry.getKey(), ((String)entry.getValue()).charAt(0));
             });
           }
           break;
         case "keyedBoxedDoubleValues":
           if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Number)
-                obj.addKeyedBoxedDoubleValue(entry.getKey(), ((Number) entry.getValue()).doubleValue());
+                obj.addKeyedBoxedDoubleValue(entry.getKey(), ((Number)entry.getValue()).doubleValue());
             });
           }
           break;
         case "keyedBoxedFloatValues":
           if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Number)
-                obj.addKeyedBoxedFloatValue(entry.getKey(), ((Number) entry.getValue()).floatValue());
+                obj.addKeyedBoxedFloatValue(entry.getKey(), ((Number)entry.getValue()).floatValue());
             });
           }
           break;
         case "keyedBoxedIntValues":
           if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Number)
-                obj.addKeyedBoxedIntValue(entry.getKey(), ((Number) entry.getValue()).intValue());
+                obj.addKeyedBoxedIntValue(entry.getKey(), ((Number)entry.getValue()).intValue());
             });
           }
           break;
         case "keyedBoxedLongValues":
           if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Number)
-                obj.addKeyedBoxedLongValue(entry.getKey(), ((Number) entry.getValue()).longValue());
+                obj.addKeyedBoxedLongValue(entry.getKey(), ((Number)entry.getValue()).longValue());
             });
           }
           break;
         case "keyedBoxedShortValues":
           if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Number)
-                obj.addKeyedBoxedShortValue(entry.getKey(), ((Number) entry.getValue()).shortValue());
+                obj.addKeyedBoxedShortValue(entry.getKey(), ((Number)entry.getValue()).shortValue());
             });
           }
           break;
         case "keyedBufferValues":
           if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                obj.addKeyedBufferValue(entry.getKey(), io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String) entry.getValue())));
+                obj.addKeyedBufferValue(entry.getKey(), io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)entry.getValue())));
             });
           }
           break;
         case "keyedDataObjectValues":
           if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof JsonObject)
-                obj.addKeyedDataObjectValue(entry.getKey(), new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject) entry.getValue()));
+                obj.addKeyedDataObjectValue(entry.getKey(), new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)entry.getValue()));
             });
           }
           break;
         case "keyedEnumValues":
           if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                obj.addKeyedEnumValue(entry.getKey(), java.util.concurrent.TimeUnit.valueOf((String) entry.getValue()));
+                obj.addKeyedEnumValue(entry.getKey(), java.util.concurrent.TimeUnit.valueOf((String)entry.getValue()));
             });
           }
           break;
         case "keyedJsonArrayValues":
           if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof JsonArray)
-                obj.addKeyedJsonArrayValue(entry.getKey(), ((JsonArray) entry.getValue()).copy());
+                obj.addKeyedJsonArrayValue(entry.getKey(), ((JsonArray)entry.getValue()).copy());
             });
           }
           break;
         case "keyedJsonObjectValues":
           if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof JsonObject)
-                obj.addKeyedJsonObjectValue(entry.getKey(), ((JsonObject) entry.getValue()).copy());
+                obj.addKeyedJsonObjectValue(entry.getKey(), ((JsonObject)entry.getValue()).copy());
             });
           }
           break;
         case "keyedObjectValues":
           if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Object)
                 obj.addKeyedObjectValue(entry.getKey(), entry.getValue());
             });
@@ -731,21 +731,21 @@ public class TestDataObjectConverter {
           break;
         case "keyedStringValues":
           if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                obj.addKeyedStringValue(entry.getKey(), (String) entry.getValue());
+                obj.addKeyedStringValue(entry.getKey(), (String)entry.getValue());
             });
           }
           break;
         case "longValue":
           if (member.getValue() instanceof Number) {
-            obj.setLongValue(((Number) member.getValue()).longValue());
+            obj.setLongValue(((Number)member.getValue()).longValue());
           }
           break;
         case "objectMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Object> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Object)
                 map.put(entry.getKey(), entry.getValue());
             });
@@ -754,8 +754,8 @@ public class TestDataObjectConverter {
           break;
         case "objectSet":
           if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<java.lang.Object> list = new java.util.LinkedHashSet<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.LinkedHashSet<java.lang.Object> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Object)
                 list.add(item);
             });
@@ -764,8 +764,8 @@ public class TestDataObjectConverter {
           break;
         case "objects":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Object> list = new java.util.ArrayList<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.ArrayList<java.lang.Object> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Object)
                 list.add(item);
             });
@@ -774,40 +774,40 @@ public class TestDataObjectConverter {
           break;
         case "shortValue":
           if (member.getValue() instanceof Number) {
-            obj.setShortValue(((Number) member.getValue()).shortValue());
+            obj.setShortValue(((Number)member.getValue()).shortValue());
           }
           break;
         case "stringSet":
           if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<java.lang.String> list = new java.util.LinkedHashSet<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.LinkedHashSet<java.lang.String> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add((String) item);
+                list.add((String)item);
             });
             obj.setStringSet(list);
           }
           break;
         case "stringValue":
           if (member.getValue() instanceof String) {
-            obj.setStringValue((String) member.getValue());
+            obj.setStringValue((String)member.getValue());
           }
           break;
         case "stringValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.String> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>) member.getValue()).forEach(entry -> {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                map.put(entry.getKey(), (String) entry.getValue());
+                map.put(entry.getKey(), (String)entry.getValue());
             });
             obj.setStringValueMap(map);
           }
           break;
         case "stringValues":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.String> list = new java.util.ArrayList<>();
-            ((Iterable<Object>) member.getValue()).forEach(item -> {
+            java.util.ArrayList<java.lang.String> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add((String) item);
+                list.add((String)item);
             });
             obj.setStringValues(list);
           }

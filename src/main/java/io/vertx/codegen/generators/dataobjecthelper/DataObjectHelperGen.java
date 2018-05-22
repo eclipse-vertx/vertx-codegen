@@ -16,7 +16,7 @@ import java.util.Map;
 public class DataObjectHelperGen extends Generator<DataObjectModel> {
 
   public DataObjectHelperGen() {
-    kinds = Collections.singleton("dataObject");
+    kinds = Collections.singleton(DataObjectModel.class);
     name = "data_object_converters";
   }
 
