@@ -9,6 +9,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -39,6 +42,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print("\n");
     writer.print("import io.vertx.core.json.JsonObject;\n");
     writer.print("import io.vertx.core.json.JsonArray;\n");
+    writer.print("import java.util.Objects;\n");
     writer.print("\n");
     writer.print("/**\n");
     writer.print(" * Converter for {@link " + model.getType() + "}.\n");
@@ -49,8 +53,35 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     generateFromson(visibility, inheritConverter, model, writer);
     writer.print("\n");
     generateToJson(visibility, inheritConverter, model, writer);
+    writer.print("\n");
+    generateEquals(model, writer);
+    writer.print("\n");
+    writer.print("\n");
+    generateHashCode(model, writer);
     writer.print("}\n");
     return buffer.toString();
+  }
+
+  private void generateEquals(DataObjectModel model, PrintWriter writer) {
+    String simpleName = model.getType().getSimpleName();
+    writer.println(String.format("    public static boolean equals(%s lhs, %s rhs) {", simpleName, simpleName));
+    writer.println("        if (lhs == rhs) return true;");
+    writer.println("        return ");
+    String equalsString = model.getPropertyMap().values().stream()
+      .map(prop -> String.format("            Objects.equals(lhs.%s(), rhs.%s())", prop.getGetterMethod(), prop.getGetterMethod()))
+      .collect(Collectors.joining(" &&\n"));
+    writer.println(equalsString + ";");
+    writer.println("    }");
+  }
+
+  private void generateHashCode(DataObjectModel model, PrintWriter writer) {
+    String simpleName = model.getType().getSimpleName();
+    writer.println(String.format("    public static int hashCode(%s o) {", simpleName));
+    String equalsString = model.getPropertyMap().values().stream()
+      .map(prop -> String.format("                o.%s()", prop.getGetterMethod()))
+      .collect(Collectors.joining(",\n"));
+    writer.println(String.format("        return Objects.hash(\n%s);", equalsString));
+    writer.println("    }");
   }
 
   private void generateToJson(String visibility, boolean inheritConverter, DataObjectModel model, PrintWriter writer) {
