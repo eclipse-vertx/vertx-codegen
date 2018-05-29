@@ -605,8 +605,21 @@ public class DataObjectTest {
     lhs.setFloatValue(100f);
     assertFalse(TestDataObjectConverter.equals(lhs, rhs));
     assertNotEquals(TestDataObjectConverter.hashCode(lhs), TestDataObjectConverter.hashCode(rhs));
-
   }
+
+  @Test
+  public void testDataObjectEqualsAndHashWithGenIgnore() {
+    DataObjectWithGenIgnore lhs = new DataObjectWithGenIgnore("Julien", "Viet");
+    DataObjectWithGenIgnore rhs = new DataObjectWithGenIgnore("Julien", "Viet");
+    assertEquals(DataObjectWithGenIgnoreConverter.hashCode(lhs), DataObjectWithGenIgnoreConverter.hashCode(lhs)); //same hashcode
+    assertTrue(DataObjectWithGenIgnoreConverter.equals(lhs, rhs)); //equals
+    assertTrue(DataObjectWithGenIgnoreConverter.equals(lhs, lhs)); //equals to itself
+
+    DataObjectWithGenIgnore other = new DataObjectWithGenIgnore("Farid", "Zakaria");
+    assertNotEquals(DataObjectWithGenIgnoreConverter.hashCode(lhs), DataObjectWithGenIgnoreConverter.hashCode(other)); //same hashcode
+    assertFalse(DataObjectWithGenIgnoreConverter.equals(lhs, other)); //same hashcode
+  }
+
 
   @Test
   public void testEmptyDataObjectToJson() {

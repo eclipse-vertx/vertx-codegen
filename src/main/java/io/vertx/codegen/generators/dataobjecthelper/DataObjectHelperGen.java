@@ -68,6 +68,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.println("        if (lhs == rhs) return true;");
     writer.println("        return ");
     String equalsString = model.getPropertyMap().values().stream()
+      .filter(prop -> Objects.nonNull(prop.getGetterMethod()))
       .map(prop -> String.format("            Objects.equals(lhs.%s(), rhs.%s())", prop.getGetterMethod(), prop.getGetterMethod()))
       .collect(Collectors.joining(" &&\n"));
     writer.println(equalsString + ";");
@@ -78,6 +79,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     String simpleName = model.getType().getSimpleName();
     writer.println(String.format("    public static int hashCode(%s o) {", simpleName));
     String equalsString = model.getPropertyMap().values().stream()
+      .filter(prop -> Objects.nonNull(prop.getGetterMethod()))
       .map(prop -> String.format("                o.%s()", prop.getGetterMethod()))
       .collect(Collectors.joining(",\n"));
     writer.println(String.format("        return Objects.hash(\n%s);", equalsString));
