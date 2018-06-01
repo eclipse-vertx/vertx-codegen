@@ -1250,9 +1250,11 @@ public class TestDataObjectConverter {
   }
 
     public static boolean equals(TestDataObject lhs, TestDataObject rhs) {
-        if (lhs == rhs) return true;
-        return 
-            Objects.equals(lhs.getAddedAggregatedDataObjects(), rhs.getAddedAggregatedDataObjects()) &&
+        if (lhs == rhs) {
+          return true;
+        }
+
+        return Objects.equals(lhs.getAddedAggregatedDataObjects(), rhs.getAddedAggregatedDataObjects()) &&
             Objects.equals(lhs.getAddedBoxedBooleanValues(), rhs.getAddedBoxedBooleanValues()) &&
             Objects.equals(lhs.getAddedBoxedByteValues(), rhs.getAddedBoxedByteValues()) &&
             Objects.equals(lhs.getAddedBoxedCharValues(), rhs.getAddedBoxedCharValues()) &&

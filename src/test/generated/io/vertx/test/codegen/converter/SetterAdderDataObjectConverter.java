@@ -40,9 +40,11 @@ public class SetterAdderDataObjectConverter {
   }
 
     public static boolean equals(SetterAdderDataObject lhs, SetterAdderDataObject rhs) {
-        if (lhs == rhs) return true;
-        return 
-            Objects.equals(lhs.getValues(), rhs.getValues());
+        if (lhs == rhs) {
+          return true;
+        }
+
+        return Objects.equals(lhs.getValues(), rhs.getValues());
     }
 
 

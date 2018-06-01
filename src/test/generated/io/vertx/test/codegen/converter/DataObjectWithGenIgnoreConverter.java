@@ -41,9 +41,11 @@ public class DataObjectWithGenIgnoreConverter {
   }
 
     public static boolean equals(DataObjectWithGenIgnore lhs, DataObjectWithGenIgnore rhs) {
-        if (lhs == rhs) return true;
-        return 
-            Objects.equals(lhs.getFirstName(), rhs.getFirstName()) &&
+        if (lhs == rhs) {
+          return true;
+        }
+
+        return Objects.equals(lhs.getFirstName(), rhs.getFirstName()) &&
             Objects.equals(lhs.getLastName(), rhs.getLastName());
     }
 

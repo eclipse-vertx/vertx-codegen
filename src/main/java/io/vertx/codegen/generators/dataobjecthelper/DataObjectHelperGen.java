@@ -65,12 +65,15 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
   private void generateEquals(DataObjectModel model, PrintWriter writer) {
     String simpleName = model.getType().getSimpleName();
     writer.println(String.format("    public static boolean equals(%s lhs, %s rhs) {", simpleName, simpleName));
-    writer.println("        if (lhs == rhs) return true;");
-    writer.println("        return ");
+    writer.println("        if (lhs == rhs) {");
+    writer.println("          return true;");
+    writer.println("        }");
+    writer.println("");
+    writer.print("        return ");
     String equalsString = model.getPropertyMap().values().stream()
       .filter(prop -> Objects.nonNull(prop.getGetterMethod()))
-      .map(prop -> String.format("            Objects.equals(lhs.%s(), rhs.%s())", prop.getGetterMethod(), prop.getGetterMethod()))
-      .collect(Collectors.joining(" &&\n"));
+      .map(prop -> String.format("Objects.equals(lhs.%s(), rhs.%s())", prop.getGetterMethod(), prop.getGetterMethod()))
+      .collect(Collectors.joining(" &&\n            "));
     writer.println(equalsString + ";");
     writer.println("    }");
   }

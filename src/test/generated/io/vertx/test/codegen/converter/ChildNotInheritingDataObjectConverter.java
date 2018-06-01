@@ -33,9 +33,11 @@ public class ChildNotInheritingDataObjectConverter {
   }
 
     public static boolean equals(ChildNotInheritingDataObject lhs, ChildNotInheritingDataObject rhs) {
-        if (lhs == rhs) return true;
-        return 
-            Objects.equals(lhs.getChildProperty(), rhs.getChildProperty()) &&
+        if (lhs == rhs) {
+          return true;
+        }
+
+        return Objects.equals(lhs.getChildProperty(), rhs.getChildProperty()) &&
             Objects.equals(lhs.getParentProperty(), rhs.getParentProperty());
     }
 
