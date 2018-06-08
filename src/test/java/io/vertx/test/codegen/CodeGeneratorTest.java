@@ -1,8 +1,10 @@
 package io.vertx.test.codegen;
 
 import io.vertx.codegen.CodeGenProcessor;
+import io.vertx.codegen.Compiler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.test.codegen.testapi.InterfaceDataObject;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenParams;
 import io.vertx.test.codegen.testapi.VertxGenClass1;
 import io.vertx.test.codegen.testapi.VertxGenClass2;
@@ -14,8 +16,6 @@ import io.vertx.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubApi;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import io.vertx.codegen.Compiler;
 import org.junit.rules.TestName;
 
 import java.io.File;
@@ -26,9 +26,9 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.Callable;
 
-import static org.junit.Assert.*;
-import static io.vertx.test.codegen.Utils.assertMkDirs;
 import static io.vertx.test.codegen.Utils.assertFile;
+import static io.vertx.test.codegen.Utils.assertMkDirs;
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -260,4 +260,11 @@ public class CodeGeneratorTest {
     assertTrue(fileContent.contains(VertxGenClass1.class.getSimpleName()));
     assertTrue(fileContent.contains(VertxGenClass2.class.getSimpleName()));
   }
+
+  @Test
+  public void testServiceLoader() throws Exception {
+    Properties props = assertCompile("MyTest", InterfaceDataObject.class);
+    assertEquals(props.remove("MyGenerator"), "true");
+  }
+
 }
