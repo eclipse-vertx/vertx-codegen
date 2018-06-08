@@ -14,7 +14,7 @@ pipeline {
       }
       steps {
         sh 'mvn -U -B -Dsurefire.reportNameSuffix=OracleJDK_8 clean deploy -s $MAVEN_SETTINGS_PATH'
-        triggerWorkflow
+        triggerWorkflow()
       }
       post {
         always {
