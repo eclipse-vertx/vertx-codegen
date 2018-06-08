@@ -17,7 +17,7 @@ public class EnumCheatsheetGen extends Generator<EnumModel> {
 
   public EnumCheatsheetGen() {
     name = "cheatsheet";
-    kinds = Collections.singleton("enum");
+    kinds = Collections.singleton(EnumModel.class);
     incremental = true;
   }
 

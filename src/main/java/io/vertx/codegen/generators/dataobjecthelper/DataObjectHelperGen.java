@@ -16,7 +16,7 @@ import java.util.Map;
 public class DataObjectHelperGen extends Generator<DataObjectModel> {
 
   public DataObjectHelperGen() {
-    kinds = Collections.singleton("dataObject");
+    kinds = Collections.singleton(DataObjectModel.class);
     name = "data_object_converters";
   }
 
@@ -109,18 +109,20 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       writer.print(indent + "  JsonArray array = new JsonArray();\n");
       writer.print(indent + "  obj." + prop.getGetterMethod() + "().forEach(item -> array.add(" + before + "item" + after + "));\n");
       writer.print(indent + "  json.put(\"" + prop.getName() + "\", array);\n");
-      writer.print(indent + " }\n");
+      writer.print(indent + "}\n");
     } else if (prop.isMap()) {
       writer.print(indent + "if (obj." + prop.getGetterMethod() + "() != null) {\n");
       writer.print(indent + "  JsonObject map = new JsonObject();\n");
-      writer.print(indent + "  obj." + prop.getGetterMethod() + "().forEach((key,value) -> map.put(key, " + before + "value" + after + "));\n");
+      writer.print(indent + "  obj." + prop.getGetterMethod() + "().forEach((key, value) -> map.put(key, " + before + "value" + after + "));\n");
       writer.print(indent + "  json.put(\"" + prop.getName() + "\", map);\n");
-      writer.print(indent + " }\n");
+      writer.print(indent + "}\n");
     } else {
+      String sp = "";
       if (prop.getType().getKind() != ClassKind.PRIMITIVE) {
+        sp = "  ";
         writer.print(indent + "if (obj." + prop.getGetterMethod() + "() != null) {\n");
       }
-      writer.print(indent + "  json.put(\"" + prop.getName() + "\", " + before + "obj." + prop.getGetterMethod() + "()" + after + ");\n");
+      writer.print(indent + sp + "json.put(\"" + prop.getName() + "\", " + before + "obj." + prop.getGetterMethod() + "()" + after + ");\n");
       if (prop.getType().getKind() != ClassKind.PRIMITIVE) {
         writer.print(indent + "}\n");
       }
@@ -206,10 +208,10 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
   }
 
   private void genPropFromJson(String cast, String before, String after, PropertyInfo prop, PrintWriter writer) {
-    String indent = "          ";
+    String indent = "        ";
     writer.print(indent + "case \"" + prop.getName() + "\":\n");
     if (prop.isList() || prop.isSet()) {
-      writer.print(indent + " if (member.getValue() instanceof JsonArray) {\n");
+      writer.print(indent + "  if (member.getValue() instanceof JsonArray) {\n");
       if (prop.isSetter()) {
         String coll = prop.isList() ? "java.util.ArrayList" : "java.util.LinkedHashSet";
         writer.print(indent + "    " + coll + "<" + prop.getType().getName() + "> list =  new " + coll + "<>();\n");
@@ -224,9 +226,9 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         writer.print(indent + "        obj." + prop.getAdderMethod() + "(" + before + "item" + after + ");\n");
         writer.print(indent + "    });\n");
       }
-      writer.print(indent + " }\n");
+      writer.print(indent + "  }\n");
     } else if (prop.isMap()) {
-      writer.print(indent + " if (member.getValue() instanceof JsonObject) {\n");
+      writer.print(indent + "  if (member.getValue() instanceof JsonObject) {\n");
       if (prop.isAdder()) {
         writer.print(indent + "    ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {\n");
         writer.print(indent + "      if (entry.getValue() instanceof " + cast + ")\n");
@@ -240,7 +242,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         writer.print(indent + "    });\n");
         writer.print(indent + "    obj." + prop.getSetterMethod() + "(map);\n");
       }
-      writer.print(indent + "    }\n");
+      writer.print(indent + "  }\n");
     } else {
       if (prop.isSetter()) {
         writer.print(indent + "  if (member.getValue() instanceof " + cast + ") {\n");

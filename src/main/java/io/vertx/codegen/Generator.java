@@ -14,7 +14,7 @@ public abstract class Generator<M extends Model> {
 
   public ProcessingEnvironment env;
   public String name;
-  public Set<String> kinds;
+  public Set<Class<? extends M>> kinds;
   public boolean incremental;
 
   public void load(ProcessingEnvironment processingEnv) {

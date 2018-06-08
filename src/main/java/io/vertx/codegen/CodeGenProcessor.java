@@ -147,10 +147,9 @@ public class CodeGenProcessor extends AbstractProcessor {
           try {
             Model model = entry.getValue();
             for (Generator codeGenerator : codeGenerators) {
-              if (codeGenerator.kinds.contains(model.getKind())) {
+              if (codeGenerator.kinds.contains(model.getClass())) {
                 String relativeName = codeGenerator.relativeFilename(model);
                 if (relativeName != null) {
-
                   int kind;
                   if (relativeName.endsWith(".java") && !relativeName.contains("/")) {
                     String relocation = relocations.get(codeGenerator.name);
