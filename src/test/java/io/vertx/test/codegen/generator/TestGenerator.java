@@ -6,9 +6,9 @@ import io.vertx.codegen.Generator;
 import java.util.Collections;
 import java.util.Map;
 
-public class MyGenerator extends Generator<DataObjectModel>{
-  public MyGenerator(){
-    name = "MyTest";
+public class TestGenerator extends Generator<DataObjectModel>{
+  public TestGenerator(){
+    name = "testgen7";
     kinds = Collections.singleton(DataObjectModel.class);
   }
 

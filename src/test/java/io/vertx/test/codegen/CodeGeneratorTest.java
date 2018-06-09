@@ -263,8 +263,7 @@ public class CodeGeneratorTest {
 
   @Test
   public void testServiceLoader() throws Exception {
-    Properties props = assertCompile("MyTest", InterfaceDataObject.class);
+    Properties props = assertCompile("testgen7", InterfaceDataObject.class);
     assertEquals(props.remove("MyGenerator"), "true");
   }
-
 }

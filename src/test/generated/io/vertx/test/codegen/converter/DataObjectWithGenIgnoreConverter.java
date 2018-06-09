@@ -13,16 +13,16 @@ public class DataObjectWithGenIgnoreConverter {
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, DataObjectWithGenIgnore obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
       switch (member.getKey()) {
-          case "firstName":
-            if (member.getValue() instanceof String) {
-              obj.setFirstName((String)member.getValue());
-            }
-            break;
-          case "lastName":
-            if (member.getValue() instanceof String) {
-              obj.setLastName((String)member.getValue());
-            }
-            break;
+        case "firstName":
+          if (member.getValue() instanceof String) {
+            obj.setFirstName((String)member.getValue());
+          }
+          break;
+        case "lastName":
+          if (member.getValue() instanceof String) {
+            obj.setLastName((String)member.getValue());
+          }
+          break;
       }
     }
   }
