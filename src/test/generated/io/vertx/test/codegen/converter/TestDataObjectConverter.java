@@ -2,6 +2,7 @@ package io.vertx.test.codegen.converter;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
+import java.util.Objects;
 
 /**
  * Converter for {@link io.vertx.test.codegen.converter.TestDataObject}.
@@ -1247,4 +1248,210 @@ public class TestDataObjectConverter {
       json.put("stringValues", array);
     }
   }
+
+    public static boolean equals(TestDataObject lhs, TestDataObject rhs) {
+        if (lhs == rhs) {
+          return true;
+        }
+
+        return Objects.equals(lhs.getAddedAggregatedDataObjects(), rhs.getAddedAggregatedDataObjects()) &&
+            Objects.equals(lhs.getAddedBoxedBooleanValues(), rhs.getAddedBoxedBooleanValues()) &&
+            Objects.equals(lhs.getAddedBoxedByteValues(), rhs.getAddedBoxedByteValues()) &&
+            Objects.equals(lhs.getAddedBoxedCharValues(), rhs.getAddedBoxedCharValues()) &&
+            Objects.equals(lhs.getAddedBoxedDoubleValues(), rhs.getAddedBoxedDoubleValues()) &&
+            Objects.equals(lhs.getAddedBoxedFloatValues(), rhs.getAddedBoxedFloatValues()) &&
+            Objects.equals(lhs.getAddedBoxedIntValues(), rhs.getAddedBoxedIntValues()) &&
+            Objects.equals(lhs.getAddedBoxedLongValues(), rhs.getAddedBoxedLongValues()) &&
+            Objects.equals(lhs.getAddedBoxedShortValues(), rhs.getAddedBoxedShortValues()) &&
+            Objects.equals(lhs.getAddedBuffers(), rhs.getAddedBuffers()) &&
+            Objects.equals(lhs.getAddedHttpMethods(), rhs.getAddedHttpMethods()) &&
+            Objects.equals(lhs.getAddedJsonArrays(), rhs.getAddedJsonArrays()) &&
+            Objects.equals(lhs.getAddedJsonObjects(), rhs.getAddedJsonObjects()) &&
+            Objects.equals(lhs.getAddedObjects(), rhs.getAddedObjects()) &&
+            Objects.equals(lhs.getAddedStringValues(), rhs.getAddedStringValues()) &&
+            Objects.equals(lhs.getAggregatedDataObject(), rhs.getAggregatedDataObject()) &&
+            Objects.equals(lhs.getAggregatedDataObjectMap(), rhs.getAggregatedDataObjectMap()) &&
+            Objects.equals(lhs.getAggregatedDataObjectSet(), rhs.getAggregatedDataObjectSet()) &&
+            Objects.equals(lhs.getAggregatedDataObjects(), rhs.getAggregatedDataObjects()) &&
+            Objects.equals(lhs.isBooleanValue(), rhs.isBooleanValue()) &&
+            Objects.equals(lhs.getBoxedBooleanSet(), rhs.getBoxedBooleanSet()) &&
+            Objects.equals(lhs.isBoxedBooleanValue(), rhs.isBoxedBooleanValue()) &&
+            Objects.equals(lhs.getBoxedBooleanValueMap(), rhs.getBoxedBooleanValueMap()) &&
+            Objects.equals(lhs.getBoxedBooleanValues(), rhs.getBoxedBooleanValues()) &&
+            Objects.equals(lhs.getBoxedByteSet(), rhs.getBoxedByteSet()) &&
+            Objects.equals(lhs.getBoxedByteValue(), rhs.getBoxedByteValue()) &&
+            Objects.equals(lhs.getBoxedByteValueMap(), rhs.getBoxedByteValueMap()) &&
+            Objects.equals(lhs.getBoxedByteValues(), rhs.getBoxedByteValues()) &&
+            Objects.equals(lhs.getBoxedCharSet(), rhs.getBoxedCharSet()) &&
+            Objects.equals(lhs.getBoxedCharValue(), rhs.getBoxedCharValue()) &&
+            Objects.equals(lhs.getBoxedCharValueMap(), rhs.getBoxedCharValueMap()) &&
+            Objects.equals(lhs.getBoxedCharValues(), rhs.getBoxedCharValues()) &&
+            Objects.equals(lhs.getBoxedDoubleSet(), rhs.getBoxedDoubleSet()) &&
+            Objects.equals(lhs.getBoxedDoubleValue(), rhs.getBoxedDoubleValue()) &&
+            Objects.equals(lhs.getBoxedDoubleValueMap(), rhs.getBoxedDoubleValueMap()) &&
+            Objects.equals(lhs.getBoxedDoubleValues(), rhs.getBoxedDoubleValues()) &&
+            Objects.equals(lhs.getBoxedFloatSet(), rhs.getBoxedFloatSet()) &&
+            Objects.equals(lhs.getBoxedFloatValue(), rhs.getBoxedFloatValue()) &&
+            Objects.equals(lhs.getBoxedFloatValueMap(), rhs.getBoxedFloatValueMap()) &&
+            Objects.equals(lhs.getBoxedFloatValues(), rhs.getBoxedFloatValues()) &&
+            Objects.equals(lhs.getBoxedIntSet(), rhs.getBoxedIntSet()) &&
+            Objects.equals(lhs.getBoxedIntValue(), rhs.getBoxedIntValue()) &&
+            Objects.equals(lhs.getBoxedIntValueMap(), rhs.getBoxedIntValueMap()) &&
+            Objects.equals(lhs.getBoxedIntValues(), rhs.getBoxedIntValues()) &&
+            Objects.equals(lhs.getBoxedLongSet(), rhs.getBoxedLongSet()) &&
+            Objects.equals(lhs.getBoxedLongValue(), rhs.getBoxedLongValue()) &&
+            Objects.equals(lhs.getBoxedLongValueMap(), rhs.getBoxedLongValueMap()) &&
+            Objects.equals(lhs.getBoxedLongValues(), rhs.getBoxedLongValues()) &&
+            Objects.equals(lhs.getBoxedShortSet(), rhs.getBoxedShortSet()) &&
+            Objects.equals(lhs.getBoxedShortValue(), rhs.getBoxedShortValue()) &&
+            Objects.equals(lhs.getBoxedShortValueMap(), rhs.getBoxedShortValueMap()) &&
+            Objects.equals(lhs.getBoxedShortValues(), rhs.getBoxedShortValues()) &&
+            Objects.equals(lhs.getBuffer(), rhs.getBuffer()) &&
+            Objects.equals(lhs.getBufferMap(), rhs.getBufferMap()) &&
+            Objects.equals(lhs.getBufferSet(), rhs.getBufferSet()) &&
+            Objects.equals(lhs.getBuffers(), rhs.getBuffers()) &&
+            Objects.equals(lhs.getByteValue(), rhs.getByteValue()) &&
+            Objects.equals(lhs.getCharValue(), rhs.getCharValue()) &&
+            Objects.equals(lhs.getDoubleValue(), rhs.getDoubleValue()) &&
+            Objects.equals(lhs.getFloatValue(), rhs.getFloatValue()) &&
+            Objects.equals(lhs.getHttpMethod(), rhs.getHttpMethod()) &&
+            Objects.equals(lhs.getHttpMethodMap(), rhs.getHttpMethodMap()) &&
+            Objects.equals(lhs.getHttpMethodSet(), rhs.getHttpMethodSet()) &&
+            Objects.equals(lhs.getHttpMethods(), rhs.getHttpMethods()) &&
+            Objects.equals(lhs.getIntValue(), rhs.getIntValue()) &&
+            Objects.equals(lhs.getJsonArray(), rhs.getJsonArray()) &&
+            Objects.equals(lhs.getJsonArrayMap(), rhs.getJsonArrayMap()) &&
+            Objects.equals(lhs.getJsonArraySet(), rhs.getJsonArraySet()) &&
+            Objects.equals(lhs.getJsonArrays(), rhs.getJsonArrays()) &&
+            Objects.equals(lhs.getJsonObject(), rhs.getJsonObject()) &&
+            Objects.equals(lhs.getJsonObjectMap(), rhs.getJsonObjectMap()) &&
+            Objects.equals(lhs.getJsonObjectSet(), rhs.getJsonObjectSet()) &&
+            Objects.equals(lhs.getJsonObjects(), rhs.getJsonObjects()) &&
+            Objects.equals(lhs.getKeyedBoxedBooleanValues(), rhs.getKeyedBoxedBooleanValues()) &&
+            Objects.equals(lhs.getKeyedBoxedByteValues(), rhs.getKeyedBoxedByteValues()) &&
+            Objects.equals(lhs.getKeyedBoxedCharValues(), rhs.getKeyedBoxedCharValues()) &&
+            Objects.equals(lhs.getKeyedBoxedDoubleValues(), rhs.getKeyedBoxedDoubleValues()) &&
+            Objects.equals(lhs.getKeyedBoxedFloatValues(), rhs.getKeyedBoxedFloatValues()) &&
+            Objects.equals(lhs.getKeyedBoxedIntValues(), rhs.getKeyedBoxedIntValues()) &&
+            Objects.equals(lhs.getKeyedBoxedLongValues(), rhs.getKeyedBoxedLongValues()) &&
+            Objects.equals(lhs.getKeyedBoxedShortValues(), rhs.getKeyedBoxedShortValues()) &&
+            Objects.equals(lhs.getKeyedBufferValues(), rhs.getKeyedBufferValues()) &&
+            Objects.equals(lhs.getKeyedDataObjectValues(), rhs.getKeyedDataObjectValues()) &&
+            Objects.equals(lhs.getKeyedEnumValues(), rhs.getKeyedEnumValues()) &&
+            Objects.equals(lhs.getKeyedJsonArrayValues(), rhs.getKeyedJsonArrayValues()) &&
+            Objects.equals(lhs.getKeyedJsonObjectValues(), rhs.getKeyedJsonObjectValues()) &&
+            Objects.equals(lhs.getKeyedObjectValues(), rhs.getKeyedObjectValues()) &&
+            Objects.equals(lhs.getKeyedStringValues(), rhs.getKeyedStringValues()) &&
+            Objects.equals(lhs.getLongValue(), rhs.getLongValue()) &&
+            Objects.equals(lhs.getObjectMap(), rhs.getObjectMap()) &&
+            Objects.equals(lhs.getObjectSet(), rhs.getObjectSet()) &&
+            Objects.equals(lhs.getObjects(), rhs.getObjects()) &&
+            Objects.equals(lhs.getShortValue(), rhs.getShortValue()) &&
+            Objects.equals(lhs.getStringSet(), rhs.getStringSet()) &&
+            Objects.equals(lhs.getStringValue(), rhs.getStringValue()) &&
+            Objects.equals(lhs.getStringValueMap(), rhs.getStringValueMap()) &&
+            Objects.equals(lhs.getStringValues(), rhs.getStringValues());
+    }
+
+
+    public static int hashCode(TestDataObject o) {
+        return Objects.hash(
+                o.getAddedAggregatedDataObjects(),
+                o.getAddedBoxedBooleanValues(),
+                o.getAddedBoxedByteValues(),
+                o.getAddedBoxedCharValues(),
+                o.getAddedBoxedDoubleValues(),
+                o.getAddedBoxedFloatValues(),
+                o.getAddedBoxedIntValues(),
+                o.getAddedBoxedLongValues(),
+                o.getAddedBoxedShortValues(),
+                o.getAddedBuffers(),
+                o.getAddedHttpMethods(),
+                o.getAddedJsonArrays(),
+                o.getAddedJsonObjects(),
+                o.getAddedObjects(),
+                o.getAddedStringValues(),
+                o.getAggregatedDataObject(),
+                o.getAggregatedDataObjectMap(),
+                o.getAggregatedDataObjectSet(),
+                o.getAggregatedDataObjects(),
+                o.isBooleanValue(),
+                o.getBoxedBooleanSet(),
+                o.isBoxedBooleanValue(),
+                o.getBoxedBooleanValueMap(),
+                o.getBoxedBooleanValues(),
+                o.getBoxedByteSet(),
+                o.getBoxedByteValue(),
+                o.getBoxedByteValueMap(),
+                o.getBoxedByteValues(),
+                o.getBoxedCharSet(),
+                o.getBoxedCharValue(),
+                o.getBoxedCharValueMap(),
+                o.getBoxedCharValues(),
+                o.getBoxedDoubleSet(),
+                o.getBoxedDoubleValue(),
+                o.getBoxedDoubleValueMap(),
+                o.getBoxedDoubleValues(),
+                o.getBoxedFloatSet(),
+                o.getBoxedFloatValue(),
+                o.getBoxedFloatValueMap(),
+                o.getBoxedFloatValues(),
+                o.getBoxedIntSet(),
+                o.getBoxedIntValue(),
+                o.getBoxedIntValueMap(),
+                o.getBoxedIntValues(),
+                o.getBoxedLongSet(),
+                o.getBoxedLongValue(),
+                o.getBoxedLongValueMap(),
+                o.getBoxedLongValues(),
+                o.getBoxedShortSet(),
+                o.getBoxedShortValue(),
+                o.getBoxedShortValueMap(),
+                o.getBoxedShortValues(),
+                o.getBuffer(),
+                o.getBufferMap(),
+                o.getBufferSet(),
+                o.getBuffers(),
+                o.getByteValue(),
+                o.getCharValue(),
+                o.getDoubleValue(),
+                o.getFloatValue(),
+                o.getHttpMethod(),
+                o.getHttpMethodMap(),
+                o.getHttpMethodSet(),
+                o.getHttpMethods(),
+                o.getIntValue(),
+                o.getJsonArray(),
+                o.getJsonArrayMap(),
+                o.getJsonArraySet(),
+                o.getJsonArrays(),
+                o.getJsonObject(),
+                o.getJsonObjectMap(),
+                o.getJsonObjectSet(),
+                o.getJsonObjects(),
+                o.getKeyedBoxedBooleanValues(),
+                o.getKeyedBoxedByteValues(),
+                o.getKeyedBoxedCharValues(),
+                o.getKeyedBoxedDoubleValues(),
+                o.getKeyedBoxedFloatValues(),
+                o.getKeyedBoxedIntValues(),
+                o.getKeyedBoxedLongValues(),
+                o.getKeyedBoxedShortValues(),
+                o.getKeyedBufferValues(),
+                o.getKeyedDataObjectValues(),
+                o.getKeyedEnumValues(),
+                o.getKeyedJsonArrayValues(),
+                o.getKeyedJsonObjectValues(),
+                o.getKeyedObjectValues(),
+                o.getKeyedStringValues(),
+                o.getLongValue(),
+                o.getObjectMap(),
+                o.getObjectSet(),
+                o.getObjects(),
+                o.getShortValue(),
+                o.getStringSet(),
+                o.getStringValue(),
+                o.getStringValueMap(),
+                o.getStringValues());
+    }
 }

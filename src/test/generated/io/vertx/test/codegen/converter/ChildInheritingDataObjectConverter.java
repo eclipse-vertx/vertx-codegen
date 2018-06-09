@@ -2,6 +2,7 @@ package io.vertx.test.codegen.converter;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
+import java.util.Objects;
 
 /**
  * Converter for {@link io.vertx.test.codegen.converter.ChildInheritingDataObject}.
@@ -38,4 +39,20 @@ public class ChildInheritingDataObjectConverter {
       json.put("parentProperty", obj.getParentProperty());
     }
   }
+
+    public static boolean equals(ChildInheritingDataObject lhs, ChildInheritingDataObject rhs) {
+        if (lhs == rhs) {
+          return true;
+        }
+
+        return Objects.equals(lhs.getChildProperty(), rhs.getChildProperty()) &&
+            Objects.equals(lhs.getParentProperty(), rhs.getParentProperty());
+    }
+
+
+    public static int hashCode(ChildInheritingDataObject o) {
+        return Objects.hash(
+                o.getChildProperty(),
+                o.getParentProperty());
+    }
 }
