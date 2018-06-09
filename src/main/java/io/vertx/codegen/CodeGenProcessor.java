@@ -102,7 +102,7 @@ public class CodeGenProcessor extends AbstractProcessor {
         }
       }
       // load GeneratorLoader by ServiceLoader
-      Stream<GeneratorLoader> serviceLoader = StreamSupport.stream(ServiceLoader.load(GeneratorLoader.class).spliterator(), false);
+      Stream<GeneratorLoader> serviceLoader = StreamSupport.stream(ServiceLoader.load(GeneratorLoader.class, CodeGenProcessor.class.getClassLoader()).spliterator(), false);
       Stream<GeneratorLoader> loaders = Arrays.asList(new MvelCodeGeneratorLoader(), new CheatsheetGenLoader(), new DataObjectHelperGenLoader()).stream();
       Stream<Generator<?>> generators = Stream.concat(serviceLoader, loaders).flatMap(l -> l.loadGenerators(processingEnv));
       Predicate<Generator> filter = filterGenerators();
