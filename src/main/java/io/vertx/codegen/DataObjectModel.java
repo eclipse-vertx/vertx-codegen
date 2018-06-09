@@ -43,6 +43,8 @@ public class DataObjectModel implements Model {
   private boolean generateConverter;
   private boolean inheritConverter;
   private boolean publicConverter;
+  private boolean generateEquals;
+  private boolean generateHashCode;
   private int constructors;
   private boolean deprecated;
   private ClassTypeInfo superType;
@@ -129,6 +131,14 @@ public class DataObjectModel implements Model {
     return generateConverter;
   }
 
+  public boolean getGenerateEquals() {
+    return generateEquals;
+  }
+
+  public boolean getGenerateHashCode() {
+    return generateHashCode;
+  }
+
   public boolean isJsonifiable() {
     return jsonifiable;
   }
@@ -192,6 +202,8 @@ public class DataObjectModel implements Model {
     this.generateConverter = ann.generateConverter();
     this.publicConverter = ann.publicConverter();
     this.inheritConverter = ann.inheritConverter();
+    this.generateEquals = ann.generateEquals();
+    this.generateHashCode = ann.generateHashCode();
     this.isClass = modelElt.getKind() == ElementKind.CLASS;
     this.concrete = isClass && !modelElt.getModifiers().contains(Modifier.ABSTRACT);
     try {

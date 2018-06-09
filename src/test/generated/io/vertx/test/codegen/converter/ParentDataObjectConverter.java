@@ -32,17 +32,4 @@ public class ParentDataObjectConverter {
     }
   }
 
-    public static boolean equals(ParentDataObject lhs, ParentDataObject rhs) {
-        if (lhs == rhs) {
-          return true;
-        }
-
-        return Objects.equals(lhs.getParentProperty(), rhs.getParentProperty());
-    }
-
-
-    public static int hashCode(ParentDataObject o) {
-        return Objects.hash(
-                o.getParentProperty());
-    }
 }

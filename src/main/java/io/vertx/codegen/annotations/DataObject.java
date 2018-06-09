@@ -72,4 +72,15 @@ public @interface DataObject {
    * @return wether the generated converter should be public or package private
    */
   boolean publicConverter() default true;
+
+  /**
+   * @return {@code true} if the equals method should be generated for the data object
+   */
+  boolean generateEquals() default false;
+
+  /**
+   * @return {@code true} if the hashCode method should be generated for the data object
+   */
+  boolean generateHashCode() default false;
+
 }

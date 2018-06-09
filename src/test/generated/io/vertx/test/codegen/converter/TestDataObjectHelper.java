@@ -8,7 +8,7 @@ import java.util.Objects;
  * Converter for {@link io.vertx.test.codegen.converter.TestDataObject}.
  * NOTE: This class has been automatically generated from the {@link "io.vertx.test.codegen.converter.TestDataObject} original class using Vert.x codegen.
  */
-public class TestDataObjectConverter {
+public class TestDataObjectHelper {
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, TestDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
@@ -1353,7 +1353,6 @@ public class TestDataObjectConverter {
             Objects.equals(lhs.getStringValues(), rhs.getStringValues());
     }
 
-
     public static int hashCode(TestDataObject o) {
         return Objects.hash(
                 o.getAddedAggregatedDataObjects(),
@@ -1454,4 +1453,5 @@ public class TestDataObjectConverter {
                 o.getStringValueMap(),
                 o.getStringValues());
     }
+
 }

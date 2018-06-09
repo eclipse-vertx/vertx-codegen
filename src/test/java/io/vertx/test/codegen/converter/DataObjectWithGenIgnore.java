@@ -4,7 +4,7 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.json.JsonObject;
 
-@DataObject(generateConverter = true)
+@DataObject(generateHashCode = true, generateEquals = true)
 public class DataObjectWithGenIgnore {
 
   private String firstName;

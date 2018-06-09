@@ -40,19 +40,4 @@ public class ChildInheritingDataObjectConverter {
     }
   }
 
-    public static boolean equals(ChildInheritingDataObject lhs, ChildInheritingDataObject rhs) {
-        if (lhs == rhs) {
-          return true;
-        }
-
-        return Objects.equals(lhs.getChildProperty(), rhs.getChildProperty()) &&
-            Objects.equals(lhs.getParentProperty(), rhs.getParentProperty());
-    }
-
-
-    public static int hashCode(ChildInheritingDataObject o) {
-        return Objects.hash(
-                o.getChildProperty(),
-                o.getParentProperty());
-    }
 }

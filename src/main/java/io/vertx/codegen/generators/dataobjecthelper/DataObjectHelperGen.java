@@ -10,7 +10,6 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
@@ -23,10 +22,18 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     name = "data_object_converters";
   }
 
+  private String getNameSuffix(DataObjectModel model) {
+    if (model.getGenerateEquals() || model.getGenerateHashCode()) {
+      return "Helper";
+    } else {
+      return "Converter";
+    }
+  }
+
   @Override
   public String relativeFilename(DataObjectModel model) {
-    if (model.isClass() && model.getGenerateConverter()) {
-      return model.getFqn() + "Converter.java";
+    if (model.isClass() && (model.getGenerateConverter() || model.getGenerateEquals()) || model.getGenerateHashCode()) {
+      return model.getFqn() + getNameSuffix(model) + ".java";
     }
     return null;
   }
@@ -48,16 +55,22 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print(" * Converter for {@link " + model.getType() + "}.\n");
     writer.print(" * NOTE: This class has been automatically generated from the {@link \"" + model.getType() + "} original class using Vert.x codegen.\n");
     writer.print(" */\n");
-    writer.print(visibility + " class " + simpleName + "Converter {\n");
+    writer.print(visibility + " class " + simpleName + getNameSuffix(model) + " {\n");
     writer.print("\n");
-    generateFromson(visibility, inheritConverter, model, writer);
-    writer.print("\n");
-    generateToJson(visibility, inheritConverter, model, writer);
-    writer.print("\n");
-    generateEquals(model, writer);
-    writer.print("\n");
-    writer.print("\n");
-    generateHashCode(model, writer);
+    if (model.getGenerateConverter()) {
+      generateFromson(visibility, inheritConverter, model, writer);
+      writer.print("\n");
+      generateToJson(visibility, inheritConverter, model, writer);
+      writer.print("\n");
+    }
+    if (model.getGenerateEquals()) {
+      generateEquals(model, writer);
+      writer.print("\n");
+    }
+    if (model.getGenerateHashCode()) {
+      generateHashCode(model, writer);
+      writer.print("\n");
+    }
     writer.print("}\n");
     return buffer.toString();
   }
