@@ -166,10 +166,9 @@ public class Doc {
           writer.append("<code>").append(tag.value.trim()).append("</code>");
         }
       }
-      if (need) {
-        writer.append(margin);
-        need = false;
-      }
+    }
+    if (!need) {
+      writer.append(sep);
     }
   }
 
