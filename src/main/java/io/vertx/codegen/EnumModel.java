@@ -45,7 +45,7 @@ public class EnumModel implements Model {
     this.deprecated = modelElt.getAnnotation(Deprecated.class) != null;
   }
 
-  boolean process() {
+  public boolean process() {
     if (!processed) {
       if (modelElt.getKind() != ElementKind.ENUM) {
         throw new GenException(modelElt, "@VertxGen can only be used with interfaces or enums" + modelElt.asType().toString());

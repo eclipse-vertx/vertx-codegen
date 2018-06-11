@@ -1,7 +1,6 @@
 package io.vertx.test.codegen;
 
 import io.vertx.codegen.*;
-import io.vertx.test.codegen.proxytestapi.ValidProxyCloseWithFuture;
 import io.vertx.test.codegen.testapi.DeprecatedInterface;
 import io.vertx.test.codegen.testapi.GenericInterface;
 import io.vertx.test.codegen.testdataobject.DataObjectWithProperty;
@@ -23,6 +22,7 @@ public class DeprecatedTest {
     assertTrue(model.getMethods().get(0).isDeprecated());
   }
 
+  /*
   @Test
   public void testProxyGenDeprecated() throws Exception {
     ProxyModel model = generator.generateProxyModel(DeprecatedInterface.class);
@@ -30,6 +30,7 @@ public class DeprecatedTest {
     assertEquals(model.getVars().get("deprecated"), true);
     assertTrue(model.getMethods().get(0).isDeprecated());
   }
+  */
 
   @Test
   public void testVertxGenNotDeprecated() throws Exception {
@@ -39,6 +40,7 @@ public class DeprecatedTest {
     assertFalse(model.getMethods().get(0).isDeprecated());
   }
 
+  /*
   @Test
   public void testProxyGenNotDeprecated() throws Exception {
     ProxyModel model = generator.generateProxyModel(ValidProxyCloseWithFuture.class);
@@ -46,6 +48,7 @@ public class DeprecatedTest {
     assertEquals(model.getVars().get("deprecated"), false);
     assertFalse(model.getMethods().get(0).isDeprecated());
   }
+  */
 
   @Test
   public void testDataObjectDeprecated() throws Exception {

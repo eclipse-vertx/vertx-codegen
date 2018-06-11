@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class DataObjectHelperGen extends Generator<DataObjectModel> {
 
   public DataObjectHelperGen() {
-    kinds = Collections.singleton(DataObjectModel.class);
+    kinds = Collections.singleton("dataObject");
     name = "data_object_converters";
   }
 

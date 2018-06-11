@@ -13,6 +13,8 @@ import java.util.Map;
  */
 public interface Model {
 
+  boolean process();
+
   String getKind();
 
   Element getElement();

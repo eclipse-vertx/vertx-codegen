@@ -9,7 +9,7 @@ import java.util.Map;
 public class TestGenerator extends Generator<DataObjectModel>{
   public TestGenerator(){
     name = "testgen7";
-    kinds = Collections.singleton(DataObjectModel.class);
+    kinds = Collections.singleton("dataObject");
   }
 
   @Override

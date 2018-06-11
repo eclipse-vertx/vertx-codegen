@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MvelCodeGeneratorLoader implements GeneratorLoader {
@@ -59,25 +58,7 @@ public class MvelCodeGeneratorLoader implements GeneratorLoader {
             templates.add(templateFilename);
             MvelCodeGenerator gen = new MvelCodeGenerator();
             gen.name = name;
-            gen.kinds = kinds.stream().map(t -> {
-              switch (t) {
-                case "dataObject":
-                  return DataObjectModel.class;
-                case "class":
-                  return ClassModel.class;
-                case "proxy":
-                  return ProxyModel.class;
-                case "enum":
-                  return EnumModel.class;
-                case "module":
-                  return ModuleModel.class;
-                case "package":
-                  return PackageModel.class;
-                default:
-                  return null;
-              }
-            }).filter(Objects::nonNull)
-              .collect(Collectors.toSet());
+            gen.kinds = kinds;
             gen.incremental = incremental;
             gen.filename = filename;
             gen.templateFilename = templateFilename;

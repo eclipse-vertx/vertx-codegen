@@ -536,7 +536,7 @@ public class ClassModel implements Model {
       collect(Collectors.toSet());
   }
 
-  boolean process() {
+  public boolean process() {
     if (!processed) {
       traverseType(modelElt);
       determineApiTypes();

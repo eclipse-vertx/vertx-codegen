@@ -181,7 +181,7 @@ public class DataObjectModel implements Model {
     return vars;
   }
 
-  boolean process() {
+  public boolean process() {
     if (!processed) {
       if (modelElt.getKind() == ElementKind.INTERFACE || modelElt.getKind() == ElementKind.CLASS) {
         traverse();

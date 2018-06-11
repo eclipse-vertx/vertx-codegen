@@ -95,7 +95,9 @@ public class CodeGenProcessor extends AbstractProcessor {
       if (outputDirectoryOption != null) {
         outputDirectory = new File(outputDirectoryOption);
         if (!outputDirectory.exists()) {
-          processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " does not exist");
+          if (!outputDirectory.mkdirs()) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " does not exist");
+          }
         }
         if (!outputDirectory.isDirectory()) {
           processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " is not a directory");
@@ -142,7 +144,7 @@ public class CodeGenProcessor extends AbstractProcessor {
           try {
             Model model = entry.getValue();
             for (Generator codeGenerator : codeGenerators) {
-              if (codeGenerator.kinds.contains(model.getClass())) {
+              if (codeGenerator.kinds.contains(model.getKind())) {
                 String relativeName = codeGenerator.relativeFilename(model);
                 if (relativeName != null) {
                   int kind;

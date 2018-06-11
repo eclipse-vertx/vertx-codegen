@@ -16,7 +16,7 @@ public class DataObjectCheatsheetGen extends Generator<DataObjectModel> {
 
   public DataObjectCheatsheetGen() {
     name = "cheatsheet";
-    kinds = Collections.singleton(DataObjectModel.class);
+    kinds = Collections.singleton("dataObject");
     incremental = true;
   }
 

@@ -1,10 +1,6 @@
 package io.vertx.codegen;
 
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
-import io.vertx.codegen.annotations.ProxyGen;
-import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
 import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.AnnotationValueInfoFactory;
 import io.vertx.codegen.type.TypeMirrorFactory;
@@ -12,15 +8,11 @@ import io.vertx.codegen.type.TypeMirrorFactory;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
@@ -32,20 +24,35 @@ import java.util.stream.Stream;
  */
 public class CodeGen {
 
+  private static final List<ModelProvider> PROVIDERS;
+
+  static {
+    List<ModelProvider> list = new ArrayList<>();
+    list.add(ModelProvider.CLASS);
+    list.add(ModelProvider.DATA_OBJECT);
+    list.add(ModelProvider.ENUM);
+    ServiceLoader<ModelProvider> loader = ServiceLoader.load(ModelProvider.class, ModelProvider.class.getClassLoader());
+    try {
+      for (ModelProvider aLoader : loader) {
+        list.add(aLoader);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    PROVIDERS = list;
+  }
+
   private static final Logger logger = Logger.getLogger(CodeGen.class.getName());
   final static Map<ProcessingEnvironment, ClassLoader> loaderMap = new WeakHashMap<>();
 
-  private final HashMap<String, TypeElement> dataObjects = new HashMap<>();
-  private final HashMap<String, TypeElement> classes = new HashMap<>();
-  private final HashMap<String, TypeElement> enums = new HashMap<>();
+  private final Map<String, Map<String, Map.Entry<TypeElement, Model>>> models = new HashMap<>();
+  private final Set<TypeElement> all = new HashSet<>();
+
   private final HashMap<String, PackageElement> modules = new HashMap<>();
-  private final HashMap<String, TypeElement> proxyClasses = new HashMap<>();
-  private final ProcessingEnvironment env;
   private final Elements elementUtils;
   private final Types typeUtils;
 
   public CodeGen(ProcessingEnvironment env, RoundEnvironment round, ClassLoader loader) {
-    this.env = env;
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
     loaderMap.put(env, loader);
@@ -58,46 +65,37 @@ public class CodeGen {
         return true;
       }
     };
-    round.getElementsAnnotatedWith(DataObject.class).
-      stream().
-      filter(implFilter).
-      forEach(element -> dataObjects.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
-    round.getElementsAnnotatedWith(VertxGen.class).
-      stream().
-      filter(implFilter).
-      filter(elt -> elt.getKind() != ElementKind.ENUM).
-      forEach(element -> classes.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
-    round.getElementsAnnotatedWith(VertxGen.class).
-        stream().
-        filter(implFilter).
-        filter(elt -> elt.getKind() == ElementKind.ENUM).
-        forEach(element -> enums.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
+    round.getRootElements().stream()
+      .filter(implFilter)
+      .filter(elt -> elt instanceof TypeElement)
+      .map(elt -> (TypeElement)elt).forEach(te -> {
+        for (ModelProvider provider : PROVIDERS) {
+          Model model = provider.getModel(env, te);
+          if (model != null) {
+            String kind = model.getKind();
+            all.add(te);
+            Map<String, Map.Entry<TypeElement, Model>> map = models.computeIfAbsent(kind, a -> new HashMap<>());
+            ModelEntry<TypeElement, Model> entry = new ModelEntry<>(te, () -> model);
+            map.put(Helper.getNonGenericType(te.asType().toString()), entry);
+          }
+        }
+    });
     round.getElementsAnnotatedWith(ModuleGen.class).
       stream().
       map(element -> (PackageElement) element).
       forEach(element -> modules.put(element.getQualifiedName().toString(), element));
-    round.getElementsAnnotatedWith(ProxyGen.class).
-      stream().
-      filter(implFilter).
-      forEach(element -> proxyClasses.put(Helper.getNonGenericType(element.asType().toString()), (TypeElement) element));
   }
 
   public Stream<Map.Entry<? extends Element, ? extends Model>> getModels() {
-    return Stream.concat(getDataObjectModels(),
-        Stream.concat(getModuleModels(),
-            Stream.concat(getPackageModels(),
-                Stream.concat(getClassModels(),
-                    Stream.concat(getEnumModels(),
-                        getProxyModels())))));
+    Stream<Map.Entry<? extends Element, ? extends Model>> s = Stream.empty();
+    for (Map<String, Map.Entry<TypeElement, Model>> m : models.values()) {
+      s = Stream.concat(s, m.values().stream());
+    }
+    return Stream.concat(s, Stream.concat(getModuleModels(), getPackageModels()));
   }
 
-  public Stream<Map.Entry<TypeElement, ClassModel>> getClassModels() {
-    return classes.entrySet().stream().map(entry -> new ModelEntry<>(entry.getValue(), () -> getClassModel(entry.getKey())));
-  }
-
-  public Stream<Map.Entry<PackageElement, PackageModel>> getPackageModels() {
-    return Stream.of(classes, enums, dataObjects)
-      .flatMap(m -> m.values().stream())
+  private Stream<Map.Entry<PackageElement, PackageModel>> getPackageModels() {
+    return all.stream()
       .map(elementUtils::getPackageOf).distinct()
       .map(element ->
             new ModelEntry<>(element, () -> new PackageModel(
@@ -106,20 +104,8 @@ public class CodeGen {
             ));
   }
 
-  public Stream<Map.Entry<PackageElement, ModuleModel>> getModuleModels() {
+  private Stream<Map.Entry<PackageElement, ModuleModel>> getModuleModels() {
     return modules.entrySet().stream().map(entry -> new ModelEntry<>(entry.getValue(), () -> getModuleModel(entry.getKey())));
-  }
-
-  public Stream<Map.Entry<TypeElement, DataObjectModel>> getDataObjectModels() {
-    return dataObjects.entrySet().stream().map(element -> new ModelEntry<>(element.getValue(), () -> getDataObjectModel(element.getKey())));
-  }
-
-  public Stream<Map.Entry<TypeElement, ProxyModel>> getProxyModels() {
-    return proxyClasses.entrySet().stream().map(entry -> new ModelEntry<>(entry.getValue(), () -> getProxyModel(entry.getKey())));
-  }
-
-  public Stream<Map.Entry<TypeElement, EnumModel>> getEnumModels() {
-    return enums.entrySet().stream().map(entry -> new ModelEntry<>(entry.getValue(), () -> getEnumModel(entry.getKey())));
   }
 
   public ModuleModel getModuleModel(String modulePackage) {
@@ -155,51 +141,32 @@ public class CodeGen {
     return getPackageModels().filter(pkg -> pkg.getValue().getFqn().equals(fqn)).findFirst().map(Map.Entry::getValue).orElse(null);
   }
 
-  public ClassModel getClassModel(String fqcn) {
-    TypeElement element = classes.get(fqcn);
-    if (element == null) {
+  public Model getModel(String fqcn, String kind) {
+    Map<String, Map.Entry<TypeElement, Model>> map = models.get(kind);
+    if (map == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
-    } else {
-      ClassModel model = new ClassModel(env, element);
-      model.process();
-      return model;
     }
+    Map.Entry<TypeElement, Model> entry = map.get(fqcn);
+    if (entry == null) {
+      throw new IllegalArgumentException("Source for " + fqcn + " not found");
+    }
+    return entry.getValue();
+  }
+
+  public ClassModel getClassModel(String fqcn) {
+    return (ClassModel) getModel(fqcn, "class");
   }
 
   public EnumModel getEnumModel(String fqcn) {
-    TypeElement element = enums.get(fqcn);
-    if (element == null) {
-      throw new IllegalArgumentException("Source for " + fqcn + " not found");
-    } else {
-      EnumModel model = new EnumModel(env, element);
-      model.process();
-      return model;
-    }
+    return (EnumModel) getModel(fqcn, "enum");
   }
 
   public DataObjectModel getDataObjectModel(String fqcn) {
-    TypeElement element = dataObjects.get(fqcn);
-    if (element == null) {
-      throw new IllegalArgumentException("Source for " + fqcn + " not found");
-    } else {
-      DataObjectModel model = new DataObjectModel(env, element);
-      model.process();
-      return model;
-    }
-  }
-
-  public ProxyModel getProxyModel(String fqcn) {
-    TypeElement element = proxyClasses.get(fqcn);
-    if (element == null) {
-      throw new IllegalArgumentException("Source for " + fqcn + " not found");
-    } else {
-      ProxyModel model = new ProxyModel(env, element);
-      model.process();
-      return model;
-    }
+    return (DataObjectModel) getModel(fqcn, "dataObject");
   }
 
   private static class ModelEntry<E extends Element, M extends Model> implements Map.Entry<E, M> {
+
     private final E key;
     private final Supplier<M> supplier;
     private M value;
@@ -218,6 +185,7 @@ public class CodeGen {
     public M getValue() {
       if (value == null) {
         value = supplier.get();
+        value.process();
       }
       return value;
     }
