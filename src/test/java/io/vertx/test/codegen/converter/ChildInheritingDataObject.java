@@ -17,7 +17,7 @@ import io.vertx.core.json.JsonObject;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@DataObject(inheritConverter = true, generateConverter = true)
+@DataObject(inheritConverter = true, generateConverter = true, generateEquals = true, generateHashCode = true)
 public class ChildInheritingDataObject extends ParentDataObject {
 
   private String childProperty;

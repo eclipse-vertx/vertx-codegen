@@ -64,18 +64,18 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       writer.print("\n");
     }
     if (model.getGenerateEquals()) {
-      generateEquals(model, writer);
+      generateEquals(model, inheritConverter, writer);
       writer.print("\n");
     }
     if (model.getGenerateHashCode()) {
-      generateHashCode(model, writer);
+      generateHashCode(model, inheritConverter, writer);
       writer.print("\n");
     }
     writer.print("}\n");
     return buffer.toString();
   }
 
-  private void generateEquals(DataObjectModel model, PrintWriter writer) {
+  private void generateEquals(DataObjectModel model, boolean inheritConverter, PrintWriter writer) {
     String simpleName = model.getType().getSimpleName();
     writer.println(String.format("    public static boolean equals(%s lhs, %s rhs) {", simpleName, simpleName));
     writer.println("        if (lhs == rhs) {");
@@ -84,6 +84,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.println("");
     writer.print("        return ");
     String equalsString = model.getPropertyMap().values().stream()
+      .filter(prop -> prop.isDeclared() || inheritConverter)
       .filter(prop -> Objects.nonNull(prop.getGetterMethod()))
       .map(prop -> String.format("Objects.equals(lhs.%s(), rhs.%s())", prop.getGetterMethod(), prop.getGetterMethod()))
       .collect(Collectors.joining(" &&\n            "));
@@ -91,10 +92,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.println("    }");
   }
 
-  private void generateHashCode(DataObjectModel model, PrintWriter writer) {
+  private void generateHashCode(DataObjectModel model, boolean inheritConverter, PrintWriter writer) {
     String simpleName = model.getType().getSimpleName();
     writer.println(String.format("    public static int hashCode(%s o) {", simpleName));
     String equalsString = model.getPropertyMap().values().stream()
+      .filter(prop -> prop.isDeclared() || inheritConverter)
       .filter(prop -> Objects.nonNull(prop.getGetterMethod()))
       .map(prop -> String.format("                o.%s()", prop.getGetterMethod()))
       .collect(Collectors.joining(",\n"));
