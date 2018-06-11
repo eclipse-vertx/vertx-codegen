@@ -620,6 +620,35 @@ public class DataObjectTest {
     assertFalse(DataObjectWithGenIgnoreHelper.equals(lhs, other)); //same hashcode
   }
 
+  @Test
+  public void testDataObjectEqualsAndHashCodeDontInherit() {
+    ChildNotInheritingDataObject lhs = new ChildNotInheritingDataObject()
+      .setChildProperty("child").setParentProperty("mom");
+    ChildNotInheritingDataObject rhs = new ChildNotInheritingDataObject()
+      .setChildProperty("child").setParentProperty("dad");
+
+    //This DataObject ignore parent properties so they should be equal
+    //even though the parent property differs
+    assertEquals(ChildNotInheritingDataObjectHelper.hashCode(lhs), ChildNotInheritingDataObjectHelper.hashCode(lhs));
+    assertEquals(ChildNotInheritingDataObjectHelper.hashCode(lhs), ChildNotInheritingDataObjectHelper.hashCode(rhs));
+    assertTrue(ChildNotInheritingDataObjectHelper.equals(rhs, lhs));
+    //The parent is not equals
+    assertNotEquals(ParentDataObjectHelper.hashCode(lhs), ParentDataObjectHelper.hashCode(rhs));
+  }
+
+  @Test
+  public void testDataObjectEqualsAndHashCodeInherit() {
+    ChildInheritingDataObject lhs = new ChildInheritingDataObject()
+      .setChildProperty("child").setParentProperty("mom");
+    ChildInheritingDataObject rhs = new ChildInheritingDataObject()
+      .setChildProperty("child").setParentProperty("dad");
+
+    //This DataObject inherits parent properties so they should be not equal
+    assertEquals(ChildInheritingDataObjectHelper.hashCode(lhs), ChildInheritingDataObjectHelper.hashCode(lhs));
+    assertNotEquals(ChildInheritingDataObjectHelper.hashCode(lhs), ChildInheritingDataObjectHelper.hashCode(rhs));
+    assertFalse(ChildInheritingDataObjectHelper.equals(rhs, lhs));
+  }
+
 
   @Test
   public void testEmptyDataObjectToJson() {
