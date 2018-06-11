@@ -9,7 +9,6 @@ import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.AnnotationValueInfoFactory;
 import io.vertx.codegen.type.TypeMirrorFactory;
 
-import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
@@ -44,12 +43,9 @@ public class CodeGen {
   private final ProcessingEnvironment env;
   private final Elements elementUtils;
   private final Types typeUtils;
-  private final Messager messager;
-  private final MethodOverloadChecker methodOverloadChecker = new MethodOverloadChecker();
 
   public CodeGen(ProcessingEnvironment env, RoundEnvironment round, ClassLoader loader) {
     this.env = env;
-    this.messager = env.getMessager();
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
     loaderMap.put(env, loader);
@@ -164,7 +160,7 @@ public class CodeGen {
     if (element == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
-      ClassModel model = new ClassModel(env, methodOverloadChecker, messager, classes, elementUtils, typeUtils, element);
+      ClassModel model = new ClassModel(env, element);
       model.process();
       return model;
     }
@@ -175,7 +171,7 @@ public class CodeGen {
     if (element == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
-      EnumModel model = new EnumModel(messager, elementUtils, typeUtils, element);
+      EnumModel model = new EnumModel(env, element);
       model.process();
       return model;
     }
@@ -186,7 +182,7 @@ public class CodeGen {
     if (element == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
-      DataObjectModel model = new DataObjectModel(elementUtils, typeUtils, element, messager);
+      DataObjectModel model = new DataObjectModel(env, element);
       model.process();
       return model;
     }
@@ -197,7 +193,7 @@ public class CodeGen {
     if (element == null) {
       throw new IllegalArgumentException("Source for " + fqcn + " not found");
     } else {
-      ProxyModel model = new ProxyModel(env, methodOverloadChecker, messager, classes, elementUtils, typeUtils, element);
+      ProxyModel model = new ProxyModel(env, element);
       model.process();
       return model;
     }

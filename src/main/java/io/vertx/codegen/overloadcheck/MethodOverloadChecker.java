@@ -37,6 +37,18 @@ import java.util.Set;
  */
 public class MethodOverloadChecker {
 
+  public final static MethodOverloadChecker INSTANCE;
+
+  static {
+    MethodOverloadChecker checker = new MethodOverloadChecker(new Properties());
+    try {
+      checker = new MethodOverloadChecker(); // Might fail
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    INSTANCE = checker;
+  }
+
   private final Map<String, Map<String, Set<String>>> typeMappingsMap = new HashMap<>();
 
   public MethodOverloadChecker() {
@@ -125,7 +137,7 @@ public class MethodOverloadChecker {
       index1++;
     }
   }
-  
+
   private List<SimpleType> convertToLangParamTypes(SimpleMethod meth, Map<String, Set<String>> typeMapping) {
     List<SimpleType> langParamTypes = new ArrayList<>();
     for (SimpleParam param: meth.params) {
