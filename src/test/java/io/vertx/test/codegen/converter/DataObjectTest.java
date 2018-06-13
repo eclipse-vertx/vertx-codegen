@@ -175,7 +175,7 @@ public class DataObjectTest {
     json.put("keyedObjectValues", toJson(map));
 
     TestDataObject obj = new TestDataObject();
-    TestDataObjectHelper.fromJson(json, obj);
+    TestDataObjectConverter.fromJson(json, obj);
 
     assertEquals(stringValue, obj.getStringValue());
     assertEquals(booleanValue, obj.isBooleanValue());
@@ -281,7 +281,7 @@ public class DataObjectTest {
 //    json.put("aggregatedDataObjects", new JsonArray().add(new JsonObject().put("value", aggregatedDataObject.getValue()).getMap()));
 //    json.put("addedAggregatedDataObjects", new JsonArray().add(new JsonObject().put("value", aggregatedDataObject.getValue()).getMap()));
 //    obj = new TestDataObject();
-//    TestDataObjectHelper.fromJson(json, obj);
+//    TestDataObjectConverter.fromJson(json, obj);
 //    assertEquals(aggregatedDataObject, obj.getAggregatedDataObject());
 //    assertEquals(Collections.singletonList(aggregatedDataObject), obj.getAggregatedDataObjects());
 //    assertEquals(Collections.singletonList(aggregatedDataObject), obj.getAddedAggregatedDataObjects());
@@ -293,7 +293,7 @@ public class DataObjectTest {
     JsonObject json = new JsonObject();
 
     TestDataObject obj = new TestDataObject();
-    TestDataObjectHelper.fromJson(json, obj);
+    TestDataObjectConverter.fromJson(json, obj);
 
     assertEquals(null, obj.getStringValue());
     assertEquals(false, obj.isBooleanValue());
@@ -497,7 +497,7 @@ public class DataObjectTest {
     map.forEach(obj::addKeyedObjectValue);
 
     Map<String, Object> json = new HashMap<>();
-    TestDataObjectHelper.toJson(obj, json);
+    TestDataObjectConverter.toJson(obj, json);
 
     assertEquals(stringValue, json.get("stringValue"));
     assertEquals(booleanValue, json.get("booleanValue"));
@@ -592,42 +592,12 @@ public class DataObjectTest {
   }
 
   @Test
-  public void testDataObjectEqualsAndHashCode() {
-    TestDataObject lhs = new TestDataObject();
-    assertTrue(TestDataObjectHelper.equals(lhs, lhs)); //equals to itself
-    assertEquals(TestDataObjectHelper.hashCode(lhs), TestDataObjectHelper.hashCode(lhs)); //same hashcode
-
-    TestDataObject rhs = new TestDataObject();
-    assertTrue(rhs != lhs); //assert different memory address
-    assertTrue(TestDataObjectHelper.equals(lhs, rhs)); //equals to object with same field values
-    assertEquals(TestDataObjectHelper.hashCode(lhs), TestDataObjectHelper.hashCode(rhs));
-
-    lhs.setFloatValue(100f);
-    assertFalse(TestDataObjectHelper.equals(lhs, rhs));
-    assertNotEquals(TestDataObjectHelper.hashCode(lhs), TestDataObjectHelper.hashCode(rhs));
-  }
-
-  @Test
-  public void testDataObjectEqualsAndHashWithGenIgnore() {
-    DataObjectWithGenIgnore lhs = new DataObjectWithGenIgnore("Julien", "Viet");
-    DataObjectWithGenIgnore rhs = new DataObjectWithGenIgnore("Julien", "Viet");
-    assertEquals(DataObjectWithGenIgnoreHelper.hashCode(lhs), DataObjectWithGenIgnoreHelper.hashCode(lhs)); //same hashcode
-    assertTrue(DataObjectWithGenIgnoreHelper.equals(lhs, rhs)); //equals
-    assertTrue(DataObjectWithGenIgnoreHelper.equals(lhs, lhs)); //equals to itself
-
-    DataObjectWithGenIgnore other = new DataObjectWithGenIgnore("Farid", "Zakaria");
-    assertNotEquals(DataObjectWithGenIgnoreHelper.hashCode(lhs), DataObjectWithGenIgnoreHelper.hashCode(other)); //same hashcode
-    assertFalse(DataObjectWithGenIgnoreHelper.equals(lhs, other)); //same hashcode
-  }
-
-
-  @Test
   public void testEmptyDataObjectToJson() {
 
     TestDataObject obj = new TestDataObject();
 
     Map<String, Object> json = new HashMap<>();
-    TestDataObjectHelper.toJson(obj, json);
+    TestDataObjectConverter.toJson(obj, json);
 
     assertEquals(null, json.get("stringValue"));
     assertEquals(false, json.get("booleanValue"));

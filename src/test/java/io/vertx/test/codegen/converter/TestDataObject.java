@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@DataObject(generateConverter = true, generateEquals = true, generateHashCode = true)
+@DataObject(generateConverter = true)
 public class TestDataObject {
 
   private String stringValue;
