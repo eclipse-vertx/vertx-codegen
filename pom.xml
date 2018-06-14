@@ -72,9 +72,10 @@
                 <compilerArgs>
                   <arg>-Adocgen.source=${asciidoc.dir}</arg>
                   <arg>-Adocgen.output=${project.build.directory}/asciidoc/java</arg>
-                  <arg>-J-XaddExports:jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
-                  <arg>-J-XaddExports:jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
                 </compilerArgs>
+                <excludes>
+                  <exclude>**/TreeTypeInternal.java</exclude>
+                </excludes>
                 <generatedSourcesDirectory>${generated.dir}</generatedSourcesDirectory>
               </configuration>
             </execution>
@@ -82,15 +83,15 @@
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
+          <configuration>
+            <archive>
+              <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+            </archive>
+          </configuration>
           <executions>
             <execution>
               <id>default-jar</id>
               <configuration>
-                <archive>
-                  <manifestEntries>
-                    <Multi-Release>true</Multi-Release>
-                  </manifestEntries>
-                </archive>
                 <excludes>
                   <exclude>io/vertx/core/**</exclude>
                   <exclude>io/vertx/codegen/testmodel/**</exclude>
@@ -159,6 +160,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.bsc.maven</groupId>
         <artifactId>maven-processor-plugin</artifactId>
@@ -190,56 +192,12 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.8</version>
-        <executions>
-          <execution>
-            <id>compile-java9</id>
-            <phase>compile</phase>
-            <configuration>
-              <tasks>
-                <mkdir dir="${project.basedir}/src/main/java9" />
-                <mkdir dir="${project.build.directory}/classes9" />
-                <javac srcdir="${project.basedir}/src/main/java9"
-                       destdir="${project.build.directory}/classes9"
-                       classpath="${project.build.outputDirectory}"
-                       includeantruntime="false" />
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.outputDirectory}/META-INF/versions/9</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${project.build.directory}/classes9</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
           <execution>
-            <id>package-jar</id>
+            <id>package</id>
             <phase>package</phase>
             <goals>
               <goal>single</goal>
@@ -247,10 +205,9 @@
             <configuration>
               <attach>true</attach>
               <appendAssemblyId>false</appendAssemblyId>
-              <mergeManifestMode>merge</mergeManifestMode>
               <archive>
-                <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
-              </archive>
+                    <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
+                </archive>
               <descriptors>
                 <descriptor>src/main/assembly/jar.xml</descriptor>
               </descriptors>
@@ -322,6 +279,26 @@
       <activation>
         <jdk>1.8</jdk>
       </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>default-compile</id>
+                  <configuration>
+                    <excludes>
+                      <exclude>/whatever</exclude>
+                    </excludes>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
       <dependencies>
         <dependency>
           <groupId>com.sun</groupId>
@@ -332,25 +309,6 @@
           <optional>true</optional>
         </dependency>
       </dependencies>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-antrun-plugin</artifactId>
-              <dependencies>
-                <dependency>
-                  <groupId>com.sun</groupId>
-                  <artifactId>tools</artifactId>
-                  <version>1.8</version>
-                  <scope>system</scope>
-                  <systemPath>${tools.jar}</systemPath>
-                </dependency>
-              </dependencies>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
     </profile>
 
     <!-- Documentation generation : activate with -Pdocs -->

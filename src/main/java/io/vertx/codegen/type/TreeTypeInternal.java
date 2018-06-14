@@ -86,9 +86,12 @@ class TreeTypeInternal implements TypeUse.TypeInternal {
 
   private static boolean isNullable(Tree type) {
     TypeMirror typeMirror = ((JCTree)type).type;
-    for (AnnotationMirror mirror : typeMirror.getAnnotationMirrors()) {
-      if (mirror.getAnnotationType().toString().equals(TypeUse.NULLABLE)) {
-        return true;
+    if (typeMirror instanceof com.sun.tools.javac.code.Type.AnnotatedType) {
+      com.sun.tools.javac.code.Type.AnnotatedType abc = (com.sun.tools.javac.code.Type.AnnotatedType) typeMirror;
+      for (AnnotationMirror mirror : abc.getAnnotationMirrors()) {
+        if (mirror.getAnnotationType().toString().equals(TypeUse.NULLABLE)) {
+          return true;
+        }
       }
     }
     if (type instanceof JCTree.JCTypeApply) {
