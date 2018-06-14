@@ -96,6 +96,7 @@
                   <exclude>io/vertx/core/**</exclude>
                   <exclude>io/vertx/codegen/testmodel/**</exclude>
                   <exclude>com/acme/**</exclude>
+                  <exclude>examples/**</exclude>
                 </excludes>
               </configuration>
             </execution>
