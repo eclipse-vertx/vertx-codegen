@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -53,23 +54,31 @@ public class GeneratorHelper {
 
   DiagnosticCollector<JavaFileObject> collector = new DiagnosticCollector<>();
 
-  public PackageModel generatePackage(Class clazz) throws Exception {
+  public PackageModel generatePackage(Class clazz, Set<Class> otherSupportedAnnotations) throws Exception {
     URL url = clazz.getClassLoader().getResource(clazz.getName().replace('.', '/') + ".java");
     File f = new File(url.toURI());
-    MyProcessor<PackageModel> processor = new MyProcessor<>(codegen -> codegen.getPackageModel(clazz.getPackage().getName()));
+    MyProcessor<PackageModel> processor = new MyProcessor<>(codegen -> codegen.getPackageModel(clazz.getPackage().getName()), otherSupportedAnnotations.stream().map(Class::getCanonicalName).collect(Collectors.toSet()));
     Compiler compiler = new Compiler(processor, collector);
     compiler.compile(f);
     return processor.result;
   }
 
-  public ModuleModel generateModule(ClassLoader loader, String packageFqn) throws Exception {
+  public PackageModel generatePackage(Class clazz) throws Exception {
+    return this.generatePackage(clazz, new HashSet<>());
+  }
+
+  public ModuleModel generateModule(ClassLoader loader, String packageFqn, Set<Class> otherSupportedAnnotations) throws Exception {
     URL url = loader.getResource(packageFqn.replace('.', '/') + "/package-info.java");
     File info = new File(url.toURI());
     File[] files = Files.walk(info.getParentFile().toPath()).filter(Files::isRegularFile).map(Path::toFile).toArray(File[]::new);
-    MyProcessor<ModuleModel> processor = new MyProcessor<>(codegen -> codegen.getModuleModel(packageFqn));
+    MyProcessor<ModuleModel> processor = new MyProcessor<>(codegen -> codegen.getModuleModel(packageFqn), otherSupportedAnnotations.stream().map(Class::getCanonicalName).collect(Collectors.toSet()));
     Compiler compiler = new Compiler(processor, collector);
     compiler.compile(files);
     return processor.result;
+  }
+
+  public ModuleModel generateModule(ClassLoader loader, String packageFqn) throws Exception {
+    return this.generateModule(loader, packageFqn, new HashSet<>());
   }
 
   public DataObjectModel generateDataObject(Class c, Class... rest) throws Exception {
@@ -84,12 +93,12 @@ public class GeneratorHelper {
     return generateClass(codegen -> codegen.getEnumModel(c.getCanonicalName()), c, rest);
   }
 
-  public <M> M generateClass(Function<CodeGen, M> f, Class c, Class... rest) throws Exception {
+  public <M> M generateClass(Function<CodeGen, M> f, Set<Class> otherSupportedAnnotations, Class c, Class... rest) throws Exception {
     ArrayList<Class> types = new ArrayList<>();
     types.add(c);
     Collections.addAll(types, rest);
     String className = c.getCanonicalName();
-    MyProcessor<M> processor = new MyProcessor<>(f);
+    MyProcessor<M> processor = new MyProcessor<>(f, otherSupportedAnnotations.stream().map(Class::getCanonicalName).collect(Collectors.toSet()));
     Compiler compiler = new Compiler(processor, collector);
     compiler.compile(types);
     if (processor.result == null) {
@@ -98,7 +107,32 @@ public class GeneratorHelper {
     return processor.result;
   }
 
+  public <M> M generateClass(Function<CodeGen, M> f, Class annotation, Class c, Class... rest) throws Exception {
+    Set<Class> s = new HashSet<>();
+    s.add(annotation);
+    return this.generateClass(f, s, c, rest);
+  }
+
+  public <M> M generateClass(Function<CodeGen, M> f, Class c, Class... rest) throws Exception {
+    return this.generateClass(f, new HashSet<>(), c, rest);
+  }
+
   private class MyProcessor<R> implements Processor {
+
+    private ProcessingEnvironment env;
+    private final Function<CodeGen, R> f;
+    private R result;
+    private Set<String> supportedAnnotations;
+
+    private MyProcessor(Function<CodeGen, R> f, Set<String> otherSupportedAnnotations) {
+      this.f = f;
+      this.supportedAnnotations = new HashSet<>();
+      this.supportedAnnotations.add(ProxyGen.class.getCanonicalName());
+      this.supportedAnnotations.add(VertxGen.class.getCanonicalName());
+      this.supportedAnnotations.add(DataObject.class.getCanonicalName());
+      this.supportedAnnotations.add(ModuleGen.class.getCanonicalName());
+      this.supportedAnnotations.addAll(otherSupportedAnnotations);
+    }
 
     @Override
     public Set<String> getSupportedOptions() {
@@ -107,25 +141,12 @@ public class GeneratorHelper {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-      HashSet<String> set = new HashSet<>();
-      set.add(ProxyGen.class.getCanonicalName());
-      set.add(VertxGen.class.getCanonicalName());
-      set.add(DataObject.class.getCanonicalName());
-      set.add(ModuleGen.class.getCanonicalName());
-      return set;
+      return supportedAnnotations;
     }
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
       return SourceVersion.RELEASE_8;
-    }
-
-    private ProcessingEnvironment env;
-    private final Function<CodeGen, R> f;
-    private R result;
-
-    private MyProcessor(Function<CodeGen, R> f) {
-      this.f = f;
     }
 
     @Override
