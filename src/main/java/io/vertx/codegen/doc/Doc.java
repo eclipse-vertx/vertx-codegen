@@ -49,7 +49,13 @@ public class Doc {
         String name = matcher.group(2);
         int prev = matcher.end() + 1;
         if (matcher.find()) {
-          blockTags.add(new Tag(name, javadoc.substring(prev, matcher.start())));
+          int start = matcher.start();
+          if (start <= prev) {
+            // this is a tag without content (e.g.: deprecated)
+            blockTags.add(new Tag(name, ""));
+          } else {
+            blockTags.add(new Tag(name, javadoc.substring(prev, start)));
+          }
         } else {
           blockTags.add(new Tag(name, javadoc.substring(prev)));
           break;

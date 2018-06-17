@@ -50,6 +50,8 @@ public class DocTest {
     assertComment("@tag1 value", "", null, new Tag("tag1", "value"));
     assertComment("\n@tag1 value", "", null, new Tag("tag1", "value"));
     assertComment("@tag1 value1\n@tag2 value2", "", null, new Tag("tag1", "value1"), new Tag("tag2", "value2"));
+
+    assertComment("@deprecated\n@see #handler(RountingContext)", "", null, new Tag("deprecated", ""), new Tag("see", "#handler(RountingContext)"));
   }
 
   private void assertComment(String text, String expectedFirstSentence, String expectedBody, Tag... expectedBlockTags) {
