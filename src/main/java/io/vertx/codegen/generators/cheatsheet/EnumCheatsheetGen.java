@@ -4,6 +4,7 @@ import io.vertx.codegen.Generator;
 import io.vertx.codegen.EnumModel;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Tag;
+import io.vertx.codegen.doc.Token;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -41,7 +42,7 @@ public class EnumCheatsheetGen extends Generator<EnumModel> {
     Doc doc = model.getDoc();
     if (doc != null) {
       html.append("++++\n");
-      doc.toHtml("", Tag::getName, "\n", html);
+      Token.toHtml(doc.getTokens(), "", Tag::getName, "\n", html);
       html.append("++++\n");
       html.append("'''\n");
     }
@@ -55,7 +56,7 @@ public class EnumCheatsheetGen extends Generator<EnumModel> {
       html.append("|");
       if (value.getDoc() != null) {
         html.append("+++\n");
-        html.append(value.getDoc().toHtml("", Tag::getName, "\n").trim()).append("\n");
+        html.append(Token.toHtml(value.getDoc().getTokens(), "", Tag::getName, "\n").trim()).append("\n");
         html.append("+++\n");
       } else {
         html.append("-\n");

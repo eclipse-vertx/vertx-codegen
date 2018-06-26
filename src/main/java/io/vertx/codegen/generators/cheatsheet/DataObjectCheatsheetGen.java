@@ -4,6 +4,7 @@ import io.vertx.codegen.Generator;
 import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Tag;
+import io.vertx.codegen.doc.Token;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.TypeInfo;
 
@@ -40,7 +41,7 @@ public class DataObjectCheatsheetGen extends Generator<DataObjectModel> {
     Doc doc = model.getDoc();
     if (doc != null) {
       html.append("++++\n");
-      doc.toHtml("", Tag::getName, "\n", html);
+      Token.toHtml(doc.getTokens(), "", Tag::getName, "\n", html);
       html.append("++++\n");
       html.append("'''\n");
     }
@@ -58,7 +59,7 @@ public class DataObjectCheatsheetGen extends Generator<DataObjectModel> {
         html.append("|");
         if (property.getDoc() != null) {
           html.append("+++\n");
-          html.append(property.getDoc().toHtml("", Tag::getName, "\n").trim()).append("\n");
+          html.append(Token.toHtml(property.getDoc().getTokens(), "", Tag::getName, "\n").trim()).append("\n");
           html.append("+++\n");
         } else {
           html.append("-\n");
