@@ -42,7 +42,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print("\n");
     writer.print("/**\n");
     writer.print(" * Converter for {@link " + model.getType() + "}.\n");
-    writer.print(" * NOTE: This class has been automatically generated from the {@link \"" + model.getType() + "} original class using Vert.x codegen.\n");
+    writer.print(" * NOTE: This class has been automatically generated from the {@link " + model.getType() + "} original class using Vert.x codegen.\n");
     writer.print(" */\n");
     writer.print(visibility + " class " + simpleName + "Converter {\n");
     writer.print("\n");

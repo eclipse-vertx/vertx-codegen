@@ -5,7 +5,7 @@ import io.vertx.core.json.JsonArray;
 
 /**
  * Converter for {@link io.vertx.test.codegen.converter.ParentDataObject}.
- * NOTE: This class has been automatically generated from the {@link "io.vertx.test.codegen.converter.ParentDataObject} original class using Vert.x codegen.
+ * NOTE: This class has been automatically generated from the {@link io.vertx.test.codegen.converter.ParentDataObject} original class using Vert.x codegen.
  */
 public class ParentDataObjectConverter {
 
