@@ -4,6 +4,7 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.time.Instant;
 import java.util.Map;
 
 /**
@@ -22,6 +23,8 @@ public interface PropertyGettersSetters {
 
   void setString(String s);
   String getString();
+  void setInstant(Instant i);
+  Instant getInstant();
   void setBoxedInteger(Integer i);
   Integer getBoxedInteger();
   void setPrimitiveInteger(int i);

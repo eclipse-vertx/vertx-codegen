@@ -483,6 +483,7 @@ public class DataObjectModel implements Model {
       case PRIMITIVE:
       case BOXED_PRIMITIVE:
       case STRING:
+      case INSTANT:
       case API:
       case JSON_OBJECT:
       case JSON_ARRAY:

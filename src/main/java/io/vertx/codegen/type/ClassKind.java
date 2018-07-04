@@ -2,6 +2,7 @@ package io.vertx.codegen.type;
 
 import io.vertx.codegen.ClassModel;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ public enum ClassKind {
   STRING(true, false, false),
   BOXED_PRIMITIVE(true, false, false),
   PRIMITIVE(true, false, false),
+  INSTANT(true, false, false),
 
   // Enum
   ENUM(false, false, false),
@@ -102,6 +104,8 @@ public enum ClassKind {
       return OBJECT;
     } else if (fqcn.equals(String.class.getName())) {
       return STRING;
+    } else if(fqcn.equals(Instant.class.getName())) {
+      return INSTANT;
     } else if (fqcn.equals(List.class.getName())) {
       return LIST;
     } else if (fqcn.equals(Set.class.getName())) {

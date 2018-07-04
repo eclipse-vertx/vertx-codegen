@@ -4,6 +4,7 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -27,6 +28,8 @@ public interface PropertyListGettersSetters {
   // Regular case
   List<String> getStrings();
   PropertyListGettersSetters setStrings(List<String> s);
+  List<Instant> getInstants();
+  PropertyListGettersSetters setInstants(List<Instant> s);
   List<Integer> getBoxedIntegers();
   PropertyListGettersSetters setBoxedIntegers(List<Integer> i);
   List<Boolean> getBoxedBooleans();
