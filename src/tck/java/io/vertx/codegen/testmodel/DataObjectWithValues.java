@@ -174,7 +174,7 @@ public class DataObjectWithValues {
       json.put("stringValue", stringValue);
     }
     if (instantValue != null) {
-      json.put("instantValue", stringValue);
+      json.put("instantValue", instantValue);
     }
     if (jsonObjectValue != null) {
       json.put("jsonObjectValue", jsonObjectValue);

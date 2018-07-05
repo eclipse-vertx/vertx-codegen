@@ -64,7 +64,7 @@ public class DataObjectWithLists {
     floatValues = fromArray(json, "floatValues", o -> Float.parseFloat(o.toString()));
     doubleValues = fromArray(json, "doubleValues");
     stringValues = fromArray(json, "stringValues");
-    instantValues = fromArray(json, "instantValues");
+    instantValues = fromArray(json, "instantValues", o -> Instant.parse(o.toString()));
     jsonObjectValues = fromArray(json, "jsonObjectValues", o -> (JsonObject) o);
     jsonArrayValues = fromArray(json, "jsonArrayValues", o -> (JsonArray) o);
     dataObjectValues = fromArray(json, "dataObjectValues", o -> new TestDataObject((JsonObject) o));
@@ -161,7 +161,7 @@ public class DataObjectWithLists {
       json.put("stringValues", toArray(stringValues));
     }
     if (instantValues != null) {
-      json.put("instantValues", toArray(instantValues));
+      json.put("instantValues", toArray(instantValues.stream().map(Instant::toString).collect(Collectors.toList())));
     }
     if (jsonObjectValues != null) {
       json.put("jsonObjectValues", toArray(jsonObjectValues));

@@ -71,6 +71,7 @@ public class DataObjectWithMaps {
     floatValues = fromObject(json, "floatValues", o -> Float.parseFloat(o.toString()));
     doubleValues = fromObject(json, "doubleValues");
     stringValues = fromObject(json, "stringValues");
+    instantValues = fromObject(json, "instantValues", (o -> Instant.parse(o.toString())));
     jsonObjectValues = fromObject(json, "jsonObjectValues", o -> (JsonObject) o);
     jsonArrayValues = fromObject(json, "jsonArrayValues", o -> (JsonArray) o);
     dataObjectValues = fromObject(json, "dataObjectValues", o -> new TestDataObject((JsonObject) o));
@@ -165,6 +166,9 @@ public class DataObjectWithMaps {
     }
     if (stringValues != null) {
       json.put("stringValues", toObject(stringValues));
+    }
+    if (instantValues != null) {
+      json.put("instantValues", toObject(instantValues, Instant::toString));
     }
     if (jsonObjectValues != null) {
       json.put("jsonObjectValues", toObject(jsonObjectValues));
