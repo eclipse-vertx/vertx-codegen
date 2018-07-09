@@ -7,6 +7,7 @@ import io.vertx.codegen.type.ClassKind;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
 
@@ -68,8 +69,6 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         if (propKind.basic) {
           if (propKind == ClassKind.STRING) {
             genPropToJson("", "", prop, writer);
-          } else if (propKind == ClassKind.INSTANT) {
-            genPropToJson("DateTimeFormatter.ISO_INSTANT.format(", ")", prop, writer);
           } else {
             switch (prop.getType().getSimpleName()) {
               case "char":
@@ -97,6 +96,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               break;
             case DATA_OBJECT:
               genPropToJson("", ".toJson()", prop, writer);
+              break;
+            case OTHER:
+              if (prop.getType().getName().equals(Instant.class.getName())) {
+                genPropToJson("DateTimeFormatter.ISO_INSTANT.format(", ")", prop, writer);
+              }
               break;
           }
         }
@@ -143,8 +147,6 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         if (propKind.basic) {
           if (propKind == ClassKind.STRING) {
             genPropFromJson("String", "(String)", "", prop, writer);
-          } else if (propKind == ClassKind.INSTANT) {
-            genPropFromJson("String", "Instant.from(DateTimeFormatter.ISO_INSTANT.parse((String)", "))", prop, writer);
           } else {
             switch (prop.getType().getSimpleName()) {
               case "boolean":
@@ -202,6 +204,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               break;
             case OBJECT:
               genPropFromJson("Object", "", "", prop, writer);
+              break;
+            case OTHER:
+              if (prop.getType().getName().equals(Instant.class.getName())) {
+                genPropFromJson("String", "Instant.from(DateTimeFormatter.ISO_INSTANT.parse((String)", "))", prop, writer);
+              }
               break;
             default:
           }

@@ -13,6 +13,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.time.Instant;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -483,7 +484,6 @@ public class DataObjectModel implements Model {
       case PRIMITIVE:
       case BOXED_PRIMITIVE:
       case STRING:
-      case INSTANT:
       case API:
       case JSON_OBJECT:
       case JSON_ARRAY:
@@ -495,6 +495,12 @@ public class DataObjectModel implements Model {
         jsonifiable = propTypeElt.getAnnotation(DataObject.class) == null ||
           Helper.isJsonifiable(elementUtils, typeUtils, (TypeElement) propTypeElt);
         break;
+      case OTHER:
+        if (propType.getName().equals(Instant.class.getName())) {
+          jsonifiable = true;
+          break;
+        }
+        return;
       default:
         return;
     }

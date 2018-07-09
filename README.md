@@ -370,6 +370,7 @@ Data object converter can be generated with `@DataObject(generateConverter=true)
 
 * the specific `io.vertx.core.Buffer` type
 * the set _`Basic`_
+* the `java.time.Instant` type
 * the set _`Json`_
 * any data object class annotated with `@DataObject`
 * type `java.util.List<C>` where `C` contains
