@@ -21,7 +21,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
   }
 
   @Override
-  public String relativeFilename(DataObjectModel model) {
+  public String filename(DataObjectModel model) {
     if (model.isClass() && model.getGenerateConverter()) {
       return model.getFqn() + "Converter.java";
     }

@@ -38,7 +38,7 @@ public class CodeGeneratorTest {
   @Rule
   public final TestName name = new TestName();
 
-  private File testDir;
+  private static File testDir;
 
   @Before
   public void before() throws Exception {
@@ -265,5 +265,20 @@ public class CodeGeneratorTest {
   public void testServiceLoader() throws Exception {
     Properties props = assertCompile("testgen7", InterfaceDataObject.class);
     assertEquals(props.remove("MyGenerator"), "true");
+  }
+
+  public static String testAbsoluteFilenamePath() {
+    return testDir.getAbsolutePath().replace(File.separatorChar, '/') + "/somedir/file.txt";
+  }
+
+  @Test
+  public void testAbsoluteFilename() throws Exception {
+    Compiler compiler = new Compiler(new CodeGenProcessor());
+    compiler.addOption("-Acodegen.generators=testgen8");
+
+    assertTrue(compiler.compile(VertxGenClass1.class));
+    File f = new File(testDir, "somedir/file.txt".replace('/', File.separatorChar));
+    assertTrue(f.exists());
+    assertTrue(f.isFile());
   }
 }
