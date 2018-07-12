@@ -263,37 +263,6 @@ public class ClassTest extends ClassTestBase {
   // Invalid params
 
   @Test
-  public void testGenerateMethodWithJavaDotObjectParam() throws Exception {
-    assertGenInvalid(MethodWithJavaDotObjectParam.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithJavaDotObjectInHandler() throws Exception {
-    assertGenInvalid(MethodWithJavaDotObjectInHandler.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithJavaDotObjectInHandlerAsyncResult() throws Exception {
-    assertGenInvalid(MethodWithJavaDotObjectInHandlerAsyncResult.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithNonVertxGenParam() throws Exception {
-    Class<?> c = MethodWithNotVertxGenObjectParam.class;
-    assertGenInvalid(c);
-  }
-
-  @Test
-  public void testGenerateMethodWithNonVertxGenInHandler() throws Exception {
-    assertGenInvalid(MethodWithNotVertxGenObjectInHandler.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithNonVertxGenInHandlerAsyncResult() throws Exception {
-    assertGenInvalid(MethodWithNotVertxGenObjectInHandlerAsyncResult.class);
-  }
-
-  @Test
   public void testGenerateMethodWithFunctionInHandler() throws Exception {
     assertGenInvalid(MethodWithFunctionInHandler.class);
   }
@@ -313,33 +282,6 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testGenerateMethodWithWildcardLowerBoundTypeArg() throws Exception {
     assertGenInvalid(MethodWithWildcardLowerBoundTypeArg.class);
-  }
-
-  // Invalid returns
-
-  @Test
-  public void testGenerateMethodWithJavaDotObjectReturn() throws Exception {
-    assertGenInvalid(MethodWithJavaDotObjectReturn.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithNonVertxGenReturn() throws Exception {
-    assertGenInvalid(MethodWithNotVertxGenObjectReturn.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithReturnSetNonBasicType() throws Exception {
-    assertGenInvalid(MethodWithSetNonBasicTypeReturn.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithReturnListNonBasicType() throws Exception {
-    assertGenInvalid(MethodWithListNonBasicTypeReturn.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithReturnHandlerNonVertxGen() throws Exception {
-    assertGenInvalid(MethodWithHandlerNonVertxGenReturn.class);
   }
 
   // Invalid methods
@@ -418,6 +360,69 @@ public class ClassTest extends ClassTestBase {
   // Test valid stuff
   // ----------------
 
+  // Valid classes
+
+  @Test
+  public void testGenerateMethodWithNonVertxGenInHandler() throws Exception {
+    assertGenValid(MethodWithNotVertxGenObjectInHandler.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithNonVertxGenReturn() throws Exception {
+    assertGenValid(MethodWithNotVertxGenObjectReturn.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithReturnSetNonBasicType() throws Exception {
+    assertGenValid(MethodWithSetNonBasicTypeReturn.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithReturnListNonBasicType() throws Exception {
+    assertGenValid(MethodWithListNonBasicTypeReturn.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithReturnHandlerNonVertxGen() throws Exception {
+    assertGenValid(MethodWithHandlerNonVertxGenReturn.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithNonVertxGenInHandlerAsyncResult() throws Exception {
+    assertGenValid(MethodWithNotVertxGenObjectInHandlerAsyncResult.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithJavaDotObjectInHandler() throws Exception {
+    assertGenValid(MethodWithJavaDotObjectInHandler.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithJavaDotObjectInHandlerAsyncResult() throws Exception {
+    assertGenValid(MethodWithJavaDotObjectInHandlerAsyncResult.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithJavaDotObjectParam() throws Exception {
+    assertGenValid(MethodWithJavaDotObjectParam.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithNonVertxGenParam() throws Exception {
+    Class<?> c = MethodWithNotVertxGenObjectParam.class;
+    assertGenValid(c);
+  }
+
+  @Test
+  public void testGenerateMethodWithJavaDotObjectReturn() throws Exception {
+    assertGenValid(MethodWithJavaDotObjectReturn.class);
+  }
+
+  @Test
+  public void testMethodInvalidThrowableParam() throws Exception {
+    assertGenValid(MethodWithInvalidExceptionParam.class);
+  }
+  
   // Valid params
 
   @Test
@@ -2097,11 +2102,6 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testMethodInvalidHandlerAsyncResultDataObjectsParam() throws Exception {
     assertGenFail(MethodWithInvalidHandlerAsyncResultDataObjectParam.class, "Option without toJson() in AsyncResult param should fail");
-  }
-
-  @Test
-  public void testMethodInvalidThrowableParam() throws Exception {
-    assertGenInvalid(MethodWithInvalidExceptionParam.class);
   }
 
   @Test
