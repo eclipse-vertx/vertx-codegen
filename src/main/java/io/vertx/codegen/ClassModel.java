@@ -308,6 +308,9 @@ public class ClassModel implements Model {
     if (isVertxGenInterface(type, true)) {
       return true;
     }
+    if (type.getKind() == ClassKind.OTHER) {
+      return true;
+    }
     if (isLegalContainerReturn(type)) {
       return true;
     }
@@ -344,6 +347,9 @@ public class ClassModel implements Model {
       return true;
     }
     if (isVertxGenInterface(typeInfo, true)) {
+      return true;
+    }
+    if (type.getKind() == ClassKind.OTHER) {
       return true;
     }
     if (isLegalContainerParam(typeInfo)) {
