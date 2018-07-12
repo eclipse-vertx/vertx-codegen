@@ -410,7 +410,12 @@ public class ClassModel implements Model {
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
       TypeInfo argument = ((ParameterizedTypeInfo) type).getArgs().get(0);
       if (type.getKind() != ClassKind.MAP) {
-        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument, false) || isLegalDataObjectTypeParam(argument) || argument.getKind() == ClassKind.ENUM) {
+        if (argument.getKind().basic ||
+          argument.getKind().json ||
+          isVertxGenInterface(argument, false) ||
+          isLegalDataObjectTypeParam(argument) ||
+          argument.getKind() == ClassKind.ENUM ||
+          argument.getKind() == ClassKind.OTHER) {
           return true;
         }
       } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
@@ -441,6 +446,7 @@ public class ClassModel implements Model {
             valueType.getKind().json ||
             valueType.getKind() == ClassKind.ENUM ||
             isVertxGenInterface(valueType, false) ||
+            valueType.getKind() == ClassKind.OTHER ||
             isLegalDataObjectTypeReturn(valueType)) {
           return true;
         }
