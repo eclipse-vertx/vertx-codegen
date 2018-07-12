@@ -18,6 +18,7 @@ package io.vertx.codegen.overloadcheck;
 
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.ParamInfo;
+import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.TypeInfo;
 
 import java.io.IOException;
@@ -140,17 +141,19 @@ public class MethodOverloadChecker {
 
   private List<SimpleType> convertToLangParamTypes(SimpleMethod meth, Map<String, Set<String>> typeMapping) {
     List<SimpleType> langParamTypes = new ArrayList<>();
-    for (SimpleParam param: meth.params) {
-      Set<String> langType = typeMapping.get(param.classKind.toString());
-      if (langType == null) {
-        // Try with type name appended
-        String lhs = param.classKind.toString() + "." + param.typeName;
-        langType = typeMapping.get(lhs);
+    for (SimpleParam param : meth.params) {
+      if (param.classKind != ClassKind.OTHER) {
+        Set<String> langType = typeMapping.get(param.classKind.toString());
         if (langType == null) {
-          throw new IllegalStateException("No type mapping found for param type " + lhs);
+          // Try with type name appended
+          String lhs = param.classKind.toString() + "." + param.typeName;
+          langType = typeMapping.get(lhs);
+          if (langType == null) {
+            throw new IllegalStateException("No type mapping found for param type " + lhs);
+          }
         }
+        langParamTypes.add(new SimpleType(langType, param.nullable));
       }
-      langParamTypes.add(new SimpleType(langType, param.nullable));
     }
     return langParamTypes;
   }

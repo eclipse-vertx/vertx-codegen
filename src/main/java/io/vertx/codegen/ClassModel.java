@@ -308,6 +308,9 @@ public class ClassModel implements Model {
     if (isVertxGenInterface(type, true)) {
       return true;
     }
+    if (type.getKind() == ClassKind.OTHER) {
+      return true;
+    }
     if (isLegalContainerReturn(type)) {
       return true;
     }
@@ -344,6 +347,9 @@ public class ClassModel implements Model {
       return true;
     }
     if (isVertxGenInterface(typeInfo, true)) {
+      return true;
+    }
+    if (typeInfo.getKind() == ClassKind.OTHER) {
       return true;
     }
     if (isLegalContainerParam(typeInfo)) {
@@ -404,12 +410,17 @@ public class ClassModel implements Model {
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
       TypeInfo argument = ((ParameterizedTypeInfo) type).getArgs().get(0);
       if (type.getKind() != ClassKind.MAP) {
-        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument, false) || isLegalDataObjectTypeParam(argument) || argument.getKind() == ClassKind.ENUM) {
+        if (argument.getKind().basic ||
+          argument.getKind().json ||
+          isVertxGenInterface(argument, false) ||
+          isLegalDataObjectTypeParam(argument) ||
+          argument.getKind() == ClassKind.ENUM ||
+          argument.getKind() == ClassKind.OTHER) {
           return true;
         }
       } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
         argument = ((ParameterizedTypeInfo) type).getArgs().get(1);
-        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument, false)) {
+        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument, false) || argument.getKind() == ClassKind.OTHER) {
           return true;
         }
       }
@@ -426,7 +437,8 @@ public class ClassModel implements Model {
         }
         TypeInfo valueType = args.get(1);
         if (valueType.getKind().basic ||
-            valueType.getKind().json) {
+          valueType.getKind().json ||
+          valueType.getKind() == ClassKind.OTHER) {
           return true;
         }
       } else {
@@ -435,6 +447,7 @@ public class ClassModel implements Model {
             valueType.getKind().json ||
             valueType.getKind() == ClassKind.ENUM ||
             isVertxGenInterface(valueType, false) ||
+            valueType.getKind() == ClassKind.OTHER ||
             isLegalDataObjectTypeReturn(valueType)) {
           return true;
         }
