@@ -23,6 +23,11 @@ public class DataObjectCheatsheetGen extends Generator<DataObjectModel> {
   }
 
   @Override
+  public String filename(DataObjectModel model) {
+    return "asciidocs/dataobjects.adoc";
+  }
+
+  @Override
   public String render(DataObjectModel model, int index, int size, Map<String, Object> session) {
     StringWriter buffer = new StringWriter();
     PrintWriter html = new PrintWriter(buffer);
@@ -32,7 +37,7 @@ public class DataObjectCheatsheetGen extends Generator<DataObjectModel> {
     }
     render(model, html);
     html.append("\n");
-    return html.toString();
+    return buffer.toString();
   }
 
   private void render(DataObjectModel model, PrintWriter html) {
