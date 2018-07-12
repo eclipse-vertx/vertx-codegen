@@ -23,6 +23,11 @@ public class EnumCheatsheetGen extends Generator<EnumModel> {
   }
 
   @Override
+  public String filename(EnumModel model) {
+    return "asciidocs/enums.adoc";
+  }
+
+  @Override
   public String render(EnumModel model, int index, int size, Map<String, Object> session) {
     StringWriter buffer = new StringWriter();
     PrintWriter html = new PrintWriter(buffer);
@@ -32,7 +37,7 @@ public class EnumCheatsheetGen extends Generator<EnumModel> {
     }
     render(model, html);
     html.append("\n");
-    return html.toString();
+    return buffer.toString();
   }
 
   private void render(EnumModel model, PrintWriter html) {
