@@ -349,7 +349,7 @@ public class ClassModel implements Model {
     if (isVertxGenInterface(typeInfo, true)) {
       return true;
     }
-    if (type.getKind() == ClassKind.OTHER) {
+    if (typeInfo.getKind() == ClassKind.OTHER) {
       return true;
     }
     if (isLegalContainerParam(typeInfo)) {
