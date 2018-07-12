@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -96,7 +97,7 @@ public class CodeGeneratorTest {
     assertEquals("false", props.remove("concrete"));
     assertEquals("false", props.remove("isClass"));
     assertEquals("[" + JsonArray.class.getName() + ", " + JsonObject.class.getName() + ", " + Boolean.class.getName() + ", "
-        + Integer.class.getName() + ", " + Long.class.getName() + ", " + String.class.getName()
+        + Integer.class.getName() + ", " + Long.class.getName() + ", " + String.class.getName() + ", " + Instant.class.getName()
         + "]", props.remove("importedTypes"));
     assertEquals("[]", props.remove("superTypes"));
     assertEquals("[]", props.remove("abstractSuperTypes"));
@@ -113,6 +114,7 @@ public class CodeGeneratorTest {
     assertEquals("int", props.remove("property.primitiveInteger"));
     assertEquals("long", props.remove("property.primitiveLong"));
     assertEquals("java.lang.String", props.remove("property.string"));
+    assertEquals("java.time.Instant", props.remove("property.instant"));
     assertEquals("io.vertx.test.codegen.testdataobject.ToJsonDataObject", props.remove("property.toJsonDataObject"));
     assertEquals(new Properties(), props);
   }

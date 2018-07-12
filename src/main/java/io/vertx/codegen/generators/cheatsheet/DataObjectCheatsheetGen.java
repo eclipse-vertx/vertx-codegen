@@ -10,6 +10,7 @@ import io.vertx.codegen.type.TypeInfo;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
 
@@ -111,6 +112,12 @@ public class DataObjectCheatsheetGen extends Generator<DataObjectModel> {
           if (type.getName().equals("io.vertx.core.buffer.Buffer")) {
             return "Buffer";
           }
+          break;
+        case OTHER:
+          if (type.getName().equals(Instant.class.getName())) {
+            return "Instant";
+          }
+          break;
       }
     }
     System.out.println("unhandled type " + type);
