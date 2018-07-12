@@ -9,14 +9,13 @@ import io.vertx.codegen.type.AnnotationValueInfoFactory;
 import io.vertx.codegen.type.EnumTypeInfo;
 import io.vertx.codegen.type.TypeMirrorFactory;
 
-import javax.annotation.processing.Messager;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,16 +41,16 @@ public class EnumModel implements Model {
   private boolean deprecated;
   private Text deprecatedDesc;
 
-  public EnumModel(Messager messager, Elements elementUtils, Types typeUtils, TypeElement modelElt) {
-    this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, new TypeMirrorFactory(elementUtils, typeUtils), modelElt);
-    this.typeUtils = typeUtils;
-    this.elementUtils = elementUtils;
+  public EnumModel(ProcessingEnvironment env, TypeElement modelElt) {
+    this.typeUtils = env.getTypeUtils();
+    this.elementUtils = env.getElementUtils();
+    this.docFactory = new Doc.Factory(env.getMessager(), elementUtils, typeUtils, new TypeMirrorFactory(elementUtils, typeUtils), modelElt);
     this.modelElt = modelElt;
     this.annotationValueInfoFactory = new AnnotationValueInfoFactory(new TypeMirrorFactory(elementUtils, typeUtils));
     this.deprecated = modelElt.getAnnotation(Deprecated.class) != null;
   }
 
-  boolean process() {
+  public boolean process() {
     if (!processed) {
       if (modelElt.getKind() != ElementKind.ENUM) {
         throw new GenException(modelElt, "@VertxGen can only be used with interfaces or enums" + modelElt.asType().toString());

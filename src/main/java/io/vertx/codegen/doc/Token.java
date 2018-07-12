@@ -8,6 +8,8 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -184,5 +186,69 @@ public abstract class Token {
       }
       return token;
     };
+  }
+
+  /**
+   * Render a list of tokens to HTML markup and return it.
+   *
+   * @param tokens the tokens to render
+   * @param margin the left margin
+   * @param linkToHtml the function that renders a tag link to HTML markup
+   * @param sep the separator
+   * @return the rendered HTML
+   */
+  public static String toHtml(List<Token> tokens, String margin,
+                       Function<Tag.Link, String> linkToHtml,
+                       String sep) {
+    StringWriter sw = new StringWriter();
+    toHtml(tokens, margin, linkToHtml, sep, new PrintWriter(sw));
+    return sw.toString();
+  }
+
+  /**
+   * Render a list of tokens to HTML markup.
+   *
+   * @param tokens the tokens to render
+   * @param margin the left margin
+   * @param linkToHtml the function that renders a tag link to HTML markup
+   * @param sep the separator
+   * @param writer the writer for output
+   */
+  public static void toHtml(List<Token> tokens,
+                            String margin,
+                     Function<Tag.Link, String> linkToHtml,
+                     String sep,
+                     PrintWriter writer) {
+    boolean need = true;
+    for (Token token : tokens) {
+      if (need) {
+        writer.append(margin);
+        need = false;
+      }
+      if (token.isLineBreak()) {
+        writer.append(sep);
+        need = true;
+      } else if (token.isText()) {
+        writer.append(token.getValue());
+      } else {
+        Tag tag = ((Token.InlineTag) token).getTag();
+        if (tag instanceof Tag.Link) {
+          Tag.Link tagLink = (Tag.Link) tag;
+          String link = linkToHtml.apply((Tag.Link) tag);
+          if (link == null || link.trim().isEmpty()) {
+            link = tagLink.getLabel();
+          }
+          if (link == null || link.trim().isEmpty()) {
+            link = tagLink.targetElement.getSimpleName().toString();
+          }
+          writer.append(link);
+        } else if (tag.getName().equals("code")) {
+          writer.append("<code>").append(tag.value.trim()).append("</code>");
+        }
+      }
+    }
+    if (!need) {
+      writer.append(sep);
+    }
   }
 }

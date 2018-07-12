@@ -80,10 +80,6 @@ public class GeneratorHelper {
     return generateClass(codegen -> codegen.getClassModel(c.getCanonicalName()), c, rest);
   }
 
-  public ProxyModel generateProxyModel(Class c, Class... rest) throws Exception {
-    return generateClass(codegen -> codegen.getProxyModel(c.getCanonicalName()), c, rest);
-  }
-
   public EnumModel generateEnum(Class c, Class... rest) throws Exception {
     return generateClass(codegen -> codegen.getEnumModel(c.getCanonicalName()), c, rest);
   }

@@ -21,20 +21,14 @@ import javax.tools.StandardLocation;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -101,15 +95,18 @@ public class CodeGenProcessor extends AbstractProcessor {
       if (outputDirectoryOption != null) {
         outputDirectory = new File(outputDirectoryOption);
         if (!outputDirectory.exists()) {
-          processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " does not exist");
+          if (!outputDirectory.mkdirs()) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " does not exist");
+          }
         }
         if (!outputDirectory.isDirectory()) {
           processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " is not a directory");
         }
       }
-
+      // load GeneratorLoader by ServiceLoader
+      Stream<GeneratorLoader> serviceLoader = StreamSupport.stream(ServiceLoader.load(GeneratorLoader.class, CodeGenProcessor.class.getClassLoader()).spliterator(), false);
       Stream<GeneratorLoader> loaders = Arrays.asList(new MvelCodeGeneratorLoader(), new CheatsheetGenLoader(), new DataObjectHelperGenLoader()).stream();
-      Stream<Generator<?>> generators = loaders.flatMap(l -> l.loadGenerators(processingEnv));
+      Stream<Generator<?>> generators = Stream.concat(serviceLoader, loaders).flatMap(l -> l.loadGenerators(processingEnv));
       Predicate<Generator> filter = filterGenerators();
       if (filter != null) {
         generators = generators.filter(filter);
@@ -147,7 +144,7 @@ public class CodeGenProcessor extends AbstractProcessor {
           try {
             Model model = entry.getValue();
             for (Generator codeGenerator : codeGenerators) {
-              if (codeGenerator.kinds.contains(model.getClass())) {
+              if (codeGenerator.kinds.contains(model.getKind())) {
                 String relativeName = codeGenerator.relativeFilename(model);
                 if (relativeName != null) {
                   int kind;

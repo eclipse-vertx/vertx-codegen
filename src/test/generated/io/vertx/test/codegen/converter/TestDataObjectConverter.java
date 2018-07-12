@@ -5,7 +5,7 @@ import io.vertx.core.json.JsonArray;
 
 /**
  * Converter for {@link io.vertx.test.codegen.converter.TestDataObject}.
- * NOTE: This class has been automatically generated from the {@link "io.vertx.test.codegen.converter.TestDataObject} original class using Vert.x codegen.
+ * NOTE: This class has been automatically generated from the {@link io.vertx.test.codegen.converter.TestDataObject} original class using Vert.x codegen.
  */
 public class TestDataObjectConverter {
 

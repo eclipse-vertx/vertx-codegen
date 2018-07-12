@@ -29,6 +29,11 @@ public class TemplateTest {
     }
 
     @Override
+    public boolean process() {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
     public ModuleInfo getModule() {
       throw new UnsupportedOperationException();
     }

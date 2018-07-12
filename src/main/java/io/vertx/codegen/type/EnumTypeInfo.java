@@ -13,7 +13,7 @@ public class EnumTypeInfo extends ClassTypeInfo {
   final List<String> values;
   final boolean gen;
 
-  public EnumTypeInfo(String fqcn, boolean gen, List<String> values, ModuleInfo module, boolean nullable, boolean proxyGen) {
+  public EnumTypeInfo(String fqcn, boolean gen, List<String> values, ModuleInfo module, boolean nullable) {
     super(ClassKind.ENUM, fqcn, module, nullable, Collections.emptyList());
 
     this.gen = gen;

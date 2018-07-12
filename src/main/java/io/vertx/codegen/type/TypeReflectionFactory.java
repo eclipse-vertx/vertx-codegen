@@ -8,14 +8,11 @@ import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.streams.ReadStream;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -64,8 +61,8 @@ public class TypeReflectionFactory {
             classType.getDeclaredAnnotation(VertxGen.class) != null,
             Stream.of(classType.getEnumConstants()).map(Object::toString).collect(Collectors.toList()),
             module,
-            false,
-            false);
+            false
+          );
         } else {
           ClassKind kind = ClassKind.getKind(fqcn, classType.getAnnotation(DataObject.class) != null, classType.getAnnotation(VertxGen.class) != null);
           List<TypeParamInfo.Class> typeParams = new ArrayList<>();
@@ -79,7 +76,7 @@ public class TypeReflectionFactory {
             return new ApiTypeInfo(fqcn, true, typeParams, readStreamArg != null ? create(readStreamArg) : null, null, null, module, false, false);
           } else if (kind == ClassKind.DATA_OBJECT) {
             boolean _abstract = Modifier.isAbstract(classType.getModifiers());
-            return new DataObjectTypeInfo(kind, fqcn, module, _abstract, false, false, typeParams);
+            return new DataObjectTypeInfo(kind, fqcn, module, _abstract, false, typeParams);
           } else {
             return new ClassTypeInfo(kind, fqcn, module, false, typeParams);
           }

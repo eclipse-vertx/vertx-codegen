@@ -56,11 +56,9 @@ public class ClassModel implements Model {
 
   protected final ProcessingEnvironment env;
   protected final AnnotationValueInfoFactory annotationValueInfoFactory;
-  protected final MethodOverloadChecker methodOverloadChecker;
   protected final Messager messager;
   protected final TypeMirrorFactory typeFactory;
   protected final Doc.Factory docFactory;
-  protected final Map<String, TypeElement> sources;
   protected final TypeElement modelElt;
   protected final Elements elementUtils;
   protected final Types typeUtils;
@@ -89,17 +87,13 @@ public class ClassModel implements Model {
   protected final boolean deprecated;
   protected Text deprecatedDesc;
 
-  public ClassModel(ProcessingEnvironment env, MethodOverloadChecker methodOverloadChecker,
-                    Messager messager,  Map<String, TypeElement> sources, Elements elementUtils,
-                    Types typeUtils, TypeElement modelElt) {
+  public ClassModel(ProcessingEnvironment env, TypeElement modelElt) {
+    this.elementUtils = env.getElementUtils();
+    this.typeUtils = env.getTypeUtils();
     this.env = env;
-    this.methodOverloadChecker = methodOverloadChecker;
     this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils);
-    this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, typeFactory, modelElt);
-    this.messager = messager;
-    this.sources = sources;
-    this.elementUtils = elementUtils;
-    this.typeUtils = typeUtils;
+    this.docFactory = new Doc.Factory(env.getMessager(), elementUtils, typeUtils, typeFactory, modelElt);
+    this.messager = env.getMessager();
     this.modelElt = modelElt;
     this.annotationValueInfoFactory = new AnnotationValueInfoFactory(typeFactory);
     this.deprecated = modelElt.getAnnotation(Deprecated.class) != null;
@@ -543,7 +537,7 @@ public class ClassModel implements Model {
       collect(Collectors.toSet());
   }
 
-  boolean process() {
+  public boolean process() {
     if (!processed) {
       traverseType(modelElt);
       determineApiTypes();
@@ -686,7 +680,7 @@ public class ClassModel implements Model {
 
         // Ambiguous
         try {
-          methodOverloadChecker.checkAmbiguous(meths);
+          MethodOverloadChecker.INSTANCE.checkAmbiguous(meths);
         } catch (RuntimeException e) {
           throw new GenException(elem, e.getMessage());
         }

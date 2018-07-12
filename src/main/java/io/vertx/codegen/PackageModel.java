@@ -18,6 +18,11 @@ public class PackageModel implements Model {
   }
 
   @Override
+  public boolean process() {
+    return false;
+  }
+
+  @Override
   public String getKind() {
     return "package";
   }

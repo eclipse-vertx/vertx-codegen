@@ -658,10 +658,10 @@ public class Helper {
     return method;
   }
 
-  static boolean isJsonifiable(Elements elementUtils, Types typeUtils, TypeElement propTypeElt) {
+  public static boolean isJsonifiable(Elements elementUtils, Types typeUtils, TypeElement propTypeElt) {
     TypeMirror jsonType = elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType();
     return elementUtils.getAllMembers(
-        (TypeElement) propTypeElt).stream().
+        propTypeElt).stream().
         flatMap(Helper.FILTER_METHOD).
         filter(exeElt -> exeElt.getSimpleName().toString().equals("toJson") && typeUtils.isSameType(jsonType, exeElt.getReturnType())).
         count() > 0;

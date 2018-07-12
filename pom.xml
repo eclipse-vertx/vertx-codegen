@@ -96,6 +96,7 @@
                   <exclude>io/vertx/core/**</exclude>
                   <exclude>io/vertx/codegen/testmodel/**</exclude>
                   <exclude>com/acme/**</exclude>
+                  <exclude>examples/**</exclude>
                 </excludes>
               </configuration>
             </execution>
@@ -113,6 +114,7 @@
               <additionalClasspathElement>${project.basedir}/src/test/testgen4</additionalClasspathElement>
               <additionalClasspathElement>${project.basedir}/src/test/testgen5</additionalClasspathElement>
               <additionalClasspathElement>${project.basedir}/src/test/testgen6</additionalClasspathElement>
+              <additionalClasspathElement>${project.basedir}/src/test/testgen7</additionalClasspathElement>
             </additionalClasspathElements>
           </configuration>
         </plugin>

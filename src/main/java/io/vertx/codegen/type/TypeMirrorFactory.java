@@ -21,9 +21,7 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -90,7 +88,7 @@ public class TypeMirrorFactory {
         }
       }
       boolean gen = elt.getAnnotation(VertxGen.class) != null;
-      return new EnumTypeInfo(fqcn, gen, values, module, nullable, proxyGen);
+      return new EnumTypeInfo(fqcn, gen, values, module, nullable);
     } else {
       ClassKind kind = ClassKind.getKind(fqcn, elt.getAnnotation(DataObject.class) != null, elt.getAnnotation(VertxGen.class) != null);
       ClassTypeInfo raw;
@@ -127,7 +125,7 @@ public class TypeMirrorFactory {
           raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, args[0], args[1], args[2], module, nullable, proxyGen);
         } else if (kind == ClassKind.DATA_OBJECT) {
           boolean _abstract = elt.getModifiers().contains(Modifier.ABSTRACT);
-          raw = new DataObjectTypeInfo(kind, fqcn, module, _abstract, nullable, proxyGen, typeParams);
+          raw = new DataObjectTypeInfo(kind, fqcn, module, _abstract, nullable, typeParams);
         } else {
           raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams);
         }

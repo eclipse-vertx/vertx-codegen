@@ -9,7 +9,7 @@ import io.vertx.codegen.doc.Token;
 import io.vertx.codegen.type.*;
 import io.vertx.core.json.JsonObject;
 
-import javax.annotation.processing.Messager;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
@@ -17,7 +17,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -55,11 +54,11 @@ public class DataObjectModel implements Model {
   private boolean jsonifiable;
   private List<AnnotationValueInfo> annotations;
 
-  public DataObjectModel(Elements elementUtils, Types typeUtils, TypeElement modelElt, Messager messager) {
-    this.elementUtils = elementUtils;
-    this.typeUtils = typeUtils;
+  public DataObjectModel(ProcessingEnvironment env, TypeElement modelElt) {
+    this.elementUtils = env.getElementUtils();
+    this.typeUtils = env.getTypeUtils();
     this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils);
-    this.docFactory = new Doc.Factory(messager, elementUtils, typeUtils, typeFactory, modelElt);
+    this.docFactory = new Doc.Factory(env.getMessager(), elementUtils, typeUtils, typeFactory, modelElt);
     this.modelElt = modelElt;
     this.annotationValueInfoFactory = new AnnotationValueInfoFactory(typeFactory);
     this.deprecated = modelElt.getAnnotation(Deprecated.class) != null;
@@ -182,7 +181,7 @@ public class DataObjectModel implements Model {
     return vars;
   }
 
-  boolean process() {
+  public boolean process() {
     if (!processed) {
       if (modelElt.getKind() == ElementKind.INTERFACE || modelElt.getKind() == ElementKind.CLASS) {
         traverse();

@@ -7,9 +7,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +46,13 @@ public class Doc {
         String name = matcher.group(2);
         int prev = matcher.end() + 1;
         if (matcher.find()) {
-          blockTags.add(new Tag(name, javadoc.substring(prev, matcher.start())));
+          int start = matcher.start();
+          if (start <= prev) {
+            // this is a tag without content (e.g.: deprecated)
+            blockTags.add(new Tag(name, ""));
+          } else {
+            blockTags.add(new Tag(name, javadoc.substring(prev, start)));
+          }
         } else {
           blockTags.add(new Tag(name, javadoc.substring(prev)));
           break;
@@ -125,52 +128,6 @@ public class Doc {
 
   public List<Tag> getBlockTags() {
     return blockTags;
-  }
-
-  public String toHtml(String margin,
-                     Function<Tag.Link, String> linkToHtml,
-                     String sep) {
-    StringWriter sw = new StringWriter();
-    toHtml(margin, linkToHtml, sep, new PrintWriter(sw));
-    return sw.toString();
-  }
-
-  public void toHtml(String margin,
-                     Function<Tag.Link, String> linkToHtml,
-                     String sep,
-                     PrintWriter writer) {
-    boolean need = true;
-    for (Token token : getTokens()) {
-      if (need) {
-        writer.append(margin);
-        need = false;
-      }
-      if (token.isLineBreak()) {
-        writer.append(sep);
-        need = true;
-      } else if (token.isText()) {
-        writer.append(token.getValue());
-      } else {
-        Tag tag = ((Token.InlineTag) token).getTag();
-        if (tag instanceof Tag.Link) {
-          Tag.Link tagLink = (Tag.Link) tag;
-          String link = linkToHtml.apply((Tag.Link) tag);
-          if (link == null || link.trim().isEmpty()) {
-            link = tagLink.getLabel();
-          }
-          if (link == null || link.trim().isEmpty()) {
-            link = tagLink.targetElement.getSimpleName().toString();
-          }
-          writer.append(link);
-        } else if (tag.getName().equals("code")) {
-          writer.append("<code>").append(tag.value.trim()).append("</code>");
-        }
-      }
-      if (need) {
-        writer.append(margin);
-        need = false;
-      }
-    }
   }
 
   @Override
