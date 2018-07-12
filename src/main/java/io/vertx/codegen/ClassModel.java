@@ -84,7 +84,7 @@ public class ClassModel implements Model {
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
   protected Map<String, List<AnnotationValueInfo>> methodAnnotationsMap = new LinkedHashMap<>();
   protected List<AnnotationValueInfo> annotations;
-  protected final boolean deprecated;
+  protected boolean deprecated;
   protected Text deprecatedDesc;
 
   public ClassModel(ProcessingEnvironment env, TypeElement modelElt) {
@@ -577,6 +577,7 @@ public class ClassModel implements Model {
         doc.getBlockTags().stream().filter(tag -> tag.getName().equals("deprecated")).findFirst().ifPresent(tag ->
           deprecatedDesc = new Text(Helper.normalizeWhitespaces(tag.getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt))
         );
+        deprecated = deprecated || deprecatedDesc != null;
         concrete = elem.getAnnotation(VertxGen.class) == null || elem.getAnnotation(VertxGen.class).concrete();
         DeclaredType tm = (DeclaredType) elem.asType();
         List<? extends TypeMirror> typeArgs = tm.getTypeArguments();
@@ -863,7 +864,7 @@ public class ClassModel implements Model {
         }
       }
     }
-    boolean methodDeprecated = modelMethod.getAnnotation(Deprecated.class) != null;
+    boolean methodDeprecated = modelMethod.getAnnotation(Deprecated.class) != null || deprecatedDesc != null;
 
     MethodInfo methodInfo = createMethodInfo(ownerTypes, methodName, comment, doc, kind,
         returnType, returnDesc, isFluent, isCacheReturn, mParams, modelMethod, isStatic, isDefault, typeParams, declaringElt, methodDeprecated, methodDeprecatedDesc);
