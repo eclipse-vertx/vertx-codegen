@@ -37,10 +37,9 @@ import io.vertx.test.codegen.testapi.ConcreteInterfaceWithTwoConcreteSuperInterf
 import io.vertx.test.codegen.testapi.DiamondMethod1;
 import io.vertx.test.codegen.testapi.DiamondMethod2;
 import io.vertx.test.codegen.testapi.DiamondMethod3;
-import io.vertx.test.codegen.testapi.GenericInterface2;
-import io.vertx.test.codegen.testapi.MethodWithTypeVarParamByGenericType;
 import io.vertx.test.codegen.testapi.GenericAbstractInterface;
 import io.vertx.test.codegen.testapi.GenericInterface;
+import io.vertx.test.codegen.testapi.GenericInterface2;
 import io.vertx.test.codegen.testapi.GenericInterfaceWithUpperBound;
 import io.vertx.test.codegen.testapi.InterfaceDataObjectWithToJson;
 import io.vertx.test.codegen.testapi.InterfaceExtendingGenericAbstractInterface;
@@ -125,11 +124,13 @@ import io.vertx.test.codegen.testapi.MethodWithNotVertxGenObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithNotVertxGenObjectReturn;
 import io.vertx.test.codegen.testapi.MethodWithObjectParam;
 import io.vertx.test.codegen.testapi.MethodWithObjectReturn;
+import io.vertx.test.codegen.testapi.MethodWithOtherContainerType;
 import io.vertx.test.codegen.testapi.MethodWithSameSignatureInheritedFromDistinctInterfaces;
 import io.vertx.test.codegen.testapi.MethodWithSetNonBasicTypeReturn;
 import io.vertx.test.codegen.testapi.MethodWithThrowableReturn;
 import io.vertx.test.codegen.testapi.MethodWithTypeParameter;
 import io.vertx.test.codegen.testapi.MethodWithTypeParameterUpperBound;
+import io.vertx.test.codegen.testapi.MethodWithTypeVarParamByGenericType;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicBoxedParams;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicParams;
 import io.vertx.test.codegen.testapi.MethodWithValidBasicReturn;
@@ -499,6 +500,22 @@ public class ClassTest extends ClassTestBase {
     ParameterizedTypeInfo genericType = (ParameterizedTypeInfo) mi.getParams().get(0).getType();
     ClassTypeInfo voidType = (ClassTypeInfo) genericType.getArgs().get(0);
     assertEquals(ClassKind.VOID, voidType.getKind());
+  }
+
+  @Test
+  public void testOtherIsValidContainerParam() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(MethodWithOtherContainerType.class);
+    ParameterizedTypeInfo containerType = (ParameterizedTypeInfo) model.getMethods().get(0).getParams().get(0).getType();
+    ClassTypeInfo otherType = (ClassTypeInfo) containerType.getArgs().get(0);
+    assertEquals(ClassKind.OTHER, otherType.getKind());
+  }
+
+  @Test
+  public void testOtherIsValidContainerReturn() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(MethodWithOtherContainerType.class);
+    ParameterizedTypeInfo containerType = (ParameterizedTypeInfo) model.getMethods().get(0).getReturnType();
+    ClassTypeInfo otherType = (ClassTypeInfo) containerType.getArgs().get(0);
+    assertEquals(ClassKind.OTHER, otherType.getKind());
   }
 
   @Test
