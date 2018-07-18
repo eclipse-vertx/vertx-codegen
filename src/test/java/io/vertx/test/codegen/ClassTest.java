@@ -194,6 +194,7 @@ import io.vertx.test.codegen.testapi.streams.InterfaceExtentingReadStreamAndWrit
 import io.vertx.test.codegen.testapi.streams.InterfaceExtentingWriteStream;
 import io.vertx.test.codegen.testapi.streams.InterfaceSubtypingReadStream;
 import io.vertx.test.codegen.testapi.streams.ReadStreamWithParameterizedTypeArg;
+import io.vertx.test.codegen.testdataobject.Abstract;
 import org.junit.Test;
 
 import java.net.Socket;
@@ -793,7 +794,7 @@ public class ClassTest extends ClassTestBase {
     assertEquals(4, model.getMethods().size());
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, "methodWithHandlerParams", 16, "void", MethodKind.FUTURE);
+    checkMethod(method, "methodWithHandlerParams", 17, "void", MethodKind.FUTURE);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "byteHandler", new TypeLiteral<Handler<AsyncResult<Byte>>>() {});
     checkParam(params.get(1), "shortHandler", new TypeLiteral<Handler<AsyncResult<Short>>>() {});
@@ -811,9 +812,10 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(13), "voidHandler",  new TypeLiteral<Handler<AsyncResult<Void>>>(){});
     checkParam(params.get(14), "dataObjectHandler", new TypeLiteral<Handler<AsyncResult<TestDataObject>>>(){});
     checkParam(params.get(15), "enumHandler", new TypeLiteral<Handler<AsyncResult<TestEnum>>>(){});
+    checkParam(params.get(16), "socketHandler", new TypeLiteral<Handler<AsyncResult<Socket>>>(){});
 
     method = model.getMethods().get(1);
-    checkMethod(method, "methodWithListHandlerParams", 14, "void", MethodKind.FUTURE);
+    checkMethod(method, "methodWithListHandlerParams", 15, "void", MethodKind.FUTURE);
     params = method.getParams();
     checkParam(params.get(0), "listByteHandler", new TypeLiteral<Handler<AsyncResult<List<Byte>>>>(){});
     checkParam(params.get(1), "listShortHandler", new TypeLiteral<Handler<AsyncResult<List<Short>>>>() {});
@@ -829,9 +831,10 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(11), "listJsonArrayHandler", new TypeLiteral<Handler<AsyncResult<List<JsonArray>>>>(){});
     checkParam(params.get(12), "listDataObjectHandler", new TypeLiteral<Handler<AsyncResult<List<TestDataObject>>>>(){});
     checkParam(params.get(13), "listEnumHandler", new TypeLiteral<Handler<AsyncResult<List<TestEnum>>>>(){});
+    checkParam(params.get(14), "socketListHandler", new TypeLiteral<Handler<AsyncResult<List<Socket>>>>(){});
 
     method = model.getMethods().get(2);
-    checkMethod(method, "methodWithSetHandlerParams", 14, "void", MethodKind.FUTURE);
+    checkMethod(method, "methodWithSetHandlerParams", 15, "void", MethodKind.FUTURE);
     params = method.getParams();
     checkParam(params.get(0), "setByteHandler", new TypeLiteral<Handler<AsyncResult<Set<Byte>>>>(){});
     checkParam(params.get(1), "setShortHandler", new TypeLiteral<Handler<AsyncResult<Set<Short>>>>(){});
@@ -847,9 +850,10 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(11), "setJsonArrayHandler", new TypeLiteral<Handler<AsyncResult<Set<JsonArray>>>>(){});
     checkParam(params.get(12), "setDataObjectHandler", new TypeLiteral<Handler<AsyncResult<Set<TestDataObject>>>>(){});
     checkParam(params.get(13), "setEnumHandler", new TypeLiteral<Handler<AsyncResult<Set<TestEnum>>>>(){});
+    checkParam(params.get(14), "socketSetHandler", new TypeLiteral<Handler<AsyncResult<Set<Socket>>>>(){});
 
     method = model.getMethods().get(3);
-    checkMethod(method, "methodWithMapHandlerParams", 11, "void", MethodKind.FUTURE);
+    checkMethod(method, "methodWithMapHandlerParams", 12, "void", MethodKind.FUTURE);
     params = method.getParams();
     checkParam(params.get(0), "mapByteHandler", new TypeLiteral<Handler<AsyncResult<Map<String,Byte>>>>(){});
     checkParam(params.get(1), "mapShortHandler", new TypeLiteral<Handler<AsyncResult<Map<String,Short>>>>(){});
@@ -862,6 +866,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(8), "mapStrHandler", new TypeLiteral<Handler<AsyncResult<Map<String,String>>>>(){});
     checkParam(params.get(9), "mapJsonObjectHandler", new TypeLiteral<Handler<AsyncResult<Map<String,JsonObject>>>>(){});
     checkParam(params.get(10), "mapJsonArrayHandler", new TypeLiteral<Handler<AsyncResult<Map<String,JsonArray>>>>(){});
+    checkParam(params.get(11), "mapStringToSocketObjectHandler", new TypeLiteral<Handler<AsyncResult<Map<String,Socket>>>>(){});
   }
 
   @Test
