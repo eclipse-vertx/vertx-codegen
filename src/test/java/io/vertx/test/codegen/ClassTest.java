@@ -196,6 +196,7 @@ import io.vertx.test.codegen.testapi.streams.InterfaceSubtypingReadStream;
 import io.vertx.test.codegen.testapi.streams.ReadStreamWithParameterizedTypeArg;
 import org.junit.Test;
 
+import java.net.Socket;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -616,7 +617,7 @@ public class ClassTest extends ClassTestBase {
     assertEquals(4, model.getMethods().size());
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, "methodWithHandlerParams", 15, "void", MethodKind.HANDLER);
+    checkMethod(method, "methodWithHandlerParams", 16, "void", MethodKind.HANDLER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "byteHandler", new TypeLiteral<Handler<Byte>>() {});
     checkParam(params.get(1), "shortHandler", new TypeLiteral<Handler<Short>>() {});
@@ -633,9 +634,10 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(12), "throwableHandler",  new TypeLiteral<Handler<Throwable>>(){});
     checkParam(params.get(13), "dataObjectHandler", new TypeLiteral<Handler<TestDataObject>>(){});
     checkParam(params.get(14), "enumHandler", new TypeLiteral<Handler<TestEnum>>(){});
+    checkParam(params.get(15), "socketHandler", new TypeLiteral<Handler<Socket>>(){});
 
     method = model.getMethods().get(1);
-    checkMethod(method, "methodWithListHandlerParams", 14, "void", MethodKind.HANDLER);
+    checkMethod(method, "methodWithListHandlerParams", 15, "void", MethodKind.HANDLER);
     params = method.getParams();
     checkParam(params.get(0), "listByteHandler", new TypeLiteral<Handler<List<Byte>>>(){});
     checkParam(params.get(1), "listShortHandler", new TypeLiteral<Handler<List<Short>>>() {});
@@ -651,9 +653,10 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(11), "listJsonArrayHandler", new TypeLiteral<Handler<List<JsonArray>>>(){});
     checkParam(params.get(12), "listDataObjectHandler", new TypeLiteral<Handler<List<TestDataObject>>>(){});
     checkParam(params.get(13), "listEnumHandler", new TypeLiteral<Handler<List<TestEnum>>>(){});
+    checkParam(params.get(14), "socketListHandler", new TypeLiteral<Handler<List<Socket>>>(){});
 
     method = model.getMethods().get(2);
-    checkMethod(method, "methodWithSetHandlerParams", 14, "void", MethodKind.HANDLER);
+    checkMethod(method, "methodWithSetHandlerParams", 15, "void", MethodKind.HANDLER);
     params = method.getParams();
     checkParam(params.get(0), "setByteHandler", new TypeLiteral<Handler<Set<Byte>>>(){});
     checkParam(params.get(1), "setShortHandler", new TypeLiteral<Handler<Set<Short>>>(){});
@@ -669,9 +672,10 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(11), "setJsonArrayHandler",  new TypeLiteral<Handler<Set<JsonArray>>>(){});
     checkParam(params.get(12), "setDataObjectHandler",  new TypeLiteral<Handler<Set<TestDataObject>>>(){});
     checkParam(params.get(13), "setEnumHandler",  new TypeLiteral<Handler<Set<TestEnum>>>(){});
+    checkParam(params.get(14), "socketSetHandler",  new TypeLiteral<Handler<Set<Socket>>>(){});
 
     method = model.getMethods().get(3);
-    checkMethod(method, "methodWithMapHandlerParams", 11, "void", MethodKind.HANDLER);
+    checkMethod(method, "methodWithMapHandlerParams", 12, "void", MethodKind.HANDLER);
     params = method.getParams();
     checkParam(params.get(0), "mapByteHandler", new TypeLiteral<Handler<Map<String, Byte>>>(){});
     checkParam(params.get(1), "mapShortHandler", new TypeLiteral<Handler<Map<String, Short>>>(){});
@@ -684,6 +688,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(8), "mapStrHandler", new TypeLiteral<Handler<Map<String, String>>>(){});
     checkParam(params.get(9), "mapJsonObjectHandler", new TypeLiteral<Handler<Map<String, JsonObject>>>(){});
     checkParam(params.get(10), "mapJsonArrayHandler",  new TypeLiteral<Handler<Map<String, JsonArray>>>(){});
+    checkParam(params.get(11), "mapStringToSocketObjectHandler",  new TypeLiteral<Handler<Map<String, Socket>>>(){});
   }
 
   @Test

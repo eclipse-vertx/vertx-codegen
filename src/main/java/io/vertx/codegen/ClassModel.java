@@ -437,7 +437,8 @@ public class ClassModel implements Model {
         }
         TypeInfo valueType = args.get(1);
         if (valueType.getKind().basic ||
-            valueType.getKind().json) {
+          valueType.getKind().json ||
+          valueType.getKind() == ClassKind.OTHER) {
           return true;
         }
       } else {
