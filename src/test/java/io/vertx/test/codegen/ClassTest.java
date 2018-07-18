@@ -697,7 +697,7 @@ public class ClassTest extends ClassTestBase {
     ClassModel model = new GeneratorHelper().generateClass(MethodWithValidFunctionParams.class);
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, "methodWithFunctionParams", 18, "void", MethodKind.OTHER);
+    checkMethod(method, "methodWithFunctionParams", 19, "void", MethodKind.OTHER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "byteFunction", new TypeLiteral<Function<Byte, Byte>>() {});
     checkParam(params.get(1), "shortFunction", new TypeLiteral<Function<Short, Short>>() {});
@@ -717,9 +717,10 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(15), "objectFunction", new TypeLiteral<Function<Object, Object>>(){});
     checkParam(params.get(16), "genericFunction", new TypeLiteral<Function<T, T>>(){});
     checkParam(params.get(17), "genericUserTypeFunction", new TypeLiteral<Function<GenericInterface<T>, GenericInterface<T>>>(){});
+    checkParam(params.get(18), "socketFunction", new TypeLiteral<Function<Socket, Socket>>(){});
 
     method = model.getMethods().get(1);
-    checkMethod(method, "methodWithListFunctionParams", 14, "void", MethodKind.OTHER);
+    checkMethod(method, "methodWithListFunctionParams", 15, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "listByteFunction", new TypeLiteral<Function<List<Byte>, List<Byte>>>(){});
     checkParam(params.get(1), "listShortFunction", new TypeLiteral<Function<List<Short>, List<Short>>>() {});
@@ -735,9 +736,10 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(11), "listJsonArrayFunction", new TypeLiteral<Function<List<JsonArray>, List<JsonArray>>>(){});
     checkParam(params.get(12), "listDataObjectFunction", new TypeLiteral<Function<List<TestDataObject>, List<TestDataObject>>>(){});
     checkParam(params.get(13), "listEnumFunction", new TypeLiteral<Function<List<TestEnum>, List<TestEnum>>>(){});
+    checkParam(params.get(14), "socketListFunction", new TypeLiteral<Function<List<Socket>, List<Socket>>>(){});
 
     method = model.getMethods().get(2);
-    checkMethod(method, "methodWithSetFunctionParams", 14, "void", MethodKind.OTHER);
+    checkMethod(method, "methodWithSetFunctionParams", 15, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "setByteFunction", new TypeLiteral<Function<Set<Byte>, Set<Byte>>>(){});
     checkParam(params.get(1), "setShortFunction", new TypeLiteral<Function<Set<Short>, Set<Short>>>(){});
@@ -753,9 +755,10 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(11), "setJsonArrayFunction",  new TypeLiteral<Function<Set<JsonArray>, Set<JsonArray>>>(){});
     checkParam(params.get(12), "setDataObjectFunction",  new TypeLiteral<Function<Set<TestDataObject>, Set<TestDataObject>>>(){});
     checkParam(params.get(13), "setEnumFunction",  new TypeLiteral<Function<Set<TestEnum>, Set<TestEnum>>>(){});
+    checkParam(params.get(14), "socketSetFunction", new TypeLiteral<Function<Set<Socket>, Set<Socket>>>(){});
 
     method = model.getMethods().get(3);
-    checkMethod(method, "methodWithMapFunctionParams", 11, "void", MethodKind.OTHER);
+    checkMethod(method, "methodWithMapFunctionParams", 12, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "mapByteFunction", new TypeLiteral<Function<Map<String, Byte>, Map<String, Byte>>>(){});
     checkParam(params.get(1), "mapShortFunction", new TypeLiteral<Function<Map<String, Short>, Map<String, Short>>>(){});
@@ -768,6 +771,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(8), "mapStrFunction", new TypeLiteral<Function<Map<String, String>, Map<String, String>>>(){});
     checkParam(params.get(9), "mapJsonObjectFunction", new TypeLiteral<Function<Map<String, JsonObject>, Map<String, JsonObject>>>(){});
     checkParam(params.get(10), "mapJsonArrayFunction",  new TypeLiteral<Function<Map<String, JsonArray>, Map<String, JsonArray>>>(){});
+    checkParam(params.get(11), "socketMapStringToSocketFunction",  new TypeLiteral<Function<Map<String, Socket>, Map<String, Socket>>>(){});
   }
 
   @Test

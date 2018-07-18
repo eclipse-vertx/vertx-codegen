@@ -420,7 +420,7 @@ public class ClassModel implements Model {
         }
       } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
         argument = ((ParameterizedTypeInfo) type).getArgs().get(1);
-        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument, false)) {
+        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument, false) || argument.getKind() == ClassKind.OTHER) {
           return true;
         }
       }
