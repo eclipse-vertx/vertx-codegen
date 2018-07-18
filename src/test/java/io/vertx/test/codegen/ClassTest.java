@@ -507,17 +507,33 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testOtherIsValidContainerParam() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(MethodWithOtherContainerType.class);
-    ParameterizedTypeInfo containerType = (ParameterizedTypeInfo) model.getMethods().get(0).getParams().get(0).getType();
-    ClassTypeInfo otherType = (ClassTypeInfo) containerType.getArgs().get(0);
-    assertEquals(ClassKind.OTHER, otherType.getKind());
+    List<ParamInfo> params = model.getMethods().get(0).getParams();
+
+    ParamInfo socketSet = params.get(0);
+    ParamInfo socketList = params.get(1);
+    ParamInfo socketMap = params.get(2);
+
+    TypeInfo otherTypeFormSet = ((ParameterizedTypeInfo) socketSet.getType()).getArgs().get(0);
+    TypeInfo otherTypeFormList = ((ParameterizedTypeInfo) socketList.getType()).getArgs().get(0);
+    TypeInfo otherTypeFormMap = ((ParameterizedTypeInfo) socketMap.getType()).getArgs().get(1);
+
+    assertEquals(ClassKind.OTHER, otherTypeFormSet.getKind());
+    assertEquals(ClassKind.OTHER, otherTypeFormList.getKind());
+    assertEquals(ClassKind.OTHER, otherTypeFormMap.getKind());
   }
 
   @Test
   public void testOtherIsValidContainerReturn() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(MethodWithOtherContainerType.class);
-    ParameterizedTypeInfo containerType = (ParameterizedTypeInfo) model.getMethods().get(0).getReturnType();
-    ClassTypeInfo otherType = (ClassTypeInfo) containerType.getArgs().get(0);
-    assertEquals(ClassKind.OTHER, otherType.getKind());
+    ParameterizedTypeInfo setContainer = (ParameterizedTypeInfo) model.getMethods().get(0).getReturnType();
+    ParameterizedTypeInfo listContainer = (ParameterizedTypeInfo) model.getMethods().get(1).getReturnType();
+    ParameterizedTypeInfo mapContainer = (ParameterizedTypeInfo) model.getMethods().get(2).getReturnType();
+    ClassTypeInfo otherTypeFromSet = (ClassTypeInfo) setContainer.getArgs().get(0);
+    ClassTypeInfo otherTypeFromList = (ClassTypeInfo) listContainer.getArgs().get(0);
+    ClassTypeInfo otherTypeFromMap = (ClassTypeInfo) mapContainer.getArgs().get(1);
+    assertEquals(ClassKind.OTHER, otherTypeFromSet.getKind());
+    assertEquals(ClassKind.OTHER, otherTypeFromList.getKind());
+    assertEquals(ClassKind.OTHER, otherTypeFromMap.getKind());
   }
 
   @Test
