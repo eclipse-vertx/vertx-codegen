@@ -13,6 +13,17 @@ import java.util.Map;
 import java.util.Set;
 
 public class EnhancedMethodsTCKImpl implements EnhancedMethodsTCK {
+
+  @Override
+  public void methodWithOtherParam(Socket socket) {
+    System.out.println(socket.toString());
+  }
+
+  @Override
+  public Socket methodWithOtherReturn() {
+    return new Socket();
+  }
+
   @Override
   public void methodWithListOfOtherParam(List<Socket> socketList) {
     for (Socket socket : socketList) {

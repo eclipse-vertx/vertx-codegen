@@ -12,6 +12,9 @@ import java.util.Set;
 @VertxGen
 public interface EnhancedMethodsTCK {
 
+  void methodWithOtherParam(Socket socket);
+  Socket methodWithOtherReturn();
+
   void methodWithListOfOtherParam(List<Socket> socketList);
   void methodWithSetOfOtherParam(Set<Socket> socketSet);
   void methodWithMapOfOtherParam(Map<String, Socket> socketMap);
