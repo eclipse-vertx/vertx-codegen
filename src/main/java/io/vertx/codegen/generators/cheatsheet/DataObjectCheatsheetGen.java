@@ -24,7 +24,7 @@ public class DataObjectCheatsheetGen extends Generator<DataObjectModel> {
 
   @Override
   public String filename(DataObjectModel model) {
-    return "asciidocs/dataobjects.adoc";
+    return "asciidoc/dataobjects.adoc";
   }
 
   @Override

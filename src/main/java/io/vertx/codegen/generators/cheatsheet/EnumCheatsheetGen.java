@@ -24,7 +24,7 @@ public class EnumCheatsheetGen extends Generator<EnumModel> {
 
   @Override
   public String filename(EnumModel model) {
-    return "asciidocs/enums.adoc";
+    return "asciidoc/enums.adoc";
   }
 
   @Override
