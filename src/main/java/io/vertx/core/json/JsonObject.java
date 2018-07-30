@@ -1,5 +1,6 @@
 package io.vertx.core.json;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -62,6 +63,8 @@ public class JsonObject implements Iterable<Map.Entry<String, Object>> {
   public JsonObject getJsonObject(String name) { throw new UnsupportedOperationException(); }
   public String getString(String name) { throw new UnsupportedOperationException(); }
   public String getString(String name, String def) { throw new UnsupportedOperationException(); }
+  public Instant getInstant(String name) { throw new UnsupportedOperationException(); }
+  public Instant getInstant(String name, Instant def) { throw new UnsupportedOperationException(); }
   public Integer getInteger(String fieldName) { throw new UnsupportedOperationException(); }
   public Boolean getBoolean(String fieldName, Boolean def) { throw new UnsupportedOperationException(); }
   public Integer getInteger(String fieldName, Integer def) { throw new UnsupportedOperationException(); }

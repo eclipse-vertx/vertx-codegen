@@ -22,12 +22,23 @@ public abstract class Generator<M extends Model> {
   }
 
   /**
-   * Generate the relative file name for the {@code model}
+   * Generate the file name for the {@code model}.
+   * <p/>
+   * When the returned value
+   * <ul>
+   *   <li>is {@code null}, no file is created</li>
+   *   <li>does not contain {@code /} and ends with {@code .java}, the file is created as a source file by the annotation processor
+   *   and the class will be compiled by the current compilation process</li>
+   *   <li>starts with the {@code resources/} prefix, the file is created as a resource file by the annotation processor using the
+   *   remaining suffix value and the file will likely end in the classes directory</li>
+   *   <li>otherwise the resource will be created as a file on the filesystem, a value not starting with
+   *   {@code /} is created relative to the {@code codegen.output} directory</li>
+   * </ul>
    *
    * @param model the model
-   * @return the relative filename or {@code null} if no generation should happen
+   * @return the filename or {@code null} if no generation should happen
    */
-  public String relativeFilename(M model) {
+  public String filename(M model) {
     return null;
   }
 

@@ -4,6 +4,8 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.time.Instant;
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
@@ -29,6 +31,7 @@ public class PropertyGetters {
   public boolean isPrimitiveBoolean() { throw new UnsupportedOperationException(); }
   public Long getBoxedLong() { throw new UnsupportedOperationException(); }
   public long getPrimitiveLong() { throw new UnsupportedOperationException(); }
+  public Instant getInstant() { throw new UnsupportedOperationException(); }
 
   public ApiObject getApiObject() { throw new UnsupportedOperationException(); }
   public EmptyDataObject getDataObject() { throw new UnsupportedOperationException(); }

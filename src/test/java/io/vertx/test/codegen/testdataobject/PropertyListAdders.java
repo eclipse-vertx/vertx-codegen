@@ -4,6 +4,8 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.time.Instant;
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
@@ -19,6 +21,7 @@ public interface PropertyListAdders {
   }
 
   PropertyListAdders addString(String s);
+  PropertyListAdders addInstant(Instant i);
   PropertyListAdders addBoxedInteger(Integer i);
   PropertyListAdders addPrimitiveInteger(int i);
   PropertyListAdders addBoxedBoolean(Boolean b);

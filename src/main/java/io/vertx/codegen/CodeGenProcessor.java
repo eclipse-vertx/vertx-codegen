@@ -161,7 +161,7 @@ public class CodeGenProcessor extends AbstractProcessor {
             shouldWarningsBeSuppressed = elements.contains(model.getElement());
             for (Generator codeGenerator : codeGenerators) {
               if (codeGenerator.kinds.contains(model.getKind())) {
-                String relativeName = codeGenerator.relativeFilename(model);
+                String relativeName = codeGenerator.filename(model);
                 if (relativeName != null) {
                   int kind;
                   if (relativeName.endsWith(".java") && !relativeName.contains("/")) {
@@ -259,25 +259,30 @@ public class CodeGenProcessor extends AbstractProcessor {
         }
       }
       // Generate files
-      if (outputDirectory != null) {
-        generatedFiles.values().forEach(generated -> {
-          boolean shouldWarningsBeSuppressed = false;
-          File file = new File(outputDirectory, generated.uri);
-          Helper.ensureParentDir(file);
-          String content = generated.generate();
-          if (content.length() > 0) {
-            shouldWarningsBeSuppressed = elements.contains(generated.get(0).model.getElement());
-            try (FileWriter fileWriter = new FileWriter(file)) {
-              fileWriter.write(content);
-            } catch (GenException e) {
-              reportGenException(e, shouldWarningsBeSuppressed);
-            } catch (Exception e) {
-              reportException(e, generated.get(0).model.getElement(), shouldWarningsBeSuppressed);
-            }
-            log.info("Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
+      generatedFiles.values().forEach(generated -> {
+        // todo: need to rewrite "/" according to platform file separator
+        File file;
+        if (generated.uri.startsWith("/")) {
+          file = new File(generated.uri);
+        } else if (outputDirectory != null) {
+          file = new File(outputDirectory, generated.uri);
+        } else {
+          return;
+        }
+        Helper.ensureParentDir(file);
+        String content = generated.generate();
+        if (content.length() > 0) {
+          boolean shouldWarningsBeSuppressed = elements.contains(generated.get(0).model.getElement());
+          try (FileWriter fileWriter = new FileWriter(file)) {
+            fileWriter.write(content);
+          } catch (GenException e) {
+            reportGenException(e, shouldWarningsBeSuppressed);
+          } catch (Exception e) {
+            reportException(e, generated.get(0).model.getElement(), shouldWarningsBeSuppressed);
           }
-        });
-      }
+          log.info("Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
+        }
+      });
     }
     return true;
   }

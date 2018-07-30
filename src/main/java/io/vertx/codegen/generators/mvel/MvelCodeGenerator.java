@@ -31,7 +31,7 @@ public class MvelCodeGenerator extends Generator<Model> {
   }
 
   @Override
-  public String relativeFilename(Model model) {
+  public String filename(Model model) {
 
     Map<String, Object> vars = new HashMap<>();
     vars.put("helper", new Helper());

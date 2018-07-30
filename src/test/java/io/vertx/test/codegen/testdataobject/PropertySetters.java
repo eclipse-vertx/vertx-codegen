@@ -4,6 +4,8 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.time.Instant;
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
@@ -29,6 +31,7 @@ public class PropertySetters {
   public PropertySetters setPrimitiveBoolean(boolean b) { throw new UnsupportedOperationException(); }
   public PropertySetters setBoxedLong(Long b) { throw new UnsupportedOperationException(); }
   public PropertySetters setPrimitiveLong(long b) { throw new UnsupportedOperationException(); }
+  public PropertySetters setInstant(Instant i) { throw new UnsupportedOperationException(); }
 
   public PropertySetters setApiObject(ApiObject s) { throw new UnsupportedOperationException(); }
   public PropertySetters setDataObject(EmptyDataObject nested) { throw new UnsupportedOperationException(); }

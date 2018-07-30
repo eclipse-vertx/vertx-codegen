@@ -1,0 +1,9 @@
+{
+  "name": "testgen8",
+  "generators": [{
+    "kind": ["class"],
+    "incremental": false,
+    "filename": "io.vertx.test.codegen.CodeGeneratorTest.testAbsoluteFilenamePath()",
+    "templateFilename": "templates/absolute_file_name.templ"
+  }]
+}

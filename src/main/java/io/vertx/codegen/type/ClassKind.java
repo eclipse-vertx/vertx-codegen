@@ -2,6 +2,7 @@ package io.vertx.codegen.type;
 
 import io.vertx.codegen.ClassModel;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

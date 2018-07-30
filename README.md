@@ -368,8 +368,10 @@ to Json (via the `toJson` method).
 Data object converter can be generated with `@DataObject(generateConverter=true)` by Vert.x Core. Such
  Data object conversion recognize the following types as _member_ of any `@DataObject`:
 
-* the specific `io.vertx.core.Buffer` type
 * the set _`Basic`_
+* these specific types
+    * `io.vertx.core.Buffer`
+    * `java.time.Instant`
 * the set _`Json`_
 * any data object class annotated with `@DataObject`
 * type `java.util.List<C>` where `C` contains

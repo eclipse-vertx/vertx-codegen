@@ -10,6 +10,7 @@ import io.vertx.codegen.type.TypeInfo;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
 
@@ -22,6 +23,11 @@ public class DataObjectCheatsheetGen extends Generator<DataObjectModel> {
   }
 
   @Override
+  public String filename(DataObjectModel model) {
+    return "asciidoc/dataobjects.adoc";
+  }
+
+  @Override
   public String render(DataObjectModel model, int index, int size, Map<String, Object> session) {
     StringWriter buffer = new StringWriter();
     PrintWriter html = new PrintWriter(buffer);
@@ -31,7 +37,7 @@ public class DataObjectCheatsheetGen extends Generator<DataObjectModel> {
     }
     render(model, html);
     html.append("\n");
-    return html.toString();
+    return buffer.toString();
   }
 
   private void render(DataObjectModel model, PrintWriter html) {
@@ -111,6 +117,12 @@ public class DataObjectCheatsheetGen extends Generator<DataObjectModel> {
           if (type.getName().equals("io.vertx.core.buffer.Buffer")) {
             return "Buffer";
           }
+          break;
+        case OTHER:
+          if (type.getName().equals(Instant.class.getName())) {
+            return "Instant";
+          }
+          break;
       }
     }
     System.out.println("unhandled type " + type);
