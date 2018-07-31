@@ -37,6 +37,7 @@ import java.util.stream.StreamSupport;
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)
 public class CodeGenProcessor extends AbstractProcessor {
 
+  private static final String CODEGEN_ENHANCED_METHODS = "codegen-enhanced-method";
   private static final int JAVA= 0, RESOURCE = 1, OTHER = 2;
   public static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
   private File outputDirectory;
@@ -132,6 +133,19 @@ public class CodeGenProcessor extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
+    // find elements annotated with @SuppressWarnings("codegen-enhanced-method")
+    Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(SuppressWarnings.class)
+      .stream()
+      .filter(element -> {
+        String[] warningNames = element.getAnnotation(SuppressWarnings.class).value();
+        for (String warnName : warningNames) {
+          if (warnName.equals(CODEGEN_ENHANCED_METHODS)) {
+            return true;
+          }
+        }
+        return false;
+      }).collect(Collectors.toSet());
+
     if (!roundEnv.processingOver()) {
       Collection<? extends Generator> codeGenerators = getCodeGenerators();
 
@@ -141,8 +155,10 @@ public class CodeGenProcessor extends AbstractProcessor {
 
         // Generate source code
         codegen.getModels().forEach(entry -> {
+          boolean shouldWarningsBeSuppressed = false;
           try {
             Model model = entry.getValue();
+            shouldWarningsBeSuppressed = elements.contains(model.getElement());
             for (Generator codeGenerator : codeGenerators) {
               if (codeGenerator.kinds.contains(model.getKind())) {
                 String relativeName = codeGenerator.filename(model);
@@ -183,17 +199,19 @@ public class CodeGenProcessor extends AbstractProcessor {
               }
             }
           } catch (GenException e) {
-            reportGenException(e);
+            reportGenException(e, shouldWarningsBeSuppressed);
           } catch (Exception e) {
-            reportException(e, entry.getKey());
+            reportException(e, entry.getKey(), shouldWarningsBeSuppressed);
           }
         });
 
         // Generate classes
         generatedClasses.values().forEach(generated -> {
+          boolean shouldWarningsBeSuppressed = false;
           try {
             String content = generated.generate();
             if (content.length() > 0) {
+              shouldWarningsBeSuppressed = elements.contains(generated.get(0).model.getElement());
               JavaFileObject target = processingEnv.getFiler().createSourceFile(generated.uri);
               try (Writer writer = target.openWriter()) {
                 writer.write(content);
@@ -201,9 +219,9 @@ public class CodeGenProcessor extends AbstractProcessor {
               log.info("Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
             }
           } catch (GenException e) {
-            reportGenException(e);
+            reportGenException(e, shouldWarningsBeSuppressed);
           } catch (Exception e) {
-            reportException(e, generated.get(0).model.getElement());
+            reportException(e, generated.get(0).model.getElement(), shouldWarningsBeSuppressed);
           }
         });
       }
@@ -211,9 +229,11 @@ public class CodeGenProcessor extends AbstractProcessor {
 
       // Generate resources
       for (GeneratedFile generated : generatedResources.values()) {
+        boolean shouldWarningsBeSuppressed = false;
         try {
           String content = generated.generate();
           if (content.length() > 0) {
+            shouldWarningsBeSuppressed = elements.contains(generated.get(0).model.getElement());
             try (Writer w = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", generated.uri).openWriter()) {
               w.write(content);
             }
@@ -233,9 +253,9 @@ public class CodeGenProcessor extends AbstractProcessor {
             log.info("Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
           }
         } catch (GenException e) {
-          reportGenException(e);
+          reportGenException(e, shouldWarningsBeSuppressed);
         } catch (Exception e) {
-          reportException(e, generated.get(0).model.getElement());
+          reportException(e, generated.get(0).model.getElement(), shouldWarningsBeSuppressed);
         }
       }
       // Generate files
@@ -252,12 +272,13 @@ public class CodeGenProcessor extends AbstractProcessor {
         Helper.ensureParentDir(file);
         String content = generated.generate();
         if (content.length() > 0) {
+          boolean shouldWarningsBeSuppressed = elements.contains(generated.get(0).model.getElement());
           try (FileWriter fileWriter = new FileWriter(file)) {
             fileWriter.write(content);
           } catch (GenException e) {
-            reportGenException(e);
+            reportGenException(e, shouldWarningsBeSuppressed);
           } catch (Exception e) {
-            reportException(e, generated.get(0).model.getElement());
+            reportException(e, generated.get(0).model.getElement(), shouldWarningsBeSuppressed);
           }
           log.info("Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
         }
@@ -266,20 +287,20 @@ public class CodeGenProcessor extends AbstractProcessor {
     return true;
   }
 
-  private void reportGenException(GenException e) {
+  private void reportGenException(GenException e, boolean shouldBeSuppressed) {
     String name = e.element.toString();
     if (e.element.getKind() == ElementKind.METHOD) {
       name = e.element.getEnclosingElement() + "#" + name;
     }
     String msg = "Could not generate model for " + name + ": " + e.msg;
-    log.log(Level.SEVERE, msg, e);
-    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, e.element);
+    log.log(Level.WARNING, msg, e);
+    processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, msg, e.element);
   }
 
-  private void reportException(Exception e, Element elt) {
+  private void reportException(Exception e, Element elt, boolean shouldBeSuppressed) {
     String msg = "Could not generate element for " + elt + ": " + e.getMessage();
-    log.log(Level.SEVERE, msg, e);
-    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, elt);
+    log.log(Level.WARNING, msg, e);
+    processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, msg, elt);
   }
 
   private static class ModelProcessing {
