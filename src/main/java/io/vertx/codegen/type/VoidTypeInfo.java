@@ -12,6 +12,11 @@ public class VoidTypeInfo extends TypeInfo {
   }
 
   @Override
+  public ClassKind getKind() {
+    return ClassKind.VOID;
+  }
+
+  @Override
   public boolean equals(Object obj) {
     return obj instanceof VoidTypeInfo;
   }

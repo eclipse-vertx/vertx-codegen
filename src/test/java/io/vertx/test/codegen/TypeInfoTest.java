@@ -68,7 +68,7 @@ public class TypeInfoTest {
       VoidTypeInfo voidType = (VoidTypeInfo) map.get("voidType");
       assertEquals("void", voidType.getName());
       assertEquals("void", voidType.getSimpleName());
-      assertEquals(ClassKind.OTHER, voidType.getKind());
+      assertEquals(ClassKind.VOID, voidType.getKind());
       assertClass(map.get("VoidType"), "java.lang.Void", ClassKind.VOID);
     });
   }
