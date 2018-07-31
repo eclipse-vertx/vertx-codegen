@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -60,8 +62,8 @@ public class MethodOverloadChecker {
     loadTypeMappings(props);
   }
 
-  public void checkAmbiguous(List<MethodInfo> meths) {
-    checkAmbiguousSimple(convert(meths));
+  public void checkAmbiguous(Stream<MethodInfo> meths) {
+    checkAmbiguousSimple(convert(meths).collect(Collectors.toList()));
   }
 
   public void checkAmbiguousSimple(List<SimpleMethod> meths) {
@@ -89,17 +91,15 @@ public class MethodOverloadChecker {
   }
 
   // We convert to simpler types - this makes it much easier to test
-  private List<SimpleMethod> convert(List<MethodInfo> meths) {
-    List<SimpleMethod> simpleMethods = new ArrayList<>(meths.size());
-    for (MethodInfo meth: meths) {
+  private Stream<SimpleMethod> convert(Stream<MethodInfo> meths) {
+    return meths.map(meth -> {
       List<SimpleParam> simpleParams = new ArrayList<>();
       for (ParamInfo param: meth.getParams()) {
         TypeInfo type = param.getType();
         simpleParams.add(new SimpleParam(param.getName(), type.getKind(), param.isNullable(), type.getName()));
       }
-      simpleMethods.add(new SimpleMethod(meth.getName(), simpleParams));
-    }
-    return simpleMethods;
+      return new SimpleMethod(meth.getName(), simpleParams);
+    });
   }
 
   private void checkMethodList(String targetLang, List<SimpleMethod> meths, Map<String, Set<String>> typeMapping) {
@@ -141,19 +141,17 @@ public class MethodOverloadChecker {
 
   private List<SimpleType> convertToLangParamTypes(SimpleMethod meth, Map<String, Set<String>> typeMapping) {
     List<SimpleType> langParamTypes = new ArrayList<>();
-    for (SimpleParam param : meth.params) {
-      if (param.classKind != ClassKind.OTHER) {
-        Set<String> langType = typeMapping.get(param.classKind.toString());
+    for (SimpleParam param: meth.params) {
+      Set<String> langType = typeMapping.get(param.classKind.toString());
+      if (langType == null) {
+        // Try with type name appended
+        String lhs = param.classKind.toString() + "." + param.typeName;
+        langType = typeMapping.get(lhs);
         if (langType == null) {
-          // Try with type name appended
-          String lhs = param.classKind.toString() + "." + param.typeName;
-          langType = typeMapping.get(lhs);
-          if (langType == null) {
-            throw new IllegalStateException("No type mapping found for param type " + lhs);
-          }
+          throw new IllegalStateException("No type mapping found for param type " + lhs);
         }
-        langParamTypes.add(new SimpleType(langType, param.nullable));
       }
+      langParamTypes.add(new SimpleType(langType, param.nullable));
     }
     return langParamTypes;
   }

@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
  */
 public class ClassModel implements Model {
 
+  private static final String CODEGEN_JAVA_ALLOW_ANY_JAVA_TYPE = "codegen-allow-any-java-type";
   public static final String VERTX_READ_STREAM = "io.vertx.core.streams.ReadStream";
   public static final String VERTX_WRITE_STREAM = "io.vertx.core.streams.WriteStream";
   public static final String VERTX_ASYNC_RESULT = "io.vertx.core.AsyncResult";
@@ -245,36 +246,36 @@ public class ClassModel implements Model {
     }
   }
 
-  protected void checkParamType(ExecutableElement elem, TypeMirror type, TypeInfo typeInfo, int pos, int numParams) {
-    if (isLegalNonCallableParam(typeInfo)) {
+  protected void checkParamType(ExecutableElement elem, TypeMirror type, TypeInfo typeInfo, int pos, int numParams, boolean allowJavaTypes) {
+    if (isLegalNonCallableParam(typeInfo, allowJavaTypes)) {
       return;
     }
     if (isLegalClassTypeParam(elem, typeInfo)) {
       return;
     }
-    if (isLegalHandlerType(typeInfo)) {
+    if (isLegalHandlerType(typeInfo, allowJavaTypes)) {
       return;
     }
-    if (isLegalHandlerAsyncResultType(typeInfo)) {
+    if (isLegalHandlerAsyncResultType(typeInfo, allowJavaTypes)) {
       return;
     }
-    if (isLegalFunctionType(typeInfo)) {
+    if (isLegalFunctionType(typeInfo, allowJavaTypes)) {
       return;
     }
     throw new GenException(elem, "type " + typeInfo + " is not legal for use for a parameter in code generation");
   }
 
-  protected void checkReturnType(ExecutableElement elem, TypeInfo type, TypeMirror typeMirror) {
+  protected void checkReturnType(ExecutableElement elem, TypeInfo type, TypeMirror typeMirror, boolean allowJavaTypes) {
     if (type.isVoid()) {
       return;
     }
-    if (isLegalNonCallableReturnType(type)) {
+    if (isLegalNonCallableReturnType(type, allowJavaTypes)) {
       return;
     }
-    if (isLegalHandlerType(type)) {
+    if (isLegalHandlerType(type, allowJavaTypes)) {
       return;
     }
-    if (isLegalHandlerAsyncResultType(type)) {
+    if (isLegalHandlerAsyncResultType(type, allowJavaTypes)) {
       return;
     }
     throw new GenException(elem, "type " + type + " is not legal for use for a return type in code generation");
@@ -283,7 +284,7 @@ public class ClassModel implements Model {
   /**
    * The <i>Return</i> set but not `void`.
    */
-  private boolean isLegalNonCallableReturnType(TypeInfo type) {
+  private boolean isLegalNonCallableReturnType(TypeInfo type, boolean allowJavaTypes) {
     if (type.getKind().basic) {
       return true;
     }
@@ -308,10 +309,10 @@ public class ClassModel implements Model {
     if (isVertxGenInterface(type, true)) {
       return true;
     }
-    if (type.getKind() == ClassKind.OTHER) {
+    if (allowJavaTypes && type.getKind() == ClassKind.OTHER) {
       return true;
     }
-    if (isLegalContainerReturn(type)) {
+    if (isLegalContainerReturn(type, allowJavaTypes)) {
       return true;
     }
     return false;
@@ -324,7 +325,7 @@ public class ClassModel implements Model {
   /**
    * The set <i>Param</i>
    */
-  private boolean isLegalNonCallableParam(TypeInfo typeInfo) {
+  private boolean isLegalNonCallableParam(TypeInfo typeInfo, boolean allowJavaTypes) {
     if (typeInfo.getKind().basic) {
       return true;
     }
@@ -349,10 +350,10 @@ public class ClassModel implements Model {
     if (isVertxGenInterface(typeInfo, true)) {
       return true;
     }
-    if (typeInfo.getKind() == ClassKind.OTHER) {
+    if (allowJavaTypes && typeInfo.getKind() == ClassKind.OTHER) {
       return true;
     }
-    if (isLegalContainerParam(typeInfo)) {
+    if (isLegalContainerParam(typeInfo, allowJavaTypes)) {
       return true;
     }
     return false;
@@ -404,7 +405,7 @@ public class ClassModel implements Model {
     return false;
   }
 
-  protected boolean isLegalContainerParam(TypeInfo type) {
+  protected boolean isLegalContainerParam(TypeInfo type, boolean allowJavaTypes) {
     // List<T> and Set<T> are also legal for params if T = basic type, json, @VertxGen, @DataObject
     // Map<K,V> is also legal for returns and params if K is a String and V is a basic type, json, or a @VertxGen interface
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
@@ -415,12 +416,12 @@ public class ClassModel implements Model {
           isVertxGenInterface(argument, false) ||
           isLegalDataObjectTypeParam(argument) ||
           argument.getKind() == ClassKind.ENUM ||
-          argument.getKind() == ClassKind.OTHER) {
+          (allowJavaTypes && argument.getKind() == ClassKind.OTHER)) {
           return true;
         }
       } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
         argument = ((ParameterizedTypeInfo) type).getArgs().get(1);
-        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument, false) || argument.getKind() == ClassKind.OTHER) {
+        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument, false) || (allowJavaTypes && argument.getKind() == ClassKind.OTHER)) {
           return true;
         }
       }
@@ -428,7 +429,7 @@ public class ClassModel implements Model {
     return false;
   }
 
-  protected boolean isLegalContainerReturn(TypeInfo type) {
+  protected boolean isLegalContainerReturn(TypeInfo type, boolean allowJavaTypes) {
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
       List<TypeInfo> args = ((ParameterizedTypeInfo) type).getArgs();
       if (type.getKind() == ClassKind.MAP) {
@@ -438,7 +439,7 @@ public class ClassModel implements Model {
         TypeInfo valueType = args.get(1);
         if (valueType.getKind().basic ||
           valueType.getKind().json ||
-          valueType.getKind() == ClassKind.OTHER) {
+          (allowJavaTypes && valueType.getKind() == ClassKind.OTHER)) {
           return true;
         }
       } else {
@@ -447,7 +448,7 @@ public class ClassModel implements Model {
             valueType.getKind().json ||
             valueType.getKind() == ClassKind.ENUM ||
             isVertxGenInterface(valueType, false) ||
-            valueType.getKind() == ClassKind.OTHER ||
+            (allowJavaTypes && valueType.getKind() == ClassKind.OTHER )||
             isLegalDataObjectTypeReturn(valueType)) {
           return true;
         }
@@ -482,33 +483,33 @@ public class ClassModel implements Model {
     return false;
   }
 
-  private boolean isLegalFunctionType(TypeInfo typeInfo) {
+  private boolean isLegalFunctionType(TypeInfo typeInfo, boolean allowJavaTypes) {
     if (typeInfo.getErased().getKind() == ClassKind.FUNCTION) {
       TypeInfo paramType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(0);
-      if (isLegalCallbackValueType(paramType) || paramType.getKind() == ClassKind.THROWABLE) {
+      if (isLegalCallbackValueType(paramType, allowJavaTypes) || paramType.getKind() == ClassKind.THROWABLE) {
         TypeInfo returnType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(1);
-        return isLegalNonCallableParam(returnType);
+        return isLegalNonCallableParam(returnType, allowJavaTypes);
       }
     }
     return false;
   }
 
-  private boolean isLegalHandlerType(TypeInfo type) {
+  private boolean isLegalHandlerType(TypeInfo type, boolean allowJavaTypes) {
     if (type.getErased().getKind() == ClassKind.HANDLER) {
       TypeInfo eventType = ((ParameterizedTypeInfo) type).getArgs().get(0);
-      if (isLegalCallbackValueType(eventType) || eventType.getKind() == ClassKind.THROWABLE) {
+      if (isLegalCallbackValueType(eventType, allowJavaTypes) || eventType.getKind() == ClassKind.THROWABLE) {
         return true;
       }
     }
     return false;
   }
 
-  private boolean isLegalHandlerAsyncResultType(TypeInfo type) {
+  private boolean isLegalHandlerAsyncResultType(TypeInfo type, boolean allowJavaTypes) {
     if (type.getErased().getKind() == ClassKind.HANDLER) {
       TypeInfo eventType = ((ParameterizedTypeInfo) type).getArgs().get(0);
       if (eventType.getErased().getKind() == ClassKind.ASYNC_RESULT && !eventType.isNullable()) {
         TypeInfo resultType = ((ParameterizedTypeInfo) eventType).getArgs().get(0);
-        if (isLegalCallbackValueType(resultType)) {
+        if (isLegalCallbackValueType(resultType, allowJavaTypes)) {
           return true;
         }
       }
@@ -516,11 +517,11 @@ public class ClassModel implements Model {
     return false;
   }
 
-  private boolean isLegalCallbackValueType(TypeInfo type) {
+  private boolean isLegalCallbackValueType(TypeInfo type, boolean allowJavaTypes) {
     if (type.getKind() == ClassKind.VOID) {
       return true;
     }
-    return isLegalNonCallableReturnType(type);
+    return isLegalNonCallableReturnType(type, allowJavaTypes);
   }
 
   private void determineApiTypes() {
@@ -676,7 +677,11 @@ public class ClassModel implements Model {
       elementUtils.getAllMembers((TypeElement) elem).stream().
           filter(elt -> !typeUtils.isSameType(elt.getEnclosingElement().asType(), objectType)).
           flatMap(Helper.FILTER_METHOD).
-          forEach(this::addMethod);
+          filter(elt -> !isGenIgnore(elt)).
+          forEach(elt -> {
+            SuppressWarnings suppressWarnings = elt.getAnnotation(SuppressWarnings.class);
+            addMethod(elt, suppressWarnings != null && Arrays.asList(suppressWarnings.value()).contains(CODEGEN_JAVA_ALLOW_ANY_JAVA_TYPE));
+          });
 
       boolean hasNoMethods = methods.values().stream().filter(m -> !m.isDefaultMethod()).count() == 0;
       if (hasNoMethods && superTypes.isEmpty()) {
@@ -689,7 +694,7 @@ public class ClassModel implements Model {
 
         // Ambiguous
         try {
-          MethodOverloadChecker.INSTANCE.checkAmbiguous(meths);
+          MethodOverloadChecker.INSTANCE.checkAmbiguous(meths.stream().filter(meth -> !meth.isContainingAnyJavaType()));
         } catch (RuntimeException e) {
           throw new GenException(elem, e.getMessage());
         }
@@ -709,10 +714,7 @@ public class ClassModel implements Model {
     return elt.getAnnotation(GenIgnore.class) != null;
   }
 
-  private void addMethod(ExecutableElement modelMethod) {
-    if (isGenIgnore(modelMethod)) {
-      return;
-    }
+  private void addMethod(ExecutableElement modelMethod, boolean allowJavaTypes) {
     Set<Modifier> mods = modelMethod.getModifiers();
     if (!mods.contains(Modifier.PUBLIC)) {
       return;
@@ -804,7 +806,7 @@ public class ClassModel implements Model {
     }
 
     //
-    List<ParamInfo> mParams = getParams(modelMethods, modelMethod, paramDescs);
+    List<ParamInfo> mParams = getParams(modelMethods, modelMethod, paramDescs, allowJavaTypes);
 
     //
     AnnotationMirror fluentAnnotation = Helper.resolveMethodAnnotation(Fluent.class, elementUtils, typeUtils, declaringElt, modelMethod);
@@ -844,7 +846,7 @@ public class ClassModel implements Model {
 
     // Only check the return type if not fluent, because generated code won't look it at anyway
     if (!isFluent) {
-      checkReturnType(modelMethod, returnType, methodType.getReturnType());
+      checkReturnType(modelMethod, returnType, methodType.getReturnType(), allowJavaTypes);
     } else if (returnType.isNullable()) {
       throw new GenException(modelMethod, "Fluent return type cannot be nullable");
     }
@@ -865,8 +867,23 @@ public class ClassModel implements Model {
     }
     boolean methodDeprecated = modelMethod.getAnnotation(Deprecated.class) != null;
 
-    MethodInfo methodInfo = createMethodInfo(ownerTypes, methodName, comment, doc, kind,
-        returnType, returnDesc, isFluent, isCacheReturn, mParams, modelMethod, isStatic, isDefault, typeParams, declaringElt, methodDeprecated);
+    MethodInfo methodInfo = createMethodInfo(
+      ownerTypes,
+      methodName,
+      comment,
+      doc,
+      kind,
+      returnType,
+      returnDesc,
+      isFluent,
+      isCacheReturn,
+      mParams,
+      modelMethod,
+      isStatic,
+      isDefault,
+      typeParams,
+      declaringElt,
+      methodDeprecated);
     checkMethod(methodInfo);
 
     // Check we don't hide another method, we don't check overrides but we are more
@@ -932,7 +949,10 @@ public class ClassModel implements Model {
     return bound.getKind() == TypeKind.DECLARED && bound.toString().equals(Object.class.getName());
   }
 
-  private List<ParamInfo> getParams(List<ExecutableElement> modelMethods, ExecutableElement methodElt, Map<String, String> descs) {
+  private List<ParamInfo> getParams(List<ExecutableElement> modelMethods,
+                                    ExecutableElement methodElt,
+                                    Map<String, String> descs,
+                                    boolean allowJavaTypes) {
     ExecutableType methodType = (ExecutableType) typeUtils.asMemberOf((DeclaredType) modelElt.asType(), methodElt);
     ExecutableType methodType2 = (ExecutableType) methodElt.asType();
     List<? extends VariableElement> params = methodElt.getParameters();
@@ -947,7 +967,7 @@ public class ClassModel implements Model {
       } catch (Exception e) {
         throw new GenException(param, e.getMessage());
       }
-      checkParamType(methodElt, type, typeInfo, i, params.size());
+      checkParamType(methodElt, type, typeInfo, i, params.size(), allowJavaTypes);
       String name = param.getSimpleName().toString();
       String desc = descs.get(name);
       Text text = desc != null ? new Text(desc).map(Token.tagMapper(elementUtils, typeUtils, modelElt)) : null;

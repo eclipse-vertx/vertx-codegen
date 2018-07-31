@@ -28,149 +28,13 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.WriteStream;
 import io.vertx.test.codegen.annotations.EmptyAnnotation;
-import io.vertx.test.codegen.testapi.AbstractDataObjectWithToJson;
-import io.vertx.test.codegen.testapi.AbstractInterfaceWithConcreteSuperInterface;
-import io.vertx.test.codegen.testapi.AbstractInterfaceWithStaticMethod;
-import io.vertx.test.codegen.testapi.Annotated;
-import io.vertx.test.codegen.testapi.CacheReturnMethodWithVoidReturn;
-import io.vertx.test.codegen.testapi.ConcreteInterfaceWithTwoConcreteSuperInterfaces;
-import io.vertx.test.codegen.testapi.DiamondMethod1;
-import io.vertx.test.codegen.testapi.DiamondMethod2;
-import io.vertx.test.codegen.testapi.DiamondMethod3;
-import io.vertx.test.codegen.testapi.GenericAbstractInterface;
-import io.vertx.test.codegen.testapi.GenericInterface;
-import io.vertx.test.codegen.testapi.GenericInterface2;
-import io.vertx.test.codegen.testapi.GenericInterfaceWithUpperBound;
-import io.vertx.test.codegen.testapi.InterfaceDataObjectWithToJson;
-import io.vertx.test.codegen.testapi.InterfaceExtendingGenericAbstractInterface;
-import io.vertx.test.codegen.testapi.InterfaceWithCacheReturnMethods;
-import io.vertx.test.codegen.testapi.InterfaceWithComments;
-import io.vertx.test.codegen.testapi.InterfaceWithDefaultMethod;
-import io.vertx.test.codegen.testapi.InterfaceWithGenericMethodOverride;
-import io.vertx.test.codegen.testapi.InterfaceWithIgnoredElements;
-import io.vertx.test.codegen.testapi.InterfaceWithInstanceMethods;
-import io.vertx.test.codegen.testapi.InterfaceWithMethodOverloadedFromParent;
-import io.vertx.test.codegen.testapi.InterfaceWithMethodOverride;
-import io.vertx.test.codegen.testapi.InterfaceWithMethodOverrideParameterRenamed;
-import io.vertx.test.codegen.testapi.InterfaceWithNoMethods;
-import io.vertx.test.codegen.testapi.InterfaceWithNoNotIgnoredMethods;
-import io.vertx.test.codegen.testapi.InterfaceWithNonGenSuperType;
-import io.vertx.test.codegen.testapi.InterfaceWithOnlyDefaultMethod;
-import io.vertx.test.codegen.testapi.InterfaceWithOverloadedFutureMethod;
-import io.vertx.test.codegen.testapi.InterfaceWithOverloadedInstanceAndStaticMethod;
-import io.vertx.test.codegen.testapi.InterfaceWithOverloadedMethods;
-import io.vertx.test.codegen.testapi.InterfaceWithParameterizedArraySupertype;
-import io.vertx.test.codegen.testapi.InterfaceWithParameterizedDeclaredSupertype;
-import io.vertx.test.codegen.testapi.InterfaceWithParameterizedGenericArraySupertype;
-import io.vertx.test.codegen.testapi.InterfaceWithParameterizedVariableSupertype;
-import io.vertx.test.codegen.testapi.InterfaceWithStaticMethods;
-import io.vertx.test.codegen.testapi.InterfaceWithSuperStaticMethods;
-import io.vertx.test.codegen.testapi.InterfaceWithSupertypes;
-import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument1;
-import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument2;
-import io.vertx.test.codegen.testapi.InterfaceWithTypeVariableArgument3;
-import io.vertx.test.codegen.testapi.MethodWithDataObjectParam;
-import io.vertx.test.codegen.testapi.MethodWithDiamond;
-import io.vertx.test.codegen.testapi.MethodWithEnumParam;
-import io.vertx.test.codegen.testapi.MethodWithEnumReturn;
-import io.vertx.test.codegen.testapi.MethodWithFunctionInHandler;
-import io.vertx.test.codegen.testapi.MethodWithFunctionInHandlerAsyncResult;
-import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultParam;
-import io.vertx.test.codegen.testapi.MethodWithHandlerAsyncResultReturn;
-import io.vertx.test.codegen.testapi.MethodWithHandlerNonVertxGenReturn;
-import io.vertx.test.codegen.testapi.MethodWithHandlerParam;
-import io.vertx.test.codegen.testapi.MethodWithHandlerReturn;
-import io.vertx.test.codegen.testapi.MethodWithInvalidAbstractDataObjectParam;
-import io.vertx.test.codegen.testapi.MethodWithInvalidExceptionParam;
-import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam1;
-import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam2;
-import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam3;
-import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam4;
-import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam5;
-import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam6;
-import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam7;
-import io.vertx.test.codegen.testapi.MethodWithInvalidFunctionParam8;
-import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerAsyncResultDataObjectParam;
-import io.vertx.test.codegen.testapi.MethodWithInvalidHandlerDataObjectParam;
-import io.vertx.test.codegen.testapi.MethodWithInvalidInterfaceDataObjectParam;
-import io.vertx.test.codegen.testapi.MethodWithInvalidListParams1;
-import io.vertx.test.codegen.testapi.MethodWithInvalidListParams2;
-import io.vertx.test.codegen.testapi.MethodWithInvalidListReturn1;
-import io.vertx.test.codegen.testapi.MethodWithInvalidListReturn2;
-import io.vertx.test.codegen.testapi.MethodWithInvalidMapParams1;
-import io.vertx.test.codegen.testapi.MethodWithInvalidMapParams2;
-import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn1;
-import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn2;
-import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn3;
-import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn4;
-import io.vertx.test.codegen.testapi.MethodWithInvalidMapReturn5;
-import io.vertx.test.codegen.testapi.MethodWithInvalidNestedEnumParam;
-import io.vertx.test.codegen.testapi.MethodWithInvalidSetParams1;
-import io.vertx.test.codegen.testapi.MethodWithInvalidSetParams2;
-import io.vertx.test.codegen.testapi.MethodWithInvalidSetReturn1;
-import io.vertx.test.codegen.testapi.MethodWithInvalidSetReturn2;
-import io.vertx.test.codegen.testapi.MethodWithInvalidTypeParamByObjectReturn;
-import io.vertx.test.codegen.testapi.MethodWithInvalidTypeParamByParameterizedReturn;
-import io.vertx.test.codegen.testapi.MethodWithInvalidTypeParamByThrowableReturn;
-import io.vertx.test.codegen.testapi.MethodWithInvalidWildcardTypeArg;
-import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectInHandler;
-import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectInHandlerAsyncResult;
-import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectParam;
-import io.vertx.test.codegen.testapi.MethodWithJavaDotObjectReturn;
-import io.vertx.test.codegen.testapi.MethodWithListNonBasicTypeReturn;
-import io.vertx.test.codegen.testapi.MethodWithNotVertxGenObjectInHandler;
-import io.vertx.test.codegen.testapi.MethodWithNotVertxGenObjectInHandlerAsyncResult;
-import io.vertx.test.codegen.testapi.MethodWithNotVertxGenObjectParam;
-import io.vertx.test.codegen.testapi.MethodWithNotVertxGenObjectReturn;
-import io.vertx.test.codegen.testapi.MethodWithObjectParam;
-import io.vertx.test.codegen.testapi.MethodWithObjectReturn;
-import io.vertx.test.codegen.testapi.MethodWithOtherContainerType;
-import io.vertx.test.codegen.testapi.MethodWithSameSignatureInheritedFromDistinctInterfaces;
-import io.vertx.test.codegen.testapi.MethodWithSetNonBasicTypeReturn;
-import io.vertx.test.codegen.testapi.MethodWithThrowableReturn;
-import io.vertx.test.codegen.testapi.MethodWithTypeParameter;
-import io.vertx.test.codegen.testapi.MethodWithTypeParameterUpperBound;
-import io.vertx.test.codegen.testapi.MethodWithTypeVarParamByGenericType;
-import io.vertx.test.codegen.testapi.MethodWithValidBasicBoxedParams;
-import io.vertx.test.codegen.testapi.MethodWithValidBasicParams;
-import io.vertx.test.codegen.testapi.MethodWithValidBasicReturn;
-import io.vertx.test.codegen.testapi.MethodWithValidClassTypeParams;
-import io.vertx.test.codegen.testapi.MethodWithValidDataObjectReturn;
-import io.vertx.test.codegen.testapi.MethodWithValidFunctionParams;
-import io.vertx.test.codegen.testapi.MethodWithValidHandlerAsyncResultJSON;
-import io.vertx.test.codegen.testapi.MethodWithValidHandlerAsyncResultParams;
-import io.vertx.test.codegen.testapi.MethodWithValidHandlerAsyncResultTypeParamByInterface;
-import io.vertx.test.codegen.testapi.MethodWithValidHandlerJSON;
-import io.vertx.test.codegen.testapi.MethodWithValidHandlerParams;
-import io.vertx.test.codegen.testapi.MethodWithValidHandlerTypeParamByInterface;
-import io.vertx.test.codegen.testapi.MethodWithValidJSONParams;
-import io.vertx.test.codegen.testapi.MethodWithValidJSONReturn;
-import io.vertx.test.codegen.testapi.MethodWithValidListParams;
-import io.vertx.test.codegen.testapi.MethodWithValidListReturn;
-import io.vertx.test.codegen.testapi.MethodWithValidMapParams;
-import io.vertx.test.codegen.testapi.MethodWithValidMapReturn;
-import io.vertx.test.codegen.testapi.MethodWithValidSetParams;
-import io.vertx.test.codegen.testapi.MethodWithValidSetReturn;
-import io.vertx.test.codegen.testapi.MethodWithValidThrowableParam;
-import io.vertx.test.codegen.testapi.MethodWithValidTypeParamByInterfaceReturn;
-import io.vertx.test.codegen.testapi.MethodWithValidVertxGenParams;
-import io.vertx.test.codegen.testapi.MethodWithValidVertxGenReturn;
-import io.vertx.test.codegen.testapi.MethodWithValidVoidReturn;
-import io.vertx.test.codegen.testapi.MethodWithValidVoidTypeArg;
-import io.vertx.test.codegen.testapi.MethodWithWildcardLowerBoundTypeArg;
-import io.vertx.test.codegen.testapi.MethodWithWildcardUpperBoundTypeArg;
-import io.vertx.test.codegen.testapi.NestedInterface;
-import io.vertx.test.codegen.testapi.NoVertxGen;
-import io.vertx.test.codegen.testapi.NotInterface;
-import io.vertx.test.codegen.testapi.OverloadedMethodsWithDifferentReturnType;
-import io.vertx.test.codegen.testapi.PlainDataObject;
-import io.vertx.test.codegen.testapi.PlainDataObjectWithToJson;
-import io.vertx.test.codegen.testapi.RecursiveFuture;
-import io.vertx.test.codegen.testapi.SameSignatureMethod1;
-import io.vertx.test.codegen.testapi.SameSignatureMethod2;
-import io.vertx.test.codegen.testapi.VertxGenClass1;
-import io.vertx.test.codegen.testapi.VertxGenClass2;
-import io.vertx.test.codegen.testapi.VertxGenInterface;
+import io.vertx.test.codegen.testapi.*;
+import io.vertx.test.codegen.testapi.javatypes.MethodWithInvalidJavaTypeParam;
+import io.vertx.test.codegen.testapi.javatypes.MethodWithInvalidJavaTypeReturn;
+import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeParams;
+import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeReturn;
+import io.vertx.test.codegen.testapi.overloadcheck.OverloadCheckIgnoreEnhancedMethod;
+import io.vertx.test.codegen.testapi.overloadcheck.OverloadCheckInvalidMethodOverloading;
 import io.vertx.test.codegen.testapi.fluent.AbstractInterfaceWithFluentMethods;
 import io.vertx.test.codegen.testapi.fluent.ConcreteInterfaceWithFluentMethods;
 import io.vertx.test.codegen.testapi.fluent.FluentMethodOverrideWithSuperType;
@@ -194,7 +58,6 @@ import io.vertx.test.codegen.testapi.streams.InterfaceExtentingReadStreamAndWrit
 import io.vertx.test.codegen.testapi.streams.InterfaceExtentingWriteStream;
 import io.vertx.test.codegen.testapi.streams.InterfaceSubtypingReadStream;
 import io.vertx.test.codegen.testapi.streams.ReadStreamWithParameterizedTypeArg;
-import io.vertx.test.codegen.testdataobject.Abstract;
 import org.junit.Test;
 
 import java.net.Socket;
@@ -254,16 +117,42 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
-  public void testGenerateInterfaceWithNoNotIgnoredMethods() throws Exception {
-    assertGenInvalid(InterfaceWithNoNotIgnoredMethods.class);
-  }
-
-  @Test
   public void testGenerateInterfaceWithOnlyDefaultMethod() throws Exception {
     assertGenInvalid(InterfaceWithOnlyDefaultMethod.class);
   }
 
   // Invalid params
+
+  @Test
+  public void testGenerateMethodWithJavaDotObjectParam() throws Exception {
+    assertGenInvalid(MethodWithJavaDotObjectParam.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithJavaDotObjectInHandler() throws Exception {
+    assertGenInvalid(MethodWithJavaDotObjectInHandler.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithJavaDotObjectInHandlerAsyncResult() throws Exception {
+    assertGenInvalid(MethodWithJavaDotObjectInHandlerAsyncResult.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithNonVertxGenParam() throws Exception {
+    Class<?> c = MethodWithNotVertxGenObjectParam.class;
+    assertGenInvalid(c);
+  }
+
+  @Test
+  public void testGenerateMethodWithNonVertxGenInHandler() throws Exception {
+    assertGenInvalid(MethodWithNotVertxGenObjectInHandler.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithNonVertxGenInHandlerAsyncResult() throws Exception {
+    assertGenInvalid(MethodWithNotVertxGenObjectInHandlerAsyncResult.class);
+  }
 
   @Test
   public void testGenerateMethodWithFunctionInHandler() throws Exception {
@@ -285,6 +174,43 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testGenerateMethodWithWildcardLowerBoundTypeArg() throws Exception {
     assertGenInvalid(MethodWithWildcardLowerBoundTypeArg.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithInvalidJavaTypeParam() throws Exception {
+    assertGenInvalid(MethodWithInvalidJavaTypeParam.class);
+  }
+
+  // Invalid returns
+
+  @Test
+  public void testGenerateMethodWithJavaDotObjectReturn() throws Exception {
+    assertGenInvalid(MethodWithJavaDotObjectReturn.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithNonVertxGenReturn() throws Exception {
+    assertGenInvalid(MethodWithNotVertxGenObjectReturn.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithReturnSetNonBasicType() throws Exception {
+    assertGenInvalid(MethodWithSetNonBasicTypeReturn.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithReturnListNonBasicType() throws Exception {
+    assertGenInvalid(MethodWithListNonBasicTypeReturn.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithReturnHandlerNonVertxGen() throws Exception {
+    assertGenInvalid(MethodWithHandlerNonVertxGenReturn.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithInvalidJavaTypeReturn() throws Exception {
+    assertGenInvalid(MethodWithInvalidJavaTypeReturn.class);
   }
 
   // Invalid methods
@@ -336,6 +262,13 @@ public class ClassTest extends ClassTestBase {
     assertGenInvalid(MethodWithInvalidTypeParamByThrowableReturn.class);
   }
 
+  // Invalid ambiguous overload
+
+  @Test
+  public void testOverloadCheckInvalidMethodOverloading() throws Exception {
+    assertGenInvalid(OverloadCheckInvalidMethodOverloading.class);
+  }
+
   // Invalid abstract/concrete interfaces
 
   @Test
@@ -363,69 +296,6 @@ public class ClassTest extends ClassTestBase {
   // Test valid stuff
   // ----------------
 
-  // Valid classes
-
-  @Test
-  public void testGenerateMethodWithNonVertxGenInHandler() throws Exception {
-    assertGenValid(MethodWithNotVertxGenObjectInHandler.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithNonVertxGenReturn() throws Exception {
-    assertGenValid(MethodWithNotVertxGenObjectReturn.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithReturnSetNonBasicType() throws Exception {
-    assertGenValid(MethodWithSetNonBasicTypeReturn.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithReturnListNonBasicType() throws Exception {
-    assertGenValid(MethodWithListNonBasicTypeReturn.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithReturnHandlerNonVertxGen() throws Exception {
-    assertGenValid(MethodWithHandlerNonVertxGenReturn.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithNonVertxGenInHandlerAsyncResult() throws Exception {
-    assertGenValid(MethodWithNotVertxGenObjectInHandlerAsyncResult.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithJavaDotObjectInHandler() throws Exception {
-    assertGenValid(MethodWithJavaDotObjectInHandler.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithJavaDotObjectInHandlerAsyncResult() throws Exception {
-    assertGenValid(MethodWithJavaDotObjectInHandlerAsyncResult.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithJavaDotObjectParam() throws Exception {
-    assertGenValid(MethodWithJavaDotObjectParam.class);
-  }
-
-  @Test
-  public void testGenerateMethodWithNonVertxGenParam() throws Exception {
-    Class<?> c = MethodWithNotVertxGenObjectParam.class;
-    assertGenValid(c);
-  }
-
-  @Test
-  public void testGenerateMethodWithJavaDotObjectReturn() throws Exception {
-    assertGenValid(MethodWithJavaDotObjectReturn.class);
-  }
-
-  @Test
-  public void testMethodInvalidThrowableParam() throws Exception {
-    assertGenValid(MethodWithInvalidExceptionParam.class);
-  }
-  
   // Valid params
 
   @Test
@@ -502,38 +372,6 @@ public class ClassTest extends ClassTestBase {
     ParameterizedTypeInfo genericType = (ParameterizedTypeInfo) mi.getParams().get(0).getType();
     ClassTypeInfo voidType = (ClassTypeInfo) genericType.getArgs().get(0);
     assertEquals(ClassKind.VOID, voidType.getKind());
-  }
-
-  @Test
-  public void testOtherIsValidContainerParam() throws Exception {
-    ClassModel model = new GeneratorHelper().generateClass(MethodWithOtherContainerType.class);
-    List<ParamInfo> params = model.getMethods().get(0).getParams();
-
-    ParamInfo socketSet = params.get(0);
-    ParamInfo socketList = params.get(1);
-    ParamInfo socketMap = params.get(2);
-
-    TypeInfo otherTypeFormSet = ((ParameterizedTypeInfo) socketSet.getType()).getArgs().get(0);
-    TypeInfo otherTypeFormList = ((ParameterizedTypeInfo) socketList.getType()).getArgs().get(0);
-    TypeInfo otherTypeFormMap = ((ParameterizedTypeInfo) socketMap.getType()).getArgs().get(1);
-
-    assertEquals(ClassKind.OTHER, otherTypeFormSet.getKind());
-    assertEquals(ClassKind.OTHER, otherTypeFormList.getKind());
-    assertEquals(ClassKind.OTHER, otherTypeFormMap.getKind());
-  }
-
-  @Test
-  public void testOtherIsValidContainerReturn() throws Exception {
-    ClassModel model = new GeneratorHelper().generateClass(MethodWithOtherContainerType.class);
-    ParameterizedTypeInfo setContainer = (ParameterizedTypeInfo) model.getMethods().get(0).getReturnType();
-    ParameterizedTypeInfo listContainer = (ParameterizedTypeInfo) model.getMethods().get(1).getReturnType();
-    ParameterizedTypeInfo mapContainer = (ParameterizedTypeInfo) model.getMethods().get(2).getReturnType();
-    ClassTypeInfo otherTypeFromSet = (ClassTypeInfo) setContainer.getArgs().get(0);
-    ClassTypeInfo otherTypeFromList = (ClassTypeInfo) listContainer.getArgs().get(0);
-    ClassTypeInfo otherTypeFromMap = (ClassTypeInfo) mapContainer.getArgs().get(1);
-    assertEquals(ClassKind.OTHER, otherTypeFromSet.getKind());
-    assertEquals(ClassKind.OTHER, otherTypeFromList.getKind());
-    assertEquals(ClassKind.OTHER, otherTypeFromMap.getKind());
   }
 
   @Test
@@ -634,7 +472,7 @@ public class ClassTest extends ClassTestBase {
     assertEquals(4, model.getMethods().size());
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, "methodWithHandlerParams", 16, "void", MethodKind.HANDLER);
+    checkMethod(method, "methodWithHandlerParams", 15, "void", MethodKind.HANDLER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "byteHandler", new TypeLiteral<Handler<Byte>>() {});
     checkParam(params.get(1), "shortHandler", new TypeLiteral<Handler<Short>>() {});
@@ -651,10 +489,9 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(12), "throwableHandler",  new TypeLiteral<Handler<Throwable>>(){});
     checkParam(params.get(13), "dataObjectHandler", new TypeLiteral<Handler<TestDataObject>>(){});
     checkParam(params.get(14), "enumHandler", new TypeLiteral<Handler<TestEnum>>(){});
-    checkParam(params.get(15), "socketHandler", new TypeLiteral<Handler<Socket>>(){});
 
     method = model.getMethods().get(1);
-    checkMethod(method, "methodWithListHandlerParams", 15, "void", MethodKind.HANDLER);
+    checkMethod(method, "methodWithListHandlerParams", 14, "void", MethodKind.HANDLER);
     params = method.getParams();
     checkParam(params.get(0), "listByteHandler", new TypeLiteral<Handler<List<Byte>>>(){});
     checkParam(params.get(1), "listShortHandler", new TypeLiteral<Handler<List<Short>>>() {});
@@ -670,10 +507,9 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(11), "listJsonArrayHandler", new TypeLiteral<Handler<List<JsonArray>>>(){});
     checkParam(params.get(12), "listDataObjectHandler", new TypeLiteral<Handler<List<TestDataObject>>>(){});
     checkParam(params.get(13), "listEnumHandler", new TypeLiteral<Handler<List<TestEnum>>>(){});
-    checkParam(params.get(14), "socketListHandler", new TypeLiteral<Handler<List<Socket>>>(){});
 
     method = model.getMethods().get(2);
-    checkMethod(method, "methodWithSetHandlerParams", 15, "void", MethodKind.HANDLER);
+    checkMethod(method, "methodWithSetHandlerParams", 14, "void", MethodKind.HANDLER);
     params = method.getParams();
     checkParam(params.get(0), "setByteHandler", new TypeLiteral<Handler<Set<Byte>>>(){});
     checkParam(params.get(1), "setShortHandler", new TypeLiteral<Handler<Set<Short>>>(){});
@@ -689,10 +525,9 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(11), "setJsonArrayHandler",  new TypeLiteral<Handler<Set<JsonArray>>>(){});
     checkParam(params.get(12), "setDataObjectHandler",  new TypeLiteral<Handler<Set<TestDataObject>>>(){});
     checkParam(params.get(13), "setEnumHandler",  new TypeLiteral<Handler<Set<TestEnum>>>(){});
-    checkParam(params.get(14), "socketSetHandler",  new TypeLiteral<Handler<Set<Socket>>>(){});
 
     method = model.getMethods().get(3);
-    checkMethod(method, "methodWithMapHandlerParams", 12, "void", MethodKind.HANDLER);
+    checkMethod(method, "methodWithMapHandlerParams", 11, "void", MethodKind.HANDLER);
     params = method.getParams();
     checkParam(params.get(0), "mapByteHandler", new TypeLiteral<Handler<Map<String, Byte>>>(){});
     checkParam(params.get(1), "mapShortHandler", new TypeLiteral<Handler<Map<String, Short>>>(){});
@@ -705,7 +540,6 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(8), "mapStrHandler", new TypeLiteral<Handler<Map<String, String>>>(){});
     checkParam(params.get(9), "mapJsonObjectHandler", new TypeLiteral<Handler<Map<String, JsonObject>>>(){});
     checkParam(params.get(10), "mapJsonArrayHandler",  new TypeLiteral<Handler<Map<String, JsonArray>>>(){});
-    checkParam(params.get(11), "mapStringToSocketObjectHandler",  new TypeLiteral<Handler<Map<String, Socket>>>(){});
   }
 
   @Test
@@ -713,7 +547,7 @@ public class ClassTest extends ClassTestBase {
     ClassModel model = new GeneratorHelper().generateClass(MethodWithValidFunctionParams.class);
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, "methodWithFunctionParams", 19, "void", MethodKind.OTHER);
+    checkMethod(method, "methodWithFunctionParams", 18, "void", MethodKind.OTHER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "byteFunction", new TypeLiteral<Function<Byte, Byte>>() {});
     checkParam(params.get(1), "shortFunction", new TypeLiteral<Function<Short, Short>>() {});
@@ -733,10 +567,9 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(15), "objectFunction", new TypeLiteral<Function<Object, Object>>(){});
     checkParam(params.get(16), "genericFunction", new TypeLiteral<Function<T, T>>(){});
     checkParam(params.get(17), "genericUserTypeFunction", new TypeLiteral<Function<GenericInterface<T>, GenericInterface<T>>>(){});
-    checkParam(params.get(18), "socketFunction", new TypeLiteral<Function<Socket, Socket>>(){});
 
     method = model.getMethods().get(1);
-    checkMethod(method, "methodWithListFunctionParams", 15, "void", MethodKind.OTHER);
+    checkMethod(method, "methodWithListFunctionParams", 14, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "listByteFunction", new TypeLiteral<Function<List<Byte>, List<Byte>>>(){});
     checkParam(params.get(1), "listShortFunction", new TypeLiteral<Function<List<Short>, List<Short>>>() {});
@@ -752,10 +585,9 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(11), "listJsonArrayFunction", new TypeLiteral<Function<List<JsonArray>, List<JsonArray>>>(){});
     checkParam(params.get(12), "listDataObjectFunction", new TypeLiteral<Function<List<TestDataObject>, List<TestDataObject>>>(){});
     checkParam(params.get(13), "listEnumFunction", new TypeLiteral<Function<List<TestEnum>, List<TestEnum>>>(){});
-    checkParam(params.get(14), "socketListFunction", new TypeLiteral<Function<List<Socket>, List<Socket>>>(){});
 
     method = model.getMethods().get(2);
-    checkMethod(method, "methodWithSetFunctionParams", 15, "void", MethodKind.OTHER);
+    checkMethod(method, "methodWithSetFunctionParams", 14, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "setByteFunction", new TypeLiteral<Function<Set<Byte>, Set<Byte>>>(){});
     checkParam(params.get(1), "setShortFunction", new TypeLiteral<Function<Set<Short>, Set<Short>>>(){});
@@ -771,10 +603,9 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(11), "setJsonArrayFunction",  new TypeLiteral<Function<Set<JsonArray>, Set<JsonArray>>>(){});
     checkParam(params.get(12), "setDataObjectFunction",  new TypeLiteral<Function<Set<TestDataObject>, Set<TestDataObject>>>(){});
     checkParam(params.get(13), "setEnumFunction",  new TypeLiteral<Function<Set<TestEnum>, Set<TestEnum>>>(){});
-    checkParam(params.get(14), "socketSetFunction", new TypeLiteral<Function<Set<Socket>, Set<Socket>>>(){});
 
     method = model.getMethods().get(3);
-    checkMethod(method, "methodWithMapFunctionParams", 12, "void", MethodKind.OTHER);
+    checkMethod(method, "methodWithMapFunctionParams", 11, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "mapByteFunction", new TypeLiteral<Function<Map<String, Byte>, Map<String, Byte>>>(){});
     checkParam(params.get(1), "mapShortFunction", new TypeLiteral<Function<Map<String, Short>, Map<String, Short>>>(){});
@@ -787,7 +618,6 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(8), "mapStrFunction", new TypeLiteral<Function<Map<String, String>, Map<String, String>>>(){});
     checkParam(params.get(9), "mapJsonObjectFunction", new TypeLiteral<Function<Map<String, JsonObject>, Map<String, JsonObject>>>(){});
     checkParam(params.get(10), "mapJsonArrayFunction",  new TypeLiteral<Function<Map<String, JsonArray>, Map<String, JsonArray>>>(){});
-    checkParam(params.get(11), "socketMapStringToSocketFunction",  new TypeLiteral<Function<Map<String, Socket>, Map<String, Socket>>>(){});
   }
 
   @Test
@@ -814,7 +644,7 @@ public class ClassTest extends ClassTestBase {
     assertEquals(4, model.getMethods().size());
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, "methodWithHandlerParams", 17, "void", MethodKind.FUTURE);
+    checkMethod(method, "methodWithHandlerParams", 16, "void", MethodKind.FUTURE);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "byteHandler", new TypeLiteral<Handler<AsyncResult<Byte>>>() {});
     checkParam(params.get(1), "shortHandler", new TypeLiteral<Handler<AsyncResult<Short>>>() {});
@@ -832,10 +662,9 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(13), "voidHandler",  new TypeLiteral<Handler<AsyncResult<Void>>>(){});
     checkParam(params.get(14), "dataObjectHandler", new TypeLiteral<Handler<AsyncResult<TestDataObject>>>(){});
     checkParam(params.get(15), "enumHandler", new TypeLiteral<Handler<AsyncResult<TestEnum>>>(){});
-    checkParam(params.get(16), "socketHandler", new TypeLiteral<Handler<AsyncResult<Socket>>>(){});
 
     method = model.getMethods().get(1);
-    checkMethod(method, "methodWithListHandlerParams", 15, "void", MethodKind.FUTURE);
+    checkMethod(method, "methodWithListHandlerParams", 14, "void", MethodKind.FUTURE);
     params = method.getParams();
     checkParam(params.get(0), "listByteHandler", new TypeLiteral<Handler<AsyncResult<List<Byte>>>>(){});
     checkParam(params.get(1), "listShortHandler", new TypeLiteral<Handler<AsyncResult<List<Short>>>>() {});
@@ -851,10 +680,9 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(11), "listJsonArrayHandler", new TypeLiteral<Handler<AsyncResult<List<JsonArray>>>>(){});
     checkParam(params.get(12), "listDataObjectHandler", new TypeLiteral<Handler<AsyncResult<List<TestDataObject>>>>(){});
     checkParam(params.get(13), "listEnumHandler", new TypeLiteral<Handler<AsyncResult<List<TestEnum>>>>(){});
-    checkParam(params.get(14), "socketListHandler", new TypeLiteral<Handler<AsyncResult<List<Socket>>>>(){});
 
     method = model.getMethods().get(2);
-    checkMethod(method, "methodWithSetHandlerParams", 15, "void", MethodKind.FUTURE);
+    checkMethod(method, "methodWithSetHandlerParams", 14, "void", MethodKind.FUTURE);
     params = method.getParams();
     checkParam(params.get(0), "setByteHandler", new TypeLiteral<Handler<AsyncResult<Set<Byte>>>>(){});
     checkParam(params.get(1), "setShortHandler", new TypeLiteral<Handler<AsyncResult<Set<Short>>>>(){});
@@ -870,10 +698,9 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(11), "setJsonArrayHandler", new TypeLiteral<Handler<AsyncResult<Set<JsonArray>>>>(){});
     checkParam(params.get(12), "setDataObjectHandler", new TypeLiteral<Handler<AsyncResult<Set<TestDataObject>>>>(){});
     checkParam(params.get(13), "setEnumHandler", new TypeLiteral<Handler<AsyncResult<Set<TestEnum>>>>(){});
-    checkParam(params.get(14), "socketSetHandler", new TypeLiteral<Handler<AsyncResult<Set<Socket>>>>(){});
 
     method = model.getMethods().get(3);
-    checkMethod(method, "methodWithMapHandlerParams", 12, "void", MethodKind.FUTURE);
+    checkMethod(method, "methodWithMapHandlerParams", 11, "void", MethodKind.FUTURE);
     params = method.getParams();
     checkParam(params.get(0), "mapByteHandler", new TypeLiteral<Handler<AsyncResult<Map<String,Byte>>>>(){});
     checkParam(params.get(1), "mapShortHandler", new TypeLiteral<Handler<AsyncResult<Map<String,Short>>>>(){});
@@ -886,7 +713,70 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(8), "mapStrHandler", new TypeLiteral<Handler<AsyncResult<Map<String,String>>>>(){});
     checkParam(params.get(9), "mapJsonObjectHandler", new TypeLiteral<Handler<AsyncResult<Map<String,JsonObject>>>>(){});
     checkParam(params.get(10), "mapJsonArrayHandler", new TypeLiteral<Handler<AsyncResult<Map<String,JsonArray>>>>(){});
-    checkParam(params.get(11), "mapStringToSocketObjectHandler", new TypeLiteral<Handler<AsyncResult<Map<String,Socket>>>>(){});
+  }
+
+  @Test
+  public void testValidJavaTypeParams() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(MethodWithValidJavaTypeParams.class);
+    assertEquals(4, model.getMethods().size());
+
+    MethodInfo method = model.getMethods().get(0);
+    checkMethod(method, "methodWithParams", 4, "void", MethodKind.OTHER);
+    List<ParamInfo> params = method.getParams();
+    checkParam(params.get(0), "socket", new TypeLiteral<Socket>(){});
+    checkParam(params.get(1), "listSocket", new TypeLiteral<List<Socket>>(){});
+    checkParam(params.get(2), "setSocket", new TypeLiteral<Set<Socket>>(){});
+    checkParam(params.get(3), "mapSocket", new TypeLiteral<Map<String, Socket>>(){});
+    assertTrue(method.isContainingAnyJavaType());
+
+    method = model.getMethods().get(1);
+    checkMethod(method, "methodWithHandlerParams", 4, "void", MethodKind.HANDLER);
+    params = method.getParams();
+    checkParam(params.get(0), "socketHandler", new TypeLiteral<Handler<Socket>>(){});
+    checkParam(params.get(1), "listSocketHandler", new TypeLiteral<Handler<List<Socket>>>(){});
+    checkParam(params.get(2), "setSocketHandler", new TypeLiteral<Handler<Set<Socket>>>(){});
+    checkParam(params.get(3), "mapSocketHandler", new TypeLiteral<Handler<Map<String, Socket>>>(){});
+    assertTrue(method.isContainingAnyJavaType());
+
+    method = model.getMethods().get(2);
+    checkMethod(method, "methodWithHandlerAsyncResultParams", 4, "void", MethodKind.FUTURE);
+    params = method.getParams();
+    checkParam(params.get(0), "socketHandler", new TypeLiteral<Handler<AsyncResult<Socket>>>(){});
+    checkParam(params.get(1), "listSocketHandler", new TypeLiteral<Handler<AsyncResult<List<Socket>>>>(){});
+    checkParam(params.get(2), "setSocketHandler", new TypeLiteral<Handler<AsyncResult<Set<Socket>>>>(){});
+    checkParam(params.get(3), "mapSocketHandler", new TypeLiteral<Handler<AsyncResult<Map<String, Socket>>>>(){});
+    assertTrue(method.isContainingAnyJavaType());
+
+    method = model.getMethods().get(3);
+    checkMethod(method, "methodWithFunctionParams", 4, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "socketFunction", new TypeLiteral<Function<Socket, Socket>>(){});
+    checkParam(params.get(1), "listSocketFunction", new TypeLiteral<Function<List<Socket>, List<Socket>>>(){});
+    checkParam(params.get(2), "setSocketFunction", new TypeLiteral<Function<Set<Socket>, Set<Socket>>>(){});
+    checkParam(params.get(3), "mapSocketFunction", new TypeLiteral<Function<Map<String, Socket>, Map<String, Socket>>>(){});
+    assertTrue(method.isContainingAnyJavaType());
+  }
+
+  @Test
+  public void testValidJavaTypeReturn() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(MethodWithValidJavaTypeReturn.class);
+    assertEquals(4, model.getMethods().size());
+
+    MethodInfo method = model.getMethods().get(0);
+    checkMethod(method, "methodWithReturn", 0, new TypeLiteral<Socket>(){}, MethodKind.OTHER);
+    assertTrue(method.isContainingAnyJavaType());
+
+    method = model.getMethods().get(1);
+    checkMethod(method, "methodWithListReturn", 0, new TypeLiteral<List<Socket>>(){}, MethodKind.OTHER);
+    assertTrue(method.isContainingAnyJavaType());
+
+    method = model.getMethods().get(2);
+    checkMethod(method, "methodWithSetReturn", 0, new TypeLiteral<Set<Socket>>(){}, MethodKind.OTHER);
+    assertTrue(method.isContainingAnyJavaType());
+
+    method = model.getMethods().get(3);
+    checkMethod(method, "methodWithMapReturn", 0, new TypeLiteral<Map<String, Socket>>(){}, MethodKind.OTHER);
+    assertTrue(method.isContainingAnyJavaType());
   }
 
   @Test
@@ -1269,6 +1159,8 @@ public class ClassTest extends ClassTestBase {
     assertEquals(2, methods.size());
     checkMethod(methods.get(0), "foo", 1, "void", MethodKind.OTHER);
     checkMethod(methods.get(1), "bar", 1, "void", MethodKind.OTHER);
+    assertFalse(methods.get(0).isContainingAnyJavaType());
+    assertFalse(methods.get(1).isContainingAnyJavaType());
   }
 
   @Test
@@ -1417,8 +1309,8 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testParameterizedForbiddenSuperType() throws Exception {
     Class<?>[] forbidenTypes = {
-        InterfaceWithParameterizedArraySupertype.class,
-        InterfaceWithParameterizedGenericArraySupertype.class
+      InterfaceWithParameterizedArraySupertype.class,
+      InterfaceWithParameterizedGenericArraySupertype.class
     };
     for (Class<?> forbidenType : forbidenTypes) {
       try {
@@ -1487,6 +1379,12 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
+  public void testOverloadCheckIgnoreEnhancedMethod() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(OverloadCheckIgnoreEnhancedMethod.class);
+    assertEquals(2, model.getMethods().size());
+  }
+
+  @Test
   public void testStaticMethods() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(InterfaceWithStaticMethods.class);
     assertEquals(InterfaceWithStaticMethods.class.getName(), model.getIfaceFQCN());
@@ -1540,8 +1438,8 @@ public class ClassTest extends ClassTestBase {
     assertEquals(1, methods.size());
     checkMethod(methods.get(0), "bar", 1, "void", MethodKind.OTHER);
     assertEquals(set(
-        TypeReflectionFactory.create(InterfaceWithMethodOverride.class),
-        TypeReflectionFactory.create(VertxGenInterface.class)
+      TypeReflectionFactory.create(InterfaceWithMethodOverride.class),
+      TypeReflectionFactory.create(VertxGenInterface.class)
     ), methods.get(0).getOwnerTypes());
     checkParam(methods.get(0).getParams().get(0), "str", String.class);
   }
@@ -1553,8 +1451,8 @@ public class ClassTest extends ClassTestBase {
     assertEquals(1, methods.size());
     checkMethod(methods.get(0), "bar", 1, "void", MethodKind.OTHER);
     assertEquals(set(
-        TypeReflectionFactory.create(InterfaceWithMethodOverrideParameterRenamed.class),
-        TypeReflectionFactory.create(VertxGenInterface.class)
+      TypeReflectionFactory.create(InterfaceWithMethodOverrideParameterRenamed.class),
+      TypeReflectionFactory.create(VertxGenInterface.class)
     ), methods.get(0).getOwnerTypes());
     checkParam(methods.get(0).getParams().get(0), "str_renamed", String.class);
   }
@@ -1571,8 +1469,8 @@ public class ClassTest extends ClassTestBase {
     checkMethod(methods.get(4), "collargol", 1, "void", MethodKind.OTHER);
     for (int i = 0;i < 5;i++) {
       assertEquals(set(
-          TypeReflectionFactory.create(InterfaceWithGenericMethodOverride.class),
-          TypeReflectionFactory.create(GenericAbstractInterface.class)
+        TypeReflectionFactory.create(InterfaceWithGenericMethodOverride.class),
+        TypeReflectionFactory.create(GenericAbstractInterface.class)
       ), methods.get(i).getOwnerTypes());
     }
     checkParam(methods.get(2).getParams().get(0), "handler", new TypeLiteral<Handler<AsyncResult<String>>>() {
@@ -1619,8 +1517,8 @@ public class ClassTest extends ClassTestBase {
     assertEquals(1, methods.size());
     checkMethod(methods.get(0), "foo", 0, InterfaceWithTypeVariableArgument3.class, MethodKind.OTHER);
     assertEquals(set(
-        TypeReflectionFactory.create(InterfaceWithTypeVariableArgument1.class),
-        TypeReflectionFactory.create(InterfaceWithTypeVariableArgument2.class)
+      TypeReflectionFactory.create(InterfaceWithTypeVariableArgument1.class),
+      TypeReflectionFactory.create(InterfaceWithTypeVariableArgument2.class)
     ), methods.get(0).getOwnerTypes());
   }
 
@@ -1652,7 +1550,7 @@ public class ClassTest extends ClassTestBase {
     List<MethodInfo> methods = model.getMethods();
     assertEquals(2, methods.size());
     Doc comment1 = new Doc(" Comment 1 line 1\n Comment 1 line 2", null,
-        Arrays.asList(new Tag("param", "str the_string"), new Tag("return", "the_return_value\n")));
+      Arrays.asList(new Tag("param", "str the_string"), new Tag("return", "the_return_value\n")));
     Doc comment2 = new Doc(" Comment 2 line 1\n Comment 2 line 2\n");
     checkMethod(methods.get(0), "foo", 1, String.class, MethodKind.OTHER, comment1);
     assertEquals("str", methods.get(0).getParams().get(0).getName());
@@ -1669,8 +1567,8 @@ public class ClassTest extends ClassTestBase {
     assertTrue(model.getSuperTypes().isEmpty());
     String firstSentence =
       " Interface comment line 1\n" +
-      " Interface comment line 2\n" +
-      " Interface comment line 3";
+        " Interface comment line 2\n" +
+        " Interface comment line 3";
     assertEquals(firstSentence, model.getDoc().getFirstSentence().getValue());
   }
 
@@ -2149,6 +2047,11 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testMethodInvalidHandlerAsyncResultDataObjectsParam() throws Exception {
     assertGenFail(MethodWithInvalidHandlerAsyncResultDataObjectParam.class, "Option without toJson() in AsyncResult param should fail");
+  }
+
+  @Test
+  public void testMethodInvalidThrowableParam() throws Exception {
+    assertGenInvalid(MethodWithInvalidExceptionParam.class);
   }
 
   @Test

@@ -42,9 +42,7 @@ public abstract class TypeInfo {
   /**
    * @return the class kind this type resolves to
    */
-  public ClassKind getKind() {
-    return ClassKind.OTHER;
-  }
+  public abstract ClassKind getKind();
 
   /**
    * @return the declaration suitable for source code represented using qualified names, for instance
