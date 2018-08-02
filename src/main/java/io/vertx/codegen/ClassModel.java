@@ -692,14 +692,6 @@ public class ClassModel implements Model {
               if (meth.isContainingAnyJavaType()) {
                 anyJavaTypeMethods.put(elt, meth);
               } else {
-                // Add the method
-                List<MethodInfo> methodsByName = methodMap.get(meth.getName());
-                if (methodsByName == null) {
-                  methodsByName = new ArrayList<>();
-                  methodMap.put(meth.getName(), methodsByName);
-                  methodAnnotationsMap.put(meth.getName(), elt.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList()));
-                }
-                methodsByName.add(meth);
                 methods.put(elt, meth);
               }
             }
@@ -917,6 +909,17 @@ public class ClassModel implements Model {
           return null;
         }
       }
+    }
+
+    // Add the method to the method map (it's a bit ugly but useful for JS and Ruby)
+    if (!methodInfo.isContainingAnyJavaType()) {
+      List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
+      if (methodsByName == null) {
+        methodsByName = new ArrayList<>();
+        methodMap.put(methodInfo.getName(), methodsByName);
+        methodAnnotationsMap.put(methodInfo.getName(), modelMethod.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList()));
+      }
+      methodsByName.add(methodInfo);
     }
 
     // Filter methods inherited from abstract ancestors
