@@ -967,7 +967,9 @@ public class ClassModel implements Model {
       try {
         typeInfo = typeFactory.create(typeUse, type);
       } catch (Exception e) {
-        throw new GenException(param, e.getMessage());
+        GenException ex = new GenException(param, e.getMessage());
+        ex.setStackTrace(e.getStackTrace());
+        throw ex;
       }
       checkParamType(methodElt, typeInfo, allowAnyJavaType);
       String name = param.getSimpleName().toString();

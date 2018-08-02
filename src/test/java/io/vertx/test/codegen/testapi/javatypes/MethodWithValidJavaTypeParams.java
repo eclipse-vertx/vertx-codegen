@@ -58,6 +58,10 @@ public interface MethodWithValidJavaTypeParams {
                                 Function<Map<String, Socket>, Map<String, Socket>> mapSocketFunction);
 
   @SuppressWarnings("codegen-allow-any-java-type")
+  void methodWithArrayParams(byte[] byteArray,
+                             boolean[] booleanArray);
+
+  @SuppressWarnings("codegen-allow-any-java-type")
   void methodWithParameterizedParams(Iterable<String> iterableString);
 
 }

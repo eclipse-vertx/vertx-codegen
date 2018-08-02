@@ -14,10 +14,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.*;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
@@ -64,6 +61,8 @@ public class TypeMirrorFactory {
         return PrimitiveTypeInfo.PRIMITIVES.get(type.getKind().name().toLowerCase());
       case TYPEVAR:
         return create(use, (TypeVariable) type);
+      case ARRAY:
+        return create(use, (ArrayType) type);
       default:
         throw new IllegalArgumentException("Illegal type " + type + " of kind " + type.getKind());
     }
@@ -151,6 +150,11 @@ public class TypeMirrorFactory {
     TypeParameterElement elt = (TypeParameterElement) type.asElement();
     TypeParamInfo param = TypeParamInfo.create(elt);
     return new TypeVariableInfo(param, use != null && use.isNullable(), elt.getSimpleName().toString());
+  }
+
+  public ArrayTypeInfo create(TypeUse use, ArrayType type) {
+    TypeMirror componentType = type.getComponentType();
+    return new ArrayTypeInfo(create(componentType), use != null && use.isNullable());
   }
 
   private List<TypeParamInfo.Class> createTypeParams(DeclaredType type) {
