@@ -77,7 +77,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
 
   private static boolean containsAnyJavaType(TypeInfo type) {
     if (type instanceof ParameterizedTypeInfo) {
-      return ((ParameterizedTypeInfo) type).getArgs().stream().anyMatch(MethodInfo::containsAnyJavaType);
+      return containsAnyJavaType(type.getRaw()) || ((ParameterizedTypeInfo) type).getArgs().stream().anyMatch(MethodInfo::containsAnyJavaType);
     } else {
       return type.getKind() == ClassKind.OTHER;
     }

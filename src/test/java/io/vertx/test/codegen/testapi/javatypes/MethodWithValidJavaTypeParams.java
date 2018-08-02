@@ -57,4 +57,7 @@ public interface MethodWithValidJavaTypeParams {
                                 Function<Set<Socket>, Set<Socket>> setSocketFunction,
                                 Function<Map<String, Socket>, Map<String, Socket>> mapSocketFunction);
 
+  @SuppressWarnings("codegen-allow-any-java-type")
+  void methodWithParameterizedParams(Iterable<String> iterableString);
+
 }
