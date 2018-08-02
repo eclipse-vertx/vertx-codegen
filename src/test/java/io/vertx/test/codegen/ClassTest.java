@@ -1622,9 +1622,8 @@ public class ClassTest extends ClassTestBase {
     checkMethod(methods.get(0), "foo", 1, "void", MethodKind.OTHER);
     checkParam(methods.get(0).getParam(0), "str", String.class);
     methods = model.getMethodMap().get("foo");
-    assertEquals(2, methods.size());
-    checkMethod(methods.get(0), "foo", 0, "void", MethodKind.OTHER);
-    checkMethod(methods.get(1), "foo", 1, "void", MethodKind.OTHER);
+    assertEquals(1, methods.size());
+    checkMethod(methods.get(0), "foo", 1, "void", MethodKind.OTHER);
   }
 
   @Test

@@ -900,6 +900,16 @@ public class ClassModel implements Model {
       }
     }
 
+    // Filter methods inherited from abstract ancestors
+    if (!declaringElt.equals(modelElt) && declaringType.getKind() == ClassKind.API) {
+      ApiTypeInfo declaringApiType = (ApiTypeInfo) declaringType.getRaw();
+      if (declaringApiType.isConcrete()) {
+        if (typeUtils.isSameType(methodType, modelMethod.asType())) {
+          return;
+        }
+      }
+    }
+
     // Add the method
     List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
     if (methodsByName == null) {
@@ -910,14 +920,6 @@ public class ClassModel implements Model {
     methodsByName.add(methodInfo);
     methodInfo.collectImports(collectedTypes);
 
-    if (!declaringElt.equals(modelElt) && declaringType.getKind() == ClassKind.API) {
-      ApiTypeInfo declaringApiType = (ApiTypeInfo) declaringType.getRaw();
-      if (declaringApiType.isConcrete()) {
-        if (typeUtils.isSameType(methodType, modelMethod.asType())) {
-          return;
-        }
-      }
-    }
     methods.put(modelMethod, methodInfo);
   }
 
