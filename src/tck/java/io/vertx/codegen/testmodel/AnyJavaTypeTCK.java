@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 @VertxGen()
-public interface JavaTypeTCK {
+public interface AnyJavaTypeTCK {
 
   @SuppressWarnings("codegen-allow-any-java-type") void methodWithJavaTypeParam(Socket socket);
   @SuppressWarnings("codegen-allow-any-java-type") void methodWithListOfJavaTypeParam(List<Socket> socketList);
