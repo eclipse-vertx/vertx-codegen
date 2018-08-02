@@ -234,6 +234,8 @@ In the perspective of codegen, Java types can be categorized as follow:
 . _data object_ type : any type annotated with `io.vertx.codegen.annotations.DataObject`
 . _enum_ type : any Java enum
 . _collection_ type : `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>`
+. _java_ type : any other type that can be represented as a Java class. Java types declarations are only permitted
+in interfaces allowing them (`@VertxGen(allowJavaTypes = true)`)
 
 Parameterized types are supported but wildcards are not, that is the following type arguments declarations
 are *forbidden*:
@@ -242,10 +244,12 @@ are *forbidden*:
 - `Foo<? extends Number>`
 - `Foo<? super Number>`
 
-Parameterized types are only supported for _api_ generic types and _collection_ types.
+Parameterized types are only supported for _api_ generic types, _collection_ types and _java_ types.
 
 Type variables are allowed and carry a special meaning: a type variable is a dynamic form of a _basic_ type and
 _json_ type.
+
+_java_ types should be used wisely because they provide a limited compatibility with Vert.x generators.
 
 ==== Inheritance
 
@@ -265,6 +269,7 @@ The following method parameter types are allowed:
 
 . any _basic_ type
 . any _api_ type or parameterized _api_ type having type variable parameters
+. any _java_ type
 . any _json_ type
 . the `java.lang.Throwable` type
 . any _enum_ type
@@ -272,14 +277,15 @@ The following method parameter types are allowed:
 . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
 . `java.lang.Object`
 . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
-a _json_ type, an _API_ type. For list and set `V` can also be an _enum_ type or a _data object_ type
+a _json_ type, an _api_ type or a `java` type. For list and set `V` can also be an _enum_ type or a _data object_ type
 
 Callback parameters are allowed, i.e types declaring `io.vertx.core.Handler<E>` or
 `io.vertx.core.Handler<io.vertx.core.AsyncResult<E>>` where `<E>` can be:
 
 . the `java.lang.Void` type
 . any _basic_ type
-. any _API_ type
+. any _api_ type
+. any _java_ type
 . any _json_ type
 . the `java.lang.Throwable` type - only for `Handler<R>`
 . any _enum_ type
@@ -292,14 +298,15 @@ Function parameters are allowed, i.e types declaring `java.util.function.Functio
 be same than for handlers and `<R>` can be:
 
 . any _basic_ type
-. any _API_ type
+. any _api_ type
+. any _java_ type
 . any _json_ type
 . the `java.lang.Throwable` type
 . any _enum_ type
 . any _data object_ type that is a non abstract class
 . an unbounded type variable
 . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
-a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
+a _json_ type or a `java` type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
 
 ==== Method return type
 
@@ -308,6 +315,7 @@ The following return types are allowed:
 . `void` type
 . any _basic_ type
 . any _api_ type or parameterized _api_ type having type variable parameters
+. any _java_ type
 . any _json_ type
 . the `java.lang.Throwable` type
 . any _enum_ type
@@ -337,6 +345,8 @@ void add(double x, double y);
 
 The JavaScript language use the type number in both cases: at runtime there is no possibility for the
 JavaScript shim to know which method to use.
+
+Method declaring `java` types are not checked.
 
 ==== Nullable types
 

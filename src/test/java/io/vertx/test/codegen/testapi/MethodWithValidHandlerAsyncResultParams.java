@@ -1,5 +1,6 @@
 package io.vertx.test.codegen.testapi;
 
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.core.AsyncResult;
@@ -8,6 +9,7 @@ import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.net.Socket;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,5 +42,6 @@ public interface MethodWithValidHandlerAsyncResultParams {
   void methodWithMapHandlerParams(Handler<AsyncResult<Map<String,Byte>>> mapByteHandler, Handler<AsyncResult<Map<String,Short>>> mapShortHandler, Handler<AsyncResult<Map<String,Integer>>> mapIntHandler,
                                   Handler<AsyncResult<Map<String,Long>>> mapLongHandler, Handler<AsyncResult<Map<String,Float>>> mapFloatHandler, Handler<AsyncResult<Map<String,Double>>> mapDoubleHandler,
                                   Handler<AsyncResult<Map<String,Boolean>>> mapBooleanHandler, Handler<AsyncResult<Map<String,Character>>> mapCharHandler, Handler<AsyncResult<Map<String,String>>> mapStrHandler,
-                                  Handler<AsyncResult<Map<String,JsonObject>>> mapJsonObjectHandler, Handler<AsyncResult<Map<String,JsonArray>>> mapJsonArrayHandler);
+                                  Handler<AsyncResult<Map<String,JsonObject>>> mapJsonObjectHandler, Handler<AsyncResult<Map<String, JsonArray>>> mapJsonArrayHandler);
+
 }

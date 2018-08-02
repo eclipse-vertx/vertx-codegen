@@ -132,6 +132,7 @@ public class CodeGenProcessor extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
+    // find elements annotated with @SuppressWarnings("codegen-enhanced-method")
     if (!roundEnv.processingOver()) {
       Collection<? extends Generator> codeGenerators = getCodeGenerators();
 
@@ -191,6 +192,7 @@ public class CodeGenProcessor extends AbstractProcessor {
 
         // Generate classes
         generatedClasses.values().forEach(generated -> {
+          boolean shouldWarningsBeSuppressed = false;
           try {
             String content = generated.generate();
             if (content.length() > 0) {
@@ -211,6 +213,7 @@ public class CodeGenProcessor extends AbstractProcessor {
 
       // Generate resources
       for (GeneratedFile generated : generatedResources.values()) {
+        boolean shouldWarningsBeSuppressed = false;
         try {
           String content = generated.generate();
           if (content.length() > 0) {
@@ -241,6 +244,7 @@ public class CodeGenProcessor extends AbstractProcessor {
       // Generate files
       generatedFiles.values().forEach(generated -> {
         // todo: need to rewrite "/" according to platform file separator
+        boolean shouldWarningsBeSuppressed = false;
         File file;
         if (generated.uri.startsWith("/")) {
           file = new File(generated.uri);

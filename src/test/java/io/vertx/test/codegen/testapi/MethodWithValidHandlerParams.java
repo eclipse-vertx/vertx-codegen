@@ -1,12 +1,15 @@
 package io.vertx.test.codegen.testapi;
 
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.codegen.testmodel.TestEnum;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.net.Socket;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,8 +24,7 @@ public interface MethodWithValidHandlerParams {
                                Handler<Long> longHandler, Handler<Float> floatHandler, Handler<Double> doubleHandler,
                                Handler<Boolean> booleanHandler, Handler<Character> charHandler, Handler<String> strHandler,
                                Handler<VertxGenClass1> gen1Handler, Handler<VertxGenClass2> gen2Handler,
-                               Handler<Void> voidHandler, Handler<Throwable> throwableHandler, Handler<TestDataObject> dataObjectHandler,
-                               Handler<TestEnum> enumHandler);
+                               Handler<Void> voidHandler, Handler<Throwable> throwableHandler, Handler<TestDataObject> dataObjectHandler, Handler<TestEnum> enumHandler);
 
   void methodWithListHandlerParams(Handler<List<Byte>> listByteHandler, Handler<List<Short>> listShortHandler, Handler<List<Integer>> listIntHandler,
                                Handler<List<Long>> listLongHandler, Handler<List<Float>> listFloatHandler, Handler<List<Double>> listDoubleHandler,

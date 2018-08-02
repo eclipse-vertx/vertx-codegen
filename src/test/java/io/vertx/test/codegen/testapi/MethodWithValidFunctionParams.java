@@ -16,12 +16,14 @@
 
 package io.vertx.test.codegen.testapi;
 
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.net.Socket;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,4 +58,5 @@ public interface MethodWithValidFunctionParams {
                                   Function<Map<String,Long>, Map<String,Long>> mapLongFunction, Function<Map<String,Float>, Map<String,Float>> mapFloatFunction, Function<Map<String,Double>, Map<String,Double>> mapDoubleFunction,
                                   Function<Map<String,Boolean>, Map<String,Boolean>> mapBooleanFunction, Function<Map<String,Character>, Map<String,Character>> mapCharFunction, Function<Map<String,String>, Map<String,String>> mapStrFunction,
                                   Function<Map<String,JsonObject>, Map<String,JsonObject>> mapJsonObjectFunction, Function<Map<String,JsonArray>, Map<String,JsonArray>> mapJsonArrayFunction);
+
 }

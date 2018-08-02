@@ -69,4 +69,5 @@ public class ApiTypeInfo extends ClassTypeInfo {
   public boolean isHandler() {
     return handlerArg != null;
   }
+
 }
