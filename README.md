@@ -477,7 +477,7 @@ The `MethodInfo` object has the following fields:
 * `params`. List of `ParamInfo` objects representing the parameters of the method.
 * `staticMethod`. `true` if it's a static method.
 * `typeParams`. The list of the type parameters declared by the method
-* `containingJavaType`. `true` when the method declares a type that is any java type
+* `containingANyJavaType`. `true` when the method declares a type that is any java type
 
 The `ParamInfo` object has the following fields:
 
