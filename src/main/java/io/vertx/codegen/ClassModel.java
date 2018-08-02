@@ -692,6 +692,7 @@ public class ClassModel implements Model {
               if (meth.isContainingAnyJavaType()) {
                 anyJavaTypeMethods.put(elt, meth);
               } else {
+                checkMethod(meth);
                 methods.put(elt, meth);
               }
             }
@@ -895,7 +896,6 @@ public class ClassModel implements Model {
       typeParams,
       declaringElt,
       methodDeprecated);
-    checkMethod(methodInfo);
 
     // Check we don't hide another method, we don't check overrides but we are more
     // interested by situations like diamond inheritance of the same method, in this case
@@ -951,7 +951,7 @@ public class ClassModel implements Model {
     if (methodsByName != null) {
       // Overloaded methods must have same return type
       for (MethodInfo meth: methodsByName) {
-        if (!meth.returnType.equals(methodInfo.returnType)) {
+        if (!meth.isContainingAnyJavaType() && !meth.returnType.equals(methodInfo.returnType)) {
           throw new GenException(this.modelElt, "Overloaded method " + methodInfo.name + " must have the same return type "
             + meth.returnType + " != " + methodInfo.returnType);
         }
