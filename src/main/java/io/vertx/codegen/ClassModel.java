@@ -251,7 +251,7 @@ public class ClassModel implements Model {
     }
   }
 
-  protected void checkParamType(ExecutableElement elem, TypeInfo typeInfo, boolean allowAnyJavaType) {
+  protected void checkParamType(ExecutableElement elem, TypeMirror type, TypeInfo typeInfo, int pos, int numParams, boolean allowAnyJavaType) {
     if (isLegalNonCallableParam(typeInfo, allowAnyJavaType)) {
       return;
     }
@@ -980,7 +980,7 @@ public class ClassModel implements Model {
         ex.setStackTrace(e.getStackTrace());
         throw ex;
       }
-      checkParamType(methodElt, typeInfo, allowAnyJavaType);
+      checkParamType(methodElt, type, typeInfo, i, params.size(), allowAnyJavaType);
       String name = param.getSimpleName().toString();
       String desc = descs.get(name);
       Text text = desc != null ? new Text(desc).map(Token.tagMapper(elementUtils, typeUtils, modelElt)) : null;
