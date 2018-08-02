@@ -111,16 +111,6 @@ public class ClassTest extends ClassTestBase {
     assertGenInvalid(NestedInterface.class);
   }
 
-  @Test
-  public void testGenerateInterfaceWithNoMethods() throws Exception {
-    assertGenInvalid(InterfaceWithNoMethods.class);
-  }
-
-  @Test
-  public void testGenerateInterfaceWithOnlyDefaultMethod() throws Exception {
-    assertGenInvalid(InterfaceWithOnlyDefaultMethod.class);
-  }
-
   // Invalid params
 
   @Test
@@ -718,9 +708,9 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testValidJavaTypeParams() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(MethodWithValidJavaTypeParams.class);
-    assertEquals(6, model.getMethods().size());
+    assertEquals(6, model.getAnyJavaTypeMethods().size());
 
-    MethodInfo method = model.getMethods().get(0);
+    MethodInfo method = model.getAnyJavaTypeMethods().get(0);
     checkMethod(method, "methodWithParams", 4, "void", MethodKind.OTHER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "socket", new TypeLiteral<Socket>(){});
@@ -729,7 +719,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(3), "mapSocket", new TypeLiteral<Map<String, Socket>>(){});
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getMethods().get(1);
+    method = model.getAnyJavaTypeMethods().get(1);
     checkMethod(method, "methodWithHandlerParams", 4, "void", MethodKind.HANDLER);
     params = method.getParams();
     checkParam(params.get(0), "socketHandler", new TypeLiteral<Handler<Socket>>(){});
@@ -738,7 +728,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(3), "mapSocketHandler", new TypeLiteral<Handler<Map<String, Socket>>>(){});
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getMethods().get(2);
+    method = model.getAnyJavaTypeMethods().get(2);
     checkMethod(method, "methodWithHandlerAsyncResultParams", 4, "void", MethodKind.FUTURE);
     params = method.getParams();
     checkParam(params.get(0), "socketHandler", new TypeLiteral<Handler<AsyncResult<Socket>>>(){});
@@ -747,7 +737,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(3), "mapSocketHandler", new TypeLiteral<Handler<AsyncResult<Map<String, Socket>>>>(){});
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getMethods().get(3);
+    method = model.getAnyJavaTypeMethods().get(3);
     checkMethod(method, "methodWithFunctionParams", 4, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "socketFunction", new TypeLiteral<Function<Socket, Socket>>(){});
@@ -756,14 +746,14 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(3), "mapSocketFunction", new TypeLiteral<Function<Map<String, Socket>, Map<String, Socket>>>(){});
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getMethods().get(4);
+    method = model.getAnyJavaTypeMethods().get(4);
     checkMethod(method, "methodWithArrayParams", 2, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "byteArray", new TypeLiteral<byte[]>(){});
     checkParam(params.get(1), "booleanArray", new TypeLiteral<boolean[]>(){});
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getMethods().get(5);
+    method = model.getAnyJavaTypeMethods().get(5);
     checkMethod(method, "methodWithParameterizedParams", 1, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "iterableString", new TypeLiteral<Iterable<String>>(){});
@@ -773,21 +763,21 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testValidJavaTypeReturn() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(MethodWithValidJavaTypeReturn.class);
-    assertEquals(4, model.getMethods().size());
+    assertEquals(4, model.getAnyJavaTypeMethods().size());
 
-    MethodInfo method = model.getMethods().get(0);
+    MethodInfo method = model.getAnyJavaTypeMethods().get(0);
     checkMethod(method, "methodWithReturn", 0, new TypeLiteral<Socket>(){}, MethodKind.OTHER);
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getMethods().get(1);
+    method = model.getAnyJavaTypeMethods().get(1);
     checkMethod(method, "methodWithListReturn", 0, new TypeLiteral<List<Socket>>(){}, MethodKind.OTHER);
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getMethods().get(2);
+    method = model.getAnyJavaTypeMethods().get(2);
     checkMethod(method, "methodWithSetReturn", 0, new TypeLiteral<Set<Socket>>(){}, MethodKind.OTHER);
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getMethods().get(3);
+    method = model.getAnyJavaTypeMethods().get(3);
     checkMethod(method, "methodWithMapReturn", 0, new TypeLiteral<Map<String, Socket>>(){}, MethodKind.OTHER);
     assertTrue(method.isContainingAnyJavaType());
   }
@@ -1392,9 +1382,10 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
-  public void testOverloadCheckIgnoreEnhancedMethod() throws Exception {
+  public void testOverloadCheckIgnoreAnyJavaTypeMethod() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(OverloadCheckIgnoreEnhancedMethod.class);
-    assertEquals(2, model.getMethods().size());
+    assertEquals(1, model.getMethods().size());
+    assertEquals(1, model.getAnyJavaTypeMethods().size());
   }
 
   @Test

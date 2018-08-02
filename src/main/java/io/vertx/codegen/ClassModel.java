@@ -65,6 +65,7 @@ public class ClassModel implements Model {
   protected final Types typeUtils;
   protected boolean processed = false;
   protected LinkedHashMap<ExecutableElement, MethodInfo> methods = new LinkedHashMap<>();
+  protected LinkedHashMap<ExecutableElement, MethodInfo> anyJavaTypeMethods = new LinkedHashMap<>();
   protected Set<ClassTypeInfo> collectedTypes = new HashSet<>();
   protected Set<ClassTypeInfo> importedTypes = new HashSet<>();
   protected Set<ApiTypeInfo> referencedTypes = new HashSet<>();
@@ -128,6 +129,10 @@ public class ClassModel implements Model {
 
   public List<MethodInfo> getMethods() {
     return new ArrayList<>(methods.values());
+  }
+
+  public List<MethodInfo> getAnyJavaTypeMethods() {
+    return new ArrayList<>(anyJavaTypeMethods.values());
   }
 
   public List<MethodInfo> getStaticMethods() {
@@ -680,13 +685,27 @@ public class ClassModel implements Model {
           filter(elt -> !isGenIgnore(elt)).
           forEach(elt -> {
             SuppressWarnings suppressWarnings = elt.getAnnotation(SuppressWarnings.class);
-            addMethod(elt, suppressWarnings != null && Arrays.asList(suppressWarnings.value()).contains(CODEGEN_JAVA_ALLOW_ANY_JAVA_TYPE));
+            boolean allowAnyJavaType = suppressWarnings != null && Arrays.asList(suppressWarnings.value()).contains(CODEGEN_JAVA_ALLOW_ANY_JAVA_TYPE);
+            MethodInfo meth = createMethod(elt, allowAnyJavaType);
+            if (meth != null) {
+              meth.collectImports(collectedTypes);
+              if (meth.isContainingAnyJavaType()) {
+                anyJavaTypeMethods.put(elt, meth);
+              } else {
+                // Add the method
+                List<MethodInfo> methodsByName = methodMap.get(meth.getName());
+                if (methodsByName == null) {
+                  methodsByName = new ArrayList<>();
+                  methodMap.put(meth.getName(), methodsByName);
+                  methodAnnotationsMap.put(meth.getName(), elt.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList()));
+                }
+                methodsByName.add(meth);
+                methods.put(elt, meth);
+              }
+            }
           });
 
-      boolean hasNoMethods = methods.values().stream().filter(m -> !m.isDefaultMethod()).count() == 0;
-      if (hasNoMethods && superTypes.isEmpty()) {
-        throw new GenException(elem, "Interface " + ifaceFQCN + " does not contain any methods for generation");
-      }
+      // Sort method map
       sortMethodMap(methodMap);
 
       // Now check for overloaded methods
@@ -694,7 +713,7 @@ public class ClassModel implements Model {
 
         // Ambiguous
         try {
-          MethodOverloadChecker.INSTANCE.checkAmbiguous(meths.stream().filter(meth -> !meth.isContainingAnyJavaType()));
+          MethodOverloadChecker.INSTANCE.checkAmbiguous(meths.stream());
         } catch (RuntimeException e) {
           throw new GenException(elem, e.getMessage());
         }
@@ -714,17 +733,17 @@ public class ClassModel implements Model {
     return elt.getAnnotation(GenIgnore.class) != null;
   }
 
-  private void addMethod(ExecutableElement modelMethod, boolean allowAnyJavaType) {
+  private MethodInfo createMethod(ExecutableElement modelMethod, boolean allowAnyJavaType) {
     Set<Modifier> mods = modelMethod.getModifiers();
     if (!mods.contains(Modifier.PUBLIC)) {
-      return;
+      return null;
     }
 
     TypeElement declaringElt = (TypeElement) modelMethod.getEnclosingElement();
     TypeInfo declaringType = typeFactory.create(declaringElt.asType());
 
     if (!declaringElt.equals(modelElt) && (declaringType.getKind() != ClassKind.API && declaringType.getKind() != ClassKind.HANDLER)) {
-      return;
+      return null;
     }
 
     ClassTypeInfo type = typeFactory.create(declaringElt.asType()).getRaw();
@@ -895,7 +914,7 @@ public class ClassModel implements Model {
         ExecutableType t2 = (ExecutableType) modelMethod.asType();
         if (typeUtils.isSubsignature(t1, t2) && typeUtils.isSubsignature(t2, t1)) {
           otherMethod.getValue().ownerTypes.addAll(methodInfo.ownerTypes);
-          return;
+          return null;
         }
       }
     }
@@ -905,22 +924,12 @@ public class ClassModel implements Model {
       ApiTypeInfo declaringApiType = (ApiTypeInfo) declaringType.getRaw();
       if (declaringApiType.isConcrete()) {
         if (typeUtils.isSameType(methodType, modelMethod.asType())) {
-          return;
+          return null;
         }
       }
     }
 
-    // Add the method
-    List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
-    if (methodsByName == null) {
-      methodsByName = new ArrayList<>();
-      methodMap.put(methodInfo.getName(), methodsByName);
-      methodAnnotationsMap.put(methodInfo.getName(), modelMethod.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList()));
-    }
-    methodsByName.add(methodInfo);
-    methodInfo.collectImports(collectedTypes);
-
-    methods.put(modelMethod, methodInfo);
+    return methodInfo;
   }
 
   // This is a hook to allow a specific type of method to be created
