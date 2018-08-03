@@ -692,7 +692,6 @@ public class ClassModel implements Model {
               if (meth.isContainingAnyJavaType()) {
                 anyJavaTypeMethods.put(elt, meth);
               } else {
-                checkMethod(meth);
                 methods.put(elt, meth);
               }
             }
@@ -913,6 +912,7 @@ public class ClassModel implements Model {
 
     // Add the method to the method map (it's a bit ugly but useful for JS and Ruby)
     if (!methodInfo.isContainingAnyJavaType()) {
+      checkMethod(methodInfo);
       List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
       if (methodsByName == null) {
         methodsByName = new ArrayList<>();
