@@ -4,6 +4,7 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,8 @@ public interface PropertyMapGettersSetters {
   // Regular case
   Map<String, String> getStringMap();
   PropertyMapGettersSetters setStringMap(Map<String, String> s);
+  Map<String, Instant> getInstantMap();
+  PropertyMapGettersSetters setInstantMap(Map<String, Instant> i);
   Map<String, Integer> getBoxedIntegerMap();
   PropertyMapGettersSetters setBoxedIntegerMap(Map<String, Integer> i);
   Map<String, Boolean> getBoxedBooleanMap();

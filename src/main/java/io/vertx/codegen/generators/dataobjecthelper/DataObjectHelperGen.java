@@ -7,6 +7,7 @@ import io.vertx.codegen.type.ClassKind;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
   }
 
   @Override
-  public String relativeFilename(DataObjectModel model) {
+  public String filename(DataObjectModel model) {
     if (model.isClass() && model.getGenerateConverter()) {
       return model.getFqn() + "Converter.java";
     }
@@ -39,6 +40,8 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print("\n");
     writer.print("import io.vertx.core.json.JsonObject;\n");
     writer.print("import io.vertx.core.json.JsonArray;\n");
+    writer.print("import java.time.Instant;\n");
+    writer.print("import java.time.format.DateTimeFormatter;\n");
     writer.print("\n");
     writer.print("/**\n");
     writer.print(" * Converter for {@link " + model.getType() + "}.\n");
@@ -93,6 +96,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               break;
             case DATA_OBJECT:
               genPropToJson("", ".toJson()", prop, writer);
+              break;
+            case OTHER:
+              if (prop.getType().getName().equals(Instant.class.getName())) {
+                genPropToJson("DateTimeFormatter.ISO_INSTANT.format(", ")", prop, writer);
+              }
               break;
           }
         }
@@ -196,6 +204,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               break;
             case OBJECT:
               genPropFromJson("Object", "", "", prop, writer);
+              break;
+            case OTHER:
+              if (prop.getType().getName().equals(Instant.class.getName())) {
+                genPropFromJson("String", "Instant.from(DateTimeFormatter.ISO_INSTANT.parse((String)", "))", prop, writer);
+              }
               break;
             default:
           }

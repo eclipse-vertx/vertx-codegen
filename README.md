@@ -220,6 +220,11 @@ We define _`TypeVar`_ as the set of of types variables where the variable is eit
 
 We define _`Api`_ as the set of user defined API types which are defined in its own interface and annotated with `@VertxGen`
 
+We define _`JavaType`_ as the set of any Java type that does not belong to _`Basic`_, _`Json`_, _`DataObject`_, _`TypeVar`_ and _`Api`_, e.g `java.net.Socket`.
+Methods are not allowed to declare such type by default and they must be annotated with `@SuppressWarnings("codegen-allow-any-java-type")` to declare them. Such
+method limit the translation of the method to other languages, so it should be used with care. It is useful to allow method
+previously annotated with `@GenIgnore` to be available in code generator like RxJava that can handle Java types.
+
 We define _`Parameterized`_ as the set of user defined API types which are defined in its own interface and annotated with
 `@VertxGen` where the type parameters belong to:
 * the type `java.lang.Void`
@@ -242,15 +247,18 @@ The following set _`Return`_ of types are permitted as return types from any API
 * `java.lang.Object`
 * the set _`Api`_
 * the set _`Parameterized`_
+* the set _`JavaType`_
 * type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
     * the set _`Basic`_
     * the set _`Json`_
     * any enum type
     * the set _`Api`_
-    * the set _`Da  taObject`_
+    * the set _`DataObject`_
+    * the set _`JavaType`_
 * `java.util.Map<String, C>` where `C` contains
     * the set _`Basic`_
     * the set _`Json`_
+    * the set _`JavaType`_
 
 The following set _`Param`_ of types are permitted as parameters to any API method:
 
@@ -262,22 +270,26 @@ The following set _`Param`_ of types are permitted as parameters to any API meth
 * the set _`TypeVar`_
 * `java.lang.Object`
 * the set _`Api`_
+* the set _`JavaType`_
 * the set _`Parameterized`_
 * the type `java.lang.Class<T>` where `<T>` is among
     * the set _`Basic`_
     * the set _`Json`_
     * the set _`Api`_
+    * the set _`JavaType`_
 * type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
     * the set _`Basic`_
     * the set _`Json`_
     * the set _`DataObject`_
     * the set _`Api`_
+    * the set _`JavaType`_
 * type `java.util.Map<String, C>` where `C` contains
     * the set _`Basic`_
     * the set _`Json`_
     * the set _`Api`_
+    * the set _`JavaType`_
 
-In addition any API method can have as parameter:
+In addition any _`Api_ method can have as parameter:
 
 * `io.vertx.java.core.Handler<io.vertx.java.core.AsyncResult<HA>>` where `HA` contains
     * the set _`Return`_ where `void` is interpreted as `java.lang.Void` minus `java.lang.Throwable`
@@ -368,8 +380,10 @@ to Json (via the `toJson` method).
 Data object converter can be generated with `@DataObject(generateConverter=true)` by Vert.x Core. Such
  Data object conversion recognize the following types as _member_ of any `@DataObject`:
 
-* the specific `io.vertx.core.Buffer` type
 * the set _`Basic`_
+* these specific types
+    * `io.vertx.core.Buffer`
+    * `java.time.Instant`
 * the set _`Json`_
 * any data object class annotated with `@DataObject`
 * type `java.util.List<C>` where `C` contains
@@ -455,9 +469,7 @@ The `MethodInfo` object has the following fields:
 * `kind`. The method kind
     * `HANDLER`: last parameter type is `io.vertx.core.Handler<T>` and a `void` or _fluent_ return
     * `FUTURE`: last parameter type is `io.vertx.core.Handler<io.vertx.core.AsyncResult<T>>` and a `void` or _fluent_ return
-    * `INDEX_GETTER`: an index getter
-    * `INDEX_SETTER`: an index setter
-    * `OTHER`: anything else
+    * `OTHER`: anything else, i.e a regular method
 * `returnType`. The fully qualified return type (or `void`) of the method
 * `fluent`. `true` if the method is fluent (i.e. returns a reference to the interface itself for chaining calls)
 * `cacheReturn`. `true` if the generated API method should cache return value
@@ -465,6 +477,7 @@ The `MethodInfo` object has the following fields:
 * `params`. List of `ParamInfo` objects representing the parameters of the method.
 * `staticMethod`. `true` if it's a static method.
 * `typeParams`. The list of the type parameters declared by the method
+* `containingANyJavaType`. `true` when the method declares a type that is any java type
 
 The `ParamInfo` object has the following fields:
 

@@ -51,6 +51,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   List<ParamInfo> params;
   final boolean deprecated;
   Text deprecatedDesc;
+  final boolean containsAnyJavaType;
 
   public MethodInfo(Set<ClassTypeInfo> ownerTypes, String name, MethodKind kind,
                     TypeInfo returnType, Text returnDescription, boolean fluent,  boolean cacheReturn,
@@ -73,6 +74,15 @@ public class MethodInfo implements Comparable<MethodInfo> {
     this.ownerTypes = new LinkedHashSet<>(ownerTypes);
     this.deprecated = deprecated;
     this.deprecatedDesc = deprecatedDesc;
+    this.containsAnyJavaType = params.stream().map(ParamInfo::getType).anyMatch(MethodInfo::containsAnyJavaType) || containsAnyJavaType(returnType);
+  }
+
+  private static boolean containsAnyJavaType(TypeInfo type) {
+    if (type instanceof ParameterizedTypeInfo) {
+      return containsAnyJavaType(type.getRaw()) || ((ParameterizedTypeInfo) type).getArgs().stream().anyMatch(MethodInfo::containsAnyJavaType);
+    } else {
+      return type.getKind() == ClassKind.OTHER;
+    }
   }
 
   public String getName() {
@@ -89,6 +99,13 @@ public class MethodInfo implements Comparable<MethodInfo> {
 
   public TypeInfo getReturnType() {
     return returnType;
+  }
+
+  /**
+   * @return whether the method is annotated with {@link io.vertx.codegen.annotations.GenIgnore}
+   */
+  public boolean isContainingAnyJavaType() {
+    return containsAnyJavaType;
   }
 
   /**

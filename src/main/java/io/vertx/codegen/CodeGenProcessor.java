@@ -132,6 +132,7 @@ public class CodeGenProcessor extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
+    // find elements annotated with @SuppressWarnings("codegen-enhanced-method")
     if (!roundEnv.processingOver()) {
       Collection<? extends Generator> codeGenerators = getCodeGenerators();
 
@@ -145,7 +146,7 @@ public class CodeGenProcessor extends AbstractProcessor {
             Model model = entry.getValue();
             for (Generator codeGenerator : codeGenerators) {
               if (codeGenerator.kinds.contains(model.getKind())) {
-                String relativeName = codeGenerator.relativeFilename(model);
+                String relativeName = codeGenerator.filename(model);
                 if (relativeName != null) {
                   int kind;
                   if (relativeName.endsWith(".java") && !relativeName.contains("/")) {
@@ -191,6 +192,7 @@ public class CodeGenProcessor extends AbstractProcessor {
 
         // Generate classes
         generatedClasses.values().forEach(generated -> {
+          boolean shouldWarningsBeSuppressed = false;
           try {
             String content = generated.generate();
             if (content.length() > 0) {
@@ -211,6 +213,7 @@ public class CodeGenProcessor extends AbstractProcessor {
 
       // Generate resources
       for (GeneratedFile generated : generatedResources.values()) {
+        boolean shouldWarningsBeSuppressed = false;
         try {
           String content = generated.generate();
           if (content.length() > 0) {
@@ -239,23 +242,30 @@ public class CodeGenProcessor extends AbstractProcessor {
         }
       }
       // Generate files
-      if (outputDirectory != null) {
-        generatedFiles.values().forEach(generated -> {
-          File file = new File(outputDirectory, generated.uri);
-          Helper.ensureParentDir(file);
-          String content = generated.generate();
-          if (content.length() > 0) {
-            try (FileWriter fileWriter = new FileWriter(file)) {
-              fileWriter.write(content);
-            } catch (GenException e) {
-              reportGenException(e);
-            } catch (Exception e) {
-              reportException(e, generated.get(0).model.getElement());
-            }
-            log.info("Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
+      generatedFiles.values().forEach(generated -> {
+        // todo: need to rewrite "/" according to platform file separator
+        boolean shouldWarningsBeSuppressed = false;
+        File file;
+        if (generated.uri.startsWith("/")) {
+          file = new File(generated.uri);
+        } else if (outputDirectory != null) {
+          file = new File(outputDirectory, generated.uri);
+        } else {
+          return;
+        }
+        Helper.ensureParentDir(file);
+        String content = generated.generate();
+        if (content.length() > 0) {
+          try (FileWriter fileWriter = new FileWriter(file)) {
+            fileWriter.write(content);
+          } catch (GenException e) {
+            reportGenException(e);
+          } catch (Exception e) {
+            reportException(e, generated.get(0).model.getElement());
           }
-        });
-      }
+          log.info("Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
+        }
+      });
     }
     return true;
   }

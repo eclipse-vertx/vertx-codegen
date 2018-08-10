@@ -2,6 +2,7 @@ package io.vertx.codegen.type;
 
 import io.vertx.codegen.ClassModel;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public enum ClassKind {
 
   // Various stuff
   THROWABLE(false, false, false),  // java.lang.Throwable
-  VOID(false, false, false),       // java.lang.Void
+  VOID(false, false, false),       // java.lang.Void or void
   OBJECT(false, false, false),     // java.lang.Object or an unbounded type variable
 
   // Collection types

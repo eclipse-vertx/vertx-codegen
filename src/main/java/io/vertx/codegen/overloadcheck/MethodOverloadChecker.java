@@ -18,6 +18,7 @@ package io.vertx.codegen.overloadcheck;
 
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.ParamInfo;
+import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.TypeInfo;
 
 import java.io.IOException;
@@ -30,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -59,8 +62,8 @@ public class MethodOverloadChecker {
     loadTypeMappings(props);
   }
 
-  public void checkAmbiguous(List<MethodInfo> meths) {
-    checkAmbiguousSimple(convert(meths));
+  public void checkAmbiguous(Stream<MethodInfo> meths) {
+    checkAmbiguousSimple(convert(meths).collect(Collectors.toList()));
   }
 
   public void checkAmbiguousSimple(List<SimpleMethod> meths) {
@@ -88,17 +91,15 @@ public class MethodOverloadChecker {
   }
 
   // We convert to simpler types - this makes it much easier to test
-  private List<SimpleMethod> convert(List<MethodInfo> meths) {
-    List<SimpleMethod> simpleMethods = new ArrayList<>(meths.size());
-    for (MethodInfo meth: meths) {
+  private Stream<SimpleMethod> convert(Stream<MethodInfo> meths) {
+    return meths.map(meth -> {
       List<SimpleParam> simpleParams = new ArrayList<>();
       for (ParamInfo param: meth.getParams()) {
         TypeInfo type = param.getType();
         simpleParams.add(new SimpleParam(param.getName(), type.getKind(), param.isNullable(), type.getName()));
       }
-      simpleMethods.add(new SimpleMethod(meth.getName(), simpleParams));
-    }
-    return simpleMethods;
+      return new SimpleMethod(meth.getName(), simpleParams);
+    });
   }
 
   private void checkMethodList(String targetLang, List<SimpleMethod> meths, Map<String, Set<String>> typeMapping) {

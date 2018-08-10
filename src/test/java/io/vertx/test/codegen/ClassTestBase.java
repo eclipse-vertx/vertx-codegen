@@ -103,6 +103,10 @@ public abstract class ClassTestBase {
     }
   }
 
+  void assertGenValid(Class<?> c, Class<?>... rest) throws Exception {
+    new GeneratorHelper().generateClass(c, rest);
+  }
+
   void assertGenFail(Class<?> type, String msg) throws Exception {
     try {
       new GeneratorHelper().generateClass(type);

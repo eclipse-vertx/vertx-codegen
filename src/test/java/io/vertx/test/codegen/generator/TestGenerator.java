@@ -13,7 +13,7 @@ public class TestGenerator extends Generator<DataObjectModel>{
   }
 
   @Override
-  public String relativeFilename(DataObjectModel model) {
+  public String filename(DataObjectModel model) {
     return model.getType().getName().replace(".", "_") + ".properties";
   }
 
