@@ -50,12 +50,13 @@ public class MethodInfo implements Comparable<MethodInfo> {
   LinkedHashSet<ClassTypeInfo> ownerTypes;
   List<ParamInfo> params;
   final boolean deprecated;
+  Text deprecatedDesc;
   final boolean containsAnyJavaType;
 
   public MethodInfo(Set<ClassTypeInfo> ownerTypes, String name, MethodKind kind,
                     TypeInfo returnType, Text returnDescription, boolean fluent,  boolean cacheReturn,
                     List<ParamInfo> params, String comment, Doc doc, boolean staticMethod, boolean defaultMethod,
-                    List<TypeParamInfo.Method> typeParams, boolean deprecated) {
+                    List<TypeParamInfo.Method> typeParams, boolean deprecated, Text deprecatedDesc) {
 
 
     this.comment = comment;
@@ -72,6 +73,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
     this.typeParams = typeParams;
     this.ownerTypes = new LinkedHashSet<>(ownerTypes);
     this.deprecated = deprecated;
+    this.deprecatedDesc = deprecatedDesc;
     this.containsAnyJavaType = params.stream().map(ParamInfo::getType).anyMatch(MethodInfo::containsAnyJavaType) || containsAnyJavaType(returnType);
   }
 
@@ -231,6 +233,13 @@ public class MethodInfo implements Comparable<MethodInfo> {
    */
   public boolean isDeprecated() {
     return deprecated;
+  }
+
+  /**
+   * @return the description of deprecated
+   */
+  public Text getDeprecatedDesc() {
+    return deprecatedDesc;
   }
 
   public List<TypeParamInfo.Method> getTypeParams() {

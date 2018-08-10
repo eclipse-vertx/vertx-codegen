@@ -1,6 +1,7 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.doc.Doc;
+import io.vertx.codegen.doc.Text;
 
 /**
  * The value (member) of an enumeration model.
@@ -12,11 +13,13 @@ public class EnumValueInfo {
   private final String identifier;
   private final Doc doc;
   private final boolean deprecated;
+  private final Text deprecatedDesc;
 
-  public EnumValueInfo(String identifier, Doc doc, boolean deprecated) {
+  public EnumValueInfo(String identifier, Doc doc, boolean deprecated, Text deprecatedDesc) {
     this.identifier = identifier;
     this.doc = doc;
     this.deprecated = deprecated;
+    this.deprecatedDesc = deprecatedDesc;
   }
 
   /**
@@ -37,5 +40,12 @@ public class EnumValueInfo {
    */
   public boolean isDeprecated() {
     return deprecated;
+  }
+
+  /**
+   * @return the description of deprecated
+   */
+  public Text getDeprecatedDesc() {
+    return deprecatedDesc;
   }
 }

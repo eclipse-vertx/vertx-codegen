@@ -3,6 +3,9 @@ package io.vertx.codegen;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.doc.Doc;
+import io.vertx.codegen.doc.Tag;
+import io.vertx.codegen.doc.Text;
+import io.vertx.codegen.doc.Token;
 import io.vertx.codegen.type.*;
 import io.vertx.core.json.JsonObject;
 
@@ -45,6 +48,7 @@ public class DataObjectModel implements Model {
   private boolean publicConverter;
   private int constructors;
   private boolean deprecated;
+  private Text deprecatedDesc;
   private ClassTypeInfo superType;
   private ClassTypeInfo type;
   private Doc doc;
@@ -150,7 +154,12 @@ public class DataObjectModel implements Model {
   public boolean isDeprecated() {
     return deprecated;
   }
-
+  /**
+   * @return the description of deprecated
+   */
+  public Text getDeprecatedDesc() {
+    return deprecatedDesc;
+  }
   @Override
   public Map<String, Object> getVars() {
     Map<String, Object> vars = Model.super.getVars();
@@ -169,6 +178,7 @@ public class DataObjectModel implements Model {
     vars.put("jsonifiable", jsonifiable);
     vars.put("hasEmptyConstructor", hasEmptyConstructor());
     vars.put("deprecated", deprecated);
+    vars.put("deprecatedDesc", getDeprecatedDesc());
     return vars;
   }
 
@@ -201,7 +211,9 @@ public class DataObjectModel implements Model {
     }
     Helper.checkUnderModule(this, "@VertxGen");
     doc = docFactory.createDoc(modelElt);
-
+    doc.getBlockTags().stream().filter(tag -> tag.getName().equals("deprecated")).findFirst().ifPresent(tag ->
+      deprecatedDesc = new Text(Helper.normalizeWhitespaces(tag.getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt))
+    );
     if (getModule() == null) {
       throw new GenException(modelElt, "Data object must have an ancestor package annotated with @ModuleGen");
     }
@@ -557,11 +569,23 @@ public class DataObjectModel implements Model {
       annotationMirrors.stream().map(annotationValueInfoFactory::processAnnotation).forEach(annotationValueInfos::add);
     }
 
+    Text propertyDeprecatedDesc = null;
+    if (doc != null) {
+      Optional<Tag> methodDeprecatedTag = doc.
+          getBlockTags().
+          stream().
+          filter(tag -> tag.getName().equals("deprecated")).
+          findFirst();
+      if (methodDeprecatedTag.isPresent()) {
+        propertyDeprecatedDesc = new Text(Helper.normalizeWhitespaces(methodDeprecatedTag.get().getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt));
+      }
+    }
+
     PropertyInfo property = new PropertyInfo(declared, name, doc, propType,
       setterElt != null ? setterElt.getSimpleName().toString() : null,
       adderElt != null ? adderElt.getSimpleName().toString() : null,
       getterElt != null ? getterElt.getSimpleName().toString() : null,
-      annotationValueInfos, propKind, jsonifiable, propertyDeprecated);
+      annotationValueInfos, propKind, jsonifiable, propertyDeprecated, propertyDeprecatedDesc);
     propertyMap.put(property.name, property);
   }
 

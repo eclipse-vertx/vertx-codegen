@@ -86,7 +86,8 @@ public class ClassModel implements Model {
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
   protected Map<String, List<AnnotationValueInfo>> methodAnnotationsMap = new LinkedHashMap<>();
   protected List<AnnotationValueInfo> annotations;
-  protected final boolean deprecated;
+  protected boolean deprecated;
+  protected Text deprecatedDesc;
 
   public ClassModel(ProcessingEnvironment env, TypeElement modelElt) {
     this.elementUtils = env.getElementUtils();
@@ -592,6 +593,10 @@ public class ClassModel implements Model {
         ifacePackageName = elementUtils.getPackageOf(elem).getQualifiedName().toString();
         ifaceComment = elementUtils.getDocComment(elem);
         doc = docFactory.createDoc(elem);
+        doc.getBlockTags().stream().filter(tag -> tag.getName().equals("deprecated")).findFirst().ifPresent(tag ->
+          deprecatedDesc = new Text(Helper.normalizeWhitespaces(tag.getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt))
+        );
+        deprecated = deprecated || deprecatedDesc != null;
         concrete = elem.getAnnotation(VertxGen.class) == null || elem.getAnnotation(VertxGen.class).concrete();
         DeclaredType tm = (DeclaredType) elem.asType();
         List<? extends TypeMirror> typeArgs = tm.getTypeArguments();
@@ -799,6 +804,7 @@ public class ClassModel implements Model {
     String comment = elementUtils.getDocComment(modelMethod);
     Doc doc = docFactory.createDoc(modelMethod);
     Text returnDesc = null;
+    Text methodDeprecatedDesc = null;
     if (doc != null) {
       doc.
           getBlockTags().
@@ -813,6 +819,14 @@ public class ClassModel implements Model {
           findFirst();
       if (returnTag.isPresent()) {
         returnDesc = new Text(Helper.normalizeWhitespaces(returnTag.get().getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt));
+      }
+      Optional<Tag> methodDeprecatedTag = doc.
+          getBlockTags().
+          stream().
+          filter(tag -> tag.getName().equals("deprecated")).
+          findFirst();
+      if (methodDeprecatedTag.isPresent()) {
+        methodDeprecatedDesc = new Text(Helper.normalizeWhitespaces(methodDeprecatedTag.get().getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt));
       }
     }
 
@@ -876,7 +890,7 @@ public class ClassModel implements Model {
         }
       }
     }
-    boolean methodDeprecated = modelMethod.getAnnotation(Deprecated.class) != null;
+    boolean methodDeprecated = modelMethod.getAnnotation(Deprecated.class) != null || deprecatedDesc != null;
 
     MethodInfo methodInfo = createMethodInfo(
       ownerTypes,
@@ -894,7 +908,8 @@ public class ClassModel implements Model {
       isDefault,
       typeParams,
       declaringElt,
-      methodDeprecated);
+      methodDeprecated,
+      methodDeprecatedDesc);
 
     // Check we don't hide another method, we don't check overrides but we are more
     // interested by situations like diamond inheritance of the same method, in this case
@@ -940,9 +955,9 @@ public class ClassModel implements Model {
                                         Text returnDescription,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
                                         ExecutableElement methodElt, boolean isStatic, boolean isDefault, ArrayList<TypeParamInfo.Method> typeParams,
-                                        TypeElement declaringElt, boolean methodDeprecated) {
+                                        TypeElement declaringElt, boolean methodDeprecated, Text methodDeprecatedDesc) {
     return new MethodInfo(ownerTypes, methodName, kind, returnType, returnDescription,
-      isFluent, isCacheReturn, mParams, comment, doc, isStatic, isDefault, typeParams, methodDeprecated);
+      isFluent, isCacheReturn, mParams, comment, doc, isStatic, isDefault, typeParams, methodDeprecated, methodDeprecatedDesc);
   }
 
   // This is a hook to allow different model implementations to check methods in different ways
@@ -1005,6 +1020,12 @@ public class ClassModel implements Model {
   public boolean isDeprecated() {
     return deprecated;
   }
+  /**
+   * @return the description of deprecated
+   */
+  public Text getDeprecatedDesc() {
+    return deprecatedDesc;
+  }
 
   @Override
   public Map<String, Object> getVars() {
@@ -1032,6 +1053,7 @@ public class ClassModel implements Model {
     vars.put("instanceMethods", getInstanceMethods());
     vars.put("staticMethods", getStaticMethods());
     vars.put("deprecated", isDeprecated());
+    vars.put("deprecatedDesc", getDeprecatedDesc());
     return vars;
   }
 }
