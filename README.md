@@ -497,6 +497,7 @@ The `ParamInfo` object has the following fields:
 * `superTypes` - a list of `TypeInfo` representing the set of user defined types which the current interface extends from
 * `superType` - the supertype of this option ???
 * `jsonifiable` - True if the object has a `toJson()` method
+* `hasEmptyConstructor` - True if the object has an empty constructor
 
 The `PropertyInfo` object has the following fields:
 
@@ -504,8 +505,9 @@ The `PropertyInfo` object has the following fields:
 * `type`. The type of the property as `TypeInfo`
 * `doc` - the `Doc` object
 * `declared`. True if the property is declared by its data object and does not override the same property from an ancestor
-* `writerMethod`. The name of the setter/adder method in Java
-* `readerMethod`. The optional name of the getter method in Java
+* `setterMethod`. The name of the setter method in Java
+* `adderMethod`. The name of the adder method in Java
+* `getterMethod`. The name of the getter method in Java
 * `array`. True if the property is an array
 * `adder`. True if the property is an adder (addSomething)
 * `jsonifiable`. True if the object can be converted somehow to json
