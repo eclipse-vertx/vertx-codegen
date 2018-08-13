@@ -116,6 +116,8 @@ public class CodeGeneratorTest {
     assertEquals("java.lang.String", props.remove("property.string"));
     assertEquals("java.time.Instant", props.remove("property.instant"));
     assertEquals("io.vertx.test.codegen.testdataobject.ToJsonDataObject", props.remove("property.toJsonDataObject"));
+    assertEquals("false", props.remove("jsonifiable"));
+    assertEquals("false", props.remove("hasEmptyConstructor"));
     assertEquals(new Properties(), props);
   }
 

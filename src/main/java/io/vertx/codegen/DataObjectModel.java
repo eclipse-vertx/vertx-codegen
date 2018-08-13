@@ -211,9 +211,10 @@ public class DataObjectModel implements Model {
     }
     Helper.checkUnderModule(this, "@VertxGen");
     doc = docFactory.createDoc(modelElt);
-    doc.getBlockTags().stream().filter(tag -> tag.getName().equals("deprecated")).findFirst().ifPresent(tag ->
-      deprecatedDesc = new Text(Helper.normalizeWhitespaces(tag.getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt))
-    );
+    if (doc != null)
+      doc.getBlockTags().stream().filter(tag -> tag.getName().equals("deprecated")).findFirst().ifPresent(tag ->
+        deprecatedDesc = new Text(Helper.normalizeWhitespaces(tag.getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt))
+      );
     if (getModule() == null) {
       throw new GenException(modelElt, "Data object must have an ancestor package annotated with @ModuleGen");
     }
