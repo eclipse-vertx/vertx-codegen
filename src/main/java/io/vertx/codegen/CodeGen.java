@@ -31,8 +31,8 @@ public class CodeGen {
     list.add(ModelProvider.CLASS);
     list.add(ModelProvider.DATA_OBJECT);
     list.add(ModelProvider.ENUM);
-    ServiceLoader<ModelProvider> loader = ServiceLoader.load(ModelProvider.class, ModelProvider.class.getClassLoader());
     try {
+      ServiceLoader<ModelProvider> loader = ServiceLoader.load(ModelProvider.class, ModelProvider.class.getClassLoader());
       for (ModelProvider aLoader : loader) {
         list.add(aLoader);
       }
