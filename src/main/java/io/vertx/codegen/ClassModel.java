@@ -593,9 +593,10 @@ public class ClassModel implements Model {
         ifacePackageName = elementUtils.getPackageOf(elem).getQualifiedName().toString();
         ifaceComment = elementUtils.getDocComment(elem);
         doc = docFactory.createDoc(elem);
-        doc.getBlockTags().stream().filter(tag -> tag.getName().equals("deprecated")).findFirst().ifPresent(tag ->
-          deprecatedDesc = new Text(Helper.normalizeWhitespaces(tag.getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt))
-        );
+        if (doc != null)
+          doc.getBlockTags().stream().filter(tag -> tag.getName().equals("deprecated")).findFirst().ifPresent(tag ->
+            deprecatedDesc = new Text(Helper.normalizeWhitespaces(tag.getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt))
+          );
         deprecated = deprecated || deprecatedDesc != null;
         concrete = elem.getAnnotation(VertxGen.class) == null || elem.getAnnotation(VertxGen.class).concrete();
         DeclaredType tm = (DeclaredType) elem.asType();

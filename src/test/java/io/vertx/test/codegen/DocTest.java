@@ -5,11 +5,7 @@ import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.doc.Token;
-import io.vertx.test.codegen.doc.FooEnum;
-import io.vertx.test.codegen.doc.LinkLabel;
-import io.vertx.test.codegen.doc.LinkToEnum;
-import io.vertx.test.codegen.doc.LinkToMethodInSameType;
-import io.vertx.test.codegen.doc.LinkToSameType;
+import io.vertx.test.codegen.doc.*;
 import org.junit.Test;
 
 import javax.lang.model.element.ElementKind;
@@ -173,6 +169,13 @@ public class DocTest {
       Tag.Link link = (Tag.Link) ((Token.InlineTag) tokens.get(i)).getTag();
       assertEquals("" + i,expectedLabels[i], link.getLabel());
     }
+  }
+
+  @Test
+  public void testNoDoc() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(NoDoc.class);
+    assertNull(model.getDoc());
+    assertNull(model.getDeprecatedDesc());
   }
 
   @Test
