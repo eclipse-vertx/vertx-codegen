@@ -5,9 +5,11 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
- * Class to simplify code write that mantains indentation status
+ * Class to simplify code write that maintains indentation status
  *
  * @author <a href="http://slinkydeveloper.github.io">Francesco Guardiani @slinkydeveloper</a>
  */
@@ -29,8 +31,9 @@ public class CodeWriter extends PrintWriter {
     return indentationFactor;
   }
 
-  public void setIndentationFactor(int indentationFactor) {
+  public CodeWriter setIndentationFactor(int indentationFactor) {
     this.indentationFactor = indentationFactor;
+    return this;
   }
 
   public String indentation() {
@@ -38,7 +41,9 @@ public class CodeWriter extends PrintWriter {
   }
 
   public CodeWriter indent() {
-    for (int i = 0; i < indentationFactor; i++) indent += ' ';
+    for (int i = 0; i < indentationFactor; i++) {
+      indent += ' ';
+    }
     return this;
   }
 
@@ -47,8 +52,8 @@ public class CodeWriter extends PrintWriter {
     return this;
   }
 
-  public CodeWriter writeJavaImport(String i) {
-    this.print("import " + i + ";\n");
+  public CodeWriter javaImport(String name) {
+    this.print("import " + name + ";\n");
     return this;
   }
 
@@ -89,20 +94,18 @@ public class CodeWriter extends PrintWriter {
   }
 
   /**
-   * Write an array of things delimited with provided delimiter
+   * Write an array of strings delimited with provided delimiter
+   *
    * @param delimiter
-   * @param l
-   * @param map
-   * @param <T>
+   * @param stream
    * @return
    */
-  public <T> CodeWriter writeArray(String delimiter, List<T> l, Function<T, String> map) {
-    if (l.size() == 0) return this;
-    int i = 0;
-    for (; i < l.size() - 1; i++) {
-      write(map.apply(l.get(i)) + delimiter);
-    }
-    write(map.apply(l.get(i)));
+  public CodeWriter writeArray(String delimiter, Stream<String> stream) {
+    write(stream.collect(Collectors.joining(delimiter)));
     return this;
+  }
+
+  public <T> CodeWriter writeArray(String delimiter, List<T> l, Function<T, String> map) {
+    return writeArray(delimiter, l.stream().map(map));
   }
 }

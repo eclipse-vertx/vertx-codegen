@@ -91,7 +91,7 @@ public class CodeWriterTest {
   @Test
   public void testJavaImport(){
     CodeWriter writer = testCodeWriter(w ->
-        w.writeJavaImport("io.vertx.test.codegen.utils.CodeWriterTest"),
+        w.javaImport("io.vertx.test.codegen.utils.CodeWriterTest"),
       "import io.vertx.test.codegen.utils.CodeWriterTest;\n"
     );
   }
