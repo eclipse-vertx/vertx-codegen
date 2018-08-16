@@ -1,6 +1,7 @@
 package io.vertx.test.codegen;
 
 import io.vertx.codegen.ClassModel;
+import io.vertx.codegen.EnumModel;
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Tag;
@@ -174,6 +175,12 @@ public class DocTest {
   @Test
   public void testNoDoc() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(NoDoc.class);
+    assertNull(model.getDoc());
+    assertNull(model.getDeprecatedDesc());
+  }
+  @Test
+  public void testNoDocEnum() throws Exception {
+    EnumModel model = new GeneratorHelper().generateEnum(NoDocEnum.class);
     assertNull(model.getDoc());
     assertNull(model.getDeprecatedDesc());
   }
