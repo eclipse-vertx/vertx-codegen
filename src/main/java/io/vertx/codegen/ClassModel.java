@@ -248,7 +248,7 @@ public class ClassModel implements Model {
 
   private void sortMethodMap(Map<String, List<MethodInfo>> map) {
     for (List<MethodInfo> list: map.values()) {
-      list.sort(Comparator.comparingInt(meth -> meth.params.size()));
+      list.sort(Comparator.comparingInt(meth -> meth.getParams().size()));
     }
   }
 
@@ -719,7 +719,7 @@ public class ClassModel implements Model {
         // Cannot be both static and non static
         MethodInfo first = meths.get(0);
         for (MethodInfo method : meths) {
-          if (method.staticMethod != first.staticMethod) {
+          if (method.isStaticMethod() != first.isStaticMethod()) {
             throw new GenException(elem, "Overloaded method " + method.getName() + " cannot be both static and instance");
           }
         }
@@ -877,20 +877,6 @@ public class ClassModel implements Model {
       throw new GenException(modelMethod, "Fluent return type cannot be nullable");
     }
 
-    // Determine method kind + validate
-    MethodKind kind = MethodKind.OTHER;
-    int lastParamIndex = mParams.size() - 1;
-    if (lastParamIndex >= 0 && (returnType.isVoid() || isFluent)) {
-      TypeInfo lastParamType = mParams.get(lastParamIndex).type;
-      if (lastParamType.getKind() == ClassKind.HANDLER) {
-        TypeInfo typeArg = ((ParameterizedTypeInfo) lastParamType).getArgs().get(0);
-        if (typeArg.getKind() == ClassKind.ASYNC_RESULT) {
-          kind = MethodKind.FUTURE;
-        } else {
-          kind = MethodKind.HANDLER;
-        }
-      }
-    }
     boolean methodDeprecated = modelMethod.getAnnotation(Deprecated.class) != null || deprecatedDesc != null;
 
     MethodInfo methodInfo = createMethodInfo(
@@ -898,7 +884,6 @@ public class ClassModel implements Model {
       methodName,
       comment,
       doc,
-      kind,
       returnType,
       returnDesc,
       isFluent,
@@ -920,7 +905,7 @@ public class ClassModel implements Model {
         ExecutableType t1 = (ExecutableType) otherMethod.getKey().asType();
         ExecutableType t2 = (ExecutableType) modelMethod.asType();
         if (typeUtils.isSubsignature(t1, t2) && typeUtils.isSubsignature(t2, t1)) {
-          otherMethod.getValue().ownerTypes.addAll(methodInfo.ownerTypes);
+          otherMethod.getValue().getOwnerTypes().addAll(methodInfo.getOwnerTypes());
           return null;
         }
       }
@@ -952,12 +937,12 @@ public class ClassModel implements Model {
   }
 
   // This is a hook to allow a specific type of method to be created
-  protected MethodInfo createMethodInfo(Set<ClassTypeInfo> ownerTypes, String methodName, String comment, Doc doc, MethodKind kind, TypeInfo returnType,
+  protected MethodInfo createMethodInfo(Set<ClassTypeInfo> ownerTypes, String methodName, String comment, Doc doc, TypeInfo returnType,
                                         Text returnDescription,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
                                         ExecutableElement methodElt, boolean isStatic, boolean isDefault, ArrayList<TypeParamInfo.Method> typeParams,
                                         TypeElement declaringElt, boolean methodDeprecated, Text methodDeprecatedDesc) {
-    return new MethodInfo(ownerTypes, methodName, kind, returnType, returnDescription,
+    return new MethodInfo(ownerTypes, methodName, returnType, returnDescription,
       isFluent, isCacheReturn, mParams, comment, doc, isStatic, isDefault, typeParams, methodDeprecated, methodDeprecatedDesc);
   }
 
@@ -967,9 +952,9 @@ public class ClassModel implements Model {
     if (methodsByName != null) {
       // Overloaded methods must have same return type
       for (MethodInfo meth: methodsByName) {
-        if (!meth.isContainingAnyJavaType() && !meth.returnType.equals(methodInfo.returnType)) {
-          throw new GenException(this.modelElt, "Overloaded method " + methodInfo.name + " must have the same return type "
-            + meth.returnType + " != " + methodInfo.returnType);
+        if (!meth.isContainingAnyJavaType() && !meth.getReturnType().equals(methodInfo.getReturnType())) {
+          throw new GenException(this.modelElt, "Overloaded method " + methodInfo.getName() + " must have the same return type "
+            + meth.getReturnType() + " != " + methodInfo.getReturnType());
         }
       }
     }

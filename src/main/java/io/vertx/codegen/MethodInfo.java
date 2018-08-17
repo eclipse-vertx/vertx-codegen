@@ -24,43 +24,35 @@ import io.vertx.codegen.type.ParameterizedTypeInfo;
 import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.type.TypeVariableInfo;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 public class MethodInfo implements Comparable<MethodInfo> {
 
-  final String name;
-  final MethodKind kind;
-  final TypeInfo returnType;
-  final Text returnDescription;
-  final boolean fluent;
-  final boolean cacheReturn;
-  final String comment;
-  final Doc doc;
-  final boolean staticMethod;
-  final boolean defaultMethod;
-  List<TypeParamInfo.Method> typeParams;
-  LinkedHashSet<ClassTypeInfo> ownerTypes;
-  List<ParamInfo> params;
-  final boolean deprecated;
-  Text deprecatedDesc;
-  final boolean containsAnyJavaType;
+  private String name;
+  private TypeInfo returnType;
+  private Text returnDescription;
+  private boolean fluent;
+  private boolean cacheReturn;
+  private String comment;
+  private Doc doc;
+  private boolean staticMethod;
+  private boolean defaultMethod;
+  private List<TypeParamInfo.Method> typeParams;
+  private Set<ClassTypeInfo> ownerTypes;
+  private List<ParamInfo> params;
+  private boolean deprecated;
+  private Text deprecatedDesc;
 
-  public MethodInfo(Set<ClassTypeInfo> ownerTypes, String name, MethodKind kind,
+  public MethodInfo(Set<ClassTypeInfo> ownerTypes, String name,
                     TypeInfo returnType, Text returnDescription, boolean fluent,  boolean cacheReturn,
                     List<ParamInfo> params, String comment, Doc doc, boolean staticMethod, boolean defaultMethod,
                     List<TypeParamInfo.Method> typeParams, boolean deprecated, Text deprecatedDesc) {
 
 
     this.comment = comment;
-    this.kind = kind;
     this.name = name;
     this.returnType = returnType;
     this.returnDescription = returnDescription;
@@ -71,10 +63,54 @@ public class MethodInfo implements Comparable<MethodInfo> {
     this.defaultMethod = defaultMethod;
     this.params = params;
     this.typeParams = typeParams;
-    this.ownerTypes = new LinkedHashSet<>(ownerTypes);
+    this.ownerTypes = ownerTypes;
     this.deprecated = deprecated;
     this.deprecatedDesc = deprecatedDesc;
-    this.containsAnyJavaType = params.stream().map(ParamInfo::getType).anyMatch(MethodInfo::containsAnyJavaType) || containsAnyJavaType(returnType);
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public MethodInfo setName(String name) {
+    this.name = name;
+    return this;
+  }
+
+  public String getName(Case _case) {
+    return _case.format(Case.CAMEL.parse(name));
+  }
+
+  public MethodKind getKind() {
+    int lastParamIndex = params.size() - 1;
+    if (lastParamIndex >= 0 && (returnType.isVoid() || fluent)) {
+      TypeInfo lastParamType = params.get(lastParamIndex).type;
+      if (lastParamType.getKind() == ClassKind.HANDLER) {
+        TypeInfo typeArg = ((ParameterizedTypeInfo) lastParamType).getArgs().get(0);
+        if (typeArg.getKind() == ClassKind.ASYNC_RESULT) {
+          return MethodKind.FUTURE;
+        } else {
+          return MethodKind.HANDLER;
+        }
+      }
+    }
+    return MethodKind.OTHER;
+  }
+
+  public TypeInfo getReturnType() {
+    return returnType;
+  }
+
+  public MethodInfo setReturnType(TypeInfo returnType) {
+    this.returnType = returnType;
+    return this;
+  }
+
+  /**
+   * @return whether the method is annotated with {@link io.vertx.codegen.annotations.GenIgnore}
+   */
+  public boolean isContainingAnyJavaType() {
+    return params.stream().map(ParamInfo::getType).anyMatch(MethodInfo::containsAnyJavaType) || containsAnyJavaType(returnType);
   }
 
   private static boolean containsAnyJavaType(TypeInfo type) {
@@ -83,29 +119,6 @@ public class MethodInfo implements Comparable<MethodInfo> {
     } else {
       return type.getKind() == ClassKind.OTHER;
     }
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public String getName(Case _case) {
-    return _case.format(Case.CAMEL.parse(name));
-  }
-
-  public MethodKind getKind() {
-    return kind;
-  }
-
-  public TypeInfo getReturnType() {
-    return returnType;
-  }
-
-  /**
-   * @return whether the method is annotated with {@link io.vertx.codegen.annotations.GenIgnore}
-   */
-  public boolean isContainingAnyJavaType() {
-    return containsAnyJavaType;
   }
 
   /**
@@ -164,8 +177,18 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return returnDescription;
   }
 
+  public MethodInfo setReturnDescription(Text returnDescription) {
+    this.returnDescription = returnDescription;
+    return this;
+  }
+
   public Set<ClassTypeInfo> getOwnerTypes() {
     return ownerTypes;
+  }
+
+  public MethodInfo setOwnerTypes(Set<ClassTypeInfo> ownerTypes) {
+    this.ownerTypes = ownerTypes;
+    return this;
   }
 
   /**
@@ -192,8 +215,18 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return fluent;
   }
 
+  public MethodInfo setFluent(boolean fluent) {
+    this.fluent = fluent;
+    return this;
+  }
+
   public boolean isCacheReturn() {
     return cacheReturn;
+  }
+
+  public MethodInfo setCacheReturn(boolean cacheReturn) {
+    this.cacheReturn = cacheReturn;
+    return this;
   }
 
   /**
@@ -207,6 +240,11 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return params;
   }
 
+  public MethodInfo setParams(List<ParamInfo> params) {
+    this.params = params;
+    return this;
+  }
+
   public ParamInfo getParam(int index) {
     return params.get(index);
   }
@@ -215,16 +253,36 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return comment;
   }
 
+  public MethodInfo setComment(String comment) {
+    this.comment = comment;
+    return this;
+  }
+
   public Doc getDoc() {
     return doc;
+  }
+
+  public MethodInfo setDoc(Doc doc) {
+    this.doc = doc;
+    return this;
   }
 
   public boolean isStaticMethod() {
     return staticMethod;
   }
 
+  public MethodInfo setStaticMethod(boolean staticMethod) {
+    this.staticMethod = staticMethod;
+    return this;
+  }
+
   public boolean isDefaultMethod() {
     return defaultMethod;
+  }
+
+  public MethodInfo setDefaultMethod(boolean defaultMethod) {
+    this.defaultMethod = defaultMethod;
+    return this;
   }
 
   /**
@@ -235,6 +293,11 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return deprecated;
   }
 
+  public MethodInfo setDeprecated(boolean deprecated) {
+    this.deprecated = deprecated;
+    return this;
+  }
+
   /**
    * @return the description of deprecated
    */
@@ -242,8 +305,18 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return deprecatedDesc;
   }
 
+  public MethodInfo setDeprecatedDesc(Text deprecatedDesc) {
+    this.deprecatedDesc = deprecatedDesc;
+    return this;
+  }
+
   public List<TypeParamInfo.Method> getTypeParams() {
     return typeParams;
+  }
+
+  public MethodInfo setTypeParams(List<TypeParamInfo.Method> typeParams) {
+    this.typeParams = typeParams;
+    return this;
   }
 
   public void mergeTypeParams(List<TypeParamInfo.Method> mergedTypeParams) throws IllegalArgumentException {
@@ -259,6 +332,27 @@ public class MethodInfo implements Comparable<MethodInfo> {
 
   public void collectImports(Collection<ClassTypeInfo> imports) {
     params.stream().map(ParamInfo::getType).forEach(a -> a.collectImports(imports));
+  }
+
+  /**
+   * @return a copy of this object
+   */
+  public MethodInfo copy() {
+    return new MethodInfo(
+      new HashSet<>(ownerTypes),
+      name,
+      returnType,
+      returnDescription,
+      fluent,
+      cacheReturn,
+      new ArrayList<>(params),
+      comment,
+      doc,
+      staticMethod,
+      defaultMethod,
+      new ArrayList<>(typeParams),
+      deprecated,
+      deprecatedDesc);
   }
 
   @Override
