@@ -1,30 +1,30 @@
-package io.vertx.test.codegen.utils;
+package io.vertx.test.codegen.writer;
 
-import io.vertx.codegen.utils.CodeWriter;
+import io.vertx.codegen.writer.CodeWriter;
 import org.junit.Test;
 
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 /**
  * @author <a href="http://slinkydeveloper.github.io">Francesco Guardiani @slinkydeveloper</a>
  */
 public class CodeWriterTest {
 
-  private CodeWriter testCodeWriter(Consumer<CodeWriter> codeToExecute, String expectedOutput) {
+  @Test
+  public void testUnderlyingWriter() {
     StringWriter w = new StringWriter();
-    CodeWriter codeWriter = new CodeWriter(w);
-    codeToExecute.accept(codeWriter);
-    assertEquals(expectedOutput, w.toString());
-    return codeWriter;
+    CodeWriter writer = new CodeWriter(w);
+    assertSame(w, writer.writer());
   }
 
   @Test
   public void testIndentation(){
-    CodeWriter writer = testCodeWriter(w ->
+    CodeWriter writer = assertWriter(w ->
       w.codeln("line 1")
         .indent()
           .codeln("line 2")
@@ -41,13 +41,13 @@ public class CodeWriterTest {
         "line 5"
     );
     assertEquals("", writer.indentation());
-    assertEquals(2, writer.getIndentationFactor());
+    assertEquals(2, writer.indentSize());
   }
 
   @Test
   public void testIndentationFactor(){
-    CodeWriter writer = testCodeWriter(w -> {
-      w.setIndentationFactor(4);
+    CodeWriter writer = assertWriter(w -> {
+      w.indentSize(4);
         w.codeln("line 1")
           .indent()
           .codeln("line 2")
@@ -65,12 +65,12 @@ public class CodeWriterTest {
         "line 5"
     );
     assertEquals("", writer.indentation());
-    assertEquals(4, writer.getIndentationFactor());
+    assertEquals(4, writer.indentSize());
   }
 
   @Test
   public void testStmt(){
-    CodeWriter writer = testCodeWriter(w ->
+    CodeWriter writer = assertWriter(w ->
         w.stmt("line 1")
           .indent()
           .stmt("line 2")
@@ -90,7 +90,7 @@ public class CodeWriterTest {
 
   @Test
   public void testJavaImport(){
-    CodeWriter writer = testCodeWriter(w ->
+    CodeWriter writer = assertWriter(w ->
         w.javaImport("io.vertx.test.codegen.utils.CodeWriterTest"),
       "import io.vertx.test.codegen.utils.CodeWriterTest;\n"
     );
@@ -98,10 +98,56 @@ public class CodeWriterTest {
 
   @Test
   public void testArray(){
-    testCodeWriter(w ->
-      w.writeArray(", ", Arrays.asList(2, 4, 1, 5, 6, 1), Object::toString),
+    assertWriter(w ->
+      w.writeSeq(Stream.of(2, 4, 1, 5, 6, 1).map(Object::toString), ", "),
       "2, 4, 1, 5, 6, 1"
     );
   }
 
+  @Test
+  public void testCodeForceNewLine() {
+    assertWriter(w -> {
+        w.indent().print("foo");
+        w.code("bar");
+      },
+      "  foo\n" +
+        "  bar"
+    );
+  }
+
+  @Test
+  public void testPrint1() {
+    assertWriter(w -> {
+        w.indent().print("foo");
+      },
+      "  foo"
+    );
+  }
+
+  @Test
+  public void testPrint2() {
+    assertWriter(w -> {
+        w.indent().print("foo");
+        w.print("bar");
+      },
+      "  foobar"
+    );
+  }
+
+  @Test
+  public void testPrintNewLine() {
+    assertWriter(w -> {
+        w.indent().print("foo\nbar");
+      },
+      "  foo\n  bar"
+    );
+  }
+
+  private CodeWriter assertWriter(Consumer<CodeWriter> codeToExecute, String expectedOutput) {
+    StringWriter w = new StringWriter();
+    CodeWriter codeWriter = new CodeWriter(w);
+    codeToExecute.accept(codeWriter);
+    assertEquals(expectedOutput, w.toString());
+    return codeWriter;
+  }
 }
