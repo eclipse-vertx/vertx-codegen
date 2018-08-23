@@ -52,7 +52,7 @@ public class DataObjectCheatsheetGen extends Generator<DataObjectModel> {
       html.append("'''\n");
     }
     html.append("\n");
-    html.append("[cols=\">25%,75%\"]\n");
+    html.append("[cols=\">25%,25%,50%\"]\n");
     html.append("[frame=\"topbot\"]\n");
     html.append("|===\n");
     html.append("^|Name | Type ^| Description\n");
