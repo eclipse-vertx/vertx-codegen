@@ -2,6 +2,7 @@ package io.vertx.codegen.writer;
 
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -184,5 +185,15 @@ public class CodeWriter extends PrintWriter {
   @Override
   public CodeWriter append(char c) {
     return (CodeWriter) super.append(c);
+  }
+
+  @Override
+  public CodeWriter format(String format, Object... args) {
+    return (CodeWriter) super.format(format, args);
+  }
+
+  @Override
+  public CodeWriter format(Locale l, String format, Object... args) {
+    return (CodeWriter) super.format(l, format, args);
   }
 }
