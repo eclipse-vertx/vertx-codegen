@@ -28,5 +28,10 @@ public interface InterfaceWithComments {
    */
   void bar(String str);
 
+  /**
+   * Comment 3 line 1
+   * Comment 3 line 2
+   */
+  String someField = "value-does-not-matter";
 
 }

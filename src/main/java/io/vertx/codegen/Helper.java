@@ -61,6 +61,14 @@ public class Helper {
     }
   };
 
+  public static final Function<Element, Stream<VariableElement>> FILTER_FIELD = element -> {
+    if (element.getKind() == ElementKind.FIELD) {
+      return Stream.of((VariableElement) element);
+    } else {
+      return Stream.empty();
+    }
+  };
+
   static <T> Function<Object, Stream<T>> instanceOf(Class<T> type) {
     return o -> {
       if (type.isInstance(o)) {
@@ -667,5 +675,12 @@ public class Helper {
         flatMap(Helper.FILTER_METHOD).
         filter(exeElt -> exeElt.getSimpleName().toString().equals("toJson") && typeUtils.isSameType(jsonType, exeElt.getReturnType())).
         count() > 0;
+  }
+
+  private static final String CODEGEN_JAVA_ALLOW_ANY_JAVA_TYPE = "codegen-allow-any-java-type";
+
+  public static boolean allowAnyJavaType(Element elt) {
+    SuppressWarnings suppressWarnings = elt.getAnnotation(SuppressWarnings.class);
+    return suppressWarnings != null && Arrays.asList(suppressWarnings.value()).contains(CODEGEN_JAVA_ALLOW_ANY_JAVA_TYPE);
   }
 }

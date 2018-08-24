@@ -301,9 +301,30 @@ Notes:
 
 * Why no support for data object in `Map` param values ?
 
-### Static factory methods
+### Instance Methods
 
-You may add static factory methods in your interfaces, e.g.
+You can declare methods in your interfaces, e.g.
+
+    interface MyInterface {
+
+        void doSomething(String foo);
+
+    }
+
+Default method works as well
+
+    interface MyInterface {
+
+        default String doSomething(String foo) {
+          return foo != null ? new StringBuilder(foo).reverse().toString() : null;
+        }
+
+    }
+
+
+### Static methods
+
+You can declare static methods in your interfaces, e.g.
 
     interface MyInterface {
 
@@ -313,6 +334,15 @@ You may add static factory methods in your interfaces, e.g.
 
     }
 
+### Fields
+
+You can declare fields in your interfaces, e.g.
+
+    interface MyInterface {
+
+        int SOME_CONSTANT = 4;
+
+    }
 
 ### Super interfaces
 
@@ -438,6 +468,7 @@ are referenced from the current interface
 * `importedTypes`- this is a `Set<TypeInfo>` containing the types used by this class
 * `referencedDataObjectTypes`- this is a `Set<TypeInfo>` containing the `DataObject` types used by this class
 * `referencedEnumTypes`- this is a `Set<TypeInfo>` containing the `Enum` types used by this class
+* `constants`- this is a `List<ConstantInfo>` containing the constants declared by this class
 
 The `TypeInfo` represents a Java type:
 
@@ -484,6 +515,12 @@ The `ParamInfo` object has the following fields:
 * `name`. The name of the parameter
 * `type`. The type of the parameter as a `TypeInfo`
 * `dataObject`. `true` If the parameter is a data object type.
+
+The `ConstantInfo` object has the following fields:
+
+* `doc`. The doc of the field
+* `name`. The name of the field
+* `type`. The type of the field as a `TypeInfo`
 
 ### Template variables in data object models
 

@@ -1,12 +1,7 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.ClassModel;
-import io.vertx.codegen.GenException;
-import io.vertx.codegen.MethodInfo;
-import io.vertx.codegen.MethodKind;
-import io.vertx.codegen.ParamInfo;
-import io.vertx.codegen.Signature;
-import io.vertx.codegen.TypeParamInfo;
+import io.vertx.codegen.*;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Tag;
@@ -29,6 +24,8 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.WriteStream;
 import io.vertx.test.codegen.annotations.EmptyAnnotation;
 import io.vertx.test.codegen.testapi.*;
+import io.vertx.test.codegen.testapi.constant.InterfaceWithConstants;
+import io.vertx.test.codegen.testapi.constant.InterfaceWithIllegalConstantType;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithInvalidJavaTypeParam;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithInvalidJavaTypeReturn;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeParams;
@@ -1577,6 +1574,18 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
+  public void testConstantComments() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithComments.class);
+    List<ConstantInfo> constants = model.getConstants();
+    ConstantInfo constant = constants.get(0);
+    assertEquals(1, constants.size());
+    Doc comment = new Doc(" Comment 3 line 1\n Comment 3 line 2\n", null, Collections.emptyList());
+    assertEquals(comment.getFirstSentence(), constant.getDoc().getFirstSentence());
+    assertNull(constant.getDoc().getBody());
+    assertEquals(Collections.emptyList(), constant.getDoc().getBlockTags());
+  }
+
+  @Test
   public void testSignature() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(MethodWithValidBasicParams.class);
     assertEquals(1, model.getMethods().size());
@@ -1996,6 +2005,96 @@ public class ClassTest extends ClassTestBase {
     // Check we can build this type
     ClassModel model = new GeneratorHelper().generateClass(FutureLike.class);
     assertNull(model.getHandlerType());
+  }
+
+  @Test
+  public void testConstants() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithConstants.class);
+    assertEquals(1, model.getReferencedTypes().size());
+    assertEquals(VertxGenClass1.class.getName(), model.getReferencedTypes().iterator().next().getName());
+    assertEquals(1, model.getReferencedDataObjectTypes().size());
+    assertEquals(TestDataObject.class.getName(), model.getReferencedDataObjectTypes().iterator().next().getName());
+    assertEquals(1, model.getReferencedEnumTypes().size());
+    assertEquals(TestEnum.class.getName(), model.getReferencedEnumTypes().iterator().next().getName());
+
+    List<ConstantInfo> constants = model.getConstants();
+    assertEquals(66, constants.size());
+
+    checkConstant(constants.get(0), "BYTE", PrimitiveTypeInfo.BYTE);
+    checkConstant(constants.get(1), "BOXED_BYTE", PrimitiveTypeInfo.BYTE.getBoxed());
+    checkConstant(constants.get(2), "SHORT", PrimitiveTypeInfo.SHORT);
+    checkConstant(constants.get(3), "BOXED_SHORT", PrimitiveTypeInfo.SHORT.getBoxed());
+    checkConstant(constants.get(4), "INT", PrimitiveTypeInfo.INT);
+    checkConstant(constants.get(5), "BOXED_INT", PrimitiveTypeInfo.INT.getBoxed());
+    checkConstant(constants.get(6), "LONG", PrimitiveTypeInfo.LONG);
+    checkConstant(constants.get(7), "BOXED_LONG", PrimitiveTypeInfo.LONG.getBoxed());
+    checkConstant(constants.get(8), "FLOAT", PrimitiveTypeInfo.FLOAT);
+    checkConstant(constants.get(9), "BOXED_FLOAT", PrimitiveTypeInfo.FLOAT.getBoxed());
+    checkConstant(constants.get(10), "DOUBLE", PrimitiveTypeInfo.DOUBLE);
+    checkConstant(constants.get(11), "BOXED_DOUBLE", PrimitiveTypeInfo.DOUBLE.getBoxed());
+    checkConstant(constants.get(12), "BOOLEAN", PrimitiveTypeInfo.BOOLEAN);
+    checkConstant(constants.get(13), "BOXED_BOOLEAN", PrimitiveTypeInfo.BOOLEAN.getBoxed());
+    checkConstant(constants.get(14), "CHAR", PrimitiveTypeInfo.CHAR);
+    checkConstant(constants.get(15), "BOXED_CHAR", PrimitiveTypeInfo.CHAR.getBoxed());
+    checkConstant(constants.get(16), "STRING", String.class);
+    checkConstant(constants.get(17), "VERTX_GEN", VertxGenClass1.class);
+    checkConstant(constants.get(18), "JSON_OBJECT", JsonObject.class);
+    checkConstant(constants.get(19), "JSON_ARRAY", JsonArray.class);
+    checkConstant(constants.get(20), "DATA_OBJECT", TestDataObject.class);
+    checkConstant(constants.get(21), "ENUM", TestEnum.class);
+    checkConstant(constants.get(22), "OBJECT", Object.class);
+
+    checkConstant(constants.get(23), "BYTE_LIST", new TypeLiteral<List<Byte>>() {});
+    checkConstant(constants.get(24), "SHORT_LIST", new TypeLiteral<List<Short>>() {});
+    checkConstant(constants.get(25), "INT_LIST", new TypeLiteral<List<Integer>>() {});
+    checkConstant(constants.get(26), "LONG_LIST", new TypeLiteral<List<Long>>() {});
+    checkConstant(constants.get(27), "FLOAT_LIST", new TypeLiteral<List<Float>>() {});
+    checkConstant(constants.get(28), "DOUBLE_LIST", new TypeLiteral<List<Double>>() {});
+    checkConstant(constants.get(29), "BOOLEAN_LIST", new TypeLiteral<List<Boolean>>() {});
+    checkConstant(constants.get(30), "CHAR_LIST", new TypeLiteral<List<Character>>() {});
+    checkConstant(constants.get(31), "STRING_LIST", new TypeLiteral<List<String>>() {});
+    checkConstant(constants.get(32), "VERTX_GEN_LIST", new TypeLiteral<List<VertxGenClass1>>() {});
+    checkConstant(constants.get(33), "JSON_OBJECT_LIST", new TypeLiteral<List<JsonObject>>() {});
+    checkConstant(constants.get(34), "JSON_ARRAY_LIST", new TypeLiteral<List<JsonArray>>() {});
+    checkConstant(constants.get(35), "DATA_OBJECT_LIST", new TypeLiteral<List<TestDataObject>>() {});
+    checkConstant(constants.get(36), "ENUM_LIST", new TypeLiteral<List<TestEnum>>() {});
+
+    checkConstant(constants.get(37), "BYTE_SET", new TypeLiteral<Set<Byte>>() {});
+    checkConstant(constants.get(38), "SHORT_SET", new TypeLiteral<Set<Short>>() {});
+    checkConstant(constants.get(39), "INT_SET", new TypeLiteral<Set<Integer>>() {});
+    checkConstant(constants.get(40), "LONG_SET", new TypeLiteral<Set<Long>>() {});
+    checkConstant(constants.get(41), "FLOAT_SET", new TypeLiteral<Set<Float>>() {});
+    checkConstant(constants.get(42), "DOUBLE_SET", new TypeLiteral<Set<Double>>() {});
+    checkConstant(constants.get(43), "BOOLEAN_SET", new TypeLiteral<Set<Boolean>>() {});
+    checkConstant(constants.get(44), "CHAR_SET", new TypeLiteral<Set<Character>>() {});
+    checkConstant(constants.get(45), "STRING_SET", new TypeLiteral<Set<String>>() {});
+    checkConstant(constants.get(46), "VERTX_GEN_SET", new TypeLiteral<Set<VertxGenClass1>>() {});
+    checkConstant(constants.get(47), "JSON_OBJECT_SET", new TypeLiteral<Set<JsonObject>>() {});
+    checkConstant(constants.get(48), "JSON_ARRAY_SET", new TypeLiteral<Set<JsonArray>>() {});
+    checkConstant(constants.get(49), "DATA_OBJECT_SET", new TypeLiteral<Set<TestDataObject>>() {});
+    checkConstant(constants.get(50), "ENUM_SET", new TypeLiteral<Set<TestEnum>>() {});
+
+    checkConstant(constants.get(51), "BYTE_MAP", new TypeLiteral<Map<String, Byte>>() {});
+    checkConstant(constants.get(52), "SHORT_MAP", new TypeLiteral<Map<String, Short>>() {});
+    checkConstant(constants.get(53), "INT_MAP", new TypeLiteral<Map<String, Integer>>() {});
+    checkConstant(constants.get(54), "LONG_MAP", new TypeLiteral<Map<String, Long>>() {});
+    checkConstant(constants.get(55), "FLOAT_MAP", new TypeLiteral<Map<String, Float>>() {});
+    checkConstant(constants.get(56), "DOUBLE_MAP", new TypeLiteral<Map<String, Double>>() {});
+    checkConstant(constants.get(57), "BOOLEAN_MAP", new TypeLiteral<Map<String, Boolean>>() {});
+    checkConstant(constants.get(58), "CHAR_MAP", new TypeLiteral<Map<String, Character>>() {});
+    checkConstant(constants.get(59), "STRING_MAP", new TypeLiteral<Map<String, String>>() {});
+    checkConstant(constants.get(60), "JSON_OBJECT_MAP", new TypeLiteral<Map<String, JsonObject>>() {});
+    checkConstant(constants.get(61), "JSON_ARRAY_MAP", new TypeLiteral<Map<String, JsonArray>>() {});
+
+    checkConstant(constants.get(62), "THREAD", Thread.class);
+    checkConstant(constants.get(63), "THREAD_LIST", new TypeLiteral<List<Thread>>() {});
+    checkConstant(constants.get(64), "THREAD_SET", new TypeLiteral<Set<Thread>>() {});
+    checkConstant(constants.get(65), "THREAD_MAP", new TypeLiteral<Map<String, Thread>>() {});
+  }
+
+  @Test
+  public void testIllegalConstantType() throws Exception {
+    assertGenFail(InterfaceWithIllegalConstantType.class, "Invalid constant type should fail");
   }
 
   @Test

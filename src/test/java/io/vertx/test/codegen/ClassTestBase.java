@@ -1,9 +1,6 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.GenException;
-import io.vertx.codegen.MethodInfo;
-import io.vertx.codegen.MethodKind;
-import io.vertx.codegen.ParamInfo;
+import io.vertx.codegen.*;
 import io.vertx.codegen.type.TypeReflectionFactory;
 import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.doc.Doc;
@@ -92,6 +89,21 @@ public abstract class ClassTestBase {
     TypeInfo expectedUnresolvedTypeInfo = TypeReflectionFactory.create(expectedUnresolvedType);
     assertEquals(expectedUnresolvedTypeInfo.getName(), param.getUnresolvedType().getName());
     assertEquals(expectedUnresolvedTypeInfo.getKind(), param.getUnresolvedType().getKind());
+  }
+
+  void checkConstant(ConstantInfo param, String name, TypeLiteral<?> expectedType) {
+    checkConstant(param, name, expectedType.type);
+  }
+
+  void checkConstant(ConstantInfo param, String name, Type expectedType) {
+    TypeInfo expectedTypeInfo = TypeReflectionFactory.create(expectedType);
+    checkConstant(param, name, expectedTypeInfo);
+  }
+
+  void checkConstant(ConstantInfo param, String name, TypeInfo expectedType) {
+    assertEquals(name, param.getName());
+    assertEquals(expectedType.getName(), param.getType().getName());
+    assertEquals(expectedType.getKind(), param.getType().getKind());
   }
 
   void assertGenInvalid(Class<?> c, Class<?>... rest) throws Exception {

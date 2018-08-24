@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
  */
 public class ClassModel implements Model {
 
-  private static final String CODEGEN_JAVA_ALLOW_ANY_JAVA_TYPE = "codegen-allow-any-java-type";
   public static final String VERTX_READ_STREAM = "io.vertx.core.streams.ReadStream";
   public static final String VERTX_WRITE_STREAM = "io.vertx.core.streams.WriteStream";
   public static final String VERTX_ASYNC_RESULT = "io.vertx.core.AsyncResult";
@@ -66,6 +65,7 @@ public class ClassModel implements Model {
   protected boolean processed = false;
   protected LinkedHashMap<ExecutableElement, MethodInfo> methods = new LinkedHashMap<>();
   protected LinkedHashMap<ExecutableElement, MethodInfo> anyJavaTypeMethods = new LinkedHashMap<>();
+  protected List<ConstantInfo> constants = new ArrayList<>();
   protected Set<ClassTypeInfo> collectedTypes = new HashSet<>();
   protected Set<ClassTypeInfo> importedTypes = new HashSet<>();
   protected Set<ApiTypeInfo> referencedTypes = new HashSet<>();
@@ -142,6 +142,10 @@ public class ClassModel implements Model {
 
   public List<MethodInfo> getInstanceMethods() {
     return methods.values().stream().filter(m -> !m.isStaticMethod()).collect(Collectors.toList());
+  }
+
+  public List<ConstantInfo> getConstants() {
+    return constants;
   }
 
   public boolean isConcrete() {
@@ -285,6 +289,13 @@ public class ClassModel implements Model {
       return;
     }
     throw new GenException(elem, "type " + type + " is not legal for use for a return type in code generation");
+  }
+
+  protected void checkConstantType(VariableElement elem, TypeInfo type, TypeMirror typeMirror, boolean allowAnyJavaType) {
+    if (isLegalNonCallableReturnType(type, allowAnyJavaType)) {
+      return;
+    }
+    throw new GenException(elem, "type " + type + " is not legal for use for a constant type in code generation");
   }
 
   /**
@@ -684,14 +695,28 @@ public class ClassModel implements Model {
 
       TypeMirror objectType = elementUtils.getTypeElement("java.lang.Object").asType();
 
+      // Traverse fields
+      elementUtils.getAllMembers((TypeElement) elem).stream().
+        filter(elt -> !typeUtils.isSameType(elt.getEnclosingElement().asType(), objectType)).
+        flatMap(Helper.FILTER_FIELD).
+        filter(elt -> !isGenIgnore(elt)).
+        forEach(elt -> {
+          boolean allowAnyJavaType = Helper.allowAnyJavaType(elt);
+          ConstantInfo cst = fieldMethod(elt, allowAnyJavaType);
+          if (cst != null) {
+            cst.getType().collectImports(collectedTypes);
+            constants.add(cst);
+          }
+        });
+
+
       // Traverse methods
       elementUtils.getAllMembers((TypeElement) elem).stream().
           filter(elt -> !typeUtils.isSameType(elt.getEnclosingElement().asType(), objectType)).
           flatMap(Helper.FILTER_METHOD).
           filter(elt -> !isGenIgnore(elt)).
           forEach(elt -> {
-            SuppressWarnings suppressWarnings = elt.getAnnotation(SuppressWarnings.class);
-            boolean allowAnyJavaType = suppressWarnings != null && Arrays.asList(suppressWarnings.value()).contains(CODEGEN_JAVA_ALLOW_ANY_JAVA_TYPE);
+            boolean allowAnyJavaType = Helper.allowAnyJavaType(elt);
             MethodInfo meth = createMethod(elt, allowAnyJavaType);
             if (meth != null) {
               meth.collectImports(collectedTypes);
@@ -729,6 +754,17 @@ public class ClassModel implements Model {
 
   private static boolean isGenIgnore(Element elt) {
     return elt.getAnnotation(GenIgnore.class) != null;
+  }
+
+  private ConstantInfo fieldMethod(VariableElement modelField, boolean allowAnyJavaType) {
+    Set<Modifier> mods = modelField.getModifiers();
+    if (!mods.contains(Modifier.PUBLIC)) {
+      return null;
+    }
+    TypeInfo type = typeFactory.create(modelField.asType());
+    checkConstantType(modelField, type, modelField.asType(),allowAnyJavaType);
+    Doc doc = docFactory.createDoc(modelField);
+    return new ConstantInfo(doc, modelField.getSimpleName().toString(), type);
   }
 
   private MethodInfo createMethod(ExecutableElement modelMethod, boolean allowAnyJavaType) {
@@ -1025,6 +1061,7 @@ public class ClassModel implements Model {
     vars.put("ifaceComment", getIfaceComment());
     vars.put("doc", doc);
     vars.put("methods", getMethods());
+    vars.put("constants", getConstants());
     vars.put("referencedTypes", getReferencedTypes());
     vars.put("superTypes", getSuperTypes());
     vars.put("concreteSuperType", getConcreteSuperType());

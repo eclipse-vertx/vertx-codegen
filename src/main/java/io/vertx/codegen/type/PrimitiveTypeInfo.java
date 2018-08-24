@@ -7,17 +7,23 @@ import java.util.HashMap;
  */
 public class PrimitiveTypeInfo extends TypeInfo {
 
+  public static final PrimitiveTypeInfo BOOLEAN = new PrimitiveTypeInfo(boolean.class.getName(), Boolean.class.getName());
+  public static final PrimitiveTypeInfo BYTE = new PrimitiveTypeInfo(byte.class.getName(), Byte.class.getName());
+  public static final PrimitiveTypeInfo SHORT = new PrimitiveTypeInfo(short.class.getName(), Short.class.getName());
+  public static final PrimitiveTypeInfo INT = new PrimitiveTypeInfo(int.class.getName(), Integer.class.getName());
+  public static final PrimitiveTypeInfo LONG = new PrimitiveTypeInfo(long.class.getName(), Long.class.getName());
+  public static final PrimitiveTypeInfo FLOAT = new PrimitiveTypeInfo(float.class.getName(), Float.class.getName());
+  public static final PrimitiveTypeInfo DOUBLE = new PrimitiveTypeInfo(double.class.getName(), Double.class.getName());
+  public static final PrimitiveTypeInfo CHAR = new PrimitiveTypeInfo(char.class.getName(), Character.class.getName());
+
   static final HashMap<String, PrimitiveTypeInfo> PRIMITIVES = new HashMap<>();
 
   static {
-    java.lang.Class<?>[] primitives = {boolean.class, byte.class, short.class, int.class, long.class,
-        float.class, double.class, char.class};
-    java.lang.Class<?>[] boxes = {Boolean.class, Byte.class, Short.class, Integer.class, Long.class,
-        Float.class, Double.class, Character.class};
-    for (int i = 0; i < primitives.length; i++) {
-      java.lang.Class<?> primitive = primitives[i];
-      String name = primitive.getName();
-      PRIMITIVES.put(name, new PrimitiveTypeInfo(primitive.getName(), boxes[i].getName()));
+    PrimitiveTypeInfo[] primitives = {
+      BOOLEAN, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, CHAR
+    };
+    for (PrimitiveTypeInfo primitive : primitives) {
+      PRIMITIVES.put(primitive.getName(), primitive);
     }
   }
 
