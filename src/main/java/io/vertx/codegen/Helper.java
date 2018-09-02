@@ -26,12 +26,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.*;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.io.File;
@@ -567,47 +562,69 @@ public class Helper {
    * @param buffer the buffer appended with the string representation
    */
   static void toString(TypeMirror mirror, StringBuilder buffer) {
-    if (mirror instanceof DeclaredType) {
-      DeclaredType dt = (DeclaredType) mirror;
-      TypeElement elt = (TypeElement) dt.asElement();
-      buffer.append(elt.getQualifiedName().toString());
-      List<? extends TypeMirror> args = dt.getTypeArguments();
-      if (args.size() > 0) {
-        buffer.append("<");
-        for (int i = 0;i < args.size();i++) {
-          if (i > 0) {
-            buffer.append(",");
+    switch (mirror.getKind()) {
+      case DECLARED: {
+        DeclaredType dt = (DeclaredType) mirror;
+        TypeElement elt = (TypeElement) dt.asElement();
+        buffer.append(elt.getQualifiedName().toString());
+        List<? extends TypeMirror> args = dt.getTypeArguments();
+        if (args.size() > 0) {
+          buffer.append("<");
+          for (int i = 0;i < args.size();i++) {
+            if (i > 0) {
+              buffer.append(",");
+            }
+            toString(args.get(i), buffer);
           }
-          toString(args.get(i), buffer);
+          buffer.append(">");
         }
-        buffer.append(">");
+        break;
       }
-    } else if (mirror instanceof PrimitiveType) {
-      PrimitiveType pm = (PrimitiveType) mirror;
-      buffer.append(pm.getKind().name().toLowerCase());
-    } else if (mirror instanceof javax.lang.model.type.WildcardType) {
-      javax.lang.model.type.WildcardType wt = (javax.lang.model.type.WildcardType) mirror;
-      buffer.append("?");
-      if (wt.getSuperBound() != null) {
-        buffer.append(" super ");
-        toString(wt.getSuperBound(), buffer);
-      } else if (wt.getExtendsBound() != null) {
-        buffer.append(" extends ");
-        toString(wt.getExtendsBound(), buffer);
+      case WILDCARD: {
+        javax.lang.model.type.WildcardType wt = (javax.lang.model.type.WildcardType) mirror;
+        buffer.append("?");
+        if (wt.getSuperBound() != null) {
+          buffer.append(" super ");
+          toString(wt.getSuperBound(), buffer);
+        } else if (wt.getExtendsBound() != null) {
+          buffer.append(" extends ");
+          toString(wt.getExtendsBound(), buffer);
+        }
+        break;
       }
-    } else if (mirror instanceof javax.lang.model.type.TypeVariable) {
-      javax.lang.model.type.TypeVariable tv = (TypeVariable) mirror;
-      TypeParameterElement elt = (TypeParameterElement) tv.asElement();
-      buffer.append(elt.getSimpleName().toString());
-      if (tv.getUpperBound() != null && !tv.getUpperBound().toString().equals("java.lang.Object")) {
-        buffer.append(" extends ");
-        toString(tv.getUpperBound(), buffer);
-      } else if (tv.getLowerBound() != null && tv.getLowerBound().getKind() != TypeKind.NULL) {
-        buffer.append(" super ");
-        toString(tv.getUpperBound(), buffer);
+      case TYPEVAR: {
+        javax.lang.model.type.TypeVariable tv = (TypeVariable) mirror;
+        TypeParameterElement elt = (TypeParameterElement) tv.asElement();
+        buffer.append(elt.getSimpleName().toString());
+        if (tv.getUpperBound() != null && !tv.getUpperBound().toString().equals("java.lang.Object")) {
+          buffer.append(" extends ");
+          toString(tv.getUpperBound(), buffer);
+        } else if (tv.getLowerBound() != null && tv.getLowerBound().getKind() != TypeKind.NULL) {
+          buffer.append(" super ");
+          toString(tv.getUpperBound(), buffer);
+        }
+        break;
       }
-    } else {
-      throw new UnsupportedOperationException("todo " + mirror + " " + mirror.getKind());
+      case BYTE:
+      case SHORT:
+      case INT:
+      case LONG:
+      case FLOAT:
+      case DOUBLE:
+      case CHAR:
+      case BOOLEAN: {
+        PrimitiveType pm = (PrimitiveType) mirror;
+        buffer.append(pm.getKind().name().toLowerCase());
+        break;
+      }
+      case ARRAY: {
+        ArrayType at = (ArrayType) mirror;
+        toString(at.getComponentType(), buffer);
+        buffer.append("[]");
+        break;
+      }
+      default:
+        throw new UnsupportedOperationException("todo " + mirror + " " + mirror.getKind());
     }
   }
 
