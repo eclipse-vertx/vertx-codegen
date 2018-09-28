@@ -1,27 +1,27 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.DataObjectModel;
-import io.vertx.codegen.GenException;
-import io.vertx.codegen.PropertyInfo;
-import io.vertx.codegen.PropertyKind;
+import io.vertx.codegen.*;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.doc.Doc;
-import io.vertx.codegen.type.AnnotationValueInfo;
-import io.vertx.codegen.type.ClassTypeInfo;
-import io.vertx.codegen.type.TypeInfo;
-import io.vertx.codegen.type.TypeReflectionFactory;
+import io.vertx.codegen.type.*;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.annotations.EmptyAnnotation;
-import io.vertx.test.codegen.testdataobject.Foo;
 import io.vertx.test.codegen.annotations.TestEnum;
+import io.vertx.test.codegen.converter.IndividualPropertyValueEmptyDataObject;
+import io.vertx.test.codegen.converter.UpperCamelCaseDataObject;
 import io.vertx.test.codegen.testapi.InterfaceDataObject;
 import io.vertx.test.codegen.testdataobject.*;
 import io.vertx.test.codegen.testdataobject.imported.Imported;
 import org.junit.Test;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -180,6 +180,7 @@ public class DataObjectTest {
   public void testPropertyMapGettersAdders() throws Exception {
 
   }
+
   @Test
   public void testPropertyMapGettersSetters() throws Exception {
     DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyMapGettersSetters.class);
@@ -832,6 +833,13 @@ public class DataObjectTest {
     assertEquals(2, fieldWithMethodAnnotationModel.getAnnotations().size());
     assertNotNull(fieldWithMethodAnnotationModel.getAnnotation(SomeAnnotation.class.getName()).getName());
     assertNotNull(fieldWithMethodAnnotationModel.getAnnotation(SomeMethodAnnotation.class.getName()).getName());
+  }
+
+  @Test
+  public void testConverterCaseDataObject() throws Exception {
+    DataObjectModel model = new GeneratorHelper().generateDataObject(UpperCamelCaseDataObject.class);
+    assertTrue(model.getGenerateConverter());
+    assertEquals(Case.CAMEL, model.getCase());
   }
 
   private void assertInvalidDataObject(Class<?> dataObjectClass) throws Exception {

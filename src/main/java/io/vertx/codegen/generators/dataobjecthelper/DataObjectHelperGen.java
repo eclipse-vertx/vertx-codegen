@@ -1,12 +1,8 @@
 package io.vertx.codegen.generators.dataobjecthelper;
 
-import io.vertx.codegen.Case;
-import io.vertx.codegen.DataObjectModel;
-import io.vertx.codegen.Generator;
-import io.vertx.codegen.PropertyInfo;
+import io.vertx.codegen.*;
 import io.vertx.codegen.annotations.DataObjectProperty;
 import io.vertx.codegen.type.AnnotationValueInfo;
-import io.vertx.codegen.type.CaseFormat;
 import io.vertx.codegen.type.ClassKind;
 
 import java.io.PrintWriter;
@@ -120,8 +116,13 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     String name = prop.getName(_case);
     AnnotationValueInfo propertyAnnotation = prop.getAnnotation(DataObjectProperty.class.getName());
     if (propertyAnnotation != null) {
-      CaseFormat caseFormat = CaseFormat.valueOf((String)propertyAnnotation.getMember("caseFormat"));
-      name = prop.getName(caseFormat.getCase());
+      String propertyName = (String)propertyAnnotation.getMember("value");
+
+      if (propertyName.trim().length() == 0) {
+        throw new GenException(null, "DataObjectProperty value for " + prop.getName() + " cannot be empty");
+      }
+
+      name = propertyName;
     }
 
     if (prop.isList() || prop.isSet()) {
@@ -238,8 +239,13 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     String name = prop.getName(_case);
     AnnotationValueInfo propertyAnnotation = prop.getAnnotation(DataObjectProperty.class.getName());
     if (propertyAnnotation != null) {
-      CaseFormat caseFormat = CaseFormat.valueOf((String)propertyAnnotation.getMember("caseFormat"));
-      name = prop.getName(caseFormat.getCase());
+      String propertyName = (String)propertyAnnotation.getMember("value");
+
+      if (propertyName.trim().length() == 0) {
+        throw new GenException(null, "DataObjectProperty value for " + prop.getName() + " cannot be empty");
+      }
+
+      name = propertyName;
     }
 
     writer.print(indent + "case \"" + name + "\":\n");

@@ -14,7 +14,6 @@ package io.vertx.test.codegen.converter;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.*;
@@ -910,46 +909,44 @@ public class DataObjectTest {
   }
 
   @Test
-  public void testIndividualPropertyCaseFromJson() {
-    String lowerCamelCase = "foo";
-    String upperCamelCase = "bar";
-    String kebabCase = "baz";
-    String snakeCase = "qux";
+  public void testIndividualPropertyValueFromJson() {
+    List<Object> list = new ArrayList<>();
+    list.add("foo");
+    Map<String, Object> map = new HashMap<>();
+    map.put("bar", "bar");
+    String string = "baz";
 
     JsonObject json = new JsonObject();
-    json.put("lowerCamelCase", lowerCamelCase);
-    json.put("UpperCamelCase", upperCamelCase);
-    json.put("kebab-case", kebabCase);
-    json.put("snake_case", snakeCase);
+    json.put("listOfFoo", new JsonArray(list));
+    json.put("map-of-bar", new JsonObject(map));
+    json.put("string_of_baz", string);
 
-    IndividualPropertyCaseDataObject obj = new IndividualPropertyCaseDataObject(json);
-    IndividualPropertyCaseDataObjectConverter.fromJson(json, obj);
+    IndividualPropertyValueDataObject obj = new IndividualPropertyValueDataObject(json);
+    IndividualPropertyValueDataObjectConverter.fromJson(json, obj);
 
-    assertEquals(lowerCamelCase, obj.getLowerCamelCase());
-    assertEquals(upperCamelCase, obj.getUpperCamelCase());
-    assertEquals(kebabCase, obj.getKebabCase());
-    assertEquals(snakeCase, obj.getSnakeCase());
+    assertEquals(list, obj.getFooList());
+    assertEquals(map, obj.getBarMap());
+    assertEquals(string, obj.getBazString());
   }
 
   @Test
   public void testIndividualPropertyToJson() {
-    String lowerCamelCase = "foo";
-    String upperCamelCase = "bar";
-    String kebabCase = "baz";
-    String snakeCase = "qux";
+    List<Object> list = new ArrayList<>();
+    list.add("foo");
+    Map<String, Object> map = new HashMap<>();
+    map.put("bar", "bar");
+    String string = "baz";
 
-    IndividualPropertyCaseDataObject obj = new IndividualPropertyCaseDataObject();
-    obj.setLowerCamelCase(lowerCamelCase);
-    obj.setUpperCamelCase(upperCamelCase);
-    obj.setKebabCase(kebabCase);
-    obj.setSnakeCase(snakeCase);
+    IndividualPropertyValueDataObject obj = new IndividualPropertyValueDataObject();
+    obj.setFooList(list);
+    obj.setBarMap(map);
+    obj.setBazString(string);
 
     Map<String, Object> json = new HashMap<>();
-    IndividualPropertyCaseDataObjectConverter.toJson(obj, json);
+    IndividualPropertyValueDataObjectConverter.toJson(obj, json);
 
-    assertEquals(lowerCamelCase, json.get("lowerCamelCase"));
-    assertEquals(upperCamelCase, json.get("UpperCamelCase"));
-    assertEquals(kebabCase, json.get("kebab-case"));
-    assertEquals(snakeCase, json.get("snake_case"));
+    assertEquals(new JsonArray(list), json.get("listOfFoo"));
+    assertEquals(new JsonObject(map), json.get("map-of-bar"));
+    assertEquals(string, json.get("string_of_baz"));
   }
 }

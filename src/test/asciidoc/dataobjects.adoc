@@ -44,8 +44,8 @@
 |[[parentProperty]]`@parentProperty`|`String`|-
 |===
 
-[[IndividualPropertyCaseDataObject]]
-== IndividualPropertyCaseDataObject
+[[IndividualPropertyValueDataObject]]
+== IndividualPropertyValueDataObject
 
 ++++
 ++++
@@ -55,10 +55,21 @@
 [frame="topbot"]
 |===
 ^|Name | Type ^| Description
-|[[kebabCase]]`@kebabCase`|`String`|-
-|[[lowerCamelCase]]`@lowerCamelCase`|`String`|-
-|[[snakeCase]]`@snakeCase`|`String`|-
-|[[upperCamelCase]]`@upperCamelCase`|`String`|-
+|[[bazString]]`@bazString`|`String`|-
+|===
+
+[[IndividualPropertyValueEmptyDataObject]]
+== IndividualPropertyValueEmptyDataObject
+
+++++
+++++
+'''
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[bazString]]`@bazString`|`String`|-
 |===
 
 [[KebabCaseDataObject]]
