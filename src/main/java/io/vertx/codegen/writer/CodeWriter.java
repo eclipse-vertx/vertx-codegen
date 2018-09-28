@@ -83,6 +83,13 @@ public class CodeWriter extends PrintWriter {
     return this;
   }
 
+  public CodeWriter indented(Runnable block) {
+    indent();
+    block.run();
+    unindent();
+    return this;
+  }
+
   /**
    * Append the {@code name} as a java package import.
    *
