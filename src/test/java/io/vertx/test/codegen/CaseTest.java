@@ -51,6 +51,19 @@ public class CaseTest {
   }
 
   @Test
+  public void testParseLowerCamelCase() {
+    parseLowerCamelCase("");
+    parseLowerCamelCase("foo", "foo");
+    parseLowerCamelCase("fooBar", "foo", "Bar");
+    parseLowerCamelCase("fooBarJuu", "foo", "Bar", "Juu");
+    parseLowerCamelCase("URL", "URL");
+    parseLowerCamelCase("URLDecoder", "URL", "Decoder");
+    parseLowerCamelCase("testSomething", "test", "Something");
+    parseLowerCamelCase("testURL", "test", "URL");
+    parseLowerCamelCase("test123", "test123");
+  }
+
+  @Test
   public void testFormatQualifiedCase() {
     formatQualifiedCase("", "");
     formatQualifiedCase("foo", "foo");
@@ -159,6 +172,10 @@ public class CaseTest {
 
   private void parseCamelCase(String s, String... expected) {
     parseCase(Case.CAMEL, s, expected);
+  }
+
+  private void parseLowerCamelCase(String s, String... expected) {
+    parseCase(Case.LOWER_CAMEL, s, expected);
   }
 
   private void parseQualifiedCase(String s, String... expected) {

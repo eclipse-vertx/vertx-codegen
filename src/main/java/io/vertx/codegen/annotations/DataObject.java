@@ -1,5 +1,7 @@
 package io.vertx.codegen.annotations;
 
+import io.vertx.codegen.type.CaseFormat;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -72,4 +74,9 @@ public @interface DataObject {
    * @return wether the generated converter should be public or package private
    */
   boolean publicConverter() default true;
+
+  /**
+   * @return naming scheme for the converter to use
+   */
+  CaseFormat caseFormat() default CaseFormat.LOWER_CAMEL;
 }

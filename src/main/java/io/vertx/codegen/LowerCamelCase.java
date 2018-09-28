@@ -1,6 +1,9 @@
 package io.vertx.codegen;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -37,4 +40,15 @@ public class LowerCamelCase extends Case {
     }
     return sb.toString();
   }
+
+  @Override
+  public List<String> parse(final String name) {
+    String[] atoms = name.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])");
+    if (atoms.length == 1 && atoms[0].isEmpty()) {
+      return Collections.emptyList();
+    } else {
+      return Arrays.asList(atoms);
+    }
+  }
+
 }

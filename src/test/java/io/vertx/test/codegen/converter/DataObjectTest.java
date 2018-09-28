@@ -14,12 +14,14 @@ package io.vertx.test.codegen.converter;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import org.junit.Ignore;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -733,5 +735,221 @@ public class DataObjectTest {
     assertEquals(Arrays.asList("first", "second"), obj.getValues());
     assertEquals(1, obj.sets);
     assertEquals(0, obj.adds);
+  }
+
+  @Test
+  public void testUpperCamelCaseFromJson() {
+    List<Object> list = new ArrayList<>();
+    list.add("foo");
+    Map<String, Object> map = new HashMap<>();
+    map.put("foo", "bar");
+    String string = "foo";
+
+    JsonObject json = new JsonObject();
+    json.put("ListName", new JsonArray(list));
+    json.put("MapName", new JsonObject(map));
+    json.put("StringName", string);
+
+    UpperCamelCaseDataObject obj = new UpperCamelCaseDataObject();
+    UpperCamelCaseDataObjectConverter.fromJson(json, obj);
+
+    assertEquals(list, obj.getListName());
+    assertEquals(map, obj.getMapName());
+    assertEquals(string, obj.getStringName());
+  }
+
+  @Test
+  public void testUpperCamelCaseToJson() {
+    List<Object> list = new ArrayList<>();
+    list.add("foo");
+    Map<String, Object> map = new HashMap<>();
+    map.put("foo", "bar");
+    String string = "foo";
+
+    UpperCamelCaseDataObject obj = new UpperCamelCaseDataObject();
+    obj.setListName(list);
+    obj.setMapName(map);
+    obj.setStringName(string);
+
+    Map<String, Object> json = new HashMap<>();
+    UpperCamelCaseDataObjectConverter.toJson(obj, json);
+
+    assertEquals(new JsonArray(list), json.get("ListName"));
+    assertEquals(new JsonObject(map), json.get("MapName"));
+    assertEquals(string, json.get("StringName"));
+    assertEquals(3, json.size());
+  }
+
+  @Test
+  public void testLowerCamelCaseFromJson() {
+    List<Object> list = new ArrayList<>();
+    list.add("foo");
+    Map<String, Object> map = new HashMap<>();
+    map.put("foo", "bar");
+    String string = "foo";
+
+    JsonObject json = new JsonObject();
+    json.put("listName", new JsonArray(list));
+    json.put("mapName", new JsonObject(map));
+    json.put("stringName", string);
+
+    LowerCamelCaseDataObject obj = new LowerCamelCaseDataObject(json);
+    LowerCamelCaseDataObjectConverter.fromJson(json, obj);
+
+    assertEquals(list, obj.getListName());
+    assertEquals(map, obj.getMapName());
+    assertEquals(string, obj.getStringName());
+  }
+
+  @Test
+  public void testLowerCamelCaseToJson() {
+    List<Object> list = new ArrayList<>();
+    list.add("foo");
+    Map<String, Object> map = new HashMap<>();
+    map.put("foo", "bar");
+    String string = "foo";
+
+    LowerCamelCaseDataObject obj = new LowerCamelCaseDataObject();
+    obj.setListName(list);
+    obj.setMapName(map);
+    obj.setStringName(string);
+
+    Map<String, Object> json = new HashMap<>();
+    LowerCamelCaseDataObjectConverter.toJson(obj, json);
+
+    assertEquals(new JsonArray(list), json.get("listName"));
+    assertEquals(new JsonObject(map), json.get("mapName"));
+    assertEquals(string, json.get("stringName"));
+    assertEquals(3, json.size());
+  }
+
+  @Test
+  public void testKebabCaseFromJson() {
+    List<Object> list = new ArrayList<>();
+    list.add("foo");
+    Map<String, Object> map = new HashMap<>();
+    map.put("foo", "bar");
+    String string = "foo";
+
+    JsonObject json = new JsonObject();
+    json.put("list-name", new JsonArray(list));
+    json.put("map-name", new JsonObject(map));
+    json.put("string-name", string);
+
+    KebabCaseDataObject obj = new KebabCaseDataObject(json);
+    KebabCaseDataObjectConverter.fromJson(json, obj);
+
+    assertEquals(list, obj.getListName());
+    assertEquals(map, obj.getMapName());
+    assertEquals(string, obj.getStringName());
+  }
+
+  @Test
+  public void testKebabCaseToJson() {
+    List<Object> list = new ArrayList<>();
+    list.add("foo");
+    Map<String, Object> map = new HashMap<>();
+    map.put("foo", "bar");
+    String string = "foo";
+
+    KebabCaseDataObject obj = new KebabCaseDataObject();
+    obj.setListName(list);
+    obj.setMapName(map);
+    obj.setStringName(string);
+
+    Map<String, Object> json = new HashMap<>();
+    KebabCaseDataObjectConverter.toJson(obj, json);
+
+    assertEquals(new JsonArray(list), json.get("list-name"));
+    assertEquals(new JsonObject(map), json.get("map-name"));
+    assertEquals(string, json.get("string-name"));
+    assertEquals(3, json.size());
+  }
+
+  @Test
+  public void testSnakeCaseFromJson() {
+    List<Object> list = new ArrayList<>();
+    list.add("foo");
+    Map<String, Object> map = new HashMap<>();
+    map.put("foo", "bar");
+    String string = "foo";
+
+    JsonObject json = new JsonObject();
+    json.put("list_name", new JsonArray(list));
+    json.put("map_name", new JsonObject(map));
+    json.put("string_name", string);
+
+    SnakeCaseDataObject obj = new SnakeCaseDataObject(json);
+    SnakeCaseDataObjectConverter.fromJson(json, obj);
+
+    assertEquals(list, obj.getListName());
+    assertEquals(map, obj.getMapName());
+    assertEquals(string, obj.getStringName());
+  }
+
+  @Test
+  public void testSnakeCaseToJson() {
+    List<Object> list = new ArrayList<>();
+    list.add("foo");
+    Map<String, Object> map = new HashMap<>();
+    map.put("foo", "bar");
+    String string = "foo";
+
+    SnakeCaseDataObject obj = new SnakeCaseDataObject();
+    obj.setListName(list);
+    obj.setMapName(map);
+    obj.setStringName(string);
+
+    Map<String, Object> json = new HashMap<>();
+    SnakeCaseDataObjectConverter.toJson(obj, json);
+
+    assertEquals(new JsonArray(list), json.get("list_name"));
+    assertEquals(new JsonObject(map), json.get("map_name"));
+    assertEquals(string, json.get("string_name"));
+    assertEquals(3, json.size());
+  }
+
+  @Test
+  public void testIndividualPropertyCaseFromJson() {
+    String lowerCamelCase = "foo";
+    String upperCamelCase = "bar";
+    String kebabCase = "baz";
+    String snakeCase = "qux";
+
+    JsonObject json = new JsonObject();
+    json.put("lowerCamelCase", lowerCamelCase);
+    json.put("UpperCamelCase", upperCamelCase);
+    json.put("kebab-case", kebabCase);
+    json.put("snake_case", snakeCase);
+
+    IndividualPropertyCaseDataObject obj = new IndividualPropertyCaseDataObject(json);
+    IndividualPropertyCaseDataObjectConverter.fromJson(json, obj);
+
+    assertEquals(lowerCamelCase, obj.getLowerCamelCase());
+    assertEquals(upperCamelCase, obj.getUpperCamelCase());
+    assertEquals(kebabCase, obj.getKebabCase());
+    assertEquals(snakeCase, obj.getSnakeCase());
+  }
+
+  @Test
+  public void testIndividualPropertyToJson() {
+    String lowerCamelCase = "foo";
+    String upperCamelCase = "bar";
+    String kebabCase = "baz";
+    String snakeCase = "qux";
+
+    IndividualPropertyCaseDataObject obj = new IndividualPropertyCaseDataObject();
+    obj.setLowerCamelCase(lowerCamelCase);
+    obj.setUpperCamelCase(upperCamelCase);
+    obj.setKebabCase(kebabCase);
+    obj.setSnakeCase(snakeCase);
+
+    Map<String, Object> json = new HashMap<>();
+    IndividualPropertyCaseDataObjectConverter.toJson(obj, json);
+
+    assertEquals(lowerCamelCase, json.get("lowerCamelCase"));
+    assertEquals(upperCamelCase, json.get("UpperCamelCase"));
+    assertEquals(kebabCase, json.get("kebab-case"));
+    assertEquals(snakeCase, json.get("snake_case"));
   }
 }
