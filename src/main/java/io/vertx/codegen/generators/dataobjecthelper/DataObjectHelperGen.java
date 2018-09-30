@@ -1,8 +1,6 @@
 package io.vertx.codegen.generators.dataobjecthelper;
 
 import io.vertx.codegen.*;
-import io.vertx.codegen.annotations.DataObjectProperty;
-import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.ClassKind;
 
 import java.io.PrintWriter;
@@ -112,18 +110,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
 
   private void genPropToJson(String before, String after, PropertyInfo prop, Case _case, PrintWriter writer) {
     String indent = "    ";
-
     String name = prop.getName(_case);
-    AnnotationValueInfo propertyAnnotation = prop.getAnnotation(DataObjectProperty.class.getName());
-    if (propertyAnnotation != null) {
-      String propertyName = (String)propertyAnnotation.getMember("value");
-
-      if (propertyName.trim().length() == 0) {
-        throw new GenException(null, "DataObjectProperty value for " + prop.getName() + " cannot be empty");
-      }
-
-      name = propertyName;
-    }
 
     if (prop.isList() || prop.isSet()) {
       writer.print(indent + "if (obj." + prop.getGetterMethod() + "() != null) {\n");
@@ -235,18 +222,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
 
   private void genPropFromJson(String cast, String before, String after, PropertyInfo prop, Case _case, PrintWriter writer) {
     String indent = "        ";
-
     String name = prop.getName(_case);
-    AnnotationValueInfo propertyAnnotation = prop.getAnnotation(DataObjectProperty.class.getName());
-    if (propertyAnnotation != null) {
-      String propertyName = (String)propertyAnnotation.getMember("value");
-
-      if (propertyName.trim().length() == 0) {
-        throw new GenException(null, "DataObjectProperty value for " + prop.getName() + " cannot be empty");
-      }
-
-      name = propertyName;
-    }
 
     writer.print(indent + "case \"" + name + "\":\n");
     if (prop.isList() || prop.isSet()) {

@@ -907,46 +907,4 @@ public class DataObjectTest {
     assertEquals(string, json.get("string_name"));
     assertEquals(3, json.size());
   }
-
-  @Test
-  public void testIndividualPropertyValueFromJson() {
-    List<Object> list = new ArrayList<>();
-    list.add("foo");
-    Map<String, Object> map = new HashMap<>();
-    map.put("bar", "bar");
-    String string = "baz";
-
-    JsonObject json = new JsonObject();
-    json.put("listOfFoo", new JsonArray(list));
-    json.put("map-of-bar", new JsonObject(map));
-    json.put("string_of_baz", string);
-
-    IndividualPropertyValueDataObject obj = new IndividualPropertyValueDataObject(json);
-    IndividualPropertyValueDataObjectConverter.fromJson(json, obj);
-
-    assertEquals(list, obj.getFooList());
-    assertEquals(map, obj.getBarMap());
-    assertEquals(string, obj.getBazString());
-  }
-
-  @Test
-  public void testIndividualPropertyToJson() {
-    List<Object> list = new ArrayList<>();
-    list.add("foo");
-    Map<String, Object> map = new HashMap<>();
-    map.put("bar", "bar");
-    String string = "baz";
-
-    IndividualPropertyValueDataObject obj = new IndividualPropertyValueDataObject();
-    obj.setFooList(list);
-    obj.setBarMap(map);
-    obj.setBazString(string);
-
-    Map<String, Object> json = new HashMap<>();
-    IndividualPropertyValueDataObjectConverter.toJson(obj, json);
-
-    assertEquals(new JsonArray(list), json.get("listOfFoo"));
-    assertEquals(new JsonObject(map), json.get("map-of-bar"));
-    assertEquals(string, json.get("string_of_baz"));
-  }
 }

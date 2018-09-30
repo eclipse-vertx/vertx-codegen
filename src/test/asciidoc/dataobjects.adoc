@@ -44,34 +44,6 @@
 |[[parentProperty]]`@parentProperty`|`String`|-
 |===
 
-[[IndividualPropertyValueDataObject]]
-== IndividualPropertyValueDataObject
-
-++++
-++++
-'''
-
-[cols=">25%,25%,50%"]
-[frame="topbot"]
-|===
-^|Name | Type ^| Description
-|[[bazString]]`@bazString`|`String`|-
-|===
-
-[[IndividualPropertyValueEmptyDataObject]]
-== IndividualPropertyValueEmptyDataObject
-
-++++
-++++
-'''
-
-[cols=">25%,25%,50%"]
-[frame="topbot"]
-|===
-^|Name | Type ^| Description
-|[[bazString]]`@bazString`|`String`|-
-|===
-
 [[KebabCaseDataObject]]
 == KebabCaseDataObject
 
