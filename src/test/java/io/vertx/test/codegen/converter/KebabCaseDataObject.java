@@ -1,7 +1,7 @@
 package io.vertx.test.codegen.converter;
 
+import io.vertx.codegen.Case;
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.type.CaseFormat;
 import io.vertx.core.json.JsonObject;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * @author Richard Gomez
  */
-@DataObject(generateConverter = true, caseFormat = CaseFormat.KEBAB)
+@DataObject(generateConverter = true, nameCase = Case.KEBAB)
 public class KebabCaseDataObject {
 
   private List<Object> listName;

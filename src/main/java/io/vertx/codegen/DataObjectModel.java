@@ -46,7 +46,7 @@ public class DataObjectModel implements Model {
   private boolean generateConverter;
   private boolean inheritConverter;
   private boolean publicConverter;
-  private Case converterCase;
+  private Case nameCase;
   private int constructors;
   private boolean deprecated;
   private Text deprecatedDesc;
@@ -146,8 +146,8 @@ public class DataObjectModel implements Model {
     return publicConverter;
   }
 
-  public Case getCase() {
-    return converterCase;
+  public Case getNameCase() {
+    return nameCase;
   }
 
   public boolean hasEmptyConstructor() {
@@ -176,7 +176,7 @@ public class DataObjectModel implements Model {
     vars.put("generateConverter", generateConverter);
     vars.put("inheritConverter", inheritConverter);
     vars.put("publicConverter", publicConverter);
-    vars.put("converterCase", converterCase);
+    vars.put("nameCase", nameCase);
     vars.put("concrete", concrete);
     vars.put("isClass", isClass);
     vars.put("properties", propertyMap.values());
@@ -210,7 +210,7 @@ public class DataObjectModel implements Model {
     DataObject ann = modelElt.getAnnotation(DataObject.class);
     this.generateConverter = ann.generateConverter();
     this.publicConverter = ann.publicConverter();
-    this.converterCase = ann.caseFormat().getCase();
+    this.nameCase = ann.nameCase();
     this.inheritConverter = ann.inheritConverter();
     this.isClass = modelElt.getKind() == ElementKind.CLASS;
     this.concrete = isClass && !modelElt.getModifiers().contains(Modifier.ABSTRACT);

@@ -83,7 +83,7 @@ public class PropertyInfo {
       return name;
     }
 
-    return _case.format(Case.CAMEL.parse(name));
+    return Case.LOWER_CAMEL.to(_case, name);
   }
 
   /**

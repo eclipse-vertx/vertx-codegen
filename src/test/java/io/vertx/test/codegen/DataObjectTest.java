@@ -1,27 +1,21 @@
 package io.vertx.test.codegen;
 
 import io.vertx.codegen.*;
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.type.*;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.annotations.EmptyAnnotation;
 import io.vertx.test.codegen.annotations.TestEnum;
-import io.vertx.test.codegen.converter.IndividualPropertyValueEmptyDataObject;
 import io.vertx.test.codegen.converter.UpperCamelCaseDataObject;
 import io.vertx.test.codegen.testapi.InterfaceDataObject;
 import io.vertx.test.codegen.testdataobject.*;
 import io.vertx.test.codegen.testdataobject.imported.Imported;
 import org.junit.Test;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -839,7 +833,7 @@ public class DataObjectTest {
   public void testConverterCaseDataObject() throws Exception {
     DataObjectModel model = new GeneratorHelper().generateDataObject(UpperCamelCaseDataObject.class);
     assertTrue(model.getGenerateConverter());
-    assertEquals(Case.CAMEL, model.getCase());
+    assertEquals(Case.UPPER_CAMEL, model.getNameCase());
   }
 
   private void assertInvalidDataObject(Class<?> dataObjectClass) throws Exception {

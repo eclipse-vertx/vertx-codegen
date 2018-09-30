@@ -1,6 +1,6 @@
 package io.vertx.codegen.annotations;
 
-import io.vertx.codegen.type.CaseFormat;
+import io.vertx.codegen.Case;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -76,7 +76,7 @@ public @interface DataObject {
   boolean publicConverter() default true;
 
   /**
-   * @return naming scheme for the converter to use
+   * @return which case the converter should use for names
    */
-  CaseFormat caseFormat() default CaseFormat.LOWER_CAMEL;
+  Case nameCase() default Case.LOWER_CAMEL;
 }
