@@ -44,6 +44,21 @@
 |[[parentProperty]]`@parentProperty`|`String`|-
 |===
 
+[[IgnoreConverterDataObject]]
+== IgnoreConverterDataObject
+
+++++
+++++
+'''
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[ignoredProperty]]`@ignoredProperty`|`String`|-
+|[[regularProperty]]`@regularProperty`|`String`|-
+|===
+
 [[NoConverterDataObject]]
 == NoConverterDataObject
 

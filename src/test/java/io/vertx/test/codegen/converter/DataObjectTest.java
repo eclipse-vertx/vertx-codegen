@@ -722,6 +722,37 @@ public class DataObjectTest {
     assertEquals(expectedJson, json);
   }
 
+  @Test
+  public void testIgnoreConverterFromJson() {
+    String ignored = "foo";
+    String regular = "bar";
+
+    JsonObject json = new JsonObject();
+    json.put("ignoredProperty", ignored);
+    json.put("regularProperty", regular);
+
+    IgnoreConverterDataObject obj = new IgnoreConverterDataObject(json);
+
+    assertNull(obj.getIgnoredProperty());
+    assertEquals(regular, obj.getRegularProperty());
+  }
+
+  @Test
+  public void testIgnoreConverterToJson() {
+    String ignored = "foo";
+    String regular = "bar";
+
+    IgnoreConverterDataObject obj = new IgnoreConverterDataObject();
+    obj.setIgnoredProperty(ignored);
+    obj.setRegularProperty(regular);
+
+    Map<String, Object> json = new HashMap<>();
+    IgnoreConverterDataObjectConverter.toJson(obj, json);
+
+    assertNull(json.get("ignoredProperty"));
+    assertEquals(regular, json.get("regularProperty"));
+  }
+
   private String toBase64(Buffer buffer) {
     return Base64.getEncoder().encodeToString(buffer.getBytes());
   }
