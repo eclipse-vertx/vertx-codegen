@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * What we need to use from type use annotations, wether it uses <i>lang model</i> api
+ * What we need to use from type use annotations, whether it uses <i>lang model</i> api
  * or <i>lang reflect</i> api.
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>

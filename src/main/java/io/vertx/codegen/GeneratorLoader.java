@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 public interface GeneratorLoader {
 
   /**
-   * Load the generator from the processing environement.
+   * Load the generator from the processing environment.
    *
    * @param processingEnv the env
    * @return the stream of generator

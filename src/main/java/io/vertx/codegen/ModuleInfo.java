@@ -52,7 +52,7 @@ public class ModuleInfo {
   }
 
   /**
-   * Resolve a module info for the specified {@code pkgElt} argument, returns null for undertermined.
+   * Resolve a module info for the specified {@code pkgElt} argument, returns null for undetermined.
    *
    * @param elementUtils the element utils
    * @param pkgElt the package element

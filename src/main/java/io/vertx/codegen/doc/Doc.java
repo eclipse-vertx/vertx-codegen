@@ -15,7 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Documention of a program element, the documentation is a composed of a:
+ * Documentation of a program element, the documentation is a composed of a:
  *
  * <ul>
  *   <li>a first sentence</li>

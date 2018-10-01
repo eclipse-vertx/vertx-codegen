@@ -20,8 +20,8 @@ public class ClassTypeInfo extends TypeInfo {
   static {
     Class<?>[] boxes = {Boolean.class, Byte.class, Short.class, Integer.class, Long.class,
         Float.class, Double.class, Character.class};
-    for (Class<?> boxe : boxes) {
-      String name = boxe.getName();
+    for (Class<?> box : boxes) {
+      String name = box.getName();
       PRIMITIVES.put(name, new io.vertx.codegen.type.ClassTypeInfo(ClassKind.BOXED_PRIMITIVE, name, null, false, Collections.emptyList()));
     }
   }

@@ -49,7 +49,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print(" */\n");
     writer.print(visibility + " class " + simpleName + "Converter {\n");
     writer.print("\n");
-    generateFromson(visibility, inheritConverter, model, writer);
+    generateFromJson(visibility, inheritConverter, model, writer);
     writer.print("\n");
     generateToJson(visibility, inheritConverter, model, writer);
     writer.print("}\n");
@@ -137,7 +137,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     }
   }
 
-  private void generateFromson(String visibility, boolean inheritConverter, DataObjectModel model, PrintWriter writer) {
+  private void generateFromJson(String visibility, boolean inheritConverter, DataObjectModel model, PrintWriter writer) {
     writer.print("  " + visibility + " static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, " + model.getType().getSimpleName() + " obj) {\n");
     writer.print("    for (java.util.Map.Entry<String, Object> member : json) {\n");
     writer.print("      switch (member.getKey()) {\n");

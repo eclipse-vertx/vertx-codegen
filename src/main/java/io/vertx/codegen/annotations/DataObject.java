@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
  * </ul>
  * <p/>
  *
- * A data object can be an interface or an abstract class to accomodate the api design. Data object can extend
+ * A data object can be an interface or an abstract class to accommodate the api design. Data object can extend
  * other data objects.<p/>
  *
  * Sometimes data object can have a {@code toJson()} method that takes no arguments and returns a {@code JsonObject} representing
@@ -69,7 +69,7 @@ public @interface DataObject {
   boolean inheritConverter() default false;
 
   /**
-   * @return wether the generated converter should be public or package private
+   * @return whether the generated converter should be public or package private
    */
   boolean publicConverter() default true;
 }

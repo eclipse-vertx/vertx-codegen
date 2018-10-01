@@ -141,14 +141,14 @@ public abstract class Token {
     }
   }
 
-  // Slight modification to accomodate left whitespace trimming
+  // Slight modification to accommodate left whitespace trimming
   private static final Pattern LINK_REFERENCE_PATTERN = Pattern.compile(
       "^\\s*(" +
           Helper.LINK_REFERENCE_PATTERN.pattern() +
           ")");
 
   /**
-   * Create a tag mapper that remaps tags with extra contexutal info like @link tags.
+   * Create a tag mapper that remaps tags with extra contextual info like @link tags.
    *
    * @param elementUtils the element utils
    * @param typeUtils the type utils
