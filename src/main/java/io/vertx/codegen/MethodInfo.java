@@ -24,7 +24,13 @@ import io.vertx.codegen.type.ParameterizedTypeInfo;
 import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.type.TypeVariableInfo;
 
-import java.util.*;
+import javax.lang.model.element.Name;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -45,6 +51,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   private List<ParamInfo> params;
   private boolean deprecated;
   private Text deprecatedDesc;
+  private Name companionObjectName;
 
   public MethodInfo(Set<ClassTypeInfo> ownerTypes, String name,
                     TypeInfo returnType, Text returnDescription, boolean fluent,  boolean cacheReturn,
@@ -283,6 +290,19 @@ public class MethodInfo implements Comparable<MethodInfo> {
   public MethodInfo setDefaultMethod(boolean defaultMethod) {
     this.defaultMethod = defaultMethod;
     return this;
+  }
+
+  public Name getCompanionObjectName() {
+    return companionObjectName;
+  }
+
+  public MethodInfo setCompanion(Name companionObjectName) {
+    this.companionObjectName = companionObjectName;
+    return this;
+  }
+
+  public boolean isCompanionMethod() {
+    return companionObjectName != null;
   }
 
   /**
