@@ -716,9 +716,9 @@ public class ClassModel implements Model {
             if (meth != null) {
               meth.collectImports(collectedTypes);
               if (meth.isContainingAnyJavaType()) {
-//                anyJavaTypeMethods.put(elt, meth);
+                anyJavaTypeMethods.put(elt, meth);
               } else {
-//                methods.put(elt, meth);
+                methods.put(elt, meth);
               }
             }
           });

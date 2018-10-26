@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -51,7 +52,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   private List<ParamInfo> params;
   private boolean deprecated;
   private Text deprecatedDesc;
-  private Name companionObjectName;
+  private Name companion;
 
   public MethodInfo(Set<ClassTypeInfo> ownerTypes, String name,
                     TypeInfo returnType, Text returnDescription, boolean fluent,  boolean cacheReturn,
@@ -292,17 +293,17 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return this;
   }
 
-  public Name getCompanionObjectName() {
-    return companionObjectName;
+  public String getCompanion() {
+    return Objects.toString(companion);
   }
 
   public MethodInfo setCompanion(Name companionObjectName) {
-    this.companionObjectName = companionObjectName;
+    this.companion = companionObjectName;
     return this;
   }
 
   public boolean isCompanionMethod() {
-    return companionObjectName != null;
+    return companion != null;
   }
 
   /**
