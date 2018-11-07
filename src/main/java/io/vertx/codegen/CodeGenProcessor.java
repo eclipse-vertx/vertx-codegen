@@ -21,7 +21,17 @@ import javax.tools.StandardLocation;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
-import java.util.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -243,11 +253,11 @@ public class CodeGenProcessor extends AbstractProcessor {
       }
       // Generate files
       generatedFiles.values().forEach(generated -> {
-        // todo: need to rewrite "/" according to platform file separator
         boolean shouldWarningsBeSuppressed = false;
         File file;
-        if (generated.uri.startsWith("/")) {
-          file = new File(generated.uri);
+        Path path = Paths.get(generated.uri);
+        if (path.isAbsolute()) {
+          file = path.toFile();
         } else if (outputDirectory != null) {
           file = new File(outputDirectory, generated.uri);
         } else {
