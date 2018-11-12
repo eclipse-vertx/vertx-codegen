@@ -18,6 +18,7 @@ package io.vertx.codegen;
 
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Text;
+import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.ClassTypeInfo;
 import io.vertx.codegen.type.ParameterizedTypeInfo;
@@ -53,6 +54,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   private boolean deprecated;
   private Text deprecatedDesc;
   private Name companion;
+  private List<AnnotationValueInfo> annotations;
 
   public MethodInfo(Set<ClassTypeInfo> ownerTypes, String name,
                     TypeInfo returnType, Text returnDescription, boolean fluent,  boolean cacheReturn,
@@ -337,6 +339,15 @@ public class MethodInfo implements Comparable<MethodInfo> {
 
   public MethodInfo setTypeParams(List<TypeParamInfo.Method> typeParams) {
     this.typeParams = typeParams;
+    return this;
+  }
+
+  public List<AnnotationValueInfo> getAnnotations() {
+    return annotations;
+  }
+
+  public MethodInfo setAnnotations(List<AnnotationValueInfo> annotations) {
+    this.annotations = annotations;
     return this;
   }
 

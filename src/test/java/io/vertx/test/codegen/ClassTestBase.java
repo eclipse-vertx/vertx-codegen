@@ -111,6 +111,7 @@ public abstract class ClassTestBase {
       new GeneratorHelper().generateClass(c, rest);
       fail("Should throw exception");
     } catch (GenException e) {
+      int i = 0;
       // OK
     }
   }
