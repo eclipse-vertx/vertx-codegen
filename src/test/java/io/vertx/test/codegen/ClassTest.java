@@ -373,7 +373,7 @@ public class ClassTest extends ClassTestBase {
     String methodName = "methodWithListParams";
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, methodName, 7, "void", MethodKind.OTHER);
+    checkMethod(method, methodName, 8, "void", MethodKind.OTHER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "listString", new TypeLiteral<List<String>>(){});
     checkParam(params.get(1), "listLong", new TypeLiteral<List<Long>>(){});
@@ -382,6 +382,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(4), "listVertxGen", new TypeLiteral<List<VertxGenClass1>>(){});
     checkParam(params.get(5), "listDataObject", new TypeLiteral<List<TestDataObject>>(){});
     checkParam(params.get(6), "listEnum", new TypeLiteral<List<TestEnum>>(){});
+    checkParam(params.get(7), "listObject", new TypeLiteral<List<Object>>(){});
   }
 
   @Test
@@ -396,19 +397,16 @@ public class ClassTest extends ClassTestBase {
     String methodName = "methodWithSetParams";
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, methodName, 7, "void", MethodKind.OTHER);
+    checkMethod(method, methodName, 8, "void", MethodKind.OTHER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "setString", new TypeLiteral<Set<String>>(){});
-    checkParam(params.get(1), "setLong", new TypeLiteral<Set<Long>>() {
-    });
+    checkParam(params.get(1), "setLong", new TypeLiteral<Set<Long>>() {});
     checkParam(params.get(2), "setJsonObject", new TypeLiteral<Set<JsonObject>>() {});
-    checkParam(params.get(3), "setJsonArray", new TypeLiteral<Set<JsonArray>>() {
-    });
-    checkParam(params.get(4), "setVertxGen", new TypeLiteral<Set<VertxGenClass1>>() {
-    });
+    checkParam(params.get(3), "setJsonArray", new TypeLiteral<Set<JsonArray>>() {});
+    checkParam(params.get(4), "setVertxGen", new TypeLiteral<Set<VertxGenClass1>>() {});
     checkParam(params.get(5), "setDataObject", new TypeLiteral<Set<TestDataObject>>(){});
-    checkParam(params.get(6), "setEnum", new TypeLiteral<Set<TestEnum>>() {
-    });
+    checkParam(params.get(6), "setEnum", new TypeLiteral<Set<TestEnum>>() {});
+    checkParam(params.get(7), "setObject", new TypeLiteral<Set<Object>>() {});
   }
 
   @Test
@@ -423,13 +421,14 @@ public class ClassTest extends ClassTestBase {
     String methodName = "methodWithMapParams";
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, methodName, 5, "void", MethodKind.OTHER);
+    checkMethod(method, methodName, 6, "void", MethodKind.OTHER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "mapString", new TypeLiteral<Map<String, String>>(){});
     checkParam(params.get(1), "mapLong", new TypeLiteral<Map<String, Long>>(){});
     checkParam(params.get(2), "mapJsonObject", new TypeLiteral<Map<String, JsonObject>>(){});
     checkParam(params.get(3), "mapJsonArray", new TypeLiteral<Map<String, JsonArray>>(){});
     checkParam(params.get(4), "mapVertxGen", new TypeLiteral<Map<String, VertxGenClass1>>(){});
+    checkParam(params.get(5), "mapObject", new TypeLiteral<Map<String, Object>>(){});
   }
 
   @Test

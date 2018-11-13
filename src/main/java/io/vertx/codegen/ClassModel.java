@@ -446,6 +446,7 @@ public class ClassModel implements Model {
     return argumentKind.basic
       || argumentKind.json
       || isVertxGenInterface(argument, false)
+      || argumentKind == ClassKind.OBJECT
       || (allowAnyJavaType && argumentKind == ClassKind.OTHER);
   }
 

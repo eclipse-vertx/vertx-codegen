@@ -30,6 +30,13 @@ import java.util.Set;
 @VertxGen
 public interface MethodWithValidSetParams {
 
-  void methodWithSetParams(Set<String> setString, Set<Long> setLong, Set<JsonObject> setJsonObject, Set<JsonArray> setJsonArray, Set<VertxGenClass1> setVertxGen,
-      Set<TestDataObject> setDataObject, Set<TestEnum> setEnum);
+  void methodWithSetParams(
+    Set<String> setString,
+    Set<Long> setLong,
+    Set<JsonObject> setJsonObject,
+    Set<JsonArray> setJsonArray,
+    Set<VertxGenClass1> setVertxGen,
+    Set<TestDataObject> setDataObject,
+    Set<TestEnum> setEnum,
+    Set<Object> setObject);
 }

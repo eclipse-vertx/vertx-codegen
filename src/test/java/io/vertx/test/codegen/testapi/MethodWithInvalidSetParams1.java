@@ -26,6 +26,6 @@ import java.util.Set;
 @VertxGen
 public interface MethodWithInvalidSetParams1 {
 
-  void methodWithInvalidSetParams(Set<Object> set);
+  void methodWithInvalidSetParams(Set<Thread> set);
 
 }

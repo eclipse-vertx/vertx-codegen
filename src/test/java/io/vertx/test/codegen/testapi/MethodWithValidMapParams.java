@@ -32,5 +32,6 @@ public interface MethodWithValidMapParams {
                            Map<String, Long> mapLong,
                            Map<String, JsonObject> mapJsonObject,
                            Map<String, JsonArray> mapJsonArray,
-                           Map<String, VertxGenClass1> mapVertxGen);
+                           Map<String, VertxGenClass1> mapVertxGen,
+                           Map<String, Object> mapObject);
 }
