@@ -1380,8 +1380,25 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testOverloadCheckIgnoreAnyJavaTypeMethod() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(OverloadCheckIgnoreEnhancedMethod.class);
+    assertEquals(1, model.getMethodMap().get("meth").size());
     assertEquals(1, model.getMethods().size());
     assertEquals(1, model.getAnyJavaTypeMethods().size());
+  }
+
+  @Test
+  public void testMethodPromotedToAnyJavaType() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(MethodPromotedToAnyJavaType.class);
+    assertNull(model.getMethodMap().get("regularMethod"));
+    assertEquals(0, model.getMethods().size());
+    assertEquals(1, model.getAnyJavaTypeMethods().size());
+  }
+
+  @Test
+  public void testInterfaceWithAnyJavaTypeMethodInheritedFromAncestor() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithAnyJavaTypeMethodInheritedFromAncestor.class);
+    assertNull(model.getMethodMap().get("regularMethod"));
+    assertEquals(0, model.getMethods().size());
+    assertEquals(0, model.getAnyJavaTypeMethods().size());
   }
 
   @Test

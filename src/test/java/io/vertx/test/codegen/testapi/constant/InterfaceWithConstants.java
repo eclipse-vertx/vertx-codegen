@@ -1,5 +1,6 @@
 package io.vertx.test.codegen.testapi.constant;
 
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.codegen.testmodel.TestEnum;
@@ -84,9 +85,9 @@ public interface InterfaceWithConstants {
   Map<String, JsonArray> JSON_ARRAY_MAP = null;
 
   // Any java type
-  @SuppressWarnings("codegen-allow-any-java-type") Thread THREAD = null;
-  @SuppressWarnings("codegen-allow-any-java-type") List<Thread> THREAD_LIST = null;
-  @SuppressWarnings("codegen-allow-any-java-type") Set<Thread> THREAD_SET = null;
-  @SuppressWarnings("codegen-allow-any-java-type") Map<String, Thread> THREAD_MAP = null;
+  @GenIgnore(GenIgnore.PERMITTED_TYPE) Thread THREAD = null;
+  @GenIgnore(GenIgnore.PERMITTED_TYPE) List<Thread> THREAD_LIST = null;
+  @GenIgnore(GenIgnore.PERMITTED_TYPE) Set<Thread> THREAD_SET = null;
+  @GenIgnore(GenIgnore.PERMITTED_TYPE) Map<String, Thread> THREAD_MAP = null;
 
 }

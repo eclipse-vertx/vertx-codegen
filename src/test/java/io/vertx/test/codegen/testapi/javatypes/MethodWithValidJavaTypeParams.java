@@ -16,6 +16,7 @@
 
 package io.vertx.test.codegen.testapi.javatypes;
 
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -30,38 +31,38 @@ import java.util.function.Function;
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @VertxGen()
-@SuppressWarnings("codegen-allow-any-java-type")
+@GenIgnore(GenIgnore.PERMITTED_TYPE)
 public interface MethodWithValidJavaTypeParams {
 
-  @SuppressWarnings("codegen-allow-any-java-type")
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   void methodWithParams(Socket socket,
                         List<Socket> listSocket,
                         Set<Socket> setSocket,
                         Map<String, Socket> mapSocket);
 
-  @SuppressWarnings("codegen-allow-any-java-type")
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   void methodWithHandlerParams(Handler<Socket> socketHandler,
                                Handler<List<Socket>> listSocketHandler,
                                Handler<Set<Socket>> setSocketHandler,
                                Handler<Map<String, Socket>> mapSocketHandler);
 
-  @SuppressWarnings("codegen-allow-any-java-type")
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   void methodWithHandlerAsyncResultParams(Handler<AsyncResult<Socket>> socketHandler,
                                           Handler<AsyncResult<List<Socket>>> listSocketHandler,
                                           Handler<AsyncResult<Set<Socket>>> setSocketHandler,
                                           Handler<AsyncResult<Map<String, Socket>>> mapSocketHandler);
 
-  @SuppressWarnings("codegen-allow-any-java-type")
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   void methodWithFunctionParams(Function<Socket, Socket> socketFunction,
                                 Function<List<Socket>, List<Socket>> listSocketFunction,
                                 Function<Set<Socket>, Set<Socket>> setSocketFunction,
                                 Function<Map<String, Socket>, Map<String, Socket>> mapSocketFunction);
 
-  @SuppressWarnings("codegen-allow-any-java-type")
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   void methodWithArrayParams(byte[] byteArray,
                              boolean[] booleanArray);
 
-  @SuppressWarnings("codegen-allow-any-java-type")
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   void methodWithParameterizedParams(Iterable<String> iterableString);
 
 }

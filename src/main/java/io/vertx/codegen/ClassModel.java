@@ -703,9 +703,18 @@ public class ClassModel implements Model {
       elementUtils.getAllMembers((TypeElement) elem).stream().
         filter(elt -> !typeUtils.isSameType(elt.getEnclosingElement().asType(), objectType)).
         flatMap(Helper.FILTER_FIELD).
-        filter(elt -> !isGenIgnore(elt)).
         forEach(elt -> {
-          boolean allowAnyJavaType = Helper.allowAnyJavaType(elt);
+          GenIgnore genIgnore = elt.getAnnotation(GenIgnore.class);
+          boolean allowAnyJavaType;
+          if (genIgnore != null) {
+            if (!Arrays.asList(genIgnore.value()).contains(GenIgnore.PERMITTED_TYPE)) {
+              // Regular ignore
+              return;
+            }
+            allowAnyJavaType = true;
+          } else {
+            allowAnyJavaType = false;
+          }
           ConstantInfo cst = fieldMethod(elt, allowAnyJavaType);
           if (cst != null) {
             cst.getType().collectImports(collectedTypes);
@@ -718,13 +727,22 @@ public class ClassModel implements Model {
       elementUtils.getAllMembers((TypeElement) elem).stream().
           filter(elt -> !typeUtils.isSameType(elt.getEnclosingElement().asType(), objectType)).
           flatMap(Helper.FILTER_METHOD).
-          filter(elt -> !isGenIgnore(elt)).
           forEach(elt -> {
-            boolean allowAnyJavaType = Helper.allowAnyJavaType(elt);
+            GenIgnore genIgnore = elt.getAnnotation(GenIgnore.class);
+            boolean allowAnyJavaType;
+            if (genIgnore != null) {
+              if (!Arrays.asList(genIgnore.value()).contains(GenIgnore.PERMITTED_TYPE)) {
+                // Regular ignore
+                return;
+              }
+              allowAnyJavaType = true;
+            } else {
+              allowAnyJavaType = false;
+            }
             MethodInfo meth = createMethod(elt, allowAnyJavaType);
             if (meth != null) {
               meth.collectImports(collectedTypes);
-              if (meth.isContainingAnyJavaType()) {
+              if (allowAnyJavaType) {
                 anyJavaTypeMethods.put(elt, meth);
               } else {
                 methods.put(elt, meth);
@@ -740,7 +758,7 @@ public class ClassModel implements Model {
 
         // Ambiguous
         try {
-          MethodOverloadChecker.INSTANCE.checkAmbiguous(meths.stream());
+          MethodOverloadChecker.INSTANCE.checkAmbiguous(meths.stream().filter(m -> !anyJavaTypeMethods.containsValue(m)));
         } catch (RuntimeException e) {
           throw new GenException(elem, e.getMessage());
         }
@@ -952,7 +970,7 @@ public class ClassModel implements Model {
     }
 
     // Add the method to the method map (it's a bit ugly but useful for JS and Ruby)
-    if (!methodInfo.isContainingAnyJavaType()) {
+    if (!allowAnyJavaType) {
       checkMethod(methodInfo);
       List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
       if (methodsByName == null) {

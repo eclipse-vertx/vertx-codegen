@@ -693,11 +693,4 @@ public class Helper {
         filter(exeElt -> exeElt.getSimpleName().toString().equals("toJson") && typeUtils.isSameType(jsonType, exeElt.getReturnType())).
         count() > 0;
   }
-
-  private static final String CODEGEN_JAVA_ALLOW_ANY_JAVA_TYPE = "codegen-allow-any-java-type";
-
-  public static boolean allowAnyJavaType(Element elt) {
-    SuppressWarnings suppressWarnings = elt.getAnnotation(SuppressWarnings.class);
-    return suppressWarnings != null && Arrays.asList(suppressWarnings.value()).contains(CODEGEN_JAVA_ALLOW_ANY_JAVA_TYPE);
-  }
 }
