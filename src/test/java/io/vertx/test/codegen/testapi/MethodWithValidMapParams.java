@@ -28,5 +28,9 @@ import java.util.Map;
 @VertxGen
 public interface MethodWithValidMapParams {
 
-  void methodWithMapParams(Map<String, String> mapString, Map<String, Long> mapLong, Map<String, JsonObject> mapJsonObject, Map<String, JsonArray> mapJsonArray, Map<String, VertxGenClass1> mapVertxGen);
+  void methodWithMapParams(Map<String, String> mapString,
+                           Map<String, Long> mapLong,
+                           Map<String, JsonObject> mapJsonObject,
+                           Map<String, JsonArray> mapJsonArray,
+                           Map<String, VertxGenClass1> mapVertxGen);
 }

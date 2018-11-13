@@ -428,22 +428,25 @@ public class ClassModel implements Model {
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
       TypeInfo argument = ((ParameterizedTypeInfo) type).getArgs().get(0);
       if (type.getKind() != ClassKind.MAP) {
-        if (argument.getKind().basic ||
-          argument.getKind().json ||
-          isVertxGenInterface(argument, false) ||
+        if (isLegalArgumentContainerParam(argument, allowAnyJavaType) ||
           isLegalDataObjectTypeParam(argument) ||
-          argument.getKind() == ClassKind.ENUM ||
-          (allowAnyJavaType && argument.getKind() == ClassKind.OTHER)) {
+          argument.getKind() == ClassKind.ENUM) {
           return true;
         }
       } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
         argument = ((ParameterizedTypeInfo) type).getArgs().get(1);
-        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument, false) || (allowAnyJavaType && argument.getKind() == ClassKind.OTHER)) {
-          return true;
-        }
+        return isLegalArgumentContainerParam(argument, allowAnyJavaType);
       }
     }
     return false;
+  }
+
+  private boolean isLegalArgumentContainerParam(TypeInfo argument, boolean allowAnyJavaType) {
+    ClassKind argumentKind = argument.getKind();
+    return argumentKind.basic
+      || argumentKind.json
+      || isVertxGenInterface(argument, false)
+      || (allowAnyJavaType && argumentKind == ClassKind.OTHER);
   }
 
   protected boolean isLegalContainerReturn(TypeInfo type, boolean allowAnyJavaType) {
