@@ -30,16 +30,19 @@ public interface MethodWithValidHandlerParams {
                                Handler<List<Long>> listLongHandler, Handler<List<Float>> listFloatHandler, Handler<List<Double>> listDoubleHandler,
                                Handler<List<Boolean>> listBooleanHandler, Handler<List<Character>> listCharHandler, Handler<List<String>> listStrHandler,
                                Handler<List<VertxGenClass1>> listVertxGenHandler, Handler<List<JsonObject>> listJsonObjectHandler, Handler<List<JsonArray>> listJsonArrayHandler,
-                               Handler<List<TestDataObject>> listDataObjectHandler, Handler<List<TestEnum>> listEnumHandler);
+                               Handler<List<TestDataObject>> listDataObjectHandler, Handler<List<TestEnum>> listEnumHandler,
+                               Handler<List<Object>> listObjectHandler);
 
   void methodWithSetHandlerParams(Handler<Set<Byte>> setByteHandler, Handler<Set<Short>> setShortHandler, Handler<Set<Integer>> setIntHandler,
                                    Handler<Set<Long>> setLongHandler, Handler<Set<Float>> setFloatHandler, Handler<Set<Double>> setDoubleHandler,
                                    Handler<Set<Boolean>> setBooleanHandler, Handler<Set<Character>> setCharHandler, Handler<Set<String>> setStrHandler,
                                    Handler<Set<VertxGenClass1>> setVertxGenHandler, Handler<Set<JsonObject>> setJsonObjectHandler, Handler<Set<JsonArray>> setJsonArrayHandler,
-                                   Handler<Set<TestDataObject>> setDataObjectHandler, Handler<Set<TestEnum>> setEnumHandler);
+                                   Handler<Set<TestDataObject>> setDataObjectHandler, Handler<Set<TestEnum>> setEnumHandler,
+                                   Handler<Set<Object>> setObjectHandler);
 
   void methodWithMapHandlerParams(Handler<Map<String,Byte>> mapByteHandler, Handler<Map<String,Short>> mapShortHandler, Handler<Map<String,Integer>> mapIntHandler,
                                   Handler<Map<String,Long>> mapLongHandler, Handler<Map<String,Float>> mapFloatHandler, Handler<Map<String,Double>> mapDoubleHandler,
                                   Handler<Map<String,Boolean>> mapBooleanHandler, Handler<Map<String,Character>> mapCharHandler, Handler<Map<String,String>> mapStrHandler,
-                                  Handler<Map<String,JsonObject>> mapJsonObjectHandler, Handler<Map<String,JsonArray>> mapJsonArrayHandler);
+                                  Handler<Map<String,JsonObject>> mapJsonObjectHandler, Handler<Map<String,JsonArray>> mapJsonArrayHandler,
+                                  Handler<Map<String, Object>> mapObjectHandler);
 }

@@ -33,5 +33,7 @@ public interface MethodWithValidListReturn {
   List<TestDataObject> dataObjectList();
   List<TestEnum> enumList();
 
+  List<Object> objectList();
+
 
 }

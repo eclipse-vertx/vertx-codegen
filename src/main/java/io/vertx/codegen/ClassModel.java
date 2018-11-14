@@ -458,24 +458,24 @@ public class ClassModel implements Model {
           return false;
         }
         TypeInfo valueType = args.get(1);
-        if (valueType.getKind().basic ||
-          valueType.getKind().json ||
-          (allowAnyJavaType && valueType.getKind() == ClassKind.OTHER)) {
-          return true;
-        }
+        return isLegalArgumentContainerReturn(valueType, allowAnyJavaType);
       } else {
         TypeInfo valueType = args.get(0);
-        if (valueType.getKind().basic ||
-            valueType.getKind().json ||
-            valueType.getKind() == ClassKind.ENUM ||
-            isVertxGenInterface(valueType, false) ||
-            (allowAnyJavaType && valueType.getKind() == ClassKind.OTHER )||
-            isLegalDataObjectTypeReturn(valueType)) {
-          return true;
-        }
+        return isLegalArgumentContainerReturn(valueType, allowAnyJavaType) ||
+          valueType.getKind() == ClassKind.ENUM ||
+          isVertxGenInterface(valueType, false) ||
+          isLegalDataObjectTypeReturn(valueType);
       }
     }
     return false;
+  }
+
+  private boolean isLegalArgumentContainerReturn(TypeInfo argument, boolean allowAnyJavaType) {
+    ClassKind argumentKind = argument.getKind();
+    return argumentKind.basic
+      || argumentKind.json
+      || argumentKind == ClassKind.OBJECT
+      || (allowAnyJavaType && argumentKind == ClassKind.OTHER);
   }
 
   private boolean isVertxGenInterface(TypeInfo type, boolean allowParameterized) {
