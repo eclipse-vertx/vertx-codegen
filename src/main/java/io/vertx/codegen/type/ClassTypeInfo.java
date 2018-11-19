@@ -75,7 +75,7 @@ public class ClassTypeInfo extends TypeInfo {
   }
 
   public String getSimpleName(Case _case) {
-    return _case.format(Case.CAMEL.parse(simpleName));
+    return _case.format(Case.UPPER_CAMEL.parse(simpleName));
   }
 
   @Override

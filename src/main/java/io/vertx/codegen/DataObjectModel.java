@@ -46,6 +46,7 @@ public class DataObjectModel implements Model {
   private boolean generateConverter;
   private boolean inheritConverter;
   private boolean publicConverter;
+  private Case nameCase;
   private int constructors;
   private boolean deprecated;
   private Text deprecatedDesc;
@@ -145,21 +146,28 @@ public class DataObjectModel implements Model {
     return publicConverter;
   }
 
+  public Case getNameCase() {
+    return nameCase;
+  }
+
   public boolean hasEmptyConstructor() {
     return (constructors & 1) == 1;
   }
+
   /**
    * @return {@code true} if the class has a {@code @Deprecated} annotation
    */
   public boolean isDeprecated() {
     return deprecated;
   }
+
   /**
    * @return the description of deprecated
    */
   public Text getDeprecatedDesc() {
     return deprecatedDesc;
   }
+
   @Override
   public Map<String, Object> getVars() {
     Map<String, Object> vars = Model.super.getVars();
@@ -168,6 +176,7 @@ public class DataObjectModel implements Model {
     vars.put("generateConverter", generateConverter);
     vars.put("inheritConverter", inheritConverter);
     vars.put("publicConverter", publicConverter);
+    vars.put("nameCase", nameCase);
     vars.put("concrete", concrete);
     vars.put("isClass", isClass);
     vars.put("properties", propertyMap.values());
@@ -201,6 +210,7 @@ public class DataObjectModel implements Model {
     DataObject ann = modelElt.getAnnotation(DataObject.class);
     this.generateConverter = ann.generateConverter();
     this.publicConverter = ann.publicConverter();
+    this.nameCase = ann.nameCase();
     this.inheritConverter = ann.inheritConverter();
     this.isClass = modelElt.getKind() == ElementKind.CLASS;
     this.concrete = isClass && !modelElt.getModifiers().contains(Modifier.ABSTRACT);
@@ -305,7 +315,6 @@ public class DataObjectModel implements Model {
       }
     }
   }
-
 
 
   @SuppressWarnings("unchecked")

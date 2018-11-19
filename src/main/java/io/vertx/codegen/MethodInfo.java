@@ -78,7 +78,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   }
 
   public String getName(Case _case) {
-    return _case.format(Case.CAMEL.parse(name));
+    return _case.format(Case.UPPER_CAMEL.parse(name));
   }
 
   public MethodKind getKind() {

@@ -44,6 +44,62 @@
 |[[parentProperty]]`@parentProperty`|`String`|-
 |===
 
+[[IndividualPropertyValueDataObject]]
+== IndividualPropertyValueDataObject
+
+++++
+++++
+'''
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[bazString]]`@bazString`|`String`|-
+|===
+
+[[IndividualPropertyValueEmptyDataObject]]
+== IndividualPropertyValueEmptyDataObject
+
+++++
+++++
+'''
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[bazString]]`@bazString`|`String`|-
+|===
+
+[[KebabCaseDataObject]]
+== KebabCaseDataObject
+
+++++
+++++
+'''
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[stringName]]`@stringName`|`String`|-
+|===
+
+[[LowerCamelCaseDataObject]]
+== LowerCamelCaseDataObject
+
+++++
+++++
+'''
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[stringName]]`@stringName`|`String`|-
+|===
+
 [[NoConverterDataObject]]
 == NoConverterDataObject
 
@@ -83,6 +139,20 @@
 |===
 ^|Name | Type ^| Description
 |[[values]]`@values`|`Array of String`|-
+|===
+
+[[SnakeCaseDataObject]]
+== SnakeCaseDataObject
+
+++++
+++++
+'''
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[stringName]]`@stringName`|`String`|-
 |===
 
 [[TestDataObject]]
@@ -188,5 +258,19 @@
 |[[stringValue]]`@stringValue`|`String`|-
 |[[stringValueMap]]`@stringValueMap`|`String`|-
 |[[stringValues]]`@stringValues`|`Array of String`|-
+|===
+
+[[UpperCamelCaseDataObject]]
+== UpperCamelCaseDataObject
+
+++++
+++++
+'''
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[stringName]]`@stringName`|`String`|-
 |===
 
