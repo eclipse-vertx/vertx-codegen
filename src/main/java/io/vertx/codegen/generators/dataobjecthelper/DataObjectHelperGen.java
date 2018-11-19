@@ -3,6 +3,8 @@ package io.vertx.codegen.generators.dataobjecthelper;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.PropertyInfo;
+import io.vertx.codegen.annotations.ConverterIgnore;
+import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.ClassKind;
 
 import java.io.PrintWriter;
@@ -64,7 +66,12 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print("\n");
     writer.print("  " + visibility + " static void toJson(" + simpleName + " obj, java.util.Map<String, Object> json) {\n");
     model.getPropertyMap().values().forEach(prop -> {
+
+      AnnotationValueInfo ignoreProp = prop.getAnnotation(ConverterIgnore.class.getName());
+      if (ignoreProp != null) return;
+
       if ((prop.isDeclared() || inheritConverter) && prop.getGetterMethod() != null && prop.isJsonifiable()) {
+
         ClassKind propKind = prop.getType().getKind();
         if (propKind.basic) {
           if (propKind == ClassKind.STRING) {
@@ -142,6 +149,10 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print("    for (java.util.Map.Entry<String, Object> member : json) {\n");
     writer.print("      switch (member.getKey()) {\n");
     model.getPropertyMap().values().forEach(prop -> {
+
+      AnnotationValueInfo ignoreProp = prop.getAnnotation(ConverterIgnore.class.getName());
+      if (ignoreProp != null) return;
+
       if (prop.isDeclared() || inheritConverter) {
         ClassKind propKind = prop.getType().getKind();
         if (propKind.basic) {
