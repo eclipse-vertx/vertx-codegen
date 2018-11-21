@@ -1,9 +1,5 @@
 package io.vertx.codegen;
 
-import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.annotations.ModuleGen;
-import io.vertx.codegen.annotations.ProxyGen;
-import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.generators.cheatsheet.CheatsheetGenLoader;
 import io.vertx.codegen.generators.dataobjecthelper.DataObjectHelperGenLoader;
 import io.vertx.codegen.generators.mvel.MvelCodeGeneratorLoader;
@@ -21,6 +17,7 @@ import javax.tools.StandardLocation;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
+import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -40,20 +37,15 @@ public class CodeGenProcessor extends AbstractProcessor {
   private static final int JAVA= 0, RESOURCE = 1, OTHER = 2;
   public static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
   private File outputDirectory;
-  private List<? extends Generator> codeGenerators;
+  private List<? extends Generator<?>> codeGenerators;
   private Map<String, GeneratedFile> generatedFiles = new HashMap<>();
   private Map<String, GeneratedFile> generatedResources = new HashMap<>();
   private Map<String, String> relocations = new HashMap<>();
+  private Set<Class<? extends Annotation>> supportedAnnotation = new HashSet<>();
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
-    return Arrays.asList(
-        VertxGen.class,
-        ProxyGen.class,
-        DataObject.class,
-        DataObject.class,
-        ModuleGen.class
-    ).stream().map(Class::getName).collect(Collectors.toSet());
+    return supportedAnnotation.stream().map(Class::getName).collect(Collectors.toSet());
   }
 
   @Override
@@ -61,9 +53,10 @@ public class CodeGenProcessor extends AbstractProcessor {
     super.init(processingEnv);
     generatedFiles.clear();
     generatedResources.clear();
+    supportedAnnotation = getCodeGenerators().stream().flatMap(gen -> gen.annotations().stream()).collect(Collectors.toSet());
   }
 
-  protected Predicate<Generator> filterGenerators() {
+  private Predicate<Generator> filterGenerators() {
     String generatorsOption = processingEnv.getOptions().get("codegen.generators");
     if (generatorsOption == null) {
       generatorsOption = processingEnv.getOptions().get("codeGenerators");
@@ -83,7 +76,7 @@ public class CodeGenProcessor extends AbstractProcessor {
     }
   }
 
-  private Collection<? extends Generator> getCodeGenerators() {
+  private Collection<? extends Generator<?>> getCodeGenerators() {
     if (codeGenerators == null) {
       String outputDirectoryOption = processingEnv.getOptions().get("codegen.output");
       if (outputDirectoryOption == null) {

@@ -1,6 +1,9 @@
 package io.vertx.codegen.generators.mvel;
 
 import io.vertx.codegen.*;
+import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.ModuleGen;
+import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.TypeNameTranslator;
 import org.mvel2.MVEL;
@@ -8,6 +11,9 @@ import org.mvel2.MVEL;
 import javax.annotation.processing.ProcessingEnvironment;
 import java.io.File;
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +34,11 @@ public class MvelCodeGenerator extends Generator<Model> {
     template.setOptions(processingEnv.getOptions());
     this.template = template;
     this.filenameExpr = MVEL.compileExpression(filename);
+  }
+
+  @Override
+  public Collection<Class<? extends Annotation>> annotations() {
+    return Arrays.asList(VertxGen.class, DataObject.class, ModuleGen.class);
   }
 
   @Override

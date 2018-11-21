@@ -3,13 +3,15 @@ package io.vertx.codegen.generators.dataobjecthelper;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.PropertyInfo;
+import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.type.ClassKind;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.annotation.Annotation;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -19,6 +21,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
   public DataObjectHelperGen() {
     kinds = Collections.singleton("dataObject");
     name = "data_object_converters";
+  }
+
+  @Override
+  public Collection<Class<? extends Annotation>> annotations() {
+    return Arrays.asList(DataObject.class, ModuleGen.class);
   }
 
   @Override
