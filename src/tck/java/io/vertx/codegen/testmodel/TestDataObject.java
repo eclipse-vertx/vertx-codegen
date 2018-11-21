@@ -58,13 +58,12 @@ public class TestDataObject {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    TestDataObject that = (TestDataObject) o;
-    return getBar() == that.getBar() &&
-      Double.compare(that.getWibble(), getWibble()) == 0 &&
-      Objects.equals(getFoo(), that.getFoo());
+  public boolean equals(Object obj) {
+    if (obj instanceof TestDataObject) {
+      TestDataObject that = (TestDataObject) obj;
+      return Objects.equals(foo, that.foo) && bar == that.bar && wibble == that.wibble;
+    }
+    return false;
   }
 
   @Override
