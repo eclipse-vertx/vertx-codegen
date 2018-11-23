@@ -69,7 +69,7 @@ public class ClassModel implements Model {
   protected Set<ClassTypeInfo> collectedTypes = new HashSet<>();
   protected Set<ClassTypeInfo> importedTypes = new HashSet<>();
   protected Set<ApiTypeInfo> referencedTypes = new HashSet<>();
-  protected Set<ClassTypeInfo> referencedDataObjectTypes = new HashSet<>();
+  protected Set<DataObjectTypeInfo> referencedDataObjectTypes = new HashSet<>();
   protected Set<EnumTypeInfo> referencedEnumTypes = new HashSet<>();
   protected boolean concrete;
   protected ClassTypeInfo type;
@@ -169,7 +169,7 @@ public class ClassModel implements Model {
   /**
    * @return all the referenced data object types
    */
-  public Set<ClassTypeInfo> getReferencedDataObjectTypes() {
+  public Set<DataObjectTypeInfo> getReferencedDataObjectTypes() {
     return referencedDataObjectTypes;
   }
 
@@ -560,7 +560,7 @@ public class ClassModel implements Model {
 
     referencedDataObjectTypes = collectedTypes.stream().
         map(ClassTypeInfo::getRaw).
-        flatMap(Helper.instanceOf(ClassTypeInfo.class)).
+        flatMap(Helper.instanceOf(DataObjectTypeInfo.class)).
         filter(t -> t.getKind() == ClassKind.DATA_OBJECT).
         collect(Collectors.toSet());
 
