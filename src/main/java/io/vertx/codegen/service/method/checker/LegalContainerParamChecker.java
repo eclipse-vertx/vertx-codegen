@@ -16,21 +16,21 @@ import static io.vertx.codegen.util.ModelUtils.rawTypeIs;
  */
 public class LegalContainerParamChecker implements Checker {
 
-  private final Checker vertxGenInterfaceChecker;
+  private final Checker legalArgumentContainerParamChecker;
   private final Checker legalDataObjectTypeParamChecker;
 
   public static Checker getInstance() {
     return new LegalContainerParamChecker();
   }
 
-  public LegalContainerParamChecker(Checker vertxGenInterfaceChecker, Checker legalDataObjectTypeParamChecker) {
-    this.vertxGenInterfaceChecker = vertxGenInterfaceChecker;
+  public LegalContainerParamChecker(Checker legalArgumentContainerParamChecker, Checker legalDataObjectTypeParamChecker) {
+    this.legalArgumentContainerParamChecker = legalArgumentContainerParamChecker;
     this.legalDataObjectTypeParamChecker = legalDataObjectTypeParamChecker;
   }
 
 
   public LegalContainerParamChecker() {
-    this.vertxGenInterfaceChecker = NotAllowParameterizedVertxGenInterfaceChecker.getInstance();
+    this.legalArgumentContainerParamChecker = LegalArgumentContainerParamChecker.getInstance();
     this.legalDataObjectTypeParamChecker = LegalDataObjectTypeParamChecker.getInstance();
   }
 
@@ -41,15 +41,14 @@ public class LegalContainerParamChecker implements Checker {
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
       TypeInfo argument = ((ParameterizedTypeInfo) type).getArgs().get(0);
       if (type.getKind() != ClassKind.MAP) {
-        return argument.getKind().basic ||
-          argument.getKind().json ||
-          vertxGenInterfaceChecker.check(elt, argument, false) ||
+        if (legalArgumentContainerParamChecker.check(elt, argument, allowAnyJavaType) ||
           legalDataObjectTypeParamChecker.check(elt, argument, false) ||
-          argument.getKind() == ClassKind.ENUM ||
-          (allowAnyJavaType && argument.getKind() == ClassKind.OTHER);
-      } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
+          argument.getKind() == ClassKind.ENUM) {
+          return true;
+        }
+      } else if (argument.getKind() == ClassKind.STRING) {
         argument = ((ParameterizedTypeInfo) type).getArgs().get(1);
-        return argument.getKind().basic || argument.getKind().json || vertxGenInterfaceChecker.check(elt, argument, false) || (allowAnyJavaType && argument.getKind() == ClassKind.OTHER);
+        return legalArgumentContainerParamChecker.check(elt, argument, allowAnyJavaType);
       }
     }
     return false;

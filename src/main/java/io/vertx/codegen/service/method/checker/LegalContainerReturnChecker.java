@@ -19,25 +19,28 @@ public class LegalContainerReturnChecker implements Checker {
 
   private final Checker vertxGenInterfaceChecker;
   private final Checker legalDataObjectTypeReturnChecker;
+  private final Checker legalArgumentContainerReturn;
 
   public static Checker getInstance(Elements elementsUtils) {
     return new LegalContainerReturnChecker(elementsUtils);
   }
 
-  public LegalContainerReturnChecker(Checker vertxGenInterfaceChecker, Checker legalDataObjectTypeReturnChecker) {
+  public LegalContainerReturnChecker(Checker vertxGenInterfaceChecker, Checker legalDataObjectTypeReturnChecker, Checker legalArgumentContainerReturn) {
     this.vertxGenInterfaceChecker = vertxGenInterfaceChecker;
     this.legalDataObjectTypeReturnChecker = legalDataObjectTypeReturnChecker;
+    this.legalArgumentContainerReturn = legalArgumentContainerReturn;
   }
-
 
 
   public LegalContainerReturnChecker(Elements elementsUtils) {
     this.vertxGenInterfaceChecker = NotAllowParameterizedVertxGenInterfaceChecker.getInstance();
     this.legalDataObjectTypeReturnChecker = LegalDataObjectTypeReturnChecker.getInstance(elementsUtils);
+    this.legalArgumentContainerReturn = LegalArgumentContainerReturnChecker.getInstance();
   }
 
   @Override
   public boolean check(ExecutableElement elt, TypeInfo type, boolean allowAnyJavaType) {
+
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
       List<TypeInfo> args = ((ParameterizedTypeInfo) type).getArgs();
       if (type.getKind() == ClassKind.MAP) {
@@ -45,17 +48,13 @@ public class LegalContainerReturnChecker implements Checker {
           return false;
         }
         TypeInfo valueType = args.get(1);
-        return valueType.getKind().basic ||
-          valueType.getKind().json ||
-          (allowAnyJavaType && valueType.getKind() == ClassKind.OTHER);
+        return legalArgumentContainerReturn.check(elt, valueType, allowAnyJavaType);
       } else {
         TypeInfo valueType = args.get(0);
-        return valueType.getKind().basic ||
-          valueType.getKind().json ||
+        return legalArgumentContainerReturn.check(elt, valueType, allowAnyJavaType) ||
           valueType.getKind() == ClassKind.ENUM ||
-          vertxGenInterfaceChecker.check(elt, valueType, allowAnyJavaType) ||
-          (allowAnyJavaType && valueType.getKind() == ClassKind.OTHER) ||
-          legalDataObjectTypeReturnChecker.check(elt, valueType, allowAnyJavaType);
+          vertxGenInterfaceChecker.check(elt, valueType, false) ||
+          legalDataObjectTypeReturnChecker.check(elt, valueType, false);
       }
     }
     return false;
