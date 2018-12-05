@@ -16,12 +16,9 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
-import io.vertx.codegen.annotations.CacheReturn;
-import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.doc.Doc;
-import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.doc.Text;
 import io.vertx.codegen.doc.Token;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
@@ -35,20 +32,18 @@ import io.vertx.codegen.type.EnumTypeInfo;
 import io.vertx.codegen.type.ParameterizedTypeInfo;
 import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.type.TypeMirrorFactory;
-import io.vertx.codegen.type.TypeUse;
 import io.vertx.codegen.type.TypeVariableInfo;
+import io.vertx.codegen.util.CompanionMethodCreator;
 import io.vertx.codegen.util.DefaultMethodCreator;
 import io.vertx.codegen.util.MethodCreator;
 
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
@@ -57,18 +52,14 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import javax.tools.Diagnostic;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -85,7 +76,6 @@ public class ClassModel implements Model {
   public static final String JSON_OBJECT = "io.vertx.core.json.JsonObject";
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
   public static final String VERTX = "io.vertx.core.Vertx";
-  private static final Logger logger = Logger.getLogger(ClassModel.class.getName());
 
   protected final ProcessingEnvironment env;
   protected final AnnotationValueInfoFactory annotationValueInfoFactory;
@@ -123,6 +113,7 @@ public class ClassModel implements Model {
   protected Text deprecatedDesc;
 
   protected MethodCreator defaultMethodCreator;
+  protected MethodCreator companionMethodCreator;
 
   public ClassModel(ProcessingEnvironment env, TypeElement modelElt) {
     this.elementUtils = env.getElementUtils();
@@ -291,41 +282,6 @@ public class ClassModel implements Model {
     }
   }
 
-  protected void checkParamType(ExecutableElement elem, TypeMirror type, TypeInfo typeInfo, int pos, int numParams, boolean allowAnyJavaType) {
-    if (isLegalNonCallableParam(typeInfo, allowAnyJavaType)) {
-      return;
-    }
-    if (isLegalClassTypeParam(elem, typeInfo)) {
-      return;
-    }
-    if (isLegalHandlerType(typeInfo, allowAnyJavaType)) {
-      return;
-    }
-    if (isLegalHandlerAsyncResultType(typeInfo, allowAnyJavaType)) {
-      return;
-    }
-    if (isLegalFunctionType(typeInfo, allowAnyJavaType)) {
-      return;
-    }
-    throw new GenException(elem, "type " + typeInfo + " is not legal for use for a parameter in code generation");
-  }
-
-  protected void checkReturnType(ExecutableElement elem, TypeInfo type, TypeMirror typeMirror, boolean allowAnyJavaType) {
-    if (type.isVoid()) {
-      return;
-    }
-    if (isLegalNonCallableReturnType(type, allowAnyJavaType)) {
-      return;
-    }
-    if (isLegalHandlerType(type, allowAnyJavaType)) {
-      return;
-    }
-    if (isLegalHandlerAsyncResultType(type, allowAnyJavaType)) {
-      return;
-    }
-    throw new GenException(elem, "type " + type + " is not legal for use for a return type in code generation");
-  }
-
   protected void checkConstantType(VariableElement elem, TypeInfo type, TypeMirror typeMirror, boolean allowAnyJavaType) {
     if (isLegalNonCallableReturnType(type, allowAnyJavaType)) {
       return;
@@ -423,22 +379,6 @@ public class ClassModel implements Model {
     return false;
   }
 
-  private boolean isLegalClassTypeParam(ExecutableElement elt, TypeInfo type) {
-    if (type.getKind() == ClassKind.CLASS_TYPE && type.isParameterized()) {
-      ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
-      TypeInfo arg = parameterized.getArg(0);
-      if (arg.isVariable()) {
-        TypeVariableInfo variable = (TypeVariableInfo) arg;
-        for (TypeParameterElement typeParamElt : elt.getTypeParameters()) {
-          if (typeParamElt.getSimpleName().toString().equals(variable.getName())) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-
   protected boolean isLegalDataObjectTypeReturn(TypeInfo type) {
     if (type.getKind() == ClassKind.DATA_OBJECT) {
       TypeElement typeElt = elementUtils.getTypeElement(type.getName());
@@ -530,17 +470,6 @@ public class ClassModel implements Model {
         }
       } else {
         return true;
-      }
-    }
-    return false;
-  }
-
-  private boolean isLegalFunctionType(TypeInfo typeInfo, boolean allowAnyJavaType) {
-    if (typeInfo.getErased().getKind() == ClassKind.FUNCTION) {
-      TypeInfo paramType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(0);
-      if (isLegalCallbackValueType(paramType, allowAnyJavaType) || paramType.getKind() == ClassKind.THROWABLE) {
-        TypeInfo returnType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(1);
-        return isLegalNonCallableParam(returnType, allowAnyJavaType);
       }
     }
     return false;
@@ -647,6 +576,7 @@ public class ClassModel implements Model {
         concrete = elem.getAnnotation(VertxGen.class) == null || elem.getAnnotation(VertxGen.class).concrete();
 
         this.defaultMethodCreator = new DefaultMethodCreator(env, concrete);
+        this.companionMethodCreator = new CompanionMethodCreator(env, concrete);
 
         DeclaredType tm = (DeclaredType) elem.asType();
         List<? extends TypeMirror> typeArgs = tm.getTypeArguments();
@@ -750,15 +680,63 @@ public class ClassModel implements Model {
           .filter(elt -> !isGenIgnore(elt))
           .forEach(elt -> {
             boolean allowAnyJavaType = Helper.allowAnyJavaType(elt);
-            MethodInfo meth = createCompanionMethod(companion, elt, allowAnyJavaType);
-            if (meth != null) {
-              meth.collectImports(collectedTypes);
-              if (meth.isContainingAnyJavaType()) {
-                anyJavaTypeMethods.put(elt, meth);
+            Optional<MethodInfo> methodInfoOpt = companionMethodCreator.createMethod(companion, elt, allowAnyJavaType, collectedTypes, deprecatedDesc)
+              .filter(methodInfo -> {
+                // Check we don't hide another method, we don't check overrides but we are more
+                // interested by situations like diamond inheritance of the same method, in this case
+                // we see two methods with the same signature that don't override each other
+                for (Map.Entry<ExecutableElement, MethodInfo> otherMethod : methods.entrySet()) {
+                  if (otherMethod.getValue().getName().equals(elt.getSimpleName().toString())) {
+                    ExecutableType t1 = (ExecutableType) otherMethod.getKey().asType();
+                    ExecutableType t2 = (ExecutableType) elt.asType();
+                    if (typeUtils.isSubsignature(t1, t2) && typeUtils.isSubsignature(t2, t1)) {
+                      otherMethod.getValue().getOwnerTypes().addAll(methodInfo.getOwnerTypes());
+                      return false;
+                    }
+                  }
+                }
+                return true;
+              });
+            methodInfoOpt.filter(methodInfo -> !methodInfo.isContainingAnyJavaType()).ifPresent(methodInfo -> {
+              List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
+              if (methodsByName != null) {
+                // Overloaded methods must have same return type
+                for (MethodInfo method : methodsByName) {
+                  if (!method.isContainingAnyJavaType() && !method.getReturnType().equals(methodInfo.getReturnType())) {
+                    throw new GenException(this.modelElt, "Overloaded method " + methodInfo.getName() + " must have the same return type "
+                      + method.getReturnType() + " != " + methodInfo.getReturnType());
+                  }
+                }
               } else {
-                methods.put(elt, meth);
+                methodsByName = new ArrayList<>();
+                methodMap.put(methodInfo.getName(), methodsByName);
+                methodAnnotationsMap.put(methodInfo.getName(), methodInfo.getAnnotations());
               }
-            }
+              methodsByName.add(methodInfo);
+            });
+            methodInfoOpt
+              .filter(methodInfo -> {
+                TypeElement declaringElt = (TypeElement) elt.getEnclosingElement();
+                TypeInfo declaringType = typeFactory.create(declaringElt.asType());
+                ExecutableType methodType = (ExecutableType) typeUtils.asMemberOf((DeclaredType) modelElt.asType(), elt);
+                // Filter methods inherited from abstract ancestors
+                if (!declaringElt.equals(modelElt) && declaringType.getKind() == ClassKind.API) {
+                  ApiTypeInfo declaringApiType = (ApiTypeInfo) declaringType.getRaw();
+                  if (declaringApiType.isConcrete()) {
+                    return !typeUtils.isSameType(methodType, elt.asType());
+                  }
+                }
+                return true;
+              })
+              .ifPresent(methodInfo -> {
+                methodInfo.collectImports(collectedTypes);
+                if (methodInfo.isContainingAnyJavaType()) {
+                  anyJavaTypeMethods.put(elt, methodInfo);
+                } else {
+                  methods.put(elt, methodInfo);
+                }
+              });
+
           });
       });
 
@@ -883,252 +861,8 @@ public class ClassModel implements Model {
     return new ConstantInfo(doc, modelField.getSimpleName().toString(), type);
   }
 
-  private MethodInfo createCompanionMethod(TypeElement companion, ExecutableElement modelMethod, boolean allowAnyJavaType) {
-    Set<Modifier> mods = modelMethod.getModifiers();
-    if (!mods.contains(Modifier.PUBLIC)) {
-      return null;
-    }
-
-    ClassTypeInfo type = typeFactory.create(companion.getEnclosingElement().asType()).getRaw();
-
-    boolean isStatic = true;
-
-    boolean isCacheReturn = modelMethod.getAnnotation(CacheReturn.class) != null;
-    ArrayList<TypeParamInfo.Method> typeParams = new ArrayList<>();
-    for (TypeParameterElement typeParam : modelMethod.getTypeParameters()) {
-      for (TypeMirror bound : typeParam.getBounds()) {
-        if (!isObjectBound(bound)) {
-          throw new GenException(modelMethod, "Type parameter bound not supported " + bound);
-        }
-      }
-      typeParams.add((TypeParamInfo.Method) TypeParamInfo.create(typeParam));
-    }
-
-    //
-    List<ExecutableElement> modelMethods = new ArrayList<>();
-    modelMethods.add(modelMethod);
-
-    // Owner types
-    Set<ClassTypeInfo> ownerTypes = new HashSet<>();
-    ownerTypes.add(type);
-
-    List<DeclaredType> ancestors = new ArrayList<>(Helper.resolveAncestorTypes(companion, true, true));
-
-    // Sort to have super types the last, etc..
-    // solve some problem with diamond inheritance order that can show up in type use
-    Collections.sort(ancestors, (o1, o2) -> {
-      if (typeUtils.isSubtype(o1, o2)) {
-        return -1;
-      } else if (typeUtils.isSubtype(o2, o1)) {
-        return 1;
-      } else {
-        return ((TypeElement) o1.asElement()).getQualifiedName().toString().compareTo(((TypeElement) o2.asElement()).getQualifiedName().toString());
-      }
-    });
-
-    // Check overrides and merge type use
-    for (DeclaredType ancestorType : ancestors) {
-      TypeElement ancestorElt = (TypeElement) ancestorType.asElement();
-      if (ancestorElt.getAnnotation(VertxGen.class) != null) {
-        elementUtils.getAllMembers(ancestorElt).
-          stream().
-          flatMap(Helper.FILTER_METHOD).
-          filter(meth -> elementUtils.overrides(modelMethod, meth, companion)).
-          forEach(overridenMethodElt -> {
-            modelMethods.add(overridenMethodElt);
-            ownerTypes.add(typeFactory.create((DeclaredType) ancestorElt.asType()).getRaw());
-          });
-      }
-    }
-
-    //
-    Map<String, String> paramDescs = new HashMap<>();
-    String comment = elementUtils.getDocComment(modelMethod);
-    Doc doc = docFactory.createDoc(modelMethod);
-    Text returnDesc = null;
-    Text methodDeprecatedDesc = null;
-    if (doc != null) {
-      doc.
-        getBlockTags().
-        stream().
-        filter(tag -> tag.getName().equals("param")).
-        map(Tag.Param::new).
-        forEach(tag -> paramDescs.put(tag.getParamName(), tag.getParamDescription()));
-      Optional<Tag> returnTag = doc.
-        getBlockTags().
-        stream().
-        filter(tag -> tag.getName().equals("return")).
-        findFirst();
-      if (returnTag.isPresent()) {
-        returnDesc = new Text(Helper.normalizeWhitespaces(returnTag.get().getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt));
-      }
-      Optional<Tag> methodDeprecatedTag = doc.
-        getBlockTags().
-        stream().
-        filter(tag -> tag.getName().equals("deprecated")).
-        findFirst();
-      if (methodDeprecatedTag.isPresent()) {
-        methodDeprecatedDesc = new Text(Helper.normalizeWhitespaces(methodDeprecatedTag.get().getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt));
-      }
-    }
-
-    //
-    List<ParamInfo> mParams = getCompanionMethodParams(companion, modelMethods, modelMethod, paramDescs, allowAnyJavaType);
-
-    //
-    AnnotationMirror fluentAnnotation = Helper.resolveMethodAnnotation(Fluent.class, elementUtils, typeUtils, companion, modelMethod);
-    boolean isFluent = fluentAnnotation != null;
-    if (isFluent) {
-      isFluent = true;
-      if (!typeUtils.isSameType(companion.asType(), modelElt.asType())) {
-        String msg = "Interface " + modelElt + " does not redeclare the @Fluent return type " +
-          " of method " + modelMethod + " declared by " + companion;
-        messager.printMessage(Diagnostic.Kind.WARNING, msg, modelElt, fluentAnnotation);
-        logger.warning(msg);
-      } else {
-        TypeMirror fluentType = modelMethod.getReturnType();
-        if (!typeUtils.isAssignable(fluentType, modelElt.asType())) {
-          throw new GenException(modelMethod, "Methods marked with @Fluent must have a return type that extends the type");
-        }
-      }
-    }
-
-    //
-    TypeUse returnTypeUse = TypeUse.createReturnTypeUse(env, modelMethods.toArray(new ExecutableElement[modelMethods.size()]));
-
-    ExecutableType methodType = (ExecutableType) typeUtils.asMemberOf((DeclaredType) companion.asType(), modelMethod);
-    TypeInfo returnType;
-    try {
-      returnType = typeFactory.create(returnTypeUse, methodType.getReturnType());
-    } catch (Exception e) {
-      GenException genEx = new GenException(modelMethod, e.getMessage());
-      genEx.initCause(e);
-      throw genEx;
-    }
-    returnType.collectImports(collectedTypes);
-    if (isCacheReturn && returnType.isVoid()) {
-      throw new GenException(modelMethod, "void method can't be marked with @CacheReturn");
-    }
-    String methodName = modelMethod.getSimpleName().toString();
-
-    // Only check the return type if not fluent, because generated code won't look it at anyway
-    if (!isFluent) {
-      checkReturnType(modelMethod, returnType, methodType.getReturnType(), allowAnyJavaType);
-    } else if (returnType.isNullable()) {
-      throw new GenException(modelMethod, "Fluent return type cannot be nullable");
-    }
-
-    boolean methodDeprecated = modelMethod.getAnnotation(Deprecated.class) != null || deprecatedDesc != null;
-
-    MethodInfo methodInfo = createMethodInfo(
-      ownerTypes,
-      methodName,
-      comment,
-      doc,
-      returnType,
-      returnDesc,
-      isFluent,
-      isCacheReturn,
-      mParams,
-      modelMethod,
-      isStatic,
-      false,
-      typeParams,
-      companion,
-      methodDeprecated,
-      methodDeprecatedDesc).setCompanion(companion.getSimpleName());
-
-    // Check we don't hide another method, we don't check overrides but we are more
-    // interested by situations like diamond inheritance of the same method, in this case
-    // we see two methods with the same signature that don't override each other
-    for (Map.Entry<ExecutableElement, MethodInfo> otherMethod : methods.entrySet()) {
-      if (otherMethod.getValue().getName().equals(modelMethod.getSimpleName().toString())) {
-        ExecutableType t1 = (ExecutableType) otherMethod.getKey().asType();
-        ExecutableType t2 = (ExecutableType) modelMethod.asType();
-        if (typeUtils.isSubsignature(t1, t2) && typeUtils.isSubsignature(t2, t1)) {
-          otherMethod.getValue().getOwnerTypes().addAll(methodInfo.getOwnerTypes());
-          return null;
-        }
-      }
-    }
-
-    // Add the method to the method map (it's a bit ugly but useful for JS and Ruby)
-    if (!methodInfo.isContainingAnyJavaType()) {
-      checkMethod(methodInfo);
-      List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
-      if (methodsByName == null) {
-        methodsByName = new ArrayList<>();
-        methodMap.put(methodInfo.getName(), methodsByName);
-        methodAnnotationsMap.put(methodInfo.getName(), modelMethod.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList()));
-      }
-      methodsByName.add(methodInfo);
-    }
-
-    return methodInfo;
-  }
-
-  // This is a hook to allow a specific type of method to be created
-  protected MethodInfo createMethodInfo(Set<ClassTypeInfo> ownerTypes, String methodName, String comment, Doc doc, TypeInfo returnType,
-                                        Text returnDescription,
-                                        boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
-                                        ExecutableElement methodElt, boolean isStatic, boolean isDefault, ArrayList<TypeParamInfo.Method> typeParams,
-                                        TypeElement declaringElt, boolean methodDeprecated, Text methodDeprecatedDesc) {
-    return new MethodInfo(ownerTypes, methodName, returnType, returnDescription,
-      isFluent, isCacheReturn, mParams, comment, doc, isStatic, isDefault, typeParams, methodDeprecated, methodDeprecatedDesc);
-  }
-
-  // This is a hook to allow different model implementations to check methods in different ways
-  protected void checkMethod(MethodInfo methodInfo) {
-    List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
-    if (methodsByName != null) {
-      // Overloaded methods must have same return type
-      for (MethodInfo meth : methodsByName) {
-        if (!meth.isContainingAnyJavaType() && !meth.getReturnType().equals(methodInfo.getReturnType())) {
-          throw new GenException(this.modelElt, "Overloaded method " + methodInfo.getName() + " must have the same return type "
-            + meth.getReturnType() + " != " + methodInfo.getReturnType());
-        }
-      }
-    }
-  }
-
   private boolean isObjectBound(TypeMirror bound) {
     return bound.getKind() == TypeKind.DECLARED && bound.toString().equals(Object.class.getName());
-  }
-
-  private List<ParamInfo> getCompanionMethodParams(TypeElement companion, List<ExecutableElement> modelMethods,
-                                                   ExecutableElement methodElt,
-                                                   Map<String, String> descs,
-                                                   boolean allowAnyJavaType) {
-    ExecutableType methodType = (ExecutableType) typeUtils.asMemberOf((DeclaredType) companion.asType(), methodElt);
-    ExecutableType methodType2 = (ExecutableType) methodElt.asType();
-    List<? extends VariableElement> params = methodElt.getParameters();
-    List<ParamInfo> mParams = new ArrayList<>();
-    for (int i = 0; i < params.size(); i++) {
-      VariableElement param = params.get(i);
-      TypeMirror type = methodType.getParameterTypes().get(i);
-      TypeInfo typeInfo;
-      TypeUse typeUse = TypeUse.createParamTypeUse(env, modelMethods.toArray(new ExecutableElement[modelMethods.size()]), i);
-      try {
-        typeInfo = typeFactory.create(typeUse, type);
-      } catch (Exception e) {
-        GenException ex = new GenException(param, e.getMessage());
-        ex.setStackTrace(e.getStackTrace());
-        throw ex;
-      }
-      checkParamType(methodElt, type, typeInfo, i, params.size(), allowAnyJavaType);
-      String name = param.getSimpleName().toString();
-      String desc = descs.get(name);
-      Text text = desc != null ? new Text(desc).map(Token.tagMapper(elementUtils, typeUtils, companion)) : null;
-      TypeInfo unresolvedTypeInfo;
-      try {
-        unresolvedTypeInfo = typeFactory.create(typeUse, methodType2.getParameterTypes().get(i));
-      } catch (Exception e) {
-        throw new GenException(param, e.getMessage());
-      }
-      ParamInfo mParam = new ParamInfo(i, name, text, typeInfo, unresolvedTypeInfo);
-      mParams.add(mParam);
-    }
-    return mParams;
   }
 
   /**
