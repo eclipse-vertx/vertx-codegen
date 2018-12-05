@@ -1,15 +1,18 @@
 package io.vertx.codegen.generators.cheatsheet;
 
+import io.vertx.codegen.ClassModel;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.EnumModel;
+import io.vertx.codegen.annotations.ModuleGen;
+import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.doc.Token;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Collections;
-import java.util.Map;
+import java.lang.annotation.Annotation;
+import java.util.*;
 
 /**
  * A generator for Java enums that creates cheatsheets doc.
@@ -20,6 +23,11 @@ public class EnumCheatsheetGen extends Generator<EnumModel> {
     name = "cheatsheet";
     kinds = Collections.singleton("enum");
     incremental = true;
+  }
+
+  @Override
+  public Collection<Class<? extends Annotation>> annotations() {
+    return Arrays.asList(VertxGen.class, ModuleGen.class);
   }
 
   @Override

@@ -11,4 +11,9 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface GenIgnore {
+
+  String PERMITTED_TYPE = "permitted-type";
+
+  String[] value() default {};
+
 }

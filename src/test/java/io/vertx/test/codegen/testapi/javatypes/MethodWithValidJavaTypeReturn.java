@@ -16,6 +16,7 @@
 
 package io.vertx.test.codegen.testapi.javatypes;
 
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -32,16 +33,16 @@ import java.util.function.Function;
 @VertxGen()
 public interface MethodWithValidJavaTypeReturn {
 
-  @SuppressWarnings("codegen-allow-any-java-type")
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   Socket methodWithReturn();
 
-  @SuppressWarnings("codegen-allow-any-java-type")
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   List<Socket> methodWithListReturn();
 
-  @SuppressWarnings("codegen-allow-any-java-type")
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   Set<Socket> methodWithSetReturn();
 
-  @SuppressWarnings("codegen-allow-any-java-type")
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   Map<String, Socket> methodWithMapReturn();
 
 }

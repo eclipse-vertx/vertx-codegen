@@ -1,8 +1,6 @@
 # Vert.x API Generation
 
-[![Build Status](https://travis-ci.org/vert-x3/vertx-codegen.svg?branch=master?branch=master)](https://travis-ci.org/vert-x3/vertx-codegen)
-
-This projects contains tools which allow idiomatic other language API shims to be generated from Java APIs.
+[![Build Status](https://travis-ci.org/vert-x3/vertx-codegen.svg?branch=master)](https://travis-ci.org/vert-x3/vertx-codegen)
 
 ## Render documentation
 
@@ -221,7 +219,7 @@ We define _`TypeVar`_ as the set of of types variables where the variable is eit
 We define _`Api`_ as the set of user defined API types which are defined in its own interface and annotated with `@VertxGen`
 
 We define _`JavaType`_ as the set of any Java type that does not belong to _`Basic`_, _`Json`_, _`DataObject`_, _`TypeVar`_ and _`Api`_, e.g `java.net.Socket`.
-Methods are not allowed to declare such type by default and they must be annotated with `@SuppressWarnings("codegen-allow-any-java-type")` to declare them. Such
+Methods are not allowed to declare such type by default and can be annotated with `@GenIgnore(GenIgnore.PERMITTED_TYPE)` to allow them. Such
 method limit the translation of the method to other languages, so it should be used with care. It is useful to allow method
 previously annotated with `@GenIgnore` to be available in code generator like RxJava that can handle Java types.
 
@@ -255,10 +253,12 @@ The following set _`Return`_ of types are permitted as return types from any API
     * the set _`Api`_
     * the set _`DataObject`_
     * the set _`JavaType`_
+    * `java.lang.Object`
 * `java.util.Map<String, C>` where `C` contains
     * the set _`Basic`_
     * the set _`Json`_
     * the set _`JavaType`_
+    * `java.lang.Object`
 
 The following set _`Param`_ of types are permitted as parameters to any API method:
 
@@ -283,11 +283,15 @@ The following set _`Param`_ of types are permitted as parameters to any API meth
     * the set _`DataObject`_
     * the set _`Api`_
     * the set _`JavaType`_
+    * any enum type
+    * `java.lang.Object`
 * type `java.util.Map<String, C>` where `C` contains
     * the set _`Basic`_
     * the set _`Json`_
     * the set _`Api`_
     * the set _`JavaType`_
+    * any enum type
+    * `java.lang.Object`
 
 In addition any _`Api_ method can have as parameter:
 

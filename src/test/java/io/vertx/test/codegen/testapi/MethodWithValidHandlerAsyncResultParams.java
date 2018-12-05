@@ -31,17 +31,20 @@ public interface MethodWithValidHandlerAsyncResultParams {
                                Handler<AsyncResult<List<Long>>> listLongHandler, Handler<AsyncResult<List<Float>>> listFloatHandler, Handler<AsyncResult<List<Double>>> listDoubleHandler,
                                Handler<AsyncResult<List<Boolean>>> listBooleanHandler, Handler<AsyncResult<List<Character>>> listCharHandler, Handler<AsyncResult<List<String>>> listStrHandler,
                                Handler<AsyncResult<List<VertxGenClass1>>> listVertxGenHandler, Handler<AsyncResult<List<JsonObject>>> listJsonObjectHandler, Handler<AsyncResult<List<JsonArray>>> listJsonArrayHandler,
-                               Handler<AsyncResult<List<TestDataObject>>> listDataObjectHandler, Handler<AsyncResult<List<TestEnum>>> listEnumHandler);
+                               Handler<AsyncResult<List<TestDataObject>>> listDataObjectHandler, Handler<AsyncResult<List<TestEnum>>> listEnumHandler,
+                               Handler<AsyncResult<List<Object>>> listObjectHandler);
 
   void methodWithSetHandlerParams(Handler<AsyncResult<Set<Byte>>> setByteHandler, Handler<AsyncResult<Set<Short>>> setShortHandler, Handler<AsyncResult<Set<Integer>>> setIntHandler,
                                Handler<AsyncResult<Set<Long>>> setLongHandler, Handler<AsyncResult<Set<Float>>> setFloatHandler, Handler<AsyncResult<Set<Double>>> setDoubleHandler,
                                Handler<AsyncResult<Set<Boolean>>> setBooleanHandler, Handler<AsyncResult<Set<Character>>> setCharHandler, Handler<AsyncResult<Set<String>>> setStrHandler,
                                Handler<AsyncResult<Set<VertxGenClass1>>> setVertxGenHandler, Handler<AsyncResult<Set<JsonObject>>> setJsonObjectHandler, Handler<AsyncResult<Set<JsonArray>>> setJsonArrayHandler,
-                               Handler<AsyncResult<Set<TestDataObject>>> setDataObjectHandler, Handler<AsyncResult<Set<TestEnum>>> setEnumHandler);
+                               Handler<AsyncResult<Set<TestDataObject>>> setDataObjectHandler, Handler<AsyncResult<Set<TestEnum>>> setEnumHandler,
+                               Handler<AsyncResult<Set<Object>>> setObjectHandler);
 
   void methodWithMapHandlerParams(Handler<AsyncResult<Map<String,Byte>>> mapByteHandler, Handler<AsyncResult<Map<String,Short>>> mapShortHandler, Handler<AsyncResult<Map<String,Integer>>> mapIntHandler,
                                   Handler<AsyncResult<Map<String,Long>>> mapLongHandler, Handler<AsyncResult<Map<String,Float>>> mapFloatHandler, Handler<AsyncResult<Map<String,Double>>> mapDoubleHandler,
                                   Handler<AsyncResult<Map<String,Boolean>>> mapBooleanHandler, Handler<AsyncResult<Map<String,Character>>> mapCharHandler, Handler<AsyncResult<Map<String,String>>> mapStrHandler,
-                                  Handler<AsyncResult<Map<String,JsonObject>>> mapJsonObjectHandler, Handler<AsyncResult<Map<String, JsonArray>>> mapJsonArrayHandler);
+                                  Handler<AsyncResult<Map<String,JsonObject>>> mapJsonObjectHandler, Handler<AsyncResult<Map<String, JsonArray>>> mapJsonArrayHandler,
+                                  Handler<AsyncResult<Map<String,Object>>> mapObjectHandler);
 
 }

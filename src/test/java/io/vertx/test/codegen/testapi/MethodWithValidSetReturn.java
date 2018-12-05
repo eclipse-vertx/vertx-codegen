@@ -32,4 +32,6 @@ public interface MethodWithValidSetReturn {
   Set<TestDataObject> dataObjectSet();
   Set<TestEnum> enumSet();
 
+  Set<Object> objectSet();
+
 }

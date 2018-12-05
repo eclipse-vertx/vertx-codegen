@@ -26,6 +26,6 @@ import java.util.List;
 @VertxGen
 public interface MethodWithInvalidListParams1 {
 
-  void methodWithInvalidListParams(List<Object> set);
+  void methodWithInvalidListParams(List<Thread> set);
 
 }

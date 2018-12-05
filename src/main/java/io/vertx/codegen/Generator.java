@@ -1,6 +1,9 @@
 package io.vertx.codegen;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,6 +19,10 @@ public abstract class Generator<M extends Model> {
   public String name;
   public Set<String> kinds;
   public boolean incremental;
+
+  public Collection<Class<? extends Annotation>> annotations() {
+    return Collections.emptySet();
+  }
 
   public void load(ProcessingEnvironment processingEnv) {
     env = processingEnv;

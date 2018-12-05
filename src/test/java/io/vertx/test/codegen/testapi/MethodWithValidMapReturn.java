@@ -27,4 +27,5 @@ public interface MethodWithValidMapReturn {
 
   Map<String, JsonArray> jsonArrayMap();
   Map<String, JsonObject> jsonObjectMap();
+  Map<String, Object> objectMap();
 }

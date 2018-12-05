@@ -30,6 +30,13 @@ import java.util.List;
 @VertxGen
 public interface MethodWithValidListParams {
 
-  void methodWithListParams(List<String> listString, List<Long> listLong, List<JsonObject> listJsonObject, List<JsonArray> listJsonArray, List<VertxGenClass1> listVertxGen,
-      List<TestDataObject> listDataObject, List<TestEnum> listEnum);
+  void methodWithListParams(
+    List<String> listString,
+    List<Long> listLong,
+    List<JsonObject> listJsonObject,
+    List<JsonArray> listJsonArray,
+    List<VertxGenClass1> listVertxGen,
+    List<TestDataObject> listDataObject,
+    List<TestEnum> listEnum,
+    List<Object> listObject);
 }

@@ -2,6 +2,8 @@ package io.vertx.codegen.generators.cheatsheet;
 
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.DataObjectModel;
+import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.doc.Token;
@@ -10,7 +12,10 @@ import io.vertx.codegen.type.TypeInfo;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.annotation.Annotation;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -20,6 +25,11 @@ public class DataObjectCheatsheetGen extends Generator<DataObjectModel> {
     name = "cheatsheet";
     kinds = Collections.singleton("dataObject");
     incremental = true;
+  }
+
+  @Override
+  public Collection<Class<? extends Annotation>> annotations() {
+    return Arrays.asList(DataObject.class, ModuleGen.class);
   }
 
   @Override

@@ -26,6 +26,6 @@ import java.util.Map;
 @VertxGen
 public interface MethodWithInvalidMapParams1 {
 
-  void methodWithInvalidMapParams(Map<String, Object> map);
+  void methodWithInvalidMapParams(Map<String, Thread> map);
 
 }

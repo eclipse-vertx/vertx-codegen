@@ -76,6 +76,7 @@ public class ClassModel implements Model {
   public static final String JSON_OBJECT = "io.vertx.core.json.JsonObject";
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
   public static final String VERTX = "io.vertx.core.Vertx";
+  private static final Logger logger = Logger.getLogger(ClassModel.class.getName());
 
   protected final ProcessingEnvironment env;
   protected final AnnotationValueInfoFactory annotationValueInfoFactory;
@@ -92,7 +93,7 @@ public class ClassModel implements Model {
   protected Set<ClassTypeInfo> collectedTypes = new HashSet<>();
   protected Set<ClassTypeInfo> importedTypes = new HashSet<>();
   protected Set<ApiTypeInfo> referencedTypes = new HashSet<>();
-  protected Set<ClassTypeInfo> referencedDataObjectTypes = new HashSet<>();
+  protected Set<DataObjectTypeInfo> referencedDataObjectTypes = new HashSet<>();
   protected Set<EnumTypeInfo> referencedEnumTypes = new HashSet<>();
   protected boolean concrete;
   protected ClassTypeInfo type;
@@ -195,7 +196,7 @@ public class ClassModel implements Model {
   /**
    * @return all the referenced data object types
    */
-  public Set<ClassTypeInfo> getReferencedDataObjectTypes() {
+  public Set<DataObjectTypeInfo> getReferencedDataObjectTypes() {
     return referencedDataObjectTypes;
   }
 
@@ -403,22 +404,26 @@ public class ClassModel implements Model {
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
       TypeInfo argument = ((ParameterizedTypeInfo) type).getArgs().get(0);
       if (type.getKind() != ClassKind.MAP) {
-        if (argument.getKind().basic ||
-          argument.getKind().json ||
-          isVertxGenInterface(argument, false) ||
+        if (isLegalArgumentContainerParam(argument, allowAnyJavaType) ||
           isLegalDataObjectTypeParam(argument) ||
-          argument.getKind() == ClassKind.ENUM ||
-          (allowAnyJavaType && argument.getKind() == ClassKind.OTHER)) {
+          argument.getKind() == ClassKind.ENUM) {
           return true;
         }
       } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
         argument = ((ParameterizedTypeInfo) type).getArgs().get(1);
-        if (argument.getKind().basic || argument.getKind().json || isVertxGenInterface(argument, false) || (allowAnyJavaType && argument.getKind() == ClassKind.OTHER)) {
-          return true;
-        }
+        return isLegalArgumentContainerParam(argument, allowAnyJavaType);
       }
     }
     return false;
+  }
+
+  private boolean isLegalArgumentContainerParam(TypeInfo argument, boolean allowAnyJavaType) {
+    ClassKind argumentKind = argument.getKind();
+    return argumentKind.basic
+      || argumentKind.json
+      || isVertxGenInterface(argument, false)
+      || argumentKind == ClassKind.OBJECT
+      || (allowAnyJavaType && argumentKind == ClassKind.OTHER);
   }
 
   protected boolean isLegalContainerReturn(TypeInfo type, boolean allowAnyJavaType) {
@@ -429,24 +434,24 @@ public class ClassModel implements Model {
           return false;
         }
         TypeInfo valueType = args.get(1);
-        if (valueType.getKind().basic ||
-          valueType.getKind().json ||
-          (allowAnyJavaType && valueType.getKind() == ClassKind.OTHER)) {
-          return true;
-        }
+        return isLegalArgumentContainerReturn(valueType, allowAnyJavaType);
       } else {
         TypeInfo valueType = args.get(0);
-        if (valueType.getKind().basic ||
-          valueType.getKind().json ||
+        return isLegalArgumentContainerReturn(valueType, allowAnyJavaType) ||
           valueType.getKind() == ClassKind.ENUM ||
           isVertxGenInterface(valueType, false) ||
-          (allowAnyJavaType && valueType.getKind() == ClassKind.OTHER) ||
-          isLegalDataObjectTypeReturn(valueType)) {
-          return true;
-        }
+          isLegalDataObjectTypeReturn(valueType);
       }
     }
     return false;
+  }
+
+  private boolean isLegalArgumentContainerReturn(TypeInfo argument, boolean allowAnyJavaType) {
+    ClassKind argumentKind = argument.getKind();
+    return argumentKind.basic
+      || argumentKind.json
+      || argumentKind == ClassKind.OBJECT
+      || (allowAnyJavaType && argumentKind == ClassKind.OTHER);
   }
 
   private boolean isVertxGenInterface(TypeInfo type, boolean allowParameterized) {
@@ -519,10 +524,10 @@ public class ClassModel implements Model {
       collect(Collectors.toSet());
 
     referencedDataObjectTypes = collectedTypes.stream().
-      map(ClassTypeInfo::getRaw).
-      flatMap(Helper.instanceOf(ClassTypeInfo.class)).
-      filter(t -> t.getKind() == ClassKind.DATA_OBJECT).
-      collect(Collectors.toSet());
+        map(ClassTypeInfo::getRaw).
+        flatMap(Helper.instanceOf(DataObjectTypeInfo.class)).
+        filter(t -> t.getKind() == ClassKind.DATA_OBJECT).
+        collect(Collectors.toSet());
 
     referencedEnumTypes = collectedTypes.stream().
       map(ClassTypeInfo::getRaw).
@@ -744,11 +749,20 @@ public class ClassModel implements Model {
       elementUtils.getAllMembers((TypeElement) elem).stream().
         filter(elt -> !typeUtils.isSameType(elt.getEnclosingElement().asType(), objectType)).
         flatMap(Helper.FILTER_FIELD).
-        filter(elt -> !isGenIgnore(elt)).
         forEach(elt -> {
-          boolean allowAnyJavaType = Helper.allowAnyJavaType(elt);
+          GenIgnore genIgnore = elt.getAnnotation(GenIgnore.class);
           boolean isCompanionField = companionOpt.filter(companion -> elt.asType() == companion.asType()).isPresent();
-          ConstantInfo cst = fieldMethod(elt, allowAnyJavaType || isCompanionField);
+          boolean allowAnyJavaType;
+          if (genIgnore != null) {
+            if (!Arrays.asList(genIgnore.value()).contains(GenIgnore.PERMITTED_TYPE)) {
+              // Regular ignore
+              return;
+            }
+            allowAnyJavaType = true;
+          } else {
+            allowAnyJavaType = false;
+          }
+          ConstantInfo cst = fieldMethod(elt, allowAnyJavaType);
           if (cst != null) {
             cst.getType().collectImports(collectedTypes);
             constants.add(cst);
@@ -760,9 +774,18 @@ public class ClassModel implements Model {
       elementUtils.getAllMembers((TypeElement) elem).stream().
         filter(elt -> !typeUtils.isSameType(elt.getEnclosingElement().asType(), objectType)).
         flatMap(Helper.FILTER_METHOD).
-        filter(elt -> !isGenIgnore(elt)).
         forEach(elt -> {
-          boolean allowAnyJavaType = Helper.allowAnyJavaType(elt);
+          GenIgnore genIgnore = elt.getAnnotation(GenIgnore.class);
+          boolean allowAnyJavaType;
+          if (genIgnore != null) {
+            if (!Arrays.asList(genIgnore.value()).contains(GenIgnore.PERMITTED_TYPE)) {
+              // Regular ignore
+              return;
+            }
+            allowAnyJavaType = true;
+          } else {
+            allowAnyJavaType = false;
+          }
           Optional<MethodInfo> methodInfoOpt = defaultMethodCreator.createMethod(modelElt, elt, allowAnyJavaType, collectedTypes, deprecatedDesc)
             .filter(methodInfo -> {
               // Check we don't hide another method, we don't check overrides but we are more
@@ -830,7 +853,7 @@ public class ClassModel implements Model {
 
         // Ambiguous
         try {
-          MethodOverloadChecker.INSTANCE.checkAmbiguous(meths.stream());
+          MethodOverloadChecker.INSTANCE.checkAmbiguous(meths.stream().filter(m -> !anyJavaTypeMethods.containsValue(m)));
         } catch (RuntimeException e) {
           throw new GenException(elem, e.getMessage());
         }
@@ -871,7 +894,6 @@ public class ClassModel implements Model {
   public boolean isDeprecated() {
     return deprecated;
   }
-
   /**
    * @return the description of deprecated
    */
