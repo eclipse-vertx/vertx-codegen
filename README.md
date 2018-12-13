@@ -124,7 +124,7 @@ You can configure the `CodeGenProcessor` as any Java annotation processor, here 
               <annotationProcessor>io.vertx.codegen.CodeGenProcessor</annotationProcessor>
             </annotationProcessors>
             <compilerArgs>
-              <arg>-AoutputDirectory=${project.basedir}/src/main</arg>
+              <arg>-Acodegen.output=${project.basedir}/src/main</arg>
             </compilerArgs>
           </configuration>
         </execution>
@@ -144,7 +144,7 @@ task annotationProcessing(type: JavaCompile, group: 'build') { // codegen
   options.compilerArgs = [
     "-proc:only",
     "-processor", "io.vertx.codegen.CodeGenProcessor",
-    "-AoutputDirectory=${project.projectDir}/src/main"
+    "-Acodegen.output=${project.projectDir}/src/main"
   ]
 }
 
@@ -175,7 +175,7 @@ Besides you can use the `processor` classified dependency that declares the anno
 </dependency>
 ```
 
-You still need to configure the `outputDirectory` for generating files non resources/classes as the processors
+You still need to configure the `codegen.output` for generating files non resources/classes as the processors
 requires this option to know where to place them.
 
 The processor is configured by a few options
