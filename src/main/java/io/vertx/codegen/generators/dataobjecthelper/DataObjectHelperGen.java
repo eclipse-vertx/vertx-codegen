@@ -1,7 +1,7 @@
 package io.vertx.codegen.generators.dataobjecthelper;
 
-import io.vertx.codegen.Generator;
 import io.vertx.codegen.DataObjectModel;
+import io.vertx.codegen.Generator;
 import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
@@ -11,7 +11,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.time.Instant;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -56,7 +59,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print(" */\n");
     writer.print(visibility + " class " + simpleName + "Converter {\n");
     writer.print("\n");
-    generateFromson(visibility, inheritConverter, model, writer);
+    generateFromJson(visibility, inheritConverter, model, writer);
     writer.print("\n");
     generateToJson(visibility, inheritConverter, model, writer);
     writer.print("}\n");
@@ -90,7 +93,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
           switch (propKind) {
             case API:
               if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
-                genPropToJson("java.util.Base64.getEncoder().encodeToString(", ".getBytes())", prop, writer);
+                genPropToJson("java.util.Base64.getUrlEncoder().encodeToString(", ".getBytes())", prop, writer);
               }
               break;
             case ENUM:
@@ -144,11 +147,14 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     }
   }
 
-  private void generateFromson(String visibility, boolean inheritConverter, DataObjectModel model, PrintWriter writer) {
-    writer.print("  " + visibility + " static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, " + model.getType().getSimpleName() + " obj) {\n");
-    writer.print("    for (java.util.Map.Entry<String, Object> member : json) {\n");
-    writer.print("      switch (member.getKey()) {\n");
-    model.getPropertyMap().values().forEach(prop -> {
+  private void generateFromJson(String visibility, boolean inheritConverter, DataObjectModel model, PrintWriter writer) {
+    boolean genBase64Decode = false;
+
+    writer.format("  %s static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, %s obj) {%n", visibility, model.getType().getSimpleName());
+    writer.println("    for (java.util.Map.Entry<String, Object> member : json) {");
+    writer.println("      switch (member.getKey()) {");
+
+    for (PropertyInfo prop : model.getPropertyMap().values()) {
       if (prop.isDeclared() || inheritConverter) {
         ClassKind propKind = prop.getType().getKind();
         if (propKind.basic) {
@@ -194,7 +200,8 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
           switch (propKind) {
             case API:
               if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
-                genPropFromJson("String", "io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)", "))", prop, writer);
+                genBase64Decode = true;
+                genPropFromJson("String", "base64Decode((String)", ")", prop, writer);
               }
               break;
             case JSON_OBJECT:
@@ -221,10 +228,33 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
           }
         }
       }
-    });
-    writer.print("      }\n");
-    writer.print("    }\n");
-    writer.print("  }\n");
+    }
+
+    writer.println("      }");
+    writer.println("    }");
+    writer.println("  }");
+
+    if (genBase64Decode) {
+      writer.println();
+      writer.println("  private static final java.util.concurrent.atomic.AtomicBoolean base64WarningLogged = new java.util.concurrent.atomic.AtomicBoolean();");
+      writer.println();
+      writer.println("  private static io.vertx.core.buffer.Buffer base64Decode(String value) {");
+      writer.println("    try {");
+      writer.println("      return io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getUrlDecoder().decode(value));");
+      writer.println("    } catch (IllegalArgumentException e) {");
+      writer.println("      io.vertx.core.buffer.Buffer result = io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode(value));");
+      writer.println("      if (base64WarningLogged.compareAndSet(false, true)) {");
+      writer.println("        java.io.StringWriter sw = new java.io.StringWriter();");
+      writer.println("        java.io.PrintWriter pw = new java.io.PrintWriter(sw);");
+      writer.format("        pw.println(\"Failed to decode a %s value with base64url encoding. Used the base64 fallback.\");%n", model.getType().getSimpleName());
+      writer.println("        e.printStackTrace(pw);");
+      writer.println("        pw.close();");
+      writer.println("        System.err.print(sw.toString());");
+      writer.println("      }");
+      writer.println("      return result;");
+      writer.println("    }");
+      writer.println("  }");
+    }
   }
 
   private void genPropFromJson(String cast, String before, String after, PropertyInfo prop, PrintWriter writer) {

@@ -90,7 +90,7 @@ public class TestDataObjectConverter {
           if (member.getValue() instanceof JsonArray) {
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                obj.addAddedBuffer(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)item)));
+                obj.addAddedBuffer(base64Decode((String)item));
             });
           }
           break;
@@ -456,7 +456,7 @@ public class TestDataObjectConverter {
           break;
         case "buffer":
           if (member.getValue() instanceof String) {
-            obj.setBuffer(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)member.getValue())));
+            obj.setBuffer(base64Decode((String)member.getValue()));
           }
           break;
         case "bufferMap":
@@ -464,7 +464,7 @@ public class TestDataObjectConverter {
             java.util.Map<String, io.vertx.core.buffer.Buffer> map = new java.util.LinkedHashMap<>();
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                map.put(entry.getKey(), io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)entry.getValue())));
+                map.put(entry.getKey(), base64Decode((String)entry.getValue()));
             });
             obj.setBufferMap(map);
           }
@@ -474,7 +474,7 @@ public class TestDataObjectConverter {
             java.util.LinkedHashSet<io.vertx.core.buffer.Buffer> list =  new java.util.LinkedHashSet<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)item)));
+                list.add(base64Decode((String)item));
             });
             obj.setBufferSet(list);
           }
@@ -484,7 +484,7 @@ public class TestDataObjectConverter {
             java.util.ArrayList<io.vertx.core.buffer.Buffer> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)item)));
+                list.add(base64Decode((String)item));
             });
             obj.setBuffers(list);
           }
@@ -687,7 +687,7 @@ public class TestDataObjectConverter {
           if (member.getValue() instanceof JsonObject) {
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                obj.addKeyedBufferValue(entry.getKey(), io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)entry.getValue())));
+                obj.addKeyedBufferValue(entry.getKey(), base64Decode((String)entry.getValue()));
             });
           }
           break;
@@ -818,6 +818,25 @@ public class TestDataObjectConverter {
     }
   }
 
+  private static final java.util.concurrent.atomic.AtomicBoolean base64WarningLogged = new java.util.concurrent.atomic.AtomicBoolean();
+
+  private static io.vertx.core.buffer.Buffer base64Decode(String value) {
+    try {
+      return io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getUrlDecoder().decode(value));
+    } catch (IllegalArgumentException e) {
+      io.vertx.core.buffer.Buffer result = io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode(value));
+      if (base64WarningLogged.compareAndSet(false, true)) {
+        java.io.StringWriter sw = new java.io.StringWriter();
+        java.io.PrintWriter pw = new java.io.PrintWriter(sw);
+        pw.println("Failed to decode a TestDataObject value with base64url encoding. Used the base64 fallback.");
+        e.printStackTrace(pw);
+        pw.close();
+        System.err.print(sw.toString());
+      }
+      return result;
+    }
+  }
+
   public static void toJson(TestDataObject obj, JsonObject json) {
     toJson(obj, json.getMap());
   }
@@ -870,7 +889,7 @@ public class TestDataObjectConverter {
     }
     if (obj.getAddedBuffers() != null) {
       JsonArray array = new JsonArray();
-      obj.getAddedBuffers().forEach(item -> array.add(java.util.Base64.getEncoder().encodeToString(item.getBytes())));
+      obj.getAddedBuffers().forEach(item -> array.add(java.util.Base64.getUrlEncoder().encodeToString(item.getBytes())));
       json.put("addedBuffers", array);
     }
     if (obj.getAddedHttpMethods() != null) {
@@ -1062,21 +1081,21 @@ public class TestDataObjectConverter {
       json.put("boxedShortValues", array);
     }
     if (obj.getBuffer() != null) {
-      json.put("buffer", java.util.Base64.getEncoder().encodeToString(obj.getBuffer().getBytes()));
+      json.put("buffer", java.util.Base64.getUrlEncoder().encodeToString(obj.getBuffer().getBytes()));
     }
     if (obj.getBufferMap() != null) {
       JsonObject map = new JsonObject();
-      obj.getBufferMap().forEach((key, value) -> map.put(key, java.util.Base64.getEncoder().encodeToString(value.getBytes())));
+      obj.getBufferMap().forEach((key, value) -> map.put(key, java.util.Base64.getUrlEncoder().encodeToString(value.getBytes())));
       json.put("bufferMap", map);
     }
     if (obj.getBufferSet() != null) {
       JsonArray array = new JsonArray();
-      obj.getBufferSet().forEach(item -> array.add(java.util.Base64.getEncoder().encodeToString(item.getBytes())));
+      obj.getBufferSet().forEach(item -> array.add(java.util.Base64.getUrlEncoder().encodeToString(item.getBytes())));
       json.put("bufferSet", array);
     }
     if (obj.getBuffers() != null) {
       JsonArray array = new JsonArray();
-      obj.getBuffers().forEach(item -> array.add(java.util.Base64.getEncoder().encodeToString(item.getBytes())));
+      obj.getBuffers().forEach(item -> array.add(java.util.Base64.getUrlEncoder().encodeToString(item.getBytes())));
       json.put("buffers", array);
     }
     json.put("byteValue", obj.getByteValue());
@@ -1180,7 +1199,7 @@ public class TestDataObjectConverter {
     }
     if (obj.getKeyedBufferValues() != null) {
       JsonObject map = new JsonObject();
-      obj.getKeyedBufferValues().forEach((key, value) -> map.put(key, java.util.Base64.getEncoder().encodeToString(value.getBytes())));
+      obj.getKeyedBufferValues().forEach((key, value) -> map.put(key, java.util.Base64.getUrlEncoder().encodeToString(value.getBytes())));
       json.put("keyedBufferValues", map);
     }
     if (obj.getKeyedDataObjectValues() != null) {

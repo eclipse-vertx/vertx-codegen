@@ -16,10 +16,11 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -86,7 +87,7 @@ public class DataObjectTest {
     json.put("boxedDoubleValue", boxedDoubleValue);
     json.put("boxedCharValue", Character.toString(boxedCharValue));
     json.put("aggregatedDataObject", aggregatedDataObject.toJson());
-    json.put("buffer", toBase64(buffer));
+    json.put("buffer", toBase64Url(buffer));
     json.put("jsonObject", jsonObject);
     json.put("jsonArray", jsonArray);
     json.put("httpMethod", httpMethod.toString());
@@ -100,7 +101,7 @@ public class DataObjectTest {
     json.put("boxedDoubleValues", new JsonArray().add(boxedDoubleValue));
     json.put("boxedCharValues", new JsonArray().add(Character.toString(boxedCharValue)));
     json.put("aggregatedDataObjects", new JsonArray().add(aggregatedDataObject.toJson()));
-    json.put("buffers", new JsonArray().add(toBase64(buffer)));
+    json.put("buffers", new JsonArray().add(toBase64Url(buffer)));
     json.put("jsonObjects", new JsonArray().add(jsonObject));
     json.put("jsonArrays", new JsonArray().add(jsonArray));
     json.put("httpMethods", new JsonArray().add(httpMethod.toString()));
@@ -115,7 +116,7 @@ public class DataObjectTest {
     json.put("boxedDoubleSet", new JsonArray().add(boxedDoubleValue));
     json.put("boxedCharSet", new JsonArray().add(Character.toString(boxedCharValue)));
     json.put("aggregatedDataObjectSet", new JsonArray().add(aggregatedDataObject.toJson()));
-    json.put("bufferSet", new JsonArray().add(toBase64(buffer)));
+    json.put("bufferSet", new JsonArray().add(toBase64Url(buffer)));
     json.put("jsonObjectSet", new JsonArray().add(jsonObject));
     json.put("jsonArraySet", new JsonArray().add(jsonArray));
     json.put("httpMethodSet", new JsonArray().add(httpMethod.toString()));
@@ -138,7 +139,7 @@ public class DataObjectTest {
     json.put("addedBoxedDoubleValues", new JsonArray().add(boxedDoubleValue));
     json.put("addedBoxedCharValues", new JsonArray().add(Character.toString(boxedCharValue)));
     json.put("addedAggregatedDataObjects", new JsonArray().add(aggregatedDataObject.toJson()));
-    json.put("addedBuffers", new JsonArray().add(toBase64(buffer)));
+    json.put("addedBuffers", new JsonArray().add(toBase64Url(buffer)));
     json.put("addedJsonObjects", new JsonArray().add(jsonObject));
     json.put("addedJsonArrays", new JsonArray().add(jsonArray));
     json.put("addedHttpMethods", new JsonArray().add(httpMethod.toString()));
@@ -153,7 +154,7 @@ public class DataObjectTest {
     json.put("boxedDoubleValueMap", new JsonObject().put(key, boxedDoubleValue));
     json.put("boxedCharValueMap", new JsonObject().put(key, Character.toString(boxedCharValue)));
     json.put("aggregatedDataObjectMap", new JsonObject().put(key, aggregatedDataObject.toJson()));
-    json.put("bufferMap", new JsonObject().put(key, toBase64(buffer)));
+    json.put("bufferMap", new JsonObject().put(key, toBase64Url(buffer)));
     json.put("jsonObjectMap", new JsonObject().put(key, jsonObject));
     json.put("jsonArrayMap", new JsonObject().put(key, jsonArray));
     json.put("httpMethodMap", new JsonObject().put(key, httpMethod.toString()));
@@ -168,7 +169,7 @@ public class DataObjectTest {
     json.put("keyedBoxedDoubleValues", new JsonObject().put(key, boxedDoubleValue));
     json.put("keyedBoxedCharValues", new JsonObject().put(key, Character.toString(boxedCharValue)));
     json.put("keyedDataObjectValues", new JsonObject().put(key, aggregatedDataObject.toJson()));
-    json.put("keyedBufferValues", new JsonObject().put(key, toBase64(buffer)));
+    json.put("keyedBufferValues", new JsonObject().put(key, toBase64Url(buffer)));
     json.put("keyedJsonObjectValues", new JsonObject().put(key, jsonObject));
     json.put("keyedJsonArrayValues", new JsonObject().put(key, jsonArray));
     json.put("keyedEnumValues", new JsonObject().put(key, httpMethod.name()));
@@ -285,6 +286,31 @@ public class DataObjectTest {
 //    assertEquals(aggregatedDataObject, obj.getAggregatedDataObject());
 //    assertEquals(Collections.singletonList(aggregatedDataObject), obj.getAggregatedDataObjects());
 //    assertEquals(Collections.singletonList(aggregatedDataObject), obj.getAddedAggregatedDataObjects());
+  }
+
+  @Test
+  public void testJsonToDataObjectBase64Compat() {
+
+    String key = TestUtils.randomAlphaString(10);
+    Buffer buffer = TestUtils.randomBuffer(20);
+
+    JsonObject json = new JsonObject();
+    json.put("buffer", toBase64(buffer));
+    json.put("buffers", new JsonArray().add(toBase64(buffer)));
+    json.put("bufferSet", new JsonArray().add(toBase64(buffer)));
+    json.put("addedBuffers", new JsonArray().add(toBase64(buffer)));
+    json.put("bufferMap", new JsonObject().put(key, toBase64(buffer)));
+    json.put("keyedBufferValues", new JsonObject().put(key, toBase64(buffer)));
+
+    TestDataObject obj = new TestDataObject();
+    TestDataObjectConverter.fromJson(json, obj);
+
+    assertEquals(buffer, obj.getBuffer());
+    assertEquals(Collections.singletonList(buffer), obj.getBuffers());
+    assertEquals(Collections.singleton(buffer), obj.getBufferSet());
+    assertEquals(Collections.singletonList(buffer), obj.getAddedBuffers());
+    assertEquals(Collections.singletonMap(key, buffer), obj.getBufferMap());
+    assertEquals(Collections.singletonMap(key, buffer), obj.getKeyedBufferValues());
   }
 
   @Test
@@ -517,7 +543,7 @@ public class DataObjectTest {
     assertEquals(boxedDoubleValue, (double) json.get("boxedDoubleValue"), 0.001);
     assertEquals(Character.toString(boxedCharValue), json.get("boxedCharValue"));
     assertEquals(aggregatedDataObject.toJson(), json.get("aggregatedDataObject"));
-    assertEquals(buffer, Buffer.buffer(Base64.getDecoder().decode((String)json.get("buffer"))));
+    assertEquals(buffer, Buffer.buffer(Base64.getUrlDecoder().decode((String) json.get("buffer"))));
     assertEquals(jsonObject, json.get("jsonObject"));
     assertEquals(jsonArray, json.get("jsonArray"));
     assertEquals(httpMethod.name(), json.get("httpMethod"));
@@ -533,7 +559,7 @@ public class DataObjectTest {
     assertEquals(boxedDoubleValue, (double)((JsonArray)json.get("boxedDoubleValues")).getValue(0), 0.001);
     assertEquals(new JsonArray().add(Character.toString(boxedCharValue)), json.get("boxedCharValues"));
     assertEquals(new JsonArray().add(aggregatedDataObject.toJson()), json.get("aggregatedDataObjects"));
-    assertEquals(Base64.getEncoder().encodeToString(buffer.getBytes()), ((JsonArray)json.get("buffers")).getValue(0));
+    assertEquals(Base64.getUrlEncoder().encodeToString(buffer.getBytes()), ((JsonArray) json.get("buffers")).getValue(0));
     assertEquals(new JsonArray().add(jsonObject), json.get("jsonObjects"));
     assertEquals(new JsonArray().add(jsonArray), json.get("jsonArrays"));
     assertEquals(new JsonArray().add(httpMethod.name()), json.get("httpMethods"));
@@ -550,7 +576,7 @@ public class DataObjectTest {
     assertEquals(boxedDoubleValue, (double)((JsonArray)json.get("boxedDoubleSet")).getValue(0), 0.001);
     assertEquals(new JsonArray().add(Character.toString(boxedCharValue)), json.get("boxedCharSet"));
     assertEquals(new JsonArray().add(aggregatedDataObject.toJson()), json.get("aggregatedDataObjectSet"));
-    assertEquals(Base64.getEncoder().encodeToString(buffer.getBytes()), ((JsonArray)json.get("bufferSet")).getValue(0));
+    assertEquals(Base64.getUrlEncoder().encodeToString(buffer.getBytes()), ((JsonArray) json.get("bufferSet")).getValue(0));
     assertEquals(new JsonArray().add(jsonObject), json.get("jsonObjectSet"));
     assertEquals(new JsonArray().add(jsonArray), json.get("jsonArraySet"));
     assertEquals(new JsonArray().add(httpMethod.name()), json.get("httpMethodSet"));
@@ -567,7 +593,7 @@ public class DataObjectTest {
     assertEquals(boxedDoubleValue, (double)((JsonObject)json.get("boxedDoubleValueMap")).getValue(key), 0.001);
     assertEquals(new JsonObject().put(key, Character.toString(boxedCharValue)), json.get("boxedCharValueMap"));
     assertEquals(new JsonObject().put(key, aggregatedDataObject.toJson()), json.get("aggregatedDataObjectMap"));
-    assertEquals(Base64.getEncoder().encodeToString(buffer.getBytes()), ((JsonObject)json.get("bufferMap")).getValue(key));
+    assertEquals(Base64.getUrlEncoder().encodeToString(buffer.getBytes()), ((JsonObject) json.get("bufferMap")).getValue(key));
     assertEquals(new JsonObject().put(key, jsonObject), json.get("jsonObjectMap"));
     assertEquals(new JsonObject().put(key, jsonArray), json.get("jsonArrayMap"));
     assertEquals(new JsonObject().put(key, httpMethod.name()), json.get("httpMethodMap"));
@@ -584,7 +610,7 @@ public class DataObjectTest {
     assertEquals(boxedDoubleValue, (double)((JsonObject)json.get("keyedBoxedDoubleValues")).getValue(key), 0.001);
     assertEquals(new JsonObject().put(key, Character.toString(boxedCharValue)), json.get("keyedBoxedCharValues"));
     assertEquals(new JsonObject().put(key, aggregatedDataObject.toJson()), json.get("keyedDataObjectValues"));
-    assertEquals(Base64.getEncoder().encodeToString(buffer.getBytes()), ((JsonObject)json.get("keyedBufferValues")).getValue(key));
+    assertEquals(Base64.getUrlEncoder().encodeToString(buffer.getBytes()), ((JsonObject) json.get("keyedBufferValues")).getValue(key));
     assertEquals(new JsonObject().put(key, jsonObject), json.get("keyedJsonObjectValues"));
     assertEquals(new JsonObject().put(key, jsonArray), json.get("keyedJsonArrayValues"));
     assertEquals(new JsonObject().put(key, httpMethod.name()), json.get("keyedEnumValues"));
@@ -724,6 +750,10 @@ public class DataObjectTest {
 
   private String toBase64(Buffer buffer) {
     return Base64.getEncoder().encodeToString(buffer.getBytes());
+  }
+
+  private String toBase64Url(Buffer buffer) {
+    return Base64.getUrlEncoder().encodeToString(buffer.getBytes());
   }
 
   @Test
