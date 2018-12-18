@@ -22,4 +22,8 @@ public interface GenericAbstractInterface<T> {
 
   void collargol(T t);
 
+  void selfArg(GenericAbstractInterface<T> self);
+
+  void inheritedSelfArg(GenericAbstractInterface<T> self);
+
 }

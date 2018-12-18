@@ -9,4 +9,6 @@ import io.vertx.codegen.annotations.VertxGen;
 public interface InterfaceWithMethodOverride extends VertxGenInterface {
   @Override
   void bar(String str);
+
+  void foo(String str);
 }
