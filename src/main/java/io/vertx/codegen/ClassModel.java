@@ -256,6 +256,14 @@ public class ClassModel implements Model {
     }
   }
 
+  protected void checkSuperType(Element elt, TypeInfo type) {
+    if (type.getKind() == ClassKind.API) {
+      if (!isVertxGenInterface(type, true)) {
+        throw new GenException(elt, "type " + type + " is not legal for use for super type in code generation");
+      }
+    }
+  }
+
   protected void checkParamType(ExecutableElement elem, TypeMirror type, TypeInfo typeInfo, int pos, int numParams, boolean allowAnyJavaType) {
     if (isLegalNonCallableParam(typeInfo, allowAnyJavaType)) {
       return;
@@ -485,7 +493,7 @@ public class ClassModel implements Model {
           ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
           for (TypeInfo paramType : parameterized.getArgs()) {
             ClassKind kind = paramType.getKind();
-            if (!(paramType instanceof ApiTypeInfo || paramType.isVariable() || kind == ClassKind.VOID
+            if (!(kind == ClassKind.API || paramType.isVariable() || kind == ClassKind.VOID
               || kind.basic || kind.json || kind == ClassKind.DATA_OBJECT || kind == ClassKind.ENUM )) {
               return false;
             }
@@ -631,6 +639,7 @@ public class ClassModel implements Model {
             } catch (IllegalArgumentException e) {
               throw new GenException(elem, e.getMessage());
             }
+            checkSuperType(modelElt, superTypeInfo);
             switch (superTypeInfo.getKind()) {
               case API: {
                 try {
@@ -890,7 +899,38 @@ public class ClassModel implements Model {
     }
 
     //
-    List<ParamInfo> mParams = getParams(modelMethods, modelMethod, paramDescs, allowAnyJavaType);
+    List<ParamInfo> mParams = new ArrayList<>();
+    ExecutableType resolvedMethodType = (ExecutableType) typeUtils.asMemberOf((DeclaredType) modelElt.asType(), modelMethod);
+    ExecutableType methodType = (ExecutableType) modelMethod.asType();
+    List<? extends VariableElement> params = modelMethod.getParameters();
+    for (int i = 0; i < params.size();i++) {
+      VariableElement param = params.get(i);
+      TypeMirror typeMirror = resolvedMethodType.getParameterTypes().get(i);
+      TypeInfo typeInfo;
+      TypeUse typeUse = TypeUse.createParamTypeUse(env, modelMethods.<ExecutableElement>toArray(new ExecutableElement[0]), i);
+      try {
+        typeInfo = typeFactory.create(typeUse, typeMirror);
+      } catch (Exception e) {
+        GenException ex = new GenException(param, e.getMessage());
+        ex.setStackTrace(e.getStackTrace());
+        throw ex;
+      }
+      // Only validate when it's not inherited
+      if (ownerTypes.size() == 1) {
+        checkParamType(modelMethod, typeMirror, typeInfo, i, params.size(), allowAnyJavaType);
+      }
+      String name = param.getSimpleName().toString();
+      String desc = paramDescs.get(name);
+      Text text = desc != null ? new Text(desc).map(Token.tagMapper(elementUtils, typeUtils, modelElt)) : null;
+      TypeInfo unresolvedTypeInfo;
+      try {
+        unresolvedTypeInfo = typeFactory.create(typeUse, methodType.getParameterTypes().get(i));
+      } catch (Exception e) {
+        throw new GenException(param, e.getMessage());
+      }
+      ParamInfo mParam = new ParamInfo(i, name, text, typeInfo, unresolvedTypeInfo);
+      mParams.add(mParam);
+    }
 
     //
     AnnotationMirror fluentAnnotation = Helper.resolveMethodAnnotation(Fluent.class, elementUtils, typeUtils, declaringElt, modelMethod);
@@ -912,11 +952,9 @@ public class ClassModel implements Model {
 
     //
     TypeUse returnTypeUse = TypeUse.createReturnTypeUse(env,  modelMethods.toArray(new ExecutableElement[modelMethods.size()]));
-
-    ExecutableType methodType = (ExecutableType) typeUtils.asMemberOf((DeclaredType) modelElt.asType(), modelMethod);
     TypeInfo returnType;
     try {
-      returnType = typeFactory.create(returnTypeUse, methodType.getReturnType());
+      returnType = typeFactory.create(returnTypeUse, resolvedMethodType.getReturnType());
     } catch (Exception e) {
       GenException genEx = new GenException(modelMethod, e.getMessage());
       genEx.initCause(e);
@@ -926,16 +964,19 @@ public class ClassModel implements Model {
     if (isCacheReturn && returnType.isVoid()) {
       throw new GenException(modelMethod, "void method can't be marked with @CacheReturn");
     }
-    String methodName = modelMethod.getSimpleName().toString();
 
     // Only check the return type if not fluent, because generated code won't look it at anyway
     if (!isFluent) {
-      checkReturnType(modelMethod, returnType, methodType.getReturnType(), allowAnyJavaType);
+      // Only validate when it's not inherited
+      if (ancestors.isEmpty()) {
+        checkReturnType(modelMethod, returnType, resolvedMethodType.getReturnType(), allowAnyJavaType);
+      }
     } else if (returnType.isNullable()) {
       throw new GenException(modelMethod, "Fluent return type cannot be nullable");
     }
 
     boolean methodDeprecated = modelMethod.getAnnotation(Deprecated.class) != null || deprecatedDesc != null;
+    String methodName = modelMethod.getSimpleName().toString();
 
     MethodInfo methodInfo = createMethodInfo(
       ownerTypes,
@@ -985,7 +1026,7 @@ public class ClassModel implements Model {
     if (!declaringElt.equals(modelElt) && declaringType.getKind() == ClassKind.API) {
       ApiTypeInfo declaringApiType = (ApiTypeInfo) declaringType.getRaw();
       if (declaringApiType.isConcrete()) {
-        if (typeUtils.isSameType(methodType, modelMethod.asType())) {
+        if (typeUtils.isSameType(resolvedMethodType, modelMethod.asType())) {
           return null;
         }
       }
@@ -1020,42 +1061,6 @@ public class ClassModel implements Model {
 
   private boolean isObjectBound(TypeMirror bound) {
     return bound.getKind() == TypeKind.DECLARED && bound.toString().equals(Object.class.getName());
-  }
-
-  private List<ParamInfo> getParams(List<ExecutableElement> modelMethods,
-                                    ExecutableElement methodElt,
-                                    Map<String, String> descs,
-                                    boolean allowAnyJavaType) {
-    ExecutableType methodType = (ExecutableType) typeUtils.asMemberOf((DeclaredType) modelElt.asType(), methodElt);
-    ExecutableType methodType2 = (ExecutableType) methodElt.asType();
-    List<? extends VariableElement> params = methodElt.getParameters();
-    List<ParamInfo> mParams = new ArrayList<>();
-    for (int i = 0; i < params.size();i++) {
-      VariableElement param = params.get(i);
-      TypeMirror type = methodType.getParameterTypes().get(i);
-      TypeInfo typeInfo;
-      TypeUse typeUse = TypeUse.createParamTypeUse(env, modelMethods.toArray(new ExecutableElement[modelMethods.size()]), i);
-      try {
-        typeInfo = typeFactory.create(typeUse, type);
-      } catch (Exception e) {
-        GenException ex = new GenException(param, e.getMessage());
-        ex.setStackTrace(e.getStackTrace());
-        throw ex;
-      }
-      checkParamType(methodElt, type, typeInfo, i, params.size(), allowAnyJavaType);
-      String name = param.getSimpleName().toString();
-      String desc = descs.get(name);
-      Text text = desc != null ? new Text(desc).map(Token.tagMapper(elementUtils, typeUtils, modelElt)) : null;
-      TypeInfo unresolvedTypeInfo;
-      try {
-        unresolvedTypeInfo = typeFactory.create(typeUse, methodType2.getParameterTypes().get(i));
-      } catch (Exception e) {
-        throw new GenException(param, e.getMessage());
-      }
-      ParamInfo mParam = new ParamInfo(i, name, text, typeInfo, unresolvedTypeInfo);
-      mParams.add(mParam);
-    }
-    return mParams;
   }
 
   /**

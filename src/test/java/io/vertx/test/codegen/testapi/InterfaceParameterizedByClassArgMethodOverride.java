@@ -10,7 +10,7 @@ import java.util.List;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @VertxGen
-public interface InterfaceWithGenericMethodOverride extends GenericAbstractInterface<String> {
+public interface InterfaceParameterizedByClassArgMethodOverride extends GenericAbstractInterface<String> {
 
   @Override
   String foo();
@@ -26,4 +26,7 @@ public interface InterfaceWithGenericMethodOverride extends GenericAbstractInter
 
   @Override
   void collargol(String t);
+
+  @Override
+  void selfArg(GenericAbstractInterface<String> self);
 }
