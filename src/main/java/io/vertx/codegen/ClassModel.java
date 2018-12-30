@@ -295,6 +295,11 @@ public class ClassModel implements Model {
     if (isLegalNonCallableReturnType(type, allowAnyJavaType)) {
       return;
     }
+    // Workaround for Kotlin companion objects.
+    // https://github.com/vert-x3/vertx-lang-kotlin/issues/93
+    if (type.getName().equalsIgnoreCase(modelElt.getQualifiedName().toString() + "." + type.getSimpleName())) {
+      return;
+    }
     throw new GenException(elem, "type " + type + " is not legal for use for a constant type in code generation");
   }
 

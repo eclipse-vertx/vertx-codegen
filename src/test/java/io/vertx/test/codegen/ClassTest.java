@@ -2205,4 +2205,14 @@ public class ClassTest extends ClassTestBase {
     assertEquals(InterfaceInImplContainingPackage.class.getName(), model.getFqn());
   }
 
+  @Test
+  public void testInterfaceWithKotlinCompanionObject() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithCompanionObject.class);
+  }
+
+  @Test(expected = GenException.class)
+  public void testInterfaceUnrelatedCompanionObject() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithUnrelatedCompanionClass.class);
+  }
+
 }
