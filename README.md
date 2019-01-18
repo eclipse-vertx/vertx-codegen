@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/vert-x3/vertx-codegen.svg?branch=master)](https://travis-ci.org/vert-x3/vertx-codegen)
 
+Another try
+
 ## Render documentation
 
 ```
