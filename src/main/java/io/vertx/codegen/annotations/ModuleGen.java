@@ -1,5 +1,7 @@
 package io.vertx.codegen.annotations;
 
+import io.vertx.codegen.JsonCodec;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -53,5 +55,7 @@ public @interface ModuleGen {
    * @return the module group package
    */
   String groupPackage();
+
+  Class<? extends JsonCodec<?>>[] codecs() default {};
 
 }

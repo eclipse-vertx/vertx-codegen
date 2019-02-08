@@ -1,28 +1,22 @@
 package io.vertx.codegen.type;
 
-import io.vertx.codegen.ClassModel;
-import io.vertx.codegen.Helper;
-import io.vertx.codegen.ModuleInfo;
-import io.vertx.codegen.TypeParamInfo;
+import io.vertx.codegen.*;
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.*;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Type info factory based on <i>javax.lang.model</i> and type mirrors.
+ * Type info factory based on <i>javax.lang.model</i> and type mirrors. </br>
+ * This factory also caches json codecs, so you should not share it through various packages
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
@@ -30,10 +24,12 @@ public class TypeMirrorFactory {
 
   final Elements elementUtils;
   final Types typeUtils;
+  final Map<String, DeclaredType> jsonCodecs;
 
-  public TypeMirrorFactory(Elements elementUtils, Types typeUtils) {
+  public TypeMirrorFactory(Elements elementUtils, Types typeUtils, PackageElement pkgElt) {
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
+    this.jsonCodecs = resolveJsonCodecs(pkgElt);
   }
 
   public TypeInfo create(TypeMirror type) {
@@ -72,6 +68,13 @@ public class TypeMirrorFactory {
     return create(null, type);
   }
 
+  /**
+   * Interfaces/classes TypeInfo factory
+   *
+   * @param use
+   * @param type
+   * @return
+   */
   public TypeInfo create(TypeUse use, DeclaredType type) {
     boolean nullable = use != null && use.isNullable();
     TypeElement elt = (TypeElement) type.asElement();
@@ -98,7 +101,10 @@ public class TypeMirrorFactory {
         }
       } else {
         List<TypeParamInfo.Class> typeParams = createTypeParams(type);
-        if (kind == ClassKind.API) {
+        Optional<DeclaredType> codec = findCodecForType(type);
+        if (codec.isPresent()) {
+          raw = new JsonifiableTypeInfo(fqcn, module, nullable, typeParams, codec.get());
+        } else if (kind == ClassKind.API) {
           VertxGen genAnn = elt.getAnnotation(VertxGen.class);
           TypeInfo[] args = Stream.of(
               ClassModel.VERTX_READ_STREAM,
@@ -166,5 +172,54 @@ public class TypeMirrorFactory {
       typeParams.add(new TypeParamInfo.Class(elt.getQualifiedName().toString(), index, typeParamElt.getSimpleName().toString()));
     }
     return typeParams;
+  }
+
+  /**
+   * Resolve package defined json codecs
+   *
+   * @param pkgElt
+   * @return
+   */
+  private Map<String, DeclaredType> resolveJsonCodecs(PackageElement pkgElt) {
+    AnnotationMirror mirror = elementUtils
+      .getAllAnnotationMirrors(pkgElt)
+      .stream()
+      .filter(am -> am.getAnnotationType().toString().equals(ModuleGen.class.getName()))
+      .findFirst()
+      .orElseThrow(() -> new GenException(pkgElt, "Cannot find json codecs for package without ModuleGen annotation"));
+    AnnotationValue codecsAnnotationValue = elementUtils
+      .getElementValuesWithDefaults(mirror)
+      .entrySet()
+      .stream()
+      .filter(e -> e.getKey().getSimpleName().contentEquals("codecs"))
+      .map(Map.Entry::getValue).findFirst()
+      .orElseThrow(() -> new GenException(pkgElt, "Cannot find json codecs inside ModuleGen annotation"));
+    List<AnnotationValue> declaredJsonCodecs = (List<AnnotationValue>) codecsAnnotationValue.getValue();
+
+    return declaredJsonCodecs.stream()
+      .map(t -> (DeclaredType)t.getValue())
+      .map(codecDeclaredType -> {
+        List<? extends TypeMirror> superTypesOfCodecDeclaredType = typeUtils.directSupertypes(codecDeclaredType);
+        //todo check if has empty constructor
+        TypeMirror jsonifiableType = superTypesOfCodecDeclaredType
+          .stream()
+          .filter(t -> t.getKind() == TypeKind.DECLARED)
+          .map(t -> (DeclaredType)t)
+          .filter(t -> t.asElement().getSimpleName().contentEquals("JsonCodec"))
+          .map(t -> t.getTypeArguments().get(0))
+          .findFirst()
+          .orElseThrow(() -> new GenException(codecDeclaredType.asElement(), "Cannot find what type the json codec handles"));
+        return new AbstractMap.SimpleImmutableEntry<>(jsonifiableType.toString(), codecDeclaredType);
+      }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+  }
+
+  /**
+   * Resolve package defined json codecs
+   *
+   * @param pkgElt
+   * @return
+   */
+  private Optional<DeclaredType> findCodecForType(TypeMirror typeToFindCodec) {
+    return Optional.ofNullable(jsonCodecs.get(typeToFindCodec.toString()));
   }
 }

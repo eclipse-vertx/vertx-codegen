@@ -59,12 +59,20 @@ public class ModuleInfo {
    * @return the module info
    */
   public static ModuleInfo resolve(Elements elementUtils, PackageElement pkgElt) {
+    PackageElement result = resolveFirstModuleGenAnnotatedPackageElement(elementUtils, pkgElt);
+    if (result != null) {
+      ModuleGen annotation = result.getAnnotation(ModuleGen.class);
+      return new ModuleInfo(result.getQualifiedName().toString(), annotation.name(), annotation.groupPackage());
+    } else return null;
+  }
+
+  public static PackageElement resolveFirstModuleGenAnnotatedPackageElement(Elements elementUtils, PackageElement pkgElt) {
     String pkgQN = pkgElt.getQualifiedName().toString();
     while (true) {
       if (pkgElt != null) {
         ModuleGen annotation = pkgElt.getAnnotation(ModuleGen.class);
         if (annotation != null) {
-          return new ModuleInfo(pkgElt.getQualifiedName().toString(), annotation.name(), annotation.groupPackage());
+          return pkgElt;
         }
       }
       int pos = pkgQN.lastIndexOf('.');
