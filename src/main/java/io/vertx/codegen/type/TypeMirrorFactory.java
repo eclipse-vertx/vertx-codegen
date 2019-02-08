@@ -202,8 +202,16 @@ public class TypeMirrorFactory {
     return declaredJsonCodecs.stream()
       .map(t -> (DeclaredType)t.getValue())
       .map(codecDeclaredType -> {
+        // Check if codecDeclaredType is concrete and has empty constructor
+        if (codecDeclaredType.asElement().getKind() != ElementKind.CLASS) throw new GenException(codecDeclaredType.asElement(), "The json codec must be a concrete class");
+        TypeElement codecDeclaredElement = (TypeElement) codecDeclaredType.asElement();
+        if (codecDeclaredElement.getModifiers().contains(Modifier.ABSTRACT)) throw new GenException(codecDeclaredElement, "The json codec must be a concrete class");
+        if (elementUtils
+          .getAllMembers(codecDeclaredElement).stream()
+          .filter(e -> e.getKind() == ElementKind.CONSTRUCTOR)
+          .noneMatch(e -> ((ExecutableElement)e).getParameters().isEmpty())) throw new GenException(codecDeclaredElement, "The json codec must have an empty constructor");
+
         List<? extends TypeMirror> superTypesOfCodecDeclaredType = typeUtils.directSupertypes(codecDeclaredType);
-        //todo check if has empty constructor
         TypeMirror jsonifiableType = superTypesOfCodecDeclaredType
           .stream()
           .filter(t -> t.getKind() == TypeKind.DECLARED)
