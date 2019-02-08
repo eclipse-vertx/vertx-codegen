@@ -16,6 +16,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -47,6 +48,7 @@ public class TestDataObject {
   private JsonObject jsonObject;
   private JsonArray jsonArray;
   private TimeUnit httpMethod;
+  private ZonedDateTime dateTime;
 
   private List<String> stringValues;
   private List<Boolean> boxedBooleanValues;
@@ -62,6 +64,7 @@ public class TestDataObject {
   private List<JsonObject> jsonObjects;
   private List<JsonArray> jsonArrays;
   private List<TimeUnit> httpMethods;
+  private List<ZonedDateTime> dateTimes;
   private List<Object> objects;
 
   private Set<String> stringSet;
@@ -78,6 +81,7 @@ public class TestDataObject {
   private Set<JsonObject> jsonObjectSet;
   private Set<JsonArray> jsonArraySet;
   private Set<TimeUnit> httpMethodSet;
+  private Set<ZonedDateTime> dateTimeSet;
   private Set<Object> objectSet;
 
   private List<String> addedStringValues = new ArrayList<>();
@@ -94,6 +98,7 @@ public class TestDataObject {
   private List<JsonObject> addedJsonObjects = new ArrayList<>();
   private List<JsonArray> addedJsonArrays = new ArrayList<>();
   private List<TimeUnit> addedHttpMethods = new ArrayList<>();
+  private List<ZonedDateTime> addedDateTimes = new ArrayList<>();
   private List<Object> addedObjects = new ArrayList<>();
 
   private Map<String, String> stringValueMap;
@@ -110,6 +115,7 @@ public class TestDataObject {
   private Map<String, JsonObject> jsonObjectMap;
   private Map<String, JsonArray> jsonArrayMap;
   private Map<String, TimeUnit> httpMethodMap;
+  private Map<String, ZonedDateTime> dateTimeMap;
   private Map<String, Object> objectMap;
 
   private Map<String, String> keyedStringValues = new HashMap<>();
@@ -126,6 +132,7 @@ public class TestDataObject {
   private Map<String, JsonObject> keyedJsonObjectValues = new HashMap<>();
   private Map<String, JsonArray> keyedJsonArrayValues = new HashMap<>();
   private Map<String, TimeUnit> keyedEnumValues = new HashMap<>();
+  private Map<String, ZonedDateTime> keyedDateTimeValues = new HashMap<>();
   private Map<String, Object> keyedObjectValues = new HashMap<>();
 
   public TestDataObject() {
@@ -335,6 +342,15 @@ public class TestDataObject {
     return this;
   }
 
+  public ZonedDateTime getDateTime() {
+    return dateTime;
+  }
+
+  public TestDataObject setDateTime(ZonedDateTime dateTime) {
+    this.dateTime = dateTime;
+    return this;
+  }
+
   public List<String> getStringValues() {
     return stringValues;
   }
@@ -458,6 +474,15 @@ public class TestDataObject {
 
   public TestDataObject setHttpMethods(List<TimeUnit> httpMethods) {
     this.httpMethods = httpMethods;
+    return this;
+  }
+
+  public List<ZonedDateTime> getDateTimes() {
+    return dateTimes;
+  }
+
+  public TestDataObject setDateTimes(List<ZonedDateTime> dateTimes) {
+    this.dateTimes = dateTimes;
     return this;
   }
 
@@ -597,6 +622,15 @@ public class TestDataObject {
     return this;
   }
 
+  public Set<ZonedDateTime> getDateTimeSet() {
+    return dateTimeSet;
+  }
+
+  public TestDataObject setDateTimeSet(Set<ZonedDateTime> dateTimeSet) {
+    this.dateTimeSet = dateTimeSet;
+    return this;
+  }
+
   public Set<Object> getObjectSet() {
     return objectSet;
   }
@@ -729,6 +763,15 @@ public class TestDataObject {
 
   public TestDataObject addAddedHttpMethod(TimeUnit addedHttpMethod) {
     this.addedHttpMethods.add(addedHttpMethod);
+    return this;
+  }
+
+  public List<ZonedDateTime> getAddedDateTimes() {
+    return addedDateTimes;
+  }
+
+  public TestDataObject addAddedDateTime(ZonedDateTime addedDateTime) {
+    this.addedDateTimes.add(addedDateTime);
     return this;
   }
 
@@ -867,6 +910,15 @@ public class TestDataObject {
     return this;
   }
 
+  public Map<String, ZonedDateTime> getDateTimeMap() {
+    return dateTimeMap;
+  }
+
+  public TestDataObject setDateTimeMap(Map<String, ZonedDateTime> dateTimeMap) {
+    this.dateTimeMap = dateTimeMap;
+    return this;
+  }
+
   public Map<String, Object> getObjectMap() {
     return objectMap;
   }
@@ -999,6 +1051,15 @@ public class TestDataObject {
 
   public TestDataObject addKeyedEnumValue(String key, TimeUnit value) {
     keyedEnumValues.put(key, value);
+    return this;
+  }
+
+  public Map<String, ZonedDateTime> getKeyedDateTimeValues() {
+    return keyedDateTimeValues;
+  }
+
+  public TestDataObject addKeyedDateTimeValue(String key, ZonedDateTime value) {
+    this.keyedDateTimeValues.put(key, value);
     return this;
   }
 

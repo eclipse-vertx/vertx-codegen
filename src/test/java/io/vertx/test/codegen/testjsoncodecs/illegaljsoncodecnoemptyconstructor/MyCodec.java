@@ -9,12 +9,12 @@ public class MyCodec implements JsonCodec<ZonedDateTime> {
   public MyCodec(Integer aValue) {}
 
   @Override
-  public Object decode(ZonedDateTime value) {
+  public Object encode(ZonedDateTime value) {
     return null;
   }
 
   @Override
-  public ZonedDateTime encode(Object value) {
+  public ZonedDateTime decode(Object value) {
     return null;
   }
 }

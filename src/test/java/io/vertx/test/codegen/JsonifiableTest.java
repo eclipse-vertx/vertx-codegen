@@ -49,13 +49,14 @@ public class JsonifiableTest extends ClassTestBase {
   }
 
 
+
   // Test valid stuff
   // ----------------
 
   // Valid param
 
   @Test
-  public void testValidBasicParams() throws Exception {
+  public void testValidParamAndReturnType() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(APIInterfaceWithZonedDateTime.class);
     assertEquals(APIInterfaceWithZonedDateTime.class.getName(), model.getIfaceFQCN());
     assertEquals(APIInterfaceWithZonedDateTime.class.getSimpleName(), model.getIfaceSimpleName());

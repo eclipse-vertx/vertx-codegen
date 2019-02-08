@@ -11,6 +11,8 @@ import java.time.format.DateTimeFormatter;
  */
 public class TestDataObjectConverter {
 
+  private static io.vertx.test.codegen.converter.ZonedDateTimeCodec zonedDateTimeCodec = new io.vertx.test.codegen.converter.ZonedDateTimeCodec();
+
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, TestDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
       switch (member.getKey()) {
@@ -91,6 +93,14 @@ public class TestDataObjectConverter {
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
                 obj.addAddedBuffer(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)item)));
+            });
+          }
+          break;
+        case "addedDateTimes":
+          if (member.getValue() instanceof JsonArray) {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof Object)
+                obj.addAddedDateTime(zonedDateTimeCodec.decode(item));
             });
           }
           break;
@@ -499,6 +509,41 @@ public class TestDataObjectConverter {
             obj.setCharValue(((String)member.getValue()).charAt(0));
           }
           break;
+        case "dateTime":
+          if (member.getValue() instanceof Object) {
+            obj.setDateTime(zonedDateTimeCodec.decode(member.getValue()));
+          }
+          break;
+        case "dateTimeMap":
+          if (member.getValue() instanceof JsonObject) {
+            java.util.Map<String, java.time.ZonedDateTime> map = new java.util.LinkedHashMap<>();
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
+              if (entry.getValue() instanceof Object)
+                map.put(entry.getKey(), zonedDateTimeCodec.decode(entry.getValue()));
+            });
+            obj.setDateTimeMap(map);
+          }
+          break;
+        case "dateTimeSet":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.LinkedHashSet<java.time.ZonedDateTime> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof Object)
+                list.add(zonedDateTimeCodec.decode(item));
+            });
+            obj.setDateTimeSet(list);
+          }
+          break;
+        case "dateTimes":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<java.time.ZonedDateTime> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof Object)
+                list.add(zonedDateTimeCodec.decode(item));
+            });
+            obj.setDateTimes(list);
+          }
+          break;
         case "doubleValue":
           if (member.getValue() instanceof Number) {
             obj.setDoubleValue(((Number)member.getValue()).doubleValue());
@@ -699,6 +744,14 @@ public class TestDataObjectConverter {
             });
           }
           break;
+        case "keyedDateTimeValues":
+          if (member.getValue() instanceof JsonObject) {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
+              if (entry.getValue() instanceof Object)
+                obj.addKeyedDateTimeValue(entry.getKey(), zonedDateTimeCodec.decode(entry.getValue()));
+            });
+          }
+          break;
         case "keyedEnumValues":
           if (member.getValue() instanceof JsonObject) {
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
@@ -872,6 +925,11 @@ public class TestDataObjectConverter {
       JsonArray array = new JsonArray();
       obj.getAddedBuffers().forEach(item -> array.add(java.util.Base64.getEncoder().encodeToString(item.getBytes())));
       json.put("addedBuffers", array);
+    }
+    if (obj.getAddedDateTimes() != null) {
+      JsonArray array = new JsonArray();
+      obj.getAddedDateTimes().forEach(item -> array.add(zonedDateTimeCodec.encode(item)));
+      json.put("addedDateTimes", array);
     }
     if (obj.getAddedHttpMethods() != null) {
       JsonArray array = new JsonArray();
@@ -1081,6 +1139,24 @@ public class TestDataObjectConverter {
     }
     json.put("byteValue", obj.getByteValue());
     json.put("charValue", Character.toString(obj.getCharValue()));
+    if (obj.getDateTime() != null) {
+      json.put("dateTime", zonedDateTimeCodec.encode(obj.getDateTime()));
+    }
+    if (obj.getDateTimeMap() != null) {
+      JsonObject map = new JsonObject();
+      obj.getDateTimeMap().forEach((key, value) -> map.put(key, zonedDateTimeCodec.encode(value)));
+      json.put("dateTimeMap", map);
+    }
+    if (obj.getDateTimeSet() != null) {
+      JsonArray array = new JsonArray();
+      obj.getDateTimeSet().forEach(item -> array.add(zonedDateTimeCodec.encode(item)));
+      json.put("dateTimeSet", array);
+    }
+    if (obj.getDateTimes() != null) {
+      JsonArray array = new JsonArray();
+      obj.getDateTimes().forEach(item -> array.add(zonedDateTimeCodec.encode(item)));
+      json.put("dateTimes", array);
+    }
     json.put("doubleValue", obj.getDoubleValue());
     json.put("floatValue", obj.getFloatValue());
     if (obj.getHttpMethod() != null) {
@@ -1187,6 +1263,11 @@ public class TestDataObjectConverter {
       JsonObject map = new JsonObject();
       obj.getKeyedDataObjectValues().forEach((key, value) -> map.put(key, value.toJson()));
       json.put("keyedDataObjectValues", map);
+    }
+    if (obj.getKeyedDateTimeValues() != null) {
+      JsonObject map = new JsonObject();
+      obj.getKeyedDateTimeValues().forEach((key, value) -> map.put(key, zonedDateTimeCodec.encode(value)));
+      json.put("keyedDateTimeValues", map);
     }
     if (obj.getKeyedEnumValues() != null) {
       JsonObject map = new JsonObject();
