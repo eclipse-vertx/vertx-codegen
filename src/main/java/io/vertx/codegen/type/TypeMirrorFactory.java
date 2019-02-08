@@ -103,7 +103,7 @@ public class TypeMirrorFactory {
         List<TypeParamInfo.Class> typeParams = createTypeParams(type);
         Optional<DeclaredType> codec = findCodecForType(type);
         if (codec.isPresent()) {
-          raw = new JsonifiableTypeInfo(fqcn, module, nullable, typeParams, codec.get());
+          raw = new JsonifiableTypeInfo(fqcn, module, nullable, typeParams, (ClassTypeInfo) this.create(codec.get()));
         } else if (kind == ClassKind.API) {
           VertxGen genAnn = elt.getAnnotation(VertxGen.class);
           TypeInfo[] args = Stream.of(
@@ -175,12 +175,15 @@ public class TypeMirrorFactory {
   }
 
   /**
-   * Resolve package defined json codecs
+   * Resolve package defined json codecs inspecting the ModuleGen annotation.
+   * For each codec declared, it inspects the type parameter used. For example the class ZonedDateTimeCodec implements
+   * @<code>JsonCodec<ZonedDateTime></code>, so this function creates a map entry with ZonedDateTime: ZonedDateTimeCodec
    *
    * @param pkgElt
    * @return
    */
   private Map<String, DeclaredType> resolveJsonCodecs(PackageElement pkgElt) {
+    if (pkgElt == null) return new HashMap<>();
     AnnotationMirror mirror = elementUtils
       .getAllAnnotationMirrors(pkgElt)
       .stream()
@@ -216,7 +219,7 @@ public class TypeMirrorFactory {
   /**
    * Resolve package defined json codecs
    *
-   * @param pkgElt
+   * @param typeToFindCodec
    * @return
    */
   private Optional<DeclaredType> findCodecForType(TypeMirror typeToFindCodec) {
