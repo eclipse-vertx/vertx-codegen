@@ -29,7 +29,7 @@ public class TypeMirrorFactory {
   public TypeMirrorFactory(Elements elementUtils, Types typeUtils, PackageElement pkgElt) {
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
-    this.jsonCodecs = resolveJsonCodecs(pkgElt);
+    this.jsonCodecs = resolveJsonCodecs(ModuleInfo.resolveFirstModuleGenAnnotatedPackageElement(elementUtils, pkgElt));
   }
 
   public TypeInfo create(TypeMirror type) {

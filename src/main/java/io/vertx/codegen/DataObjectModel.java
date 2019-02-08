@@ -62,7 +62,7 @@ public class DataObjectModel implements Model {
   public DataObjectModel(ProcessingEnvironment env, TypeElement modelElt) {
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
-    this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils, ModuleInfo.resolveFirstModuleGenAnnotatedPackageElement(elementUtils, elementUtils.getPackageOf(modelElt)));
+    this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils, elementUtils.getPackageOf(modelElt));
     this.docFactory = new Doc.Factory(env.getMessager(), elementUtils, typeUtils, typeFactory, modelElt);
     this.modelElt = modelElt;
     this.annotationValueInfoFactory = new AnnotationValueInfoFactory(typeFactory);
