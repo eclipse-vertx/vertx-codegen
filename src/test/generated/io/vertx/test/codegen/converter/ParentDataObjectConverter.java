@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class ParentDataObjectConverter {
 
+
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ParentDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
       switch (member.getKey()) {

@@ -1,11 +1,14 @@
 package io.vertx.codegen.generators.dataobjecthelper;
 
+import io.vertx.codegen.Case;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.type.ClassKind;
+import io.vertx.codegen.type.ClassTypeInfo;
+import io.vertx.codegen.type.JsonifiableTypeInfo;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -18,9 +21,12 @@ import java.util.*;
  */
 public class DataObjectHelperGen extends Generator<DataObjectModel> {
 
+  private Map<String, String> jsonCodecInstanceNames;
+
   public DataObjectHelperGen() {
     kinds = Collections.singleton("dataObject");
     name = "data_object_converters";
+    jsonCodecInstanceNames = new HashMap<>();
   }
 
   @Override
@@ -56,11 +62,21 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print(" */\n");
     writer.print(visibility + " class " + simpleName + "Converter {\n");
     writer.print("\n");
-    generateFromson(visibility, inheritConverter, model, writer);
+    generateJsonCodecInstances(model, writer);
+    writer.print("\n");
+    generateFromJson(visibility, inheritConverter, model, writer);
     writer.print("\n");
     generateToJson(visibility, inheritConverter, model, writer);
     writer.print("}\n");
     return buffer.toString();
+  }
+
+  private void generateJsonCodecInstances(DataObjectModel model, PrintWriter writer) {
+    model.getUsedJsonifiableTypes().forEach(jsonifiable -> {
+      String instanceName = chooseJsonCodecInstanceName(jsonifiable);
+      writer.print("  private static " + jsonifiable.getJsonCodec().getName() + " " + instanceName + " = new " + jsonifiable.getJsonCodec().getName() + "();\n");
+      jsonCodecInstanceNames.put(jsonifiable.getName(), instanceName);
+    });
   }
 
   private void generateToJson(String visibility, boolean inheritConverter, DataObjectModel model, PrintWriter writer) {
@@ -104,6 +120,9 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             case DATA_OBJECT:
               genPropToJson("", ".toJson()", prop, writer);
               break;
+            case JSONIFIABLE:
+              genPropToJson(solveJsonCodecInstanceName((JsonifiableTypeInfo) prop.getType()) + ".encode(" ,  ")", prop, writer);
+              break;
             case OTHER:
               if (prop.getType().getName().equals(Instant.class.getName())) {
                 genPropToJson("DateTimeFormatter.ISO_INSTANT.format(", ")", prop, writer);
@@ -144,7 +163,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     }
   }
 
-  private void generateFromson(String visibility, boolean inheritConverter, DataObjectModel model, PrintWriter writer) {
+  private void generateFromJson(String visibility, boolean inheritConverter, DataObjectModel model, PrintWriter writer) {
     writer.print("  " + visibility + " static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, " + model.getType().getSimpleName() + " obj) {\n");
     writer.print("    for (java.util.Map.Entry<String, Object> member : json) {\n");
     writer.print("      switch (member.getKey()) {\n");
@@ -205,6 +224,9 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               break;
             case DATA_OBJECT:
               genPropFromJson("JsonObject", "new " + prop.getType().getName() + "((JsonObject)", ")", prop, writer);
+              break;
+            case JSONIFIABLE:
+              genPropFromJson("Object", solveJsonCodecInstanceName((JsonifiableTypeInfo) prop.getType()) + ".decode(", ")", prop, writer);
               break;
             case ENUM:
               genPropFromJson("String", prop.getType().getName() + ".valueOf((String)", ")", prop, writer);
@@ -271,5 +293,19 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       }
     }
     writer.print(indent + "  break;\n");
+  }
+
+  private String solveJsonCodecInstanceName(ClassTypeInfo info) {
+    return jsonCodecInstanceNames.get(info.getName());
+  }
+
+  private String chooseJsonCodecInstanceName(JsonifiableTypeInfo jsonifiableTypeInfo) {
+    String instanceName = jsonifiableTypeInfo.getJsonCodec().getSimpleName(Case.LOWER_CAMEL);
+    int i = 0;
+    while (jsonCodecInstanceNames.containsKey(instanceName)) {
+      i++;
+      instanceName = instanceName + i;
+    }
+    return instanceName;
   }
 }
