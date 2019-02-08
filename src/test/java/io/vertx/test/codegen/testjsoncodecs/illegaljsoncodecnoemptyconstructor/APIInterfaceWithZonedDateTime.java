@@ -1,6 +1,5 @@
-package io.vertx.test.codegen.testjsoncodecs;
+package io.vertx.test.codegen.testjsoncodecs.illegaljsoncodecnoemptyconstructor;
 
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.VertxGen;
 
 import java.time.ZonedDateTime;

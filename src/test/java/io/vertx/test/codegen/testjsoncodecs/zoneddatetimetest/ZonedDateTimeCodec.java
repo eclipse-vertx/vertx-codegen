@@ -1,4 +1,4 @@
-package io.vertx.test.codegen.testjsoncodecs;
+package io.vertx.test.codegen.testjsoncodecs.zoneddatetimetest;
 
 import io.vertx.codegen.JsonCodec;
 
