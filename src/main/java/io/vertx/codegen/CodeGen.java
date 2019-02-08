@@ -132,7 +132,7 @@ public class CodeGen {
       throw new GenException(element, "Invalid group package name " + groupPackage);
     }
     ModuleInfo info = new ModuleInfo(modulePackage, moduleName, groupPackage);
-    AnnotationValueInfoFactory annotationFactory = new AnnotationValueInfoFactory(new TypeMirrorFactory(elementUtils,typeUtils));
+    AnnotationValueInfoFactory annotationFactory = new AnnotationValueInfoFactory(new TypeMirrorFactory(elementUtils, typeUtils, element));
     List<AnnotationValueInfo> annotationValueInfos = element.getAnnotationMirrors().stream().map(annotationFactory::processAnnotation).collect(Collectors.toList());
     return new ModuleModel(element, info, annotationValueInfos);
   }

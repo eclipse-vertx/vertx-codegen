@@ -93,7 +93,7 @@ public class ClassModel implements Model {
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
     this.env = env;
-    this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils);
+    this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils, ModuleInfo.resolveFirstModuleGenAnnotatedPackageElement(elementUtils, elementUtils.getPackageOf(modelElt)));
     this.docFactory = new Doc.Factory(env.getMessager(), elementUtils, typeUtils, typeFactory, modelElt);
     this.messager = env.getMessager();
     this.modelElt = modelElt;
@@ -337,6 +337,9 @@ public class ClassModel implements Model {
     if (allowAnyJavaType && type.getKind() == ClassKind.OTHER) {
       return true;
     }
+    if (type.getKind() == ClassKind.JSONIFIABLE) {
+      return true;
+    }
     if (isLegalContainer(type, allowAnyJavaType)) {
       return true;
     }
@@ -376,6 +379,9 @@ public class ClassModel implements Model {
       return true;
     }
     if (allowAnyJavaType && typeInfo.getKind() == ClassKind.OTHER) {
+      return true;
+    }
+    if (typeInfo.getKind() == ClassKind.JSONIFIABLE) {
       return true;
     }
     if (isLegalContainer(typeInfo, allowAnyJavaType)) {

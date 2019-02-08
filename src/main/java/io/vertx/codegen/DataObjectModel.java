@@ -35,18 +35,22 @@ public class DataObjectModel implements Model {
   private final Doc.Factory docFactory;
   private final TypeMirrorFactory typeFactory;
   private final TypeElement modelElt;
+  // ----------------
   private final Map<String, PropertyInfo> propertyMap = new LinkedHashMap<>();
   private final Set<ClassTypeInfo> superTypes = new LinkedHashSet<>();
   private final Set<ClassTypeInfo> abstractSuperTypes = new LinkedHashSet<>();
   private final Set<ClassTypeInfo> importedTypes = new LinkedHashSet<>();
+  // ----------------
   private final AnnotationValueInfoFactory annotationValueInfoFactory;
   private boolean processed;
   private boolean concrete;
   private boolean isClass;
+  // ----------------
   private boolean generateConverter;
   private boolean inheritConverter;
   private boolean publicConverter;
   private int constructors;
+  // ----------------
   private boolean deprecated;
   private Text deprecatedDesc;
   private ClassTypeInfo superType;
@@ -58,7 +62,7 @@ public class DataObjectModel implements Model {
   public DataObjectModel(ProcessingEnvironment env, TypeElement modelElt) {
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
-    this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils);
+    this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils, ModuleInfo.resolveFirstModuleGenAnnotatedPackageElement(elementUtils, elementUtils.getPackageOf(modelElt)));
     this.docFactory = new Doc.Factory(env.getMessager(), elementUtils, typeUtils, typeFactory, modelElt);
     this.modelElt = modelElt;
     this.annotationValueInfoFactory = new AnnotationValueInfoFactory(typeFactory);
