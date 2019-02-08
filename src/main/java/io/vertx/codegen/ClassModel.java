@@ -93,7 +93,7 @@ public class ClassModel implements Model {
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
     this.env = env;
-    this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils, ModuleInfo.resolveFirstModuleGenAnnotatedPackageElement(elementUtils, elementUtils.getPackageOf(modelElt)));
+    this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils, elementUtils.getPackageOf(modelElt));
     this.docFactory = new Doc.Factory(env.getMessager(), elementUtils, typeUtils, typeFactory, modelElt);
     this.messager = env.getMessager();
     this.modelElt = modelElt;

@@ -54,7 +54,7 @@ public class TypeInfoTest {
     assertion.accept(reflectedMap);
     Utils.assertProcess((proc, env) -> {
       TypeElement modelMap = proc.getElementUtils().getTypeElement(container.getName());
-      TypeMirrorFactory factory = new TypeMirrorFactory(proc.getElementUtils(), proc.getTypeUtils(), ModuleInfo.resolveFirstModuleGenAnnotatedPackageElement(proc.getElementUtils(), proc.getElementUtils().getPackageOf(modelMap)));
+      TypeMirrorFactory factory = new TypeMirrorFactory(proc.getElementUtils(), proc.getTypeUtils(), proc.getElementUtils().getPackageOf(modelMap));
       Map<String, TypeInfo> collect = modelMap.getEnclosedElements().stream().
           flatMap(Helper.FILTER_METHOD).
           filter(elt -> elt.getModifiers().contains(javax.lang.model.element.Modifier.PUBLIC)).
