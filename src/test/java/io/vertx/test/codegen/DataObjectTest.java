@@ -17,6 +17,9 @@ import io.vertx.test.codegen.annotations.TestEnum;
 import io.vertx.test.codegen.testapi.InterfaceDataObject;
 import io.vertx.test.codegen.testdataobject.*;
 import io.vertx.test.codegen.testdataobject.imported.Imported;
+import io.vertx.test.codegen.testdataobject.jsoncodec.DataObjectWithJsonifiable;
+import io.vertx.test.codegen.testdataobject.jsoncodec.MyPojo;
+import io.vertx.test.codegen.testdataobject.jsoncodec.MyPojoJsonCodec;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -832,6 +835,22 @@ public class DataObjectTest {
     assertEquals(2, fieldWithMethodAnnotationModel.getAnnotations().size());
     assertNotNull(fieldWithMethodAnnotationModel.getAnnotation(SomeAnnotation.class.getName()).getName());
     assertNotNull(fieldWithMethodAnnotationModel.getAnnotation(SomeMethodAnnotation.class.getName()).getName());
+  }
+
+  @Test
+  public void testDataObjectWithJsonifiable() throws Exception {
+    DataObjectModel model = new GeneratorHelper().generateDataObject(DataObjectWithJsonifiable.class);
+    assertNotNull(model);
+    assertTrue(model.isClass());
+    assertTrue(model.getGenerateConverter());
+    assertTrue(model.isPublicConverter());
+
+    assertEquals(1, model.getReferencedJsonifiableTypes().size());
+    assertEquals(MyPojo.class.getName(), model.getReferencedJsonifiableTypes().iterator().next().getName());
+    assertEquals(MyPojoJsonCodec.class.getName(), model.getReferencedJsonifiableTypes().iterator().next().getJsonCodec().getName());
+
+    PropertyInfo myPojoProperty = model.getPropertyMap().get("myPojo");
+    assertEquals(model.getReferencedJsonifiableTypes().iterator().next(), myPojoProperty.getType());
   }
 
   private void assertInvalidDataObject(Class<?> dataObjectClass) throws Exception {
