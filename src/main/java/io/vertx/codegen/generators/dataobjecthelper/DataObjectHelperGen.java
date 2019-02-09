@@ -72,7 +72,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
   }
 
   private void generateJsonCodecInstances(DataObjectModel model, PrintWriter writer) {
-    model.getUsedJsonifiableTypes().forEach(jsonifiable -> {
+    model.getReferencedJsonifiableTypes().forEach(jsonifiable -> {
       String instanceName = chooseJsonCodecInstanceName(jsonifiable);
       writer.print("  private static " + jsonifiable.getJsonCodec().getName() + " " + instanceName + " = new " + jsonifiable.getJsonCodec().getName() + "();\n");
       jsonCodecInstanceNames.put(jsonifiable.getName(), instanceName);

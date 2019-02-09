@@ -37,7 +37,7 @@ public class DataObjectModel implements Model {
   private final TypeElement modelElt;
   // ----------------
   private final Map<String, PropertyInfo> propertyMap = new LinkedHashMap<>();
-  private final Set<JsonifiableTypeInfo> usedJsonifiableTypes = new LinkedHashSet<>();
+  private final Set<JsonifiableTypeInfo> referencedJsonifiableTypes = new LinkedHashSet<>();
   private final Set<ClassTypeInfo> superTypes = new LinkedHashSet<>();
   private final Set<ClassTypeInfo> abstractSuperTypes = new LinkedHashSet<>();
   private final Set<ClassTypeInfo> importedTypes = new LinkedHashSet<>();
@@ -166,8 +166,8 @@ public class DataObjectModel implements Model {
     return deprecatedDesc;
   }
 
-  public Set<JsonifiableTypeInfo> getUsedJsonifiableTypes() {
-    return usedJsonifiableTypes;
+  public Set<JsonifiableTypeInfo> getReferencedJsonifiableTypes() {
+    return referencedJsonifiableTypes;
   }
 
   @Override
@@ -278,7 +278,7 @@ public class DataObjectModel implements Model {
     props.forEach(prop -> propertyMap.put(prop.name, prop));
 
     // Add all used json codecs to imports
-    importedTypes.addAll(usedJsonifiableTypes.stream().map(JsonifiableTypeInfo::getJsonCodec).collect(Collectors.toSet()));
+    importedTypes.addAll(referencedJsonifiableTypes.stream().map(JsonifiableTypeInfo::getJsonCodec).collect(Collectors.toSet()));
   }
 
   private void processTypeAnnotations() {
@@ -522,7 +522,7 @@ public class DataObjectModel implements Model {
           Helper.isJsonifiable(elementUtils, typeUtils, (TypeElement) propTypeElt);
         break;
       case JSONIFIABLE:
-        usedJsonifiableTypes.add(((JsonifiableTypeInfo)propType));
+        referencedJsonifiableTypes.add(((JsonifiableTypeInfo)propType));
         jsonifiable = true;
         break;
       case OTHER:
