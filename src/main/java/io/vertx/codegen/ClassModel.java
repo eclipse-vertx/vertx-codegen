@@ -16,7 +16,6 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import io.vertx.codegen.annotations.CacheReturn;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
@@ -72,6 +71,7 @@ public class ClassModel implements Model {
   protected Set<ApiTypeInfo> referencedTypes = new HashSet<>();
   protected Set<DataObjectTypeInfo> referencedDataObjectTypes = new HashSet<>();
   protected Set<EnumTypeInfo> referencedEnumTypes = new HashSet<>();
+  protected Set<JsonifiableTypeInfo> referencedJsonifiableTypes = new HashSet<>();
   protected boolean concrete;
   protected ClassTypeInfo type;
   protected String ifaceSimpleName;
@@ -158,6 +158,13 @@ public class ClassModel implements Model {
    */
   public Set<ClassTypeInfo> getImportedTypes() {
     return importedTypes;
+  }
+
+  /**
+   * @return all referenced jsonifiable types
+   */
+  public Set<JsonifiableTypeInfo> getReferencedJsonifiableTypes() {
+    return referencedJsonifiableTypes;
   }
 
   /**
@@ -454,7 +461,8 @@ public class ClassModel implements Model {
       || argumentKind.json
       || isVertxGenInterface(argument, false)
       || argumentKind == ClassKind.OBJECT
-      || (allowAnyJavaType && argumentKind == ClassKind.OTHER);
+      || (allowAnyJavaType && argumentKind == ClassKind.OTHER)
+      || argumentKind == ClassKind.JSONIFIABLE;
   }
 
   protected boolean isLegalContainerReturn(TypeInfo type, boolean allowAnyJavaType) {
@@ -482,7 +490,8 @@ public class ClassModel implements Model {
     return argumentKind.basic
       || argumentKind.json
       || argumentKind == ClassKind.OBJECT
-      || (allowAnyJavaType && argumentKind == ClassKind.OTHER);
+      || (allowAnyJavaType && argumentKind == ClassKind.OTHER)
+      || argumentKind == ClassKind.JSONIFIABLE;
   }
 
   private boolean isVertxGenInterface(TypeInfo type, boolean allowParameterized) {
@@ -576,6 +585,11 @@ public class ClassModel implements Model {
       flatMap(Helper.instanceOf(EnumTypeInfo.class)).
       filter(t -> t.getKind() == ClassKind.ENUM).
       collect(Collectors.toSet());
+
+    referencedJsonifiableTypes = collectedTypes.stream()
+      .map(ClassTypeInfo::getRaw)
+      .flatMap(Helper.instanceOf(JsonifiableTypeInfo.class))
+      .collect(Collectors.toSet());
   }
 
   public boolean process() {
@@ -1093,6 +1107,7 @@ public class ClassModel implements Model {
     vars.put("constants", getConstants());
     vars.put("referencedTypes", getReferencedTypes());
     vars.put("superTypes", getSuperTypes());
+    vars.put("referencedJsonifiableTypes", getReferencedJsonifiableTypes());
     vars.put("concreteSuperType", getConcreteSuperType());
     vars.put("abstractSuperTypes", getAbstractSuperTypes());
     vars.put("handlerType", getHandlerType());
