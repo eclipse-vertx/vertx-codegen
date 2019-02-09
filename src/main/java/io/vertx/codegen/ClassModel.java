@@ -71,6 +71,7 @@ public class ClassModel implements Model {
   protected Set<ApiTypeInfo> referencedTypes = new HashSet<>();
   protected Set<DataObjectTypeInfo> referencedDataObjectTypes = new HashSet<>();
   protected Set<EnumTypeInfo> referencedEnumTypes = new HashSet<>();
+  protected Set<JsonifiableTypeInfo> referencedJsonifiableTypes = new HashSet<>();
   protected boolean concrete;
   protected ClassTypeInfo type;
   protected String ifaceSimpleName;
@@ -157,6 +158,13 @@ public class ClassModel implements Model {
    */
   public Set<ClassTypeInfo> getImportedTypes() {
     return importedTypes;
+  }
+
+  /**
+   * @return all referenced jsonifiable types
+   */
+  public Set<JsonifiableTypeInfo> getReferencedJsonifiableTypes() {
+    return referencedJsonifiableTypes;
   }
 
   /**
@@ -543,6 +551,11 @@ public class ClassModel implements Model {
       flatMap(Helper.instanceOf(EnumTypeInfo.class)).
       filter(t -> t.getKind() == ClassKind.ENUM).
       collect(Collectors.toSet());
+
+    referencedJsonifiableTypes = collectedTypes.stream()
+      .map(ClassTypeInfo::getRaw)
+      .flatMap(Helper.instanceOf(JsonifiableTypeInfo.class))
+      .collect(Collectors.toSet());
   }
 
   public boolean process() {
@@ -1053,6 +1066,7 @@ public class ClassModel implements Model {
     vars.put("constants", getConstants());
     vars.put("referencedTypes", getReferencedTypes());
     vars.put("superTypes", getSuperTypes());
+    vars.put("referencedJsonifiableTypes", getReferencedJsonifiableTypes());
     vars.put("concreteSuperType", getConcreteSuperType());
     vars.put("abstractSuperTypes", getAbstractSuperTypes());
     vars.put("handlerType", getHandlerType());
