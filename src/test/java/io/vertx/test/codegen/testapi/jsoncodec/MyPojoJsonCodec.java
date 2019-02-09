@@ -1,7 +1,7 @@
 package io.vertx.test.codegen.testapi.jsoncodec;
 
 
-import io.vertx.codegen.JsonCodec;
+import io.vertx.core.json.JsonCodec;
 
 public class MyPojoJsonCodec implements JsonCodec<MyPojo> {
 
