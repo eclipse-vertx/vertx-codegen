@@ -494,7 +494,7 @@ public class ClassModel implements Model {
           for (TypeInfo paramType : parameterized.getArgs()) {
             ClassKind kind = paramType.getKind();
             if (!(kind == ClassKind.API || paramType.isVariable() || kind == ClassKind.VOID
-              || kind.basic || kind.json || kind == ClassKind.DATA_OBJECT || kind == ClassKind.ENUM )) {
+              || kind.basic || kind.json || kind == ClassKind.DATA_OBJECT || kind == ClassKind.ENUM || kind == ClassKind.OTHER)) {
               return false;
             }
             if (paramType.isNullable()) {
