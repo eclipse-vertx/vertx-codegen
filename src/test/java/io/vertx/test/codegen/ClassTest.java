@@ -60,6 +60,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -1546,6 +1547,14 @@ public class ClassTest extends ClassTestBase {
     checkParam(methods.get(4).getParams().get(0), "handler", new TypeLiteral<Handler<GenericInterface<T>>>() {});
     checkParam(methods.get(5).getParams().get(0), "t", new TypeLiteral<GenericInterface<T>>() {});
     checkParam(methods.get(6).getParams().get(0), "self", new TypeLiteral<GenericAbstractInterface<GenericInterface<T>>>() {});
+  }
+
+  @Test
+  public void testInterfaceParameterizedByOtherType() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceParameterizedByOtherType.class);
+    ParameterizedTypeInfo parameterizedType = (ParameterizedTypeInfo) model.getSuperTypes().get(0);
+    assertEquals(1, parameterizedType.getArgs().size());
+    assertEquals(Locale.class.getName(), parameterizedType.getArg(0).getName());
   }
 
   @Test
