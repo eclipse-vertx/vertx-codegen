@@ -257,6 +257,7 @@ The following set _`Return`_ of types are permitted as return types from any API
 * `java.util.Map<String, C>` where `C` contains
     * the set _`Basic`_
     * the set _`Json`_
+    * the set _`Api`_
     * the set _`JavaType`_
     * `java.lang.Object`
 
@@ -290,7 +291,6 @@ The following set _`Param`_ of types are permitted as parameters to any API meth
     * the set _`Json`_
     * the set _`Api`_
     * the set _`JavaType`_
-    * any enum type
     * `java.lang.Object`
 
 In addition any _`Api_ method can have as parameter:

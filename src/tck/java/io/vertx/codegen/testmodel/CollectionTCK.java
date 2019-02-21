@@ -74,6 +74,7 @@ public interface CollectionTCK {
   Map<String, Boolean> methodWithMapBooleanReturn(Handler<String> handler);
   Map<String, Float> methodWithMapFloatReturn(Handler<String> handler);
   Map<String, Double> methodWithMapDoubleReturn(Handler<String> handler);
+  Map<String, RefedInterface1> methodWithMapVertxGenReturn(Handler<String> handler);
   Map<String, JsonObject> methodWithMapJsonObjectReturn(Handler<String> handler);
   Map<String, JsonObject> methodWithMapComplexJsonObjectReturn(Handler<String> handler);
   Map<String, JsonArray> methodWithMapJsonArrayReturn(Handler<String> handler);
