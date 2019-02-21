@@ -233,6 +233,15 @@ We define _`Parameterized`_ as the set of user defined API types which are defin
 * the set _`Api`_
 * the set _`TypeVar`_
 
+We define _`ContainerValueType`_ as the set of any Java type that belongs to:
+* the set _`Basic`_
+* the set _`Json`_
+* any enum type
+* the set _`Api`_
+* the set _`DataObject`_
+* the set _`JavaType`_
+* `java.lang.Object`
+
 The following set _`Return`_ of types are permitted as return types from any API method:
 
 * `void`
@@ -246,22 +255,7 @@ The following set _`Return`_ of types are permitted as return types from any API
 * the set _`Api`_
 * the set _`Parameterized`_
 * the set _`JavaType`_
-* type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
-    * the set _`Basic`_
-    * the set _`Json`_
-    * any enum type
-    * the set _`Api`_
-    * the set _`DataObject`_
-    * the set _`JavaType`_
-    * `java.lang.Object`
-* `java.util.Map<String, C>` where `C` contains
-    * the set _`Basic`_
-    * the set _`Json`_
-    * any enum type
-    * the set _`Api`_
-    * the set _`DataObject`_
-    * the set _`JavaType`_
-    * `java.lang.Object`
+* type `java.util.List<C>`, `java.util.Set<C>` or `java.util.Map<String, C>` where `C` belongs to `ContainerValueType`
 
 The following set _`Param`_ of types are permitted as parameters to any API method:
 
@@ -280,22 +274,7 @@ The following set _`Param`_ of types are permitted as parameters to any API meth
     * the set _`Json`_
     * the set _`Api`_
     * the set _`JavaType`_
-* type `java.util.List<C>` or `java.util.Set<C>` where `C` contains
-    * the set _`Basic`_
-    * the set _`Json`_
-    * the set _`DataObject`_
-    * the set _`Api`_
-    * the set _`JavaType`_
-    * any enum type
-    * `java.lang.Object`
-* type `java.util.Map<String, C>` where `C` contains
-    * the set _`Basic`_
-    * the set _`Json`_
-    * any enum type
-    * the set _`Api`_
-    * the set _`DataObject`_
-    * the set _`JavaType`_
-    * `java.lang.Object`
+* type `java.util.List<C>`, `java.util.Set<C>` or `java.util.Map<String, C>` where `C` belongs to `ContainerValueType`
 
 In addition any _`Api_ method can have as parameter:
 
