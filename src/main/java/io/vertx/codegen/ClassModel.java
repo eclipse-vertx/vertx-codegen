@@ -258,7 +258,7 @@ public class ClassModel implements Model {
 
   protected void checkSuperType(Element elt, TypeInfo type) {
     if (type.getKind() == ClassKind.API) {
-      if (!isVertxGenInterface(type, true)) {
+      if (!isLegalVertxGenInterface(type, true)) {
         throw new GenException(elt, "type " + type + " is not legal for use for super type in code generation");
       }
     }
@@ -325,13 +325,13 @@ public class ClassModel implements Model {
     if (type.getKind() == ClassKind.THROWABLE) {
       return true;
     }
-    if (isTypeVariable(type)) {
+    if (type.isVariable()) {
       return true;
     }
     if (type.getKind() == ClassKind.OBJECT) {
       return true;
     }
-    if (isVertxGenInterface(type, true)) {
+    if (isLegalVertxGenInterface(type, true)) {
       return true;
     }
     if (allowAnyJavaType && type.getKind() == ClassKind.OTHER) {
@@ -366,13 +366,13 @@ public class ClassModel implements Model {
     if (typeInfo.getKind() == ClassKind.THROWABLE) {
       return true;
     }
-    if (isTypeVariable(typeInfo)) {
+    if (type.isVariable()) {
       return true;
     }
     if (typeInfo.getKind() == ClassKind.OBJECT) {
       return true;
     }
-    if (isVertxGenInterface(typeInfo, true)) {
+    if (isLegalVertxGenInterface(typeInfo, true)) {
       return true;
     }
     if (allowAnyJavaType && typeInfo.getKind() == ClassKind.OTHER) {
@@ -382,10 +382,6 @@ public class ClassModel implements Model {
       return true;
     }
     return false;
-  }
-
-  private boolean isTypeVariable(TypeInfo type) {
-    return type instanceof TypeVariableInfo;
   }
 
   private boolean isLegalDataObjectTypeParam(TypeInfo type) {
@@ -443,36 +439,32 @@ public class ClassModel implements Model {
     return false;
   }
 
-  private boolean isLegalContainerComponent(TypeInfo argument, boolean allowAnyJavaType) {
-    ClassKind argumentKind = argument.getKind();
+  private boolean isLegalContainerComponent(TypeInfo arg, boolean allowAnyJavaType) {
+    ClassKind argumentKind = arg.getKind();
     return argumentKind.basic
       || argumentKind.json
-      || isVertxGenInterface(argument, false)
+      || isLegalVertxGenInterface(arg, false)
       || argumentKind == ClassKind.OBJECT
-      || isLegalDataObjectTypeParam(argument)
-      || argument.getKind() == ClassKind.ENUM
+      || isLegalDataObjectTypeParam(arg)
+      || arg.getKind() == ClassKind.ENUM
       || (allowAnyJavaType && argumentKind == ClassKind.OTHER);
   }
 
-  private boolean isVertxGenInterface(TypeInfo type, boolean allowParameterized) {
+  private boolean isLegalVertxGenTypeArgument(TypeInfo arg) {
+    ClassKind kind = arg.getKind();
+    return kind == ClassKind.API || arg.isVariable() || kind == ClassKind.VOID
+      || kind.basic || kind.json || kind == ClassKind.DATA_OBJECT || kind == ClassKind.ENUM || kind == ClassKind.OTHER;
+  }
+
+  private boolean isLegalVertxGenInterface(TypeInfo type, boolean allowParameterized) {
     if (type.getKind() == ClassKind.API) {
       if (type.isParameterized()) {
-        if (allowParameterized) {
-          ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
-          for (TypeInfo paramType : parameterized.getArgs()) {
-            ClassKind kind = paramType.getKind();
-            if (!(kind == ClassKind.API || paramType.isVariable() || kind == ClassKind.VOID
-              || kind.basic || kind.json || kind == ClassKind.DATA_OBJECT || kind == ClassKind.ENUM || kind == ClassKind.OTHER)) {
-              return false;
-            }
-            if (paramType.isNullable()) {
-              return false;
-            }
-          }
-          return true;
-        } else {
-          return false;
-        }
+        ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
+        return allowParameterized &&
+          parameterized
+            .getArgs()
+            .stream()
+            .noneMatch(arg -> !isLegalVertxGenTypeArgument(arg) || arg.isNullable());
       } else {
         return true;
       }
@@ -660,7 +652,7 @@ public class ClassModel implements Model {
 
     // Traverse nested elements that are not methods (like nested interfaces)
     for (Element enclosedElt : elem.getEnclosedElements()) {
-      if (!isGenIgnore(enclosedElt)) {
+      if (!Helper.isGenIgnore(enclosedElt)) {
         switch (enclosedElt.getKind()) {
           case METHOD:
           case FIELD:
@@ -749,10 +741,6 @@ public class ClassModel implements Model {
         }
       }
     }
-  }
-
-  private static boolean isGenIgnore(Element elt) {
-    return elt.getAnnotation(GenIgnore.class) != null;
   }
 
   private ConstantInfo fieldMethod(VariableElement modelField, boolean allowAnyJavaType) {

@@ -693,4 +693,12 @@ public class Helper {
         filter(exeElt -> exeElt.getSimpleName().toString().equals("toJson") && typeUtils.isSameType(jsonType, exeElt.getReturnType())).
         count() > 0;
   }
+
+  /**
+   * @param elt the element to check
+   * @return Return {@code true} if the {@code elt} is annotated with {@code @GenIgnore}.
+   */
+  public static boolean isGenIgnore(Element elt) {
+    return elt.getAnnotation(GenIgnore.class) != null;
+  }
 }
