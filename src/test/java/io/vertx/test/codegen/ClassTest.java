@@ -420,14 +420,16 @@ public class ClassTest extends ClassTestBase {
     String methodName = "methodWithMapParams";
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, methodName, 6, "void", MethodKind.OTHER);
+    checkMethod(method, methodName, 8, "void", MethodKind.OTHER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "mapString", new TypeLiteral<Map<String, String>>(){});
     checkParam(params.get(1), "mapLong", new TypeLiteral<Map<String, Long>>(){});
-    checkParam(params.get(2), "mapVertxGen", new TypeLiteral<Map<String, VertxGenClass1>>(){});
-    checkParam(params.get(3), "mapJsonObject", new TypeLiteral<Map<String, JsonObject>>(){});
-    checkParam(params.get(4), "mapJsonArray", new TypeLiteral<Map<String, JsonArray>>(){});
-    checkParam(params.get(5), "mapObject", new TypeLiteral<Map<String, Object>>(){});
+    checkParam(params.get(2), "mapJsonObject", new TypeLiteral<Map<String, JsonObject>>(){});
+    checkParam(params.get(3), "mapJsonArray", new TypeLiteral<Map<String, JsonArray>>(){});
+    checkParam(params.get(4), "mapVertxGen", new TypeLiteral<Map<String, VertxGenClass1>>(){});
+    checkParam(params.get(5), "mapDataObject", new TypeLiteral<Map<String, TestDataObject>>(){});
+    checkParam(params.get(6), "mapEnum", new TypeLiteral<Map<String, TestEnum>>(){});
+    checkParam(params.get(7), "mapObject", new TypeLiteral<Map<String, Object>>(){});
   }
 
   @Test
@@ -1124,7 +1126,7 @@ public class ClassTest extends ClassTestBase {
     assertEquals(1, model.getReferencedTypes().size());
     assertTrue(model.getSuperTypes().isEmpty());
     List<MethodInfo> methods = model.getMethods();
-    assertEquals(13, methods.size());
+    assertEquals(15, methods.size());
     checkMethod(methods.get(0), "byteMap", 0, new TypeLiteral<Map<String, Byte>>() {
     }, MethodKind.OTHER);
     checkMethod(methods.get(1), "shortMap", 0, new TypeLiteral<Map<String, Short>>() {}, MethodKind.OTHER);
@@ -1135,10 +1137,12 @@ public class ClassTest extends ClassTestBase {
     checkMethod(methods.get(6), "booleanMap", 0, new TypeLiteral<Map<String, Boolean>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(7), "charMap", 0, new TypeLiteral<Map<String, Character>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(8), "stringMap", 0, new TypeLiteral<Map<String, String>>() {}, MethodKind.OTHER);
-    checkMethod(methods.get(9), "vertxGenMap", 0, new TypeLiteral<Map<String, VertxGenClass1>>() {}, MethodKind.OTHER);
-    checkMethod(methods.get(10), "jsonArrayMap", 0, new TypeLiteral<Map<String, JsonArray>>() {}, MethodKind.OTHER);
-    checkMethod(methods.get(11), "jsonObjectMap", 0, new TypeLiteral<Map<String, JsonObject>>() {}, MethodKind.OTHER);
-    checkMethod(methods.get(12), "objectMap", 0, new TypeLiteral<Map<String, Object>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(9), "jsonArrayMap", 0, new TypeLiteral<Map<String, JsonArray>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(10), "jsonObjectMap", 0, new TypeLiteral<Map<String, JsonObject>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(11), "vertxGenMap", 0, new TypeLiteral<Map<String, VertxGenClass1>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(12), "dataObjectMap", 0, new TypeLiteral<Map<String, TestDataObject>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(13), "enumMap", 0, new TypeLiteral<Map<String, TestEnum>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(14), "objectMap", 0, new TypeLiteral<Map<String, Object>>() {}, MethodKind.OTHER);
   }
 
   @Test
@@ -1922,16 +1926,6 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testMethodInvalidMapReturn1() throws Exception {
     assertGenFail(MethodWithInvalidMapReturn1.class, "Invalid Map return should fail");
-  }
-
-  @Test
-  public void testMethodInvalidMapReturn3() throws Exception {
-    assertGenFail(MethodWithInvalidMapReturn3.class, "Invalid Map return should fail");
-  }
-
-  @Test
-  public void testMethodInvalidMapReturn4() throws Exception {
-    assertGenFail(MethodWithInvalidMapReturn4.class, "Invalid Map return should fail");
   }
 
   @Test

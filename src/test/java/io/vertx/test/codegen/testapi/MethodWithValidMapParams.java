@@ -17,6 +17,7 @@
 package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -31,8 +32,10 @@ public interface MethodWithValidMapParams {
 
   void methodWithMapParams(Map<String, String> mapString,
                            Map<String, Long> mapLong,
-                           Map<String, VertxGenClass1> mapVertxGen,
                            Map<String, JsonObject> mapJsonObject,
                            Map<String, JsonArray> mapJsonArray,
+                           Map<String, VertxGenClass1> mapVertxGen,
+                           Map<String, TestDataObject> mapDataObject,
+                           Map<String, TestEnum> mapEnum,
                            Map<String, Object> mapObject);
 }

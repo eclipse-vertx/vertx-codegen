@@ -431,19 +431,13 @@ public class ClassModel implements Model {
   }
 
   protected boolean isLegalContainer(TypeInfo type, boolean allowAnyJavaType) {
-    // List<T> and Set<T> are also legal for params if T = basic type, json, @VertxGen, @DataObject
-    // Map<K,V> is also legal for returns and params if K is a String and V is a basic type, json, or a @VertxGen interface
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
-      TypeInfo argument = ((ParameterizedTypeInfo) type).getArgs().get(0);
+      ParameterizedTypeInfo parameterizedType = (ParameterizedTypeInfo) type;
+      TypeInfo argument = parameterizedType.getArgs().get(0);
       if (type.getKind() != ClassKind.MAP) {
-        if (isLegalContainerComponent(argument, allowAnyJavaType) ||
-          isLegalDataObjectTypeParam(argument) ||
-          argument.getKind() == ClassKind.ENUM) {
-          return true;
-        }
-      } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
-        argument = ((ParameterizedTypeInfo) type).getArgs().get(1);
         return isLegalContainerComponent(argument, allowAnyJavaType);
+      } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
+        return isLegalContainerComponent(parameterizedType.getArgs().get(1), allowAnyJavaType);
       }
     }
     return false;
@@ -455,38 +449,10 @@ public class ClassModel implements Model {
       || argumentKind.json
       || isVertxGenInterface(argument, false)
       || argumentKind == ClassKind.OBJECT
+      || isLegalDataObjectTypeParam(argument)
+      || argument.getKind() == ClassKind.ENUM
       || (allowAnyJavaType && argumentKind == ClassKind.OTHER);
   }
-
-/*
-  protected boolean isLegalContainerReturn(TypeInfo type, boolean allowAnyJavaType) {
-    if (rawTypeIs(type, List.class, Set.class, Map.class)) {
-      List<TypeInfo> args = ((ParameterizedTypeInfo) type).getArgs();
-      if (type.getKind() == ClassKind.MAP) {
-        if (args.get(0).getKind() != ClassKind.STRING) {
-          return false;
-        }
-        TypeInfo valueType = args.get(1);
-        return isLegalArgumentContainerReturn(valueType, allowAnyJavaType);
-      } else {
-        TypeInfo valueType = args.get(0);
-        return isLegalArgumentContainerReturn(valueType, allowAnyJavaType) ||
-          valueType.getKind() == ClassKind.ENUM ||
-          isVertxGenInterface(valueType, false) ||
-          isLegalDataObjectTypeReturn(valueType);
-      }
-    }
-    return false;
-  }
-
-  private boolean isLegalArgumentContainerReturn(TypeInfo argument, boolean allowAnyJavaType) {
-    ClassKind argumentKind = argument.getKind();
-    return argumentKind.basic
-      || argumentKind.json
-      || argumentKind == ClassKind.OBJECT
-      || (allowAnyJavaType && argumentKind == ClassKind.OTHER);
-  }
-*/
 
   private boolean isVertxGenInterface(TypeInfo type, boolean allowParameterized) {
     if (type.getKind() == ClassKind.API) {
