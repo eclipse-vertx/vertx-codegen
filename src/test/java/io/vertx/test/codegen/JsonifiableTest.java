@@ -1,8 +1,9 @@
 package io.vertx.test.codegen;
 
 import io.vertx.codegen.*;
-import io.vertx.codegen.type.JsonifiableTypeInfo;
+import io.vertx.codegen.type.ClassTypeInfo;
 import io.vertx.test.codegen.testjsoncodecs.zoneddatetimetest.APIInterfaceWithZonedDateTime;
+import io.vertx.test.codegen.testjsoncodecs.zoneddatetimetest.ZonedDateTimeCodec;
 import org.junit.Test;
 
 import java.time.ZonedDateTime;
@@ -66,12 +67,13 @@ public class JsonifiableTest extends ClassTestBase {
     MethodInfo method1 = model.getMethods().get(0);
     checkMethod(method1, "doSomething", 1, "void", MethodKind.OTHER);
     List<ParamInfo> params = method1.getParams();
-    assertTrue(params.get(0).getType() instanceof JsonifiableTypeInfo);
+    assertTrue(params.get(0).getType() instanceof ClassTypeInfo);
     assertEquals(ZonedDateTime.class.getName(), params.get(0).getType().getName());
+    assertEquals(ZonedDateTimeCodec.class.getName(), model.getReferencedJsonifiableCodecs().get(params.get(0).getType()).getName());
 
     MethodInfo method2 = model.getMethods().get(1);
     checkMethod(method2, "returnSomething", 0, "java.time.ZonedDateTime", MethodKind.OTHER);
-    assertTrue(method2.getReturnType() instanceof JsonifiableTypeInfo);
+    assertTrue(method2.getReturnType() instanceof ClassTypeInfo);
   }
 
 }

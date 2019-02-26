@@ -37,7 +37,7 @@ public class DataObjectModel implements Model {
   private final TypeElement modelElt;
   // ----------------
   private final Map<String, PropertyInfo> propertyMap = new LinkedHashMap<>();
-  private final Set<JsonifiableTypeInfo> referencedJsonifiableTypes = new LinkedHashSet<>();
+  private final Map<ClassTypeInfo, ClassTypeInfo> referencedJsonifiableCodecs = new LinkedHashMap<>();
   private final Set<ClassTypeInfo> superTypes = new LinkedHashSet<>();
   private final Set<ClassTypeInfo> abstractSuperTypes = new LinkedHashSet<>();
   private final Set<ClassTypeInfo> importedTypes = new LinkedHashSet<>();
@@ -166,8 +166,8 @@ public class DataObjectModel implements Model {
     return deprecatedDesc;
   }
 
-  public Set<JsonifiableTypeInfo> getReferencedJsonifiableTypes() {
-    return referencedJsonifiableTypes;
+  public Map<ClassTypeInfo, ClassTypeInfo> getReferencedJsonifiableCodecs() {
+    return referencedJsonifiableCodecs;
   }
 
   @Override
@@ -278,7 +278,7 @@ public class DataObjectModel implements Model {
     props.forEach(prop -> propertyMap.put(prop.name, prop));
 
     // Add all used json codecs to imports
-    importedTypes.addAll(referencedJsonifiableTypes.stream().map(JsonifiableTypeInfo::getJsonCodec).collect(Collectors.toSet()));
+    importedTypes.addAll(referencedJsonifiableCodecs.values());
   }
 
   private void processTypeAnnotations() {
@@ -522,7 +522,11 @@ public class DataObjectModel implements Model {
           Helper.isJsonifiable(elementUtils, typeUtils, (TypeElement) propTypeElt);
         break;
       case JSONIFIABLE:
-        referencedJsonifiableTypes.add(((JsonifiableTypeInfo)propType));
+        referencedJsonifiableCodecs
+          .put(
+            (ClassTypeInfo) propType,
+            (ClassTypeInfo) typeFactory.create(getModule().findCodec((ClassTypeInfo) propType).orElseThrow(() -> new GenException(modelElt, "Cannot determine the json codec")))
+          );
         jsonifiable = true;
         break;
       case OTHER:

@@ -41,7 +41,7 @@ public class TypeReflectionFactory {
           while (pkg != null) {
             ModuleGen annotation = pkg.getAnnotation(ModuleGen.class);
             if (annotation != null) {
-              module = new ModuleInfo(pkg.getName(), annotation.name(), annotation.groupPackage());
+              module = ModuleInfo.createWithNoCodecs(pkg.getName(), annotation.name(), annotation.groupPackage());
               break;
             } else {
               int pos = pkg.getName().lastIndexOf('.');
@@ -64,7 +64,7 @@ public class TypeReflectionFactory {
             false
           );
         } else {
-          ClassKind kind = ClassKind.getKind(fqcn, classType.getAnnotation(DataObject.class) != null, classType.getAnnotation(VertxGen.class) != null);
+          ClassKind kind = ClassKind.getKind(fqcn, classType.getAnnotation(DataObject.class) != null, classType.getAnnotation(VertxGen.class) != null, false);
           List<TypeParamInfo.Class> typeParams = new ArrayList<>();
           int index = 0;
           for (java.lang.reflect.TypeVariable<? extends Class<?>> var : classType.getTypeParameters()) {

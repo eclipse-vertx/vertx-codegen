@@ -87,8 +87,11 @@ public enum ClassKind {
   public static ClassKind getKind(
       String fqcn,
       boolean isDataObjectAnnotated,
-      boolean isVertxGenAnnotated) {
-    if (isDataObjectAnnotated) {
+      boolean isVertxGenAnnotated,
+      boolean hasAssociatedCodec) {
+    if (hasAssociatedCodec) {
+      return JSONIFIABLE;
+    } else if (isDataObjectAnnotated) {
       return DATA_OBJECT;
     } else if (isVertxGenAnnotated) {
       return API;

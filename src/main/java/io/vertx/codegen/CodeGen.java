@@ -100,7 +100,7 @@ public class CodeGen {
       .map(element ->
             new ModelEntry<>(element, () -> new PackageModel(
                 element.getQualifiedName().toString(),
-                ModuleInfo.resolve(elementUtils, element))
+                ModuleInfo.resolve(elementUtils, typeUtils, element))
             ));
   }
 
@@ -131,7 +131,7 @@ public class CodeGen {
     } catch (Exception e) {
       throw new GenException(element, "Invalid group package name " + groupPackage);
     }
-    ModuleInfo info = new ModuleInfo(modulePackage, moduleName, groupPackage);
+    ModuleInfo info = ModuleInfo.create(modulePackage, moduleName, groupPackage, elementUtils, typeUtils, element);
     AnnotationValueInfoFactory annotationFactory = new AnnotationValueInfoFactory(new TypeMirrorFactory(elementUtils, typeUtils, element));
     List<AnnotationValueInfo> annotationValueInfos = element.getAnnotationMirrors().stream().map(annotationFactory::processAnnotation).collect(Collectors.toList());
     return new ModuleModel(element, info, annotationValueInfos);

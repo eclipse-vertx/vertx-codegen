@@ -845,12 +845,12 @@ public class DataObjectTest {
     assertTrue(model.getGenerateConverter());
     assertTrue(model.isPublicConverter());
 
-    assertEquals(1, model.getReferencedJsonifiableTypes().size());
-    assertEquals(MyPojo.class.getName(), model.getReferencedJsonifiableTypes().iterator().next().getName());
-    assertEquals(MyPojoJsonCodec.class.getName(), model.getReferencedJsonifiableTypes().iterator().next().getJsonCodec().getName());
+    assertEquals(1, model.getReferencedJsonifiableCodecs().size());
+    assertEquals(MyPojo.class.getName(), model.getReferencedJsonifiableCodecs().keySet().iterator().next().getName());
+    assertEquals(MyPojoJsonCodec.class.getName(), model.getReferencedJsonifiableCodecs().values().iterator().next().getName());
 
     PropertyInfo myPojoProperty = model.getPropertyMap().get("myPojo");
-    assertEquals(model.getReferencedJsonifiableTypes().iterator().next(), myPojoProperty.getType());
+    assertEquals(model.getReferencedJsonifiableCodecs().keySet().iterator().next(), myPojoProperty.getType());
   }
 
   private void assertInvalidDataObject(Class<?> dataObjectClass) throws Exception {

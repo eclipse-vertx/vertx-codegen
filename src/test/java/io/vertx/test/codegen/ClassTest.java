@@ -2214,9 +2214,9 @@ public class ClassTest extends ClassTestBase {
     assertEquals(1, model.getAnnotations().size());
     assertEquals(VertxGen.class.getName(), model.getAnnotations().get(0).getName());
 
-    assertEquals(1, model.getReferencedJsonifiableTypes().size());
-    assertEquals("MyPojo", model.getReferencedJsonifiableTypes().iterator().next().getSimpleName());
-    assertEquals("MyPojoJsonCodec", model.getReferencedJsonifiableTypes().iterator().next().getJsonCodec().getSimpleName());
+    assertEquals(1, model.getReferencedJsonifiableCodecs().size());
+    assertEquals("MyPojo", model.getReferencedJsonifiableCodecs().keySet().iterator().next().getSimpleName());
+    assertEquals("MyPojoJsonCodec", model.getReferencedJsonifiableCodecs().values().iterator().next().getSimpleName());
 
     checkMethod(model.getMethodMap().get("returnMyPojo").get(0), "returnMyPojo", 0, new TypeLiteral<MyPojo>() {}, MethodKind.OTHER);
 
