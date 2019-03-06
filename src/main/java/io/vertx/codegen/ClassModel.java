@@ -35,8 +35,10 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A processed source.
@@ -57,6 +59,9 @@ public class ClassModel implements Model {
   public static final String FUNCTION = "java.util.function.Function";
   private static final Logger logger = Logger.getLogger(ClassModel.class.getName());
 
+  private static final ClassTypeInfo ASYNC_RESULT_TYPE = new ClassTypeInfo(ClassKind.ASYNC_RESULT, "io.vertx.core.AsyncResult", null, false, Arrays.asList(new TypeParamInfo.Class("io.vertx.core.AsyncResult", 0, "T")));
+  private static final ClassTypeInfo HANDLER_TYPE = new ClassTypeInfo(ClassKind.HANDLER, "io.vertx.core.Handler", null, false, Arrays.asList(new TypeParamInfo.Class("io.vertx.core.Handler", 0, "T")));
+
   protected final ProcessingEnvironment env;
   protected final AnnotationValueInfoFactory annotationValueInfoFactory;
   protected final Messager messager;
@@ -68,6 +73,7 @@ public class ClassModel implements Model {
   protected boolean processed = false;
   protected LinkedHashMap<ExecutableElement, MethodInfo> methods = new LinkedHashMap<>();
   protected LinkedHashMap<ExecutableElement, MethodInfo> anyJavaTypeMethods = new LinkedHashMap<>();
+  protected Set<MethodInfo> futureMethods = new HashSet<>();
   protected List<ConstantInfo> constants = new ArrayList<>();
   protected Set<ClassTypeInfo> collectedTypes = new HashSet<>();
   protected Set<ClassTypeInfo> importedTypes = new HashSet<>();
@@ -268,7 +274,7 @@ public class ClassModel implements Model {
     }
   }
 
-  protected void checkParamType(ExecutableElement elem, TypeMirror type, TypeInfo typeInfo, int pos, int numParams, boolean allowAnyJavaType) {
+  protected void checkParamType(ExecutableElement elem, TypeInfo typeInfo, int pos, int numParams, boolean allowAnyJavaType) {
     if (isLegalNonCallableParam(typeInfo, allowAnyJavaType)) {
       return;
     }
@@ -287,7 +293,7 @@ public class ClassModel implements Model {
     throw new GenException(elem, "type " + typeInfo + " is not legal for use for a parameter in code generation");
   }
 
-  protected void checkReturnType(ExecutableElement elem, TypeInfo type, TypeMirror typeMirror, boolean allowAnyJavaType) {
+  protected void checkReturnType(ExecutableElement elem, TypeInfo type, boolean allowAnyJavaType) {
     if (type.isVoid()) {
       return;
     }
@@ -530,11 +536,21 @@ public class ClassModel implements Model {
       traverseType(modelElt);
       determineApiTypes();
       processTypeAnnotations();
+      logNonFutures();
       processed = true;
       return true;
     } else {
       return false;
     }
+  }
+
+  private void logNonFutures() {
+    methods.values()
+      .stream()
+      .filter(m -> m.getKind() == MethodKind.FUTURE && !futureMethods.contains(m))
+      .forEach(meth -> {
+        CodeGenProcessor.log.info("Non future method " + type.getRaw().getName() + ": " + meth);
+    });
   }
 
   private void processTypeAnnotations() {
@@ -714,11 +730,40 @@ public class ClassModel implements Model {
             }
           });
 
+      // Validate return types
+      Stream.concat(methods.entrySet().stream(), anyJavaTypeMethods.entrySet().stream()).forEach(entry -> {
+        MethodInfo method = entry.getValue();
+        TypeInfo returnType = method.getReturnType();
+
+        // Valid return type
+        // Only check the return type if not fluent, because generated code won't look it at anyway
+        ExecutableElement methodElt = entry.getKey();
+        if (!method.isFluent()) {
+          // Only validate when it's not inherited
+          if (method.isOwnedBy(type)) {
+            checkReturnType(methodElt, returnType, anyJavaTypeMethods.containsKey(methodElt));
+          }
+        } else if (returnType.isNullable()) {
+          throw new GenException(methodElt, "Fluent return type cannot be nullable");
+        }
+      });
+
       // Sort method map
       sortMethodMap(methodMap);
 
       // Now check for overloaded methods
       for (List<MethodInfo> meths: methodMap.values()) {
+
+        // Check return types are the same
+        TypeInfo[] returnTypes = meths.stream()
+          .filter(meth -> !meth.isContainingAnyJavaType())
+          .map(meth -> meth.getReturnType().getErased())
+          .distinct()
+          .toArray(TypeInfo[]::new);
+        if (returnTypes.length > 1) {
+          throw new GenException(this.modelElt, "Overloaded method " + meths.get(0).getName() + " must have the same return type "
+            + returnTypes[0] + " != " + returnTypes[1]);
+        }
 
         // Ambiguous
         try {
@@ -894,10 +939,6 @@ public class ClassModel implements Model {
         ex.setStackTrace(e.getStackTrace());
         throw ex;
       }
-      // Only validate when it's not inherited
-      if (ownerTypes.size() == 1) {
-        checkParamType(modelMethod, typeMirror, typeInfo, i, params.size(), allowAnyJavaType);
-      }
       String name = param.getSimpleName().toString();
       String desc = paramDescs.get(name);
       Text text = desc != null ? new Text(desc).map(Token.tagMapper(elementUtils, typeUtils, modelElt)) : null;
@@ -944,16 +985,6 @@ public class ClassModel implements Model {
       throw new GenException(modelMethod, "void method can't be marked with @CacheReturn");
     }
 
-    // Only check the return type if not fluent, because generated code won't look it at anyway
-    if (!isFluent) {
-      // Only validate when it's not inherited
-      if (ancestors.isEmpty()) {
-        checkReturnType(modelMethod, returnType, resolvedMethodType.getReturnType(), allowAnyJavaType);
-      }
-    } else if (returnType.isNullable()) {
-      throw new GenException(modelMethod, "Fluent return type cannot be nullable");
-    }
-
     boolean methodDeprecated = modelMethod.getAnnotation(Deprecated.class) != null || deprecatedDesc != null;
     String methodName = modelMethod.getSimpleName().toString();
 
@@ -986,6 +1017,56 @@ public class ClassModel implements Model {
           otherMethod.getValue().getOwnerTypes().addAll(methodInfo.getOwnerTypes());
           return null;
         }
+      }
+    }
+
+    // Check if we have a corresponding method
+    if (returnType.isParameterized() && returnType.getRaw().getName().equals("io.vertx.core.Future")) {
+      TypeInfo asyncType = ((ParameterizedTypeInfo)returnType).getArg(0);
+      List<ParamInfo> p = new ArrayList<>(methodInfo.getParams());
+      p.add(new ParamInfo(
+        p.size(),
+        "handler",
+        null,
+        new ParameterizedTypeInfo(
+          HANDLER_TYPE,
+          false,
+          Collections.singletonList(new ParameterizedTypeInfo(ASYNC_RESULT_TYPE, false, Collections.singletonList(asyncType))))));
+      Signature t = new Signature(methodName, p);
+      List<MethodInfo> methods = methodMap.get(methodName);
+      if (methods != null) {
+        Optional<MethodInfo> opt = methods.stream().filter(m -> m.getSignature().equals(t)).findFirst();
+        if (opt.isPresent())  {
+          futureMethods.add(opt.get());
+          return null;
+        }
+      }
+    } else if (methodInfo.getKind() == MethodKind.FUTURE) {
+      List<MethodInfo> methods = methodMap.get(methodName);
+      if (methods != null) {
+        List<ParamInfo> p = methodInfo.getParams();
+        Signature s = new Signature(methodName, p.subList(0, p.size() - 1));
+        TypeInfo blih = ((ParameterizedTypeInfo)((ParameterizedTypeInfo)p.get(p.size() - 1).getType()).getArg(0)).getArg(0);
+        for (Iterator<MethodInfo> it = methods.iterator();it.hasNext();) {
+          MethodInfo m = it.next();
+          if (m.getSignature().equals(s) &&
+            m.getReturnType().isParameterized() &&
+            m.getReturnType().getRaw().getName().equals("io.vertx.core.Future") &&
+            ((ParameterizedTypeInfo)m.getReturnType()).getArg(0).equals(blih)) {
+            it.remove();
+            this.methods.values().remove(m);
+            futureMethods.add(methodInfo);
+          }
+        }
+      }
+    }
+
+    // Valid param types
+    if (ownerTypes.size() == 1) {
+      // Only validate when it's not inherited
+      List<ParamInfo> p = methodInfo.getParams();
+      for (int i = 0;i < p.size();i++) {
+        checkParamType(modelMethod, p.get(i).getType(), i, p.size(), allowAnyJavaType);
       }
     }
 
@@ -1026,16 +1107,6 @@ public class ClassModel implements Model {
 
   // This is a hook to allow different model implementations to check methods in different ways
   protected void checkMethod(MethodInfo methodInfo) {
-    List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
-    if (methodsByName != null) {
-      // Overloaded methods must have same return type
-      for (MethodInfo meth: methodsByName) {
-        if (!meth.isContainingAnyJavaType() && !meth.getReturnType().equals(methodInfo.getReturnType())) {
-          throw new GenException(this.modelElt, "Overloaded method " + methodInfo.getName() + " must have the same return type "
-            + meth.getReturnType() + " != " + methodInfo.getReturnType());
-        }
-      }
-    }
   }
 
   private boolean isObjectBound(TypeMirror bound) {

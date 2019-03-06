@@ -29,7 +29,14 @@ public class Signature {
     }
     if (o instanceof Signature) {
       Signature that = (Signature) o;
-      return name.equals(that.name) && params.equals(that.params);
+      if (name.equals(that.name) && params.size() == that.params.size()) {
+        for (int i = 0;i < params.size();i++) {
+          if (!params.get(i).getType().equals(that.params.get(i).getType())) {
+            return false;
+          }
+        }
+        return true;
+      }
     }
     return false;
   }
