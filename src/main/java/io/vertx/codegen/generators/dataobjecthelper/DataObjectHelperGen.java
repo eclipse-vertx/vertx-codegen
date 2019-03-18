@@ -226,7 +226,8 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               genPropFromJson("JsonObject", "new " + prop.getType().getName() + "((JsonObject)", ")", prop, writer);
               break;
             case JSONIFIABLE:
-              genPropFromJson("Object", solveJsonCodecInstanceName((JsonifiableTypeInfo) prop.getType()) + ".decode(", ")", prop, writer);
+              JsonifiableTypeInfo jsonifiableTypeInfo = (JsonifiableTypeInfo) prop.getType();
+              genPropFromJson(jsonifiableTypeInfo.getTargetJsonType().getSimpleName(), solveJsonCodecInstanceName(jsonifiableTypeInfo) + ".decode((" + jsonifiableTypeInfo.getTargetJsonType().getSimpleName() + ")", ")", prop, writer);
               break;
             case ENUM:
               genPropFromJson("String", prop.getType().getName() + ".valueOf((String)", ")", prop, writer);

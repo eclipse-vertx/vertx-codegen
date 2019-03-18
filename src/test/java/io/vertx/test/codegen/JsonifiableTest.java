@@ -2,6 +2,7 @@ package io.vertx.test.codegen;
 
 import io.vertx.codegen.*;
 import io.vertx.codegen.type.JsonifiableTypeInfo;
+import io.vertx.codegen.type.PrimitiveTypeInfo;
 import io.vertx.test.codegen.testjsoncodecs.zoneddatetimetest.APIInterfaceWithZonedDateTime;
 import org.junit.Test;
 
@@ -48,6 +49,15 @@ public class JsonifiableTest extends ClassTestBase {
     } catch (GenException expected) { }
   }
 
+  // Json codec method overload check
+
+  @Test
+  public void testJsonCodecMustFailMethodOverloadCheck() throws Exception {
+    try {
+      new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsoncodecs.illegalinterfacewithoverloads.APIInterfaceWithZonedDateTime.class);
+      fail();
+    } catch (GenException expected) { }
+  }
 
 
   // Test valid stuff
@@ -72,6 +82,25 @@ public class JsonifiableTest extends ClassTestBase {
     MethodInfo method2 = model.getMethods().get(1);
     checkMethod(method2, "returnSomething", 0, "java.time.ZonedDateTime", MethodKind.OTHER);
     assertTrue(method2.getReturnType() instanceof JsonifiableTypeInfo);
+  }
+
+  @Test
+  public void testValidMethodOverload() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsoncodecs.interfacewithoverloads.APIInterfaceWithZonedDateTime.class);
+    assertTrue(model.getSuperTypes().isEmpty());
+    assertEquals(2, model.getMethods().size());
+
+    MethodInfo method1 = model.getMethods().get(0);
+    checkMethod(method1, "doSomething", 1, "void", MethodKind.OTHER);
+    List<ParamInfo> params1 = method1.getParams();
+    assertTrue(params1.get(0).getType() instanceof JsonifiableTypeInfo);
+    assertEquals(ZonedDateTime.class.getName(), params1.get(0).getType().getName());
+
+    MethodInfo method2 = model.getMethods().get(1);
+    checkMethod(method2, "doSomething", 1, "void", MethodKind.OTHER);
+    List<ParamInfo> params2 = method2.getParams();
+    assertTrue(params2.get(0).getType() instanceof PrimitiveTypeInfo);
+    assertEquals(long.class.getName(), params2.get(0).getType().getName());
   }
 
 }

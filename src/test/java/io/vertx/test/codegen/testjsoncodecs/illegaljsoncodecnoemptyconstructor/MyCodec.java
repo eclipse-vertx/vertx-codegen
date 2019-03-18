@@ -4,17 +4,17 @@ import io.vertx.core.json.JsonCodec;
 
 import java.time.ZonedDateTime;
 
-public class MyCodec implements JsonCodec<ZonedDateTime> {
+public class MyCodec implements JsonCodec<ZonedDateTime, String> {
 
   public MyCodec(Integer aValue) {}
 
   @Override
-  public Object encode(ZonedDateTime value) {
+  public String encode(ZonedDateTime value) {
     return null;
   }
 
   @Override
-  public ZonedDateTime decode(Object value) {
+  public ZonedDateTime decode(String value) {
     return null;
   }
 }

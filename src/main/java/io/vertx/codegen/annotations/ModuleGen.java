@@ -56,6 +56,6 @@ public @interface ModuleGen {
    */
   String groupPackage();
 
-  Class<? extends JsonCodec<?>>[] codecs() default {};
+  Class<? extends JsonCodec<?, ?>>[] codecs() default {};
 
 }

@@ -11,6 +11,7 @@ import javax.lang.model.type.*;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.*;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,7 +25,8 @@ public class TypeMirrorFactory {
 
   final Elements elementUtils;
   final Types typeUtils;
-  final Map<String, DeclaredType> jsonCodecs;
+  // Each map entry contains json codec and json target type
+  final Map<String, Map.Entry<DeclaredType, TypeMirror>> jsonCodecs;
 
   public TypeMirrorFactory(Elements elementUtils, Types typeUtils, PackageElement pkgElt) {
     this.elementUtils = elementUtils;
@@ -101,9 +103,16 @@ public class TypeMirrorFactory {
         }
       } else {
         List<TypeParamInfo.Class> typeParams = createTypeParams(type);
-        Optional<DeclaredType> codec = findCodecForType(type);
+        Optional<Map.Entry<DeclaredType, TypeMirror>> codec = findCodecForType(type);
         if (codec.isPresent()) {
-          raw = new JsonifiableTypeInfo(fqcn, module, nullable, typeParams, (ClassTypeInfo) this.create(codec.get()));
+          raw = new JsonifiableTypeInfo(
+            fqcn,
+            module,
+            nullable,
+            typeParams,
+            (ClassTypeInfo) this.create(codec.get().getKey()),
+            this.create(codec.get().getValue())
+          );
         } else if (kind == ClassKind.API) {
           VertxGen genAnn = elt.getAnnotation(VertxGen.class);
           TypeInfo[] args = Stream.of(
@@ -182,7 +191,7 @@ public class TypeMirrorFactory {
    * @param pkgElt
    * @return
    */
-  private Map<String, DeclaredType> resolveJsonCodecs(PackageElement pkgElt) {
+  private Map<String, Map.Entry<DeclaredType, TypeMirror>> resolveJsonCodecs(PackageElement pkgElt) {
     if (pkgElt == null) return new HashMap<>();
     AnnotationMirror mirror = elementUtils
       .getAllAnnotationMirrors(pkgElt)
@@ -212,16 +221,17 @@ public class TypeMirrorFactory {
           .noneMatch(e -> ((ExecutableElement)e).getParameters().isEmpty())) throw new GenException(codecDeclaredElement, "The json codec must have an empty constructor");
 
         List<? extends TypeMirror> superTypesOfCodecDeclaredType = typeUtils.directSupertypes(codecDeclaredType);
-        TypeMirror jsonifiableType = superTypesOfCodecDeclaredType
+        Map.Entry<? extends TypeMirror, ? extends TypeMirror> codecGenericsValues = superTypesOfCodecDeclaredType
           .stream()
           .filter(t -> t.getKind() == TypeKind.DECLARED)
           .map(t -> (DeclaredType)t)
           .filter(t -> t.asElement().getSimpleName().contentEquals("JsonCodec"))
-          .map(t -> t.getTypeArguments().get(0))
+          .map(t -> new SimpleImmutableEntry<>(t.getTypeArguments().get(0), t.getTypeArguments().get(1)))
           .findFirst()
           .orElseThrow(() -> new GenException(codecDeclaredType.asElement(), "Cannot find what type the json codec handles"));
-        return new AbstractMap.SimpleImmutableEntry<>(jsonifiableType.toString(), codecDeclaredType);
-      }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return new SimpleImmutableEntry<>(codecGenericsValues.getKey().toString(), new SimpleImmutableEntry<>(codecDeclaredType, (TypeMirror)codecGenericsValues.getValue()));
+      })
+      .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
   /**
@@ -230,7 +240,7 @@ public class TypeMirrorFactory {
    * @param typeToFindCodec
    * @return
    */
-  private Optional<DeclaredType> findCodecForType(TypeMirror typeToFindCodec) {
+  private Optional<Map.Entry<DeclaredType, TypeMirror>> findCodecForType(TypeMirror typeToFindCodec) {
     return Optional.ofNullable(jsonCodecs.get(typeToFindCodec.toString()));
   }
 }

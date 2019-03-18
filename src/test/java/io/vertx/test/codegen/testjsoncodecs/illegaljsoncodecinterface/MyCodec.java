@@ -4,4 +4,4 @@ import io.vertx.core.json.JsonCodec;
 
 import java.time.ZonedDateTime;
 
-public interface MyCodec extends JsonCodec<ZonedDateTime> { }
+public interface MyCodec extends JsonCodec<ZonedDateTime, String> { }
