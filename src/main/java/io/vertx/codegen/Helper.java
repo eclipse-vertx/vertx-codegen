@@ -279,16 +279,12 @@ public class Helper {
     TypeMirror erased = typeUtils.erasure(typeParam.getGenericElement().asType());
     TypeMirror erasedSubType = typeUtils.erasure(subType);
     if (typeUtils.isSameType(erased, erasedSubType)) {
-      return typeParam.asType();
+      return typeUtils.asMemberOf(subType, ((TypeVariable) typeParam.asType()).asElement());
     } else if (typeUtils.isSubtype(erasedSubType, erased)) {
       for (TypeMirror superType : typeUtils.directSupertypes(subType)) {
         TypeMirror resolved = resolveTypeParameter(typeUtils, (DeclaredType) superType, typeParam);
         if (resolved != null) {
-          if (resolved.getKind() == TypeKind.TYPEVAR) {
-            return typeUtils.asMemberOf(subType, ((TypeVariable) resolved).asElement());
-          } else {
-            return resolved;
-          }
+          return resolved;
         }
       }
     }

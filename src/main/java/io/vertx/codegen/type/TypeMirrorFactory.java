@@ -73,6 +73,10 @@ public class TypeMirrorFactory {
   }
 
   public TypeInfo create(TypeUse use, DeclaredType type) {
+    return create(use, type, true);
+  }
+
+  public TypeInfo create(TypeUse use, DeclaredType type, boolean checkTypeArgs) {
     boolean nullable = use != null && use.isNullable();
     TypeElement elt = (TypeElement) type.asElement();
     PackageElement pkgElt = elementUtils.getPackageOf(elt);
@@ -90,47 +94,8 @@ public class TypeMirrorFactory {
       return new EnumTypeInfo(fqcn, gen, values, module, nullable);
     } else {
       ClassKind kind = ClassKind.getKind(fqcn, elt.getAnnotation(DataObject.class) != null, elt.getAnnotation(VertxGen.class) != null);
-      ClassTypeInfo raw;
-      if (kind == ClassKind.BOXED_PRIMITIVE) {
-        raw = ClassTypeInfo.PRIMITIVES.get(fqcn);
-        if (nullable) {
-          raw = new ClassTypeInfo(raw.kind, raw.name, raw.module, true, raw.params);
-        }
-      } else {
-        List<TypeParamInfo.Class> typeParams = createTypeParams(type);
-        if (kind == ClassKind.API) {
-          VertxGen genAnn = elt.getAnnotation(VertxGen.class);
-          TypeInfo[] args = Stream.of(
-              ClassModel.VERTX_READ_STREAM,
-              ClassModel.VERTX_WRITE_STREAM,
-              ClassModel.VERTX_HANDLER
-          ).map(s -> {
-            TypeElement parameterizedElt = elementUtils.getTypeElement(s);
-            TypeMirror parameterizedType = parameterizedElt.asType();
-            TypeMirror rawType = typeUtils.erasure(parameterizedType);
-            if (typeUtils.isSubtype(type, rawType)) {
-              TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, parameterizedElt.getTypeParameters().get(0));
-              if (resolved.getKind() == TypeKind.DECLARED) {
-                DeclaredType dt = (DeclaredType) resolved;
-                TypeElement a = (TypeElement) dt.asElement();
-                if (a.getQualifiedName().toString().equals("io.vertx.core.AsyncResult")) {
-                  return null;
-                }
-              }
-              return create(resolved);
-            }
-            return null;
-          }).toArray(TypeInfo[]::new);
-          raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, args[0], args[1], args[2], module, nullable, proxyGen);
-        } else if (kind == ClassKind.DATA_OBJECT) {
-          boolean _abstract = elt.getModifiers().contains(Modifier.ABSTRACT);
-          raw = new DataObjectTypeInfo(kind, fqcn, module, _abstract, nullable, typeParams);
-        } else {
-          raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams);
-        }
-      }
       List<? extends TypeMirror> typeArgs = type.getTypeArguments();
-      if (typeArgs.size() > 0) {
+      if (checkTypeArgs && typeArgs.size() > 0) {
         List<TypeInfo> typeArguments;
         typeArguments = new ArrayList<>(typeArgs.size());
         for (int i = 0; i < typeArgs.size(); i++) {
@@ -139,8 +104,48 @@ public class TypeMirrorFactory {
           // Need to check it is an interface type
           typeArguments.add(typeArgDesc);
         }
+        ClassTypeInfo raw = (ClassTypeInfo) create(null, (DeclaredType) type.asElement().asType(), false);
         return new ParameterizedTypeInfo(raw, nullable, typeArguments);
       } else {
+        ClassTypeInfo raw;
+        if (kind == ClassKind.BOXED_PRIMITIVE) {
+          raw = ClassTypeInfo.PRIMITIVES.get(fqcn);
+          if (nullable) {
+            raw = new ClassTypeInfo(raw.kind, raw.name, raw.module, true, raw.params);
+          }
+        } else {
+          List<TypeParamInfo.Class> typeParams = createTypeParams(type);
+          if (kind == ClassKind.API) {
+            VertxGen genAnn = elt.getAnnotation(VertxGen.class);
+            TypeInfo[] args = Stream.of(
+              ClassModel.VERTX_READ_STREAM,
+              ClassModel.VERTX_WRITE_STREAM,
+              ClassModel.VERTX_HANDLER
+            ).map(s -> {
+              TypeElement parameterizedElt = elementUtils.getTypeElement(s);
+              TypeMirror parameterizedType = parameterizedElt.asType();
+              TypeMirror rawType = typeUtils.erasure(parameterizedType);
+              if (typeUtils.isSubtype(type, rawType)) {
+                TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, parameterizedElt.getTypeParameters().get(0));
+                if (resolved.getKind() == TypeKind.DECLARED) {
+                  DeclaredType dt = (DeclaredType) resolved;
+                  TypeElement a = (TypeElement) dt.asElement();
+                  if (a.getQualifiedName().toString().equals("io.vertx.core.AsyncResult")) {
+                    return null;
+                  }
+                }
+                return create(resolved);
+              }
+              return null;
+            }).toArray(TypeInfo[]::new);
+            raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, args[0], args[1], args[2], module, nullable, proxyGen);
+          } else if (kind == ClassKind.DATA_OBJECT) {
+            boolean _abstract = elt.getModifiers().contains(Modifier.ABSTRACT);
+            raw = new DataObjectTypeInfo(kind, fqcn, module, _abstract, nullable, typeParams);
+          } else {
+            raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams);
+          }
+        }
         return raw;
       }
     }
