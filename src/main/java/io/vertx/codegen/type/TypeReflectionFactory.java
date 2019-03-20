@@ -6,11 +6,10 @@ import io.vertx.codegen.TypeParamInfo;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
 
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -76,7 +75,16 @@ public class TypeReflectionFactory {
             return new ApiTypeInfo(fqcn, true, typeParams, readStreamArg != null ? create(readStreamArg) : null, null, null, module, false, false);
           } else if (kind == ClassKind.DATA_OBJECT) {
             boolean _abstract = Modifier.isAbstract(classType.getModifiers());
-            return new DataObjectTypeInfo(kind, fqcn, module, _abstract, false, typeParams);
+            //TODO wtf?
+            return new DataObjectTypeInfo(
+              fqcn,
+              module,
+              false,
+              typeParams,
+              isDataObjectEncodable(classType) ? fqcn + "Codec" : null,
+              isDataObjectDecodable(classType) ? fqcn + "Codec" : null,
+              create(JsonObject.class)
+            );
           } else {
             return new ClassTypeInfo(kind, fqcn, module, false, typeParams);
           }
@@ -96,6 +104,23 @@ public class TypeReflectionFactory {
       return new TypeVariableInfo(param, false, ((java.lang.reflect.TypeVariable) type).getName());
     } else {
       throw new IllegalArgumentException("Unsupported type " + type);
+    }
+  }
+
+  private static boolean isDataObjectEncodable(Class<?> type) {
+    try {
+      Method m = type.getMethod("toJson");
+      return Modifier.isPublic(m.getModifiers()) && m.getReturnType().equals(JsonObject.class);
+    } catch (NoSuchMethodException e) {
+      return false;
+    }
+  }
+
+  private static boolean isDataObjectDecodable(Class<?> type) {
+    try {
+      return !Modifier.isAbstract(type.getModifiers()) && Modifier.isPublic(type.getConstructor(JsonObject.class).getModifiers());
+    } catch (NoSuchMethodException e) {
+      return false;
     }
   }
 }

@@ -71,7 +71,6 @@ public class ClassModel implements Model {
   protected Set<ApiTypeInfo> referencedTypes = new HashSet<>();
   protected Set<DataObjectTypeInfo> referencedDataObjectTypes = new HashSet<>();
   protected Set<EnumTypeInfo> referencedEnumTypes = new HashSet<>();
-  protected Set<JsonifiableTypeInfo> referencedJsonifiableTypes = new HashSet<>();
   protected boolean concrete;
   protected ClassTypeInfo type;
   protected String ifaceSimpleName;
@@ -159,14 +158,6 @@ public class ClassModel implements Model {
   public Set<ClassTypeInfo> getImportedTypes() {
     return importedTypes;
   }
-
-  /**
-   * @return all referenced jsonifiable types
-   */
-  public Set<JsonifiableTypeInfo> getReferencedJsonifiableTypes() {
-    return referencedJsonifiableTypes;
-  }
-
   /**
    * @return all the referenced api types
    */
@@ -345,9 +336,6 @@ public class ClassModel implements Model {
     if (allowAnyJavaType && type.getKind() == ClassKind.OTHER) {
       return true;
     }
-    if (type.getKind() == ClassKind.JSONIFIABLE) {
-      return true;
-    }
     if (isLegalContainer(type, allowAnyJavaType)) {
       return true;
     }
@@ -389,9 +377,6 @@ public class ClassModel implements Model {
     if (allowAnyJavaType && typeInfo.getKind() == ClassKind.OTHER) {
       return true;
     }
-    if (typeInfo.getKind() == ClassKind.JSONIFIABLE) {
-      return true;
-    }
     if (isLegalContainer(typeInfo, allowAnyJavaType)) {
       return true;
     }
@@ -399,11 +384,7 @@ public class ClassModel implements Model {
   }
 
   private boolean isLegalDataObjectTypeParam(TypeInfo type) {
-    if (type.getKind() == ClassKind.DATA_OBJECT) {
-      DataObjectTypeInfo classType = (DataObjectTypeInfo) type;
-      return !classType.isAbstract();
-    }
-    return false;
+    return type.getKind() == ClassKind.DATA_OBJECT && ((DataObjectTypeInfo) type).hasJsonDecoder();
   }
 
   private boolean isLegalClassTypeParam(ExecutableElement elt, TypeInfo type) {
@@ -423,21 +404,7 @@ public class ClassModel implements Model {
   }
 
   protected boolean isLegalDataObjectTypeReturn(TypeInfo type) {
-    if (type.getKind() == ClassKind.DATA_OBJECT) {
-      TypeElement typeElt = elementUtils.getTypeElement(type.getName());
-      if (typeElt != null) {
-        Optional<ExecutableElement> opt = elementUtils.
-            getAllMembers(typeElt).
-            stream().
-            flatMap(Helper.FILTER_METHOD).
-            filter(m -> m.getSimpleName().toString().equals("toJson") &&
-                m.getParameters().isEmpty() &&
-                m.getReturnType().toString().equals(JSON_OBJECT)).
-            findFirst();
-        return opt.isPresent();
-      }
-    }
-    return false;
+    return type.getKind() == ClassKind.DATA_OBJECT && ((DataObjectTypeInfo) type).hasJsonEncoder();
   }
 
   protected boolean isLegalContainer(TypeInfo type, boolean allowAnyJavaType) {
@@ -551,11 +518,6 @@ public class ClassModel implements Model {
       flatMap(Helper.instanceOf(EnumTypeInfo.class)).
       filter(t -> t.getKind() == ClassKind.ENUM).
       collect(Collectors.toSet());
-
-    referencedJsonifiableTypes = collectedTypes.stream()
-      .map(ClassTypeInfo::getRaw)
-      .flatMap(Helper.instanceOf(JsonifiableTypeInfo.class))
-      .collect(Collectors.toSet());
   }
 
   public boolean process() {
@@ -1066,7 +1028,6 @@ public class ClassModel implements Model {
     vars.put("constants", getConstants());
     vars.put("referencedTypes", getReferencedTypes());
     vars.put("superTypes", getSuperTypes());
-    vars.put("referencedJsonifiableTypes", getReferencedJsonifiableTypes());
     vars.put("concreteSuperType", getConcreteSuperType());
     vars.put("abstractSuperTypes", getAbstractSuperTypes());
     vars.put("handlerType", getHandlerType());

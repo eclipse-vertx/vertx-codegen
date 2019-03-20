@@ -186,6 +186,7 @@
               <optionMap>
                 <codegen.output>${project.basedir}/src/test</codegen.output>
                 <codegen.output.data_object_converters>generated</codegen.output.data_object_converters>
+                <codegen.output.data_object_codecs>generated</codegen.output.data_object_codecs>
               </optionMap>
               <includes>
                 <include>io/vertx/test/codegen/converter/*.java</include>

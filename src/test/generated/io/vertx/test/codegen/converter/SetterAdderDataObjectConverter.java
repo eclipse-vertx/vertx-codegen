@@ -11,7 +11,6 @@ import java.time.format.DateTimeFormatter;
  */
 public class SetterAdderDataObjectConverter {
 
-
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, SetterAdderDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
       switch (member.getKey()) {

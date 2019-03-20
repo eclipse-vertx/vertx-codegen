@@ -1,7 +1,7 @@
 package io.vertx.test.codegen;
 
 import io.vertx.codegen.*;
-import io.vertx.codegen.type.JsonifiableTypeInfo;
+import io.vertx.codegen.type.DataObjectTypeInfo;
 import io.vertx.codegen.type.PrimitiveTypeInfo;
 import io.vertx.test.codegen.testjsoncodecs.zoneddatetimetest.APIInterfaceWithZonedDateTime;
 import org.junit.Test;
@@ -76,12 +76,12 @@ public class JsonifiableTest extends ClassTestBase {
     MethodInfo method1 = model.getMethods().get(0);
     checkMethod(method1, "doSomething", 1, "void", MethodKind.OTHER);
     List<ParamInfo> params = method1.getParams();
-    assertTrue(params.get(0).getType() instanceof JsonifiableTypeInfo);
+    assertTrue(params.get(0).getType() instanceof DataObjectTypeInfo);
     assertEquals(ZonedDateTime.class.getName(), params.get(0).getType().getName());
 
     MethodInfo method2 = model.getMethods().get(1);
     checkMethod(method2, "returnSomething", 0, "java.time.ZonedDateTime", MethodKind.OTHER);
-    assertTrue(method2.getReturnType() instanceof JsonifiableTypeInfo);
+    assertTrue(method2.getReturnType() instanceof DataObjectTypeInfo);
   }
 
   @Test
@@ -93,7 +93,7 @@ public class JsonifiableTest extends ClassTestBase {
     MethodInfo method1 = model.getMethods().get(0);
     checkMethod(method1, "doSomething", 1, "void", MethodKind.OTHER);
     List<ParamInfo> params1 = method1.getParams();
-    assertTrue(params1.get(0).getType() instanceof JsonifiableTypeInfo);
+    assertTrue(params1.get(0).getType() instanceof DataObjectTypeInfo);
     assertEquals(ZonedDateTime.class.getName(), params1.get(0).getType().getName());
 
     MethodInfo method2 = model.getMethods().get(1);

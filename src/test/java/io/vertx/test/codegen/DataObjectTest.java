@@ -5,10 +5,7 @@ import io.vertx.codegen.GenException;
 import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.PropertyKind;
 import io.vertx.codegen.doc.Doc;
-import io.vertx.codegen.type.AnnotationValueInfo;
-import io.vertx.codegen.type.ClassTypeInfo;
-import io.vertx.codegen.type.TypeInfo;
-import io.vertx.codegen.type.TypeReflectionFactory;
+import io.vertx.codegen.type.*;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.annotations.EmptyAnnotation;
@@ -845,12 +842,10 @@ public class DataObjectTest {
     assertTrue(model.getGenerateConverter());
     assertTrue(model.isPublicConverter());
 
-    assertEquals(1, model.getReferencedJsonifiableTypes().size());
-    assertEquals(MyPojo.class.getName(), model.getReferencedJsonifiableTypes().iterator().next().getName());
-    assertEquals(MyPojoJsonCodec.class.getName(), model.getReferencedJsonifiableTypes().iterator().next().getJsonCodec().getName());
-
     PropertyInfo myPojoProperty = model.getPropertyMap().get("myPojo");
-    assertEquals(model.getReferencedJsonifiableTypes().iterator().next(), myPojoProperty.getType());
+    assertEquals(ClassKind.DATA_OBJECT, myPojoProperty.getType().getKind());
+    assertTrue(((DataObjectTypeInfo)myPojoProperty.getType()).hasJsonDecoder());
+    assertTrue(((DataObjectTypeInfo)myPojoProperty.getType()).hasJsonEncoder());
   }
 
   private void assertInvalidDataObject(Class<?> dataObjectClass) throws Exception {

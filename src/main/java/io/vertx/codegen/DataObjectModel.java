@@ -37,7 +37,6 @@ public class DataObjectModel implements Model {
   private final TypeElement modelElt;
   // ----------------
   private final Map<String, PropertyInfo> propertyMap = new LinkedHashMap<>();
-  private final Set<JsonifiableTypeInfo> referencedJsonifiableTypes = new LinkedHashSet<>();
   private final Set<ClassTypeInfo> superTypes = new LinkedHashSet<>();
   private final Set<ClassTypeInfo> abstractSuperTypes = new LinkedHashSet<>();
   private final Set<ClassTypeInfo> importedTypes = new LinkedHashSet<>();
@@ -55,7 +54,7 @@ public class DataObjectModel implements Model {
   private boolean deprecated;
   private Text deprecatedDesc;
   private ClassTypeInfo superType;
-  private ClassTypeInfo type;
+  private DataObjectTypeInfo type;
   private Doc doc;
   private boolean jsonifiable;
   private List<AnnotationValueInfo> annotations;
@@ -85,7 +84,7 @@ public class DataObjectModel implements Model {
     return type.getName();
   }
 
-  public ClassTypeInfo getType() {
+  public DataObjectTypeInfo getType() {
     return type;
   }
 
@@ -166,10 +165,6 @@ public class DataObjectModel implements Model {
     return deprecatedDesc;
   }
 
-  public Set<JsonifiableTypeInfo> getReferencedJsonifiableTypes() {
-    return referencedJsonifiableTypes;
-  }
-
   @Override
   public Map<String, Object> getVars() {
     Map<String, Object> vars = Model.super.getVars();
@@ -215,7 +210,7 @@ public class DataObjectModel implements Model {
     this.isClass = modelElt.getKind() == ElementKind.CLASS;
     this.concrete = isClass && !modelElt.getModifiers().contains(Modifier.ABSTRACT);
     try {
-      this.type = (ClassTypeInfo) typeFactory.create(modelElt.asType());
+      this.type = (DataObjectTypeInfo) typeFactory.create(modelElt.asType());
     } catch (ClassCastException e) {
       throw new GenException(modelElt, "Data object must be a plain java class with no type parameters");
     }
@@ -276,9 +271,6 @@ public class DataObjectModel implements Model {
     Collections.sort(props, (p1, p2) -> p1.name.compareTo(p2.name));
     propertyMap.clear();
     props.forEach(prop -> propertyMap.put(prop.name, prop));
-
-    // Add all used json codecs to imports
-    importedTypes.addAll(referencedJsonifiableTypes.stream().map(JsonifiableTypeInfo::getJsonCodec).collect(Collectors.toSet()));
   }
 
   private void processTypeAnnotations() {
@@ -517,13 +509,7 @@ public class DataObjectModel implements Model {
         jsonifiable = true;
         break;
       case DATA_OBJECT:
-        Element propTypeElt = typeUtils.asElement(propTypeMirror);
-        jsonifiable = propTypeElt.getAnnotation(DataObject.class) == null ||
-          Helper.isJsonifiable(elementUtils, typeUtils, (TypeElement) propTypeElt);
-        break;
-      case JSONIFIABLE:
-        referencedJsonifiableTypes.add(((JsonifiableTypeInfo)propType));
-        jsonifiable = true;
+        jsonifiable = ((DataObjectTypeInfo)propType).hasJsonEncoder();
         break;
       case OTHER:
         if (propType.getName().equals(Instant.class.getName())) {

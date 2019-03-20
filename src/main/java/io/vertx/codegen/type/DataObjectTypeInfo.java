@@ -10,15 +10,34 @@ import java.util.List;
  */
 public class DataObjectTypeInfo extends ClassTypeInfo {
 
-  final boolean _abstract;
+  private final String jsonEncoderFQCN;
+  private final String jsonDecoderFQCN;
+  private final TypeInfo targetJsonType;
 
-  public DataObjectTypeInfo(ClassKind kind, String name, ModuleInfo module, boolean _abstract, boolean nullable, List<TypeParamInfo.Class> params) {
-    super(kind, name, module, nullable, params);
-
-    this._abstract = _abstract;
+  public DataObjectTypeInfo(String name, ModuleInfo module, boolean nullable, List<TypeParamInfo.Class> params, String jsonEncoderFQCN, String jsonDecoderFQCN, TypeInfo targetJsonType) {
+    super(ClassKind.DATA_OBJECT, name, module, nullable, params);
+    this.jsonEncoderFQCN = jsonEncoderFQCN;
+    this.jsonDecoderFQCN = jsonDecoderFQCN;
+    this.targetJsonType = targetJsonType;
   }
 
-  public boolean isAbstract() {
-    return _abstract;
+  public String getJsonEncoderFQCN() {
+    return jsonEncoderFQCN;
+  }
+
+  public String getJsonDecoderFQCN() {
+    return jsonDecoderFQCN;
+  }
+
+  public TypeInfo getTargetJsonType() {
+    return targetJsonType;
+  }
+
+  public boolean hasJsonEncoder() {
+    return jsonEncoderFQCN != null;
+  }
+
+  public boolean hasJsonDecoder() {
+    return jsonDecoderFQCN != null;
   }
 }

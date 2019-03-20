@@ -10,6 +10,6 @@ public class DataObjectHelperGenLoader implements GeneratorLoader {
 
   @Override
   public Stream<Generator<?>> loadGenerators(ProcessingEnvironment processingEnv) {
-    return Stream.of(new DataObjectHelperGen());
+    return Stream.of(new DataObjectHelperGen(), new DataObjectCodecGen());
   }
 }

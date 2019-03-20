@@ -54,9 +54,6 @@ public enum ClassKind {
   // Class type, e.g Class<T>
   CLASS_TYPE(false, false, false),
 
-  // Type that declares a json codec
-  JSONIFIABLE(false, false, false),
-
   // Anything else
   OTHER(false, false, false);
 

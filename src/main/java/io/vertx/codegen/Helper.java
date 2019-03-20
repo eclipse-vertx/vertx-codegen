@@ -19,13 +19,7 @@ package io.vertx.codegen;
 import io.vertx.codegen.annotations.GenIgnore;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.*;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -685,13 +679,31 @@ public class Helper {
     return method;
   }
 
-  public static boolean isJsonifiable(Elements elementUtils, Types typeUtils, TypeElement propTypeElt) {
+  public static boolean isDataObjectEncodable(Elements elementUtils, Types typeUtils, TypeElement dataObjectElt) {
     TypeMirror jsonType = elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType();
-    return elementUtils.getAllMembers(
-        propTypeElt).stream().
-        flatMap(Helper.FILTER_METHOD).
-        filter(exeElt -> exeElt.getSimpleName().toString().equals("toJson") && typeUtils.isSameType(jsonType, exeElt.getReturnType())).
-        count() > 0;
+    return elementUtils.getAllMembers(dataObjectElt)
+      .stream()
+      .flatMap(Helper.FILTER_METHOD)
+      .anyMatch(exeElt ->
+        exeElt.getSimpleName().toString().equals("toJson") &&
+          typeUtils.isSameType(jsonType, exeElt.getReturnType())
+      );
+  }
+
+  // A data object is decodable if it is a concrete class with json object constructor
+  public static boolean isDataObjectDecodable(Elements elementUtils, Types typeUtils, TypeElement dataObjectElt) {
+    if (dataObjectElt.getModifiers().contains(Modifier.ABSTRACT)) return false;
+    TypeMirror jsonType = elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType();
+    return elementUtils
+      .getAllMembers(dataObjectElt)
+      .stream()
+      .filter(e -> e.getKind() == ElementKind.CONSTRUCTOR)
+      .map(e -> (ExecutableElement)e)
+      .anyMatch(constructor ->
+        constructor.getParameters().size() == 1 &&
+          constructor.getModifiers().contains(Modifier.PUBLIC) &&
+          typeUtils.isSameType(constructor.getParameters().get(0).asType(), jsonType)
+      );
   }
 
   /**
