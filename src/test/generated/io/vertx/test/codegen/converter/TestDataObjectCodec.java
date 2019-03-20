@@ -11,6 +11,6 @@ public class TestDataObjectCodec implements JsonDecoder<TestDataObject, JsonObje
 
   public static TestDataObjectCodec getInstance() { return TestDataObjectCodecHolder.INSTANCE; }
 
-  @Override public TestDataObject decode(JsonObject value) { return new TestDataObject (value); }
+  @Override public TestDataObject decode(JsonObject value) { return new TestDataObject(value); }
 
 }

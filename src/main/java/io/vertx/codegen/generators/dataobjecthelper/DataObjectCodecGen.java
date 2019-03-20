@@ -43,12 +43,12 @@ public class DataObjectCodecGen extends Generator<DataObjectModel> {
 
     code.codeln("package " + model.getType().getPackageName() + ";")
       .newLine()
-      .javaImport(JsonObject.class.getName())
+      .javaImport("io.vertx.core.json.JsonObject")
       .javaImport(
       matchCodecType(generateEncode, generateDecode,
-        JsonCodec.class.getName(),
-        JsonEncoder.class.getName(),
-        JsonDecoder.class.getName()
+        "io.vertx.core.json.JsonCodec",
+        "io.vertx.core.json.JsonEncoder",
+        "io.vertx.core.json.JsonDecoder"
       )
     );
     code.newLine()
@@ -86,7 +86,7 @@ public class DataObjectCodecGen extends Generator<DataObjectModel> {
   }
 
   private void writeDecodeMethod(String dataObjectSimpleName, CodeWriter codeWriter) {
-    codeWriter.codeln("@Override public " + dataObjectSimpleName + " decode(JsonObject value) { return new " + dataObjectSimpleName + " (value); }").newLine();
+    codeWriter.codeln("@Override public " + dataObjectSimpleName + " decode(JsonObject value) { return new " + dataObjectSimpleName + "(value); }").newLine();
   }
 
   private void writeEncodeMethod(String dataObjectSimpleName, CodeWriter codeWriter) {

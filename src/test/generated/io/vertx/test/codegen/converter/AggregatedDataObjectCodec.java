@@ -13,6 +13,6 @@ public class AggregatedDataObjectCodec implements JsonCodec<AggregatedDataObject
 
   @Override public JsonObject encode(AggregatedDataObject value) { return value.toJson(); }
 
-  @Override public AggregatedDataObject decode(JsonObject value) { return new AggregatedDataObject (value); }
+  @Override public AggregatedDataObject decode(JsonObject value) { return new AggregatedDataObject(value); }
 
 }

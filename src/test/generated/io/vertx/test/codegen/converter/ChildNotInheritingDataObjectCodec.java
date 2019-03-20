@@ -11,6 +11,6 @@ public class ChildNotInheritingDataObjectCodec implements JsonDecoder<ChildNotIn
 
   public static ChildNotInheritingDataObjectCodec getInstance() { return ChildNotInheritingDataObjectCodecHolder.INSTANCE; }
 
-  @Override public ChildNotInheritingDataObject decode(JsonObject value) { return new ChildNotInheritingDataObject (value); }
+  @Override public ChildNotInheritingDataObject decode(JsonObject value) { return new ChildNotInheritingDataObject(value); }
 
 }

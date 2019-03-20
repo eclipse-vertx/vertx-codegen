@@ -11,6 +11,6 @@ public class ChildInheritingDataObjectCodec implements JsonDecoder<ChildInheriti
 
   public static ChildInheritingDataObjectCodec getInstance() { return ChildInheritingDataObjectCodecHolder.INSTANCE; }
 
-  @Override public ChildInheritingDataObject decode(JsonObject value) { return new ChildInheritingDataObject (value); }
+  @Override public ChildInheritingDataObject decode(JsonObject value) { return new ChildInheritingDataObject(value); }
 
 }

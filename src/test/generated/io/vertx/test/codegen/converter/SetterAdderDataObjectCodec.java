@@ -11,6 +11,6 @@ public class SetterAdderDataObjectCodec implements JsonDecoder<SetterAdderDataOb
 
   public static SetterAdderDataObjectCodec getInstance() { return SetterAdderDataObjectCodecHolder.INSTANCE; }
 
-  @Override public SetterAdderDataObject decode(JsonObject value) { return new SetterAdderDataObject (value); }
+  @Override public SetterAdderDataObject decode(JsonObject value) { return new SetterAdderDataObject(value); }
 
 }

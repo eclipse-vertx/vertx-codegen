@@ -11,6 +11,6 @@ public class ParentDataObjectCodec implements JsonDecoder<ParentDataObject, Json
 
   public static ParentDataObjectCodec getInstance() { return ParentDataObjectCodecHolder.INSTANCE; }
 
-  @Override public ParentDataObject decode(JsonObject value) { return new ParentDataObject (value); }
+  @Override public ParentDataObject decode(JsonObject value) { return new ParentDataObject(value); }
 
 }

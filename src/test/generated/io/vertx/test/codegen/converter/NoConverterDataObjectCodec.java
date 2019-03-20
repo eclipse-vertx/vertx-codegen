@@ -11,6 +11,6 @@ public class NoConverterDataObjectCodec implements JsonDecoder<NoConverterDataOb
 
   public static NoConverterDataObjectCodec getInstance() { return NoConverterDataObjectCodecHolder.INSTANCE; }
 
-  @Override public NoConverterDataObject decode(JsonObject value) { return new NoConverterDataObject (value); }
+  @Override public NoConverterDataObject decode(JsonObject value) { return new NoConverterDataObject(value); }
 
 }
