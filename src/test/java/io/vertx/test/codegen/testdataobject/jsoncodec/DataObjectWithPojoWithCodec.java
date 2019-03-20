@@ -4,15 +4,15 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
 @DataObject(generateConverter = true, publicConverter = true)
-public class DataObjectWithJsonifiable {
+public class DataObjectWithPojoWithCodec {
 
   MyPojo myPojo;
 
-  public DataObjectWithJsonifiable(MyPojo myPojo) {
+  public DataObjectWithPojoWithCodec(MyPojo myPojo) {
     this.myPojo = myPojo;
   }
 
-  public DataObjectWithJsonifiable(JsonObject obj) {
+  public DataObjectWithPojoWithCodec(JsonObject obj) {
 
   }
 
@@ -24,7 +24,7 @@ public class DataObjectWithJsonifiable {
     return myPojo;
   }
 
-  public DataObjectWithJsonifiable setMyPojo(MyPojo myPojo) {
+  public DataObjectWithPojoWithCodec setMyPojo(MyPojo myPojo) {
     this.myPojo = myPojo;
     return this;
   }

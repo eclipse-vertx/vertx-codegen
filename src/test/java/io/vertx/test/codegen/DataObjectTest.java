@@ -14,9 +14,7 @@ import io.vertx.test.codegen.annotations.TestEnum;
 import io.vertx.test.codegen.testapi.InterfaceDataObject;
 import io.vertx.test.codegen.testdataobject.*;
 import io.vertx.test.codegen.testdataobject.imported.Imported;
-import io.vertx.test.codegen.testdataobject.jsoncodec.DataObjectWithJsonifiable;
-import io.vertx.test.codegen.testdataobject.jsoncodec.MyPojo;
-import io.vertx.test.codegen.testdataobject.jsoncodec.MyPojoJsonCodec;
+import io.vertx.test.codegen.testdataobject.jsoncodec.DataObjectWithPojoWithCodec;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -835,8 +833,8 @@ public class DataObjectTest {
   }
 
   @Test
-  public void testDataObjectWithJsonifiable() throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(DataObjectWithJsonifiable.class);
+  public void testDataObjectWithJsonCodec() throws Exception {
+    DataObjectModel model = new GeneratorHelper().generateDataObject(DataObjectWithPojoWithCodec.class);
     assertNotNull(model);
     assertTrue(model.isClass());
     assertTrue(model.getGenerateConverter());
