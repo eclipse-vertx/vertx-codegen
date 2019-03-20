@@ -59,9 +59,15 @@ public class JsonCodecsCache {
         TypeElement codecDeclaredElement = (TypeElement) codecDeclaredType.asElement();
         if (codecDeclaredElement.getModifiers().contains(Modifier.ABSTRACT)) throw new GenException(codecDeclaredElement, "The json codec must be a concrete class");
         if (elementUtils
-          .getAllMembers(codecDeclaredElement).stream()
-          .filter(e -> e.getKind() == ElementKind.CONSTRUCTOR)
-          .noneMatch(e -> ((ExecutableElement)e).getParameters().isEmpty())) throw new GenException(codecDeclaredElement, "The json codec must have an empty constructor");
+          .getAllMembers(codecDeclaredElement)
+          .stream()
+          .noneMatch(e ->
+            e.getKind() == ElementKind.METHOD &&
+            e.getModifiers().containsAll(Arrays.asList(Modifier.PUBLIC, Modifier.STATIC)) &&
+            e.getSimpleName().contentEquals("getInstance") &&
+            ((ExecutableElement)e).getParameters().isEmpty() &&
+              typeUtils.isSameType(((ExecutableElement)e).getReturnType(), codecDeclaredType)
+            )) throw new GenException(codecDeclaredElement, "The json codec must have a public static getInstance() method returning an instance of the codec");
 
         List<? extends TypeMirror> superTypesOfCodecDeclaredType = typeUtils.directSupertypes(codecDeclaredType);
         Map.Entry<? extends TypeMirror, ? extends TypeMirror> codecGenericsValues = superTypesOfCodecDeclaredType

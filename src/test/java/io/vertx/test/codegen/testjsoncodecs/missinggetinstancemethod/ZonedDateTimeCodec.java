@@ -1,16 +1,10 @@
-package io.vertx.test.codegen.testjsoncodecs.zoneddatetimetest;
+package io.vertx.test.codegen.testjsoncodecs.missinggetinstancemethod;
 
 import io.vertx.core.json.JsonCodec;
 
 import java.time.ZonedDateTime;
 
 public class ZonedDateTimeCodec implements JsonCodec<ZonedDateTime, String> {
-
-  public static class ZonedDateTimeCodecHolder {
-    static final ZonedDateTimeCodec INSTANCE = new ZonedDateTimeCodec();
-  }
-
-  public static ZonedDateTimeCodec getInstance() { return ZonedDateTimeCodecHolder.INSTANCE; }
 
   @Override
   public String encode(ZonedDateTime value) {

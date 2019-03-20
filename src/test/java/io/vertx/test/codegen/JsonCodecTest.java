@@ -12,9 +12,9 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * @author <a href="http://tfox.org">Tim Fox</a>
+ * @author <a href="http://slinkydeveloper.com">Francesco Guardiani</a>
  */
-public class JsonifiableTest extends ClassTestBase {
+public class JsonCodecTest extends ClassTestBase {
 
   // Test invalid stuff
   // ----------------
@@ -55,6 +55,16 @@ public class JsonifiableTest extends ClassTestBase {
   public void testJsonCodecMustFailMethodOverloadCheck() throws Exception {
     try {
       new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsoncodecs.illegalinterfacewithoverloads.APIInterfaceWithZonedDateTime.class);
+      fail();
+    } catch (GenException expected) { }
+  }
+
+  // Json codec must have getInstance static method
+
+  @Test
+  public void testJsonCodecMustHaveStaticGetInstanceMethod() throws Exception {
+    try {
+      new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsoncodecs.missinggetinstancemethod.APIInterfaceWithZonedDateTime.class);
       fail();
     } catch (GenException expected) { }
   }
