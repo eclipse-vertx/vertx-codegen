@@ -51,23 +51,54 @@ Maven _artifactId_ and the group package corresponding to the `groupId`.
 
 === Data objects
 
-A Data object_ is a Java class with the only purpose to be a container for data. They are transformed
-to and from Json.
+A _Data object_ is a type of which encoding/decoding to Vert.x Json type is known to the codegen.
 
-In its simplest form, a data object is a Java class following these rules:
+You can mark a type as a data object both:
+
+* Defining a `io.vertx.core.json.JsonCodec` for it
+* Annotating the type itself with `@DataObject` to generate the `JsonCodec` automatically
+
+==== Json codecs
+
+A json codec for type `X` is a concrete class that implements the interface `JsonCodec<X, J>`, where `J` is a _basic_ or a _json_ type.
+
+If you want to use a `JsonCodec` in vertx-codegen, you must provide a `public static [JsonCodecType] getInstance()` method inside the defined codec to retrieve the codec instance.
+
+To mark a type as a data object in your package, you must specify the codec in `@ModuleGen` annotation in `package-info.java` file. E.g.:
+
+```java
+@ModuleGen(
+  name = "my-package",
+  groupPackage = "my.package",
+  codecs = {
+    ZonedDateTimeCodec.class
+  }
+)
+```
+
+==== `@DataObject` annotated types
+
+A `@DataObject` annotated type is a Java class with the only purpose to be a container for data.
+They are transformed to and from Json.
+
+In its simplest form, a data object annotated type is a Java class following these rules:
 
 1. the class is annotated with {@link io.vertx.codegen.annotations.DataObject}
 2. provide a constructor with the `io.vertx.core.json.JsonObject` argument
 
-A data object can also be an interface annotated with `@DataObject`, this is useful when multiple inheritance
+Each `@DataObject` annotated type generates a `JsonCodec` that calls the constructor and `toJson()` to decode/encode the type.
+If the type doesn't define `toJson()` method, the codegen generates only a `JsonDecoder`.
+If the type is not instantiable (abstract classes) or it doesn't define the constructor with `JsonObject` parameter, the codegen generates only a `JsonEncoder`.
+
+`@DataObject` can also be used for interfaces, this is useful when multiple inheritance
 is needed. For instance Vert.x Core defines the `KeyCertOptions` and `TrustOptions` data object interfaces and the
 `JksOptions` is a data object class that implements both of them because a Java keystore provides support for both.
 
-Data object can also inherit from other data objects. It inherits from the properties of the parent classes.
+Data object annotated classes can also inherit from other data objects annotated types. It inherits from the properties of the parent classes.
 
-==== Data object properties
+===== Properties
 
-DataObject properties are declared via _getters_, _setters_ or _adders_:
+DataObject annotated types properties are declared via _getters_, _setters_ or _adders_:
 
 .a getter and a setter
 [source,java]
@@ -124,11 +155,11 @@ encouraged.
 
 ==== Json conversion
 
-Vert.x requires data object to be convertible from json with the json argument constructor. Altough there
-is no strict rules of mapping between the data object properties and the json structure, it is a good thing
+When a data object has an associated `JsonCodec` or just a `JsonDecoder`, it can be instantiated from a json value.
+For POJO to json object mapping, although there are no strict rules of mapping between the data object properties and the json structure, it is a good thing
 to follow a common mapping for users using json data objects (like in JavaScript shim).
 
-Json properties should be named after properties according to JavaBean conversion rules:
+In particular json object properties should be named after properties according to JavaBean conversion rules:
 
 - a single valued property follows the JavaBean convention
 - a multi valued property declared with a list setter follows the same convention
@@ -143,20 +174,16 @@ In all case, property names are _normalized_, i.e:
 
 ==== Jsonifiable data object
 
-When a data object declares a `public JsonObject toJson()` method it can be converted to the json format
+When a data object has an associated `JsonCodec` or just a `JsonEncoder`, it can be converted to the json format
 and is said _jsonifiable_. Vert.x API types have restriction in the declared method return types, a jsonifiable
 data object can be used in Vert.x API method return types or handlers because it can be converted to a json
 format, otherwise it is not permitted.
 
-==== Data object converter
+===== Data object converter
 
-Vert.x requires only the conversion from json, but the conversion to json can be useful when the API uses
-data objects as return types. The implementation of the data object / json conversion can be tedious and
-error prone.
-
-The data object / json conversion can be automated based on the rules given above. Vert.x Core allows to
-generate auxilliary classes that implement the conversion logic. The generated converters handle the
-type mapping as well as the json naming convention.
+The data object/json conversion can be tedious and error prone.
+Vertx-codegen can automate it, generating for you an auxiliary class that implements the conversion logic.
+The generated converter handles the type mapping as well as the json naming convention.
 
 Converters are generated when the data object is annotated with `@DataObject(generateConverter=true)`. The
 generation happens for the data object properties, not for the ancestor properties, unless `inheritConverter`
@@ -231,7 +258,7 @@ In the perspective of codegen, Java types can be categorized as follow:
 . _basic_ type : any primitive/boxed type or `java.lang.String`
 . _json_ type : `io.vertx.core.json.JsonObject` or `io.vertx.core.json.JsonArray`
 . _api_ type : any type annotated with `io.vertx.codegen.annotations.VertxGen`
-. _data object_ type : any type annotated with `io.vertx.codegen.annotations.DataObject`
+. _data object_ type : any data object type as defined above
 . _enum_ type : any Java enum
 . _collection_ type : `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>`
 . _java_ type : any other type that can be represented as a Java class. Java types declarations are only permitted
@@ -273,7 +300,7 @@ The following method parameter types are allowed:
 . any _json_ type
 . the `java.lang.Throwable` type
 . any _enum_ type
-. any _data object_ type that is a non abstract class
+. any _data object_ that provides a decoder
 . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
 . `java.lang.Object`
 . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
@@ -289,7 +316,7 @@ Callback parameters are allowed, i.e types declaring `io.vertx.core.Handler<E>` 
 . any _json_ type
 . the `java.lang.Throwable` type - only for `Handler<R>`
 . any _enum_ type
-. any _data object_ type with a `toJson` method
+. any _data object_ that provides an encoder
 . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
 . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
 a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
@@ -303,7 +330,7 @@ be same than for handlers and `<R>` can be:
 . any _json_ type
 . the `java.lang.Throwable` type
 . any _enum_ type
-. any _data object_ type that is a non abstract class
+. any _data object_ that provides a decoder
 . an unbounded type variable
 . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
 a _json_ type or a `java` type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
@@ -319,7 +346,7 @@ The following return types are allowed:
 . any _json_ type
 . the `java.lang.Throwable` type
 . any _enum_ type
-. any _data object_ type with a `toJson` method
+. any _data object_ that provides an encoder
 . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
 . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
 a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
@@ -508,7 +535,7 @@ A shim implements several strategies when returning values from the Vert.x API:
 1. a _basic_ value is usually handled by the shim interop
 2. an _API_ value creates a proxy to wrap the value
 3. a _json_ (object or array) value is translated to the shim equivalent
-4. a jsonifiable _data object_ is converted to json or an equivalent
+4. a _data object_ that provides an encoder is converted to json or an equivalent
 5. an _enum_ value is converted to a string or an equivalent
 6. a _collection_ is usually translated to the shim equivalent
 7. a `java.lang.Throwable` is usually translated to the shim equivalent
@@ -526,7 +553,7 @@ A shim implements several strategies when passing values to the Vert.x API:
 1. a _basic_ value is usually handled by the shim interop
 2. an _API_ value is unwrapped from the shim proxy
 3. a _json_ (object or array) value is translated from the shim equivalent
-4. a _data object_ is instantiated from the shim equivalent by its `JsonObject` constructor
+4. a _data object_ that provides a decoder is instantiated from the shim equivalent
 5. an _enum_ is converted from a string or an equivalent
 6. a _collection_ is usually translated from the shim equivalent
 7. a type variable or `java.lang.Object` is converted dynamically converted to a _basic_ type or a _json_ type

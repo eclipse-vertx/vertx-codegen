@@ -200,7 +200,7 @@ The constraints are
 * Methods where the return value must be cached in the API shim must be annotated with the `io.vertx.codegen.annotations.CacheReturn` annotation
 * Only certain types are allowed as parameter or return value types for any API methods (defined below).
 * Custom enums should be annotated with `@VertxGen`, although this is not mandatory to allow the usage of existing Java enums
-
+* JsonCodec interfaces must provide a `public static [JsonCodecType] getInstance()` method to retrieve an instance of the codec
 
 ### Permitted types
 
@@ -212,7 +212,9 @@ We define the following set _`Basic`_ of basic types:
 
 We define _`Json`_ as the set of types `io.vertx.core.json.JsonObject` and `io.vertx.core.json.JsonArray`
 
-We define _`DataObject`_ as the set of user defined API types which are defined in its own class and annotated with `@DataObject`
+We define _`DataObject`_:
+* The set of user defined API types which are defined in its own class and annotated with `@DataObject`
+* The set of types that have an associated `JsonCodec` declared in `@ModuleGen` annotation
 
 We define _`TypeVar`_ as the set of of types variables where the variable is either declared by its generic method or its generic type
 
@@ -384,15 +386,41 @@ Maven _artifactId_ and the group package corresponding to the `groupId`.
 
 ## Data objects
 
-A data object is a plain Java public class annotated with `@DataObject` that follows these minimum requirements:
+A data object is a type of which encoding/decoding to Vert.x Json type is known to the codegen.
+
+You can mark a type as a data object both:
+* Defining a `io.vertx.core.json.JsonCodec` for it
+* Annotating the type itself with `@DataObject`
+
+### Json Codec
+
+If you want to use a `JsonCodec` in vertx-codegen, you must provide a `public static [JsonCodecType] getInstance()` method inside the defined codec to retrieve the codec instance.
+
+To mark a type as a data object in your package , you must specify the codec in `@ModuleGen` annotation in `package-info.java` file. E.g.:
+
+```java
+@ModuleGen(
+  name = "my-package",
+  groupPackage = "my.package",
+  codecs = {
+    ZonedDateTimeCodec.class
+  }
+)
+```
+
+### Data object POJOs
+
+You can also mark a type as data object using the `@DataObject` annotation and following these minimum requirements:
 
 * A constructor with `io.vertx.core.json.JsonObject` parameter type
 
-Optionally a data object can define a public `io.vertx.core.json.JsonObject toJson()` method: such method makes the
-data object convertible to `JsonObject`, the data object can then be used as an Api return type.
+Optionally the type can define a public `io.vertx.core.json.JsonObject toJson()` method: such method makes the
+type encodable to `JsonObject`, the type can then be used as an Api return type.
 
-By default, a data object is responsible to decode from Json (via the `JsonObject` constructor) and encode
-to Json (via the `toJson` method).
+Each `@DataObject` annotated type generates a `JsonCodec` that calls the constructor and `toJson()` to decode/encode the type.
+These codecs are automatically loaded into the codegen, without requiring to specify it in `@ModuleGen` annotation.
+If the type doesn't define `toJson()` method, the codegen generates only a `JsonDecoder`.
+If the type is not instantiable (abstract classes) or it doesn't define the constructor with `JsonObject` parameter, the codegen generates only a `JsonEncoder`. 
 
 Data object converter can be generated with `@DataObject(generateConverter=true)` by Vert.x Core. Such
  Data object conversion recognize the following types as _member_ of any `@DataObject`:
@@ -475,7 +503,7 @@ The `TypeInfo.Class` is a subclass of `TypeInfo` representing a Java class:
     * `OBJECT`: java.lang.Object
     * `LIST`, `SET`: corresponding java collections
     * `API`: a type annotated with @VertxGen
-    * `DATA_OBJECT`: a type annotations with @DataObject
+    * `DATA_OBJECT`: a type marked as data object
     * `HANDLER`: io.vertx.core.Handler
     * `ASYNC_RESULT`: io.vertx.core.AsyncResult
     * `ENUM`: An enum
