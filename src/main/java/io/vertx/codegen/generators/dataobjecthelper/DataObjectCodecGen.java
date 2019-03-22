@@ -90,6 +90,6 @@ public class DataObjectCodecGen extends Generator<DataObjectModel> {
   }
 
   private void writeEncodeMethod(String dataObjectSimpleName, CodeWriter codeWriter) {
-    codeWriter.codeln("@Override public JsonObject encode(" + dataObjectSimpleName + " value) { return value.toJson(); }").newLine();
+    codeWriter.codeln("@Override public JsonObject encode(" + dataObjectSimpleName + " value) { return (value != null) ? value.toJson() : null; }").newLine();
   }
 }

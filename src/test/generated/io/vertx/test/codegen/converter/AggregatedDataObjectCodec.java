@@ -11,7 +11,7 @@ public class AggregatedDataObjectCodec implements JsonCodec<AggregatedDataObject
 
   public static AggregatedDataObjectCodec getInstance() { return AggregatedDataObjectCodecHolder.INSTANCE; }
 
-  @Override public JsonObject encode(AggregatedDataObject value) { return value.toJson(); }
+  @Override public JsonObject encode(AggregatedDataObject value) { return (value != null) ? value.toJson() : null; }
 
   @Override public AggregatedDataObject decode(JsonObject value) { return new AggregatedDataObject(value); }
 
