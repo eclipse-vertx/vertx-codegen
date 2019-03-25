@@ -81,8 +81,8 @@ public class TypeReflectionFactory {
               module,
               false,
               typeParams,
-              isDataObjectEncodable(classType) ? fqcn + "Codec" : null,
-              isDataObjectDecodable(classType) ? fqcn + "Codec" : null,
+              isDataObjectEncodable(classType) ? fqcn + "Converter" : null,
+              isDataObjectDecodable(classType) ? fqcn + "Converter" : null,
               create(JsonObject.class)
             );
           } else {

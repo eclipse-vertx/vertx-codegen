@@ -151,8 +151,8 @@ public class TypeMirrorFactory {
               module,
               nullable,
               typeParams,
-              Helper.isDataObjectEncodable(elementUtils, typeUtils, elt) ? fqcn + "Codec" : null,
-              Helper.isDataObjectDecodable(elementUtils, typeUtils, elt) ? fqcn + "Codec" : null,
+              Helper.isDataObjectEncodable(elementUtils, typeUtils, elt) ? fqcn + "Converter" : null,
+              Helper.isDataObjectDecodable(elementUtils, typeUtils, elt) ? fqcn + "Converter" : null,
               this.create(elementUtils.getTypeElement(JsonObject.class.getName()).asType())
             );
           } else {

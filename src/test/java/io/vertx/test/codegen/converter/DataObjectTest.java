@@ -723,11 +723,23 @@ public class DataObjectTest {
   }
 
   @Test
-  public void testNoConverters() {
+  public void testNoConvertersFromJsonMethod() throws ClassNotFoundException {
+    Class<?> clazz = NoConverterDataObject.class.getClassLoader().loadClass(NoConverterDataObject.class.getName() + "Converter");
     try {
-      NoConverterDataObject.class.getClassLoader().loadClass(NoConverterDataObject.class.getName() + "Converter");
-      fail("Was not expecting a converter to be generated");
-    } catch (ClassNotFoundException ignore) {
+      clazz.getMethod("fromJson", Iterable.class, NoConverterDataObject.class);
+      fail("Data Object marked with generateConverter = false must not generate fromJson");
+    } catch (NoSuchMethodException e) {
+      // Ok
+    }
+  }
+
+  @Test
+  public void testNoConvertersToJsonMethod() throws ClassNotFoundException {
+    Class<?> clazz = NoConverterDataObject.class.getClassLoader().loadClass(NoConverterDataObject.class.getName() + "Converter");
+    try {
+      clazz.getMethod("toJson", NoConverterDataObject.class, JsonObject.class);
+      fail("Data Object marked with generateConverter = false must not generate fromJson");
+    } catch (NoSuchMethodException e) {
       // Ok
     }
   }

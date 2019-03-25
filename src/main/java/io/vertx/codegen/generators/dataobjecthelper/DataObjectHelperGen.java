@@ -9,6 +9,7 @@ import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.ClassTypeInfo;
 import io.vertx.codegen.type.DataObjectTypeInfo;
+import io.vertx.codegen.writer.CodeWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -33,7 +34,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
 
   @Override
   public String filename(DataObjectModel model) {
-    if (model.isClass() && model.getGenerateConverter()) {
+    if (model.isClass()) {
       return model.getFqn() + "Converter.java";
     }
     return null;
@@ -43,25 +44,51 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
   public String render(DataObjectModel model, int index, int size, Map<String, Object> session) {
     StringWriter buffer = new StringWriter();
     PrintWriter writer = new PrintWriter(buffer);
+    CodeWriter code = new CodeWriter(writer);
     String visibility= model.isPublicConverter() ? "public" : "";
     String simpleName = model.getType().getSimpleName();
     boolean inheritConverter = model.getInheritConverter();
+    boolean generateEncode = model.getType().hasJsonEncoder();
+    boolean generateDecode = model.getType().hasJsonDecoder();
+
     writer.print("package " + model.getType().getPackageName() + ";\n");
     writer.print("\n");
     writer.print("import io.vertx.core.json.JsonObject;\n");
     writer.print("import io.vertx.core.json.JsonArray;\n");
     writer.print("import java.time.Instant;\n");
     writer.print("import java.time.format.DateTimeFormatter;\n");
+    code.javaImport(
+      matchCodecType(generateEncode, generateDecode,
+        "io.vertx.core.json.JsonCodec",
+        "io.vertx.core.json.JsonEncoder",
+        "io.vertx.core.json.JsonDecoder"
+      )
+    );
     writer.print("\n");
     writer.print("/**\n");
-    writer.print(" * Converter for {@link " + model.getType() + "}.\n");
+    writer.print(" * Converter and Codec for {@link " + model.getType() + "}.\n");
     writer.print(" * NOTE: This class has been automatically generated from the {@link " + model.getType() + "} original class using Vert.x codegen.\n");
     writer.print(" */\n");
-    writer.print(visibility + " class " + simpleName + "Converter {\n");
-    writer.print("\n");
-    generateFromJson(visibility, inheritConverter, model, writer);
-    writer.print("\n");
-    generateToJson(visibility, inheritConverter, model, writer);
+    code
+      .codeln("public class " + model.getType().getSimpleName() + "Converter implements " +
+        matchCodecType(generateEncode, generateDecode,
+          "JsonCodec",
+          "JsonEncoder",
+          "JsonDecoder"
+        ) + "<" + model.getType().getSimpleName() + ", JsonObject> {"
+      ).newLine();
+    code.indented(() -> {
+      generateSingletonInstanceAndHolder(model.getType().getSimpleName(), code);
+      code.newLine();
+      if (generateEncode) writeEncodeMethod(model.getType().getSimpleName(), code);
+      if (generateDecode) writeDecodeMethod(model.getType().getSimpleName(), code);
+    });
+    if (model.getGenerateConverter()) {
+      writer.print("\n");
+      generateFromJson(visibility, inheritConverter, model, writer);
+      writer.print("\n");
+      generateToJson(visibility, inheritConverter, model, writer);
+    }
     writer.print("}\n");
     return buffer.toString();
   }
@@ -280,5 +307,28 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       }
     }
     writer.print(indent + "  break;\n");
+  }
+
+  private <T> T matchCodecType(boolean generateEncode, boolean generateDecode, T completeCodec, T onlyEncoder, T onlyDecoder) {
+    if (generateDecode && generateEncode) return completeCodec;
+    else if (generateDecode) return onlyDecoder;
+    else return onlyEncoder;
+  }
+
+  private void generateSingletonInstanceAndHolder(String dataObjectSimpleName, CodeWriter code) {
+    code.codeln("private static class " + dataObjectSimpleName + "ConverterHolder {")
+      .indented(() -> code.codeln("static final " + dataObjectSimpleName + "Converter INSTANCE = new " + dataObjectSimpleName + "Converter();"))
+      .codeln("}")
+      .newLine()
+      .code("public static " + dataObjectSimpleName + "Converter getInstance() { return " + dataObjectSimpleName + "ConverterHolder.INSTANCE; }")
+      .newLine();
+  }
+
+  private void writeDecodeMethod(String dataObjectSimpleName, CodeWriter codeWriter) {
+    codeWriter.codeln("@Override public " + dataObjectSimpleName + " decode(JsonObject value) { return new " + dataObjectSimpleName + "(value); }").newLine();
+  }
+
+  private void writeEncodeMethod(String dataObjectSimpleName, CodeWriter codeWriter) {
+    codeWriter.codeln("@Override public JsonObject encode(" + dataObjectSimpleName + " value) { return (value != null) ? value.toJson() : null; }").newLine();
   }
 }

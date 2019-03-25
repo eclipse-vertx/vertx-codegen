@@ -4,12 +4,22 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import io.vertx.core.json.JsonDecoder;
 
 /**
- * Converter for {@link io.vertx.test.codegen.converter.ParentDataObject}.
+ * Converter and Codec for {@link io.vertx.test.codegen.converter.ParentDataObject}.
  * NOTE: This class has been automatically generated from the {@link io.vertx.test.codegen.converter.ParentDataObject} original class using Vert.x codegen.
  */
-public class ParentDataObjectConverter {
+public class ParentDataObjectConverter implements JsonDecoder<ParentDataObject, JsonObject> {
+
+  private static class ParentDataObjectConverterHolder {
+    static final ParentDataObjectConverter INSTANCE = new ParentDataObjectConverter();
+  }
+
+  public static ParentDataObjectConverter getInstance() { return ParentDataObjectConverterHolder.INSTANCE; }
+
+  @Override public ParentDataObject decode(JsonObject value) { return new ParentDataObject(value); }
+
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ParentDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
