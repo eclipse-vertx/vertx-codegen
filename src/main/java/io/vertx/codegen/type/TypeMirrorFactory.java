@@ -151,9 +151,9 @@ public class TypeMirrorFactory {
               module,
               nullable,
               typeParams,
-              Helper.isDataObjectEncodable(elementUtils, typeUtils, elt) ? fqcn + "Converter" : null,
-              Helper.isDataObjectDecodable(elementUtils, typeUtils, elt) ? fqcn + "Converter" : null,
-              this.create(elementUtils.getTypeElement(JsonObject.class.getName()).asType())
+              Helper.isDataObjectEncodable(elementUtils, elt) ? fqcn + "Converter" : null,
+              Helper.isDataObjectDecodable(elementUtils, elt) ? fqcn + "Converter" : null,
+              this.create(elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType())
             );
           } else {
             raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams);

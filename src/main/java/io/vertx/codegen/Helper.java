@@ -675,21 +675,19 @@ public class Helper {
     return method;
   }
 
-  public static boolean isDataObjectEncodable(Elements elementUtils, Types typeUtils, TypeElement dataObjectElt) {
-    TypeMirror jsonType = elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType();
+  public static boolean isDataObjectEncodable(Elements elementUtils, TypeElement dataObjectElt) {
     return elementUtils.getAllMembers(dataObjectElt)
       .stream()
       .flatMap(Helper.FILTER_METHOD)
       .anyMatch(exeElt ->
         exeElt.getSimpleName().toString().equals("toJson") &&
-          typeUtils.isSameType(jsonType, exeElt.getReturnType())
+          exeElt.getReturnType().toString().equals("io.vertx.core.json.JsonObject")
       );
   }
 
   // A data object is decodable if it is a concrete class with json object constructor
-  public static boolean isDataObjectDecodable(Elements elementUtils, Types typeUtils, TypeElement dataObjectElt) {
+  public static boolean isDataObjectDecodable(Elements elementUtils, TypeElement dataObjectElt) {
     if (dataObjectElt.getModifiers().contains(Modifier.ABSTRACT)) return false;
-    TypeMirror jsonType = elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType();
     return elementUtils
       .getAllMembers(dataObjectElt)
       .stream()
@@ -698,7 +696,7 @@ public class Helper {
       .anyMatch(constructor ->
         constructor.getParameters().size() == 1 &&
           constructor.getModifiers().contains(Modifier.PUBLIC) &&
-          typeUtils.isSameType(constructor.getParameters().get(0).asType(), jsonType)
+          constructor.getParameters().get(0).asType().toString().equals("io.vertx.core.json.JsonObject")
       );
   }
 
