@@ -18,7 +18,7 @@ public class ChildInheritingDataObjectConverter implements JsonDecoder<ChildInhe
 
   public static ChildInheritingDataObjectConverter getInstance() { return ChildInheritingDataObjectConverterHolder.INSTANCE; }
 
-  @Override public ChildInheritingDataObject decode(JsonObject value) { return new ChildInheritingDataObject(value); }
+  @Override public ChildInheritingDataObject decode(JsonObject value) { return (value != null) ? new ChildInheritingDataObject(value) : null; }
 
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ChildInheritingDataObject obj) {

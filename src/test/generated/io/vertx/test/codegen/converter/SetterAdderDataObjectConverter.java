@@ -18,7 +18,7 @@ public class SetterAdderDataObjectConverter implements JsonDecoder<SetterAdderDa
 
   public static SetterAdderDataObjectConverter getInstance() { return SetterAdderDataObjectConverterHolder.INSTANCE; }
 
-  @Override public SetterAdderDataObject decode(JsonObject value) { return new SetterAdderDataObject(value); }
+  @Override public SetterAdderDataObject decode(JsonObject value) { return (value != null) ? new SetterAdderDataObject(value) : null; }
 
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, SetterAdderDataObject obj) {

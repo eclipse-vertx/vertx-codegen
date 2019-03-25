@@ -18,6 +18,6 @@ public class NoConverterDataObjectConverter implements JsonDecoder<NoConverterDa
 
   public static NoConverterDataObjectConverter getInstance() { return NoConverterDataObjectConverterHolder.INSTANCE; }
 
-  @Override public NoConverterDataObject decode(JsonObject value) { return new NoConverterDataObject(value); }
+  @Override public NoConverterDataObject decode(JsonObject value) { return (value != null) ? new NoConverterDataObject(value) : null; }
 
 }

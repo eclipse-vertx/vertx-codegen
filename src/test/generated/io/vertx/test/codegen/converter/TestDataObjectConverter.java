@@ -18,7 +18,7 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
 
   public static TestDataObjectConverter getInstance() { return TestDataObjectConverterHolder.INSTANCE; }
 
-  @Override public TestDataObject decode(JsonObject value) { return new TestDataObject(value); }
+  @Override public TestDataObject decode(JsonObject value) { return (value != null) ? new TestDataObject(value) : null; }
 
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, TestDataObject obj) {

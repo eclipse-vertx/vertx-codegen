@@ -325,7 +325,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
   }
 
   private void writeDecodeMethod(String dataObjectSimpleName, CodeWriter codeWriter) {
-    codeWriter.codeln("@Override public " + dataObjectSimpleName + " decode(JsonObject value) { return new " + dataObjectSimpleName + "(value); }").newLine();
+    codeWriter.codeln("@Override public " + dataObjectSimpleName + " decode(JsonObject value) { return (value != null) ? new " + dataObjectSimpleName + "(value) : null; }").newLine();
   }
 
   private void writeEncodeMethod(String dataObjectSimpleName, CodeWriter codeWriter) {

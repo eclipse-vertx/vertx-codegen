@@ -18,7 +18,7 @@ public class ParentDataObjectConverter implements JsonDecoder<ParentDataObject, 
 
   public static ParentDataObjectConverter getInstance() { return ParentDataObjectConverterHolder.INSTANCE; }
 
-  @Override public ParentDataObject decode(JsonObject value) { return new ParentDataObject(value); }
+  @Override public ParentDataObject decode(JsonObject value) { return (value != null) ? new ParentDataObject(value) : null; }
 
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ParentDataObject obj) {

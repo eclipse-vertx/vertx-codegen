@@ -18,7 +18,7 @@ public class ChildNotInheritingDataObjectConverter implements JsonDecoder<ChildN
 
   public static ChildNotInheritingDataObjectConverter getInstance() { return ChildNotInheritingDataObjectConverterHolder.INSTANCE; }
 
-  @Override public ChildNotInheritingDataObject decode(JsonObject value) { return new ChildNotInheritingDataObject(value); }
+  @Override public ChildNotInheritingDataObject decode(JsonObject value) { return (value != null) ? new ChildNotInheritingDataObject(value) : null; }
 
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ChildNotInheritingDataObject obj) {

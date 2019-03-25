@@ -20,6 +20,6 @@ public class AggregatedDataObjectConverter implements JsonCodec<AggregatedDataOb
 
   @Override public JsonObject encode(AggregatedDataObject value) { return (value != null) ? value.toJson() : null; }
 
-  @Override public AggregatedDataObject decode(JsonObject value) { return new AggregatedDataObject(value); }
+  @Override public AggregatedDataObject decode(JsonObject value) { return (value != null) ? new AggregatedDataObject(value) : null; }
 
 }
