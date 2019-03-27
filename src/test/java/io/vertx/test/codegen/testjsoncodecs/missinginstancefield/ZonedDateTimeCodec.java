@@ -1,4 +1,4 @@
-package io.vertx.test.codegen.testjsoncodecs.missinggetinstancemethod;
+package io.vertx.test.codegen.testjsoncodecs.missinginstancefield;
 
 import io.vertx.core.json.JsonCodec;
 

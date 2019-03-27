@@ -9,4 +9,3 @@ package io.vertx.test.codegen.testjsoncodecs.illegalinterfacewithoverloads;
 
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.test.codegen.converter.ZonedDateTimeCodec;
-import io.vertx.test.codegen.testjsoncodecs.illegaljsoncodecabstract.MyCodec;

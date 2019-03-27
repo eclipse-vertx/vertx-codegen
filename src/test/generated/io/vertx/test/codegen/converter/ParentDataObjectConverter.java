@@ -12,11 +12,8 @@ import io.vertx.core.json.JsonDecoder;
  */
 public class ParentDataObjectConverter implements JsonDecoder<ParentDataObject, JsonObject> {
 
-  private static class ParentDataObjectConverterHolder {
-    static final ParentDataObjectConverter INSTANCE = new ParentDataObjectConverter();
-  }
+  public static ParentDataObjectConverter INSTANCE = new ParentDataObjectConverter();
 
-  public static ParentDataObjectConverter getInstance() { return ParentDataObjectConverterHolder.INSTANCE; }
 
   @Override public ParentDataObject decode(JsonObject value) { return (value != null) ? new ParentDataObject(value) : null; }
 

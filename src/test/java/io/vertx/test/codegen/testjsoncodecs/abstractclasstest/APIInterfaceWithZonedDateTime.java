@@ -1,4 +1,4 @@
-package io.vertx.test.codegen.testjsoncodecs.missinggetinstancemethod;
+package io.vertx.test.codegen.testjsoncodecs.abstractclasstest;
 
 import io.vertx.codegen.annotations.VertxGen;
 
@@ -11,7 +11,5 @@ import java.time.ZonedDateTime;
 public interface APIInterfaceWithZonedDateTime {
 
   void doSomething(ZonedDateTime dateTime);
-
-  ZonedDateTime returnSomething();
 
 }

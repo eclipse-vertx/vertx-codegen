@@ -2,9 +2,9 @@
   name = "dummy",
   groupPackage = "io.vertx.test",
   codecs = {
-    MyCodec.class
+    ZonedDateTimeCodec.class
   }
 )
-package io.vertx.test.codegen.testjsoncodecs.illegaljsoncodecinterface;
+package io.vertx.test.codegen.testjsoncodecs.missinginstancefield;
 
 import io.vertx.codegen.annotations.ModuleGen;

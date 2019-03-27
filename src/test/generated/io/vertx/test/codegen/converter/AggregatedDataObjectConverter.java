@@ -12,11 +12,8 @@ import io.vertx.core.json.JsonCodec;
  */
 public class AggregatedDataObjectConverter implements JsonCodec<AggregatedDataObject, JsonObject> {
 
-  private static class AggregatedDataObjectConverterHolder {
-    static final AggregatedDataObjectConverter INSTANCE = new AggregatedDataObjectConverter();
-  }
+  public static AggregatedDataObjectConverter INSTANCE = new AggregatedDataObjectConverter();
 
-  public static AggregatedDataObjectConverter getInstance() { return AggregatedDataObjectConverterHolder.INSTANCE; }
 
   @Override public JsonObject encode(AggregatedDataObject value) { return (value != null) ? value.toJson() : null; }
 

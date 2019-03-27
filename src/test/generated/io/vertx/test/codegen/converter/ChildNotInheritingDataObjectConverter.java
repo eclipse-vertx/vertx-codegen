@@ -12,11 +12,8 @@ import io.vertx.core.json.JsonDecoder;
  */
 public class ChildNotInheritingDataObjectConverter implements JsonDecoder<ChildNotInheritingDataObject, JsonObject> {
 
-  private static class ChildNotInheritingDataObjectConverterHolder {
-    static final ChildNotInheritingDataObjectConverter INSTANCE = new ChildNotInheritingDataObjectConverter();
-  }
+  public static ChildNotInheritingDataObjectConverter INSTANCE = new ChildNotInheritingDataObjectConverter();
 
-  public static ChildNotInheritingDataObjectConverter getInstance() { return ChildNotInheritingDataObjectConverterHolder.INSTANCE; }
 
   @Override public ChildNotInheritingDataObject decode(JsonObject value) { return (value != null) ? new ChildNotInheritingDataObject(value) : null; }
 

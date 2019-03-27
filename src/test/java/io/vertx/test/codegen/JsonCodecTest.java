@@ -19,36 +19,6 @@ public class JsonCodecTest extends ClassTestBase {
   // Test invalid stuff
   // ----------------
 
-  // Json codec must be a class
-
-  @Test
-  public void testJsonCodecMustBeAClass() throws Exception {
-    try {
-      new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsoncodecs.illegaljsoncodecinterface.APIInterfaceWithZonedDateTime.class);
-      fail();
-    } catch (GenException expected) { }
-  }
-
-  // Json codec must be a concrete class
-
-  @Test
-  public void testJsonCodecMustBeAConcreteClass() throws Exception {
-    try {
-      new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsoncodecs.illegaljsoncodecabstract.APIInterfaceWithZonedDateTime.class);
-      fail();
-    } catch (GenException expected) { }
-  }
-
-  // Json codec must contain an empty constructor
-
-  @Test
-  public void testJsonCodecMustContainAnEmptyConstructor() throws Exception {
-    try {
-      new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsoncodecs.illegaljsoncodecnoemptyconstructor.APIInterfaceWithZonedDateTime.class);
-      fail();
-    } catch (GenException expected) { }
-  }
-
   // Json codec method overload check
 
   @Test
@@ -62,9 +32,9 @@ public class JsonCodecTest extends ClassTestBase {
   // Json codec must have getInstance static method
 
   @Test
-  public void testJsonCodecMustHaveStaticGetInstanceMethod() throws Exception {
+  public void testJsonCodecMustHaveStaticINSTANCEField() throws Exception {
     try {
-      new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsoncodecs.missinggetinstancemethod.APIInterfaceWithZonedDateTime.class);
+      new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsoncodecs.missinginstancefield.APIInterfaceWithZonedDateTime.class);
       fail();
     } catch (GenException expected) { }
   }
@@ -74,6 +44,16 @@ public class JsonCodecTest extends ClassTestBase {
   // ----------------
 
   // Valid param
+
+  @Test
+  public void testAbstractClass() throws Exception {
+    new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsoncodecs.abstractclasstest.APIInterfaceWithZonedDateTime.class);
+  }
+
+  @Test
+  public void testInterface() throws Exception {
+    new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsoncodecs.interfacetest.APIInterfaceWithZonedDateTime.class);
+  }
 
   @Test
   public void testValidParamAndReturnType() throws Exception {

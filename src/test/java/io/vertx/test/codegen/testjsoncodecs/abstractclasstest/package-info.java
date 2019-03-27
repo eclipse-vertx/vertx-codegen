@@ -5,6 +5,6 @@
     MyCodec.class
   }
 )
-package io.vertx.test.codegen.testjsoncodecs.illegaljsoncodecnoemptyconstructor;
+package io.vertx.test.codegen.testjsoncodecs.abstractclasstest;
 
 import io.vertx.codegen.annotations.ModuleGen;

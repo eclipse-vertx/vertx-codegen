@@ -1,4 +1,4 @@
-package io.vertx.test.codegen.testjsoncodecs.illegaljsoncodecnoemptyconstructor;
+package io.vertx.test.codegen.testjsoncodecs.interfacetest;
 
 import io.vertx.codegen.annotations.VertxGen;
 

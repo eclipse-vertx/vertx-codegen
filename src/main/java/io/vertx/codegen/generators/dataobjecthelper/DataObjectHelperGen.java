@@ -1,13 +1,11 @@
 package io.vertx.codegen.generators.dataobjecthelper;
 
-import io.vertx.codegen.Case;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.type.ClassKind;
-import io.vertx.codegen.type.ClassTypeInfo;
 import io.vertx.codegen.type.DataObjectTypeInfo;
 import io.vertx.codegen.writer.CodeWriter;
 
@@ -78,7 +76,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         ) + "<" + model.getType().getSimpleName() + ", JsonObject> {"
       ).newLine();
     code.indented(() -> {
-      generateSingletonInstanceAndHolder(model.getType().getSimpleName(), code);
+      generateSingletonInstance(model.getType().getSimpleName(), code);
       code.newLine();
       if (generateEncode) writeEncodeMethod(model.getType().getSimpleName(), code);
       if (generateDecode) writeDecodeMethod(model.getType().getSimpleName(), code);
@@ -132,7 +130,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               genPropToJson("", "", prop, writer);
               break;
             case DATA_OBJECT:
-              genPropToJson(((DataObjectTypeInfo)prop.getType()).getJsonEncoderFQCN() + ".getInstance().encode(", ")", prop, writer);
+              genPropToJson(((DataObjectTypeInfo)prop.getType()).getJsonEncoderFQCN() + ".INSTANCE.encode(", ")", prop, writer);
               break;
             case OTHER:
               if (prop.getType().getName().equals(Instant.class.getName())) {
@@ -236,7 +234,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             case DATA_OBJECT:
               genPropFromJson(
                 ((DataObjectTypeInfo)prop.getType()).getTargetJsonType().getSimpleName(),
-                ((DataObjectTypeInfo)prop.getType()).getJsonDecoderFQCN() + ".getInstance().decode((" + ((DataObjectTypeInfo)prop.getType()).getTargetJsonType().getSimpleName() + ")",
+                ((DataObjectTypeInfo)prop.getType()).getJsonDecoderFQCN() + ".INSTANCE.decode((" + ((DataObjectTypeInfo)prop.getType()).getTargetJsonType().getSimpleName() + ")",
                 ")",
                 prop,
                 writer
@@ -315,12 +313,9 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     else return onlyEncoder;
   }
 
-  private void generateSingletonInstanceAndHolder(String dataObjectSimpleName, CodeWriter code) {
-    code.codeln("private static class " + dataObjectSimpleName + "ConverterHolder {")
-      .indented(() -> code.codeln("static final " + dataObjectSimpleName + "Converter INSTANCE = new " + dataObjectSimpleName + "Converter();"))
-      .codeln("}")
-      .newLine()
-      .code("public static " + dataObjectSimpleName + "Converter getInstance() { return " + dataObjectSimpleName + "ConverterHolder.INSTANCE; }")
+  private void generateSingletonInstance(String dataObjectSimpleName, CodeWriter code) {
+    code
+      .codeln("public static " + dataObjectSimpleName + "Converter INSTANCE = new " + dataObjectSimpleName + "Converter();")
       .newLine();
   }
 

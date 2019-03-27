@@ -6,11 +6,7 @@ import java.time.ZonedDateTime;
 
 public class ZonedDateTimeCodec implements JsonCodec<ZonedDateTime, String> {
 
-  public static class ZonedDateTimeCodecHolder {
-    static final ZonedDateTimeCodec INSTANCE = new ZonedDateTimeCodec();
-  }
-
-  public static ZonedDateTimeCodec getInstance() { return ZonedDateTimeCodec.ZonedDateTimeCodecHolder.INSTANCE; }
+  public static final ZonedDateTimeCodec INSTANCE = new ZonedDateTimeCodec();
 
   @Override
   public String encode(ZonedDateTime value) {

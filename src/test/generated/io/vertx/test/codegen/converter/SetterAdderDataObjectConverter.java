@@ -12,11 +12,8 @@ import io.vertx.core.json.JsonDecoder;
  */
 public class SetterAdderDataObjectConverter implements JsonDecoder<SetterAdderDataObject, JsonObject> {
 
-  private static class SetterAdderDataObjectConverterHolder {
-    static final SetterAdderDataObjectConverter INSTANCE = new SetterAdderDataObjectConverter();
-  }
+  public static SetterAdderDataObjectConverter INSTANCE = new SetterAdderDataObjectConverter();
 
-  public static SetterAdderDataObjectConverter getInstance() { return SetterAdderDataObjectConverterHolder.INSTANCE; }
 
   @Override public SetterAdderDataObject decode(JsonObject value) { return (value != null) ? new SetterAdderDataObject(value) : null; }
 

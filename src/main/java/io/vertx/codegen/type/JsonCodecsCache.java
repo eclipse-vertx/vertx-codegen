@@ -54,20 +54,17 @@ public class JsonCodecsCache {
     return declaredJsonCodecs.stream()
       .map(t -> (DeclaredType)t.getValue())
       .map(codecDeclaredType -> {
-        // Check if codecDeclaredType is concrete and has empty constructor
-        if (codecDeclaredType.asElement().getKind() != ElementKind.CLASS) throw new GenException(codecDeclaredType.asElement(), "The json codec must be a concrete class");
+        // Check if codecDeclaredType contains public static final [CodecType] INSTANCE
         TypeElement codecDeclaredElement = (TypeElement) codecDeclaredType.asElement();
-        if (codecDeclaredElement.getModifiers().contains(Modifier.ABSTRACT)) throw new GenException(codecDeclaredElement, "The json codec must be a concrete class");
         if (elementUtils
           .getAllMembers(codecDeclaredElement)
           .stream()
           .noneMatch(e ->
-            e.getKind() == ElementKind.METHOD &&
-            e.getModifiers().containsAll(Arrays.asList(Modifier.PUBLIC, Modifier.STATIC)) &&
-            e.getSimpleName().contentEquals("getInstance") &&
-            ((ExecutableElement)e).getParameters().isEmpty() &&
-              typeUtils.isSameType(((ExecutableElement)e).getReturnType(), codecDeclaredType)
-            )) throw new GenException(codecDeclaredElement, "The json codec must have a public static getInstance() method returning an instance of the codec");
+            e.getKind() == ElementKind.FIELD &&
+            e.getModifiers().containsAll(Arrays.asList(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)) &&
+            e.getSimpleName().contentEquals("INSTANCE") &&
+            typeUtils.isSameType(e.asType(), codecDeclaredType)
+            )) throw new GenException(codecDeclaredElement, "The json codec " + codecDeclaredType.toString() + " must have a public static final INSTANCE field of the codec type");
 
         List<? extends TypeMirror> superTypesOfCodecDeclaredType = typeUtils.directSupertypes(codecDeclaredType);
         Map.Entry<? extends TypeMirror, ? extends TypeMirror> codecGenericsValues = superTypesOfCodecDeclaredType

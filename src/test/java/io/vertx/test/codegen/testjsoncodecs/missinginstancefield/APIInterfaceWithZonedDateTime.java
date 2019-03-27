@@ -1,4 +1,4 @@
-package io.vertx.test.codegen.testjsoncodecs.illegaljsoncodecabstract;
+package io.vertx.test.codegen.testjsoncodecs.missinginstancefield;
 
 import io.vertx.codegen.annotations.VertxGen;
 
@@ -11,5 +11,7 @@ import java.time.ZonedDateTime;
 public interface APIInterfaceWithZonedDateTime {
 
   void doSomething(ZonedDateTime dateTime);
+
+  ZonedDateTime returnSomething();
 
 }

@@ -12,11 +12,8 @@ import io.vertx.core.json.JsonDecoder;
  */
 public class TestDataObjectConverter implements JsonDecoder<TestDataObject, JsonObject> {
 
-  private static class TestDataObjectConverterHolder {
-    static final TestDataObjectConverter INSTANCE = new TestDataObjectConverter();
-  }
+  public static TestDataObjectConverter INSTANCE = new TestDataObjectConverter();
 
-  public static TestDataObjectConverter getInstance() { return TestDataObjectConverterHolder.INSTANCE; }
 
   @Override public TestDataObject decode(JsonObject value) { return (value != null) ? new TestDataObject(value) : null; }
 
@@ -28,7 +25,7 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
           if (member.getValue() instanceof JsonArray) {
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                obj.addAddedAggregatedDataObject(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.getInstance().decode((JsonObject)item));
+                obj.addAddedAggregatedDataObject(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.decode((JsonObject)item));
             });
           }
           break;
@@ -108,7 +105,7 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
           if (member.getValue() instanceof JsonArray) {
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                obj.addAddedDateTime(io.vertx.test.codegen.converter.ZonedDateTimeCodec.getInstance().decode((String)item));
+                obj.addAddedDateTime(io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.decode((String)item));
             });
           }
           break;
@@ -154,7 +151,7 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
           break;
         case "aggregatedDataObject":
           if (member.getValue() instanceof JsonObject) {
-            obj.setAggregatedDataObject(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.getInstance().decode((JsonObject)member.getValue()));
+            obj.setAggregatedDataObject(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.decode((JsonObject)member.getValue()));
           }
           break;
         case "aggregatedDataObjectMap":
@@ -162,7 +159,7 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
             java.util.Map<String, io.vertx.test.codegen.converter.AggregatedDataObject> map = new java.util.LinkedHashMap<>();
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof JsonObject)
-                map.put(entry.getKey(), io.vertx.test.codegen.converter.AggregatedDataObjectConverter.getInstance().decode((JsonObject)entry.getValue()));
+                map.put(entry.getKey(), io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.decode((JsonObject)entry.getValue()));
             });
             obj.setAggregatedDataObjectMap(map);
           }
@@ -172,7 +169,7 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
             java.util.LinkedHashSet<io.vertx.test.codegen.converter.AggregatedDataObject> list =  new java.util.LinkedHashSet<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                list.add(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.getInstance().decode((JsonObject)item));
+                list.add(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.decode((JsonObject)item));
             });
             obj.setAggregatedDataObjectSet(list);
           }
@@ -182,7 +179,7 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
             java.util.ArrayList<io.vertx.test.codegen.converter.AggregatedDataObject> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                list.add(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.getInstance().decode((JsonObject)item));
+                list.add(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.decode((JsonObject)item));
             });
             obj.setAggregatedDataObjects(list);
           }
@@ -519,7 +516,7 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
           break;
         case "dateTime":
           if (member.getValue() instanceof String) {
-            obj.setDateTime(io.vertx.test.codegen.converter.ZonedDateTimeCodec.getInstance().decode((String)member.getValue()));
+            obj.setDateTime(io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.decode((String)member.getValue()));
           }
           break;
         case "dateTimeMap":
@@ -527,7 +524,7 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
             java.util.Map<String, java.time.ZonedDateTime> map = new java.util.LinkedHashMap<>();
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                map.put(entry.getKey(), io.vertx.test.codegen.converter.ZonedDateTimeCodec.getInstance().decode((String)entry.getValue()));
+                map.put(entry.getKey(), io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.decode((String)entry.getValue()));
             });
             obj.setDateTimeMap(map);
           }
@@ -537,7 +534,7 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
             java.util.LinkedHashSet<java.time.ZonedDateTime> list =  new java.util.LinkedHashSet<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(io.vertx.test.codegen.converter.ZonedDateTimeCodec.getInstance().decode((String)item));
+                list.add(io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.decode((String)item));
             });
             obj.setDateTimeSet(list);
           }
@@ -547,7 +544,7 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
             java.util.ArrayList<java.time.ZonedDateTime> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(io.vertx.test.codegen.converter.ZonedDateTimeCodec.getInstance().decode((String)item));
+                list.add(io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.decode((String)item));
             });
             obj.setDateTimes(list);
           }
@@ -748,7 +745,7 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
           if (member.getValue() instanceof JsonObject) {
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof JsonObject)
-                obj.addKeyedDataObjectValue(entry.getKey(), io.vertx.test.codegen.converter.AggregatedDataObjectConverter.getInstance().decode((JsonObject)entry.getValue()));
+                obj.addKeyedDataObjectValue(entry.getKey(), io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.decode((JsonObject)entry.getValue()));
             });
           }
           break;
@@ -756,7 +753,7 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
           if (member.getValue() instanceof JsonObject) {
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                obj.addKeyedDateTimeValue(entry.getKey(), io.vertx.test.codegen.converter.ZonedDateTimeCodec.getInstance().decode((String)entry.getValue()));
+                obj.addKeyedDateTimeValue(entry.getKey(), io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.decode((String)entry.getValue()));
             });
           }
           break;
@@ -886,7 +883,7 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
   public static void toJson(TestDataObject obj, java.util.Map<String, Object> json) {
     if (obj.getAddedAggregatedDataObjects() != null) {
       JsonArray array = new JsonArray();
-      obj.getAddedAggregatedDataObjects().forEach(item -> array.add(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.getInstance().encode(item)));
+      obj.getAddedAggregatedDataObjects().forEach(item -> array.add(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.encode(item)));
       json.put("addedAggregatedDataObjects", array);
     }
     if (obj.getAddedBoxedBooleanValues() != null) {
@@ -936,7 +933,7 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
     }
     if (obj.getAddedDateTimes() != null) {
       JsonArray array = new JsonArray();
-      obj.getAddedDateTimes().forEach(item -> array.add(io.vertx.test.codegen.converter.ZonedDateTimeCodec.getInstance().encode(item)));
+      obj.getAddedDateTimes().forEach(item -> array.add(io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.encode(item)));
       json.put("addedDateTimes", array);
     }
     if (obj.getAddedHttpMethods() != null) {
@@ -965,21 +962,21 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
       json.put("addedStringValues", array);
     }
     if (obj.getAggregatedDataObject() != null) {
-      json.put("aggregatedDataObject", io.vertx.test.codegen.converter.AggregatedDataObjectConverter.getInstance().encode(obj.getAggregatedDataObject()));
+      json.put("aggregatedDataObject", io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.encode(obj.getAggregatedDataObject()));
     }
     if (obj.getAggregatedDataObjectMap() != null) {
       JsonObject map = new JsonObject();
-      obj.getAggregatedDataObjectMap().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.AggregatedDataObjectConverter.getInstance().encode(value)));
+      obj.getAggregatedDataObjectMap().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.encode(value)));
       json.put("aggregatedDataObjectMap", map);
     }
     if (obj.getAggregatedDataObjectSet() != null) {
       JsonArray array = new JsonArray();
-      obj.getAggregatedDataObjectSet().forEach(item -> array.add(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.getInstance().encode(item)));
+      obj.getAggregatedDataObjectSet().forEach(item -> array.add(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.encode(item)));
       json.put("aggregatedDataObjectSet", array);
     }
     if (obj.getAggregatedDataObjects() != null) {
       JsonArray array = new JsonArray();
-      obj.getAggregatedDataObjects().forEach(item -> array.add(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.getInstance().encode(item)));
+      obj.getAggregatedDataObjects().forEach(item -> array.add(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.encode(item)));
       json.put("aggregatedDataObjects", array);
     }
     json.put("booleanValue", obj.isBooleanValue());
@@ -1148,21 +1145,21 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
     json.put("byteValue", obj.getByteValue());
     json.put("charValue", Character.toString(obj.getCharValue()));
     if (obj.getDateTime() != null) {
-      json.put("dateTime", io.vertx.test.codegen.converter.ZonedDateTimeCodec.getInstance().encode(obj.getDateTime()));
+      json.put("dateTime", io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.encode(obj.getDateTime()));
     }
     if (obj.getDateTimeMap() != null) {
       JsonObject map = new JsonObject();
-      obj.getDateTimeMap().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.ZonedDateTimeCodec.getInstance().encode(value)));
+      obj.getDateTimeMap().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.encode(value)));
       json.put("dateTimeMap", map);
     }
     if (obj.getDateTimeSet() != null) {
       JsonArray array = new JsonArray();
-      obj.getDateTimeSet().forEach(item -> array.add(io.vertx.test.codegen.converter.ZonedDateTimeCodec.getInstance().encode(item)));
+      obj.getDateTimeSet().forEach(item -> array.add(io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.encode(item)));
       json.put("dateTimeSet", array);
     }
     if (obj.getDateTimes() != null) {
       JsonArray array = new JsonArray();
-      obj.getDateTimes().forEach(item -> array.add(io.vertx.test.codegen.converter.ZonedDateTimeCodec.getInstance().encode(item)));
+      obj.getDateTimes().forEach(item -> array.add(io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.encode(item)));
       json.put("dateTimes", array);
     }
     json.put("doubleValue", obj.getDoubleValue());
@@ -1269,12 +1266,12 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
     }
     if (obj.getKeyedDataObjectValues() != null) {
       JsonObject map = new JsonObject();
-      obj.getKeyedDataObjectValues().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.AggregatedDataObjectConverter.getInstance().encode(value)));
+      obj.getKeyedDataObjectValues().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.encode(value)));
       json.put("keyedDataObjectValues", map);
     }
     if (obj.getKeyedDateTimeValues() != null) {
       JsonObject map = new JsonObject();
-      obj.getKeyedDateTimeValues().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.ZonedDateTimeCodec.getInstance().encode(value)));
+      obj.getKeyedDateTimeValues().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.encode(value)));
       json.put("keyedDateTimeValues", map);
     }
     if (obj.getKeyedEnumValues() != null) {
