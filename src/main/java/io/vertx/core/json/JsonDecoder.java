@@ -1,7 +1,5 @@
 package io.vertx.core.json;
 
-import io.vertx.codegen.annotations.Nullable;
-
 /**
  * Primitive for conversion JSON_TYPE -> TARGET_TYPE
  *
@@ -10,11 +8,11 @@ import io.vertx.codegen.annotations.Nullable;
  */
 public interface JsonDecoder<TARGET_TYPE, JSON_TYPE> {
   /**
-   * decode performs the conversion JSON_TYPE -> TARGET_TYPE.
-   * Note: This method must handle null values
+   * decode performs the conversion JSON_TYPE -> TARGET_TYPE <br/>
+   * It expects value not null
    *
    * @param value
    * @return
    */
-  @Nullable TARGET_TYPE decode(@Nullable JSON_TYPE value);
+  TARGET_TYPE decode(JSON_TYPE value);
 }
