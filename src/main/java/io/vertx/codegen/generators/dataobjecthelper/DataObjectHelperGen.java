@@ -46,8 +46,8 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     String visibility= model.isPublicConverter() ? "public" : "";
     String simpleName = model.getType().getSimpleName();
     boolean inheritConverter = model.getInheritConverter();
-    boolean generateEncode = model.getType().hasJsonEncoder();
-    boolean generateDecode = model.getType().hasJsonDecoder();
+    boolean generateEncode = model.isEncodable();
+    boolean generateDecode = model.isDecodable();
 
     writer.print("package " + model.getType().getPackageName() + ";\n");
     writer.print("\n");
@@ -77,9 +77,8 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       ).newLine();
     code.indented(() -> {
       generateSingletonInstance(model.getType().getSimpleName(), code);
-      code.newLine();
-      if (generateEncode) writeEncodeMethod(model.getType().getSimpleName(), code);
-      if (generateDecode) writeDecodeMethod(model.getType().getSimpleName(), code);
+      if (generateEncode) writeEncodeMethod(model, code);
+      if (generateDecode) writeDecodeMethod(model, code);
     });
     if (model.getGenerateConverter()) {
       writer.print("\n");
@@ -319,11 +318,41 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       .newLine();
   }
 
-  private void writeDecodeMethod(String dataObjectSimpleName, CodeWriter codeWriter) {
-    codeWriter.codeln("@Override public " + dataObjectSimpleName + " decode(JsonObject value) { return (value != null) ? new " + dataObjectSimpleName + "(value) : null; }").newLine();
+  private void writeDecodeMethod(DataObjectModel model, CodeWriter codeWriter) {
+    String modelSimpleName = model.getType().getSimpleName();
+    if (model.hasJsonConstructor())
+      codeWriter.codeln("@Override public " + modelSimpleName + " decode(JsonObject value) { return (value != null) ? new " + modelSimpleName + "(value) : null; }").newLine();
+    else {
+      codeWriter
+        .codeln("@Override")
+        .codeln("public " + modelSimpleName + " decode(JsonObject value) {")
+        .indented(() -> codeWriter
+          .codeln("if (value == null) return null;")
+          .codeln(modelSimpleName + " newInstance = new " + modelSimpleName + "();")
+          .codeln("fromJson(value, newInstance);")
+          .codeln("return newInstance;")
+        )
+        .codeln("}")
+        .newLine();
+    }
   }
 
-  private void writeEncodeMethod(String dataObjectSimpleName, CodeWriter codeWriter) {
-    codeWriter.codeln("@Override public JsonObject encode(" + dataObjectSimpleName + " value) { return (value != null) ? value.toJson() : null; }").newLine();
+  private void writeEncodeMethod(DataObjectModel model, CodeWriter codeWriter) {
+    String modelSimpleName = model.getType().getSimpleName();
+    if (model.hasToJsonMethod())
+      codeWriter.codeln("@Override public JsonObject encode(" + modelSimpleName + " value) { return (value != null) ? value.toJson() : null; }").newLine();
+    else {
+      codeWriter
+        .codeln("@Override")
+        .codeln("public JsonObject encode(" + modelSimpleName + " value) {")
+        .indented(() -> codeWriter
+          .codeln("if (value == null) return null;")
+          .codeln("JsonObject json = new JsonObject();")
+          .codeln("toJson(value, json);")
+          .codeln("return json;")
+        )
+        .codeln("}")
+        .newLine();
+    }
   }
 }

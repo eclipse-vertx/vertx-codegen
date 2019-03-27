@@ -29,11 +29,6 @@ import static org.junit.Assert.*;
 public class DataObjectTest {
 
   @Test
-  public void testDataObjectWithNoJsonObjectConstructor() throws Exception {
-    assertInvalidDataObject(DataObjectWithNoJsonObjectConstructor.class);
-  }
-
-  @Test
   public void testDataObjectWithEmptyConstructor() throws Exception {
     DataObjectModel model = new GeneratorHelper().generateDataObject(DataObjectWithEmptyConstructor.class);
     assertTrue(model.hasEmptyConstructor());
@@ -597,8 +592,8 @@ public class DataObjectTest {
 
   @Test
   public void testToJson() throws Exception {
-    assertTrue(new GeneratorHelper().generateDataObject(ToJsonDataObject.class).isJsonifiable());
-    assertFalse(new GeneratorHelper().generateDataObject(EmptyDataObject.class).isJsonifiable());
+    assertTrue(new GeneratorHelper().generateDataObject(ToJsonDataObject.class).isEncodable());
+    assertFalse(new GeneratorHelper().generateDataObject(EmptyDataObject.class).isEncodable());
   }
 
   @Test
@@ -844,6 +839,39 @@ public class DataObjectTest {
     assertEquals(ClassKind.DATA_OBJECT, myPojoProperty.getType().getKind());
     assertTrue(((DataObjectTypeInfo)myPojoProperty.getType()).hasJsonDecoder());
     assertTrue(((DataObjectTypeInfo)myPojoProperty.getType()).hasJsonEncoder());
+  }
+
+  @Test
+  public void testDataObjectWithGenerateConverterMustGenerateCompleteCodec() throws Exception {
+    DataObjectModel model = new GeneratorHelper().generateDataObject(ConverterGeneratesCompleteCodec.class);
+    assertNotNull(model);
+    assertTrue(model.isEncodable());
+    assertTrue(model.isDecodable());
+    assertTrue(model.hasEmptyConstructor());
+    assertFalse(model.hasToJsonMethod());
+    assertFalse(model.hasJsonConstructor());
+    assertEquals(ConverterGeneratesCompleteCodec.class.getPackage().getName() + "." + ConverterGeneratesCompleteCodec.class.getSimpleName() + "Converter", model.getType().getJsonDecoderFQCN());
+    assertEquals(ConverterGeneratesCompleteCodec.class.getPackage().getName() + "." + ConverterGeneratesCompleteCodec.class.getSimpleName() + "Converter", model.getType().getJsonEncoderFQCN());
+  }
+
+  @Test
+  public void testDataObjectWithGenerateConverterWithoutEmptyConstructorMustGenerateEncoder() throws Exception {
+    DataObjectModel model = new GeneratorHelper().generateDataObject(ConverterWithNoEmptyConstructorGeneratesEncodableCodec.class);
+    assertNotNull(model);
+    assertFalse(model.isDecodable());
+    assertTrue(model.isEncodable());
+    assertNull(model.getType().getJsonDecoderFQCN());
+    assertEquals(ConverterWithNoEmptyConstructorGeneratesEncodableCodec.class.getPackage().getName() + "." + ConverterWithNoEmptyConstructorGeneratesEncodableCodec.class.getSimpleName() + "Converter", model.getType().getJsonEncoderFQCN());
+  }
+
+  @Test
+  public void testAbstractDataObjectMustGenerateEncoder() throws Exception {
+    DataObjectModel model = new GeneratorHelper().generateDataObject(ConverterWithAbstractClassGeneratesEncodableCodec.class);
+    assertNotNull(model);
+    assertFalse(model.getType().hasJsonDecoder());
+    assertTrue(model.getType().hasJsonEncoder());
+    assertNull(model.getType().getJsonDecoderFQCN());
+    assertEquals(ConverterWithAbstractClassGeneratesEncodableCodec.class.getPackage().getName() + "." + ConverterWithAbstractClassGeneratesEncodableCodec.class.getSimpleName() + "Converter", model.getType().getJsonEncoderFQCN());
   }
 
   private void assertInvalidDataObject(Class<?> dataObjectClass) throws Exception {

@@ -56,7 +56,7 @@ public class DataObjectModel implements Model {
   private ClassTypeInfo superType;
   private DataObjectTypeInfo type;
   private Doc doc;
-  private boolean jsonifiable;
+  private boolean hasToJsonMethod;
   private List<AnnotationValueInfo> annotations;
 
   public DataObjectModel(ProcessingEnvironment env, TypeElement modelElt) {
@@ -137,10 +137,6 @@ public class DataObjectModel implements Model {
     return generateConverter;
   }
 
-  public boolean isJsonifiable() {
-    return jsonifiable;
-  }
-
   public boolean getInheritConverter() {
     return inheritConverter;
   }
@@ -149,9 +145,17 @@ public class DataObjectModel implements Model {
     return publicConverter;
   }
 
+  public boolean isEncodable() { return type.hasJsonEncoder(); }
+
+  public boolean isDecodable() { return type.hasJsonDecoder(); }
+
+  public boolean hasToJsonMethod() { return hasToJsonMethod; }
+
   public boolean hasEmptyConstructor() {
     return (constructors & 1) == 1;
   }
+
+  public boolean hasJsonConstructor() { return (constructors & 2) == 2; }
   /**
    * @return {@code true} if the class has a {@code @Deprecated} annotation
    */
@@ -180,8 +184,11 @@ public class DataObjectModel implements Model {
     vars.put("superTypes", superTypes);
     vars.put("superType", superType);
     vars.put("abstractSuperTypes", abstractSuperTypes);
-    vars.put("jsonifiable", jsonifiable);
+    vars.put("hasToJsonMethod", hasToJsonMethod);
     vars.put("hasEmptyConstructor", hasEmptyConstructor());
+    vars.put("hasJsonConstructor", hasJsonConstructor());
+    vars.put("encodable", isEncodable());
+    vars.put("decodable", isDecodable());
     vars.put("deprecated", deprecated);
     vars.put("deprecatedDesc", getDeprecatedDesc());
     return vars;
@@ -248,7 +255,7 @@ public class DataObjectModel implements Model {
           if (methodElt.getSimpleName().toString().equals("toJson") &&
             methodElt.getParameters().isEmpty() &&
             typeFactory.create(methodElt.getReturnType()).getKind() == ClassKind.JSON_OBJECT) {
-            jsonifiable = true;
+            hasToJsonMethod = true;
           }
           if (methodElt.getAnnotation(GenIgnore.class) == null) {
             methodsElt.add(methodElt);
@@ -259,12 +266,6 @@ public class DataObjectModel implements Model {
     }
 
     processMethods(methodsElt);
-
-    boolean hasJsonConstructor = (constructors & 2) == 2;
-
-    if (concrete && !hasJsonConstructor) {
-      throw new GenException(modelElt, "Data object " + modelElt + " class does not have a constructor " + modelElt.getSimpleName() + "(" + JsonObject.class.getSimpleName() + ")");
-    }
 
     // Sort the properties so we do have a consistent order
     ArrayList<PropertyInfo> props = new ArrayList<>(propertyMap.values());

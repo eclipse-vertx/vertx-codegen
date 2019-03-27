@@ -62,7 +62,7 @@ You can mark a type as a data object both:
 
 A json codec for type `X` is a concrete class that implements the interface `JsonCodec<X, J>`, where `J` is a _basic_ or a _json_ type.
 
-If you want to use a `JsonCodec` in vertx-codegen, you must provide a `public static [JsonCodecType] getInstance()` method inside the defined codec to retrieve the codec instance.
+If you want to use a `JsonCodec` in vertx-codegen, you must provide a `public static final [JsonCodecType] INSTANCE` field inside the defined codec to retrieve the codec instance.
 
 To mark a type as a data object in your package, you must specify the codec in `@ModuleGen` annotation in `package-info.java` file. E.g.:
 
@@ -79,16 +79,20 @@ To mark a type as a data object in your package, you must specify the codec in `
 ==== `@DataObject` annotated types
 
 A `@DataObject` annotated type is a Java class with the only purpose to be a container for data.
-They are transformed to and from Json.
+They can be transformed to and from Json using a generated `JsonEncoder`/`JsonDecoder`/`JsonCodec`.
 
-In its simplest form, a data object annotated type is a Java class following these rules:
+For each @DataObject annotated type a codec is automatically generated under the following conditions:
 
-1. the class is annotated with {@link io.vertx.codegen.annotations.DataObject}
-2. provide a constructor with the `io.vertx.core.json.JsonObject` argument
+* The codec implements the `JsonDecoder` interface if:
+- The annotated type has a constructor with the `io.vertx.core.json.JsonObject` argument. This constructor is used in `decode()` method
+- The annotated type generates the converter (`@DataObject(generateConverter = true)`), has an empty constructor and is concrete. The converter `fromJson()` is used in `decode()` method
+* The codec implements the `JsonEncoder` interface if:
+- The annotated type has `toJson()` method that returns `io.vertx.core.json.JsonObject`. This method is used in `encode()` method
+- The annotated type generates the converter (`@DataObject(generateConverter = true)`). The converter `toJson()` is used in `encode()` method
 
-Each `@DataObject` annotated type generates a `JsonCodec` that calls the constructor and `toJson()` to decode/encode the type.
-If the type doesn't define `toJson()` method, the codegen generates only a `JsonDecoder`.
-If the type is not instantiable (abstract classes) or it doesn't define the constructor with `JsonObject` parameter, the codegen generates only a `JsonEncoder`.
+If the codegen can generate both encoder and decoder, it generates a complete codec that implements `JsonCodec`
+The generated codec is called `[DataObjectType]Converter`.
+You can always override the default converter just applying a codec as explained above.
 
 `@DataObject` can also be used for interfaces, this is useful when multiple inheritance
 is needed. For instance Vert.x Core defines the `KeyCertOptions` and `TrustOptions` data object interfaces and the
@@ -153,11 +157,11 @@ Map properties can only be declared with a _setter_.
 NOTE: these examples uses a _fluent_ return types for providing a better API, this is not mandatory but
 encouraged.
 
-==== Json conversion
+==== Json -> Data Object conversion
 
-When a data object has an associated `JsonCodec` or just a `JsonDecoder`, it can be instantiated from a json value.
-For POJO to json object mapping, although there are no strict rules of mapping between the data object properties and the json structure, it is a good thing
-to follow a common mapping for users using json data objects (like in JavaScript shim).
+When a data object has an associated `JsonCodec` or just a `JsonDecoder`, it can be instantiated from a json value
+and is said _decodable_. For POJO to json object mapping, although there are no strict rules of mapping between
+the data object properties and the json structure, it is a good thing to follow a common mapping for users using json data objects (like in JavaScript shim).
 
 In particular json object properties should be named after properties according to JavaBean conversion rules:
 
@@ -172,10 +176,10 @@ In all case, property names are _normalized_, i.e:
 - _URL_ -> _url_
 - _URLFactory_ -> _urlFactory_
 
-==== Jsonifiable data object
+==== Data Object -> json conversion
 
 When a data object has an associated `JsonCodec` or just a `JsonEncoder`, it can be converted to the json format
-and is said _jsonifiable_. Vert.x API types have restriction in the declared method return types, a jsonifiable
+and is said _encodable_. Vert.x API types have restriction in the declared method return types, a jsonifiable
 data object can be used in Vert.x API method return types or handlers because it can be converted to a json
 format, otherwise it is not permitted.
 

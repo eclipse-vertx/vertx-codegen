@@ -16,6 +16,7 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -675,8 +676,10 @@ public class Helper {
     return method;
   }
 
-  public static boolean isDataObjectEncodable(Elements elementUtils, TypeElement dataObjectElt) {
-    return elementUtils.getAllMembers(dataObjectElt)
+  public static boolean isDataObjectAnnotatedEncodable(Elements elementUtils, TypeElement dataObjectElt) {
+    return
+      dataObjectElt.getAnnotation(DataObject.class).generateConverter() ||
+      elementUtils.getAllMembers(dataObjectElt)
       .stream()
       .flatMap(Helper.FILTER_METHOD)
       .anyMatch(exeElt ->
@@ -685,10 +688,8 @@ public class Helper {
       );
   }
 
-  // A data object is decodable if it is a concrete class with json object constructor
-  public static boolean isDataObjectDecodable(Elements elementUtils, TypeElement dataObjectElt) {
-    if (dataObjectElt.getModifiers().contains(Modifier.ABSTRACT)) return false;
-    return elementUtils
+  public static boolean isDataObjectAnnotatedDecodable(Elements elementUtils, TypeElement dataObjectElt) {
+    boolean hasJsonConstructor = elementUtils
       .getAllMembers(dataObjectElt)
       .stream()
       .filter(e -> e.getKind() == ElementKind.CONSTRUCTOR)
@@ -698,6 +699,18 @@ public class Helper {
           constructor.getModifiers().contains(Modifier.PUBLIC) &&
           constructor.getParameters().get(0).asType().toString().equals("io.vertx.core.json.JsonObject")
       );
+    boolean hasGenerateConverterAndEmptyConstructorAndConcrete = dataObjectElt.getAnnotation(DataObject.class).generateConverter() &&
+      elementUtils
+        .getAllMembers(dataObjectElt)
+        .stream()
+        .filter(e -> e.getKind() == ElementKind.CONSTRUCTOR)
+        .map(e -> (ExecutableElement)e)
+        .anyMatch(constructor ->
+          constructor.getParameters().size() == 0 &&
+            constructor.getModifiers().contains(Modifier.PUBLIC)
+        ) && dataObjectElt.getKind() == ElementKind.CLASS && !dataObjectElt.getModifiers().contains(Modifier.ABSTRACT)
+      ;
+    return hasJsonConstructor || hasGenerateConverterAndEmptyConstructorAndConcrete;
   }
 
   /**

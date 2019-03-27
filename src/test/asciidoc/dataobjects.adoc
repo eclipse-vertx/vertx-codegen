@@ -44,6 +44,39 @@
 |[[parentProperty]]`@parentProperty`|`String`|-
 |===
 
+[[ConverterGeneratesCompleteCodecDataObject]]
+== ConverterGeneratesCompleteCodecDataObject
+
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[a]]`@a`|`Number (int)`|-
+|===
+
+[[ConverterGeneratesDecoderWithFromJsonDataObject]]
+== ConverterGeneratesDecoderWithFromJsonDataObject
+
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[a]]`@a`|`Number (int)`|-
+|===
+
+[[ConverterGeneratesEncoderWithToJsonDataObject]]
+== ConverterGeneratesEncoderWithToJsonDataObject
+
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[a]]`@a`|`Number (int)`|-
+|===
+
 [[NoConverterDataObject]]
 == NoConverterDataObject
 

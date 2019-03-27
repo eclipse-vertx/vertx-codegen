@@ -4,7 +4,6 @@ import io.vertx.codegen.*;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.json.JsonObject;
 
 import javax.lang.model.element.*;
 import javax.lang.model.type.*;
@@ -151,8 +150,8 @@ public class TypeMirrorFactory {
               module,
               nullable,
               typeParams,
-              Helper.isDataObjectEncodable(elementUtils, elt) ? fqcn + "Converter" : null,
-              Helper.isDataObjectDecodable(elementUtils, elt) ? fqcn + "Converter" : null,
+              Helper.isDataObjectAnnotatedEncodable(elementUtils, elt) ? fqcn + "Converter" : null,
+              Helper.isDataObjectAnnotatedDecodable(elementUtils, elt) ? fqcn + "Converter" : null,
               this.create(elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType())
             );
           } else {

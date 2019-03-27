@@ -81,8 +81,8 @@ public class TypeReflectionFactory {
               module,
               false,
               typeParams,
-              isDataObjectEncodable(classType) ? fqcn + "Converter" : null,
-              isDataObjectDecodable(classType) ? fqcn + "Converter" : null,
+              isDataObjectAnnotatedEncodable(classType) ? fqcn + "Converter" : null,
+              isDataObjectAnnotatedDecodable(classType) ? fqcn + "Converter" : null,
               create(JsonObject.class)
             );
           } else {
@@ -107,20 +107,32 @@ public class TypeReflectionFactory {
     }
   }
 
-  private static boolean isDataObjectEncodable(Class<?> type) {
+  private static boolean isDataObjectAnnotatedEncodable(Class<?> type) {
     try {
       Method m = type.getMethod("toJson");
-      return Modifier.isPublic(m.getModifiers()) && m.getReturnType().equals(JsonObject.class);
+      return
+        type.getAnnotation(DataObject.class).generateConverter() ||
+          (Modifier.isPublic(m.getModifiers()) && m.getReturnType().equals(JsonObject.class));
     } catch (NoSuchMethodException e) {
       return false;
     }
   }
 
-  private static boolean isDataObjectDecodable(Class<?> type) {
+  private static boolean isDataObjectAnnotatedDecodable(Class<?> type) {
+    boolean hasJsonConstructor = false;
     try {
-      return !Modifier.isAbstract(type.getModifiers()) && Modifier.isPublic(type.getConstructor(JsonObject.class).getModifiers());
+      hasJsonConstructor = !Modifier.isAbstract(type.getModifiers()) && Modifier.isPublic(type.getConstructor(JsonObject.class).getModifiers());
     } catch (NoSuchMethodException e) {
-      return false;
+
     }
+    boolean hasEmptyConstructorAndGenerateConverterAndConcrete = false;
+    try {
+      hasEmptyConstructorAndGenerateConverterAndConcrete =
+        type.getAnnotation(DataObject.class).generateConverter() && type.getConstructor() != null &&
+          !type.isInterface() && !Modifier.isAbstract(type.getModifiers());
+    } catch (NoSuchMethodException e) {
+
+    }
+    return hasJsonConstructor || hasEmptyConstructorAndGenerateConverterAndConcrete;
   }
 }

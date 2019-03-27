@@ -394,7 +394,7 @@ You can mark a type as a data object both:
 
 ### Json Codec
 
-If you want to use a `JsonCodec` in vertx-codegen, you must provide a `public static [JsonCodecType] getInstance()` method inside the defined codec to retrieve the codec instance.
+If you want to use a `JsonCodec` in vertx-codegen, you must provide a `public static final [JsonCodecType] INSTANCE` field inside the defined codec to retrieve the codec instance.
 
 To mark a type as a data object in your package , you must specify the codec in `@ModuleGen` annotation in `package-info.java` file. E.g.:
 
@@ -410,17 +410,21 @@ To mark a type as a data object in your package , you must specify the codec in 
 
 ### Data object POJOs
 
-You can also mark a type as data object using the `@DataObject` annotation and following these minimum requirements:
+A `@DataObject` annotated type is a Java class with the only purpose to be a container for data.
+They can be transformed to and from Json using a generated `JsonEncoder`/`JsonDecoder`/`JsonCodec`.
 
-* A constructor with `io.vertx.core.json.JsonObject` parameter type
+For each @DataObject annotated type a codec is automatically generated under the following conditions:
 
-Optionally the type can define a public `io.vertx.core.json.JsonObject toJson()` method: such method makes the
-type encodable to `JsonObject`, the type can then be used as an Api return type.
+* The codec implements the `JsonDecoder` interface if:
+  - The annotated type has a constructor with the `io.vertx.core.json.JsonObject` argument. This constructor is used in `decode()` method
+  - The annotated type generates the converter (`@DataObject(generateConverter = true)`), has an empty constructor and is concrete. The converter `fromJson()` is used in `decode()` method
+* The codec implements the `JsonEncoder` interface if:
+  - The annotated type has `toJson()` method that returns `io.vertx.core.json.JsonObject`. This method is used in `encode()` method
+  - The annotated type generates the converter (`@DataObject(generateConverter = true)`). The converter `toJson()` is used in `encode()` method
 
-Each `@DataObject` annotated type generates a `JsonCodec` that calls the constructor and `toJson()` to decode/encode the type.
-These codecs are automatically loaded into the codegen, without requiring to specify it in `@ModuleGen` annotation.
-If the type doesn't define `toJson()` method, the codegen generates only a `JsonDecoder`.
-If the type is not instantiable (abstract classes) or it doesn't define the constructor with `JsonObject` parameter, the codegen generates only a `JsonEncoder`. 
+If the codegen can generate both encoder and decoder, it generates a complete codec that implements `JsonCodec`
+The generated codec is called `[DataObjectType]Converter`.
+You can always override the default converter just applying a codec as explained above.
 
 Data object converter can be generated with `@DataObject(generateConverter=true)` by Vert.x Core. Such
  Data object conversion recognize the following types as _member_ of any `@DataObject`:

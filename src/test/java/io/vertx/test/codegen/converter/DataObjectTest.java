@@ -730,7 +730,7 @@ public class DataObjectTest {
       fail("Data Object marked with generateConverter = false must not generate fromJson");
     } catch (NoSuchMethodException e) {
       // Ok
-    }
+    } //TODO wtf? should remove?
   }
 
   @Test
@@ -741,7 +741,28 @@ public class DataObjectTest {
       fail("Data Object marked with generateConverter = false must not generate fromJson");
     } catch (NoSuchMethodException e) {
       // Ok
-    }
+    } //TODO wtf? should remove?
+  }
+
+  @Test
+  public void testGeneratedCodecMustUseGeneratedFromJson() {
+    ConverterGeneratesDecoderWithFromJsonDataObjectConverter conv = ConverterGeneratesDecoderWithFromJsonDataObjectConverter.INSTANCE;
+    assertEquals(new JsonObject().put("hello", "francesco"), conv.encode(new ConverterGeneratesDecoderWithFromJsonDataObject()));
+    assertEquals(1, conv.decode(new JsonObject().put("a", 1)).getA());
+  }
+
+  @Test
+  public void testGeneratedCodecMustUseGeneratedToJson() {
+    ConverterGeneratesEncoderWithToJsonDataObjectConverter conv = ConverterGeneratesEncoderWithToJsonDataObjectConverter.INSTANCE;
+    assertEquals(new JsonObject().put("a", 2), conv.encode(new ConverterGeneratesEncoderWithToJsonDataObject(null).setA(2)));
+    assertEquals(-1, conv.decode(new JsonObject().put("a", 1)).getA());
+  }
+
+  @Test
+  public void testGeneratedCodecMustUseConverterStaticMethods() {
+    ConverterGeneratesCompleteCodecDataObjectConverter conv = ConverterGeneratesCompleteCodecDataObjectConverter.INSTANCE;
+    assertEquals(new JsonObject().put("a", 2), conv.encode(new ConverterGeneratesCompleteCodecDataObject().setA(2)));
+    assertEquals(2, conv.decode(new JsonObject().put("a", 2)).getA());
   }
 
   @Test
