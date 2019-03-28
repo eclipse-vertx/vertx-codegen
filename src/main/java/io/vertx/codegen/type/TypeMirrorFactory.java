@@ -151,7 +151,7 @@ public class TypeMirrorFactory {
               nullable,
               typeParams,
               Helper.isDataObjectAnnotatedEncodable(elementUtils, elt) ? fqcn + "Converter" : null,
-              Helper.isDataObjectAnnotatedDecodable(elementUtils, elt) ? fqcn + "Converter" : null,
+              Helper.isDataObjectAnnotatedDecodable(elementUtils, typeUtils, elt) ? fqcn + "Converter" : null,
               this.create(elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType())
             );
           } else {

@@ -1,5 +1,6 @@
 package io.vertx.codegen.type;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import io.vertx.codegen.Helper;
 import io.vertx.codegen.ModuleInfo;
 import io.vertx.codegen.TypeParamInfo;
@@ -119,20 +120,29 @@ public class TypeReflectionFactory {
   }
 
   private static boolean isDataObjectAnnotatedDecodable(Class<?> type) {
-    boolean hasJsonConstructor = false;
+    boolean isConcreteAndHasJsonConstructor = false;
     try {
-      hasJsonConstructor = !Modifier.isAbstract(type.getModifiers()) && Modifier.isPublic(type.getConstructor(JsonObject.class).getModifiers());
-    } catch (NoSuchMethodException e) {
-
-    }
+      isConcreteAndHasJsonConstructor =
+        !Modifier.isAbstract(type.getModifiers()) &&
+        !type.isInterface() &&
+        Modifier.isPublic(type.getConstructor(JsonObject.class).getModifiers());
+    } catch (NoSuchMethodException e) { }
+    boolean isNotConcreteAndHasDecodeStaticMethod = false;
+    try {
+      Method m = type.getMethod("decode", JsonObject.class);
+      isNotConcreteAndHasDecodeStaticMethod =
+        (type.isInterface() || Modifier.isAbstract(type.getModifiers())) &&
+          Modifier.isStatic(m.getModifiers()) &&
+          Modifier.isPublic(m.getModifiers()) &&
+          m.getReturnType().equals(type);
+    } catch (NoSuchMethodException e) { }
     boolean hasEmptyConstructorAndGenerateConverterAndConcrete = false;
     try {
       hasEmptyConstructorAndGenerateConverterAndConcrete =
-        type.getAnnotation(DataObject.class).generateConverter() && type.getConstructor() != null &&
-          !type.isInterface() && !Modifier.isAbstract(type.getModifiers());
-    } catch (NoSuchMethodException e) {
-
-    }
-    return hasJsonConstructor || hasEmptyConstructorAndGenerateConverterAndConcrete;
+        type.getAnnotation(DataObject.class).generateConverter() &&
+        type.getConstructor() != null &&
+        !type.isInterface() && !Modifier.isAbstract(type.getModifiers());
+    } catch (NoSuchMethodException e) { }
+    return isConcreteAndHasJsonConstructor || isNotConcreteAndHasDecodeStaticMethod || hasEmptyConstructorAndGenerateConverterAndConcrete;
   }
 }

@@ -759,6 +759,13 @@ public class DataObjectTest {
   }
 
   @Test
+  public void testGeneratedCodecMustUseGeneratedToJsonAndStaticCodec() {
+    AbstractConverterGeneratesEncoderWithToJsonDataObjectConverter conv = AbstractConverterGeneratesEncoderWithToJsonDataObjectConverter.INSTANCE;
+    assertEquals(new JsonObject().put("a", 2), conv.encode(new AbstractConverterGeneratesEncoderWithToJsonDataObject(null) {}.setA(2)));
+    assertEquals(-5, conv.decode(new JsonObject().put("a", 1)).getA());
+  }
+
+  @Test
   public void testGeneratedCodecMustUseConverterStaticMethods() {
     ConverterGeneratesCompleteCodecDataObjectConverter conv = ConverterGeneratesCompleteCodecDataObjectConverter.INSTANCE;
     assertEquals(new JsonObject().put("a", 2), conv.encode(new ConverterGeneratesCompleteCodecDataObject().setA(2)));

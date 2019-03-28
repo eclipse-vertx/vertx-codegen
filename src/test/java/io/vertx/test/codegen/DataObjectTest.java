@@ -874,6 +874,21 @@ public class DataObjectTest {
     assertEquals(ConverterWithAbstractClassGeneratesEncodableCodec.class.getPackage().getName() + "." + ConverterWithAbstractClassGeneratesEncodableCodec.class.getSimpleName() + "Converter", model.getType().getJsonEncoderFQCN());
   }
 
+  @Test
+  public void testAbstractDataObjectAndDecodeMustGenerateCompleteCodec() throws Exception {
+    Class<ConverterWithAbstractClassAndDecodeGeneratesCompleteCodec> clazz = ConverterWithAbstractClassAndDecodeGeneratesCompleteCodec.class;
+    DataObjectModel model = new GeneratorHelper().generateDataObject(clazz);
+    assertNotNull(model);
+    assertTrue(model.isEncodable());
+    assertTrue(model.isDecodable());
+    assertFalse(model.hasEmptyConstructor());
+    assertFalse(model.hasToJsonMethod());
+    assertFalse(model.hasJsonConstructor());
+    assertTrue(model.hasDecodeStaticMethod());
+    assertEquals(clazz.getPackage().getName() + "." + clazz.getSimpleName() + "Converter", model.getType().getJsonDecoderFQCN());
+    assertEquals(clazz.getPackage().getName() + "." + clazz.getSimpleName() + "Converter", model.getType().getJsonEncoderFQCN());
+  }
+
   private void assertInvalidDataObject(Class<?> dataObjectClass) throws Exception {
     try {
       new GeneratorHelper().generateDataObject(dataObjectClass);

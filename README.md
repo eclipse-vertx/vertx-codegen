@@ -416,7 +416,8 @@ They can be transformed to and from Json using a generated `JsonEncoder`/`JsonDe
 For each @DataObject annotated type a codec is automatically generated under the following conditions:
 
 * The codec implements the `JsonDecoder` interface if:
-  - The annotated type has a constructor with the `io.vertx.core.json.JsonObject` argument. This constructor is used in `decode()` method
+  - The annotated type is concrete and has a constructor with the `io.vertx.core.json.JsonObject` argument. This constructor is used in `decode()` method
+  - The annotated type is an interface or an abstract class and has `public static [DataObjectType] decode(io.vertx.core.json.JsonObject value)` method. This constructor is used in `decode()` method
   - The annotated type generates the converter (`@DataObject(generateConverter = true)`), has an empty constructor and is concrete. The converter `fromJson()` is used in `decode()` method
 * The codec implements the `JsonEncoder` interface if:
   - The annotated type has `toJson()` method that returns `io.vertx.core.json.JsonObject`. This method is used in `encode()` method

@@ -1,5 +1,16 @@
 = Cheatsheets
 
+[[AbstractConverterGeneratesEncoderWithToJsonDataObject]]
+== AbstractConverterGeneratesEncoderWithToJsonDataObject
+
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[a]]`@a`|`Number (int)`|-
+|===
+
 [[AggregatedDataObject]]
 == AggregatedDataObject
 

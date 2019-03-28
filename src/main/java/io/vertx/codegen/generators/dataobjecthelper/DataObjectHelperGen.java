@@ -320,9 +320,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
 
   private void writeDecodeMethod(DataObjectModel model, CodeWriter codeWriter) {
     String modelSimpleName = model.getType().getSimpleName();
-    if (model.hasJsonConstructor())
+    if (model.isConcrete() && model.hasJsonConstructor())
       codeWriter.codeln("@Override public " + modelSimpleName + " decode(JsonObject value) { return (value != null) ? new " + modelSimpleName + "(value) : null; }").newLine();
-    else {
+    else if (!model.isConcrete() && model.hasDecodeStaticMethod()) {
+      codeWriter.codeln("@Override public " + modelSimpleName + " decode(JsonObject value) { return (value != null) ? " + modelSimpleName + ".decode(value) : null; }").newLine();
+    } else {
       codeWriter
         .codeln("@Override")
         .codeln("public " + modelSimpleName + " decode(JsonObject value) {")

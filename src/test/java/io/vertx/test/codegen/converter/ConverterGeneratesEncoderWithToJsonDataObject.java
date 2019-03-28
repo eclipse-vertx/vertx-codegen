@@ -15,6 +15,8 @@ public class ConverterGeneratesEncoderWithToJsonDataObject {
     a = -1;
   }
 
+  public ConverterGeneratesEncoderWithToJsonDataObject(int a) { this.a = a; }
+
   public int getA() {
     return a;
   }
@@ -36,5 +38,10 @@ public class ConverterGeneratesEncoderWithToJsonDataObject {
   @Override
   public int hashCode() {
     return Objects.hash(a);
+  }
+
+  // This should be ignored
+  public static ConverterGeneratesEncoderWithToJsonDataObject decode(JsonObject obj) {
+    return new ConverterGeneratesEncoderWithToJsonDataObject(-5);
   }
 }

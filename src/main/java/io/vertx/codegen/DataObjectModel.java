@@ -57,6 +57,7 @@ public class DataObjectModel implements Model {
   private DataObjectTypeInfo type;
   private Doc doc;
   private boolean hasToJsonMethod;
+  private boolean hasDecodeStaticMethod;
   private List<AnnotationValueInfo> annotations;
 
   public DataObjectModel(ProcessingEnvironment env, TypeElement modelElt) {
@@ -156,6 +157,11 @@ public class DataObjectModel implements Model {
   }
 
   public boolean hasJsonConstructor() { return (constructors & 2) == 2; }
+
+  public boolean hasDecodeStaticMethod() {
+    return hasDecodeStaticMethod;
+  }
+
   /**
    * @return {@code true} if the class has a {@code @Deprecated} annotation
    */
@@ -256,6 +262,13 @@ public class DataObjectModel implements Model {
             methodElt.getParameters().isEmpty() &&
             typeFactory.create(methodElt.getReturnType()).getKind() == ClassKind.JSON_OBJECT) {
             hasToJsonMethod = true;
+          }
+          if (methodElt.getSimpleName().contentEquals("decode") &&
+            methodElt.getModifiers().containsAll(Arrays.asList(Modifier.STATIC, Modifier.PUBLIC)) &&
+            methodElt.getParameters().size() == 1 &&
+            typeFactory.create(methodElt.getParameters().get(0).asType()).getKind() == ClassKind.JSON_OBJECT &&
+            typeUtils.isSameType(methodElt.getReturnType(), this.modelElt.asType())) {
+            hasDecodeStaticMethod = true;
           }
           if (methodElt.getAnnotation(GenIgnore.class) == null) {
             methodsElt.add(methodElt);
