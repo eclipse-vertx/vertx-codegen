@@ -1,6 +1,5 @@
 package io.vertx.codegen.type;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import io.vertx.codegen.Helper;
 import io.vertx.codegen.ModuleInfo;
 import io.vertx.codegen.TypeParamInfo;
