@@ -2,7 +2,9 @@ package io.vertx.codegen.type;
 
 import io.vertx.codegen.GenException;
 import io.vertx.codegen.ModuleInfo;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
+import io.vertx.codegen.annotations.VertxGen;
 
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
@@ -67,17 +69,26 @@ public class JsonCodecsCache {
             )) throw new GenException(codecDeclaredElement, "The json codec " + codecDeclaredType.toString() + " must have a public static final INSTANCE field of the codec type");
 
         List<? extends TypeMirror> superTypesOfCodecDeclaredType = typeUtils.directSupertypes(codecDeclaredType);
-        Map.Entry<? extends TypeMirror, ? extends TypeMirror> codecGenericsValues = superTypesOfCodecDeclaredType
+        TypeMirror[] codecGenericsValues = superTypesOfCodecDeclaredType
           .stream()
           .filter(t -> t.getKind() == TypeKind.DECLARED)
           .map(t -> (DeclaredType)t)
           .filter(t -> t.asElement().getSimpleName().contentEquals("JsonCodec"))
-          .map(t -> new AbstractMap.SimpleImmutableEntry<>(t.getTypeArguments().get(0), t.getTypeArguments().get(1)))
+          .map(t -> new TypeMirror[]{t.getTypeArguments().get(0), t.getTypeArguments().get(1)})
           .findFirst()
           .orElseThrow(() -> new GenException(codecDeclaredType.asElement(), "Cannot find what type the json codec handles"));
-        return new AbstractMap.SimpleImmutableEntry<>(codecGenericsValues.getKey().toString(), new AbstractMap.SimpleImmutableEntry<>(codecDeclaredType, (TypeMirror)codecGenericsValues.getValue()));
+
+        if (!isJsonTypeValid(codecGenericsValues[1]))
+          throw new GenException(codecDeclaredType.asElement(), "The specified json type in codec " + codecDeclaredType.toString() + " is not a valid json type. Allowed types are JSON and BOXED_PRIMITIVE");
+
+        return new AbstractMap.SimpleImmutableEntry<>(codecGenericsValues[0].toString(), new AbstractMap.SimpleImmutableEntry<>(codecDeclaredType, codecGenericsValues[1]));
       })
       .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+  }
+
+  private boolean isJsonTypeValid(TypeMirror wannabeJsonType) {
+    ClassKind kind = ClassKind.getKind(wannabeJsonType.toString(), wannabeJsonType.getAnnotation(DataObject.class) != null, wannabeJsonType.getAnnotation(VertxGen.class) != null);
+    return kind.json || kind == ClassKind.BOXED_PRIMITIVE || kind == ClassKind.STRING;
   }
 
   /**

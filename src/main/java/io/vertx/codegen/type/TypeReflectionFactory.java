@@ -74,8 +74,6 @@ public class TypeReflectionFactory {
             Type readStreamArg = Helper.resolveTypeParameter(type, classTypeVariable);
             return new ApiTypeInfo(fqcn, true, typeParams, readStreamArg != null ? create(readStreamArg) : null, null, null, module, false, false);
           } else if (kind == ClassKind.DATA_OBJECT) {
-            boolean _abstract = Modifier.isAbstract(classType.getModifiers());
-            //TODO wtf?
             return new DataObjectTypeInfo(
               fqcn,
               module,

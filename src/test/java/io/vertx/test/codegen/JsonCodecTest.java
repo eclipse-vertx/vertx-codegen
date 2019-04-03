@@ -40,6 +40,16 @@ public class JsonCodecTest extends ClassTestBase {
     } catch (GenException expected) { }
   }
 
+  // Illegal Json type in JsonCodec
+
+  @Test
+  public void testJsonCodecMustHaveValidJsonType() throws Exception {
+    try {
+      new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsoncodecs.illegaljsontypeincodec.APIInterfaceWithZonedDateTime.class);
+      fail();
+    } catch (GenException expected) { }
+  }
+
 
   // Test valid stuff
   // ----------------
