@@ -67,6 +67,7 @@ public class ModuleInfo {
   }
 
   public static PackageElement resolveFirstModuleGenAnnotatedPackageElement(Elements elementUtils, PackageElement pkgElt) {
+    if (pkgElt == null) return null;
     String pkgQN = pkgElt.getQualifiedName().toString();
     while (true) {
       if (pkgElt != null) {
