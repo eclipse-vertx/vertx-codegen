@@ -74,13 +74,17 @@ public class TypeReflectionFactory {
             Type readStreamArg = Helper.resolveTypeParameter(type, classTypeVariable);
             return new ApiTypeInfo(fqcn, true, typeParams, readStreamArg != null ? create(readStreamArg) : null, null, null, module, false, false);
           } else if (kind == ClassKind.DATA_OBJECT) {
+            boolean encodable = isDataObjectAnnotatedEncodable(classType);
+            boolean decodable = isDataObjectAnnotatedDecodable(classType);
             return new DataObjectTypeInfo(
               fqcn,
               module,
               false,
               typeParams,
-              isDataObjectAnnotatedEncodable(classType) ? fqcn + "Converter" : null,
-              isDataObjectAnnotatedDecodable(classType) ? fqcn + "Converter" : null,
+              (encodable) ? classType.getSimpleName() + "Converter" : null,
+              (encodable) ? pkg.getName() : null,
+              (decodable) ? classType.getSimpleName() + "Converter" : null,
+              (decodable) ? pkg.getName() : null,
               create(JsonObject.class)
             );
           } else {

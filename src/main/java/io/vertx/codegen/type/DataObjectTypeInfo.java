@@ -3,6 +3,8 @@ package io.vertx.codegen.type;
 import io.vertx.codegen.ModuleInfo;
 import io.vertx.codegen.TypeParamInfo;
 
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 import java.util.List;
 
 /**
@@ -10,23 +12,47 @@ import java.util.List;
  */
 public class DataObjectTypeInfo extends ClassTypeInfo {
 
-  private final String jsonEncoderFQCN;
-  private final String jsonDecoderFQCN;
+  private final String jsonEncoderSimpleName;
+  private final String jsonEncoderPackage;
+  private final String jsonDecoderSimpleName;
+  private final String jsonDecoderPackage;
   private final TypeInfo targetJsonType;
 
-  public DataObjectTypeInfo(String name, ModuleInfo module, boolean nullable, List<TypeParamInfo.Class> params, String jsonEncoderFQCN, String jsonDecoderFQCN, TypeInfo targetJsonType) {
+  public DataObjectTypeInfo(String name, ModuleInfo module, boolean nullable, List<TypeParamInfo.Class> params, String jsonEncoderSimpleName, String jsonEncoderPackage, String jsonDecoderSimpleName, String jsonDecoderPackage, TypeInfo targetJsonType) {
     super(ClassKind.DATA_OBJECT, name, module, nullable, params);
-    this.jsonEncoderFQCN = jsonEncoderFQCN;
-    this.jsonDecoderFQCN = jsonDecoderFQCN;
+    this.jsonEncoderSimpleName = jsonEncoderSimpleName;
+    this.jsonEncoderPackage = jsonEncoderPackage;
+    this.jsonDecoderSimpleName = jsonDecoderSimpleName;
+    this.jsonDecoderPackage = jsonDecoderPackage;
     this.targetJsonType = targetJsonType;
   }
 
   public String getJsonEncoderFQCN() {
-    return jsonEncoderFQCN;
+    if (hasJsonEncoder())
+      return jsonEncoderPackage + "." + jsonEncoderSimpleName;
+    else return null;
+  }
+
+  public String getJsonEncoderSimpleName() {
+    return jsonEncoderSimpleName;
+  }
+
+  public String getJsonEncoderPackage() {
+    return jsonEncoderPackage;
   }
 
   public String getJsonDecoderFQCN() {
-    return jsonDecoderFQCN;
+    if (hasJsonDecoder())
+      return jsonDecoderPackage + "." + jsonDecoderSimpleName;
+    else return null;
+  }
+
+  public String getJsonDecoderSimpleName() {
+    return jsonDecoderSimpleName;
+  }
+
+  public String getJsonDecoderPackage() {
+    return jsonDecoderPackage;
   }
 
   public TypeInfo getTargetJsonType() {
@@ -34,10 +60,10 @@ public class DataObjectTypeInfo extends ClassTypeInfo {
   }
 
   public boolean hasJsonEncoder() {
-    return jsonEncoderFQCN != null;
+    return getJsonEncoderSimpleName() != null;
   }
 
   public boolean hasJsonDecoder() {
-    return jsonDecoderFQCN != null;
+    return getJsonDecoderSimpleName() != null;
   }
 }

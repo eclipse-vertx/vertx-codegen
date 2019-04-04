@@ -76,6 +76,7 @@ public class TypeMirrorFactory {
     PackageElement pkgElt = elementUtils.getPackageOf(elt);
     ModuleInfo module = ModuleInfo.resolve(elementUtils, pkgElt);
     String fqcn = elt.getQualifiedName().toString();
+    String simpleName = elt.getSimpleName().toString();
     boolean proxyGen = elt.getAnnotation(ProxyGen.class) != null;
     if (elt.getKind() == ElementKind.ENUM) {
       ArrayList<String> values = new ArrayList<>();
@@ -111,13 +112,17 @@ public class TypeMirrorFactory {
           List<TypeParamInfo.Class> typeParams = createTypeParams(type);
           Optional<Map.Entry<DeclaredType, TypeMirror>> codec = jsonCodecsCache.findCodecForType(type);
           if (codec.isPresent()) {
+            String codecSimpleName = codec.get().getKey().asElement().getSimpleName().toString();
+            String codecPkgName = elementUtils.getPackageOf(codec.get().getKey().asElement()).toString();
             raw = new DataObjectTypeInfo(
               fqcn,
               module,
               nullable,
               typeParams,
-              codec.get().getKey().toString(),
-              codec.get().getKey().toString(),
+              codecSimpleName,
+              codecPkgName,
+              codecSimpleName,
+              codecPkgName,
               this.create(codec.get().getValue())
             );
           } else if (kind == ClassKind.API) {
@@ -145,13 +150,17 @@ public class TypeMirrorFactory {
             }).toArray(TypeInfo[]::new);
             raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, args[0], args[1], args[2], module, nullable, proxyGen);
           } else if (kind == ClassKind.DATA_OBJECT) {
+            boolean encodable = Helper.isDataObjectAnnotatedEncodable(elementUtils, elt);
+            boolean decodable = Helper.isDataObjectAnnotatedDecodable(elementUtils, typeUtils, elt);
             raw = new DataObjectTypeInfo(
               fqcn,
               module,
               nullable,
               typeParams,
-              Helper.isDataObjectAnnotatedEncodable(elementUtils, elt) ? fqcn + "Converter" : null,
-              Helper.isDataObjectAnnotatedDecodable(elementUtils, typeUtils, elt) ? fqcn + "Converter" : null,
+              (encodable) ? simpleName + "Converter" : null,
+              (encodable) ? pkgElt.toString() : null,
+              (decodable) ? simpleName + "Converter" : null,
+              (decodable) ? pkgElt.toString() : null,
               this.create(elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType())
             );
           } else {
