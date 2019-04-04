@@ -82,8 +82,10 @@ public class TypeReflectionFactory {
               false,
               typeParams,
               (encodable) ? classType.getSimpleName() + "Converter" : null,
+              null,
               (encodable) ? pkg.getName() : null,
               (decodable) ? classType.getSimpleName() + "Converter" : null,
+              null,
               (decodable) ? pkg.getName() : null,
               create(JsonObject.class)
             );

@@ -12,7 +12,7 @@ import io.vertx.core.json.JsonCodec;
  */
 public class DataObjectWithNestedBufferConverter implements JsonCodec<DataObjectWithNestedBuffer, JsonObject> {
 
-  public static DataObjectWithNestedBufferConverter INSTANCE = new DataObjectWithNestedBufferConverter();
+  public static final DataObjectWithNestedBufferConverter INSTANCE = new DataObjectWithNestedBufferConverter();
 
   @Override public JsonObject encode(DataObjectWithNestedBuffer value) { return (value != null) ? value.toJson() : null; }
 

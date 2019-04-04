@@ -314,7 +314,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
 
   private void generateSingletonInstance(String dataObjectSimpleName, CodeWriter code) {
     code
-      .codeln("public static " + dataObjectSimpleName + "Converter INSTANCE = new " + dataObjectSimpleName + "Converter();")
+      .codeln("public static final " + dataObjectSimpleName + "Converter INSTANCE = new " + dataObjectSimpleName + "Converter();")
       .newLine();
   }
 

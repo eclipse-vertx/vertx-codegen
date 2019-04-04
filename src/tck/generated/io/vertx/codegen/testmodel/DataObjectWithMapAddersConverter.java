@@ -12,7 +12,7 @@ import io.vertx.core.json.JsonCodec;
  */
 public class DataObjectWithMapAddersConverter implements JsonCodec<DataObjectWithMapAdders, JsonObject> {
 
-  public static DataObjectWithMapAddersConverter INSTANCE = new DataObjectWithMapAddersConverter();
+  public static final DataObjectWithMapAddersConverter INSTANCE = new DataObjectWithMapAddersConverter();
 
   @Override public JsonObject encode(DataObjectWithMapAdders value) { return (value != null) ? value.toJson() : null; }
 

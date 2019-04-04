@@ -12,7 +12,7 @@ import io.vertx.core.json.JsonCodec;
  */
 public class DataObjectWithRecursionConverter implements JsonCodec<DataObjectWithRecursion, JsonObject> {
 
-  public static DataObjectWithRecursionConverter INSTANCE = new DataObjectWithRecursionConverter();
+  public static final DataObjectWithRecursionConverter INSTANCE = new DataObjectWithRecursionConverter();
 
   @Override public JsonObject encode(DataObjectWithRecursion value) { return (value != null) ? value.toJson() : null; }
 

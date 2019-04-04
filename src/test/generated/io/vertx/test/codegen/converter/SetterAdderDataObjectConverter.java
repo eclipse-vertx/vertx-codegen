@@ -12,7 +12,7 @@ import io.vertx.core.json.JsonCodec;
  */
 public class SetterAdderDataObjectConverter implements JsonCodec<SetterAdderDataObject, JsonObject> {
 
-  public static SetterAdderDataObjectConverter INSTANCE = new SetterAdderDataObjectConverter();
+  public static final SetterAdderDataObjectConverter INSTANCE = new SetterAdderDataObjectConverter();
 
   @Override
   public JsonObject encode(SetterAdderDataObject value) {

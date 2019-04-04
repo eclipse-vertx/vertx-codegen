@@ -12,7 +12,7 @@ import io.vertx.core.json.JsonCodec;
  */
 public class DataObjectWithOnlyJsonObjectConstructorConverter implements JsonCodec<DataObjectWithOnlyJsonObjectConstructor, JsonObject> {
 
-  public static DataObjectWithOnlyJsonObjectConstructorConverter INSTANCE = new DataObjectWithOnlyJsonObjectConstructorConverter();
+  public static final DataObjectWithOnlyJsonObjectConstructorConverter INSTANCE = new DataObjectWithOnlyJsonObjectConstructorConverter();
 
   @Override public JsonObject encode(DataObjectWithOnlyJsonObjectConstructor value) { return (value != null) ? value.toJson() : null; }
 

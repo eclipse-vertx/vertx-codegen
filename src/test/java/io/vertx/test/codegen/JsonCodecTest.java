@@ -78,6 +78,17 @@ public class JsonCodecTest extends ClassTestBase {
   }
 
   @Test
+  public void testEnclosedCodec() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsoncodecs.enclosedcodec.APIInterfaceWithMyPojo.class);
+    DataObjectTypeInfo typeInfo = model.getReferencedDataObjectTypes().iterator().next();
+    assertNotNull(typeInfo);
+    assertTrue(typeInfo.hasJsonEncoder());
+    assertTrue(typeInfo.hasJsonDecoder());
+    assertEquals(io.vertx.test.codegen.testjsoncodecs.enclosedcodec.MyPojo.MyPojoCodec.class.getCanonicalName(), typeInfo.getJsonEncoderFQCN());
+    assertEquals(io.vertx.test.codegen.testjsoncodecs.enclosedcodec.MyPojo.MyPojoCodec.class.getCanonicalName(), typeInfo.getJsonDecoderFQCN());
+  }
+
+  @Test
   public void testValidParamAndReturnType() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(APIInterfaceWithZonedDateTime.class);
     assertEquals(APIInterfaceWithZonedDateTime.class.getName(), model.getIfaceFQCN());

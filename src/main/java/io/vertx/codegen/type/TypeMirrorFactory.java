@@ -113,6 +113,9 @@ public class TypeMirrorFactory {
           Optional<Map.Entry<DeclaredType, TypeMirror>> codec = jsonCodecsCache.findCodecForType(type);
           if (codec.isPresent()) {
             String codecSimpleName = codec.get().getKey().asElement().getSimpleName().toString();
+            String codecEnclosingClass =
+              codec.get().getKey().asElement().getEnclosingElement().getKind() != ElementKind.PACKAGE ?
+                codec.get().getKey().asElement().getEnclosingElement().getSimpleName().toString() : null;
             String codecPkgName = elementUtils.getPackageOf(codec.get().getKey().asElement()).toString();
             raw = new DataObjectTypeInfo(
               fqcn,
@@ -120,8 +123,10 @@ public class TypeMirrorFactory {
               nullable,
               typeParams,
               codecSimpleName,
+              codecEnclosingClass,
               codecPkgName,
               codecSimpleName,
+              codecEnclosingClass,
               codecPkgName,
               this.create(codec.get().getValue())
             );
@@ -158,8 +163,10 @@ public class TypeMirrorFactory {
               nullable,
               typeParams,
               (encodable) ? simpleName + "Converter" : null,
+              null,
               (encodable) ? pkgElt.toString() : null,
               (decodable) ? simpleName + "Converter" : null,
+              null,
               (decodable) ? pkgElt.toString() : null,
               this.create(elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType())
             );

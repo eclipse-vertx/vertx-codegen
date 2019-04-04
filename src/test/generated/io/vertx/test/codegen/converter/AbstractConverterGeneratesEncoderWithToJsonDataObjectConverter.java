@@ -12,7 +12,7 @@ import io.vertx.core.json.JsonCodec;
  */
 public class AbstractConverterGeneratesEncoderWithToJsonDataObjectConverter implements JsonCodec<AbstractConverterGeneratesEncoderWithToJsonDataObject, JsonObject> {
 
-  public static AbstractConverterGeneratesEncoderWithToJsonDataObjectConverter INSTANCE = new AbstractConverterGeneratesEncoderWithToJsonDataObjectConverter();
+  public static final AbstractConverterGeneratesEncoderWithToJsonDataObjectConverter INSTANCE = new AbstractConverterGeneratesEncoderWithToJsonDataObjectConverter();
 
   @Override
   public JsonObject encode(AbstractConverterGeneratesEncoderWithToJsonDataObject value) {

@@ -12,7 +12,7 @@ import io.vertx.core.json.JsonDecoder;
  */
 public class NoConverterDataObjectConverter implements JsonDecoder<NoConverterDataObject, JsonObject> {
 
-  public static NoConverterDataObjectConverter INSTANCE = new NoConverterDataObjectConverter();
+  public static final NoConverterDataObjectConverter INSTANCE = new NoConverterDataObjectConverter();
 
   @Override public NoConverterDataObject decode(JsonObject value) { return (value != null) ? new NoConverterDataObject(value) : null; }
 

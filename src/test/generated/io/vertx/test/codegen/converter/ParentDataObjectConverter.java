@@ -12,7 +12,7 @@ import io.vertx.core.json.JsonCodec;
  */
 public class ParentDataObjectConverter implements JsonCodec<ParentDataObject, JsonObject> {
 
-  public static ParentDataObjectConverter INSTANCE = new ParentDataObjectConverter();
+  public static final ParentDataObjectConverter INSTANCE = new ParentDataObjectConverter();
 
   @Override
   public JsonObject encode(ParentDataObject value) {

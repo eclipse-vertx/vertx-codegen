@@ -12,7 +12,7 @@ import io.vertx.core.json.JsonCodec;
  */
 public class DataObjectWithListAddersConverter implements JsonCodec<DataObjectWithListAdders, JsonObject> {
 
-  public static DataObjectWithListAddersConverter INSTANCE = new DataObjectWithListAddersConverter();
+  public static final DataObjectWithListAddersConverter INSTANCE = new DataObjectWithListAddersConverter();
 
   @Override public JsonObject encode(DataObjectWithListAdders value) { return (value != null) ? value.toJson() : null; }
 
