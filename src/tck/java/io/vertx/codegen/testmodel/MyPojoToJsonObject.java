@@ -1,12 +1,9 @@
 package io.vertx.codegen.testmodel;
 
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonCodec;
 import io.vertx.core.json.JsonObject;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class MyPojoToJsonObject {
 
@@ -16,29 +13,29 @@ public class MyPojoToJsonObject {
 
     @Override
     public MyPojoToJsonObject decode(JsonObject value) throws IllegalArgumentException {
-      return new MyPojoToJsonObject(value.getInteger("a"));
+      return new MyPojoToJsonObject(value.getInteger("v"));
     }
 
     @Override
     public JsonObject encode(MyPojoToJsonObject value) throws IllegalArgumentException {
-      return new JsonObject().put("a", value.getA());
+      return new JsonObject().put("v", value.getV());
     }
   }
 
-  int a;
+  int v;
 
   public MyPojoToJsonObject() { }
 
-  public MyPojoToJsonObject(int a) {
-    this.a = a;
+  public MyPojoToJsonObject(int v) {
+    this.v = v;
   }
 
-  public int getA() {
-    return a;
+  public int getV() {
+    return v;
   }
 
-  public void setA(int a) {
-    this.a = a;
+  public void setV(int v) {
+    this.v = v;
   }
 
   @Override
@@ -46,11 +43,11 @@ public class MyPojoToJsonObject {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     MyPojoToJsonObject that = (MyPojoToJsonObject) o;
-    return a == that.a;
+    return v == that.v;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(a);
+    return Objects.hash(v);
   }
 }

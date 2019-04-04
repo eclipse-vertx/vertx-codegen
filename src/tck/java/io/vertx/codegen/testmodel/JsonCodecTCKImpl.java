@@ -198,7 +198,7 @@ public class JsonCodecTCKImpl implements JsonCodecTCK {
   public void methodWithListOfTypeToJsonArrayParam(List<MyPojoToJsonArray> myPojoToJsonArrayList) {
     assertEquals(2, myPojoToJsonArrayList.size());
     assertEquals(new MyPojoToJsonArray(Arrays.asList(1, 2, 3)), myPojoToJsonArrayList.get(0));
-    assertEquals(new MyPojoToJsonArray(Arrays.asList(4, 5, 6)), myPojoToJsonArrayList.get(0));
+    assertEquals(new MyPojoToJsonArray(Arrays.asList(4, 5, 6)), myPojoToJsonArrayList.get(1));
   }
 
   @Override
@@ -323,7 +323,7 @@ public class JsonCodecTCKImpl implements JsonCodecTCK {
   public Map<String, MyPojoToJsonObject> methodWithMapOfTypeToJsonObjectReturn() {
     Map<String, MyPojoToJsonObject> map = new HashMap<>();
     map.put("a", new MyPojoToJsonObject(1));
-    map.put("b", new MyPojoToJsonObject(1));
+    map.put("b", new MyPojoToJsonObject(2));
     return map;
   }
 
