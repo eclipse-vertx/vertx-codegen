@@ -16,6 +16,11 @@ public abstract class MyCodec implements JsonCodec<ZonedDateTime, String> {
     public String encode(ZonedDateTime value) {
       return null;
     }
+
+    @Override
+    public Class<ZonedDateTime> getTargetClass() {
+      return ZonedDateTime.class;
+    }
   };
 
 }

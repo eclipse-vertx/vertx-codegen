@@ -30,6 +30,7 @@ public class ConverterGeneratesCompleteCodecDataObjectConverter implements JsonC
     return newInstance;
   }
 
+  @Override public Class<ConverterGeneratesCompleteCodecDataObject> getTargetClass() { return ConverterGeneratesCompleteCodecDataObject.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ConverterGeneratesCompleteCodecDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {

@@ -24,6 +24,7 @@ public class ParentDataObjectConverter implements JsonCodec<ParentDataObject, Js
 
   @Override public ParentDataObject decode(JsonObject value) { return (value != null) ? new ParentDataObject(value) : null; }
 
+  @Override public Class<ParentDataObject> getTargetClass() { return ParentDataObject.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ParentDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {

@@ -24,6 +24,7 @@ public class ConverterGeneratesDecoderWithFromJsonDataObjectConverter implements
     return newInstance;
   }
 
+  @Override public Class<ConverterGeneratesDecoderWithFromJsonDataObject> getTargetClass() { return ConverterGeneratesDecoderWithFromJsonDataObject.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ConverterGeneratesDecoderWithFromJsonDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {

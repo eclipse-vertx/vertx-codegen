@@ -18,4 +18,5 @@ public class DataObjectWithOnlyJsonObjectConstructorConverter implements JsonCod
 
   @Override public DataObjectWithOnlyJsonObjectConstructor decode(JsonObject value) { return (value != null) ? new DataObjectWithOnlyJsonObjectConstructor(value) : null; }
 
+  @Override public Class<DataObjectWithOnlyJsonObjectConstructor> getTargetClass() { return DataObjectWithOnlyJsonObjectConstructor.class; }
 }

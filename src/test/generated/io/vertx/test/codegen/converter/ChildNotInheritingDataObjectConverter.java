@@ -24,6 +24,7 @@ public class ChildNotInheritingDataObjectConverter implements JsonCodec<ChildNot
 
   @Override public ChildNotInheritingDataObject decode(JsonObject value) { return (value != null) ? new ChildNotInheritingDataObject(value) : null; }
 
+  @Override public Class<ChildNotInheritingDataObject> getTargetClass() { return ChildNotInheritingDataObject.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ChildNotInheritingDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {

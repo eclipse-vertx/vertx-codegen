@@ -16,4 +16,5 @@ public class NoConverterDataObjectConverter implements JsonDecoder<NoConverterDa
 
   @Override public NoConverterDataObject decode(JsonObject value) { return (value != null) ? new NoConverterDataObject(value) : null; }
 
+  @Override public Class<NoConverterDataObject> getTargetClass() { return NoConverterDataObject.class; }
 }

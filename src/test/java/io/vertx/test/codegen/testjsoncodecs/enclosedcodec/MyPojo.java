@@ -18,6 +18,11 @@ public class MyPojo {
     public JsonObject encode(MyPojo value) throws IllegalArgumentException {
       return null;
     }
+
+    @Override
+    public Class<MyPojo> getTargetClass() {
+      return MyPojo.class;
+    }
   }
 
 }

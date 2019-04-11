@@ -23,6 +23,11 @@ public class MyPojoToJsonArray {
     public JsonArray encode(MyPojoToJsonArray value) throws IllegalArgumentException {
       return new JsonArray((List)value.stuff);
     }
+
+    @Override
+    public Class<MyPojoToJsonArray> getTargetClass() {
+      return MyPojoToJsonArray.class;
+    }
   }
 
   List<Integer> stuff;

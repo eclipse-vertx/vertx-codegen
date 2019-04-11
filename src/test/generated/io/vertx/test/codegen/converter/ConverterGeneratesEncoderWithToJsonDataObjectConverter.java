@@ -24,6 +24,7 @@ public class ConverterGeneratesEncoderWithToJsonDataObjectConverter implements J
 
   @Override public ConverterGeneratesEncoderWithToJsonDataObject decode(JsonObject value) { return (value != null) ? new ConverterGeneratesEncoderWithToJsonDataObject(value) : null; }
 
+  @Override public Class<ConverterGeneratesEncoderWithToJsonDataObject> getTargetClass() { return ConverterGeneratesEncoderWithToJsonDataObject.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ConverterGeneratesEncoderWithToJsonDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {

@@ -18,4 +18,5 @@ public class DataObjectWithValuesConverter implements JsonCodec<DataObjectWithVa
 
   @Override public DataObjectWithValues decode(JsonObject value) { return (value != null) ? new DataObjectWithValues(value) : null; }
 
+  @Override public Class<DataObjectWithValues> getTargetClass() { return DataObjectWithValues.class; }
 }

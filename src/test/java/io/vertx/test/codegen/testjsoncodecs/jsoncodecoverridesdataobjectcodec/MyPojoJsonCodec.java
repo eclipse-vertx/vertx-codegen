@@ -16,4 +16,9 @@ public class MyPojoJsonCodec implements JsonCodec<MyPojo, JsonObject> {
   public JsonObject encode(MyPojo value) throws IllegalArgumentException {
     return null;
   }
+
+  @Override
+  public Class<MyPojo> getTargetClass() {
+    return MyPojo.class;
+  }
 }

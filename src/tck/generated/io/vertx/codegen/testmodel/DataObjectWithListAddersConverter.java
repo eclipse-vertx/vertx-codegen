@@ -18,4 +18,5 @@ public class DataObjectWithListAddersConverter implements JsonCodec<DataObjectWi
 
   @Override public DataObjectWithListAdders decode(JsonObject value) { return (value != null) ? new DataObjectWithListAdders(value) : null; }
 
+  @Override public Class<DataObjectWithListAdders> getTargetClass() { return DataObjectWithListAdders.class; }
 }

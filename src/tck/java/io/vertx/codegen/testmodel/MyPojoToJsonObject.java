@@ -20,6 +20,11 @@ public class MyPojoToJsonObject {
     public JsonObject encode(MyPojoToJsonObject value) throws IllegalArgumentException {
       return new JsonObject().put("v", value.getV());
     }
+
+    @Override
+    public Class<MyPojoToJsonObject> getTargetClass() {
+      return MyPojoToJsonObject.class;
+    }
   }
 
   int v;

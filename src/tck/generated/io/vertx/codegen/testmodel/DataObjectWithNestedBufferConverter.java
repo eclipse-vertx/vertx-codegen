@@ -18,4 +18,5 @@ public class DataObjectWithNestedBufferConverter implements JsonCodec<DataObject
 
   @Override public DataObjectWithNestedBuffer decode(JsonObject value) { return (value != null) ? new DataObjectWithNestedBuffer(value) : null; }
 
+  @Override public Class<DataObjectWithNestedBuffer> getTargetClass() { return DataObjectWithNestedBuffer.class; }
 }

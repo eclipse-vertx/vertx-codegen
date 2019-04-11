@@ -18,4 +18,5 @@ public class DataObjectWithMapAddersConverter implements JsonCodec<DataObjectWit
 
   @Override public DataObjectWithMapAdders decode(JsonObject value) { return (value != null) ? new DataObjectWithMapAdders(value) : null; }
 
+  @Override public Class<DataObjectWithMapAdders> getTargetClass() { return DataObjectWithMapAdders.class; }
 }

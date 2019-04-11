@@ -394,6 +394,13 @@ You can mark a type as a data object both:
 
 ### Json Codec
 
+A json codec for type `X` is a concrete class that implements the interface `JsonCodec<X, J>`, where `J` could be:
+
+* `JsonArray` or `JsonObject`
+* `Number`
+* `String`
+* `Boolean`
+
 If you want to use a `JsonCodec` in vertx-codegen, you must provide a `public static final [JsonCodecType] INSTANCE` field inside the defined codec to retrieve the codec instance.
 
 To mark a type as a data object in your package , you must specify the codec in `@ModuleGen` annotation in `package-info.java` file. E.g.:

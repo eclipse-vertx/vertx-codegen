@@ -24,6 +24,7 @@ public class TestDataObjectConverter implements JsonCodec<TestDataObject, JsonOb
 
   @Override public TestDataObject decode(JsonObject value) { return (value != null) ? new TestDataObject(value) : null; }
 
+  @Override public Class<TestDataObject> getTargetClass() { return TestDataObject.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, TestDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {

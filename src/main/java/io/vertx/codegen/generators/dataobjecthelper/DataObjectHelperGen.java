@@ -79,6 +79,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       generateSingletonInstance(model.getType().getSimpleName(), code);
       if (generateEncode) writeEncodeMethod(model, code);
       if (generateDecode) writeDecodeMethod(model, code);
+      writeGetTargetClassMethod(model, code);
     });
     if (model.getGenerateConverter()) {
       writer.print("\n");
@@ -356,5 +357,10 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         .codeln("}")
         .newLine();
     }
+  }
+
+  private void writeGetTargetClassMethod(DataObjectModel model, CodeWriter codeWriter) {
+    String modelSimpleName = model.getType().getSimpleName();
+    codeWriter.codeln("@Override public Class<" + modelSimpleName + "> getTargetClass() { return " + modelSimpleName + ".class; }");
   }
 }

@@ -18,4 +18,5 @@ public class DataObjectWithListsConverter implements JsonCodec<DataObjectWithLis
 
   @Override public DataObjectWithLists decode(JsonObject value) { return (value != null) ? new DataObjectWithLists(value) : null; }
 
+  @Override public Class<DataObjectWithLists> getTargetClass() { return DataObjectWithLists.class; }
 }

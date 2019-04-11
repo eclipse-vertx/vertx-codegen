@@ -14,6 +14,11 @@ public class ZonedDateTimeCodec implements JsonCodec<ZonedDateTime, String> {
   }
 
   @Override
+  public Class<ZonedDateTime> getTargetClass() {
+    return ZonedDateTime.class;
+  }
+
+  @Override
   public ZonedDateTime decode(String value) {
     return ZonedDateTime.parse(value);
   }

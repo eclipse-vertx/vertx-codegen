@@ -79,7 +79,10 @@ public class JsonCodecsCache {
           .orElseThrow(() -> new GenException(codecDeclaredType.asElement(), "Cannot find what type the json codec handles"));
 
         if (!isJsonTypeValid(codecGenericsValues[1]))
-          throw new GenException(codecDeclaredType.asElement(), "The specified json type in codec " + codecDeclaredType.toString() + " is not a valid json type. Allowed types are JSON and BOXED_PRIMITIVE");
+          throw new GenException(
+            codecDeclaredType.asElement(),
+            "The specified json type in codec " + codecDeclaredType.toString() + " is not a valid json type. Allowed types are java.lang.Boolean, java.lang.Number, java.lang.String and BOXED_PRIMITIVE"
+          );
 
         return new AbstractMap.SimpleImmutableEntry<>(codecGenericsValues[0].toString(), new AbstractMap.SimpleImmutableEntry<>(codecDeclaredType, codecGenericsValues[1]));
       })
@@ -88,7 +91,10 @@ public class JsonCodecsCache {
 
   private boolean isJsonTypeValid(TypeMirror wannabeJsonType) {
     ClassKind kind = ClassKind.getKind(wannabeJsonType.toString(), wannabeJsonType.getAnnotation(DataObject.class) != null, wannabeJsonType.getAnnotation(VertxGen.class) != null);
-    return kind.json || kind == ClassKind.BOXED_PRIMITIVE || kind == ClassKind.STRING;
+    return kind.json ||
+      wannabeJsonType.toString().equals("java.lang.Boolean") ||
+      wannabeJsonType.toString().equals("java.lang.Number") ||
+      kind == ClassKind.STRING;
   }
 
   /**

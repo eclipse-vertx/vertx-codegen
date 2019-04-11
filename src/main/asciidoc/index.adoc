@@ -60,7 +60,12 @@ You can mark a type as a data object both:
 
 ==== Json codecs
 
-A json codec for type `X` is a concrete class that implements the interface `JsonCodec<X, J>`, where `J` is a _basic_ or a _json_ type.
+A json codec for type `X` is a concrete class that implements the interface `JsonCodec<X, J>`, where `J` could be:
+
+* `JsonArray` or `JsonObject`
+* `Number`
+* `String`
+* `Boolean`
 
 If you want to use a `JsonCodec` in vertx-codegen, you must provide a `public static final [JsonCodecType] INSTANCE` field inside the defined codec to retrieve the codec instance.
 

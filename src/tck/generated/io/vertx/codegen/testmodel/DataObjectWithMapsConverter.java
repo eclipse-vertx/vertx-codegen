@@ -18,4 +18,5 @@ public class DataObjectWithMapsConverter implements JsonCodec<DataObjectWithMaps
 
   @Override public DataObjectWithMaps decode(JsonObject value) { return (value != null) ? new DataObjectWithMaps(value) : null; }
 
+  @Override public Class<DataObjectWithMaps> getTargetClass() { return DataObjectWithMaps.class; }
 }

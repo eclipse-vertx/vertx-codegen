@@ -24,6 +24,7 @@ public class SetterAdderDataObjectConverter implements JsonCodec<SetterAdderData
 
   @Override public SetterAdderDataObject decode(JsonObject value) { return (value != null) ? new SetterAdderDataObject(value) : null; }
 
+  @Override public Class<SetterAdderDataObject> getTargetClass() { return SetterAdderDataObject.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, SetterAdderDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {

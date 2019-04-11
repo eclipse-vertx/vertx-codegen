@@ -18,4 +18,5 @@ public class DataObjectWithRecursionConverter implements JsonCodec<DataObjectWit
 
   @Override public DataObjectWithRecursion decode(JsonObject value) { return (value != null) ? new DataObjectWithRecursion(value) : null; }
 
+  @Override public Class<DataObjectWithRecursion> getTargetClass() { return DataObjectWithRecursion.class; }
 }

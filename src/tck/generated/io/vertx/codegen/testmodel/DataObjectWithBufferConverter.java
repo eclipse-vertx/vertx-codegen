@@ -18,4 +18,5 @@ public class DataObjectWithBufferConverter implements JsonCodec<DataObjectWithBu
 
   @Override public DataObjectWithBuffer decode(JsonObject value) { return (value != null) ? new DataObjectWithBuffer(value) : null; }
 
+  @Override public Class<DataObjectWithBuffer> getTargetClass() { return DataObjectWithBuffer.class; }
 }

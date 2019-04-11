@@ -8,18 +8,23 @@ public class MyPojoToInteger {
 
   int a;
 
-  public static class MyPojoToIntegerCodec implements JsonCodec<MyPojoToInteger, Integer> {
+  public static class MyPojoToIntegerCodec implements JsonCodec<MyPojoToInteger, Number> {
 
     public static final MyPojoToIntegerCodec INSTANCE = new MyPojoToIntegerCodec();
 
     @Override
-    public MyPojoToInteger decode(Integer value) throws IllegalArgumentException {
-      return new MyPojoToInteger(value);
+    public MyPojoToInteger decode(Number value) throws IllegalArgumentException {
+      return new MyPojoToInteger(value.intValue());
     }
 
     @Override
-    public Integer encode(MyPojoToInteger value) throws IllegalArgumentException {
+    public Number encode(MyPojoToInteger value) throws IllegalArgumentException {
       return value.getA();
+    }
+
+    @Override
+    public Class<MyPojoToInteger> getTargetClass() {
+      return MyPojoToInteger.class;
     }
   }
 

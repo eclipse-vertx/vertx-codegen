@@ -18,4 +18,9 @@ public class ZonedDateTimeCodec implements JsonCodec<ZonedDateTime, Instant> {
   public Instant encode(ZonedDateTime value) throws IllegalArgumentException {
     return null;
   }
+
+  @Override
+  public Class<ZonedDateTime> getTargetClass() {
+    return ZonedDateTime.class;
+  }
 }
