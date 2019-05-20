@@ -6,14 +6,20 @@ import io.vertx.codegen.TypeParamInfo;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.codegen.type.ApiTypeInfo.ApiTypeArgInfo;
+import io.vertx.core.Handler;
 import io.vertx.core.streams.ReadStream;
+import io.vertx.core.streams.WriteStream;
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -71,9 +77,17 @@ public class TypeReflectionFactory {
             typeParams.add(new TypeParamInfo.Class(classType.getName(), index++, var.getName()));
           }
           if (kind == ClassKind.API) {
-            java.lang.reflect.TypeVariable<Class<ReadStream>> classTypeVariable = ReadStream.class.getTypeParameters()[0];
-            Type readStreamArg = Helper.resolveTypeParameter(type, classTypeVariable);
-            return new ApiTypeInfo(fqcn, true, typeParams, readStreamArg != null ? create(readStreamArg) : null, null, null, module, false, false);
+            TypeInfo[] functionArgs = extractArgs(type, Function.class);
+            ApiTypeArgInfo argInfo = new ApiTypeArgInfo(
+              elementOrNull(extractArgs(type, ReadStream.class), 0),
+              elementOrNull(extractArgs(type, WriteStream.class), 0),
+              elementOrNull(extractArgs(type, Handler.class), 0),
+              elementOrNull(extractArgs(type, Iterable.class), 0),
+              elementOrNull(extractArgs(type, Iterator.class), 0),
+              elementOrNull(functionArgs, 0),
+              elementOrNull(functionArgs, 1)
+            );
+            return new ApiTypeInfo(fqcn, true, typeParams, module, false, false, argInfo);
           } else if (kind == ClassKind.DATA_OBJECT) {
             boolean _abstract = Modifier.isAbstract(classType.getModifiers());
             return new DataObjectTypeInfo(kind, fqcn, module, _abstract, false, typeParams);
@@ -97,5 +111,20 @@ public class TypeReflectionFactory {
     } else {
       throw new IllegalArgumentException("Unsupported type " + type);
     }
+  }
+
+  private static <T> TypeInfo[] extractArgs(Type type, Class<T> clazz) {
+    TypeVariable<Class<T>>[] classTypeVariables = clazz.getTypeParameters();
+    TypeInfo[] result = new TypeInfo[classTypeVariables.length];
+    for (int i = 0; i < classTypeVariables.length; i++) {
+      TypeVariable<Class<T>> typeVariable = classTypeVariables[i];
+      Type argType = Helper.resolveTypeParameter(type, typeVariable);
+      result[i] = argType != null ? create(argType) : null;
+    }
+    return result;
+  }
+
+  private static TypeInfo elementOrNull(TypeInfo[] array, int index) {
+    return index < array.length ? array[index] : null;
   }
 }

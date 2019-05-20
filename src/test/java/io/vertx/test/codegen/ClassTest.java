@@ -7,15 +7,7 @@ import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.codegen.testmodel.TestGenEnum;
-import io.vertx.codegen.type.ApiTypeInfo;
-import io.vertx.codegen.type.ClassKind;
-import io.vertx.codegen.type.ClassTypeInfo;
-import io.vertx.codegen.type.EnumTypeInfo;
-import io.vertx.codegen.type.ParameterizedTypeInfo;
-import io.vertx.codegen.type.PrimitiveTypeInfo;
-import io.vertx.codegen.type.TypeInfo;
-import io.vertx.codegen.type.TypeReflectionFactory;
-import io.vertx.codegen.type.TypeVariableInfo;
+import io.vertx.codegen.type.*;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
@@ -25,49 +17,31 @@ import io.vertx.test.codegen.annotations.EmptyAnnotation;
 import io.vertx.test.codegen.testapi.*;
 import io.vertx.test.codegen.testapi.constant.InterfaceWithConstants;
 import io.vertx.test.codegen.testapi.constant.InterfaceWithIllegalConstantType;
+import io.vertx.test.codegen.testapi.fluent.*;
+import io.vertx.test.codegen.testapi.handler.FutureLike;
+import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerStringSubtype;
+import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerVertxGenSubtype;
+import io.vertx.test.codegen.testapi.impl.InterfaceInImplPackage;
+import io.vertx.test.codegen.testapi.impl.sub.InterfaceInImplParentPackage;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithInvalidJavaTypeParam;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithInvalidJavaTypeReturn;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeParams;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeReturn;
 import io.vertx.test.codegen.testapi.overloadcheck.OverloadCheckIgnoreEnhancedMethod;
 import io.vertx.test.codegen.testapi.overloadcheck.OverloadCheckInvalidMethodOverloading;
-import io.vertx.test.codegen.testapi.fluent.AbstractInterfaceWithFluentMethods;
-import io.vertx.test.codegen.testapi.fluent.ConcreteInterfaceWithFluentMethods;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodOverrideWithSuperType;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodWithGenericReturn;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodWithIllegalParameterizedReturn;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodWithIllegalReturn;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodWithVoidReturn;
-import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromAbstract;
-import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromConcrete;
-import io.vertx.test.codegen.testapi.handler.FutureLike;
-import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerStringSubtype;
-import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerVertxGenSubtype;
-import io.vertx.test.codegen.testapi.impl.InterfaceInImplPackage;
-import io.vertx.test.codegen.testapi.impl.sub.InterfaceInImplParentPackage;
 import io.vertx.test.codegen.testapi.simple.InterfaceInImplContainingPackage;
-import io.vertx.test.codegen.testapi.streams.GenericInterfaceExtentingReadStream;
-import io.vertx.test.codegen.testapi.streams.GenericInterfaceExtentingReadStreamAndWriteStream;
-import io.vertx.test.codegen.testapi.streams.GenericInterfaceExtentingWriteStream;
-import io.vertx.test.codegen.testapi.streams.InterfaceExtentingReadStream;
-import io.vertx.test.codegen.testapi.streams.InterfaceExtentingReadStreamAndWriteStream;
-import io.vertx.test.codegen.testapi.streams.InterfaceExtentingWriteStream;
-import io.vertx.test.codegen.testapi.streams.InterfaceSubtypingReadStream;
-import io.vertx.test.codegen.testapi.streams.ReadStreamWithParameterizedTypeArg;
+import io.vertx.test.codegen.testapi.streams.*;
 import org.junit.Test;
 
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 /**
@@ -1285,14 +1259,81 @@ public class ClassTest extends ClassTestBase {
 
   @Test
   public void testNonGenSuperType() throws Exception {
-    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithNonGenSuperType.class);
-    assertEquals(InterfaceWithNonGenSuperType.class.getName(), model.getIfaceFQCN());
-    assertEquals(InterfaceWithNonGenSuperType.class.getSimpleName(), model.getIfaceSimpleName());
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceExtendingNonGenType.class);
+    assertEquals(InterfaceExtendingNonGenType.class.getName(), model.getIfaceFQCN());
+    assertEquals(InterfaceExtendingNonGenType.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(0, model.getReferencedTypes().size());
     assertEquals(0, model.getSuperTypes().size());
     List<MethodInfo> methods = model.getMethods();
     assertEquals(1, methods.size());
     checkMethod(methods.get(0), "foo", 1, "void", MethodKind.OTHER);
+  }
+
+  @Test
+  public void testIterableDeclaredSuperType() throws Exception {
+    Map<Class<?>, Class<?>> valid = new HashMap<>();
+    valid.put(InterfaceExtendingIterableStringSuperType.class, String.class);
+    valid.put(InterfaceExtendingIterableApiSuperType.class, VertxGenClass1.class);
+
+    for (Map.Entry<Class<?>, Class<?>> entry : valid.entrySet()) {
+      Class<?> interfaceClass = entry.getKey();
+      Class<?> valueClass = entry.getValue();
+      ClassModel model = new GeneratorHelper().generateClass(interfaceClass);
+      assertEquals(interfaceClass.getName(), model.getIfaceFQCN());
+      assertEquals(interfaceClass.getSimpleName(), model.getIfaceSimpleName());
+      assertEquals(0, model.getSuperTypes().size());
+      assertEquals(0, model.getMethods().size());
+      ApiTypeInfo apiType = (ApiTypeInfo) model.getType().getRaw();
+      assertTrue(apiType.isIterable());
+      assertEquals(valueClass.getName(), apiType.getIterableArg().getName());
+    }
+  }
+
+  @Test
+  public void testParameterizedIterableSuperType() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceExtendingParameterizedIterable.class);
+    assertEquals(InterfaceExtendingParameterizedIterable.class.getName() + "<U>", model.getIfaceFQCN());
+    assertEquals(InterfaceExtendingParameterizedIterable.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(0, model.getSuperTypes().size());
+    assertEquals(0, model.getMethods().size());
+    ApiTypeInfo apiType = (ApiTypeInfo) model.getType().getRaw();
+    assertTrue(apiType.isIterable());
+    TypeInfo iterableArg = apiType.getIterableArg();
+    assertThat(iterableArg, is(instanceOf(TypeVariableInfo.class)));
+  }
+
+  @Test
+  public void testFunctionDeclaredSuperTypes() throws Exception {
+    Map<Class<?>, Class<?>> valid = new HashMap<>();
+    valid.put(InterfaceExtendingFunctionStringSuperType.class, String.class);
+    valid.put(InterfaceExtendingFunctionApiSuperType.class, VertxGenClass1.class);
+
+    for (Map.Entry<Class<?>, Class<?>> entry : valid.entrySet()) {
+      Class<?> interfaceClass = entry.getKey();
+      Class<?> valueClass = entry.getValue();
+      ClassModel model = new GeneratorHelper().generateClass(interfaceClass);
+      assertEquals(interfaceClass.getName(), model.getIfaceFQCN());
+      assertEquals(interfaceClass.getSimpleName(), model.getIfaceSimpleName());
+      assertEquals(0, model.getSuperTypes().size());
+      assertEquals(0, model.getMethods().size());
+      ApiTypeInfo apiType = (ApiTypeInfo) model.getType().getRaw();
+      assertTrue(apiType.isFunction());
+      assertEquals(valueClass.getName(), apiType.getFunctionArgIn().getName());
+      assertEquals(valueClass.getName(), apiType.getFunctionArgOut().getName());
+    }
+  }
+
+  @Test
+  public void testParameterizedFunctionSuperType() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceExtendingParameterizedFunction.class);
+    assertEquals(InterfaceExtendingParameterizedFunction.class.getName() + "<T,R>", model.getIfaceFQCN());
+    assertEquals(InterfaceExtendingParameterizedFunction.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(0, model.getSuperTypes().size());
+    assertEquals(0, model.getMethods().size());
+    ApiTypeInfo apiType = (ApiTypeInfo) model.getType().getRaw();
+    assertTrue(apiType.isFunction());
+    assertThat(apiType.getFunctionArgIn(), is(instanceOf(TypeVariableInfo.class)));
+    assertThat(apiType.getFunctionArgOut(), is(instanceOf(TypeVariableInfo.class)));
   }
 
   @Test

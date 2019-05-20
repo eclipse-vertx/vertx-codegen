@@ -7,19 +7,17 @@ import io.vertx.codegen.TypeParamInfo;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.codegen.type.ApiTypeInfo.ApiTypeArgInfo;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.*;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Type info factory based on <i>javax.lang.model</i> and type mirrors.
@@ -117,28 +115,17 @@ public class TypeMirrorFactory {
           List<TypeParamInfo.Class> typeParams = createTypeParams(type);
           if (kind == ClassKind.API) {
             VertxGen genAnn = elt.getAnnotation(VertxGen.class);
-            TypeInfo[] args = Stream.of(
-              ClassModel.VERTX_READ_STREAM,
-              ClassModel.VERTX_WRITE_STREAM,
-              ClassModel.VERTX_HANDLER
-            ).map(s -> {
-              TypeElement parameterizedElt = elementUtils.getTypeElement(s);
-              TypeMirror parameterizedType = parameterizedElt.asType();
-              TypeMirror rawType = typeUtils.erasure(parameterizedType);
-              if (typeUtils.isSubtype(type, rawType)) {
-                TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, parameterizedElt.getTypeParameters().get(0));
-                if (resolved.getKind() == TypeKind.DECLARED) {
-                  DeclaredType dt = (DeclaredType) resolved;
-                  TypeElement a = (TypeElement) dt.asElement();
-                  if (a.getQualifiedName().toString().equals("io.vertx.core.AsyncResult")) {
-                    return null;
-                  }
-                }
-                return create(resolved);
-              }
-              return null;
-            }).toArray(TypeInfo[]::new);
-            raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, args[0], args[1], args[2], module, nullable, proxyGen);
+            List<TypeInfo> functionArgs = extractArgs(type, ClassModel.FUNCTION);
+            ApiTypeArgInfo argInfo = new ApiTypeArgInfo(
+              elementOrNull(extractArgs(type, ClassModel.VERTX_READ_STREAM), 0),
+              elementOrNull(extractArgs(type, ClassModel.VERTX_WRITE_STREAM), 0),
+              elementOrNull(extractArgs(type, ClassModel.VERTX_HANDLER), 0),
+              elementOrNull(extractArgs(type, ClassModel.ITERABLE), 0),
+              elementOrNull(extractArgs(type, ClassModel.ITERATOR), 0),
+              elementOrNull(functionArgs, 0),
+              elementOrNull(functionArgs, 1)
+            );
+            raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, module, nullable, proxyGen, argInfo);
           } else if (kind == ClassKind.DATA_OBJECT) {
             boolean _abstract = elt.getModifiers().contains(Modifier.ABSTRACT);
             raw = new DataObjectTypeInfo(kind, fqcn, module, _abstract, nullable, typeParams);
@@ -149,6 +136,33 @@ public class TypeMirrorFactory {
         return raw;
       }
     }
+  }
+
+
+  private <T> List<TypeInfo> extractArgs(DeclaredType type, String className) {
+    TypeElement parameterizedElt = elementUtils.getTypeElement(className);
+    TypeMirror parameterizedType = parameterizedElt.asType();
+    TypeMirror rawType = typeUtils.erasure(parameterizedType);
+    if (typeUtils.isSubtype(type, rawType)) {
+      return parameterizedElt.getTypeParameters().stream()
+        .map(typeParam -> {
+          TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, typeParam);
+          if (resolved != null && resolved.getKind() == TypeKind.DECLARED) {
+            DeclaredType dt = (DeclaredType) resolved;
+            TypeElement a = (TypeElement) dt.asElement();
+            if (a.getQualifiedName().toString().equals("io.vertx.core.AsyncResult")) {
+              return null;
+            }
+          }
+          return create(resolved);
+        })
+        .collect(toList());
+    }
+    return Collections.emptyList();
+  }
+
+  private TypeInfo elementOrNull(List<TypeInfo> list, int index) {
+    return index < list.size() ? list.get(index) : null;
   }
 
   public TypeVariableInfo create(TypeUse use, TypeVariable type) {
