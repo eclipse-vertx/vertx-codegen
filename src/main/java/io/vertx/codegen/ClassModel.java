@@ -82,6 +82,9 @@ public class ClassModel implements Model {
   protected TypeInfo concreteSuperType;
   private List<TypeInfo> superTypeArguments;
   protected List<TypeInfo> abstractSuperTypes = new ArrayList<>();
+  protected TypeInfo handlerArg;
+  protected TypeInfo readStreamArg;
+  protected TypeInfo writeStreamArg;
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
   protected Map<String, List<AnnotationValueInfo>> methodAnnotationsMap = new LinkedHashMap<>();
@@ -218,10 +221,6 @@ public class ClassModel implements Model {
 
   public List<TypeInfo> getAbstractSuperTypes() {
     return abstractSuperTypes;
-  }
-
-  public TypeInfo getHandlerType() {
-    return (type.getKind() == ClassKind.API) ? ((ApiTypeInfo)type).getHandlerArg() : null;
   }
 
   public Map<String, List<MethodInfo>> getMethodMap() {
@@ -560,18 +559,20 @@ public class ClassModel implements Model {
   }
 
   private void traverseType(Element elem) {
+    DeclaredType declaredType = (DeclaredType) elem.asType();
+
     switch (elem.getKind()) {
       case ENUM:
       case CLASS: {
-        throw new GenException(elem, "@VertxGen can only be used with interfaces or enums in " + elem.asType().toString());
+        throw new GenException(elem, "@VertxGen can only be used with interfaces or enums in " + declaredType.toString());
       }
       case INTERFACE: {
         if (ifaceFQCN != null) {
           throw new GenException(elem, "Can only have one interface per file");
         }
-        type = typeFactory.create(elem.asType()).getRaw();
+        type = typeFactory.create(declaredType).getRaw();
         Helper.checkUnderModule(this, "@VertxGen");
-        ifaceFQCN = elem.asType().toString();
+        ifaceFQCN = declaredType.toString();
         ifaceSimpleName = elem.getSimpleName().toString();
         ifacePackageName = elementUtils.getPackageOf(elem).getQualifiedName().toString();
         ifaceComment = elementUtils.getDocComment(elem);
@@ -582,7 +583,7 @@ public class ClassModel implements Model {
           );
         deprecated = deprecated || deprecatedDesc != null;
         concrete = elem.getAnnotation(VertxGen.class) == null || elem.getAnnotation(VertxGen.class).concrete();
-        DeclaredType tm = (DeclaredType) elem.asType();
+        DeclaredType tm = declaredType;
         List<? extends TypeMirror> typeArgs = tm.getTypeArguments();
         for (TypeMirror typeArg : typeArgs) {
           TypeVariable varTypeArg = (TypeVariable) typeArg;
@@ -627,7 +628,7 @@ public class ClassModel implements Model {
           }
         }
         if (concreteSuperType != null && concreteSuperType.isParameterized()) {
-          tm = (DeclaredType) modelElt.asType();;
+          tm = (DeclaredType) modelElt.asType();
           st = typeUtils.directSupertypes(tm);
           for (TypeMirror tmSuper: st) {
             if (tmSuper.getKind() == TypeKind.DECLARED) {
@@ -650,6 +651,10 @@ public class ClassModel implements Model {
       }
     }
 
+    handlerArg = subTypeParamInfo(VERTX_HANDLER, declaredType);
+    readStreamArg = subTypeParamInfo(VERTX_READ_STREAM, declaredType);
+    writeStreamArg = subTypeParamInfo(VERTX_WRITE_STREAM, declaredType);
+
     // Traverse nested elements that are not methods (like nested interfaces)
     for (Element enclosedElt : elem.getEnclosedElements()) {
       if (!Helper.isGenIgnore(enclosedElt)) {
@@ -659,7 +664,7 @@ public class ClassModel implements Model {
             // Allowed
             break;
           default:
-            throw new GenException(elem, "@VertxGen can only declare methods and not " + elem.asType().toString());
+            throw new GenException(elem, "@VertxGen can only declare methods and not " + declaredType.toString());
         }
       }
     }
@@ -741,6 +746,24 @@ public class ClassModel implements Model {
         }
       }
     }
+  }
+
+  private TypeInfo subTypeParamInfo(String subType, DeclaredType declaredType) {
+    TypeElement parameterizedElt = elementUtils.getTypeElement(subType);
+    TypeMirror parameterizedType = parameterizedElt.asType();
+    TypeMirror rawType = typeUtils.erasure(parameterizedType);
+    if (typeUtils.isSubtype(declaredType, rawType)) {
+      TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, declaredType, parameterizedElt.getTypeParameters().get(0));
+      if (resolved != null && resolved.getKind() == TypeKind.DECLARED) {
+        DeclaredType dt = (DeclaredType) resolved;
+        TypeElement a = (TypeElement) dt.asElement();
+        if (a.getQualifiedName().toString().equals(VERTX_ASYNC_RESULT)) {
+          return null;
+        }
+      }
+      return typeFactory.create(resolved);
+    }
+    return null;
   }
 
   private ConstantInfo fieldMethod(VariableElement modelField, boolean allowAnyJavaType) {
@@ -1049,7 +1072,7 @@ public class ClassModel implements Model {
     vars.put("superTypes", getSuperTypes());
     vars.put("concreteSuperType", getConcreteSuperType());
     vars.put("abstractSuperTypes", getAbstractSuperTypes());
-    vars.put("handlerType", getHandlerType());
+    vars.put("handlerType", getHandlerArg());
     vars.put("methodsByName", getMethodMap());
     vars.put("classAnnotations", getAnnotations());
     vars.put("annotationsByMethodName", getMethodAnnotations());
@@ -1061,5 +1084,29 @@ public class ClassModel implements Model {
     vars.put("deprecated", isDeprecated());
     vars.put("deprecatedDesc", getDeprecatedDesc());
     return vars;
+  }
+
+  public boolean isHandler() {
+    return handlerArg != null;
+  }
+
+  public TypeInfo getHandlerArg() {
+    return handlerArg;
+  }
+
+  public boolean isReadStream() {
+    return readStreamArg != null;
+  }
+
+  public TypeInfo getReadStreamArg() {
+    return readStreamArg;
+  }
+
+  public boolean isWriteStream() {
+    return writeStreamArg != null;
+  }
+
+  public TypeInfo getWriteStreamArg() {
+    return writeStreamArg;
   }
 }

@@ -8,18 +8,12 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.*;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Type info factory based on <i>javax.lang.model</i> and type mirrors.
@@ -117,28 +111,23 @@ public class TypeMirrorFactory {
           List<TypeParamInfo.Class> typeParams = createTypeParams(type);
           if (kind == ClassKind.API) {
             VertxGen genAnn = elt.getAnnotation(VertxGen.class);
-            TypeInfo[] args = Stream.of(
-              ClassModel.VERTX_READ_STREAM,
-              ClassModel.VERTX_WRITE_STREAM,
-              ClassModel.VERTX_HANDLER
-            ).map(s -> {
-              TypeElement parameterizedElt = elementUtils.getTypeElement(s);
-              TypeMirror parameterizedType = parameterizedElt.asType();
-              TypeMirror rawType = typeUtils.erasure(parameterizedType);
-              if (typeUtils.isSubtype(type, rawType)) {
-                TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, parameterizedElt.getTypeParameters().get(0));
-                if (resolved.getKind() == TypeKind.DECLARED) {
-                  DeclaredType dt = (DeclaredType) resolved;
-                  TypeElement a = (TypeElement) dt.asElement();
-                  if (a.getQualifiedName().toString().equals("io.vertx.core.AsyncResult")) {
-                    return null;
-                  }
+            TypeInfo handlerArg = null;
+            TypeElement parameterizedElt = elementUtils.getTypeElement(ClassModel.VERTX_HANDLER);
+            TypeMirror parameterizedType = parameterizedElt.asType();
+            TypeMirror rawType = typeUtils.erasure(parameterizedType);
+            if (typeUtils.isSubtype(type, rawType)) {
+              TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, type, parameterizedElt.getTypeParameters().get(0));
+              if (resolved.getKind() == TypeKind.DECLARED) {
+                DeclaredType dt = (DeclaredType) resolved;
+                TypeElement a = (TypeElement) dt.asElement();
+                if (!a.getQualifiedName().toString().equals("io.vertx.core.AsyncResult")) {
+                  handlerArg = create(resolved);
                 }
-                return create(resolved);
+              } else {
+                handlerArg = create(resolved);
               }
-              return null;
-            }).toArray(TypeInfo[]::new);
-            raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, args[0], args[1], args[2], module, nullable, proxyGen);
+            }
+            raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, handlerArg, module, nullable, proxyGen);
           } else if (kind == ClassKind.DATA_OBJECT) {
             boolean _abstract = elt.getModifiers().contains(Modifier.ABSTRACT);
             raw = new DataObjectTypeInfo(kind, fqcn, module, _abstract, nullable, typeParams);
