@@ -52,6 +52,9 @@ public class ClassModel implements Model {
   public static final String JSON_OBJECT = "io.vertx.core.json.JsonObject";
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
   public static final String VERTX = "io.vertx.core.Vertx";
+  public static final String ITERABLE = "java.lang.Iterable";
+  public static final String ITERATOR = "java.util.Iterator";
+  public static final String FUNCTION = "java.util.function.Function";
   private static final Logger logger = Logger.getLogger(ClassModel.class.getName());
 
   protected final ProcessingEnvironment env;
@@ -85,6 +88,9 @@ public class ClassModel implements Model {
   protected TypeInfo handlerArg;
   protected TypeInfo readStreamArg;
   protected TypeInfo writeStreamArg;
+  protected TypeInfo iterableArg;
+  protected TypeInfo iteratorArg;
+  protected TypeInfo[] functionArgs;
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
   protected Map<String, List<AnnotationValueInfo>> methodAnnotationsMap = new LinkedHashMap<>();
@@ -651,9 +657,12 @@ public class ClassModel implements Model {
       }
     }
 
-    handlerArg = subTypeParamInfo(VERTX_HANDLER, declaredType);
-    readStreamArg = subTypeParamInfo(VERTX_READ_STREAM, declaredType);
-    writeStreamArg = subTypeParamInfo(VERTX_WRITE_STREAM, declaredType);
+    handlerArg = extractArg(VERTX_HANDLER, declaredType);
+    readStreamArg = extractArg(VERTX_READ_STREAM, declaredType);
+    writeStreamArg = extractArg(VERTX_WRITE_STREAM, declaredType);
+    iterableArg = extractArg(ITERABLE, declaredType);
+    iteratorArg = extractArg(ITERATOR, declaredType);
+    functionArgs = extractArgs(FUNCTION, declaredType);
 
     // Traverse nested elements that are not methods (like nested interfaces)
     for (Element enclosedElt : elem.getEnclosedElements()) {
@@ -748,20 +757,30 @@ public class ClassModel implements Model {
     }
   }
 
-  private TypeInfo subTypeParamInfo(String subType, DeclaredType declaredType) {
+  private TypeInfo extractArg(String subType, DeclaredType declaredType) {
+    TypeInfo[] typeInfos = extractArgs(subType, declaredType);
+    return typeInfos != null && typeInfos.length > 0 ? typeInfos[0] : null;
+  }
+
+  private TypeInfo[] extractArgs(String subType, DeclaredType declaredType) {
     TypeElement parameterizedElt = elementUtils.getTypeElement(subType);
     TypeMirror parameterizedType = parameterizedElt.asType();
     TypeMirror rawType = typeUtils.erasure(parameterizedType);
     if (typeUtils.isSubtype(declaredType, rawType)) {
-      TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, declaredType, parameterizedElt.getTypeParameters().get(0));
-      if (resolved != null && resolved.getKind() == TypeKind.DECLARED) {
-        DeclaredType dt = (DeclaredType) resolved;
-        TypeElement a = (TypeElement) dt.asElement();
-        if (a.getQualifiedName().toString().equals(VERTX_ASYNC_RESULT)) {
-          return null;
+      List<? extends TypeParameterElement> typeParameters = parameterizedElt.getTypeParameters();
+      TypeInfo[] typeInfos = new TypeInfo[typeParameters.size()];
+      for (int i = 0; i < typeParameters.size(); i++) {
+        TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, declaredType, typeParameters.get(i));
+        if (resolved != null && resolved.getKind() == TypeKind.DECLARED) {
+          DeclaredType dt = (DeclaredType) resolved;
+          TypeElement a = (TypeElement) dt.asElement();
+          if (a.getQualifiedName().toString().equals(VERTX_ASYNC_RESULT)) {
+            return null;
+          }
         }
+        typeInfos[i] = typeFactory.create(resolved);
       }
-      return typeFactory.create(resolved);
+      return typeInfos;
     }
     return null;
   }
@@ -1108,5 +1127,29 @@ public class ClassModel implements Model {
 
   public TypeInfo getWriteStreamArg() {
     return writeStreamArg;
+  }
+
+  public boolean isIterable() {
+    return iterableArg != null;
+  }
+
+  public TypeInfo getIterableArg() {
+    return iterableArg;
+  }
+
+  public boolean isIterator() {
+    return iteratorArg != null;
+  }
+
+  public TypeInfo getIteratorArg() {
+    return iteratorArg;
+  }
+
+  public boolean isFunction() {
+    return functionArgs != null;
+  }
+
+  public TypeInfo[] getFunctionArgs() {
+    return functionArgs;
   }
 }
