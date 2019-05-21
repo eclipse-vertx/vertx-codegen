@@ -7,15 +7,7 @@ import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.codegen.testmodel.TestGenEnum;
-import io.vertx.codegen.type.ApiTypeInfo;
-import io.vertx.codegen.type.ClassKind;
-import io.vertx.codegen.type.ClassTypeInfo;
-import io.vertx.codegen.type.EnumTypeInfo;
-import io.vertx.codegen.type.ParameterizedTypeInfo;
-import io.vertx.codegen.type.PrimitiveTypeInfo;
-import io.vertx.codegen.type.TypeInfo;
-import io.vertx.codegen.type.TypeReflectionFactory;
-import io.vertx.codegen.type.TypeVariableInfo;
+import io.vertx.codegen.type.*;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
@@ -25,44 +17,24 @@ import io.vertx.test.codegen.annotations.EmptyAnnotation;
 import io.vertx.test.codegen.testapi.*;
 import io.vertx.test.codegen.testapi.constant.InterfaceWithConstants;
 import io.vertx.test.codegen.testapi.constant.InterfaceWithIllegalConstantType;
+import io.vertx.test.codegen.testapi.fluent.*;
+import io.vertx.test.codegen.testapi.handler.FutureLike;
+import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerStringSubtype;
+import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerVertxGenSubtype;
+import io.vertx.test.codegen.testapi.impl.InterfaceInImplPackage;
+import io.vertx.test.codegen.testapi.impl.sub.InterfaceInImplParentPackage;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithInvalidJavaTypeParam;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithInvalidJavaTypeReturn;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeParams;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeReturn;
 import io.vertx.test.codegen.testapi.overloadcheck.OverloadCheckIgnoreEnhancedMethod;
 import io.vertx.test.codegen.testapi.overloadcheck.OverloadCheckInvalidMethodOverloading;
-import io.vertx.test.codegen.testapi.fluent.AbstractInterfaceWithFluentMethods;
-import io.vertx.test.codegen.testapi.fluent.ConcreteInterfaceWithFluentMethods;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodOverrideWithSuperType;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodWithGenericReturn;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodWithIllegalParameterizedReturn;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodWithIllegalReturn;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodWithVoidReturn;
-import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromAbstract;
-import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromConcrete;
-import io.vertx.test.codegen.testapi.handler.FutureLike;
-import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerStringSubtype;
-import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerVertxGenSubtype;
-import io.vertx.test.codegen.testapi.impl.InterfaceInImplPackage;
-import io.vertx.test.codegen.testapi.impl.sub.InterfaceInImplParentPackage;
 import io.vertx.test.codegen.testapi.simple.InterfaceInImplContainingPackage;
-import io.vertx.test.codegen.testapi.streams.GenericInterfaceExtentingReadStream;
-import io.vertx.test.codegen.testapi.streams.GenericInterfaceExtentingReadStreamAndWriteStream;
-import io.vertx.test.codegen.testapi.streams.GenericInterfaceExtentingWriteStream;
-import io.vertx.test.codegen.testapi.streams.InterfaceExtentingReadStream;
-import io.vertx.test.codegen.testapi.streams.InterfaceExtentingReadStreamAndWriteStream;
-import io.vertx.test.codegen.testapi.streams.InterfaceExtentingWriteStream;
-import io.vertx.test.codegen.testapi.streams.InterfaceSubtypingReadStream;
-import io.vertx.test.codegen.testapi.streams.ReadStreamWithParameterizedTypeArg;
+import io.vertx.test.codegen.testapi.streams.*;
 import org.junit.Test;
 
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -1941,108 +1913,108 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testInterfaceExtendingReadStream() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(InterfaceExtentingReadStream.class);
+    assertTrue(model.isReadStream());
+    assertEquals(TypeReflectionFactory.create(String.class), model.getReadStreamArg());
+    assertFalse(model.isWriteStream());
+    assertNull(model.getWriteStreamArg());
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
-    assertTrue(apiType.isReadStream());
-    assertEquals(TypeReflectionFactory.create(String.class), apiType.getReadStreamArg());
-    assertFalse(apiType.isWriteStream());
-    assertNull(apiType.getWriteStreamArg());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testGenericInterfaceExtendingReadStream() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(GenericInterfaceExtentingReadStream.class);
+    assertTrue(model.isReadStream());
+    TypeInfo readStreamType = model.getReadStreamArg();
+    assertEquals("U", readStreamType.getName());
+    assertFalse(model.isWriteStream());
+    assertNull(model.getWriteStreamArg());
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType().getRaw();
-    assertTrue(apiType.isReadStream());
-    TypeVariableInfo readStreamArg = (TypeVariableInfo) apiType.getReadStreamArg();
-    assertEquals("U", readStreamArg.getName());
-    assertFalse(apiType.isWriteStream());
-    assertNull(apiType.getWriteStreamArg());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testInterfaceExtendingWriteStream() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(InterfaceExtentingWriteStream.class);
+    assertFalse(model.isReadStream());
+    assertNull(model.getReadStreamArg());
+    assertTrue(model.isWriteStream());
+    assertEquals(TypeReflectionFactory.create(String.class), model.getWriteStreamArg());
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
-    assertFalse(apiType.isReadStream());
-    assertNull(apiType.getReadStreamArg());
-    assertTrue(apiType.isWriteStream());
-    assertEquals(TypeReflectionFactory.create(String.class), apiType.getWriteStreamArg());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testGenericInterfaceExtendingWriteStream() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(GenericInterfaceExtentingWriteStream.class);
+    assertFalse(model.isReadStream());
+    assertNull(model.getReadStreamArg());
+    assertTrue(model.isWriteStream());
+    TypeVariableInfo writeStreamType = (TypeVariableInfo) model.getWriteStreamArg();
+    assertEquals("U", writeStreamType.getName());
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType().getRaw();
-    assertFalse(apiType.isReadStream());
-    assertNull(apiType.getReadStreamArg());
-    assertTrue(apiType.isWriteStream());
-    TypeVariableInfo writeStreamArg = (TypeVariableInfo) apiType.getWriteStreamArg();
-    assertEquals("U", writeStreamArg.getName());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testInterfaceExtendingReadStreamAndWriteStream() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(InterfaceExtentingReadStreamAndWriteStream.class);
+    assertTrue(model.isReadStream());
+    assertEquals(TypeReflectionFactory.create(String.class), model.getReadStreamArg());
+    assertTrue(model.isWriteStream());
+    assertEquals(TypeReflectionFactory.create(String.class), model.getWriteStreamArg());
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
-    assertTrue(apiType.isReadStream());
-    assertEquals(TypeReflectionFactory.create(String.class), apiType.getReadStreamArg());
-    assertTrue(apiType.isWriteStream());
-    assertEquals(TypeReflectionFactory.create(String.class), apiType.getWriteStreamArg());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testGenericInterfaceExtendingReadStreamAndWriteStream() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(GenericInterfaceExtentingReadStreamAndWriteStream.class);
+    assertTrue(model.isReadStream());
+    TypeVariableInfo readStreamType = (TypeVariableInfo) model.getReadStreamArg();
+    assertEquals("U", readStreamType.getName());
+    assertTrue(model.isWriteStream());
+    TypeVariableInfo writeStreamType = (TypeVariableInfo) model.getWriteStreamArg();
+    assertEquals("U", writeStreamType.getName());
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType().getRaw();
-    assertTrue(apiType.isReadStream());
-    TypeVariableInfo readStreamArg = (TypeVariableInfo) apiType.getReadStreamArg();
-    assertEquals("U", readStreamArg.getName());
-    assertTrue(apiType.isWriteStream());
-    TypeVariableInfo writeStreamArg = (TypeVariableInfo) apiType.getWriteStreamArg();
-    assertEquals("U", writeStreamArg.getName());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testInterfaceSubtypingReadStream() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(InterfaceSubtypingReadStream.class);
+    assertTrue(model.isReadStream());
+    assertEquals(TypeReflectionFactory.create(String.class), model.getReadStreamArg());
+    assertFalse(model.isWriteStream());
+    assertNull(model.getWriteStreamArg());
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
-    assertTrue(apiType.isReadStream());
-    assertEquals(TypeReflectionFactory.create(String.class), apiType.getReadStreamArg());
-    assertFalse(apiType.isWriteStream());
-    assertNull(apiType.getWriteStreamArg());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testReadStreamWithParameterizedTypeArg() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(ReadStreamWithParameterizedTypeArg.class);
+    assertTrue(model.isReadStream());
+    ParameterizedTypeInfo readStreamType = (ParameterizedTypeInfo) model.getReadStreamArg();
+    assertEquals(TypeReflectionFactory.create(GenericInterface.class), readStreamType.getRaw());
+    assertEquals(1, readStreamType.getArgs().size());
+    assertEquals("T", readStreamType.getArgs().get(0).getName());
+    assertFalse(model.isWriteStream());
+    assertNull(model.getWriteStreamArg());
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType().getRaw();
-    assertTrue(apiType.isReadStream());
-    ParameterizedTypeInfo readStreamArg = (ParameterizedTypeInfo) apiType.getReadStreamArg();
-    assertEquals(TypeReflectionFactory.create(GenericInterface.class), readStreamArg.getRaw());
-    assertEquals(1, readStreamArg.getArgs().size());
-    assertEquals("T", readStreamArg.getArgs().get(0).getName());
-    assertFalse(apiType.isWriteStream());
-    assertNull(apiType.getWriteStreamArg());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testInterfaceExtendingHandlerStringSubtype() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(InterfaceExtendingHandlerStringSubtype.class);
-    TypeInfo handlerSuperType = model.getHandlerType();
+    TypeInfo handlerSuperType = model.getHandlerArg();
     assertEquals(TypeReflectionFactory.create(String.class), handlerSuperType);
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
     assertTrue(apiType.isHandler());
-    assertEquals(TypeReflectionFactory.create(String.class), apiType.getHandlerArg());
-    assertFalse(apiType.isReadStream());
-    assertFalse(apiType.isWriteStream());
+    assertEquals(TypeReflectionFactory.create(String.class), model.getHandlerArg());
+    assertFalse(model.isReadStream());
+    assertFalse(model.isWriteStream());
     assertEquals(1, model.getMethodMap().size());
     assertEquals(1, model.getMethodMap().get("handle").size());
     checkMethod(model.getMethodMap().get("handle").get(0), "handle", 1, "void", MethodKind.OTHER);
@@ -2051,13 +2023,13 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testInterfaceExtendingHandlerVertxGenSubtype() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(InterfaceExtendingHandlerVertxGenSubtype.class, VertxGenClass1.class);
-    TypeInfo handlerSuperType = model.getHandlerType();
+    TypeInfo handlerSuperType = model.getHandlerArg();
     assertEquals(TypeReflectionFactory.create(VertxGenClass1.class), handlerSuperType);
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
     assertTrue(apiType.isHandler());
-    assertEquals(TypeReflectionFactory.create(VertxGenClass1.class), apiType.getHandlerArg());
-    assertFalse(apiType.isReadStream());
-    assertFalse(apiType.isWriteStream());
+    assertEquals(TypeReflectionFactory.create(VertxGenClass1.class), model.getHandlerArg());
+    assertFalse(model.isReadStream());
+    assertFalse(model.isWriteStream());
     assertEquals(1, model.getMethodMap().size());
     assertEquals(1, model.getMethodMap().get("handle").size());
     checkMethod(model.getMethodMap().get("handle").get(0), "handle", 1, "void", MethodKind.OTHER);
@@ -2067,14 +2039,14 @@ public class ClassTest extends ClassTestBase {
   public void testRecursiveFuture() throws Exception {
     // Check we can build this type
     ClassModel model = new GeneratorHelper().generateClass(RecursiveFuture.class);
-    assertNull(model.getHandlerType());
+    assertNull(model.getHandlerArg());
   }
 
   @Test
   public void testFutureLike() throws Exception {
     // Check we can build this type
     ClassModel model = new GeneratorHelper().generateClass(FutureLike.class);
-    assertNull(model.getHandlerType());
+    assertNull(model.getHandlerArg());
   }
 
   @Test

@@ -6,7 +6,7 @@ import io.vertx.codegen.TypeParamInfo;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.streams.ReadStream;
+import io.vertx.core.Handler;
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -71,9 +71,9 @@ public class TypeReflectionFactory {
             typeParams.add(new TypeParamInfo.Class(classType.getName(), index++, var.getName()));
           }
           if (kind == ClassKind.API) {
-            java.lang.reflect.TypeVariable<Class<ReadStream>> classTypeVariable = ReadStream.class.getTypeParameters()[0];
-            Type readStreamArg = Helper.resolveTypeParameter(type, classTypeVariable);
-            return new ApiTypeInfo(fqcn, true, typeParams, readStreamArg != null ? create(readStreamArg) : null, null, null, module, false, false);
+            java.lang.reflect.TypeVariable<Class<Handler>> classTypeVariable = Handler.class.getTypeParameters()[0];
+            Type handlerArg = Helper.resolveTypeParameter(type, classTypeVariable);
+            return new ApiTypeInfo(fqcn, true, typeParams, handlerArg != null ? create(handlerArg) : null, module, false, false);
           } else if (kind == ClassKind.DATA_OBJECT) {
             boolean _abstract = Modifier.isAbstract(classType.getModifiers());
             return new DataObjectTypeInfo(kind, fqcn, module, _abstract, false, typeParams);
