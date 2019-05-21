@@ -40,6 +40,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 /**
@@ -1260,6 +1262,90 @@ public class ClassTest extends ClassTestBase {
     List<MethodInfo> methods = model.getMethods();
     assertEquals(1, methods.size());
     checkMethod(methods.get(0), "foo", 1, "void", MethodKind.OTHER);
+  }
+
+  @Test
+  public void testIterableValidSuperType() throws Exception {
+    Map<Class<?>, Class<?>> valid = new HashMap<>();
+    valid.put(InterfaceWithIterableStringSuperType.class, String.class);
+    valid.put(InterfaceWithIterableApiSuperType.class, VertxGenClass1.class);
+
+    for (Map.Entry<Class<?>, Class<?>> entry : valid.entrySet()) {
+      Class<?> interfaceClass = entry.getKey();
+      Class<?> valueClass = entry.getValue();
+      ClassModel model = new GeneratorHelper().generateClass(interfaceClass);
+      assertEquals(interfaceClass.getName(), model.getIfaceFQCN());
+      assertEquals(interfaceClass.getSimpleName(), model.getIfaceSimpleName());
+      assertEquals(0, model.getSuperTypes().size());
+      assertEquals(0, model.getMethods().size());
+      assertTrue(model.isIterable());
+      assertEquals(valueClass.getName(), model.getIterableArg().getName());
+    }
+  }
+
+  @Test
+  public void testParameterizedIterableSuperType() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithParameterizedIterableSuperType.class);
+    assertEquals(InterfaceWithParameterizedIterableSuperType.class.getName() + "<U>", model.getIfaceFQCN());
+    assertEquals(InterfaceWithParameterizedIterableSuperType.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(0, model.getSuperTypes().size());
+    assertEquals(0, model.getMethods().size());
+    assertTrue(model.isIterable());
+    TypeInfo iterableType = model.getIterableArg();
+    assertThat(iterableType, is(instanceOf(TypeVariableInfo.class)));
+  }
+
+  @Test
+  public void testIterableInvalidSuperType() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithIllegalArgumentIterableSuperType.class);
+    assertEquals(InterfaceWithIllegalArgumentIterableSuperType.class.getName(), model.getIfaceFQCN());
+    assertEquals(InterfaceWithIllegalArgumentIterableSuperType.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(0, model.getSuperTypes().size());
+    assertEquals(0, model.getMethods().size());
+    assertFalse(model.isIterable());
+  }
+
+  @Test
+  public void testFunctionValidSuperType() throws Exception {
+    Map<Class<?>, Class<?>> valid = new HashMap<>();
+    valid.put(InterfaceWithFunctionStringSuperType.class, String.class);
+    valid.put(InterfaceWithFunctionApiSuperType.class, VertxGenClass1.class);
+
+    for (Map.Entry<Class<?>, Class<?>> entry : valid.entrySet()) {
+      Class<?> interfaceClass = entry.getKey();
+      Class<?> valueClass = entry.getValue();
+      ClassModel model = new GeneratorHelper().generateClass(interfaceClass);
+      assertEquals(interfaceClass.getName(), model.getIfaceFQCN());
+      assertEquals(interfaceClass.getSimpleName(), model.getIfaceSimpleName());
+      assertEquals(0, model.getSuperTypes().size());
+      assertEquals(0, model.getMethods().size());
+      assertTrue(model.isFunction());
+      assertEquals(valueClass.getName(), model.getFunctionArgs()[0].getName());
+      assertEquals(valueClass.getName(), model.getFunctionArgs()[1].getName());
+    }
+  }
+
+  @Test
+  public void testParameterizedFunctionSuperType() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithParameterizedFunctionSuperType.class);
+    assertEquals(InterfaceWithParameterizedFunctionSuperType.class.getName() + "<T,R>", model.getIfaceFQCN());
+    assertEquals(InterfaceWithParameterizedFunctionSuperType.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(0, model.getSuperTypes().size());
+    assertEquals(0, model.getMethods().size());
+    assertTrue(model.isFunction());
+    TypeInfo[] functionArgs = model.getFunctionArgs();
+    assertThat(functionArgs[0], is(instanceOf(TypeVariableInfo.class)));
+    assertThat(functionArgs[1], is(instanceOf(TypeVariableInfo.class)));
+  }
+
+  @Test
+  public void testFunctionInvalidSuperType() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithIllegalArgumentFunctionSuperType.class);
+    assertEquals(InterfaceWithIllegalArgumentFunctionSuperType.class.getName(), model.getIfaceFQCN());
+    assertEquals(InterfaceWithIllegalArgumentFunctionSuperType.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(0, model.getSuperTypes().size());
+    assertEquals(0, model.getMethods().size());
+    assertFalse(model.isFunction());
   }
 
   @Test
