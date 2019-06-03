@@ -482,10 +482,7 @@ public class ClassModel implements Model {
       TypeInfo paramType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(0);
       if (isLegalCallbackValueType(paramType, allowAnyJavaType) || paramType.getKind() == ClassKind.THROWABLE) {
         TypeInfo returnType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(1);
-        if (returnType.getKind() == ClassKind.ASYNC_RESULT) {
-
-        }
-        return isLegalNonCallableParam(returnType, allowAnyJavaType);
+        return "io.vertx.core.Future".equals(returnType.getRaw() != null ? returnType.getRaw().getName() : null) || isLegalNonCallableParam(returnType, allowAnyJavaType);
       }
     }
     return false;
@@ -494,9 +491,9 @@ public class ClassModel implements Model {
   private boolean isLegalHandlerType(TypeInfo type, boolean allowAnyJavaType) {
     if (type.getErased().getKind() == ClassKind.HANDLER) {
       TypeInfo eventType = ((ParameterizedTypeInfo) type).getArgs().get(0);
-      if (isLegalCallbackValueType(eventType, allowAnyJavaType) || eventType.getKind() == ClassKind.THROWABLE) {
-        return true;
-      }
+      return (eventType.getRaw() != null && "io.vertx.core.Future".equals(eventType.getRaw().getName())) ||
+        isLegalCallbackValueType(eventType, allowAnyJavaType) ||
+        eventType.getKind() == ClassKind.THROWABLE;
     }
     return false;
   }

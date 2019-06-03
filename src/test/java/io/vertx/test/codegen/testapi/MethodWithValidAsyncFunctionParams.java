@@ -53,9 +53,9 @@ public interface MethodWithValidAsyncFunctionParams {
                                    Function<Set<VertxGenClass1>, Future<Set<VertxGenClass1>>> setVertxGenFunction, Function<Set<JsonObject>, Future<Set<JsonObject>>> setJsonObjectFunction, Function<Set<JsonArray>, Future<Set<JsonArray>>> setJsonArrayFunction,
                                    Function<Set<TestDataObject>, Future<Set<TestDataObject>>> setDataObjectFunction, Function<Set<TestEnum>, Future<Set<TestEnum>>> setEnumFunction);
 
-  void methodWithMapFunctionParams(Function<Map<String, Future<Byte>>, Map<String, Byte>> mapByteFunction, Function<Map<String, Future<Short>>, Map<String, Short>> mapShortFunction, Function<Map<String, Future<Integer>>, Map<String, Integer>> mapIntFunction,
-                                   Function<Map<String, Future<Long>>, Map<String, Long>> mapLongFunction, Function<Map<String, Future<Float>>, Map<String, Float>> mapFloatFunction, Function<Map<String, Future<Double>>, Map<String, Double>> mapDoubleFunction,
-                                   Function<Map<String, Future<Boolean>>, Map<String, Boolean>> mapBooleanFunction, Function<Map<String, Future<Character>>, Map<String, Character>> mapCharFunction, Function<Map<String, Future<String>>, Map<String, String>> mapStrFunction,
-                                   Function<Map<String, Future<JsonObject>>, Map<String, JsonObject>> mapJsonObjectFunction, Function<Map<String, Future<JsonArray>>, Map<String, JsonArray>> mapJsonArrayFunction);
+  void methodWithMapFunctionParams(Function<Map<String, Byte>, Future<Map<String, Byte>>> mapByteFunction, Function<Map<String, Short>, Future<Map<String, Short>>> mapShortFunction, Function<Map<String, Integer>, Future<Map<String, Integer>>> mapIntFunction,
+                                   Function<Map<String, Long>, Future<Map<String, Long>>> mapLongFunction, Function<Map<String, Float>, Future<Map<String, Float>>> mapFloatFunction, Function<Map<String, Double>, Future<Map<String, Double>>> mapDoubleFunction,
+                                   Function<Map<String, Boolean>, Future<Map<String, Boolean>>> mapBooleanFunction, Function<Map<String, Character>, Future<Map<String, Character>>> mapCharFunction, Function<Map<String, String>, Future<Map<String, String>>> mapStrFunction,
+                                   Function<Map<String, JsonObject>, Future<Map<String, JsonObject>>> mapJsonObjectFunction, Function<Map<String, JsonArray>, Future<Map<String, JsonArray>>> mapJsonArrayFunction);
 
 }

@@ -87,10 +87,13 @@ public class MethodInfo implements Comparable<MethodInfo> {
       TypeInfo lastParamType = params.get(lastParamIndex).type;
       if (lastParamType.getKind() == ClassKind.HANDLER) {
         TypeInfo typeArg = ((ParameterizedTypeInfo) lastParamType).getArgs().get(0);
-        if (typeArg.getKind() == ClassKind.ASYNC_RESULT) {
-          return MethodKind.FUTURE;
-        } else {
-          return MethodKind.HANDLER;
+        // If the last param is a Handler<Future<T>> it should not be managed as a MethodKind.HANDLER
+        if (typeArg.getRaw() == null || !typeArg.getRaw().getName().equals("io.vertx.core.Future")) {
+          if (typeArg.getKind() == ClassKind.ASYNC_RESULT) {
+            return MethodKind.FUTURE;
+          } else {
+            return MethodKind.HANDLER;
+          }
         }
       }
     }
