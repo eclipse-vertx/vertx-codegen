@@ -482,6 +482,9 @@ public class ClassModel implements Model {
       TypeInfo paramType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(0);
       if (isLegalCallbackValueType(paramType, allowAnyJavaType) || paramType.getKind() == ClassKind.THROWABLE) {
         TypeInfo returnType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(1);
+        if (returnType.getKind() == ClassKind.ASYNC_RESULT) {
+
+        }
         return isLegalNonCallableParam(returnType, allowAnyJavaType);
       }
     }
