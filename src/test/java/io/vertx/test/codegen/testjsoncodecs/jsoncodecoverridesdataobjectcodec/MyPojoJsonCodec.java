@@ -1,6 +1,6 @@
 package io.vertx.test.codegen.testjsoncodecs.jsoncodecoverridesdataobjectcodec;
 
-import io.vertx.core.json.JsonCodec;
+import io.vertx.core.spi.json.JsonCodec;
 import io.vertx.core.json.JsonObject;
 
 public class MyPojoJsonCodec implements JsonCodec<MyPojo, JsonObject> {

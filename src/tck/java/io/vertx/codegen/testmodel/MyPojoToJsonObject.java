@@ -1,6 +1,6 @@
 package io.vertx.codegen.testmodel;
 
-import io.vertx.core.json.JsonCodec;
+import io.vertx.core.spi.json.JsonCodec;
 import io.vertx.core.json.JsonObject;
 
 import java.util.Objects;

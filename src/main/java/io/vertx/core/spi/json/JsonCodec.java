@@ -1,4 +1,4 @@
-package io.vertx.core.json;
+package io.vertx.core.spi.json;
 
 /**
  * This interface represents the Vert.x json representation of any <TARGET_TYPE> <br/>

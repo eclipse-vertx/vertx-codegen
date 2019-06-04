@@ -55,7 +55,7 @@ A _Data object_ is a type of which encoding/decoding to Vert.x Json type is know
 
 You can mark a type as a data object both:
 
-* Defining a `io.vertx.core.json.JsonCodec` for it
+* Defining a `io.vertx.core.spi.json.JsonCodec` for it
 * Annotating the type itself with `@DataObject` to generate the `JsonCodec` automatically
 
 ==== Json codecs

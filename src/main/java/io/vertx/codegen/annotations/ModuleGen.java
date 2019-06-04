@@ -1,6 +1,6 @@
 package io.vertx.codegen.annotations;
 
-import io.vertx.core.json.JsonCodec;
+import io.vertx.core.spi.json.JsonCodec;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

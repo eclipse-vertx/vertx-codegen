@@ -389,7 +389,7 @@ Maven _artifactId_ and the group package corresponding to the `groupId`.
 A data object is a type of which encoding/decoding to Vert.x Json type is known to the codegen.
 
 You can mark a type as a data object both:
-* Defining a `io.vertx.core.json.JsonCodec` for it
+* Defining a `io.vertx.core.spi.json.JsonCodec` for it
 * Annotating the type itself with `@DataObject`
 
 ### Json Codec

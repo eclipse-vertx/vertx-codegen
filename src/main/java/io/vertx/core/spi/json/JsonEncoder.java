@@ -1,4 +1,4 @@
-package io.vertx.core.json;
+package io.vertx.core.spi.json;
 
 /**
  * Primitive for conversion TARGET_TYPE -> JSON_TYPE

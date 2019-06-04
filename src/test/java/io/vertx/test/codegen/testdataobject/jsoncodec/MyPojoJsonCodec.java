@@ -1,6 +1,6 @@
 package io.vertx.test.codegen.testdataobject.jsoncodec;
 
-import io.vertx.core.json.JsonCodec;
+import io.vertx.core.spi.json.JsonCodec;
 
 public class MyPojoJsonCodec implements JsonCodec<MyPojo, Number> {
 

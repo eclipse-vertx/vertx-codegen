@@ -57,9 +57,9 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print("import java.time.format.DateTimeFormatter;\n");
     code.javaImport(
       matchCodecType(generateEncode, generateDecode,
-        "io.vertx.core.json.JsonCodec",
-        "io.vertx.core.json.JsonEncoder",
-        "io.vertx.core.json.JsonDecoder"
+        "io.vertx.core.spi.json.JsonCodec",
+        "io.vertx.core.spi.json.JsonEncoder",
+        "io.vertx.core.spi.json.JsonDecoder"
       )
     );
     writer.print("\n");

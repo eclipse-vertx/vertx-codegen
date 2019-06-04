@@ -1,6 +1,6 @@
 package io.vertx.test.codegen.testjsoncodecs.zoneddatetimetest;
 
-import io.vertx.core.json.JsonCodec;
+import io.vertx.core.spi.json.JsonCodec;
 
 import java.time.ZonedDateTime;
 

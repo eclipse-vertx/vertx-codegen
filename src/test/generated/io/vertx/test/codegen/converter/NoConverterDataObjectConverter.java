@@ -4,7 +4,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import io.vertx.core.json.JsonDecoder;
+import io.vertx.core.spi.json.JsonDecoder;
 
 /**
  * Converter and Codec for {@link io.vertx.test.codegen.converter.NoConverterDataObject}.
