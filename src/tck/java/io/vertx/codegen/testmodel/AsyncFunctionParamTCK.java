@@ -56,7 +56,6 @@ public interface AsyncFunctionParamTCK {
   );
 
   String methodWithJsonReturn(Function<String, Future<JsonObject>> objectFunc, Function<String, Future<JsonArray>> arrayFunc);
-  String methodWithObjectReturn(Function<Integer, Future<Object>> func);
   String methodWithDataObjectReturn(Function<String, Future<TestDataObject>> func);
   String methodWithEnumReturn(Function<String, Future<TestEnum>> func);
   String methodWithListReturn(Function<String, Future<List<String>>> func);
