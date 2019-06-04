@@ -38,8 +38,8 @@ public interface MethodWithValidAsyncFunctionParams {
                                     Function<Long, Future<Long>> longFunction, Function<Float, Future<Float>> floatFunction, Function<Double, Future<Double>> doubleFunction,
                                     Function<Boolean, Future<Boolean>> booleanFunction, Function<Character, Future<Character>> charFunction, Function<String, Future<String>> strFunction,
                                     Function<VertxGenClass1, Future<VertxGenClass1>> gen1Function, Function<VertxGenClass2, Future<VertxGenClass2>> gen2Function,
-                                    Function<Void, Future<String>> voidFunction, Function<Throwable, Future<Throwable>> throwableFunction, Function<TestDataObject, Future<TestDataObject>> dataObjectFunction,
-                                    Function<TestEnum, Future<TestEnum>> enumFunction, Function<Object, Future<Object>> objectFunction, Function<T, Future<T>> genericFunction, Function<GenericInterface<T>, Future<GenericInterface<T>>> genericUserTypeFunction);
+                                    Function<Void, Future<String>> voidFunction, Function<TestDataObject, Future<TestDataObject>> dataObjectFunction,
+                                    Function<TestEnum, Future<TestEnum>> enumFunction, Function<T, Future<T>> genericFunction, Function<GenericInterface<T>, Future<GenericInterface<T>>> genericUserTypeFunction);
 
   void methodWithListFunctionParams(Function<List<Byte>, Future<List<Byte>>> listByteFunction, Function<List<Short>, Future<List<Short>>> listShortFunction, Function<List<Integer>, Future<List<Integer>>> listIntFunction,
                                     Function<List<Long>, Future<List<Long>>> listLongFunction, Function<List<Float>, Future<List<Float>>> listFloatFunction, Function<List<Double>, Future<List<Double>>> listDoubleFunction,

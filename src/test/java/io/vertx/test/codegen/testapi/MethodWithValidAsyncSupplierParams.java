@@ -38,8 +38,8 @@ public interface MethodWithValidAsyncSupplierParams {
                                     Handler<Future<Long>> longSupplier, Handler<Future<Float>> floatSupplier, Handler<Future<Double>> doubleSupplier,
                                     Handler<Future<Boolean>> booleanSupplier, Handler<Future<Character>> charSupplier, Handler<Future<String>> strSupplier,
                                     Handler<Future<VertxGenClass1>> gen1Supplier, Handler<Future<VertxGenClass2>> gen2Supplier,
-                                    Handler<Future<String>> voidSupplier, Handler<Future<Throwable>> throwableSupplier, Handler<Future<TestDataObject>> dataObjectSupplier,
-                                    Handler<Future<TestEnum>> enumSupplier, Handler<Future<Object>> objectSupplier, Handler<Future<T>> genericSupplier, Handler<Future<GenericInterface<T>>> genericUserTypeSupplier);
+                                    Handler<Future<String>> voidSupplier, Handler<Future<TestDataObject>> dataObjectSupplier,
+                                    Handler<Future<TestEnum>> enumSupplier, Handler<Future<T>> genericSupplier, Handler<Future<GenericInterface<T>>> genericUserTypeSupplier);
 
   void methodWithListSupplierParams(Handler<Future<List<Byte>>> listByteSupplier, Handler<Future<List<Short>>> listShortSupplier, Handler<Future<List<Integer>>> listIntSupplier,
                                     Handler<Future<List<Long>>> listLongSupplier, Handler<Future<List<Float>>> listFloatSupplier, Handler<Future<List<Double>>> listDoubleSupplier,

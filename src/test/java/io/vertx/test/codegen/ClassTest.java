@@ -590,7 +590,7 @@ public class ClassTest extends ClassTestBase {
     ClassModel model = new GeneratorHelper().generateClass(MethodWithValidAsyncFunctionParams.class);
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, "methodWithFunctionParams", 18, "void", MethodKind.OTHER);
+    checkMethod(method, "methodWithFunctionParams", 16, "void", MethodKind.OTHER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "byteFunction", new TypeLiteral<Function<Byte, Future<Byte>>>() {});
     checkParam(params.get(1), "shortFunction", new TypeLiteral<Function<Short, Future<Short>>>() {});
@@ -604,12 +604,10 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(9), "gen1Function", new TypeLiteral<Function<VertxGenClass1, Future<VertxGenClass1>>>(){});
     checkParam(params.get(10), "gen2Function", new TypeLiteral<Function<VertxGenClass2, Future<VertxGenClass2>>>(){});
     checkParam(params.get(11), "voidFunction",  new TypeLiteral<Function<Void, Future<String>>>(){});
-    checkParam(params.get(12), "throwableFunction",  new TypeLiteral<Function<Throwable, Future<Throwable>>>(){});
-    checkParam(params.get(13), "dataObjectFunction", new TypeLiteral<Function<TestDataObject, Future<TestDataObject>>>(){});
-    checkParam(params.get(14), "enumFunction", new TypeLiteral<Function<TestEnum, Future<TestEnum>>>(){});
-    checkParam(params.get(15), "objectFunction", new TypeLiteral<Function<Object, Future<Object>>>(){});
-    checkParam(params.get(16), "genericFunction", new TypeLiteral<Function<T, Future<T>>>(){});
-    checkParam(params.get(17), "genericUserTypeFunction", new TypeLiteral<Function<GenericInterface<T>, Future<GenericInterface<T>>>>(){});
+    checkParam(params.get(12), "dataObjectFunction", new TypeLiteral<Function<TestDataObject, Future<TestDataObject>>>(){});
+    checkParam(params.get(13), "enumFunction", new TypeLiteral<Function<TestEnum, Future<TestEnum>>>(){});
+    checkParam(params.get(14), "genericFunction", new TypeLiteral<Function<T, Future<T>>>(){});
+    checkParam(params.get(15), "genericUserTypeFunction", new TypeLiteral<Function<GenericInterface<T>, Future<GenericInterface<T>>>>(){});
 
     method = model.getMethods().get(1);
     checkMethod(method, "methodWithListFunctionParams", 14, "void", MethodKind.OTHER);
@@ -668,7 +666,7 @@ public class ClassTest extends ClassTestBase {
     ClassModel model = new GeneratorHelper().generateClass(MethodWithValidAsyncSupplierParams.class);
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, "methodWithSupplierParams", 18, "void", MethodKind.OTHER);
+    checkMethod(method, "methodWithSupplierParams", 16, "void", MethodKind.OTHER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "byteSupplier", new TypeLiteral<Handler<Future<Byte>>>() {});
     checkParam(params.get(1), "shortSupplier", new TypeLiteral<Handler<Future<Short>>>() {});
@@ -682,12 +680,10 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(9), "gen1Supplier", new TypeLiteral<Handler<Future<VertxGenClass1>>>(){});
     checkParam(params.get(10), "gen2Supplier", new TypeLiteral<Handler<Future<VertxGenClass2>>>(){});
     checkParam(params.get(11), "voidSupplier",  new TypeLiteral<Handler<Future<String>>>(){});
-    checkParam(params.get(12), "throwableSupplier",  new TypeLiteral<Handler<Future<Throwable>>>(){});
-    checkParam(params.get(13), "dataObjectSupplier", new TypeLiteral<Handler<Future<TestDataObject>>>(){});
-    checkParam(params.get(14), "enumSupplier", new TypeLiteral<Handler<Future<TestEnum>>>(){});
-    checkParam(params.get(15), "objectSupplier", new TypeLiteral<Handler<Future<Object>>>(){});
-    checkParam(params.get(16), "genericSupplier", new TypeLiteral<Handler<Future<T>>>(){});
-    checkParam(params.get(17), "genericUserTypeSupplier", new TypeLiteral<Handler<Future<GenericInterface<T>>>>(){});
+    checkParam(params.get(12), "dataObjectSupplier", new TypeLiteral<Handler<Future<TestDataObject>>>(){});
+    checkParam(params.get(13), "enumSupplier", new TypeLiteral<Handler<Future<TestEnum>>>(){});
+    checkParam(params.get(14), "genericSupplier", new TypeLiteral<Handler<Future<T>>>(){});
+    checkParam(params.get(15), "genericUserTypeSupplier", new TypeLiteral<Handler<Future<GenericInterface<T>>>>(){});
 
     method = model.getMethods().get(1);
     checkMethod(method, "methodWithListSupplierParams", 14, "void", MethodKind.OTHER);
