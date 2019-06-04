@@ -463,19 +463,7 @@ public class ClassModel implements Model {
   }
 
   private boolean isLegalVertxGenInterface(TypeInfo type, boolean allowParameterized) {
-    if (type.getKind() == ClassKind.API) {
-      if (type.isParameterized()) {
-        ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
-        return allowParameterized &&
-          parameterized
-            .getArgs()
-            .stream()
-            .noneMatch(arg -> !isLegalVertxGenTypeArgument(arg) || arg.isNullable());
-      } else {
-        return true;
-      }
-    }
-    return false;
+    return isLegalVertxGenInterface(type, allowParameterized, this::isLegalVertxGenTypeArgument);
   }
 
   private boolean isLegalVertxGenInterface(TypeInfo type, boolean allowParameterized, Predicate<TypeInfo> p) {
