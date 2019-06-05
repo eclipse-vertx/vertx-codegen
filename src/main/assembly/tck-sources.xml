@@ -8,6 +8,10 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
+      <directory>${project.basedir}/src/tck/generated</directory>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>${project.basedir}/src/tck/java</directory>
       <outputDirectory>/</outputDirectory>
     </fileSet>

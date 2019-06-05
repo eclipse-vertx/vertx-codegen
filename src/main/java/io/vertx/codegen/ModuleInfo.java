@@ -3,12 +3,27 @@ package io.vertx.codegen;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.type.TypeNameTranslator;
 
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.stream.Stream;
 
 /**
  * Describes a module.
@@ -59,12 +74,44 @@ public class ModuleInfo {
    * @return the module info
    */
   public static ModuleInfo resolve(Elements elementUtils, PackageElement pkgElt) {
+    PackageElement result = resolveFirstModuleGenAnnotatedPackageElement(elementUtils, pkgElt);
+    if (result != null) {
+      ModuleGen annotation = result.getAnnotation(ModuleGen.class);
+      return new ModuleInfo(result.getQualifiedName().toString(), annotation.name(), annotation.groupPackage());
+    } else return null;
+  }
+
+  public static DeclaredType resolveJsonCodec(Elements elementUtils, Types typeUtils, PackageElement pkgElt, DeclaredType javaType) {
+    PackageElement result = resolveFirstModuleGenAnnotatedPackageElement(elementUtils, pkgElt);
+    if (result != null) {
+      TypeElement jsonCodecElt = elementUtils.getTypeElement("io.vertx.core.spi.json.JsonCodec");
+      TypeParameterElement typeParamElt = jsonCodecElt.getTypeParameters().get(0);
+      return elementUtils
+        .getAllAnnotationMirrors(pkgElt)
+        .stream()
+        .filter(am -> am.getAnnotationType().toString().equals(ModuleGen.class.getName()))
+        .flatMap(am -> am.getElementValues().entrySet().stream())
+        .filter(e -> e.getKey().getSimpleName().toString().equals("codecs"))
+        .flatMap(e -> ((List<AnnotationValue>) e.getValue().getValue()).stream())
+        .map(annotationValue -> (DeclaredType) annotationValue.getValue())
+        .filter(dt -> {
+          TypeMirror codecType = Helper.resolveTypeParameter(typeUtils, dt, typeParamElt);
+          return codecType != null && codecType.getKind() == TypeKind.DECLARED && typeUtils.isSameType(codecType, javaType);
+        })
+        .findFirst()
+        .orElse(null);
+    }
+    return null;
+  }
+
+  public static PackageElement resolveFirstModuleGenAnnotatedPackageElement(Elements elementUtils, PackageElement pkgElt) {
+    if (pkgElt == null) return null;
     String pkgQN = pkgElt.getQualifiedName().toString();
     while (true) {
       if (pkgElt != null) {
         ModuleGen annotation = pkgElt.getAnnotation(ModuleGen.class);
         if (annotation != null) {
-          return new ModuleInfo(pkgElt.getQualifiedName().toString(), annotation.name(), annotation.groupPackage());
+          return pkgElt;
         }
       }
       int pos = pkgQN.lastIndexOf('.');

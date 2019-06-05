@@ -14,6 +14,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.List;
@@ -32,6 +33,7 @@ public class EnumModel implements Model {
   protected final Elements elementUtils;
   protected final Types typeUtils;
   protected final TypeElement modelElt;
+  protected final TypeMirrorFactory typeMirrorFactory;
   protected EnumTypeInfo type;
   private final AnnotationValueInfoFactory annotationValueInfoFactory;
   private Doc doc;
@@ -44,9 +46,10 @@ public class EnumModel implements Model {
   public EnumModel(ProcessingEnvironment env, TypeElement modelElt) {
     this.typeUtils = env.getTypeUtils();
     this.elementUtils = env.getElementUtils();
-    this.docFactory = new Doc.Factory(env.getMessager(), elementUtils, typeUtils, new TypeMirrorFactory(elementUtils, typeUtils), modelElt);
+    this.typeMirrorFactory = new TypeMirrorFactory(elementUtils, typeUtils, elementUtils.getPackageOf(modelElt));
+    this.docFactory = new Doc.Factory(env.getMessager(), elementUtils, typeUtils, typeMirrorFactory, modelElt);
     this.modelElt = modelElt;
-    this.annotationValueInfoFactory = new AnnotationValueInfoFactory(new TypeMirrorFactory(elementUtils, typeUtils));
+    this.annotationValueInfoFactory = new AnnotationValueInfoFactory(typeMirrorFactory);
     this.deprecated = modelElt.getAnnotation(Deprecated.class) != null;
   }
 
@@ -61,7 +64,7 @@ public class EnumModel implements Model {
           deprecatedDesc = new Text(Helper.normalizeWhitespaces(tag.getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt))
         ); 
       }
-      type = (EnumTypeInfo) new TypeMirrorFactory(elementUtils, typeUtils).create(modelElt.asType());
+      type = (EnumTypeInfo) typeMirrorFactory.create(modelElt.asType());
       Helper.checkUnderModule(this, "@VertxGen");
       values = elementUtils.
         getAllMembers(modelElt).

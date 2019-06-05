@@ -1,9 +1,6 @@
 package io.vertx.codegen.type;
 
-import io.vertx.codegen.ClassModel;
-import io.vertx.codegen.Helper;
-import io.vertx.codegen.ModuleInfo;
-import io.vertx.codegen.TypeParamInfo;
+import io.vertx.codegen.*;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
@@ -24,10 +21,12 @@ public class TypeMirrorFactory {
 
   final Elements elementUtils;
   final Types typeUtils;
+  final PackageElement p;
 
-  public TypeMirrorFactory(Elements elementUtils, Types typeUtils) {
+  public TypeMirrorFactory(Elements elementUtils, Types typeUtils, PackageElement pkgElt) {
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
+    this.p = pkgElt;
   }
 
   public TypeInfo create(TypeMirror type) {
@@ -76,6 +75,7 @@ public class TypeMirrorFactory {
     PackageElement pkgElt = elementUtils.getPackageOf(elt);
     ModuleInfo module = ModuleInfo.resolve(elementUtils, pkgElt);
     String fqcn = elt.getQualifiedName().toString();
+    String simpleName = elt.getSimpleName().toString();
     boolean proxyGen = elt.getAnnotation(ProxyGen.class) != null;
     if (elt.getKind() == ElementKind.ENUM) {
       ArrayList<String> values = new ArrayList<>();
@@ -129,10 +129,48 @@ public class TypeMirrorFactory {
             }
             raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, handlerArg, module, nullable, proxyGen);
           } else if (kind == ClassKind.DATA_OBJECT) {
-            boolean _abstract = elt.getModifiers().contains(Modifier.ABSTRACT);
-            raw = new DataObjectTypeInfo(kind, fqcn, module, _abstract, nullable, typeParams);
+            boolean encodable = Helper.isDataObjectAnnotatedEncodable(elementUtils, elt);
+            boolean decodable = Helper.isDataObjectAnnotatedDecodable(elementUtils, typeUtils, elt);
+            raw = new DataObjectTypeInfo(
+              fqcn,
+              module,
+              nullable,
+              typeParams,
+              (encodable) ? simpleName + "Converter" : null,
+              null,
+              (encodable) ? pkgElt.toString() : null,
+              (decodable) ? simpleName + "Converter" : null,
+              null,
+              (decodable) ? pkgElt.toString() : null,
+              this.create(elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType())
+            );
           } else {
-            raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams);
+            DeclaredType jsonCodecType = ModuleInfo.resolveJsonCodec(elementUtils, typeUtils, p, type);
+            if (jsonCodecType != null) {
+              TypeElement jsonCodecElt = elementUtils.getTypeElement("io.vertx.core.spi.json.JsonCodec");
+              TypeParameterElement typeParamElt = jsonCodecElt.getTypeParameters().get(1);
+              TypeMirror jsonType = Helper.resolveTypeParameter(typeUtils, jsonCodecType, typeParamElt);
+              String codecSimpleName = jsonCodecType.asElement().getSimpleName().toString();
+              String codecEnclosingClass =
+                jsonCodecType.asElement().getEnclosingElement().getKind() != ElementKind.PACKAGE ?
+                  jsonCodecType.asElement().getEnclosingElement().getSimpleName().toString() : null;
+              String codecPkgName = elementUtils.getPackageOf(jsonCodecType.asElement()).toString();
+              raw = new DataObjectTypeInfo(
+                fqcn,
+                module,
+                nullable,
+                typeParams,
+                codecSimpleName,
+                codecEnclosingClass,
+                codecPkgName,
+                codecSimpleName,
+                codecEnclosingClass,
+                codecPkgName,
+                create(jsonType)
+              );
+            } else {
+              raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams);
+            }
           }
         }
         return raw;

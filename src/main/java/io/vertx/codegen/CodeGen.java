@@ -1,9 +1,6 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.ModuleGen;
-import io.vertx.codegen.type.AnnotationValueInfo;
-import io.vertx.codegen.type.AnnotationValueInfoFactory;
-import io.vertx.codegen.type.TypeMirrorFactory;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -16,7 +13,6 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -110,31 +106,7 @@ public class CodeGen {
 
   public ModuleModel getModuleModel(String modulePackage) {
     PackageElement element = modules.get(modulePackage);
-    ModuleGen annotation = element.getAnnotation(ModuleGen.class);
-    String moduleName = annotation.name();
-    if (moduleName.isEmpty()) {
-      throw new GenException(element, "A module name cannot be empty");
-    }
-    try {
-      Case.KEBAB.parse(moduleName);
-    } catch (IllegalArgumentException e) {
-      throw new GenException(element, "Module name '" + moduleName + "' does not follow the snake case format (dash separated name)");
-    }
-    String groupPackage = annotation.groupPackage();
-    if (groupPackage.equals("")) {
-      groupPackage = modulePackage;
-    } else if (!modulePackage.startsWith(groupPackage)) {
-      throw new GenException(element, "A module package (" + modulePackage + ") must be prefixed by the group package (" + groupPackage + ")");
-    }
-    try {
-      Case.QUALIFIED.parse(groupPackage);
-    } catch (Exception e) {
-      throw new GenException(element, "Invalid group package name " + groupPackage);
-    }
-    ModuleInfo info = new ModuleInfo(modulePackage, moduleName, groupPackage);
-    AnnotationValueInfoFactory annotationFactory = new AnnotationValueInfoFactory(new TypeMirrorFactory(elementUtils,typeUtils));
-    List<AnnotationValueInfo> annotationValueInfos = element.getAnnotationMirrors().stream().map(annotationFactory::processAnnotation).collect(Collectors.toList());
-    return new ModuleModel(element, info, annotationValueInfos);
+    return new ModuleModel(elementUtils, typeUtils, element);
   }
 
   public PackageModel getPackageModel(String fqn) {

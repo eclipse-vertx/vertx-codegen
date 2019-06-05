@@ -1,5 +1,16 @@
 = Cheatsheets
 
+[[AbstractConverterGeneratesEncoderWithToJsonDataObject]]
+== AbstractConverterGeneratesEncoderWithToJsonDataObject
+
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[a]]`@a`|`Number (int)`|-
+|===
+
 [[AggregatedDataObject]]
 == AggregatedDataObject
 
@@ -42,6 +53,39 @@
 ^|Name | Type ^| Description
 |[[childProperty]]`@childProperty`|`String`|-
 |[[parentProperty]]`@parentProperty`|`String`|-
+|===
+
+[[ConverterGeneratesCompleteCodecDataObject]]
+== ConverterGeneratesCompleteCodecDataObject
+
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[a]]`@a`|`Number (int)`|-
+|===
+
+[[ConverterGeneratesDecoderWithFromJsonDataObject]]
+== ConverterGeneratesDecoderWithFromJsonDataObject
+
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[a]]`@a`|`Number (int)`|-
+|===
+
+[[ConverterGeneratesEncoderWithToJsonDataObject]]
+== ConverterGeneratesEncoderWithToJsonDataObject
+
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[a]]`@a`|`Number (int)`|-
 |===
 
 [[NoConverterDataObject]]
@@ -106,6 +150,7 @@
 |[[addedBoxedLongValues]]`@addedBoxedLongValues`|`Array of Number (Long)`|-
 |[[addedBoxedShortValues]]`@addedBoxedShortValues`|`Array of Number (Short)`|-
 |[[addedBuffers]]`@addedBuffers`|`Array of Buffer`|-
+|[[addedDateTimes]]`@addedDateTimes`|`Array of link:dataobjects.html#ZonedDateTime[ZonedDateTime]`|-
 |[[addedHttpMethods]]`@addedHttpMethods`|`Array of link:enums.html#TimeUnit[TimeUnit]`|-
 |[[addedJsonArrays]]`@addedJsonArrays`|`Array of Json array`|-
 |[[addedJsonObjects]]`@addedJsonObjects`|`Array of Json object`|-
@@ -153,6 +198,10 @@
 |[[buffers]]`@buffers`|`Array of Buffer`|-
 |[[byteValue]]`@byteValue`|`Number (byte)`|-
 |[[charValue]]`@charValue`|`Char`|-
+|[[dateTime]]`@dateTime`|`link:dataobjects.html#ZonedDateTime[ZonedDateTime]`|-
+|[[dateTimeMap]]`@dateTimeMap`|`link:dataobjects.html#ZonedDateTime[ZonedDateTime]`|-
+|[[dateTimeSet]]`@dateTimeSet`|`Array of link:dataobjects.html#ZonedDateTime[ZonedDateTime]`|-
+|[[dateTimes]]`@dateTimes`|`Array of link:dataobjects.html#ZonedDateTime[ZonedDateTime]`|-
 |[[doubleValue]]`@doubleValue`|`Number (double)`|-
 |[[floatValue]]`@floatValue`|`Number (float)`|-
 |[[httpMethod]]`@httpMethod`|`link:enums.html#TimeUnit[TimeUnit]`|-
@@ -178,6 +227,7 @@
 |[[keyedBoxedShortValues]]`@keyedBoxedShortValues`|`Number (Short)`|-
 |[[keyedBufferValues]]`@keyedBufferValues`|`Buffer`|-
 |[[keyedDataObjectValues]]`@keyedDataObjectValues`|`link:dataobjects.html#AggregatedDataObject[AggregatedDataObject]`|-
+|[[keyedDateTimeValues]]`@keyedDateTimeValues`|`link:dataobjects.html#ZonedDateTime[ZonedDateTime]`|-
 |[[keyedEnumValues]]`@keyedEnumValues`|`link:enums.html#TimeUnit[TimeUnit]`|-
 |[[keyedJsonArrayValues]]`@keyedJsonArrayValues`|`Json array`|-
 |[[keyedJsonObjectValues]]`@keyedJsonObjectValues`|`Json object`|-

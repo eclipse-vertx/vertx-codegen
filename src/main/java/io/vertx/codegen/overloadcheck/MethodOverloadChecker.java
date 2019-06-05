@@ -18,7 +18,8 @@ package io.vertx.codegen.overloadcheck;
 
 import io.vertx.codegen.MethodInfo;
 import io.vertx.codegen.ParamInfo;
-import io.vertx.codegen.type.ClassKind;
+import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.type.DataObjectTypeInfo;
 import io.vertx.codegen.type.TypeInfo;
 
 import java.io.IOException;
@@ -95,7 +96,7 @@ public class MethodOverloadChecker {
     return meths.map(meth -> {
       List<SimpleParam> simpleParams = new ArrayList<>();
       for (ParamInfo param: meth.getParams()) {
-        TypeInfo type = param.getType();
+        TypeInfo type = (param.getType() instanceof DataObjectTypeInfo) ? ((DataObjectTypeInfo) param.getType()).getTargetJsonType() : param.getType();
         simpleParams.add(new SimpleParam(param.getName(), type.getKind(), param.isNullable(), type.getName()));
       }
       return new SimpleMethod(meth.getName(), simpleParams);

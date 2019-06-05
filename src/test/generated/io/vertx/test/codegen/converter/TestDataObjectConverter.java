@@ -4,12 +4,27 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import io.vertx.core.spi.json.JsonCodec;
 
 /**
- * Converter for {@link io.vertx.test.codegen.converter.TestDataObject}.
+ * Converter and Codec for {@link io.vertx.test.codegen.converter.TestDataObject}.
  * NOTE: This class has been automatically generated from the {@link io.vertx.test.codegen.converter.TestDataObject} original class using Vert.x codegen.
  */
-public class TestDataObjectConverter {
+public class TestDataObjectConverter implements JsonCodec<TestDataObject, JsonObject> {
+
+  public static final TestDataObjectConverter INSTANCE = new TestDataObjectConverter();
+
+  @Override
+  public JsonObject encode(TestDataObject value) {
+    if (value == null) return null;
+    JsonObject json = new JsonObject();
+    toJson(value, json);
+    return json;
+  }
+
+  @Override public TestDataObject decode(JsonObject value) { return (value != null) ? new TestDataObject(value) : null; }
+
+  @Override public Class<TestDataObject> getTargetClass() { return TestDataObject.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, TestDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
@@ -18,7 +33,7 @@ public class TestDataObjectConverter {
           if (member.getValue() instanceof JsonArray) {
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                obj.addAddedAggregatedDataObject(new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)item));
+                obj.addAddedAggregatedDataObject(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.decode((JsonObject)item));
             });
           }
           break;
@@ -94,6 +109,14 @@ public class TestDataObjectConverter {
             });
           }
           break;
+        case "addedDateTimes":
+          if (member.getValue() instanceof JsonArray) {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                obj.addAddedDateTime(io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.decode((String)item));
+            });
+          }
+          break;
         case "addedHttpMethods":
           if (member.getValue() instanceof JsonArray) {
             ((Iterable<Object>)member.getValue()).forEach( item -> {
@@ -136,7 +159,7 @@ public class TestDataObjectConverter {
           break;
         case "aggregatedDataObject":
           if (member.getValue() instanceof JsonObject) {
-            obj.setAggregatedDataObject(new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)member.getValue()));
+            obj.setAggregatedDataObject(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.decode((JsonObject)member.getValue()));
           }
           break;
         case "aggregatedDataObjectMap":
@@ -144,7 +167,7 @@ public class TestDataObjectConverter {
             java.util.Map<String, io.vertx.test.codegen.converter.AggregatedDataObject> map = new java.util.LinkedHashMap<>();
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof JsonObject)
-                map.put(entry.getKey(), new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)entry.getValue()));
+                map.put(entry.getKey(), io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.decode((JsonObject)entry.getValue()));
             });
             obj.setAggregatedDataObjectMap(map);
           }
@@ -154,7 +177,7 @@ public class TestDataObjectConverter {
             java.util.LinkedHashSet<io.vertx.test.codegen.converter.AggregatedDataObject> list =  new java.util.LinkedHashSet<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                list.add(new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)item));
+                list.add(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.decode((JsonObject)item));
             });
             obj.setAggregatedDataObjectSet(list);
           }
@@ -164,7 +187,7 @@ public class TestDataObjectConverter {
             java.util.ArrayList<io.vertx.test.codegen.converter.AggregatedDataObject> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                list.add(new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)item));
+                list.add(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.decode((JsonObject)item));
             });
             obj.setAggregatedDataObjects(list);
           }
@@ -499,6 +522,41 @@ public class TestDataObjectConverter {
             obj.setCharValue(((String)member.getValue()).charAt(0));
           }
           break;
+        case "dateTime":
+          if (member.getValue() instanceof String) {
+            obj.setDateTime(io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.decode((String)member.getValue()));
+          }
+          break;
+        case "dateTimeMap":
+          if (member.getValue() instanceof JsonObject) {
+            java.util.Map<String, java.time.ZonedDateTime> map = new java.util.LinkedHashMap<>();
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
+              if (entry.getValue() instanceof String)
+                map.put(entry.getKey(), io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.decode((String)entry.getValue()));
+            });
+            obj.setDateTimeMap(map);
+          }
+          break;
+        case "dateTimeSet":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.LinkedHashSet<java.time.ZonedDateTime> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                list.add(io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.decode((String)item));
+            });
+            obj.setDateTimeSet(list);
+          }
+          break;
+        case "dateTimes":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<java.time.ZonedDateTime> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                list.add(io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.decode((String)item));
+            });
+            obj.setDateTimes(list);
+          }
+          break;
         case "doubleValue":
           if (member.getValue() instanceof Number) {
             obj.setDoubleValue(((Number)member.getValue()).doubleValue());
@@ -695,7 +753,15 @@ public class TestDataObjectConverter {
           if (member.getValue() instanceof JsonObject) {
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof JsonObject)
-                obj.addKeyedDataObjectValue(entry.getKey(), new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)entry.getValue()));
+                obj.addKeyedDataObjectValue(entry.getKey(), io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.decode((JsonObject)entry.getValue()));
+            });
+          }
+          break;
+        case "keyedDateTimeValues":
+          if (member.getValue() instanceof JsonObject) {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
+              if (entry.getValue() instanceof String)
+                obj.addKeyedDateTimeValue(entry.getKey(), io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.decode((String)entry.getValue()));
             });
           }
           break;
@@ -825,7 +891,7 @@ public class TestDataObjectConverter {
   public static void toJson(TestDataObject obj, java.util.Map<String, Object> json) {
     if (obj.getAddedAggregatedDataObjects() != null) {
       JsonArray array = new JsonArray();
-      obj.getAddedAggregatedDataObjects().forEach(item -> array.add(item.toJson()));
+      obj.getAddedAggregatedDataObjects().forEach(item -> array.add(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.encode(item)));
       json.put("addedAggregatedDataObjects", array);
     }
     if (obj.getAddedBoxedBooleanValues() != null) {
@@ -873,6 +939,11 @@ public class TestDataObjectConverter {
       obj.getAddedBuffers().forEach(item -> array.add(java.util.Base64.getEncoder().encodeToString(item.getBytes())));
       json.put("addedBuffers", array);
     }
+    if (obj.getAddedDateTimes() != null) {
+      JsonArray array = new JsonArray();
+      obj.getAddedDateTimes().forEach(item -> array.add(io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.encode(item)));
+      json.put("addedDateTimes", array);
+    }
     if (obj.getAddedHttpMethods() != null) {
       JsonArray array = new JsonArray();
       obj.getAddedHttpMethods().forEach(item -> array.add(item.name()));
@@ -899,21 +970,21 @@ public class TestDataObjectConverter {
       json.put("addedStringValues", array);
     }
     if (obj.getAggregatedDataObject() != null) {
-      json.put("aggregatedDataObject", obj.getAggregatedDataObject().toJson());
+      json.put("aggregatedDataObject", io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.encode(obj.getAggregatedDataObject()));
     }
     if (obj.getAggregatedDataObjectMap() != null) {
       JsonObject map = new JsonObject();
-      obj.getAggregatedDataObjectMap().forEach((key, value) -> map.put(key, value.toJson()));
+      obj.getAggregatedDataObjectMap().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.encode(value)));
       json.put("aggregatedDataObjectMap", map);
     }
     if (obj.getAggregatedDataObjectSet() != null) {
       JsonArray array = new JsonArray();
-      obj.getAggregatedDataObjectSet().forEach(item -> array.add(item.toJson()));
+      obj.getAggregatedDataObjectSet().forEach(item -> array.add(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.encode(item)));
       json.put("aggregatedDataObjectSet", array);
     }
     if (obj.getAggregatedDataObjects() != null) {
       JsonArray array = new JsonArray();
-      obj.getAggregatedDataObjects().forEach(item -> array.add(item.toJson()));
+      obj.getAggregatedDataObjects().forEach(item -> array.add(io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.encode(item)));
       json.put("aggregatedDataObjects", array);
     }
     json.put("booleanValue", obj.isBooleanValue());
@@ -1081,6 +1152,24 @@ public class TestDataObjectConverter {
     }
     json.put("byteValue", obj.getByteValue());
     json.put("charValue", Character.toString(obj.getCharValue()));
+    if (obj.getDateTime() != null) {
+      json.put("dateTime", io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.encode(obj.getDateTime()));
+    }
+    if (obj.getDateTimeMap() != null) {
+      JsonObject map = new JsonObject();
+      obj.getDateTimeMap().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.encode(value)));
+      json.put("dateTimeMap", map);
+    }
+    if (obj.getDateTimeSet() != null) {
+      JsonArray array = new JsonArray();
+      obj.getDateTimeSet().forEach(item -> array.add(io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.encode(item)));
+      json.put("dateTimeSet", array);
+    }
+    if (obj.getDateTimes() != null) {
+      JsonArray array = new JsonArray();
+      obj.getDateTimes().forEach(item -> array.add(io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.encode(item)));
+      json.put("dateTimes", array);
+    }
     json.put("doubleValue", obj.getDoubleValue());
     json.put("floatValue", obj.getFloatValue());
     if (obj.getHttpMethod() != null) {
@@ -1185,8 +1274,13 @@ public class TestDataObjectConverter {
     }
     if (obj.getKeyedDataObjectValues() != null) {
       JsonObject map = new JsonObject();
-      obj.getKeyedDataObjectValues().forEach((key, value) -> map.put(key, value.toJson()));
+      obj.getKeyedDataObjectValues().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.AggregatedDataObjectConverter.INSTANCE.encode(value)));
       json.put("keyedDataObjectValues", map);
+    }
+    if (obj.getKeyedDateTimeValues() != null) {
+      JsonObject map = new JsonObject();
+      obj.getKeyedDateTimeValues().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.ZonedDateTimeCodec.INSTANCE.encode(value)));
+      json.put("keyedDateTimeValues", map);
     }
     if (obj.getKeyedEnumValues() != null) {
       JsonObject map = new JsonObject();

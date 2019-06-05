@@ -9,8 +9,11 @@ importedTypes=@{sortTypes(importedTypes)}\n
 superTypes=@{sortTypes(superTypes)}\n
 abstractSuperTypes=@{sortTypes(abstractSuperTypes)}\n
 superType=@{superType}\n
-jsonifiable=@{jsonifiable}\n
 hasEmptyConstructor=@{hasEmptyConstructor}\n
+hasJsonConstructor=@{hasJsonConstructor}\n
+hasToJsonMethod=@{hasToJsonMethod}\n
+encodable=@{encodable}\n
+decodable=@{decodable}\n
 @foreach{property:properties}
 property.@{property.name}=@{property.type}\n
 @end{}

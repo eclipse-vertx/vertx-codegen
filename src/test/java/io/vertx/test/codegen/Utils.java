@@ -20,8 +20,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -78,5 +77,22 @@ public class Utils {
       }
     }));
     assertTrue(task.call());
+  }
+
+  static void assertThrow(Runnable r, Class<? extends Throwable> exception) {
+    try {
+      r.run();
+      fail(exception.getName() + " not thrown");
+    } catch (Exception e) {
+      assertEquals(exception.getName() + " not thrown. Thrown: " + e.getClass().getName(), e.getClass(), exception);
+    }
+  }
+
+  static void assertNotThrow(Runnable r) {
+    try {
+      r.run();
+    } catch (Exception e) {
+      fail("Exception " + e + " is thrown");
+    }
   }
 }

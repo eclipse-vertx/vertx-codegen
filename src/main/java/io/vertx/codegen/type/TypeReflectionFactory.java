@@ -7,10 +7,9 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonObject;
 
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -75,8 +74,21 @@ public class TypeReflectionFactory {
             Type handlerArg = Helper.resolveTypeParameter(type, classTypeVariable);
             return new ApiTypeInfo(fqcn, true, typeParams, handlerArg != null ? create(handlerArg) : null, module, false, false);
           } else if (kind == ClassKind.DATA_OBJECT) {
-            boolean _abstract = Modifier.isAbstract(classType.getModifiers());
-            return new DataObjectTypeInfo(kind, fqcn, module, _abstract, false, typeParams);
+            boolean encodable = isDataObjectAnnotatedEncodable(classType);
+            boolean decodable = isDataObjectAnnotatedDecodable(classType);
+            return new DataObjectTypeInfo(
+              fqcn,
+              module,
+              false,
+              typeParams,
+              (encodable) ? classType.getSimpleName() + "Converter" : null,
+              null,
+              (encodable) ? pkg.getName() : null,
+              (decodable) ? classType.getSimpleName() + "Converter" : null,
+              null,
+              (decodable) ? pkg.getName() : null,
+              create(JsonObject.class)
+            );
           } else {
             return new ClassTypeInfo(kind, fqcn, module, false, typeParams);
           }
@@ -97,5 +109,43 @@ public class TypeReflectionFactory {
     } else {
       throw new IllegalArgumentException("Unsupported type " + type);
     }
+  }
+
+  private static boolean isDataObjectAnnotatedEncodable(Class<?> type) {
+    try {
+      Method m = type.getMethod("toJson");
+      return
+        type.getAnnotation(DataObject.class).generateConverter() ||
+          (Modifier.isPublic(m.getModifiers()) && m.getReturnType().equals(JsonObject.class));
+    } catch (NoSuchMethodException e) {
+      return false;
+    }
+  }
+
+  private static boolean isDataObjectAnnotatedDecodable(Class<?> type) {
+    boolean isConcreteAndHasJsonConstructor = false;
+    try {
+      isConcreteAndHasJsonConstructor =
+        !Modifier.isAbstract(type.getModifiers()) &&
+        !type.isInterface() &&
+        Modifier.isPublic(type.getConstructor(JsonObject.class).getModifiers());
+    } catch (NoSuchMethodException e) { }
+    boolean isNotConcreteAndHasDecodeStaticMethod = false;
+    try {
+      Method m = type.getMethod("decode", JsonObject.class);
+      isNotConcreteAndHasDecodeStaticMethod =
+        (type.isInterface() || Modifier.isAbstract(type.getModifiers())) &&
+          Modifier.isStatic(m.getModifiers()) &&
+          Modifier.isPublic(m.getModifiers()) &&
+          m.getReturnType().equals(type);
+    } catch (NoSuchMethodException e) { }
+    boolean hasEmptyConstructorAndGenerateConverterAndConcrete = false;
+    try {
+      hasEmptyConstructorAndGenerateConverterAndConcrete =
+        type.getAnnotation(DataObject.class).generateConverter() &&
+        type.getConstructor() != null &&
+        !type.isInterface() && !Modifier.isAbstract(type.getModifiers());
+    } catch (NoSuchMethodException e) { }
+    return isConcreteAndHasJsonConstructor || isNotConcreteAndHasDecodeStaticMethod || hasEmptyConstructorAndGenerateConverterAndConcrete;
   }
 }

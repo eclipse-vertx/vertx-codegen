@@ -1,6 +1,7 @@
 package io.vertx.test.codegen;
 
 import io.vertx.codegen.*;
+import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.TypeReflectionFactory;
 import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.doc.Doc;
@@ -11,6 +12,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
@@ -78,6 +80,12 @@ public abstract class ClassTestBase {
     TypeInfo expectedTypeInfo = TypeReflectionFactory.create(expectedType);
     assertEquals(expectedTypeInfo.getName(), param.getType().getName());
     assertEquals(expectedTypeInfo.getKind(), param.getType().getKind());
+  }
+
+  void checkParam(ParamInfo param, String name, String expectedTypeName, ClassKind expectedTypeKind) {
+    assertEquals(name, param.getName());
+    assertEquals(expectedTypeName.replaceAll(Pattern.quote(" "),  ""), param.getType().getName().replaceAll(Pattern.quote(" "),  ""));
+    assertEquals(expectedTypeKind, param.getType().getKind());
   }
 
   void checkParam(ParamInfo param, String name, TypeLiteral<?> expectedType, TypeLiteral<?> expectedUnresolvedType) {
