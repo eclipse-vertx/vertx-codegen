@@ -22,12 +22,14 @@ public class TypeMirrorFactory {
 
   final Elements elementUtils;
   final Types typeUtils;
-  final JsonCodecsCache jsonCodecsCache;
+//  final JsonCodecsCache jsonCodecsCache;
+  final PackageElement p;
 
   public TypeMirrorFactory(Elements elementUtils, Types typeUtils, PackageElement pkgElt) {
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
-    this.jsonCodecsCache = new JsonCodecsCache(elementUtils, typeUtils, pkgElt);
+//    this.jsonCodecsCache = new JsonCodecsCache(elementUtils, typeUtils, pkgElt);
+    this.p = pkgElt;
   }
 
   public TypeInfo create(TypeMirror type) {
@@ -110,27 +112,8 @@ public class TypeMirrorFactory {
           }
         } else {
           List<TypeParamInfo.Class> typeParams = createTypeParams(type);
-          Optional<Map.Entry<DeclaredType, TypeMirror>> codec = jsonCodecsCache.findCodecForType(type);
-          if (codec.isPresent()) {
-            String codecSimpleName = codec.get().getKey().asElement().getSimpleName().toString();
-            String codecEnclosingClass =
-              codec.get().getKey().asElement().getEnclosingElement().getKind() != ElementKind.PACKAGE ?
-                codec.get().getKey().asElement().getEnclosingElement().getSimpleName().toString() : null;
-            String codecPkgName = elementUtils.getPackageOf(codec.get().getKey().asElement()).toString();
-            raw = new DataObjectTypeInfo(
-              fqcn,
-              module,
-              nullable,
-              typeParams,
-              codecSimpleName,
-              codecEnclosingClass,
-              codecPkgName,
-              codecSimpleName,
-              codecEnclosingClass,
-              codecPkgName,
-              this.create(codec.get().getValue())
-            );
-          } else if (kind == ClassKind.API) {
+//          Optional<Map.Entry<DeclaredType, TypeMirror>> codec = jsonCodecsCache.findCodecForType(type);
+          if (kind == ClassKind.API) {
             VertxGen genAnn = elt.getAnnotation(VertxGen.class);
             TypeInfo[] args = Stream.of(
                 ClassModel.VERTX_READ_STREAM,
@@ -171,7 +154,32 @@ public class TypeMirrorFactory {
               this.create(elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType())
             );
           } else {
-            raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams);
+            DeclaredType jsonCodecType = ModuleInfo.resolveJsonCodec(elementUtils, typeUtils, p, type);
+            if (jsonCodecType != null) {
+              TypeElement jsonCodecElt = elementUtils.getTypeElement("io.vertx.core.spi.json.JsonCodec");
+              TypeParameterElement typeParamElt = jsonCodecElt.getTypeParameters().get(1);
+              TypeMirror jsonType = Helper.resolveTypeParameter(typeUtils, jsonCodecType, typeParamElt);
+              String codecSimpleName = jsonCodecType.asElement().getSimpleName().toString();
+              String codecEnclosingClass =
+                jsonCodecType.asElement().getEnclosingElement().getKind() != ElementKind.PACKAGE ?
+                  jsonCodecType.asElement().getEnclosingElement().getSimpleName().toString() : null;
+              String codecPkgName = elementUtils.getPackageOf(jsonCodecType.asElement()).toString();
+              raw = new DataObjectTypeInfo(
+                fqcn,
+                module,
+                nullable,
+                typeParams,
+                codecSimpleName,
+                codecEnclosingClass,
+                codecPkgName,
+                codecSimpleName,
+                codecEnclosingClass,
+                codecPkgName,
+                create(jsonType)
+              );
+            } else {
+              raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams);
+            }
           }
         }
         return raw;
