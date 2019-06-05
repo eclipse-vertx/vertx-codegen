@@ -13,8 +13,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 /**
- * Type info factory based on <i>javax.lang.model</i> and type mirrors. </br>
- * This factory also caches json codecs, so you should not share it through various packages
+ * Type info factory based on <i>javax.lang.model</i> and type mirrors.
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
@@ -22,13 +21,11 @@ public class TypeMirrorFactory {
 
   final Elements elementUtils;
   final Types typeUtils;
-//  final JsonCodecsCache jsonCodecsCache;
   final PackageElement p;
 
   public TypeMirrorFactory(Elements elementUtils, Types typeUtils, PackageElement pkgElt) {
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
-//    this.jsonCodecsCache = new JsonCodecsCache(elementUtils, typeUtils, pkgElt);
     this.p = pkgElt;
   }
 
@@ -112,7 +109,6 @@ public class TypeMirrorFactory {
           }
         } else {
           List<TypeParamInfo.Class> typeParams = createTypeParams(type);
-//          Optional<Map.Entry<DeclaredType, TypeMirror>> codec = jsonCodecsCache.findCodecForType(type);
           if (kind == ClassKind.API) {
             VertxGen genAnn = elt.getAnnotation(VertxGen.class);
             TypeInfo[] args = Stream.of(

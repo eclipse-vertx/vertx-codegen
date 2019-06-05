@@ -56,6 +56,11 @@ public @interface ModuleGen {
    */
   String groupPackage();
 
+  /**
+   *
+   * @return the list of external {@link JsonCodec} types used in the application, note that {@code @DataObject}
+   *         POJOs don't need to be declared here
+   */
   Class<? extends JsonCodec<?, ?>>[] codecs() default {};
 
 }
