@@ -387,24 +387,26 @@ Maven _artifactId_ and the group package corresponding to the `groupId`.
 
 ## Data objects
 
-A data object is a type of which can be converted to a Json type and that is known to codegen.
+A _Data object_ is a type that can be converted back and forth to a Json type.
 
-There are two ways to use data objects in a code generated API, either as a `@DataObject` annotated POJO or
-as a json codec type.
+You can declare data objects by:
 
-### Json codec data objects
+* Defining a `io.vertx.core.spi.json.JsonCodec` for it
+* Or annotating the type itself with `@DataObject`
 
-A json codec for type `T` is a concrete class that implements the interface `JsonCodec<T, J>`, where `J` could be:
+==== Json codecs
+
+A json codec for type `T` is a concrete class that implements the interface `JsonCodec<T, J>`, where `J` can be:
 
 * `JsonArray` or `JsonObject`
 * `Number`
 * `String`
 * `Boolean`
 
-You can create such data object using a json codec class, you must provide a `public static final [JsonCodecType] INSTANCE`
+If you want to use a `JsonCodec`, you need to declare a `public static final [JsonCodecType] INSTANCE` field in the codec class
+to expose the codec instance.
 
-To mark a type as a data object in your package , you need to declare the codec in `@ModuleGen` annotation
-in `package-info.java` file, e.g.:
+You need to declare the codec class in the `@ModuleGen` annotation of the `package-info.java` file, e.g.:
 
 ```java
 @ModuleGen(
@@ -416,35 +418,27 @@ in `package-info.java` file, e.g.:
 )
 ```
 
-### Data object POJOs
+==== `@DataObject` annotated types
 
 A `@DataObject` annotated type is a Java class with the only purpose to be a container for data.
 
-These data objects are converted to and from `JsonObject` (unlike a generic `JsonCodec` that can convert to more types) using a
-generated `JsonEncoder`/`JsonDecoder`/`JsonCodec` converter class by codegen, under the following conditions:
+They can be converted back and forth Json using the generated `JsonEncoder`/`JsonDecoder`/`JsonCodec`.
 
-* The codec implements the `JsonDecoder` interface when:
-  - The annotated type is concrete and has a constructor with the `io.vertx.core.json.JsonObject` argument. This
-    constructor is used in `decode()` method
-  - The annotated type is an interface or an abstract class and has
-    `public static [DataObjectType] decode(io.vertx.core.json.JsonObject value)` method. This constructor is
-    used in `decode()` method
-  - The annotated type generates the converter (`@DataObject(generateConverter = true)`), has an empty constructor and is concrete.
-    The converter `fromJson()` is used in `decode()` method
-* The codec implements the `JsonEncoder` interface if:
-  - The annotated type has `toJson()` method that returns `io.vertx.core.json.JsonObject`. This method is
-    used in `encode()` method
-  - The annotated type generates the converter (`@DataObject(generateConverter = true)`). The converter
-    `toJson()` is used in `encode()` method
+A codec instance is automatically generated for each annotated data object class:
 
-If the codegen can generate both encoder and decoder, it generates a complete codec that implements `JsonCodec`
+* The codec implements the `JsonDecoder` interface when the annotated type
+- has a `io.vertx.core.json.JsonObject` constructor
+- is an interface or an abstract class with a `public static [DataObjectType] decode(io.vertx.core.json.JsonObject value)` method
+- generates the converter, i.e `@DataObject(generateConverter = true)`, has an empty constructor and is concrete
+* The codec implements the `JsonEncoder` interface when the annotated type:
+- has a `io.vertx.core.json.JsonObject toJson()` method
+- generates the converter, i.e `@DataObject(generateConverter = true)`
 
-The generated codec is named `[DataObjectType]Converter`.
+When both encoder and decoder can be created then a `JsonCodec` interface is generated instead.
 
-You can always override the default converter just applying a codec as explained above.
+The generated codec class is named `[DataObjectType]Converter`.
 
-Data object converter can be generated with `@DataObject(generateConverter=true)` by Vert.x. Such
- Data object conversion recognize the following types as _member_ of any `@DataObject`:
+Data object conversion recognize the following types as _member_ of any `@DataObject`:
 
 * the set _`Basic`_
 * these specific types
@@ -524,7 +518,7 @@ The `TypeInfo.Class` is a subclass of `TypeInfo` representing a Java class:
     * `OBJECT`: java.lang.Object
     * `LIST`, `SET`: corresponding java collections
     * `API`: a type annotated with @VertxGen
-    * `DATA_OBJECT`: a type marked as data object
+    * `DATA_OBJECT`: a data object type
     * `HANDLER`: io.vertx.core.Handler
     * `ASYNC_RESULT`: io.vertx.core.AsyncResult
     * `ENUM`: An enum
