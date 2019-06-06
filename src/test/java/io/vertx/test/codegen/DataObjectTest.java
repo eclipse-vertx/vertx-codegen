@@ -1,14 +1,12 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.DataObjectModel;
-import io.vertx.codegen.GenException;
-import io.vertx.codegen.PropertyInfo;
-import io.vertx.codegen.PropertyKind;
+import io.vertx.codegen.*;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.type.*;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.annotations.EmptyAnnotation;
+import io.vertx.test.codegen.converter.UpperCamelCaseDataObject;
 import io.vertx.test.codegen.testdataobject.Foo;
 import io.vertx.test.codegen.annotations.TestEnum;
 import io.vertx.test.codegen.testapi.InterfaceDataObject;
@@ -887,6 +885,13 @@ public class DataObjectTest {
     assertTrue(model.hasDecodeStaticMethod());
     assertEquals(clazz.getPackage().getName() + "." + clazz.getSimpleName() + "Converter", model.getType().getJsonDecoderFQCN());
     assertEquals(clazz.getPackage().getName() + "." + clazz.getSimpleName() + "Converter", model.getType().getJsonEncoderFQCN());
+  }
+
+  @Test
+  public void testConverterCaseDataObject() throws Exception {
+    DataObjectModel model = new GeneratorHelper().generateDataObject(UpperCamelCaseDataObject.class);
+    assertTrue(model.getGenerateConverter());
+    assertEquals(Case.UPPER_CAMEL, model.getNameCase());
   }
 
   private void assertInvalidDataObject(Class<?> dataObjectClass) throws Exception {

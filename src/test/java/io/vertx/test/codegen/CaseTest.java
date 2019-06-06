@@ -13,28 +13,28 @@ import static org.junit.Assert.*;
 public class CaseTest {
 
   @Test
-  public void testFormatCamelCase() {
-    formatCamelCase("", "");
-    formatCamelCase("Foo", "foo");
-    formatCamelCase("Foo", "Foo");
-    formatCamelCase("FOO", "FOO");
-    formatCamelCase("FooBar", "Foo", "Bar");
-    formatCamelCase("FooBar", "Foo", "bar");
-    formatCamelCase("FooBar", "Foo", "", "Bar");
-    formatCamelCase("FOOBar", "FOO", "", "Bar");
+  public void testFormatUpperCamelCase() {
+    formatUpperCamelCase("", "");
+    formatUpperCamelCase("Foo", "foo");
+    formatUpperCamelCase("Foo", "Foo");
+    formatUpperCamelCase("FOO", "FOO");
+    formatUpperCamelCase("FooBar", "Foo", "Bar");
+    formatUpperCamelCase("FooBar", "Foo", "bar");
+    formatUpperCamelCase("FooBar", "Foo", "", "Bar");
+    formatUpperCamelCase("FOOBar", "FOO", "", "Bar");
   }
 
   @Test
-  public void testParseCamelCase() {
-    parseCamelCase("");
-    parseCamelCase("Foo", "Foo");
-    parseCamelCase("FooBar", "Foo", "Bar");
-    parseCamelCase("FooBarJuu", "Foo", "Bar", "Juu");
-    parseCamelCase("URL", "URL");
-    parseCamelCase("URLDecoder", "URL", "Decoder");
-    parseCamelCase("testSomething", "test", "Something");
-    parseCamelCase("testURL", "test", "URL");
-    parseCamelCase("test123", "test123");
+  public void testParseUpperCamelCase() {
+    parseUpperCamelCase("");
+    parseUpperCamelCase("Foo", "Foo");
+    parseUpperCamelCase("FooBar", "Foo", "Bar");
+    parseUpperCamelCase("FooBarJuu", "Foo", "Bar", "Juu");
+    parseUpperCamelCase("URL", "URL");
+    parseUpperCamelCase("URLDecoder", "URL", "Decoder");
+    parseUpperCamelCase("testSomething", "test", "Something");
+    parseUpperCamelCase("testURL", "test", "URL");
+    parseUpperCamelCase("test123", "test123");
   }
 
   @Test
@@ -51,6 +51,19 @@ public class CaseTest {
   }
 
   @Test
+  public void testParseLowerCamelCase() {
+    parseLowerCamelCase("");
+    parseLowerCamelCase("foo", "foo");
+    parseLowerCamelCase("fooBar", "foo", "Bar");
+    parseLowerCamelCase("fooBarJuu", "foo", "Bar", "Juu");
+    parseLowerCamelCase("URL", "URL");
+    parseLowerCamelCase("URLDecoder", "URL", "Decoder");
+    parseLowerCamelCase("testSomething", "test", "Something");
+    parseLowerCamelCase("testURL", "test", "URL");
+    parseLowerCamelCase("test123", "test123");
+  }
+
+  @Test
   public void testFormatQualifiedCase() {
     formatQualifiedCase("", "");
     formatQualifiedCase("foo", "foo");
@@ -58,21 +71,6 @@ public class CaseTest {
     formatQualifiedCase("foo.bar", "foo", "bar");
     formatQualifiedCase("foo.Bar", "foo", "Bar");
     formatQualifiedCase("foo.bar", "foo", "", "bar");
-  }
-
-  @Test
-  public void testParseQualifiedCase() {
-    parseQualifiedCase("");
-    parseQualifiedCase("foo", "foo");
-    parseQualifiedCase("foo.bar", "foo", "bar");
-    parseQualifiedCase("foo.bar.juu", "foo", "bar", "juu");
-    for (String test : Arrays.asList(".", ".foo", "foo.", "foo..bar")) {
-      try {
-        Case.QUALIFIED.parse(test);
-        fail("Was expecting " + test + " to be rejected");
-      } catch (Exception ignore) {
-      }
-    }
   }
 
   @Test
@@ -126,15 +124,30 @@ public class CaseTest {
   }
 
   @Test
-  public void testConversion() {
-    assertEquals("foo-bar-juu", Case.CAMEL.to(Case.KEBAB, "FooBarJuu"));
-    assertEquals("foo_bar_juu", Case.CAMEL.to(Case.SNAKE, "FooBarJuu"));
-    assertEquals("FooBarJuu", Case.SNAKE.to(Case.CAMEL, "foo_bar_juu"));
-    assertEquals("FooBarJuu", Case.KEBAB.to(Case.CAMEL, "foo-bar-juu"));
+  public void testParseQualifiedCase() {
+    parseQualifiedCase("");
+    parseQualifiedCase("foo", "foo");
+    parseQualifiedCase("foo.bar", "foo", "bar");
+    parseQualifiedCase("foo.bar.juu", "foo", "bar", "juu");
+    for (String test : Arrays.asList(".", ".foo", "foo.", "foo..bar")) {
+      try {
+        Case.QUALIFIED.parse(test);
+        fail("Was expecting " + test + " to be rejected");
+      } catch (Exception ignore) {
+      }
+    }
   }
 
-  private void formatCamelCase(String expected, String... atoms) {
-    assertCase(Case.CAMEL, expected, atoms);
+  @Test
+  public void testConversion() {
+    assertEquals("foo-bar-juu", Case.UPPER_CAMEL.to(Case.KEBAB, "FooBarJuu"));
+    assertEquals("foo_bar_juu", Case.UPPER_CAMEL.to(Case.SNAKE, "FooBarJuu"));
+    assertEquals("FooBarJuu", Case.SNAKE.to(Case.UPPER_CAMEL, "foo_bar_juu"));
+    assertEquals("FooBarJuu", Case.KEBAB.to(Case.UPPER_CAMEL, "foo-bar-juu"));
+  }
+
+  private void formatUpperCamelCase(String expected, String... atoms) {
+    assertCase(Case.UPPER_CAMEL, expected, atoms);
   }
 
   private void formatLowerCamelCase(String expected, String... atoms) {
@@ -157,8 +170,12 @@ public class CaseTest {
     parseCase(Case.SNAKE, s, expected);
   }
 
-  private void parseCamelCase(String s, String... expected) {
-    parseCase(Case.CAMEL, s, expected);
+  private void parseUpperCamelCase(String s, String... expected) {
+    parseCase(Case.UPPER_CAMEL, s, expected);
+  }
+
+  private void parseLowerCamelCase(String s, String... expected) {
+    parseCase(Case.LOWER_CAMEL, s, expected);
   }
 
   private void parseQualifiedCase(String s, String... expected) {

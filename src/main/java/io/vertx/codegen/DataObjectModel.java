@@ -49,6 +49,7 @@ public class DataObjectModel implements Model {
   private boolean generateConverter;
   private boolean inheritConverter;
   private boolean publicConverter;
+  private Case nameCase;
   private int constructors;
   // ----------------
   private boolean deprecated;
@@ -152,6 +153,8 @@ public class DataObjectModel implements Model {
 
   public boolean hasToJsonMethod() { return hasToJsonMethod; }
 
+  public Case getNameCase() { return nameCase; }
+
   public boolean hasEmptyConstructor() {
     return (constructors & 1) == 1;
   }
@@ -183,6 +186,7 @@ public class DataObjectModel implements Model {
     vars.put("generateConverter", generateConverter);
     vars.put("inheritConverter", inheritConverter);
     vars.put("publicConverter", publicConverter);
+    vars.put("nameCase", nameCase);
     vars.put("concrete", concrete);
     vars.put("isClass", isClass);
     vars.put("properties", propertyMap.values());
@@ -219,6 +223,7 @@ public class DataObjectModel implements Model {
     DataObject ann = modelElt.getAnnotation(DataObject.class);
     this.generateConverter = ann.generateConverter();
     this.publicConverter = ann.publicConverter();
+    this.nameCase = ann.nameCase();
     this.inheritConverter = ann.inheritConverter();
     this.isClass = modelElt.getKind() == ElementKind.CLASS;
     this.concrete = isClass && !modelElt.getModifiers().contains(Modifier.ABSTRACT);

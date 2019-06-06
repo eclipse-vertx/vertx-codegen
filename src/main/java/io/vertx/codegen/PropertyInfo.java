@@ -76,6 +76,17 @@ public class PropertyInfo {
   }
 
   /**
+   * @return the property name formatted as the specified case
+   */
+  public String getName(Case _case) {
+    if (_case == Case.LOWER_CAMEL) {
+      return name;
+    }
+
+    return Case.LOWER_CAMEL.to(_case, name);
+  }
+
+  /**
    * @return the property type
    */
   public TypeInfo getType() {

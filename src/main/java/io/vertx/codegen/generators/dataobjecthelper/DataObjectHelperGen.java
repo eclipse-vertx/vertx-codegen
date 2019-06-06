@@ -1,5 +1,6 @@
 package io.vertx.codegen.generators.dataobjecthelper;
 
+import io.vertx.codegen.Case;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.PropertyInfo;
@@ -103,38 +104,38 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         ClassKind propKind = prop.getType().getKind();
         if (propKind.basic) {
           if (propKind == ClassKind.STRING) {
-            genPropToJson("", "", prop, writer);
+            genPropToJson("", "", prop, model.getNameCase(), writer);
           } else {
             switch (prop.getType().getSimpleName()) {
               case "char":
               case "Character":
-                genPropToJson("Character.toString(", ")", prop, writer);
+                genPropToJson("Character.toString(", ")", prop, model.getNameCase(), writer);
                 break;
               default:
-                genPropToJson("", "", prop, writer);
+                genPropToJson("", "", prop, model.getNameCase(), writer);
             }
           }
         } else {
           switch (propKind) {
             case API:
               if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
-                genPropToJson("java.util.Base64.getEncoder().encodeToString(", ".getBytes())", prop, writer);
+                genPropToJson("java.util.Base64.getEncoder().encodeToString(", ".getBytes())", prop, model.getNameCase(), writer);
               }
               break;
             case ENUM:
-              genPropToJson("", ".name()", prop, writer);
+              genPropToJson("", ".name()", prop, model.getNameCase(), writer);
               break;
             case JSON_OBJECT:
             case JSON_ARRAY:
             case OBJECT:
-              genPropToJson("", "", prop, writer);
+              genPropToJson("", "", prop, model.getNameCase(), writer);
               break;
             case DATA_OBJECT:
-              genPropToJson(((DataObjectTypeInfo)prop.getType()).getJsonEncoderFQCN() + ".INSTANCE.encode(", ")", prop, writer);
+              genPropToJson(((DataObjectTypeInfo)prop.getType()).getJsonEncoderFQCN() + ".INSTANCE.encode(", ")", prop, model.getNameCase(), writer);
               break;
             case OTHER:
               if (prop.getType().getName().equals(Instant.class.getName())) {
-                genPropToJson("DateTimeFormatter.ISO_INSTANT.format(", ")", prop, writer);
+                genPropToJson("DateTimeFormatter.ISO_INSTANT.format(", ")", prop, model.getNameCase(), writer);
               }
               break;
           }
@@ -145,19 +146,21 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print("  }\n");
   }
 
-  private void genPropToJson(String before, String after, PropertyInfo prop, PrintWriter writer) {
+  private void genPropToJson(String before, String after, PropertyInfo prop, Case _case, PrintWriter writer) {
     String indent = "    ";
+    String name = prop.getName(_case);
+
     if (prop.isList() || prop.isSet()) {
       writer.print(indent + "if (obj." + prop.getGetterMethod() + "() != null) {\n");
       writer.print(indent + "  JsonArray array = new JsonArray();\n");
       writer.print(indent + "  obj." + prop.getGetterMethod() + "().forEach(item -> array.add(" + before + "item" + after + "));\n");
-      writer.print(indent + "  json.put(\"" + prop.getName() + "\", array);\n");
+      writer.print(indent + "  json.put(\"" + name + "\", array);\n");
       writer.print(indent + "}\n");
     } else if (prop.isMap()) {
       writer.print(indent + "if (obj." + prop.getGetterMethod() + "() != null) {\n");
       writer.print(indent + "  JsonObject map = new JsonObject();\n");
       writer.print(indent + "  obj." + prop.getGetterMethod() + "().forEach((key, value) -> map.put(key, " + before + "value" + after + "));\n");
-      writer.print(indent + "  json.put(\"" + prop.getName() + "\", map);\n");
+      writer.print(indent + "  json.put(\"" + name + "\", map);\n");
       writer.print(indent + "}\n");
     } else {
       String sp = "";
@@ -165,7 +168,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         sp = "  ";
         writer.print(indent + "if (obj." + prop.getGetterMethod() + "() != null) {\n");
       }
-      writer.print(indent + sp + "json.put(\"" + prop.getName() + "\", " + before + "obj." + prop.getGetterMethod() + "()" + after + ");\n");
+      writer.print(indent + sp + "json.put(\"" + name + "\", " + before + "obj." + prop.getGetterMethod() + "()" + after + ");\n");
       if (prop.getType().getKind() != ClassKind.PRIMITIVE) {
         writer.print(indent + "}\n");
       }
@@ -181,40 +184,40 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         ClassKind propKind = prop.getType().getKind();
         if (propKind.basic) {
           if (propKind == ClassKind.STRING) {
-            genPropFromJson("String", "(String)", "", prop, writer);
+            genPropFromJson("String", "(String)", "", prop, model.getNameCase(), writer);
           } else {
             switch (prop.getType().getSimpleName()) {
               case "boolean":
               case "Boolean":
-                genPropFromJson("Boolean", "(Boolean)", "", prop, writer);
+                genPropFromJson("Boolean", "(Boolean)", "", prop, model.getNameCase(), writer);
                 break;
               case "byte":
               case "Byte":
-                genPropFromJson("Number", "((Number)", ").byteValue()", prop, writer);
+                genPropFromJson("Number", "((Number)", ").byteValue()", prop, model.getNameCase(), writer);
                 break;
               case "short":
               case "Short":
-                genPropFromJson("Number", "((Number)", ").shortValue()", prop, writer);
+                genPropFromJson("Number", "((Number)", ").shortValue()", prop, model.getNameCase(), writer);
                 break;
               case "int":
               case "Integer":
-                genPropFromJson("Number", "((Number)", ").intValue()", prop, writer);
+                genPropFromJson("Number", "((Number)", ").intValue()", prop, model.getNameCase(), writer);
                 break;
               case "long":
               case "Long":
-                genPropFromJson("Number", "((Number)", ").longValue()", prop, writer);
+                genPropFromJson("Number", "((Number)", ").longValue()", prop, model.getNameCase(), writer);
                 break;
               case "float":
               case "Float":
-                genPropFromJson("Number", "((Number)", ").floatValue()", prop, writer);
+                genPropFromJson("Number", "((Number)", ").floatValue()", prop, model.getNameCase(), writer);
                 break;
               case "double":
               case "Double":
-                genPropFromJson("Number", "((Number)", ").doubleValue()", prop, writer);
+                genPropFromJson("Number", "((Number)", ").doubleValue()", prop, model.getNameCase(), writer);
                 break;
               case "char":
               case "Character":
-                genPropFromJson("String", "((String)", ").charAt(0)", prop, writer);
+                genPropFromJson("String", "((String)", ").charAt(0)", prop, model.getNameCase(), writer);
                 break;
             }
           }
@@ -222,14 +225,14 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
           switch (propKind) {
             case API:
               if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
-                genPropFromJson("String", "io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)", "))", prop, writer);
+                genPropFromJson("String", "io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)", "))", prop, model.getNameCase(), writer);
               }
               break;
             case JSON_OBJECT:
-              genPropFromJson("JsonObject", "((JsonObject)", ").copy()", prop, writer);
+              genPropFromJson("JsonObject", "((JsonObject)", ").copy()", prop, model.getNameCase(), writer);
               break;
             case JSON_ARRAY:
-              genPropFromJson("JsonArray", "((JsonArray)", ").copy()", prop, writer);
+              genPropFromJson("JsonArray", "((JsonArray)", ").copy()", prop, model.getNameCase(), writer);
               break;
             case DATA_OBJECT:
               genPropFromJson(
@@ -237,18 +240,19 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
                 ((DataObjectTypeInfo)prop.getType()).getJsonDecoderFQCN() + ".INSTANCE.decode((" + ((DataObjectTypeInfo)prop.getType()).getTargetJsonType().getSimpleName() + ")",
                 ")",
                 prop,
+                model.getNameCase(),
                 writer
               );
               break;
             case ENUM:
-              genPropFromJson("String", prop.getType().getName() + ".valueOf((String)", ")", prop, writer);
+              genPropFromJson("String", prop.getType().getName() + ".valueOf((String)", ")", prop, model.getNameCase(), writer);
               break;
             case OBJECT:
-              genPropFromJson("Object", "", "", prop, writer);
+              genPropFromJson("Object", "", "", prop, model.getNameCase(), writer);
               break;
             case OTHER:
               if (prop.getType().getName().equals(Instant.class.getName())) {
-                genPropFromJson("String", "Instant.from(DateTimeFormatter.ISO_INSTANT.parse((String)", "))", prop, writer);
+                genPropFromJson("String", "Instant.from(DateTimeFormatter.ISO_INSTANT.parse((String)", "))", prop, model.getNameCase(), writer);
               }
               break;
             default:
@@ -261,9 +265,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print("  }\n");
   }
 
-  private void genPropFromJson(String cast, String before, String after, PropertyInfo prop, PrintWriter writer) {
+  private void genPropFromJson(String cast, String before, String after, PropertyInfo prop,  Case _case, PrintWriter writer) {
     String indent = "        ";
-    writer.print(indent + "case \"" + prop.getName() + "\":\n");
+    String name = prop.getName(_case);
+    
+    writer.print(indent + "case \"" + name + "\":\n");
     if (prop.isList() || prop.isSet()) {
       writer.print(indent + "  if (member.getValue() instanceof JsonArray) {\n");
       if (prop.isSetter()) {
