@@ -9,6 +9,7 @@ import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.codegen.testmodel.TestGenEnum;
 import io.vertx.codegen.type.*;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -587,6 +588,158 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(10), "mapJsonArrayFunction",  new TypeLiteral<Function<Map<String, JsonArray>, Map<String, JsonArray>>>(){});
   }
 
+  @Test
+  public <T> void testValidAsyncFunctionParams() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(MethodWithValidAsyncFunctionParams.class);
+
+    MethodInfo method = model.getMethods().get(0);
+    checkMethod(method, "methodWithFunctionParams", 16, "void", MethodKind.OTHER);
+    List<ParamInfo> params = method.getParams();
+    checkParam(params.get(0), "byteFunction", new TypeLiteral<Function<Byte, Future<Byte>>>() {});
+    checkParam(params.get(1), "shortFunction", new TypeLiteral<Function<Short, Future<Short>>>() {});
+    checkParam(params.get(2), "intFunction", new TypeLiteral<Function<Integer, Future<Integer>>>() {});
+    checkParam(params.get(3), "longFunction", new TypeLiteral<Function<Long, Future<Long>>>(){});
+    checkParam(params.get(4), "floatFunction", new TypeLiteral<Function<Float, Future<Float>>>(){});
+    checkParam(params.get(5), "doubleFunction", new TypeLiteral<Function<Double, Future<Double>>>(){});
+    checkParam(params.get(6), "booleanFunction", new TypeLiteral<Function<Boolean, Future<Boolean>>>(){});
+    checkParam(params.get(7), "charFunction", new TypeLiteral<Function<Character, Future<Character>>>(){});
+    checkParam(params.get(8), "strFunction", new TypeLiteral<Function<String, Future<String>>>(){});
+    checkParam(params.get(9), "gen1Function", new TypeLiteral<Function<VertxGenClass1, Future<VertxGenClass1>>>(){});
+    checkParam(params.get(10), "gen2Function", new TypeLiteral<Function<VertxGenClass2, Future<VertxGenClass2>>>(){});
+    checkParam(params.get(11), "voidFunction",  new TypeLiteral<Function<Void, Future<String>>>(){});
+    checkParam(params.get(12), "dataObjectFunction", new TypeLiteral<Function<TestDataObject, Future<TestDataObject>>>(){});
+    checkParam(params.get(13), "enumFunction", new TypeLiteral<Function<TestEnum, Future<TestEnum>>>(){});
+    checkParam(params.get(14), "genericFunction", new TypeLiteral<Function<T, Future<T>>>(){});
+    checkParam(params.get(15), "genericUserTypeFunction", new TypeLiteral<Function<GenericInterface<T>, Future<GenericInterface<T>>>>(){});
+
+    method = model.getMethods().get(1);
+    checkMethod(method, "methodWithListFunctionParams", 14, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "listByteFunction", new TypeLiteral<Function<List<Byte>, Future<List<Byte>>>>(){});
+    checkParam(params.get(1), "listShortFunction", new TypeLiteral<Function<List<Short>, Future<List<Short>>>>() {});
+    checkParam(params.get(2), "listIntFunction", new TypeLiteral<Function<List<Integer>, Future<List<Integer>>>>(){});
+    checkParam(params.get(3), "listLongFunction", new TypeLiteral<Function<List<Long>, Future<List<Long>>>>(){});
+    checkParam(params.get(4), "listFloatFunction",  new TypeLiteral<Function<List<Float>, Future<List<Float>>>>(){});
+    checkParam(params.get(5), "listDoubleFunction", new TypeLiteral<Function<List<Double>, Future<List<Double>>>>(){});
+    checkParam(params.get(6), "listBooleanFunction", new TypeLiteral<Function<List<Boolean>, Future<List<Boolean>>>>(){});
+    checkParam(params.get(7), "listCharFunction", new TypeLiteral<Function<List<Character>, Future<List<Character>>>>(){});
+    checkParam(params.get(8), "listStrFunction", new TypeLiteral<Function<List<String>, Future<List<String>>>>(){});
+    checkParam(params.get(9), "listVertxGenFunction", new TypeLiteral<Function<List<VertxGenClass1>, Future<List<VertxGenClass1>>>>(){});
+    checkParam(params.get(10), "listJsonObjectFunction", new TypeLiteral<Function<List<JsonObject>, Future<List<JsonObject>>>>(){});
+    checkParam(params.get(11), "listJsonArrayFunction", new TypeLiteral<Function<List<JsonArray>, Future<List<JsonArray>>>>(){});
+    checkParam(params.get(12), "listDataObjectFunction", new TypeLiteral<Function<List<TestDataObject>, Future<List<TestDataObject>>>>(){});
+    checkParam(params.get(13), "listEnumFunction", new TypeLiteral<Function<List<TestEnum>, Future<List<TestEnum>>>>(){});
+
+    method = model.getMethods().get(2);
+    checkMethod(method, "methodWithSetFunctionParams", 14, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "setByteFunction", new TypeLiteral<Function<Set<Byte>, Future<Set<Byte>>>>(){});
+    checkParam(params.get(1), "setShortFunction", new TypeLiteral<Function<Set<Short>, Future<Set<Short>>>>(){});
+    checkParam(params.get(2), "setIntFunction", new TypeLiteral<Function<Set<Integer>, Future<Set<Integer>>>>(){});
+    checkParam(params.get(3), "setLongFunction", new TypeLiteral<Function<Set<Long>, Future<Set<Long>>>>(){});
+    checkParam(params.get(4), "setFloatFunction", new TypeLiteral<Function<Set<Float>, Future<Set<Float>>>>(){});
+    checkParam(params.get(5), "setDoubleFunction", new TypeLiteral<Function<Set<Double>, Future<Set<Double>>>>(){});
+    checkParam(params.get(6), "setBooleanFunction", new TypeLiteral<Function<Set<Boolean>, Future<Set<Boolean>>>>(){});
+    checkParam(params.get(7), "setCharFunction", new TypeLiteral<Function<Set<Character>, Future<Set<Character>>>>(){});
+    checkParam(params.get(8), "setStrFunction", new TypeLiteral<Function<Set<String>, Future<Set<String>>>>(){});
+    checkParam(params.get(9), "setVertxGenFunction", new TypeLiteral<Function<Set<VertxGenClass1>, Future<Set<VertxGenClass1>>>>(){});
+    checkParam(params.get(10), "setJsonObjectFunction", new TypeLiteral<Function<Set<JsonObject>, Future<Set<JsonObject>>>>(){});
+    checkParam(params.get(11), "setJsonArrayFunction",  new TypeLiteral<Function<Set<JsonArray>, Future<Set<JsonArray>>>>(){});
+    checkParam(params.get(12), "setDataObjectFunction",  new TypeLiteral<Function<Set<TestDataObject>, Future<Set<TestDataObject>>>>(){});
+    checkParam(params.get(13), "setEnumFunction",  new TypeLiteral<Function<Set<TestEnum>, Future<Set<TestEnum>>>>(){});
+
+    method = model.getMethods().get(3);
+    checkMethod(method, "methodWithMapFunctionParams", 11, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "mapByteFunction", new TypeLiteral<Function<Map<String, Byte>, Future<Map<String, Byte>>>>(){});
+    checkParam(params.get(1), "mapShortFunction", new TypeLiteral<Function<Map<String, Short>, Future<Map<String, Short>>>>(){});
+    checkParam(params.get(2), "mapIntFunction", new TypeLiteral<Function<Map<String, Integer>, Future<Map<String, Integer>>>>(){});
+    checkParam(params.get(3), "mapLongFunction", new TypeLiteral<Function<Map<String, Long>, Future<Map<String, Long>>>>(){});
+    checkParam(params.get(4), "mapFloatFunction", new TypeLiteral<Function<Map<String, Float>, Future<Map<String, Float>>>>(){});
+    checkParam(params.get(5), "mapDoubleFunction", new TypeLiteral<Function<Map<String, Double>, Future<Map<String, Double>>>>(){});
+    checkParam(params.get(6), "mapBooleanFunction", new TypeLiteral<Function<Map<String, Boolean>, Future<Map<String, Boolean>>>>(){});
+    checkParam(params.get(7), "mapCharFunction", new TypeLiteral<Function<Map<String, Character>, Future<Map<String, Character>>>>(){});
+    checkParam(params.get(8), "mapStrFunction", new TypeLiteral<Function<Map<String, String>, Future<Map<String, String>>>>(){});
+    checkParam(params.get(9), "mapJsonObjectFunction", new TypeLiteral<Function<Map<String, JsonObject>, Future<Map<String, JsonObject>>>>(){});
+    checkParam(params.get(10), "mapJsonArrayFunction",  new TypeLiteral<Function<Map<String, JsonArray>, Future<Map<String, JsonArray>>>>(){});
+  }
+
+  @Test
+  public <T> void testValidAsyncSupplierParams() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(MethodWithValidAsyncSupplierParams.class);
+
+    MethodInfo method = model.getMethods().get(0);
+    checkMethod(method, "methodWithSupplierParams", 16, "void", MethodKind.OTHER);
+    List<ParamInfo> params = method.getParams();
+    checkParam(params.get(0), "byteSupplier", new TypeLiteral<Handler<Future<Byte>>>() {});
+    checkParam(params.get(1), "shortSupplier", new TypeLiteral<Handler<Future<Short>>>() {});
+    checkParam(params.get(2), "intSupplier", new TypeLiteral<Handler<Future<Integer>>>() {});
+    checkParam(params.get(3), "longSupplier", new TypeLiteral<Handler<Future<Long>>>(){});
+    checkParam(params.get(4), "floatSupplier", new TypeLiteral<Handler<Future<Float>>>(){});
+    checkParam(params.get(5), "doubleSupplier", new TypeLiteral<Handler<Future<Double>>>(){});
+    checkParam(params.get(6), "booleanSupplier", new TypeLiteral<Handler<Future<Boolean>>>(){});
+    checkParam(params.get(7), "charSupplier", new TypeLiteral<Handler<Future<Character>>>(){});
+    checkParam(params.get(8), "strSupplier", new TypeLiteral<Handler<Future<String>>>(){});
+    checkParam(params.get(9), "gen1Supplier", new TypeLiteral<Handler<Future<VertxGenClass1>>>(){});
+    checkParam(params.get(10), "gen2Supplier", new TypeLiteral<Handler<Future<VertxGenClass2>>>(){});
+    checkParam(params.get(11), "voidSupplier",  new TypeLiteral<Handler<Future<String>>>(){});
+    checkParam(params.get(12), "dataObjectSupplier", new TypeLiteral<Handler<Future<TestDataObject>>>(){});
+    checkParam(params.get(13), "enumSupplier", new TypeLiteral<Handler<Future<TestEnum>>>(){});
+    checkParam(params.get(14), "genericSupplier", new TypeLiteral<Handler<Future<T>>>(){});
+    checkParam(params.get(15), "genericUserTypeSupplier", new TypeLiteral<Handler<Future<GenericInterface<T>>>>(){});
+
+    method = model.getMethods().get(1);
+    checkMethod(method, "methodWithListSupplierParams", 14, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "listByteSupplier", new TypeLiteral<Handler<Future<List<Byte>>>>(){});
+    checkParam(params.get(1), "listShortSupplier", new TypeLiteral<Handler<Future<List<Short>>>>() {});
+    checkParam(params.get(2), "listIntSupplier", new TypeLiteral<Handler<Future<List<Integer>>>>(){});
+    checkParam(params.get(3), "listLongSupplier", new TypeLiteral<Handler<Future<List<Long>>>>(){});
+    checkParam(params.get(4), "listFloatSupplier",  new TypeLiteral<Handler<Future<List<Float>>>>(){});
+    checkParam(params.get(5), "listDoubleSupplier", new TypeLiteral<Handler<Future<List<Double>>>>(){});
+    checkParam(params.get(6), "listBooleanSupplier", new TypeLiteral<Handler<Future<List<Boolean>>>>(){});
+    checkParam(params.get(7), "listCharSupplier", new TypeLiteral<Handler<Future<List<Character>>>>(){});
+    checkParam(params.get(8), "listStrSupplier", new TypeLiteral<Handler<Future<List<String>>>>(){});
+    checkParam(params.get(9), "listVertxGenSupplier", new TypeLiteral<Handler<Future<List<VertxGenClass1>>>>(){});
+    checkParam(params.get(10), "listJsonObjectSupplier", new TypeLiteral<Handler<Future<List<JsonObject>>>>(){});
+    checkParam(params.get(11), "listJsonArraySupplier", new TypeLiteral<Handler<Future<List<JsonArray>>>>(){});
+    checkParam(params.get(12), "listDataObjectSupplier", new TypeLiteral<Handler<Future<List<TestDataObject>>>>(){});
+    checkParam(params.get(13), "listEnumSupplier", new TypeLiteral<Handler<Future<List<TestEnum>>>>(){});
+
+    method = model.getMethods().get(2);
+    checkMethod(method, "methodWithSetSupplierParams", 14, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "setByteSupplier", new TypeLiteral<Handler<Future<Set<Byte>>>>(){});
+    checkParam(params.get(1), "setShortSupplier", new TypeLiteral<Handler<Future<Set<Short>>>>(){});
+    checkParam(params.get(2), "setIntSupplier", new TypeLiteral<Handler<Future<Set<Integer>>>>(){});
+    checkParam(params.get(3), "setLongSupplier", new TypeLiteral<Handler<Future<Set<Long>>>>(){});
+    checkParam(params.get(4), "setFloatSupplier", new TypeLiteral<Handler<Future<Set<Float>>>>(){});
+    checkParam(params.get(5), "setDoubleSupplier", new TypeLiteral<Handler<Future<Set<Double>>>>(){});
+    checkParam(params.get(6), "setBooleanSupplier", new TypeLiteral<Handler<Future<Set<Boolean>>>>(){});
+    checkParam(params.get(7), "setCharSupplier", new TypeLiteral<Handler<Future<Set<Character>>>>(){});
+    checkParam(params.get(8), "setStrSupplier", new TypeLiteral<Handler<Future<Set<String>>>>(){});
+    checkParam(params.get(9), "setVertxGenSupplier", new TypeLiteral<Handler<Future<Set<VertxGenClass1>>>>(){});
+    checkParam(params.get(10), "setJsonObjectSupplier", new TypeLiteral<Handler<Future<Set<JsonObject>>>>(){});
+    checkParam(params.get(11), "setJsonArraySupplier",  new TypeLiteral<Handler<Future<Set<JsonArray>>>>(){});
+    checkParam(params.get(12), "setDataObjectSupplier",  new TypeLiteral<Handler<Future<Set<TestDataObject>>>>(){});
+    checkParam(params.get(13), "setEnumSupplier",  new TypeLiteral<Handler<Future<Set<TestEnum>>>>(){});
+
+    method = model.getMethods().get(3);
+    checkMethod(method, "methodWithMapSupplierParams", 11, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "mapByteSupplier", new TypeLiteral<Handler<Future<Map<String, Byte>>>>(){});
+    checkParam(params.get(1), "mapShortSupplier", new TypeLiteral<Handler<Future<Map<String, Short>>>>(){});
+    checkParam(params.get(2), "mapIntSupplier", new TypeLiteral<Handler<Future<Map<String, Integer>>>>(){});
+    checkParam(params.get(3), "mapLongSupplier", new TypeLiteral<Handler<Future<Map<String, Long>>>>(){});
+    checkParam(params.get(4), "mapFloatSupplier", new TypeLiteral<Handler<Future<Map<String, Float>>>>(){});
+    checkParam(params.get(5), "mapDoubleSupplier", new TypeLiteral<Handler<Future<Map<String, Double>>>>(){});
+    checkParam(params.get(6), "mapBooleanSupplier", new TypeLiteral<Handler<Future<Map<String, Boolean>>>>(){});
+    checkParam(params.get(7), "mapCharSupplier", new TypeLiteral<Handler<Future<Map<String, Character>>>>(){});
+    checkParam(params.get(8), "mapStrSupplier", new TypeLiteral<Handler<Future<Map<String, String>>>>(){});
+    checkParam(params.get(9), "mapJsonObjectSupplier", new TypeLiteral<Handler<Future<Map<String, JsonObject>>>>(){});
+    checkParam(params.get(10), "mapJsonArraySupplier",  new TypeLiteral<Handler<Future<Map<String, JsonArray>>>>(){});
+  }
+  
   @Test
   public void testMethodWithInvalidFunctionParams() throws Exception {
     assertGenInvalid(MethodWithInvalidFunctionParam1.class);

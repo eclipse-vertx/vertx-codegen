@@ -35,6 +35,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -443,6 +444,10 @@ public class ClassModel implements Model {
   }
 
   private boolean isLegalVertxGenInterface(TypeInfo type, boolean allowParameterized) {
+    return isLegalVertxGenInterface(type, allowParameterized, this::isLegalVertxGenTypeArgument);
+  }
+
+  private boolean isLegalVertxGenInterface(TypeInfo type, boolean allowParameterized, Predicate<TypeInfo> p) {
     if (type.getKind() == ClassKind.API) {
       if (type.isParameterized()) {
         ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
@@ -450,7 +455,7 @@ public class ClassModel implements Model {
           parameterized
             .getArgs()
             .stream()
-            .noneMatch(arg -> !isLegalVertxGenTypeArgument(arg) || arg.isNullable());
+            .noneMatch(arg -> !p.test(arg) || arg.isNullable());
       } else {
         return true;
       }
@@ -463,7 +468,8 @@ public class ClassModel implements Model {
       TypeInfo paramType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(0);
       if (isLegalCallbackValueType(paramType, allowAnyJavaType) || paramType.getKind() == ClassKind.THROWABLE) {
         TypeInfo returnType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(1);
-        return isLegalNonCallableParam(returnType, allowAnyJavaType);
+        return isLegalNonCallableReturnType(returnType, allowAnyJavaType) ||
+          isLegalVertxGenInterface(returnType, true, t -> isLegalNonCallableReturnType(t, allowAnyJavaType));
       }
     }
     return false;
@@ -472,9 +478,9 @@ public class ClassModel implements Model {
   private boolean isLegalHandlerType(TypeInfo type, boolean allowAnyJavaType) {
     if (type.getErased().getKind() == ClassKind.HANDLER) {
       TypeInfo eventType = ((ParameterizedTypeInfo) type).getArgs().get(0);
-      if (isLegalCallbackValueType(eventType, allowAnyJavaType) || eventType.getKind() == ClassKind.THROWABLE) {
-        return true;
-      }
+      return isLegalNonCallableReturnType(eventType, allowAnyJavaType) ||
+        eventType.getKind() == ClassKind.VOID ||
+        isLegalVertxGenInterface(eventType, true, t -> isLegalNonCallableReturnType(t, allowAnyJavaType));
     }
     return false;
   }
