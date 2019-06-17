@@ -422,21 +422,8 @@ You need to declare the codec class in the `@ModuleGen` annotation of the `packa
 
 A `@DataObject` annotated type is a Java class with the only purpose to be a container for data.
 
-They can be converted back and forth Json using the generated `JsonEncoder`/`JsonDecoder`/`JsonCodec`.
-
-A codec instance is automatically generated for each annotated data object class:
-
-* The codec implements the `JsonDecoder` interface when the annotated type
-- has a `io.vertx.core.json.JsonObject` constructor
-- is an interface or an abstract class with a `public static [DataObjectType] decode(io.vertx.core.json.JsonObject value)` method
-- generates the converter, i.e `@DataObject(generateConverter = true)`, has an empty constructor and is concrete
-* The codec implements the `JsonEncoder` interface when the annotated type:
-- has a `io.vertx.core.json.JsonObject toJson()` method
-- generates the converter, i.e `@DataObject(generateConverter = true)`
-
-When both encoder and decoder can be created then a `JsonCodec` interface is generated instead.
-
-The generated codec class is named `[DataObjectType]Converter`.
+* The codegen recognize the type as decodable when the annotated type has a `io.vertx.core.json.JsonObject` constructor
+* The codec recognize the type as decodable when the annotated type has a `io.vertx.core.json.JsonObject toJson()` method
 
 Data object conversion recognize the following types as _member_ of any `@DataObject`:
 

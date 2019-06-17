@@ -130,19 +130,14 @@ public class TypeMirrorFactory {
             raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, handlerArg, module, nullable, proxyGen);
           } else if (elt.getAnnotation(DataObject.class) != null) {
             boolean encodable = Helper.isDataObjectAnnotatedEncodable(elementUtils, elt);
-            boolean decodableWithJsonConstructor = Helper.isDataObjectAnnotatedConcreteAndHasJsonConstructor(elementUtils, typeUtils, elt);
-            boolean decodableWithDecodeMethod = Helper.isDataObjectAnnotatedNotConcreteAndHasStaticDecodeMethod(elementUtils, typeUtils, elt);
+            boolean decodable = Helper.isDataObjectAnnotatedDecodable(elementUtils, typeUtils, elt);
             // Data object annotated here
             raw = new DataObjectTypeInfo(
               fqcn,
               module,
               nullable,
               typeParams,
-              new DataObjectAnnotatedInfo(
-                decodableWithJsonConstructor,
-                encodable,
-                decodableWithDecodeMethod || decodableWithJsonConstructor
-              ),
+              new DataObjectAnnotatedInfo(encodable, decodable),
               this.create(elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType())
             );
           } else {

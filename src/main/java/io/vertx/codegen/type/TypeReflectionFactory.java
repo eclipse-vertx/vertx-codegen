@@ -75,17 +75,15 @@ public class TypeReflectionFactory {
             return new ApiTypeInfo(fqcn, true, typeParams, handlerArg != null ? create(handlerArg) : null, module, false, false);
           } else if (kind == ClassKind.DATA_OBJECT) {
             boolean encodable = isDataObjectAnnotatedEncodable(classType);
-            boolean decodableWithJsonConstructor = isDataObjectAnnotatedConcreteAndHasJsonConstructor(classType);
-            boolean decodableWithEncodeMethod = isDataObjectAnnotatedNotConcreteAndHasDecodeStaticMethod(classType);
+            boolean decodable = isDataObjectAnnotatedDecodable(classType);
             return new DataObjectTypeInfo(
               fqcn,
               module,
               false,
               typeParams,
               new DataObjectAnnotatedInfo(
-                decodableWithJsonConstructor,
                 encodable,
-                decodableWithEncodeMethod || decodableWithJsonConstructor
+                decodable
               ),
               create(JsonObject.class)
             );
@@ -120,24 +118,12 @@ public class TypeReflectionFactory {
     }
   }
 
-  private static boolean isDataObjectAnnotatedConcreteAndHasJsonConstructor(Class<?> type) {
+  private static boolean isDataObjectAnnotatedDecodable(Class<?> type) {
     try {
       return
         !Modifier.isAbstract(type.getModifiers()) &&
           !type.isInterface() &&
           Modifier.isPublic(type.getConstructor(JsonObject.class).getModifiers());
-    } catch (NoSuchMethodException e) {
-      return false;
-    }
-  }
-
-  private static boolean isDataObjectAnnotatedNotConcreteAndHasDecodeStaticMethod(Class<?> type) {
-    try {
-      Method m = type.getMethod("decode", JsonObject.class);
-      return (type.isInterface() || Modifier.isAbstract(type.getModifiers())) &&
-          Modifier.isStatic(m.getModifiers()) &&
-          Modifier.isPublic(m.getModifiers()) &&
-          m.getReturnType().equals(type);
     } catch (NoSuchMethodException e) {
       return false;
     }
