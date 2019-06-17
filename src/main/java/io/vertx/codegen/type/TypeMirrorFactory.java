@@ -128,20 +128,21 @@ public class TypeMirrorFactory {
               }
             }
             raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, handlerArg, module, nullable, proxyGen);
-          } else if (kind == ClassKind.DATA_OBJECT) {
+          } else if (elt.getAnnotation(DataObject.class) != null) {
             boolean encodable = Helper.isDataObjectAnnotatedEncodable(elementUtils, elt);
-            boolean decodable = Helper.isDataObjectAnnotatedDecodable(elementUtils, typeUtils, elt);
+            boolean decodableWithJsonConstructor = Helper.isDataObjectAnnotatedConcreteAndHasJsonConstructor(elementUtils, typeUtils, elt);
+            boolean decodableWithDecodeMethod = Helper.isDataObjectAnnotatedNotConcreteAndHasStaticDecodeMethod(elementUtils, typeUtils, elt);
+            // Data object annotated here
             raw = new DataObjectTypeInfo(
               fqcn,
               module,
               nullable,
               typeParams,
-              (encodable) ? simpleName + "Converter" : null,
-              null,
-              (encodable) ? pkgElt.toString() : null,
-              (decodable) ? simpleName + "Converter" : null,
-              null,
-              (decodable) ? pkgElt.toString() : null,
+              new DataObjectTypeInfo.DataObjectAnnotatedInfo(
+                decodableWithJsonConstructor,
+                encodable,
+                decodableWithDecodeMethod || decodableWithJsonConstructor
+              ),
               this.create(elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType())
             );
           } else {
@@ -150,22 +151,26 @@ public class TypeMirrorFactory {
               TypeElement jsonCodecElt = elementUtils.getTypeElement("io.vertx.core.spi.json.JsonCodec");
               TypeParameterElement typeParamElt = jsonCodecElt.getTypeParameters().get(1);
               TypeMirror jsonType = Helper.resolveTypeParameter(typeUtils, jsonCodecType, typeParamElt);
+
               String codecSimpleName = jsonCodecType.asElement().getSimpleName().toString();
               String codecEnclosingClass =
                 jsonCodecType.asElement().getEnclosingElement().getKind() != ElementKind.PACKAGE ?
                   jsonCodecType.asElement().getEnclosingElement().getSimpleName().toString() : null;
               String codecPkgName = elementUtils.getPackageOf(jsonCodecType.asElement()).toString();
+              // Json codec here
               raw = new DataObjectTypeInfo(
                 fqcn,
                 module,
                 nullable,
                 typeParams,
-                codecSimpleName,
-                codecEnclosingClass,
-                codecPkgName,
-                codecSimpleName,
-                codecEnclosingClass,
-                codecPkgName,
+                new DataObjectTypeInfo.JsonCodecInfo(
+                  codecSimpleName,
+                  codecPkgName,
+                  codecEnclosingClass,
+                  codecSimpleName,
+                  codecPkgName,
+                  codecEnclosingClass
+                ),
                 create(jsonType)
               );
             } else {

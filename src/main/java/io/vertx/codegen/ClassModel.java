@@ -389,7 +389,7 @@ public class ClassModel implements Model {
   }
 
   private boolean isLegalDataObjectTypeParam(TypeInfo type) {
-    return type.getKind() == ClassKind.DATA_OBJECT && ((DataObjectTypeInfo) type).hasJsonDecoder();
+    return type.getKind() == ClassKind.DATA_OBJECT && ((DataObjectTypeInfo) type).isDecodable();
   }
 
   private boolean isLegalClassTypeParam(ExecutableElement elt, TypeInfo type) {
@@ -409,7 +409,7 @@ public class ClassModel implements Model {
   }
 
   protected boolean isLegalDataObjectTypeReturn(TypeInfo type) {
-    return type.getKind() == ClassKind.DATA_OBJECT && ((DataObjectTypeInfo) type).hasJsonEncoder();
+    return type.getKind() == ClassKind.DATA_OBJECT && ((DataObjectTypeInfo) type).isEncodable();
   }
 
   protected boolean isLegalContainer(TypeInfo type, boolean allowAnyJavaType) {

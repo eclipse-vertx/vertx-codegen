@@ -698,21 +698,23 @@ public class Helper {
       (element.getKind() == ElementKind.CLASS && element.getModifiers().contains(Modifier.ABSTRACT));
   }
 
-  public static boolean isDataObjectAnnotatedDecodable(Elements elementUtils, Types typeUtils, TypeElement dataObjectElt) {
-    boolean isConcreteAndHasJsonConstructor =
+  public static boolean isDataObjectAnnotatedConcreteAndHasJsonConstructor(Elements elementUtils, Types typeUtils, TypeElement dataObjectElt) {
+    return
       isConcreteClass(dataObjectElt) &&
-      elementUtils
-        .getAllMembers(dataObjectElt)
-        .stream()
-        .filter(e -> e.getKind() == ElementKind.CONSTRUCTOR)
-        .map(e -> (ExecutableElement)e)
-        .anyMatch(constructor ->
-          constructor.getParameters().size() == 1 &&
-            constructor.getModifiers().contains(Modifier.PUBLIC) &&
-            constructor.getParameters().get(0).asType().toString().equals("io.vertx.core.json.JsonObject")
-        );
-    boolean isNotConcreteAndHasStaticDecodeMethod =
-      isAbstractClassOrInterface(dataObjectElt) &&
+        elementUtils
+          .getAllMembers(dataObjectElt)
+          .stream()
+          .filter(e -> e.getKind() == ElementKind.CONSTRUCTOR)
+          .map(e -> (ExecutableElement)e)
+          .anyMatch(constructor ->
+            constructor.getParameters().size() == 1 &&
+              constructor.getModifiers().contains(Modifier.PUBLIC) &&
+              constructor.getParameters().get(0).asType().toString().equals("io.vertx.core.json.JsonObject")
+          );
+  }
+
+  public static boolean isDataObjectAnnotatedNotConcreteAndHasStaticDecodeMethod(Elements elementUtils, Types typeUtils, TypeElement dataObjectElt) {
+    return isAbstractClassOrInterface(dataObjectElt) &&
         elementUtils
           .getAllMembers(dataObjectElt)
           .stream()
@@ -720,23 +722,11 @@ public class Helper {
           .map(e -> (ExecutableElement)e)
           .anyMatch(methodElt ->
             methodElt.getSimpleName().contentEquals("decode") &&
-            methodElt.getModifiers().containsAll(Arrays.asList(Modifier.STATIC, Modifier.PUBLIC)) &&
-            methodElt.getParameters().size() == 1 &&
-            methodElt.getParameters().get(0).asType().toString().equals("io.vertx.core.json.JsonObject") &&
-            typeUtils.isSameType(methodElt.getReturnType(), dataObjectElt.asType())
+              methodElt.getModifiers().containsAll(Arrays.asList(Modifier.STATIC, Modifier.PUBLIC)) &&
+              methodElt.getParameters().size() == 1 &&
+              methodElt.getParameters().get(0).asType().toString().equals("io.vertx.core.json.JsonObject") &&
+              typeUtils.isSameType(methodElt.getReturnType(), dataObjectElt.asType())
           );
-    boolean hasGenerateConverterAndEmptyConstructorAndConcrete = dataObjectElt.getAnnotation(DataObject.class).generateConverter() &&
-      elementUtils
-        .getAllMembers(dataObjectElt)
-        .stream()
-        .filter(e -> e.getKind() == ElementKind.CONSTRUCTOR)
-        .map(e -> (ExecutableElement)e)
-        .anyMatch(constructor ->
-          constructor.getParameters().size() == 0 &&
-            constructor.getModifiers().contains(Modifier.PUBLIC)
-        ) && dataObjectElt.getKind() == ElementKind.CLASS && !dataObjectElt.getModifiers().contains(Modifier.ABSTRACT)
-      ;
-    return isConcreteAndHasJsonConstructor || isNotConcreteAndHasStaticDecodeMethod || hasGenerateConverterAndEmptyConstructorAndConcrete;
   }
 
   /**

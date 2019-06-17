@@ -2321,8 +2321,8 @@ public class ClassTest extends ClassTestBase {
 
     assertEquals(1, model.getReferencedDataObjectTypes().size());
     assertEquals("MyPojo", model.getReferencedDataObjectTypes().iterator().next().getSimpleName());
-    assertEquals(MyPojoJsonCodec.class.getName(), model.getReferencedDataObjectTypes().iterator().next().getJsonDecoderFQCN());
-    assertEquals(MyPojoJsonCodec.class.getName(), model.getReferencedDataObjectTypes().iterator().next().getJsonEncoderFQCN());
+    assertEquals(MyPojoJsonCodec.class.getName(), model.getReferencedDataObjectTypes().iterator().next().getJsonCodecInfo().getJsonEncoderFQCN());
+    assertEquals(MyPojoJsonCodec.class.getName(), model.getReferencedDataObjectTypes().iterator().next().getJsonCodecInfo().getJsonDecoderFQCN());
 
     checkMethod(model.getMethodMap().get("returnMyPojo").get(0), "returnMyPojo", 0, new TypeLiteral<MyPojo>() {}, MethodKind.OTHER);
 

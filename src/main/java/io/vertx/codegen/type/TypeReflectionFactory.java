@@ -75,18 +75,18 @@ public class TypeReflectionFactory {
             return new ApiTypeInfo(fqcn, true, typeParams, handlerArg != null ? create(handlerArg) : null, module, false, false);
           } else if (kind == ClassKind.DATA_OBJECT) {
             boolean encodable = isDataObjectAnnotatedEncodable(classType);
-            boolean decodable = isDataObjectAnnotatedDecodable(classType);
+            boolean decodableWithJsonConstructor = isDataObjectAnnotatedConcreteAndHasJsonConstructor(classType);
+            boolean decodableWithEncodeMethod = isDataObjectAnnotatedNotConcreteAndHasDecodeStaticMethod(classType);
             return new DataObjectTypeInfo(
               fqcn,
               module,
               false,
               typeParams,
-              (encodable) ? classType.getSimpleName() + "Converter" : null,
-              null,
-              (encodable) ? pkg.getName() : null,
-              (decodable) ? classType.getSimpleName() + "Converter" : null,
-              null,
-              (decodable) ? pkg.getName() : null,
+              new DataObjectTypeInfo.DataObjectAnnotatedInfo(
+                decodableWithJsonConstructor,
+                encodable,
+                decodableWithEncodeMethod || decodableWithJsonConstructor
+              ),
               create(JsonObject.class)
             );
           } else {
@@ -114,38 +114,32 @@ public class TypeReflectionFactory {
   private static boolean isDataObjectAnnotatedEncodable(Class<?> type) {
     try {
       Method m = type.getMethod("toJson");
-      return
-        type.getAnnotation(DataObject.class).generateConverter() ||
-          (Modifier.isPublic(m.getModifiers()) && m.getReturnType().equals(JsonObject.class));
+      return m != null && Modifier.isPublic(m.getModifiers()) && m.getReturnType().equals(JsonObject.class);
     } catch (NoSuchMethodException e) {
       return false;
     }
   }
 
-  private static boolean isDataObjectAnnotatedDecodable(Class<?> type) {
-    boolean isConcreteAndHasJsonConstructor = false;
+  private static boolean isDataObjectAnnotatedConcreteAndHasJsonConstructor(Class<?> type) {
     try {
-      isConcreteAndHasJsonConstructor =
+      return
         !Modifier.isAbstract(type.getModifiers()) &&
-        !type.isInterface() &&
-        Modifier.isPublic(type.getConstructor(JsonObject.class).getModifiers());
-    } catch (NoSuchMethodException e) { }
-    boolean isNotConcreteAndHasDecodeStaticMethod = false;
+          !type.isInterface() &&
+          Modifier.isPublic(type.getConstructor(JsonObject.class).getModifiers());
+    } catch (NoSuchMethodException e) {
+      return false;
+    }
+  }
+
+  private static boolean isDataObjectAnnotatedNotConcreteAndHasDecodeStaticMethod(Class<?> type) {
     try {
       Method m = type.getMethod("decode", JsonObject.class);
-      isNotConcreteAndHasDecodeStaticMethod =
-        (type.isInterface() || Modifier.isAbstract(type.getModifiers())) &&
+      return (type.isInterface() || Modifier.isAbstract(type.getModifiers())) &&
           Modifier.isStatic(m.getModifiers()) &&
           Modifier.isPublic(m.getModifiers()) &&
           m.getReturnType().equals(type);
-    } catch (NoSuchMethodException e) { }
-    boolean hasEmptyConstructorAndGenerateConverterAndConcrete = false;
-    try {
-      hasEmptyConstructorAndGenerateConverterAndConcrete =
-        type.getAnnotation(DataObject.class).generateConverter() &&
-        type.getConstructor() != null &&
-        !type.isInterface() && !Modifier.isAbstract(type.getModifiers());
-    } catch (NoSuchMethodException e) { }
-    return isConcreteAndHasJsonConstructor || isNotConcreteAndHasDecodeStaticMethod || hasEmptyConstructorAndGenerateConverterAndConcrete;
+    } catch (NoSuchMethodException e) {
+      return false;
+    }
   }
 }

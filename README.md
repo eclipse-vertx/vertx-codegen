@@ -394,7 +394,7 @@ You can declare data objects by:
 * Defining a `io.vertx.core.spi.json.JsonCodec` for it
 * Or annotating the type itself with `@DataObject`
 
-==== Json codecs
+### Json codecs
 
 A json codec for type `T` is a concrete class that implements the interface `JsonCodec<T, J>`, where `J` can be:
 
@@ -418,7 +418,7 @@ You need to declare the codec class in the `@ModuleGen` annotation of the `packa
 )
 ```
 
-==== `@DataObject` annotated types
+### `@DataObject` annotated types
 
 A `@DataObject` annotated type is a Java class with the only purpose to be a container for data.
 

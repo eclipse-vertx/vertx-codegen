@@ -745,34 +745,6 @@ public class DataObjectTest {
   }
 
   @Test
-  public void testGeneratedCodecMustUseGeneratedFromJson() {
-    ConverterGeneratesDecoderWithFromJsonDataObjectConverter conv = ConverterGeneratesDecoderWithFromJsonDataObjectConverter.INSTANCE;
-    assertEquals(new JsonObject().put("hello", "francesco"), conv.encode(new ConverterGeneratesDecoderWithFromJsonDataObject()));
-    assertEquals(1, conv.decode(new JsonObject().put("a", 1)).getA());
-  }
-
-  @Test
-  public void testGeneratedCodecMustUseGeneratedToJson() {
-    ConverterGeneratesEncoderWithToJsonDataObjectConverter conv = ConverterGeneratesEncoderWithToJsonDataObjectConverter.INSTANCE;
-    assertEquals(new JsonObject().put("a", 2), conv.encode(new ConverterGeneratesEncoderWithToJsonDataObject(null).setA(2)));
-    assertEquals(-1, conv.decode(new JsonObject().put("a", 1)).getA());
-  }
-
-  @Test
-  public void testGeneratedCodecMustUseGeneratedToJsonAndStaticCodec() {
-    AbstractConverterGeneratesEncoderWithToJsonDataObjectConverter conv = AbstractConverterGeneratesEncoderWithToJsonDataObjectConverter.INSTANCE;
-    assertEquals(new JsonObject().put("a", 2), conv.encode(new AbstractConverterGeneratesEncoderWithToJsonDataObject(null) {}.setA(2)));
-    assertEquals(-5, conv.decode(new JsonObject().put("a", 1)).getA());
-  }
-
-  @Test
-  public void testGeneratedCodecMustUseConverterStaticMethods() {
-    ConverterGeneratesCompleteCodecDataObjectConverter conv = ConverterGeneratesCompleteCodecDataObjectConverter.INSTANCE;
-    assertEquals(new JsonObject().put("a", 2), conv.encode(new ConverterGeneratesCompleteCodecDataObject().setA(2)));
-    assertEquals(2, conv.decode(new JsonObject().put("a", 2)).getA());
-  }
-
-  @Test
   public void testInherit() {
     ChildInheritingDataObject obj = new ChildInheritingDataObject();
     JsonObject expectedJson = new JsonObject();
