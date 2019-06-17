@@ -138,7 +138,7 @@ public class TypeMirrorFactory {
               module,
               nullable,
               typeParams,
-              new DataObjectTypeInfo.DataObjectAnnotatedInfo(
+              new DataObjectAnnotatedInfo(
                 decodableWithJsonConstructor,
                 encodable,
                 decodableWithDecodeMethod || decodableWithJsonConstructor
@@ -163,7 +163,7 @@ public class TypeMirrorFactory {
                 module,
                 nullable,
                 typeParams,
-                new DataObjectTypeInfo.JsonCodecInfo(
+                new JsonCodecInfo(
                   codecSimpleName,
                   codecPkgName,
                   codecEnclosingClass,

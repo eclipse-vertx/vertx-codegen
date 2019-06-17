@@ -2,6 +2,7 @@ package io.vertx.test.codegen;
 
 import io.vertx.codegen.*;
 import io.vertx.codegen.type.DataObjectTypeInfo;
+import io.vertx.codegen.type.JsonCodecInfo;
 import io.vertx.codegen.type.PrimitiveTypeInfo;
 import io.vertx.test.codegen.testjsoncodecs.zoneddatetimetest.APIInterfaceWithZonedDateTime;
 import org.junit.Test;
@@ -69,7 +70,7 @@ public class JsonCodecTest extends ClassTestBase {
   public void testEnclosedCodec() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsoncodecs.enclosedcodec.APIInterfaceWithMyPojo.class);
     DataObjectTypeInfo typeInfo = model.getReferencedDataObjectTypes().iterator().next();
-    DataObjectTypeInfo.JsonCodecInfo jsonCodecInfo = typeInfo.getJsonCodecInfo();
+    JsonCodecInfo jsonCodecInfo = typeInfo.getJsonCodecInfo();
     assertNotNull(typeInfo);
     assertTrue(typeInfo.isEncodable());
     assertTrue(typeInfo.isDecodable());

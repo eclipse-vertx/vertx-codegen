@@ -82,7 +82,7 @@ public class TypeReflectionFactory {
               module,
               false,
               typeParams,
-              new DataObjectTypeInfo.DataObjectAnnotatedInfo(
+              new DataObjectAnnotatedInfo(
                 decodableWithJsonConstructor,
                 encodable,
                 decodableWithEncodeMethod || decodableWithJsonConstructor
