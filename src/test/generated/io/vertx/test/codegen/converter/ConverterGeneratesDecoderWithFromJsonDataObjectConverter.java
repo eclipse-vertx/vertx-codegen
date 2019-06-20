@@ -4,25 +4,17 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import io.vertx.core.spi.json.JsonCodec;
+import io.vertx.core.spi.json.JsonEncoder;
 
 /**
  * Converter and Codec for {@link io.vertx.test.codegen.converter.ConverterGeneratesDecoderWithFromJsonDataObject}.
  * NOTE: This class has been automatically generated from the {@link io.vertx.test.codegen.converter.ConverterGeneratesDecoderWithFromJsonDataObject} original class using Vert.x codegen.
  */
-public class ConverterGeneratesDecoderWithFromJsonDataObjectConverter implements JsonCodec<ConverterGeneratesDecoderWithFromJsonDataObject, JsonObject> {
+public class ConverterGeneratesDecoderWithFromJsonDataObjectConverter implements JsonEncoder<ConverterGeneratesDecoderWithFromJsonDataObject, JsonObject> {
 
   public static final ConverterGeneratesDecoderWithFromJsonDataObjectConverter INSTANCE = new ConverterGeneratesDecoderWithFromJsonDataObjectConverter();
 
   @Override public JsonObject encode(ConverterGeneratesDecoderWithFromJsonDataObject value) { return (value != null) ? value.toJson() : null; }
-
-  @Override
-  public ConverterGeneratesDecoderWithFromJsonDataObject decode(JsonObject value) {
-    if (value == null) return null;
-    ConverterGeneratesDecoderWithFromJsonDataObject newInstance = new ConverterGeneratesDecoderWithFromJsonDataObject();
-    fromJson(value, newInstance);
-    return newInstance;
-  }
 
   @Override public Class<ConverterGeneratesDecoderWithFromJsonDataObject> getTargetClass() { return ConverterGeneratesDecoderWithFromJsonDataObject.class; }
 

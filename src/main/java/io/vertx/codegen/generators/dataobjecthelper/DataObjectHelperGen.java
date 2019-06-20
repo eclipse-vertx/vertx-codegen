@@ -32,7 +32,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
 
   @Override
   public String filename(DataObjectModel model) {
-    if (model.isClass()) {
+    if (model.isClass() && model.getType().isDataObjectAnnotatedType() && model.getGenerateConverter()) {
       return model.getFqn() + "Converter.java";
     }
     return null;
@@ -130,7 +130,8 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               genPropToJson("", "", prop, writer);
               break;
             case DATA_OBJECT:
-              genPropToJson(((DataObjectTypeInfo)prop.getType()).getJsonEncoderFQCN() + ".INSTANCE.encode(", ")", prop, writer);
+              DataObjectTypeInfo dataObjectTypeInfo = ((DataObjectTypeInfo)prop.getType());
+              genPropToJson(dataObjectTypeInfo.match(jc -> jc.getJsonDecoderFQCN() + ".INSTANCE.encode(", doa -> ""), dataObjectTypeInfo.match(jc -> ")", doa -> ".toJson()"), prop, writer);
               break;
             case OTHER:
               if (prop.getType().getName().equals(Instant.class.getName())) {
@@ -232,9 +233,13 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               genPropFromJson("JsonArray", "((JsonArray)", ").copy()", prop, writer);
               break;
             case DATA_OBJECT:
+              DataObjectTypeInfo dataObjectTypeInfo = ((DataObjectTypeInfo)prop.getType());
               genPropFromJson(
-                ((DataObjectTypeInfo)prop.getType()).getTargetJsonType().getSimpleName(),
-                ((DataObjectTypeInfo)prop.getType()).getJsonDecoderFQCN() + ".INSTANCE.decode((" + ((DataObjectTypeInfo)prop.getType()).getTargetJsonType().getSimpleName() + ")",
+                dataObjectTypeInfo.getTargetJsonType().getSimpleName(),
+                dataObjectTypeInfo.match(
+                  jci -> jci.getJsonDecoderFQCN() + ".INSTANCE.decode((" + dataObjectTypeInfo.getTargetJsonType().getSimpleName() + ")",
+                  doa -> "new " + dataObjectTypeInfo.getName() + "((JsonObject)"
+                ),
                 ")",
                 prop,
                 writer
@@ -306,6 +311,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     }
     writer.print(indent + "  break;\n");
   }
+
 
   private <T> T matchCodecType(boolean generateEncode, boolean generateDecode, T completeCodec, T onlyEncoder, T onlyDecoder) {
     if (generateDecode && generateEncode) return completeCodec;

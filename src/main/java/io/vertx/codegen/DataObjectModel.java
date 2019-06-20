@@ -146,9 +146,9 @@ public class DataObjectModel implements Model {
     return publicConverter;
   }
 
-  public boolean isEncodable() { return type.hasJsonEncoder(); }
+  public boolean isEncodable() { return type.isEncodable(); }
 
-  public boolean isDecodable() { return type.hasJsonDecoder(); }
+  public boolean isDecodable() { return type.isDecodable(); }
 
   public boolean hasToJsonMethod() { return hasToJsonMethod; }
 
@@ -523,7 +523,7 @@ public class DataObjectModel implements Model {
         jsonifiable = true;
         break;
       case DATA_OBJECT:
-        jsonifiable = ((DataObjectTypeInfo)propType).hasJsonEncoder();
+        jsonifiable = ((DataObjectTypeInfo)propType).isEncodable();
         break;
       case OTHER:
         if (propType.getName().equals(Instant.class.getName())) {

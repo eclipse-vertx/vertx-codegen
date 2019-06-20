@@ -4,13 +4,13 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import io.vertx.core.spi.json.JsonCodec;
+import io.vertx.core.spi.json.JsonEncoder;
 
 /**
  * Converter and Codec for {@link io.vertx.test.codegen.converter.ConverterGeneratesCompleteCodecDataObject}.
  * NOTE: This class has been automatically generated from the {@link io.vertx.test.codegen.converter.ConverterGeneratesCompleteCodecDataObject} original class using Vert.x codegen.
  */
-public class ConverterGeneratesCompleteCodecDataObjectConverter implements JsonCodec<ConverterGeneratesCompleteCodecDataObject, JsonObject> {
+public class ConverterGeneratesCompleteCodecDataObjectConverter implements JsonEncoder<ConverterGeneratesCompleteCodecDataObject, JsonObject> {
 
   public static final ConverterGeneratesCompleteCodecDataObjectConverter INSTANCE = new ConverterGeneratesCompleteCodecDataObjectConverter();
 
@@ -20,14 +20,6 @@ public class ConverterGeneratesCompleteCodecDataObjectConverter implements JsonC
     JsonObject json = new JsonObject();
     toJson(value, json);
     return json;
-  }
-
-  @Override
-  public ConverterGeneratesCompleteCodecDataObject decode(JsonObject value) {
-    if (value == null) return null;
-    ConverterGeneratesCompleteCodecDataObject newInstance = new ConverterGeneratesCompleteCodecDataObject();
-    fromJson(value, newInstance);
-    return newInstance;
   }
 
   @Override public Class<ConverterGeneratesCompleteCodecDataObject> getTargetClass() { return ConverterGeneratesCompleteCodecDataObject.class; }
