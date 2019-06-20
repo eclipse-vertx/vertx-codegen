@@ -4,13 +4,19 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import io.vertx.core.spi.json.JsonEncoder;
 
 /**
  * Converter and Codec for {@link io.vertx.test.codegen.converter.ConverterGeneratesDecoderWithFromJsonDataObject}.
  * NOTE: This class has been automatically generated from the {@link io.vertx.test.codegen.converter.ConverterGeneratesDecoderWithFromJsonDataObject} original class using Vert.x codegen.
  */
-public class ConverterGeneratesDecoderWithFromJsonDataObjectConverter {
+public class ConverterGeneratesDecoderWithFromJsonDataObjectConverter implements JsonEncoder<ConverterGeneratesDecoderWithFromJsonDataObject, JsonObject> {
 
+  public static final ConverterGeneratesDecoderWithFromJsonDataObjectConverter INSTANCE = new ConverterGeneratesDecoderWithFromJsonDataObjectConverter();
+
+  @Override public JsonObject encode(ConverterGeneratesDecoderWithFromJsonDataObject value) { return (value != null) ? value.toJson() : null; }
+
+  @Override public Class<ConverterGeneratesDecoderWithFromJsonDataObject> getTargetClass() { return ConverterGeneratesDecoderWithFromJsonDataObject.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ConverterGeneratesDecoderWithFromJsonDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {

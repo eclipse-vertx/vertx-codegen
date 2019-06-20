@@ -4,13 +4,25 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import io.vertx.core.spi.json.JsonEncoder;
 
 /**
  * Converter and Codec for {@link io.vertx.test.codegen.converter.AbstractConverterGeneratesEncoderWithToJsonDataObject}.
  * NOTE: This class has been automatically generated from the {@link io.vertx.test.codegen.converter.AbstractConverterGeneratesEncoderWithToJsonDataObject} original class using Vert.x codegen.
  */
-public class AbstractConverterGeneratesEncoderWithToJsonDataObjectConverter {
+public class AbstractConverterGeneratesEncoderWithToJsonDataObjectConverter implements JsonEncoder<AbstractConverterGeneratesEncoderWithToJsonDataObject, JsonObject> {
 
+  public static final AbstractConverterGeneratesEncoderWithToJsonDataObjectConverter INSTANCE = new AbstractConverterGeneratesEncoderWithToJsonDataObjectConverter();
+
+  @Override
+  public JsonObject encode(AbstractConverterGeneratesEncoderWithToJsonDataObject value) {
+    if (value == null) return null;
+    JsonObject json = new JsonObject();
+    toJson(value, json);
+    return json;
+  }
+
+  @Override public Class<AbstractConverterGeneratesEncoderWithToJsonDataObject> getTargetClass() { return AbstractConverterGeneratesEncoderWithToJsonDataObject.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, AbstractConverterGeneratesEncoderWithToJsonDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
