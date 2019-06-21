@@ -723,28 +723,6 @@ public class DataObjectTest {
   }
 
   @Test
-  public void testNoConvertersFromJsonMethod() throws ClassNotFoundException {
-    Class<?> clazz = NoConverterDataObject.class.getClassLoader().loadClass(NoConverterDataObject.class.getName() + "Converter");
-    try {
-      clazz.getMethod("fromJson", Iterable.class, NoConverterDataObject.class);
-      fail("Data Object marked with generateConverter = false must not generate fromJson");
-    } catch (NoSuchMethodException e) {
-      // Ok
-    } //TODO wtf? should remove?
-  }
-
-  @Test
-  public void testNoConvertersToJsonMethod() throws ClassNotFoundException {
-    Class<?> clazz = NoConverterDataObject.class.getClassLoader().loadClass(NoConverterDataObject.class.getName() + "Converter");
-    try {
-      clazz.getMethod("toJson", NoConverterDataObject.class, JsonObject.class);
-      fail("Data Object marked with generateConverter = false must not generate fromJson");
-    } catch (NoSuchMethodException e) {
-      // Ok
-    } //TODO wtf? should remove?
-  }
-
-  @Test
   public void testInherit() {
     ChildInheritingDataObject obj = new ChildInheritingDataObject();
     JsonObject expectedJson = new JsonObject();

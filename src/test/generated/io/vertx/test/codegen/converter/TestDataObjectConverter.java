@@ -4,23 +4,15 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import io.vertx.core.spi.json.JsonCodec;
+import io.vertx.core.spi.json.JsonDecoder;
 
 /**
  * Converter and Codec for {@link io.vertx.test.codegen.converter.TestDataObject}.
  * NOTE: This class has been automatically generated from the {@link io.vertx.test.codegen.converter.TestDataObject} original class using Vert.x codegen.
  */
-public class TestDataObjectConverter implements JsonCodec<TestDataObject, JsonObject> {
+public class TestDataObjectConverter implements JsonDecoder<TestDataObject, JsonObject> {
 
   public static final TestDataObjectConverter INSTANCE = new TestDataObjectConverter();
-
-  @Override
-  public JsonObject encode(TestDataObject value) {
-    if (value == null) return null;
-    JsonObject json = new JsonObject();
-    toJson(value, json);
-    return json;
-  }
 
   @Override public TestDataObject decode(JsonObject value) { return (value != null) ? new TestDataObject(value) : null; }
 
@@ -808,6 +800,41 @@ public class TestDataObjectConverter implements JsonCodec<TestDataObject, JsonOb
         case "longValue":
           if (member.getValue() instanceof Number) {
             obj.setLongValue(((Number)member.getValue()).longValue());
+          }
+          break;
+        case "notEncodableDataObject":
+          if (member.getValue() instanceof JsonObject) {
+            obj.setNotEncodableDataObject(new io.vertx.test.codegen.converter.NoConverterDataObject((JsonObject)member.getValue()));
+          }
+          break;
+        case "notEncodableDataObjectMap":
+          if (member.getValue() instanceof JsonObject) {
+            java.util.Map<String, io.vertx.test.codegen.converter.NoConverterDataObject> map = new java.util.LinkedHashMap<>();
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
+              if (entry.getValue() instanceof JsonObject)
+                map.put(entry.getKey(), new io.vertx.test.codegen.converter.NoConverterDataObject((JsonObject)entry.getValue()));
+            });
+            obj.setNotEncodableDataObjectMap(map);
+          }
+          break;
+        case "notEncodableDataObjectSet":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.LinkedHashSet<io.vertx.test.codegen.converter.NoConverterDataObject> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof JsonObject)
+                list.add(new io.vertx.test.codegen.converter.NoConverterDataObject((JsonObject)item));
+            });
+            obj.setNotEncodableDataObjectSet(list);
+          }
+          break;
+        case "notEncodableDataObjects":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<io.vertx.test.codegen.converter.NoConverterDataObject> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof JsonObject)
+                list.add(new io.vertx.test.codegen.converter.NoConverterDataObject((JsonObject)item));
+            });
+            obj.setNotEncodableDataObjects(list);
           }
           break;
         case "objectMap":

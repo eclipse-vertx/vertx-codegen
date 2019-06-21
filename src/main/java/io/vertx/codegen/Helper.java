@@ -679,7 +679,6 @@ public class Helper {
 
   public static boolean isDataObjectAnnotatedEncodable(Elements elementUtils, TypeElement dataObjectElt) {
     return
-      dataObjectElt.getAnnotation(DataObject.class).generateConverter() ||
       elementUtils.getAllMembers(dataObjectElt)
       .stream()
       .flatMap(Helper.FILTER_METHOD)
