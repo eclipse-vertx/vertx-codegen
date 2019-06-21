@@ -131,7 +131,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               break;
             case DATA_OBJECT:
               DataObjectTypeInfo dataObjectTypeInfo = ((DataObjectTypeInfo)prop.getType());
-              genPropToJson(dataObjectTypeInfo.match(jc -> jc.getJsonDecoderFQCN() + ".INSTANCE.encode(", doa -> ""), dataObjectTypeInfo.match(jc -> ")", doa -> ".toJson()"), prop, writer);
+              if (dataObjectTypeInfo.isEncodable()) {
+                genPropToJson(dataObjectTypeInfo.match(jc -> jc.getJsonDecoderFQCN() + ".INSTANCE.encode(", doa -> ""), dataObjectTypeInfo.match(jc -> ")", doa -> ".toJson()"), prop, writer);
+              } else {
+                return;
+              }
               break;
             case OTHER:
               if (prop.getType().getName().equals(Instant.class.getName())) {
@@ -234,16 +238,20 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               break;
             case DATA_OBJECT:
               DataObjectTypeInfo dataObjectTypeInfo = ((DataObjectTypeInfo)prop.getType());
-              genPropFromJson(
-                dataObjectTypeInfo.getTargetJsonType().getSimpleName(),
-                dataObjectTypeInfo.match(
-                  jci -> jci.getJsonDecoderFQCN() + ".INSTANCE.decode((" + dataObjectTypeInfo.getTargetJsonType().getSimpleName() + ")",
-                  doa -> "new " + dataObjectTypeInfo.getName() + "((JsonObject)"
-                ),
-                ")",
-                prop,
-                writer
-              );
+              if (dataObjectTypeInfo.isDecodable()) {
+                genPropFromJson(
+                  dataObjectTypeInfo.getTargetJsonType().getSimpleName(),
+                  dataObjectTypeInfo.match(
+                    jci -> jci.getJsonDecoderFQCN() + ".INSTANCE.decode((" + dataObjectTypeInfo.getTargetJsonType().getSimpleName() + ")",
+                    doa -> "new " + dataObjectTypeInfo.getName() + "((JsonObject)"
+                  ),
+                  ")",
+                  prop,
+                  writer
+                );
+              } else {
+                return;
+              }
               break;
             case ENUM:
               genPropFromJson("String", prop.getType().getName() + ".valueOf((String)", ")", prop, writer);

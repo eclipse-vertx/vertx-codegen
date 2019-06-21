@@ -49,6 +49,7 @@ public class TestDataObject {
   private JsonArray jsonArray;
   private TimeUnit httpMethod;
   private ZonedDateTime dateTime;
+  private NoConverterDataObject notEncodableDataObject;
 
   private List<String> stringValues;
   private List<Boolean> boxedBooleanValues;
@@ -66,6 +67,7 @@ public class TestDataObject {
   private List<TimeUnit> httpMethods;
   private List<ZonedDateTime> dateTimes;
   private List<Object> objects;
+  private List<NoConverterDataObject> notEncodableDataObjects;
 
   private Set<String> stringSet;
   private Set<Boolean> boxedBooleanSet;
@@ -83,6 +85,7 @@ public class TestDataObject {
   private Set<TimeUnit> httpMethodSet;
   private Set<ZonedDateTime> dateTimeSet;
   private Set<Object> objectSet;
+  private Set<NoConverterDataObject> notEncodableDataObjectSet;
 
   private List<String> addedStringValues = new ArrayList<>();
   private List<Boolean> addedBoxedBooleanValues = new ArrayList<>();
@@ -117,6 +120,7 @@ public class TestDataObject {
   private Map<String, TimeUnit> httpMethodMap;
   private Map<String, ZonedDateTime> dateTimeMap;
   private Map<String, Object> objectMap;
+  private Map<String, NoConverterDataObject> notEncodableDataObjectMap;
 
   private Map<String, String> keyedStringValues = new HashMap<>();
   private Map<String, Boolean> keyedBoxedBooleanValues = new HashMap<>();
@@ -348,6 +352,15 @@ public class TestDataObject {
 
   public TestDataObject setDateTime(ZonedDateTime dateTime) {
     this.dateTime = dateTime;
+    return this;
+  }
+
+  public NoConverterDataObject getNotEncodableDataObject() {
+    return notEncodableDataObject;
+  }
+
+  public TestDataObject setNotEncodableDataObject(NoConverterDataObject notEncodableDataObject) {
+    this.notEncodableDataObject = notEncodableDataObject;
     return this;
   }
 
@@ -639,6 +652,8 @@ public class TestDataObject {
     this.objectSet = objectSet;
     return this;
   }
+
+
 
   public List<String> getAddedStringValues() {
     return addedStringValues;
@@ -1069,6 +1084,33 @@ public class TestDataObject {
 
   public TestDataObject addKeyedObjectValue(String key, Object value) {
     keyedObjectValues.put(key, value);
+    return this;
+  }
+
+  public List<NoConverterDataObject> getNotEncodableDataObjects() {
+    return notEncodableDataObjects;
+  }
+
+  public TestDataObject setNotEncodableDataObjects(List<NoConverterDataObject> notEncodableDataObjects) {
+    this.notEncodableDataObjects = notEncodableDataObjects;
+    return this;
+  }
+
+  public Set<NoConverterDataObject> getNotEncodableDataObjectSet() {
+    return notEncodableDataObjectSet;
+  }
+
+  public TestDataObject setNotEncodableDataObjectSet(Set<NoConverterDataObject> notEncodableDataObjectSet) {
+    this.notEncodableDataObjectSet = notEncodableDataObjectSet;
+    return this;
+  }
+
+  public Map<String, NoConverterDataObject> getNotEncodableDataObjectMap() {
+    return notEncodableDataObjectMap;
+  }
+
+  public TestDataObject setNotEncodableDataObjectMap(Map<String, NoConverterDataObject> notEncodableDataObjectMap) {
+    this.notEncodableDataObjectMap = notEncodableDataObjectMap;
     return this;
   }
 }

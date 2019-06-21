@@ -1,16 +1,5 @@
 = Cheatsheets
 
-[[AbstractConverterGeneratesEncoderWithToJsonDataObject]]
-== AbstractConverterGeneratesEncoderWithToJsonDataObject
-
-
-[cols=">25%,25%,50%"]
-[frame="topbot"]
-|===
-^|Name | Type ^| Description
-|[[a]]`@a`|`Number (int)`|-
-|===
-
 [[AggregatedDataObject]]
 == AggregatedDataObject
 
@@ -53,17 +42,6 @@
 ^|Name | Type ^| Description
 |[[childProperty]]`@childProperty`|`String`|-
 |[[parentProperty]]`@parentProperty`|`String`|-
-|===
-
-[[ConverterGeneratesCompleteCodecDataObject]]
-== ConverterGeneratesCompleteCodecDataObject
-
-
-[cols=">25%,25%,50%"]
-[frame="topbot"]
-|===
-^|Name | Type ^| Description
-|[[a]]`@a`|`Number (int)`|-
 |===
 
 [[ConverterGeneratesDecoderWithFromJsonDataObject]]
@@ -233,6 +211,10 @@
 |[[keyedJsonObjectValues]]`@keyedJsonObjectValues`|`Json object`|-
 |[[keyedStringValues]]`@keyedStringValues`|`String`|-
 |[[longValue]]`@longValue`|`Number (long)`|-
+|[[notEncodableDataObject]]`@notEncodableDataObject`|`link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
+|[[notEncodableDataObjectMap]]`@notEncodableDataObjectMap`|`link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
+|[[notEncodableDataObjectSet]]`@notEncodableDataObjectSet`|`Array of link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
+|[[notEncodableDataObjects]]`@notEncodableDataObjects`|`Array of link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
 |[[shortValue]]`@shortValue`|`Number (short)`|-
 |[[stringSet]]`@stringSet`|`Array of String`|-
 |[[stringValue]]`@stringValue`|`String`|-
