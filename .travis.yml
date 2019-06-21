@@ -23,6 +23,7 @@ jobs:
       jdk: openjdk11
       script: mvn -q clean verify -B
     - stage: deploy
+      jdk: openjdk8
       name: "Deploy to Sonatype's snapshots repository"
       if: type != pull_request AND env(SONATYPE_NEXUS_USERNAME) IS present
       script: bash .travis.deploy.artifacts.sh
