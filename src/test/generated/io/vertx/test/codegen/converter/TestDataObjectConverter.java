@@ -867,6 +867,16 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
             obj.setObjects(list);
           }
           break;
+        case "packagePrivateValue":
+          if (member.getValue() instanceof Number) {
+            obj.setPackagePrivateValue(((Number)member.getValue()).intValue());
+          }
+          break;
+        case "protectedValue":
+          if (member.getValue() instanceof Number) {
+            obj.setProtectedValue(((Number)member.getValue()).intValue());
+          }
+          break;
         case "shortValue":
           if (member.getValue() instanceof Number) {
             obj.setShortValue(((Number)member.getValue()).shortValue());
@@ -1350,6 +1360,8 @@ public class TestDataObjectConverter implements JsonDecoder<TestDataObject, Json
       obj.getObjects().forEach(item -> array.add(item));
       json.put("objects", array);
     }
+    json.put("packagePrivateValue", obj.getPackagePrivateValue());
+    json.put("protectedValue", obj.getProtectedValue());
     json.put("shortValue", obj.getShortValue());
     if (obj.getStringSet() != null) {
       JsonArray array = new JsonArray();
