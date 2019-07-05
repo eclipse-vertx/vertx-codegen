@@ -130,7 +130,8 @@ public class TypeMirrorFactory {
             raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, handlerArg, module, nullable, proxyGen);
           } else if (kind == ClassKind.DATA_OBJECT) {
             boolean _abstract = elt.getModifiers().contains(Modifier.ABSTRACT);
-            raw = new DataObjectTypeInfo(kind, fqcn, module, _abstract, nullable, typeParams);
+            boolean _interface = elt.getKind().isInterface();
+            raw = new DataObjectTypeInfo(kind, fqcn, module, _abstract, nullable, _interface, typeParams);
           } else {
             raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams);
           }
