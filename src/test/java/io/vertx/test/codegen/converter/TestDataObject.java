@@ -50,6 +50,8 @@ public class TestDataObject {
   private TimeUnit httpMethod;
   private ZonedDateTime dateTime;
   private NoConverterDataObject notEncodableDataObject;
+  private int packagePrivateValue;
+  private int protectedValue;
 
   private List<String> stringValues;
   private List<Boolean> boxedBooleanValues;
@@ -1112,5 +1114,21 @@ public class TestDataObject {
   public TestDataObject setNotEncodableDataObjectMap(Map<String, NoConverterDataObject> notEncodableDataObjectMap) {
     this.notEncodableDataObjectMap = notEncodableDataObjectMap;
     return this;
+  }
+
+  int getPackagePrivateValue() {
+    return packagePrivateValue;
+  }
+
+  void setPackagePrivateValue(int packagePrivateValue) {
+    this.packagePrivateValue = packagePrivateValue;
+  }
+
+  protected int getProtectedValue() {
+    return protectedValue;
+  }
+
+  protected void setProtectedValue(int protectedValue) {
+    this.protectedValue = protectedValue;
   }
 }

@@ -183,6 +183,8 @@ public class DataObjectTest {
     json.put("keyedEnumValues", new JsonObject().put(key, httpMethod.name()));
     json.put("keyedDateTimeValues", new JsonObject().put(key, zonedDateTimeCodec.encode(dateTime)));
     json.put("keyedObjectValues", toJson(map));
+    json.put("packagePrivateValue", intValue);
+    json.put("protectedValue", intValue);
 
     TestDataObject obj = new TestDataObject();
     TestDataObjectConverter.fromJson(json, obj);
@@ -290,6 +292,8 @@ public class DataObjectTest {
     assertEquals(Collections.singletonMap(key, httpMethod), obj.getKeyedEnumValues());
     assertEquals(Collections.singletonMap(key, dateTime), obj.getKeyedDateTimeValues());
     assertEquals(map, obj.getObjectMap());
+    assertEquals(intValue, obj.getPackagePrivateValue());
+    assertEquals(intValue, obj.getProtectedValue());
 
     // Sometimes json can use java collections so test it runs fine in this case
 //    json = new JsonObject();
@@ -524,6 +528,8 @@ public class DataObjectTest {
     obj.addKeyedEnumValue(key, httpMethod);
     obj.addKeyedDateTimeValue(key, dateTime);
     map.forEach(obj::addKeyedObjectValue);
+    obj.setPackagePrivateValue(intValue);
+    obj.setProtectedValue(intValue);
 
     Map<String, Object> json = new HashMap<>();
     TestDataObjectConverter.toJson(obj, json);
@@ -623,6 +629,8 @@ public class DataObjectTest {
     assertEquals(new JsonObject().put(key, httpMethod.name()), json.get("keyedEnumValues"));
     assertEquals(new JsonObject().put(key, zonedDateTimeCodec.encode(dateTime)), json.get("keyedDateTimeValues"));
     assertEquals(toJson(map), json.get("keyedObjectValues"));
+    assertEquals(intValue, json.get("packagePrivateValue"));
+    assertEquals(intValue, json.get("protectedValue"));
   }
 
   @Test
