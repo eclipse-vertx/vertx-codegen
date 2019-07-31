@@ -225,6 +225,11 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
+  public void testInterfaceExtendingAnotherWithInvalidMethod() throws Exception {
+    assertGenInvalid(InterfaceExtendingAnotherWithInvalidMethod.class);
+  }
+
+  @Test
   public void testCacheReturnMethodWithVoidReturn() throws Exception {
     assertGenInvalid(CacheReturnMethodWithVoidReturn.class);
   }
