@@ -1010,7 +1010,7 @@ public class ClassModel implements Model {
     // Only check the return type if not fluent, because generated code won't look it at anyway
     if (!isFluent) {
       // Only validate when it's not inherited
-      if (ancestors.isEmpty()) {
+      if (ownerTypes.size() == 1) {
         checkReturnType(modelMethod, returnType, resolvedMethodType.getReturnType(), allowAnyJavaType);
       }
     } else if (returnType.isNullable()) {
