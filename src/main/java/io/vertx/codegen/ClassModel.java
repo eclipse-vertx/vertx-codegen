@@ -780,6 +780,13 @@ public class ClassModel implements Model {
           }
         }
       }
+
+      // Let generators depend on a restricted method map
+      methodMap = methods
+        .values()
+        .stream()
+        .collect(Collectors.groupingBy(MethodInfo::getName));
+      sortMethodMap(methodMap);
     }
   }
 
