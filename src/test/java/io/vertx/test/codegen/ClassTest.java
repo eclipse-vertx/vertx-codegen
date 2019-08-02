@@ -821,7 +821,12 @@ public class ClassTest extends ClassTestBase {
       List<MethodInfo> methods = model.getMethods();
       assertEquals(1, methods.size());
       MethodInfo method = methods.get(0);
-      checkMethod(method, "method", 1, "void", MethodKind.FUTURE);
+      checkMethod(method, "method1", 1, "void", MethodKind.FUTURE);
+      assertEquals("the_handler", method.getParam(0).getName());
+      methods = model.getAnyJavaTypeMethods();
+      assertEquals(1, methods.size());
+      method = methods.get(0);
+      checkMethod(method, "method2", 1, "void", MethodKind.FUTURE);
       assertEquals("the_handler", method.getParam(0).getName());
     }
   }

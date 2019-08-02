@@ -98,7 +98,7 @@ public class ClassModel implements Model {
   protected TypeInfo iteratorArg;
   protected TypeInfo[] functionArgs;
   // The methods, grouped by name
-  protected Map<String, List<MethodInfo>> methodMap = new LinkedHashMap<>();
+  protected Map<String, List<MethodInfo>> methodMap;
   protected Map<String, List<AnnotationValueInfo>> methodAnnotationsMap = new LinkedHashMap<>();
   protected List<AnnotationValueInfo> annotations;
   protected boolean deprecated;
@@ -702,7 +702,6 @@ public class ClassModel implements Model {
           }
         });
 
-
       // Traverse methods
       elementUtils.getAllMembers((TypeElement) elem).stream().
           filter(elt -> !typeUtils.isSameType(elt.getEnclosingElement().asType(), objectType)).
@@ -725,10 +724,43 @@ public class ClassModel implements Model {
               if (allowAnyJavaType) {
                 anyJavaTypeMethods.put(elt, meth);
               } else {
+                checkMethod(meth);
+                methodAnnotationsMap.put(meth.getName(), elt.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList()));
                 methods.put(elt, meth);
               }
             }
           });
+
+      // Erase futures
+      for (Map<ExecutableElement, MethodInfo> blah : Arrays.asList(methods, anyJavaTypeMethods)) {
+        Iterator<MethodInfo> it = blah.values().iterator();
+        while (it.hasNext()) {
+          MethodInfo methodInfo = it.next();
+          TypeInfo returnType = methodInfo.getReturnType();
+          if (returnType.isParameterized() && returnType.getRaw().getName().equals("io.vertx.core.Future")) {
+            TypeInfo asyncType = ((ParameterizedTypeInfo)returnType).getArg(0);
+            List<ParamInfo> p = new ArrayList<>(methodInfo.getParams());
+            p.add(new ParamInfo(
+              p.size(),
+              "handler",
+              null,
+              new ParameterizedTypeInfo(
+                HANDLER_TYPE,
+                false,
+                Collections.singletonList(new ParameterizedTypeInfo(ASYNC_RESULT_TYPE, false, Collections.singletonList(asyncType))))));
+            Signature t = new Signature(methodInfo.getName(), p);
+            Optional<MethodInfo> opt = blah
+              .values()
+              .stream()
+              .filter(m -> m.getName().equals(methodInfo.getName()))
+              .filter(m -> m.getSignature().equals(t)).findFirst();
+            if (opt.isPresent())  {
+              futureMethods.add(opt.get());
+              it.remove();
+            }
+          }
+        }
+      }
 
       // Validate return types
       Stream.concat(methods.entrySet().stream(), anyJavaTypeMethods.entrySet().stream()).forEach(entry -> {
@@ -748,7 +780,11 @@ public class ClassModel implements Model {
         }
       });
 
-      // Sort method map
+      // Build method map
+      methodMap = methods
+        .values()
+        .stream()
+        .collect(Collectors.groupingBy(MethodInfo::getName));
       sortMethodMap(methodMap);
 
       // Now check for overloaded methods
@@ -780,13 +816,6 @@ public class ClassModel implements Model {
           }
         }
       }
-
-      // Let generators depend on a restricted method map
-      methodMap = methods
-        .values()
-        .stream()
-        .collect(Collectors.groupingBy(MethodInfo::getName));
-      sortMethodMap(methodMap);
     }
   }
 
@@ -837,9 +866,20 @@ public class ClassModel implements Model {
 
     TypeElement declaringElt = (TypeElement) modelMethod.getEnclosingElement();
     TypeInfo declaringType = typeFactory.create(declaringElt.asType());
+    ExecutableType resolvedMethodType = (ExecutableType) typeUtils.asMemberOf((DeclaredType) modelElt.asType(), modelMethod);
 
     if (!declaringElt.equals(modelElt) && (declaringType.getKind() != ClassKind.API && declaringType.getKind() != ClassKind.HANDLER)) {
       return null;
+    }
+
+    // Filter methods inherited from abstract ancestors
+    if (!declaringElt.equals(modelElt) && declaringType.getKind() == ClassKind.API) {
+      ApiTypeInfo declaringApiType = (ApiTypeInfo) declaringType.getRaw();
+      if (declaringApiType.isConcrete()) {
+        if (typeUtils.isSameType(resolvedMethodType, modelMethod.asType())) {
+          return null;
+        }
+      }
     }
 
     ClassTypeInfo type = typeFactory.create(declaringElt.asType()).getRaw();
@@ -931,7 +971,6 @@ public class ClassModel implements Model {
 
     //
     List<ParamInfo> mParams = new ArrayList<>();
-    ExecutableType resolvedMethodType = (ExecutableType) typeUtils.asMemberOf((DeclaredType) modelElt.asType(), modelMethod);
     ExecutableType methodType = (ExecutableType) modelMethod.asType();
     List<? extends VariableElement> params = modelMethod.getParameters();
     for (int i = 0; i < params.size();i++) {
@@ -1027,75 +1066,12 @@ public class ClassModel implements Model {
       }
     }
 
-    // Check if we have a corresponding method
-    if (returnType.isParameterized() && returnType.getRaw().getName().equals("io.vertx.core.Future")) {
-      TypeInfo asyncType = ((ParameterizedTypeInfo)returnType).getArg(0);
-      List<ParamInfo> p = new ArrayList<>(methodInfo.getParams());
-      p.add(new ParamInfo(
-        p.size(),
-        "handler",
-        null,
-        new ParameterizedTypeInfo(
-          HANDLER_TYPE,
-          false,
-          Collections.singletonList(new ParameterizedTypeInfo(ASYNC_RESULT_TYPE, false, Collections.singletonList(asyncType))))));
-      Signature t = new Signature(methodName, p);
-      List<MethodInfo> methods = methodMap.get(methodName);
-      if (methods != null) {
-        Optional<MethodInfo> opt = methods.stream().filter(m -> m.getSignature().equals(t)).findFirst();
-        if (opt.isPresent())  {
-          futureMethods.add(opt.get());
-          return null;
-        }
-      }
-    } else if (methodInfo.getKind() == MethodKind.FUTURE) {
-      List<MethodInfo> methods = methodMap.get(methodName);
-      if (methods != null) {
-        List<ParamInfo> p = methodInfo.getParams();
-        Signature s = new Signature(methodName, p.subList(0, p.size() - 1));
-        TypeInfo blih = ((ParameterizedTypeInfo)((ParameterizedTypeInfo)p.get(p.size() - 1).getType()).getArg(0)).getArg(0);
-        for (Iterator<MethodInfo> it = methods.iterator();it.hasNext();) {
-          MethodInfo m = it.next();
-          if (m.getSignature().equals(s) &&
-            m.getReturnType().isParameterized() &&
-            m.getReturnType().getRaw().getName().equals("io.vertx.core.Future") &&
-            ((ParameterizedTypeInfo)m.getReturnType()).getArg(0).equals(blih)) {
-            it.remove();
-            this.methods.values().remove(m);
-            futureMethods.add(methodInfo);
-          }
-        }
-      }
-    }
-
     // Valid param types
     if (ownerTypes.size() == 1) {
       // Only validate when it's not inherited
       List<ParamInfo> p = methodInfo.getParams();
       for (int i = 0;i < p.size();i++) {
         checkParamType(modelMethod, p.get(i).getType(), i, p.size(), allowAnyJavaType);
-      }
-    }
-
-    // Add the method to the method map (it's a bit ugly but useful for JS and Ruby)
-    if (!allowAnyJavaType) {
-      checkMethod(methodInfo);
-      List<MethodInfo> methodsByName = methodMap.get(methodInfo.getName());
-      if (methodsByName == null) {
-        methodsByName = new ArrayList<>();
-        methodMap.put(methodInfo.getName(), methodsByName);
-        methodAnnotationsMap.put(methodInfo.getName(), modelMethod.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList()));
-      }
-      methodsByName.add(methodInfo);
-    }
-
-    // Filter methods inherited from abstract ancestors
-    if (!declaringElt.equals(modelElt) && declaringType.getKind() == ClassKind.API) {
-      ApiTypeInfo declaringApiType = (ApiTypeInfo) declaringType.getRaw();
-      if (declaringApiType.isConcrete()) {
-        if (typeUtils.isSameType(resolvedMethodType, modelMethod.asType())) {
-          return null;
-        }
       }
     }
 
