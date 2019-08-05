@@ -724,7 +724,6 @@ public class ClassModel implements Model {
               if (allowAnyJavaType) {
                 anyJavaTypeMethods.put(elt, meth);
               } else {
-                checkMethod(meth);
                 methodAnnotationsMap.put(meth.getName(), elt.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList()));
                 methods.put(elt, meth);
               }
@@ -800,6 +799,9 @@ public class ClassModel implements Model {
           throw new GenException(this.modelElt, "Overloaded method " + meths.get(0).getName() + " must have the same return type "
             + returnTypes[0] + " != " + returnTypes[1]);
         }
+
+        // checkMethod hook validation
+        meths.forEach(this::checkMethod);
 
         // Ambiguous
         try {
