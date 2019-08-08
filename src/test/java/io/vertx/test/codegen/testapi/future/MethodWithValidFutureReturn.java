@@ -16,6 +16,7 @@ import io.vertx.test.codegen.testapi.VertxGenClass1;
 @VertxGen
 public interface MethodWithValidFutureReturn {
 
+  // Comment
   Future<Byte> regularByteFuture();
   Future<Short> regularShortFuture();
   Future<Integer> regularIntegerFuture();
