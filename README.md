@@ -624,3 +624,7 @@ Sometimes a template can skip the generation of the file. Setting the value of
 ```
 @code{skipFile=true}
 ```
+
+```
+test
+```
