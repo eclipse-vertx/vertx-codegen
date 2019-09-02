@@ -60,7 +60,7 @@ public class DataObjectTest {
     JsonArray jsonArray = new JsonArray().add(TestUtils.randomAlphaString(20));
     TimeUnit httpMethod = TimeUnit.values()[TestUtils.randomPositiveInt() % TimeUnit.values().length];
     ZonedDateTime dateTime = ZonedDateTime.now();
-    ZonedDateTimeCodec zonedDateTimeCodec = new ZonedDateTimeCodec();
+    ZonedDateTimeMapper zonedDateTimeMapper = new ZonedDateTimeMapper();
 
     Map<String, Object> map = new HashMap<>();
     map.put(TestUtils.randomAlphaString(10), TestUtils.randomAlphaString(20));
@@ -94,7 +94,7 @@ public class DataObjectTest {
     json.put("jsonObject", jsonObject);
     json.put("jsonArray", jsonArray);
     json.put("httpMethod", httpMethod.toString());
-    json.put("dateTime", zonedDateTimeCodec.encode(dateTime));
+    json.put("dateTime", zonedDateTimeMapper.serialize(dateTime));
     json.put("stringValues", new JsonArray().add(stringValue));
     json.put("boxedBooleanValues", new JsonArray().add(boxedBooleanValue));
     json.put("boxedByteValues", new JsonArray().add(boxedByteValue));
@@ -109,7 +109,7 @@ public class DataObjectTest {
     json.put("jsonObjects", new JsonArray().add(jsonObject));
     json.put("jsonArrays", new JsonArray().add(jsonArray));
     json.put("httpMethods", new JsonArray().add(httpMethod.toString()));
-    json.put("dateTimes", new JsonArray().add(zonedDateTimeCodec.encode(dateTime)));
+    json.put("dateTimes", new JsonArray().add(zonedDateTimeMapper.serialize(dateTime)));
     json.put("objects", new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)));
     json.put("stringSet", new JsonArray().add(stringValue));
     json.put("boxedBooleanSet", new JsonArray().add(boxedBooleanValue));
@@ -125,7 +125,7 @@ public class DataObjectTest {
     json.put("jsonObjectSet", new JsonArray().add(jsonObject));
     json.put("jsonArraySet", new JsonArray().add(jsonArray));
     json.put("httpMethodSet", new JsonArray().add(httpMethod.toString()));
-    json.put("dateTimeSet", new JsonArray().add(zonedDateTimeCodec.encode(dateTime)));
+    json.put("dateTimeSet", new JsonArray().add(zonedDateTimeMapper.serialize(dateTime)));
     json.put("objectSet", new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)));
     json.put("addedStringValues", new JsonArray().add(stringValue));
     json.put("addedBooleanValues", new JsonArray().add(boxedBooleanValue));
@@ -149,7 +149,7 @@ public class DataObjectTest {
     json.put("addedJsonObjects", new JsonArray().add(jsonObject));
     json.put("addedJsonArrays", new JsonArray().add(jsonArray));
     json.put("addedHttpMethods", new JsonArray().add(httpMethod.toString()));
-    json.put("addedDateTimes", new JsonArray().add(zonedDateTimeCodec.encode(dateTime)));
+    json.put("addedDateTimes", new JsonArray().add(zonedDateTimeMapper.serialize(dateTime)));
     json.put("addedObjects", new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)));
     json.put("stringValueMap", new JsonObject().put(key, stringValue));
     json.put("boxedBooleanValueMap", new JsonObject().put(key, boxedBooleanValue));
@@ -165,7 +165,7 @@ public class DataObjectTest {
     json.put("jsonObjectMap", new JsonObject().put(key, jsonObject));
     json.put("jsonArrayMap", new JsonObject().put(key, jsonArray));
     json.put("httpMethodMap", new JsonObject().put(key, httpMethod.toString()));
-    json.put("dateTimeMap", new JsonObject().put(key, zonedDateTimeCodec.encode(dateTime)));
+    json.put("dateTimeMap", new JsonObject().put(key, zonedDateTimeMapper.serialize(dateTime)));
     json.put("objectMap", toJson(map));
     json.put("keyedStringValues", new JsonObject().put(key, stringValue));
     json.put("keyedBoxedBooleanValues", new JsonObject().put(key, boxedBooleanValue));
@@ -181,7 +181,7 @@ public class DataObjectTest {
     json.put("keyedJsonObjectValues", new JsonObject().put(key, jsonObject));
     json.put("keyedJsonArrayValues", new JsonObject().put(key, jsonArray));
     json.put("keyedEnumValues", new JsonObject().put(key, httpMethod.name()));
-    json.put("keyedDateTimeValues", new JsonObject().put(key, zonedDateTimeCodec.encode(dateTime)));
+    json.put("keyedDateTimeValues", new JsonObject().put(key, zonedDateTimeMapper.serialize(dateTime)));
     json.put("keyedObjectValues", toJson(map));
 
     TestDataObject obj = new TestDataObject();
@@ -425,7 +425,7 @@ public class DataObjectTest {
     JsonArray jsonArray = new JsonArray().add(TestUtils.randomAlphaString(20));
     TimeUnit httpMethod = TimeUnit.values()[TestUtils.randomPositiveInt() % TimeUnit.values().length];
     ZonedDateTime dateTime = ZonedDateTime.now();
-    ZonedDateTimeCodec zonedDateTimeCodec = new ZonedDateTimeCodec();
+    ZonedDateTimeMapper zonedDateTimeMapper = new ZonedDateTimeMapper();
 
     Map<String, Object> map = new HashMap<>();
     map.put(TestUtils.randomAlphaString(10), TestUtils.randomAlphaString(20));
@@ -550,7 +550,7 @@ public class DataObjectTest {
     assertEquals(jsonObject, json.get("jsonObject"));
     assertEquals(jsonArray, json.get("jsonArray"));
     assertEquals(httpMethod.name(), json.get("httpMethod"));
-    assertEquals(zonedDateTimeCodec.encode(dateTime), json.get("dateTime"));
+    assertEquals(zonedDateTimeMapper.serialize(dateTime), json.get("dateTime"));
     assertEquals(new JsonArray().add(stringValue), json.get("stringValues"));
     assertEquals(new JsonArray().add(boxedBooleanValue), json.get("boxedBooleanValues"));
     assertEquals(new JsonArray().add(boxedByteValue), json.get("boxedByteValues"));
@@ -567,7 +567,7 @@ public class DataObjectTest {
     assertEquals(new JsonArray().add(jsonObject), json.get("jsonObjects"));
     assertEquals(new JsonArray().add(jsonArray), json.get("jsonArrays"));
     assertEquals(new JsonArray().add(httpMethod.name()), json.get("httpMethods"));
-    assertEquals(new JsonArray().add(zonedDateTimeCodec.encode(dateTime)), json.get("dateTimes"));
+    assertEquals(new JsonArray().add(zonedDateTimeMapper.serialize(dateTime)), json.get("dateTimes"));
     assertEquals(new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)), json.get("objects"));
     assertEquals(new JsonArray().add(stringValue), json.get("stringSet"));
     assertEquals(new JsonArray().add(boxedBooleanValue), json.get("boxedBooleanSet"));
@@ -585,7 +585,7 @@ public class DataObjectTest {
     assertEquals(new JsonArray().add(jsonObject), json.get("jsonObjectSet"));
     assertEquals(new JsonArray().add(jsonArray), json.get("jsonArraySet"));
     assertEquals(new JsonArray().add(httpMethod.name()), json.get("httpMethodSet"));
-    assertEquals(new JsonArray().add(zonedDateTimeCodec.encode(dateTime)), json.get("dateTimeSet"));
+    assertEquals(new JsonArray().add(zonedDateTimeMapper.serialize(dateTime)), json.get("dateTimeSet"));
     assertEquals(new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)), json.get("objectSet"));
     assertEquals(new JsonObject().put(key, stringValue), json.get("stringValueMap"));
     assertEquals(new JsonObject().put(key, boxedBooleanValue), json.get("boxedBooleanValueMap"));
@@ -603,7 +603,7 @@ public class DataObjectTest {
     assertEquals(new JsonObject().put(key, jsonObject), json.get("jsonObjectMap"));
     assertEquals(new JsonObject().put(key, jsonArray), json.get("jsonArrayMap"));
     assertEquals(new JsonObject().put(key, httpMethod.name()), json.get("httpMethodMap"));
-    assertEquals(new JsonObject().put(key, zonedDateTimeCodec.encode(dateTime)), json.get("dateTimeMap"));
+    assertEquals(new JsonObject().put(key, zonedDateTimeMapper.serialize(dateTime)), json.get("dateTimeMap"));
     assertEquals(toJson(map), json.get("objectMap"));
     assertEquals(new JsonObject().put(key, stringValue), json.get("keyedStringValues"));
     assertEquals(new JsonObject().put(key, boxedBooleanValue), json.get("keyedBoxedBooleanValues"));
@@ -621,7 +621,7 @@ public class DataObjectTest {
     assertEquals(new JsonObject().put(key, jsonObject), json.get("keyedJsonObjectValues"));
     assertEquals(new JsonObject().put(key, jsonArray), json.get("keyedJsonArrayValues"));
     assertEquals(new JsonObject().put(key, httpMethod.name()), json.get("keyedEnumValues"));
-    assertEquals(new JsonObject().put(key, zonedDateTimeCodec.encode(dateTime)), json.get("keyedDateTimeValues"));
+    assertEquals(new JsonObject().put(key, zonedDateTimeMapper.serialize(dateTime)), json.get("keyedDateTimeValues"));
     assertEquals(toJson(map), json.get("keyedObjectValues"));
   }
 

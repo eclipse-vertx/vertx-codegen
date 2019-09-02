@@ -35,9 +35,9 @@ import io.vertx.test.codegen.testapi.javatypes.MethodWithInvalidJavaTypeParam;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithInvalidJavaTypeReturn;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeParams;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeReturn;
-import io.vertx.test.codegen.testapi.jsoncodec.MyPojo;
-import io.vertx.test.codegen.testapi.jsoncodec.MyPojoJsonCodec;
-import io.vertx.test.codegen.testapi.jsoncodec.WithMyPojo;
+import io.vertx.test.codegen.testapi.jsonmapper.MyPojo;
+import io.vertx.test.codegen.testapi.jsonmapper.MyPojoJsonMapper;
+import io.vertx.test.codegen.testapi.jsonmapper.WithMyPojo;
 import io.vertx.test.codegen.testapi.overloadcheck.OverloadCheckIgnoreEnhancedMethod;
 import io.vertx.test.codegen.testapi.overloadcheck.OverloadCheckInvalidMethodOverloading;
 import io.vertx.test.codegen.testapi.simple.InterfaceInImplContainingPackage;
@@ -2485,7 +2485,7 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
-  public void testJsonCodec() throws Exception {
+  public void testJsonMapper() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(WithMyPojo.class);
     assertFalse(model.getAnnotations().isEmpty());
     assertEquals(1, model.getAnnotations().size());
@@ -2493,8 +2493,8 @@ public class ClassTest extends ClassTestBase {
 
     assertEquals(1, model.getReferencedDataObjectTypes().size());
     assertEquals("MyPojo", model.getReferencedDataObjectTypes().iterator().next().getSimpleName());
-    assertEquals(MyPojoJsonCodec.class.getName(), model.getReferencedDataObjectTypes().iterator().next().getJsonCodecInfo().getJsonEncoderFQCN());
-    assertEquals(MyPojoJsonCodec.class.getName(), model.getReferencedDataObjectTypes().iterator().next().getJsonCodecInfo().getJsonDecoderFQCN());
+    assertEquals(MyPojoJsonMapper.class.getName(), model.getReferencedDataObjectTypes().iterator().next().getJsonMapperInfo().getJsonSerializerFQCN());
+    assertEquals(MyPojoJsonMapper.class.getName(), model.getReferencedDataObjectTypes().iterator().next().getJsonMapperInfo().getJsonDeserializerFQCN());
 
     checkMethod(model.getMethodMap().get("returnMyPojo").get(0), "returnMyPojo", 0, new TypeLiteral<MyPojo>() {}, MethodKind.OTHER);
 

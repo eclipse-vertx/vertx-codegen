@@ -44,8 +44,8 @@
 |[[parentProperty]]`@parentProperty`|`String`|-
 |===
 
-[[ConverterGeneratesDecoderWithFromJsonDataObject]]
-== ConverterGeneratesDecoderWithFromJsonDataObject
+[[ConverterGeneratesDeserializerWithFromJsonDataObject]]
+== ConverterGeneratesDeserializerWithFromJsonDataObject
 
 
 [cols=">25%,25%,50%"]
@@ -55,8 +55,8 @@
 |[[a]]`@a`|`Number (int)`|-
 |===
 
-[[ConverterGeneratesEncoderWithToJsonDataObject]]
-== ConverterGeneratesEncoderWithToJsonDataObject
+[[ConverterGeneratesSerializerWithToJsonDataObject]]
+== ConverterGeneratesSerializerWithToJsonDataObject
 
 
 [cols=">25%,25%,50%"]
@@ -211,10 +211,10 @@
 |[[keyedJsonObjectValues]]`@keyedJsonObjectValues`|`Json object`|-
 |[[keyedStringValues]]`@keyedStringValues`|`String`|-
 |[[longValue]]`@longValue`|`Number (long)`|-
-|[[notEncodableDataObject]]`@notEncodableDataObject`|`link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
-|[[notEncodableDataObjectMap]]`@notEncodableDataObjectMap`|`link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
-|[[notEncodableDataObjectSet]]`@notEncodableDataObjectSet`|`Array of link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
-|[[notEncodableDataObjects]]`@notEncodableDataObjects`|`Array of link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
+|[[notConvertibleDataObject]]`@notConvertibleDataObject`|`link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
+|[[notConvertibleDataObjectMap]]`@notConvertibleDataObjectMap`|`link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
+|[[notConvertibleDataObjectSet]]`@notConvertibleDataObjectSet`|`Array of link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
+|[[notConvertibleDataObjects]]`@notConvertibleDataObjects`|`Array of link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
 |[[shortValue]]`@shortValue`|`Number (short)`|-
 |[[stringSet]]`@stringSet`|`Array of String`|-
 |[[stringValue]]`@stringValue`|`String`|-

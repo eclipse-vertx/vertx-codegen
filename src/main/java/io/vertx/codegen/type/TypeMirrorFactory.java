@@ -129,42 +129,42 @@ public class TypeMirrorFactory {
             }
             raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, handlerArg, module, nullable, proxyGen);
           } else if (elt.getAnnotation(DataObject.class) != null) {
-            boolean encodable = Helper.isDataObjectAnnotatedEncodable(elementUtils, elt);
-            boolean decodable = Helper.isDataObjectAnnotatedDecodable(elementUtils, typeUtils, elt);
+            boolean serializable = Helper.isDataObjectAnnotatedSerializable(elementUtils, elt);
+            boolean deserializable = Helper.isDataObjectAnnotatedDeserializable(elementUtils, typeUtils, elt);
             // Data object annotated here
             raw = new DataObjectTypeInfo(
               fqcn,
               module,
               nullable,
               typeParams,
-              new DataObjectAnnotatedInfo(encodable, decodable),
+              new DataObjectAnnotatedInfo(serializable, deserializable),
               this.create(elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType())
             );
           } else {
-            DeclaredType jsonCodecType = ModuleInfo.resolveJsonCodec(elementUtils, typeUtils, p, type);
-            if (jsonCodecType != null) {
-              TypeElement jsonCodecElt = elementUtils.getTypeElement("io.vertx.core.spi.json.JsonCodec");
-              TypeParameterElement typeParamElt = jsonCodecElt.getTypeParameters().get(1);
-              TypeMirror jsonType = Helper.resolveTypeParameter(typeUtils, jsonCodecType, typeParamElt);
+            DeclaredType jsonMapperType = ModuleInfo.resolveJsonMapper(elementUtils, typeUtils, p, type);
+            if (jsonMapperType != null) {
+              TypeElement jsonMapperElt = elementUtils.getTypeElement("io.vertx.core.spi.json.JsonMapper");
+              TypeParameterElement typeParamElt = jsonMapperElt.getTypeParameters().get(1);
+              TypeMirror jsonType = Helper.resolveTypeParameter(typeUtils, jsonMapperType, typeParamElt);
 
-              String codecSimpleName = jsonCodecType.asElement().getSimpleName().toString();
-              String codecEnclosingClass =
-                jsonCodecType.asElement().getEnclosingElement().getKind() != ElementKind.PACKAGE ?
-                  jsonCodecType.asElement().getEnclosingElement().getSimpleName().toString() : null;
-              String codecPkgName = elementUtils.getPackageOf(jsonCodecType.asElement()).toString();
-              // Json codec here
+              String mapperSimpleName = jsonMapperType.asElement().getSimpleName().toString();
+              String mapperEnclosingClass =
+                jsonMapperType.asElement().getEnclosingElement().getKind() != ElementKind.PACKAGE ?
+                  jsonMapperType.asElement().getEnclosingElement().getSimpleName().toString() : null;
+              String mapperPkgName = elementUtils.getPackageOf(jsonMapperType.asElement()).toString();
+              // Json mapper here
               raw = new DataObjectTypeInfo(
                 fqcn,
                 module,
                 nullable,
                 typeParams,
-                new JsonCodecInfo(
-                  codecSimpleName,
-                  codecPkgName,
-                  codecEnclosingClass,
-                  codecSimpleName,
-                  codecPkgName,
-                  codecEnclosingClass
+                new JsonMapperInfo(
+                  mapperSimpleName,
+                  mapperPkgName,
+                  mapperEnclosingClass,
+                  mapperSimpleName,
+                  mapperPkgName,
+                  mapperEnclosingClass
                 ),
                 create(jsonType)
               );

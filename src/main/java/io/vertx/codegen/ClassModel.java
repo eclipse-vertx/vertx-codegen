@@ -35,7 +35,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -395,7 +394,7 @@ public class ClassModel implements Model {
   }
 
   private boolean isLegalDataObjectTypeParam(TypeInfo type) {
-    return type.getKind() == ClassKind.DATA_OBJECT && ((DataObjectTypeInfo) type).isDecodable();
+    return type.getKind() == ClassKind.DATA_OBJECT && ((DataObjectTypeInfo) type).isDeserializable();
   }
 
   private boolean isLegalClassTypeParam(ExecutableElement elt, TypeInfo type) {
@@ -415,7 +414,7 @@ public class ClassModel implements Model {
   }
 
   protected boolean isLegalDataObjectTypeReturn(TypeInfo type) {
-    return type.getKind() == ClassKind.DATA_OBJECT && ((DataObjectTypeInfo) type).isEncodable();
+    return type.getKind() == ClassKind.DATA_OBJECT && ((DataObjectTypeInfo) type).isSerializable();
   }
 
   protected boolean isLegalContainer(TypeInfo type, boolean allowAnyJavaType) {
@@ -545,12 +544,14 @@ public class ClassModel implements Model {
   }
 
   private void logNonFutures() {
+/*
     methods.values()
       .stream()
       .filter(m -> m.getKind() == MethodKind.FUTURE && !futureMethods.contains(m))
       .forEach(meth -> {
         CodeGenProcessor.log.info("Non future method " + type.getRaw().getName() + ": " + meth);
     });
+*/
   }
 
   private void processTypeAnnotations() {

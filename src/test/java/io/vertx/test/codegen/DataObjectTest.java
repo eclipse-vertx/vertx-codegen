@@ -14,7 +14,7 @@ import io.vertx.test.codegen.annotations.TestEnum;
 import io.vertx.test.codegen.testapi.InterfaceDataObject;
 import io.vertx.test.codegen.testdataobject.*;
 import io.vertx.test.codegen.testdataobject.imported.Imported;
-import io.vertx.test.codegen.testdataobject.jsoncodec.DataObjectWithPojoWithCodec;
+import io.vertx.test.codegen.testdataobject.jsonmapper.DataObjectWithPojoWithMapper;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -592,8 +592,8 @@ public class DataObjectTest {
 
   @Test
   public void testToJson() throws Exception {
-    assertTrue(new GeneratorHelper().generateDataObject(ToJsonDataObject.class).isEncodable());
-    assertFalse(new GeneratorHelper().generateDataObject(EmptyDataObject.class).isEncodable());
+    assertTrue(new GeneratorHelper().generateDataObject(ToJsonDataObject.class).isSerializable());
+    assertFalse(new GeneratorHelper().generateDataObject(EmptyDataObject.class).isSerializable());
   }
 
   @Test
@@ -828,8 +828,8 @@ public class DataObjectTest {
   }
 
   @Test
-  public void testDataObjectWithJsonCodec() throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(DataObjectWithPojoWithCodec.class);
+  public void testDataObjectWithJsonMapper() throws Exception {
+    DataObjectModel model = new GeneratorHelper().generateDataObject(DataObjectWithPojoWithMapper.class);
     assertNotNull(model);
     assertTrue(model.isClass());
     assertTrue(model.getGenerateConverter());
@@ -837,8 +837,8 @@ public class DataObjectTest {
 
     PropertyInfo myPojoProperty = model.getPropertyMap().get("myPojo");
     assertEquals(ClassKind.DATA_OBJECT, myPojoProperty.getType().getKind());
-    assertTrue(((DataObjectTypeInfo)myPojoProperty.getType()).isDecodable());
-    assertTrue(((DataObjectTypeInfo)myPojoProperty.getType()).isEncodable());
+    assertTrue(((DataObjectTypeInfo)myPojoProperty.getType()).isDeserializable());
+    assertTrue(((DataObjectTypeInfo)myPojoProperty.getType()).isSerializable());
   }
 
   private void assertInvalidDataObject(Class<?> dataObjectClass) throws Exception {

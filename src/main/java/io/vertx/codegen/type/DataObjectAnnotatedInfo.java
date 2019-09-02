@@ -1,19 +1,20 @@
 package io.vertx.codegen.type;
 
 public class DataObjectAnnotatedInfo {
-  private final boolean encodable;
-  private final boolean decodable;
 
-  public DataObjectAnnotatedInfo(boolean encodable, boolean decodable) {
-    this.encodable = encodable;
-    this.decodable = decodable;
+  private final boolean serializable;
+  private final boolean deserializable;
+
+  public DataObjectAnnotatedInfo(boolean serializable, boolean deserializable) {
+    this.serializable = serializable;
+    this.deserializable = deserializable;
   }
 
-  public boolean isEncodable() {
-    return encodable;
+  public boolean isSerializable() {
+    return serializable;
   }
 
-  public boolean isDecodable() {
-    return decodable;
+  public boolean isDeserializable() {
+    return deserializable;
   }
 }

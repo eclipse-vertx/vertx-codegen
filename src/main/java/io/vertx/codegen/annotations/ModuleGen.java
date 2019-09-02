@@ -1,6 +1,6 @@
 package io.vertx.codegen.annotations;
 
-import io.vertx.core.spi.json.JsonCodec;
+import io.vertx.core.spi.json.JsonMapper;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -58,9 +58,9 @@ public @interface ModuleGen {
 
   /**
    *
-   * @return the list of external {@link JsonCodec} types used in the application, note that {@code @DataObject}
+   * @return the list of external {@link JsonMapper} types used in the application, note that {@code @DataObject}
    *         POJOs don't need to be declared here
    */
-  Class<? extends JsonCodec<?, ?>>[] codecs() default {};
+  Class<? extends JsonMapper<?, ?>>[] mappers() default {};
 
 }

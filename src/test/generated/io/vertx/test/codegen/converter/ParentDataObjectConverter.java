@@ -4,17 +4,17 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import io.vertx.core.spi.json.JsonDecoder;
+import io.vertx.core.spi.json.JsonDeserializer;
 
 /**
- * Converter and Codec for {@link io.vertx.test.codegen.converter.ParentDataObject}.
+ * Converter and mapper for {@link io.vertx.test.codegen.converter.ParentDataObject}.
  * NOTE: This class has been automatically generated from the {@link io.vertx.test.codegen.converter.ParentDataObject} original class using Vert.x codegen.
  */
-public class ParentDataObjectConverter implements JsonDecoder<ParentDataObject, JsonObject> {
+public class ParentDataObjectConverter implements JsonDeserializer<ParentDataObject, JsonObject> {
 
   public static final ParentDataObjectConverter INSTANCE = new ParentDataObjectConverter();
 
-  @Override public ParentDataObject decode(JsonObject value) { return (value != null) ? new ParentDataObject(value) : null; }
+  @Override public ParentDataObject deserialize(JsonObject value) { return (value != null) ? new ParentDataObject(value) : null; }
 
   @Override public Class<ParentDataObject> getTargetClass() { return ParentDataObject.class; }
 

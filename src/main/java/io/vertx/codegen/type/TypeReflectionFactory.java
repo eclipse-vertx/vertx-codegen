@@ -74,16 +74,16 @@ public class TypeReflectionFactory {
             Type handlerArg = Helper.resolveTypeParameter(type, classTypeVariable);
             return new ApiTypeInfo(fqcn, true, typeParams, handlerArg != null ? create(handlerArg) : null, module, false, false);
           } else if (kind == ClassKind.DATA_OBJECT) {
-            boolean encodable = isDataObjectAnnotatedEncodable(classType);
-            boolean decodable = isDataObjectAnnotatedDecodable(classType);
+            boolean serializable = isDataObjectAnnotatedSerializable(classType);
+            boolean deserializable = isDataObjectAnnotatedDeserializable(classType);
             return new DataObjectTypeInfo(
               fqcn,
               module,
               false,
               typeParams,
               new DataObjectAnnotatedInfo(
-                encodable,
-                decodable
+                serializable,
+                deserializable
               ),
               create(JsonObject.class)
             );
@@ -109,7 +109,7 @@ public class TypeReflectionFactory {
     }
   }
 
-  private static boolean isDataObjectAnnotatedEncodable(Class<?> type) {
+  private static boolean isDataObjectAnnotatedSerializable(Class<?> type) {
     try {
       Method m = type.getMethod("toJson");
       return m != null && Modifier.isPublic(m.getModifiers()) && m.getReturnType().equals(JsonObject.class);
@@ -118,7 +118,7 @@ public class TypeReflectionFactory {
     }
   }
 
-  private static boolean isDataObjectAnnotatedDecodable(Class<?> type) {
+  private static boolean isDataObjectAnnotatedDeserializable(Class<?> type) {
     try {
       return
         !Modifier.isAbstract(type.getModifiers()) &&

@@ -677,7 +677,7 @@ public class Helper {
     return method;
   }
 
-  public static boolean isDataObjectAnnotatedEncodable(Elements elementUtils, TypeElement dataObjectElt) {
+  public static boolean isDataObjectAnnotatedSerializable(Elements elementUtils, TypeElement dataObjectElt) {
     return
       elementUtils.getAllMembers(dataObjectElt)
       .stream()
@@ -697,7 +697,7 @@ public class Helper {
       (element.getKind() == ElementKind.CLASS && element.getModifiers().contains(Modifier.ABSTRACT));
   }
 
-  public static boolean isDataObjectAnnotatedDecodable(Elements elementUtils, Types typeUtils, TypeElement dataObjectElt) {
+  public static boolean isDataObjectAnnotatedDeserializable(Elements elementUtils, Types typeUtils, TypeElement dataObjectElt) {
     return
       isConcreteClass(dataObjectElt) &&
         elementUtils

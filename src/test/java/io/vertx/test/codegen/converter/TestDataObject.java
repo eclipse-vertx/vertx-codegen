@@ -49,7 +49,7 @@ public class TestDataObject {
   private JsonArray jsonArray;
   private TimeUnit httpMethod;
   private ZonedDateTime dateTime;
-  private NoConverterDataObject notEncodableDataObject;
+  private NoConverterDataObject notConvertibleDataObject;
 
   private List<String> stringValues;
   private List<Boolean> boxedBooleanValues;
@@ -67,7 +67,7 @@ public class TestDataObject {
   private List<TimeUnit> httpMethods;
   private List<ZonedDateTime> dateTimes;
   private List<Object> objects;
-  private List<NoConverterDataObject> notEncodableDataObjects;
+  private List<NoConverterDataObject> notConvertibleDataObjects;
 
   private Set<String> stringSet;
   private Set<Boolean> boxedBooleanSet;
@@ -85,7 +85,7 @@ public class TestDataObject {
   private Set<TimeUnit> httpMethodSet;
   private Set<ZonedDateTime> dateTimeSet;
   private Set<Object> objectSet;
-  private Set<NoConverterDataObject> notEncodableDataObjectSet;
+  private Set<NoConverterDataObject> notConvertibleDataObjectSet;
 
   private List<String> addedStringValues = new ArrayList<>();
   private List<Boolean> addedBoxedBooleanValues = new ArrayList<>();
@@ -120,7 +120,7 @@ public class TestDataObject {
   private Map<String, TimeUnit> httpMethodMap;
   private Map<String, ZonedDateTime> dateTimeMap;
   private Map<String, Object> objectMap;
-  private Map<String, NoConverterDataObject> notEncodableDataObjectMap;
+  private Map<String, NoConverterDataObject> notConvertibleDataObjectMap;
 
   private Map<String, String> keyedStringValues = new HashMap<>();
   private Map<String, Boolean> keyedBoxedBooleanValues = new HashMap<>();
@@ -355,12 +355,12 @@ public class TestDataObject {
     return this;
   }
 
-  public NoConverterDataObject getNotEncodableDataObject() {
-    return notEncodableDataObject;
+  public NoConverterDataObject getNotConvertibleDataObject() {
+    return notConvertibleDataObject;
   }
 
-  public TestDataObject setNotEncodableDataObject(NoConverterDataObject notEncodableDataObject) {
-    this.notEncodableDataObject = notEncodableDataObject;
+  public TestDataObject setNotConvertibleDataObject(NoConverterDataObject notConvertibleDataObject) {
+    this.notConvertibleDataObject = notConvertibleDataObject;
     return this;
   }
 
@@ -1087,30 +1087,30 @@ public class TestDataObject {
     return this;
   }
 
-  public List<NoConverterDataObject> getNotEncodableDataObjects() {
-    return notEncodableDataObjects;
+  public List<NoConverterDataObject> getNotConvertibleDataObjects() {
+    return notConvertibleDataObjects;
   }
 
-  public TestDataObject setNotEncodableDataObjects(List<NoConverterDataObject> notEncodableDataObjects) {
-    this.notEncodableDataObjects = notEncodableDataObjects;
+  public TestDataObject setNotConvertibleDataObjects(List<NoConverterDataObject> notConvertibleDataObjects) {
+    this.notConvertibleDataObjects = notConvertibleDataObjects;
     return this;
   }
 
-  public Set<NoConverterDataObject> getNotEncodableDataObjectSet() {
-    return notEncodableDataObjectSet;
+  public Set<NoConverterDataObject> getNotConvertibleDataObjectSet() {
+    return notConvertibleDataObjectSet;
   }
 
-  public TestDataObject setNotEncodableDataObjectSet(Set<NoConverterDataObject> notEncodableDataObjectSet) {
-    this.notEncodableDataObjectSet = notEncodableDataObjectSet;
+  public TestDataObject setNotConvertibleDataObjectSet(Set<NoConverterDataObject> notConvertibleDataObjectSet) {
+    this.notConvertibleDataObjectSet = notConvertibleDataObjectSet;
     return this;
   }
 
-  public Map<String, NoConverterDataObject> getNotEncodableDataObjectMap() {
-    return notEncodableDataObjectMap;
+  public Map<String, NoConverterDataObject> getNotConvertibleDataObjectMap() {
+    return notConvertibleDataObjectMap;
   }
 
-  public TestDataObject setNotEncodableDataObjectMap(Map<String, NoConverterDataObject> notEncodableDataObjectMap) {
-    this.notEncodableDataObjectMap = notEncodableDataObjectMap;
+  public TestDataObject setNotConvertibleDataObjectMap(Map<String, NoConverterDataObject> notConvertibleDataObjectMap) {
+    this.notConvertibleDataObjectMap = notConvertibleDataObjectMap;
     return this;
   }
 }

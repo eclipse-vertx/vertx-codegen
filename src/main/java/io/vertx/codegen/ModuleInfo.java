@@ -81,22 +81,22 @@ public class ModuleInfo {
     } else return null;
   }
 
-  public static DeclaredType resolveJsonCodec(Elements elementUtils, Types typeUtils, PackageElement pkgElt, DeclaredType javaType) {
+  public static DeclaredType resolveJsonMapper(Elements elementUtils, Types typeUtils, PackageElement pkgElt, DeclaredType javaType) {
     PackageElement result = resolveFirstModuleGenAnnotatedPackageElement(elementUtils, pkgElt);
     if (result != null) {
-      TypeElement jsonCodecElt = elementUtils.getTypeElement("io.vertx.core.spi.json.JsonCodec");
-      TypeParameterElement typeParamElt = jsonCodecElt.getTypeParameters().get(0);
+      TypeElement jsonMapperElt = elementUtils.getTypeElement("io.vertx.core.spi.json.JsonMapper");
+      TypeParameterElement typeParamElt = jsonMapperElt.getTypeParameters().get(0);
       return elementUtils
         .getAllAnnotationMirrors(pkgElt)
         .stream()
         .filter(am -> am.getAnnotationType().toString().equals(ModuleGen.class.getName()))
         .flatMap(am -> am.getElementValues().entrySet().stream())
-        .filter(e -> e.getKey().getSimpleName().toString().equals("codecs"))
+        .filter(e -> e.getKey().getSimpleName().toString().equals("mappers"))
         .flatMap(e -> ((List<AnnotationValue>) e.getValue().getValue()).stream())
         .map(annotationValue -> (DeclaredType) annotationValue.getValue())
         .filter(dt -> {
-          TypeMirror codecType = Helper.resolveTypeParameter(typeUtils, dt, typeParamElt);
-          return codecType != null && codecType.getKind() == TypeKind.DECLARED && typeUtils.isSameType(codecType, javaType);
+          TypeMirror mapperType = Helper.resolveTypeParameter(typeUtils, dt, typeParamElt);
+          return mapperType != null && mapperType.getKind() == TypeKind.DECLARED && typeUtils.isSameType(mapperType, javaType);
         })
         .findFirst()
         .orElse(null);
