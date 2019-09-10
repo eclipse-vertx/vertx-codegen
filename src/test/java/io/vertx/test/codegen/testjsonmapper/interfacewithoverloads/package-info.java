@@ -1,11 +1,6 @@
 @ModuleGen(
   name = "dummy",
-  groupPackage = "io.vertx.test",
-  mappers = {
-    ZonedDateTimeMapper.class
-  }
-)
+  groupPackage = "io.vertx.test")
 package io.vertx.test.codegen.testjsonmapper.interfacewithoverloads;
 
 import io.vertx.codegen.annotations.ModuleGen;
-import io.vertx.test.codegen.converter.ZonedDateTimeMapper;

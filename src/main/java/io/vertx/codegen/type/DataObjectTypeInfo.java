@@ -1,68 +1,49 @@
 package io.vertx.codegen.type;
 
+import io.vertx.codegen.MapperKind;
 import io.vertx.codegen.ModuleInfo;
 import io.vertx.codegen.TypeParamInfo;
-import io.vertx.core.spi.json.JsonMapper;
 
 import java.util.List;
-import java.util.function.Function;
 
 /**
- * DataObject could be of two types: the one that has a {@link JsonMapper} and the one that is annotated with {@link io.vertx.codegen.annotations.DataObject}
+ * DataObject could be of two types: static methods annotated with {@link io.vertx.codegen.annotations.Mapper} and the one that is annotated with {@link io.vertx.codegen.annotations.DataObject}
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  * @author <a href="slinkydeveloper.com">Francesco Guardiani</a>
  */
 public class DataObjectTypeInfo extends ClassTypeInfo {
 
-  private final JsonMapperInfo jsonMapperInfo;
-  private final DataObjectAnnotatedInfo dataObjectAnnotatedInfo;
+  private final MapperInfo serializer;
+  private final MapperInfo deserializer;
 
-  private final TypeInfo targetJsonType;
-
-  public DataObjectTypeInfo(String name, ModuleInfo module, boolean nullable, List<TypeParamInfo.Class> params, JsonMapperInfo jsonMapperInfo, TypeInfo targetJsonType) {
+  public DataObjectTypeInfo(String name, ModuleInfo module, boolean nullable, List<TypeParamInfo.Class> params, MapperInfo serializer, MapperInfo deserializer, TypeInfo jsonType) {
     super(ClassKind.DATA_OBJECT, name, module, nullable, params);
-    this.jsonMapperInfo = jsonMapperInfo;
-    this.dataObjectAnnotatedInfo = null;
-    this.targetJsonType = targetJsonType;
-  }
-
-  public DataObjectTypeInfo(String name, ModuleInfo module, boolean nullable, List<TypeParamInfo.Class> params, DataObjectAnnotatedInfo dataObjectAnnotatedInfo, TypeInfo targetJsonType) {
-    super(ClassKind.DATA_OBJECT, name, module, nullable, params);
-    this.jsonMapperInfo = null;
-    this.dataObjectAnnotatedInfo = dataObjectAnnotatedInfo;
-    this.targetJsonType = targetJsonType;
-  }
-
-  public TypeInfo getTargetJsonType() {
-    return targetJsonType;
-  }
-
-  public boolean hasJsonMapper() {
-    return jsonMapperInfo != null;
+    this.serializer = serializer;
+    this.deserializer = deserializer;
   }
 
   public boolean isDataObjectAnnotatedType() {
-    return dataObjectAnnotatedInfo != null;
+    return deserializer != null && deserializer.getKind() == MapperKind.SELF;
   }
 
-  public JsonMapperInfo getJsonMapperInfo() {
-    return jsonMapperInfo;
+  public TypeInfo getTargetType() {
+    return deserializer != null ? deserializer.getTargetType() : serializer.getTargetType();
   }
 
-  public DataObjectAnnotatedInfo getDataObjectAnnotatedInfo() {
-    return dataObjectAnnotatedInfo;
+  public MapperInfo getSerializer() {
+    return serializer;
   }
 
-  public <T> T match(Function<JsonMapperInfo, T> hasJsonMapper, Function<DataObjectAnnotatedInfo, T> isDataObjectAnnotated) {
-    return hasJsonMapper() ? hasJsonMapper.apply(jsonMapperInfo) : isDataObjectAnnotated.apply(dataObjectAnnotatedInfo);
+  public MapperInfo getDeserializer() {
+    return deserializer;
   }
 
   public boolean isSerializable() {
-    return match(jsonMapperInfo -> jsonMapperInfo.getJsonSerializerSimpleName() != null, DataObjectAnnotatedInfo::isSerializable);
+    return serializer != null;
   }
 
   public boolean isDeserializable() {
-    return match(jsonMapperInfo -> jsonMapperInfo.getJsonDeserializerSimpleName() != null, DataObjectAnnotatedInfo::isDeserializable);
+    return deserializer != null;
   }
 }

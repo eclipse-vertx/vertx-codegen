@@ -1,16 +1,68 @@
 package io.vertx.codegen.testmodel;
 
+import io.vertx.codegen.annotations.GenIgnore;
+import io.vertx.codegen.annotations.Mapper;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @VertxGen
 public interface JsonMapperTCK {
+
+  @GenIgnore
+  @Mapper
+  static Integer serializeMyPojoToInteger(MyPojoToInteger value) {
+    return value.getA();
+  }
+
+  @GenIgnore
+  @Mapper
+  static MyPojoToInteger deserializeMyPojoToInteger(Integer value) {
+    return new MyPojoToInteger(value);
+  }
+
+  @GenIgnore
+  @Mapper
+  static JsonObject serializeMyPojoToJsonObject(MyPojoToJsonObject value) {
+    return new JsonObject().put("v", value.getV());
+  }
+
+  @GenIgnore
+  @Mapper
+  static MyPojoToJsonObject deserializeMyPojoToJsonObject(JsonObject value) {
+    return new MyPojoToJsonObject(value.getInteger("v"));
+  }
+  @GenIgnore
+  @Mapper
+  static JsonArray serializeMyPojoToJsonArray(MyPojoToJsonArray value) {
+    return new JsonArray((List)value.stuff);
+  }
+
+  @GenIgnore
+  @Mapper
+  static MyPojoToJsonArray deserializeMyPojoToJsonArray(JsonArray value) {
+    return new MyPojoToJsonArray(value.stream().map(j -> (Integer)j).collect(Collectors.toList()));
+  }
+
+  @GenIgnore
+  @Mapper
+  static String serializeZoneDateTime(ZonedDateTime value) {
+    return value.toString();
+  }
+
+  @GenIgnore
+  @Mapper
+  static ZonedDateTime deserializeZoneDateTime(String value) {
+    return ZonedDateTime.parse(value);
+  }
 
   // Java Type <-> Integer
   

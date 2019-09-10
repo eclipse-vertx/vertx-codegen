@@ -391,31 +391,44 @@ A _Data object_ is a type that can be converted back and forth to a Json type.
 
 You can declare data objects by:
 
-* Defining a `io.vertx.core.spi.json.JsonMapper` for it
+* Defining an annotated `@Mapper` method or function for it
 * Or annotating the type itself with `@DataObject`
 
-### Json Mapper
+### Json mappers
 
-A json mapper for type `T` is a concrete class that implements the interface `JsonMapper<T, J>`, where `J` can be:
+A json mapper for type `T` is a method or function that maps any object of type `Type`, where `J` can be:
 
 * `JsonArray` or `JsonObject`
-* `Number`
+* a concrete type extending `Number` such as `Long` or `Double`
 * `String`
 * `Boolean`
 
-If you want to use a `JsonMapper`, you need to declare a `public static final [JsonMapperType] INSTANCE` field in the mapper class
-to expose the mapper instance.
+Json mapped types can be used anywhere a json types used are.
 
-You need to declare the mapper class in the `@ModuleGen` annotation of the `package-info.java` file, e.g.:
+A json mapper turns any Java type into a data object type.
+
+You can declare them as public static methods:
 
 ```java
-@ModuleGen(
-  name = "my-package",
-  groupPackage = "my.package",
-  mappers = {
-    ZonedDateTimeMapper.class
-  }
-)
+@Mapper
+public static String serialize(ZonedDateTime date) {
+  return date.toString();
+}
+
+@Mapper
+public static ZonedDateTime deserialize(String s) {
+  return ZonedDateTime.parse(s);
+}
+```
+
+Or as functions:
+
+```java
+@Mapper
+public static final Function<ZonedDateTime, String> SERIALIZER = date -> date.toString();
+
+@Mapper
+public static final Function<String, ZonedDateTime> DESERIALIZER = s -> ZonedDateTime.parse(s);
 ```
 
 ### `@DataObject` annotated types
