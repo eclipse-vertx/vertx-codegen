@@ -46,7 +46,7 @@ public class EnumModel implements Model {
   public EnumModel(ProcessingEnvironment env, TypeElement modelElt) {
     this.typeUtils = env.getTypeUtils();
     this.elementUtils = env.getElementUtils();
-    this.typeMirrorFactory = new TypeMirrorFactory(elementUtils, typeUtils, elementUtils.getPackageOf(modelElt));
+    this.typeMirrorFactory = new TypeMirrorFactory(elementUtils, typeUtils);
     this.docFactory = new Doc.Factory(env.getMessager(), elementUtils, typeUtils, typeMirrorFactory, modelElt);
     this.modelElt = modelElt;
     this.annotationValueInfoFactory = new AnnotationValueInfoFactory(typeMirrorFactory);

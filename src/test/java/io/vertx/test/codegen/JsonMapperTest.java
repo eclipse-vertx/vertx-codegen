@@ -2,10 +2,8 @@ package io.vertx.test.codegen;
 
 import io.vertx.codegen.*;
 import io.vertx.codegen.type.DataObjectTypeInfo;
-import io.vertx.codegen.type.JsonMapperInfo;
 import io.vertx.codegen.type.PrimitiveTypeInfo;
-import io.vertx.test.codegen.testjsonmapper.enclosedmapper.MyPojo;
-import io.vertx.test.codegen.testjsonmapper.zoneddatetimetest.APIInterfaceWithZonedDateTime;
+import io.vertx.test.codegen.testjsonmapper.methodmapper.APIInterfaceWithZonedDateTime;
 import org.junit.Test;
 
 import java.time.ZonedDateTime;
@@ -26,17 +24,7 @@ public class JsonMapperTest extends ClassTestBase {
   @Test
   public void testJsonMapperMustFailMethodOverloadCheck() throws Exception {
     try {
-      new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsonmapper.illegalinterfacewithoverloads.APIInterfaceWithZonedDateTime.class);
-      fail();
-    } catch (GenException expected) { }
-  }
-
-  // Json mapper must have getInstance static method
-
-  @Test
-  public void testJsonMapperMustHaveStaticINSTANCEField() throws Exception {
-    try {
-      new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.missinginstancefield");
+      new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsonmapper.ambiguousoverload.APIInterfaceWithZonedDateTime.class);
       fail();
     } catch (GenException expected) { }
   }
@@ -46,45 +34,91 @@ public class JsonMapperTest extends ClassTestBase {
   @Test
   public void testJsonMapperMustHaveValidJsonType() throws Exception {
     try {
-      new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.illegaljsontypeinmapper");
+      new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.illegaljsontype");
       fail();
     } catch (GenException expected) { }
   }
 
+  // Illegal Json type in JsonMapper
+
+  @Test
+  public void testJsonMapperMustHaveSameJsonType() throws Exception {
+    try {
+      new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.mixedjsontypes");
+      fail();
+    } catch (GenException expected) { }
+  }
+
+  @Test
+  public void testFunctionMapperMustBeStatic() throws Exception {
+    try {
+      new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.nonstaticfunctionmapper");
+      fail();
+    } catch (GenException expected) { }
+  }
+
+  @Test
+  public void testMethodMapperMustBeStatic() throws Exception {
+    try {
+      new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.nonstaticmethodmapper");
+      fail();
+    } catch (GenException expected) { }
+  }
+
+  @Test
+  public void testFunctionMapperMustBePublic() throws Exception {
+    try {
+      new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.nonpublicfunctionmapper");
+      fail();
+    } catch (GenException expected) { }
+  }
+
+  @Test
+  public void testMethodMapperMustBePublic() throws Exception {
+    try {
+      new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.nonpublicmethodmapper");
+      fail();
+    } catch (GenException expected) { }
+  }
+
+  @Test
+  public void testNoArgsMethodMapper() throws Exception {
+    try {
+      new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.noargsmethodmapper");
+      fail();
+    } catch (GenException expected) { }
+  }
+
+  @Test
+  public void testTooManyArgsMethodMapper() throws Exception {
+    try {
+      new GeneratorHelper().generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.toomanyargsmethodmapper");
+      fail();
+    } catch (GenException expected) { }
+  }
 
   // Test valid stuff
   // ----------------
 
-  // Valid param
-
   @Test
-  public void testAbstractClass() throws Exception {
-    new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsonmapper.abstractclasstest.APIInterfaceWithZonedDateTime.class);
-  }
-
-  @Test
-  public void testInterface() throws Exception {
-    new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsonmapper.interfacetest.APIInterfaceWithZonedDateTime.class);
-  }
-
-  @Test
-  public void testEnclosedMapper() throws Exception {
-    ClassModel model = new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsonmapper.enclosedmapper.APIInterfaceWithMyPojo.class);
-    DataObjectTypeInfo typeInfo = model.getReferencedDataObjectTypes().iterator().next();
-    JsonMapperInfo jsonMapperInfo = typeInfo.getJsonMapperInfo();
-    assertNotNull(typeInfo);
-    assertTrue(typeInfo.isSerializable());
-    assertTrue(typeInfo.isDeserializable());
-    assertEquals(MyPojo.MyPojoMapper.class.getCanonicalName(), jsonMapperInfo.getJsonDeserializerFQCN());
-    assertEquals(MyPojo.MyPojoMapper.class.getCanonicalName(), jsonMapperInfo.getJsonSerializerFQCN());
-  }
-
-  @Test
-  public void testValidParamAndReturnType() throws Exception {
+  public void testMethodMapper() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(APIInterfaceWithZonedDateTime.class);
-    assertEquals(APIInterfaceWithZonedDateTime.class.getName(), model.getIfaceFQCN());
-    assertEquals(APIInterfaceWithZonedDateTime.class.getSimpleName(), model.getIfaceSimpleName());
-    assertTrue(model.getSuperTypes().isEmpty());
+    testMapper(model);
+  }
+
+  @Test
+  public void testValidFunctionMapper() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsonmapper.functionmapper.APIInterfaceWithZonedDateTime.class);
+    testMapper(model);
+  }
+
+  @Test
+  public void testMixedMapper() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(io.vertx.test.codegen.testjsonmapper.mixedmapper.APIInterfaceWithZonedDateTime.class);
+    testMapper(model);
+  }
+
+  private void testMapper(ClassModel model) throws Exception {
     assertEquals(2, model.getMethods().size());
 
     MethodInfo method1 = model.getMethods().get(0);
@@ -116,5 +150,4 @@ public class JsonMapperTest extends ClassTestBase {
     assertTrue(params2.get(0).getType() instanceof PrimitiveTypeInfo);
     assertEquals(long.class.getName(), params2.get(0).getType().getName());
   }
-
 }

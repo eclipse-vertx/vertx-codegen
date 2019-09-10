@@ -1,34 +1,9 @@
 package io.vertx.codegen.testmodel;
 
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.spi.json.JsonMapper;
-
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class MyPojoToJsonArray {
-
-  public static class MyPojoToJsonArrayMapper implements JsonMapper<MyPojoToJsonArray, JsonArray> {
-
-    public static final MyPojoToJsonArrayMapper INSTANCE = new MyPojoToJsonArrayMapper();
-
-    @Override
-    public MyPojoToJsonArray deserialize(JsonArray value) throws IllegalArgumentException {
-      return new MyPojoToJsonArray(value.stream().map(j -> (Integer)j).collect(Collectors.toList()));
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public JsonArray serialize(MyPojoToJsonArray value) throws IllegalArgumentException {
-      return new JsonArray((List)value.stuff);
-    }
-
-    @Override
-    public Class<MyPojoToJsonArray> getTargetClass() {
-      return MyPojoToJsonArray.class;
-    }
-  }
 
   List<Integer> stuff;
 

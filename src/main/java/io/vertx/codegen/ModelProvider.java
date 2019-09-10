@@ -2,6 +2,7 @@ package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.codegen.type.TypeMirrorFactory;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.ElementKind;
@@ -9,25 +10,25 @@ import javax.lang.model.element.TypeElement;
 
 public interface ModelProvider {
 
-  ModelProvider CLASS = (env, elt) -> {
+  ModelProvider CLASS = (env, typeFactory, elt) -> {
     if (elt.getAnnotation(VertxGen.class) != null && elt.getKind() != ElementKind.ENUM) {
-      ClassModel model = new ClassModel(env, elt);
+      ClassModel model = new ClassModel(env, typeFactory, elt);
       return model;
     } else {
       return null;
     }
   };
 
-  ModelProvider DATA_OBJECT = (env, elt) -> {
+  ModelProvider DATA_OBJECT = (env, typeFactory, elt) -> {
     if (elt.getAnnotation(DataObject.class) != null) {
-      DataObjectModel model = new DataObjectModel(env, elt);
+      DataObjectModel model = new DataObjectModel(env, typeFactory, elt);
       return model;
     } else {
       return null;
     }
   };
 
-  ModelProvider ENUM = (env, elt) -> {
+  ModelProvider ENUM = (env, typeFactory, elt) -> {
     if (elt.getAnnotation(VertxGen.class) != null && elt.getKind() == ElementKind.ENUM) {
       EnumModel model = new EnumModel(env, elt);
       return model;
@@ -36,6 +37,6 @@ public interface ModelProvider {
     }
   };
 
-  Model getModel(ProcessingEnvironment env, TypeElement elt);
+  Model getModel(ProcessingEnvironment env, TypeMirrorFactory typeFactory, TypeElement elt);
 
 }

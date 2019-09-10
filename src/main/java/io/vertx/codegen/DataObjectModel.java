@@ -59,10 +59,10 @@ public class DataObjectModel implements Model {
   private boolean hasDecodeStaticMethod;
   private List<AnnotationValueInfo> annotations;
 
-  public DataObjectModel(ProcessingEnvironment env, TypeElement modelElt) {
+  public DataObjectModel(ProcessingEnvironment env, TypeMirrorFactory typeFactory, TypeElement modelElt) {
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
-    this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils, elementUtils.getPackageOf(modelElt));
+    this.typeFactory = typeFactory;
     this.docFactory = new Doc.Factory(env.getMessager(), elementUtils, typeUtils, typeFactory, modelElt);
     this.modelElt = modelElt;
     this.annotationValueInfoFactory = new AnnotationValueInfoFactory(typeFactory);

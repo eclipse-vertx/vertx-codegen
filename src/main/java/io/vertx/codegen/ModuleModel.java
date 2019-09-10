@@ -57,7 +57,7 @@ public class ModuleModel implements Model {
       throw new GenException(element, "Invalid group package name " + groupPackage);
     }
     ModuleInfo info = new ModuleInfo(modulePackage, moduleName, groupPackage);
-    AnnotationValueInfoFactory annotationFactory = new AnnotationValueInfoFactory(new TypeMirrorFactory(elementUtils, typeUtils, element));
+    AnnotationValueInfoFactory annotationFactory = new AnnotationValueInfoFactory(new TypeMirrorFactory(elementUtils, typeUtils));
     List<AnnotationValueInfo> annotationValueInfos = element
       .getAnnotationMirrors()
       .stream()

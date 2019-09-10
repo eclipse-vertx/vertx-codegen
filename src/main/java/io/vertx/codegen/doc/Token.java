@@ -158,7 +158,7 @@ public abstract class Token {
    */
   public static Function<Token, Token> tagMapper(
       Elements elementUtils, Types typeUtils, TypeElement ownerElt) {
-    TypeMirrorFactory typeFactory = new TypeMirrorFactory(elementUtils, typeUtils, elementUtils.getPackageOf(ownerElt));
+    TypeMirrorFactory typeFactory = new TypeMirrorFactory(elementUtils, typeUtils);
     return token -> {
       if (token.isInlineTag()) {
         Tag tag = ((Token.InlineTag) token).getTag();

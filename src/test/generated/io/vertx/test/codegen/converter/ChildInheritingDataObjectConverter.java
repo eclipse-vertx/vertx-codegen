@@ -4,19 +4,13 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import io.vertx.core.spi.json.JsonDeserializer;
 
 /**
  * Converter and mapper for {@link io.vertx.test.codegen.converter.ChildInheritingDataObject}.
  * NOTE: This class has been automatically generated from the {@link io.vertx.test.codegen.converter.ChildInheritingDataObject} original class using Vert.x codegen.
  */
-public class ChildInheritingDataObjectConverter implements JsonDeserializer<ChildInheritingDataObject, JsonObject> {
+public class ChildInheritingDataObjectConverter {
 
-  public static final ChildInheritingDataObjectConverter INSTANCE = new ChildInheritingDataObjectConverter();
-
-  @Override public ChildInheritingDataObject deserialize(JsonObject value) { return (value != null) ? new ChildInheritingDataObject(value) : null; }
-
-  @Override public Class<ChildInheritingDataObject> getTargetClass() { return ChildInheritingDataObject.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ChildInheritingDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {

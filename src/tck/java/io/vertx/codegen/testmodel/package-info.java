@@ -3,14 +3,7 @@
  */
 @ModuleGen(
   name = "testmodel",
-  groupPackage = "io.vertx",
-  mappers = {
-    MyPojoToJsonArray.MyPojoToJsonArrayMapper.class,
-    MyPojoToJsonObject.MyPojoToJsonObjectMapper.class,
-    MyPojoToInteger.MyPojoToIntegerMapper.class,
-    ZonedDateTimeMapper.class
-  }
-)
+  groupPackage = "io.vertx")
 package io.vertx.codegen.testmodel;
 
 import io.vertx.codegen.annotations.ModuleGen;

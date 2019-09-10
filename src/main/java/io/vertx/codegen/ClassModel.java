@@ -19,6 +19,7 @@ package io.vertx.codegen;
 import io.vertx.codegen.annotations.CacheReturn;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
+import io.vertx.codegen.annotations.Mapper;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Tag;
@@ -103,11 +104,11 @@ public class ClassModel implements Model {
   protected boolean deprecated;
   protected Text deprecatedDesc;
 
-  public ClassModel(ProcessingEnvironment env, TypeElement modelElt) {
+  public ClassModel(ProcessingEnvironment env, TypeMirrorFactory typeFactory, TypeElement modelElt) {
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
     this.env = env;
-    this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils, elementUtils.getPackageOf(modelElt));
+    this.typeFactory = typeFactory;
     this.docFactory = new Doc.Factory(env.getMessager(), elementUtils, typeUtils, typeFactory, modelElt);
     this.messager = env.getMessager();
     this.modelElt = modelElt;
@@ -855,6 +856,9 @@ public class ClassModel implements Model {
     if (!mods.contains(Modifier.PUBLIC)) {
       return null;
     }
+    if (modelField.getAnnotation(Mapper.class) != null) {
+      return null;
+    }
     TypeInfo type = typeFactory.create(modelField.asType());
     checkConstantType(modelField, type, modelField.asType(),allowAnyJavaType);
     Doc doc = docFactory.createDoc(modelField);
@@ -864,6 +868,9 @@ public class ClassModel implements Model {
   private MethodInfo createMethod(ExecutableElement modelMethod, boolean allowAnyJavaType) {
     Set<Modifier> mods = modelMethod.getModifiers();
     if (!mods.contains(Modifier.PUBLIC)) {
+      return null;
+    }
+    if (modelMethod.getAnnotation(Mapper.class) != null) {
       return null;
     }
 

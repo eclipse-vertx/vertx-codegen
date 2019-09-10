@@ -1,6 +1,7 @@
 package io.vertx.codegen.type;
 
 import io.vertx.codegen.Helper;
+import io.vertx.codegen.MapperKind;
 import io.vertx.codegen.ModuleInfo;
 import io.vertx.codegen.TypeParamInfo;
 import io.vertx.codegen.annotations.DataObject;
@@ -76,15 +77,26 @@ public class TypeReflectionFactory {
           } else if (kind == ClassKind.DATA_OBJECT) {
             boolean serializable = isDataObjectAnnotatedSerializable(classType);
             boolean deserializable = isDataObjectAnnotatedDeserializable(classType);
+            MapperInfo serializer = null;
+            if (serializable) {
+              serializer = new MapperInfo();
+              serializer.setQualifiedName(fqcn);
+              serializer.setKind(MapperKind.SELF);
+            }
+            MapperInfo deserializer = null;
+            if (deserializable) {
+              deserializer = new MapperInfo();
+              deserializer.setQualifiedName(fqcn);
+              deserializer.setKind(MapperKind.SELF);
+            }
+            TypeInfo jsonType = create(JsonObject.class);
             return new DataObjectTypeInfo(
               fqcn,
               module,
               false,
               typeParams,
-              new DataObjectAnnotatedInfo(
-                serializable,
-                deserializable
-              ),
+              serializer,
+              deserializer,
               create(JsonObject.class)
             );
           } else {

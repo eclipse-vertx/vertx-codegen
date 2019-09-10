@@ -1,5 +1,6 @@
 package io.vertx.test.codegen.testapi.jsonmapper;
 
+import io.vertx.codegen.annotations.Mapper;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -10,6 +11,16 @@ import java.util.Set;
 
 @VertxGen
 public interface WithMyPojo {
+
+  @Mapper
+  static MyPojo deserializeMyPojo(Integer value) {
+    return new MyPojo().setA(value);
+  }
+
+  @Mapper
+  static Integer serializeMyPojo(MyPojo value) {
+    return value.getA();
+  }
 
   MyPojo returnMyPojo();
   List<MyPojo> returnMyPojoList();

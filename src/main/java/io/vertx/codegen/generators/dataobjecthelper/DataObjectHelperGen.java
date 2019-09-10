@@ -7,6 +7,8 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.DataObjectTypeInfo;
+import io.vertx.codegen.type.MapperInfo;
+import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.writer.CodeWriter;
 
 import java.io.PrintWriter;
@@ -32,7 +34,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
 
   @Override
   public String filename(DataObjectModel model) {
-    if (model.isClass() && model.getType().isDataObjectAnnotatedType() && model.getGenerateConverter()) {
+    if (model.isClass() && model.getGenerateConverter()) {
       return model.getFqn() + "Converter.java";
     }
     return null;
@@ -55,36 +57,14 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print("import io.vertx.core.json.JsonArray;\n");
     writer.print("import java.time.Instant;\n");
     writer.print("import java.time.format.DateTimeFormatter;\n");
-    code.javaImport(
-      matchMapperType(genSerialize, genDeserialize,
-        "io.vertx.core.spi.json.JsonMapper",
-        "io.vertx.core.spi.json.JsonSerializer",
-        "io.vertx.core.spi.json.JsonDeserializer"
-      )
-    );
     writer.print("\n");
     writer.print("/**\n");
     writer.print(" * Converter and mapper for {@link " + model.getType() + "}.\n");
     writer.print(" * NOTE: This class has been automatically generated from the {@link " + model.getType() + "} original class using Vert.x codegen.\n");
     writer.print(" */\n");
     code
-      .codeln("public class " + model.getType().getSimpleName() + "Converter implements " +
-        matchMapperType(genSerialize, genDeserialize,
-          "JsonMapper",
-          "JsonSerializer",
-          "JsonDeserializer"
-        ) + "<" + model.getType().getSimpleName() + ", JsonObject> {"
+      .codeln("public class " + model.getType().getSimpleName() + "Converter {"
       ).newLine();
-    code.indented(() -> {
-      genSingletonInstance(model.getType().getSimpleName(), code);
-      if (genSerialize) {
-        genSerializeMethod(model, code);
-      }
-      if (genDeserialize) {
-        genDeserializeMethod(model, code);
-      };
-      writeGetTargetClassMethod(model, code);
-    });
     if (model.getGenerateConverter()) {
       writer.print("\n");
       genFromJson(visibility, inheritConverter, model, writer);
@@ -134,9 +114,28 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               genPropToJson("", "", prop, writer);
               break;
             case DATA_OBJECT:
-              DataObjectTypeInfo dataObjectTypeInfo = ((DataObjectTypeInfo)prop.getType());
-              if (dataObjectTypeInfo.isSerializable()) {
-                genPropToJson(dataObjectTypeInfo.match(jc -> jc.getJsonDeserializerFQCN() + ".INSTANCE.serialize(", doa -> ""), dataObjectTypeInfo.match(jc -> ")", doa -> ".toJson()"), prop, writer);
+              DataObjectTypeInfo dataObjectType = ((DataObjectTypeInfo)prop.getType());
+              if (dataObjectType.isSerializable()) {
+                String m;
+                MapperInfo mapperInfo = dataObjectType.getSerializer();
+                String match;
+                switch (mapperInfo.getKind()) {
+                  case SELF:
+                    m = "";
+                    match = ".toJson()";
+                    break;
+                  case STATIC_METHOD:
+                    m = mapperInfo.getQualifiedName() + "." + mapperInfo.getName() + "(";
+                    match = ")";
+                    break;
+                  case FUNCTION:
+                    m = mapperInfo.getQualifiedName() + "." + mapperInfo.getName() + ".apply(";
+                    match = ")";
+                    break;
+                  default:
+                    throw new UnsupportedOperationException();
+                }
+                genPropToJson(m, match, prop, writer);
               } else {
                 return;
               }
@@ -243,12 +242,29 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             case DATA_OBJECT:
               DataObjectTypeInfo dataObjectTypeInfo = ((DataObjectTypeInfo)prop.getType());
               if (dataObjectTypeInfo.isDeserializable()) {
+                String simpleName;
+                String match;
+                MapperInfo mapper = dataObjectTypeInfo.getDeserializer();
+                TypeInfo jsonType = mapper.getTargetType();
+                switch (mapper.getKind()) {
+                  case SELF:
+                    match = "new " + dataObjectTypeInfo.getName() + "((JsonObject)";
+                    simpleName = jsonType.getSimpleName();
+                    break;
+                  case STATIC_METHOD:
+                    match = mapper.getQualifiedName() + "." + mapper.getName() + "((" + jsonType.getSimpleName() + ")";
+                    simpleName = jsonType.getSimpleName();
+                    break;
+                  case FUNCTION:
+                    match = mapper.getQualifiedName() + "." + mapper.getName() + ".apply((" + jsonType.getSimpleName() + ")";
+                    simpleName = jsonType.getSimpleName();
+                    break;
+                  default:
+                    throw new AssertionError();
+                }
                 genPropFromJson(
-                  dataObjectTypeInfo.getTargetJsonType().getSimpleName(),
-                  dataObjectTypeInfo.match(
-                    jci -> jci.getJsonDeserializerFQCN() + ".INSTANCE.deserialize((" + dataObjectTypeInfo.getTargetJsonType().getSimpleName() + ")",
-                    doa -> "new " + dataObjectTypeInfo.getName() + "((JsonObject)"
-                  ),
+                  simpleName,
+                  match,
                   ")",
                   prop,
                   writer
@@ -322,67 +338,5 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       }
     }
     writer.print(indent + "  break;\n");
-  }
-
-
-  private <T> T matchMapperType(boolean genSerialize, boolean genDeserialize, T completeMapper, T onlySerializer, T onlyDeserializer) {
-    if (genDeserialize && genSerialize) {
-      return completeMapper;
-    } else if (genDeserialize) {
-      return onlyDeserializer;
-    } else {
-      return onlySerializer;
-    }
-  }
-
-  private void genSingletonInstance(String dataObjectSimpleName, CodeWriter code) {
-    code
-      .codeln("public static final " + dataObjectSimpleName + "Converter INSTANCE = new " + dataObjectSimpleName + "Converter();")
-      .newLine();
-  }
-
-  private void genDeserializeMethod(DataObjectModel model, CodeWriter codeWriter) {
-    String modelSimpleName = model.getType().getSimpleName();
-    if (model.isConcrete() && model.hasJsonConstructor())
-      codeWriter.codeln("@Override public " + modelSimpleName + " deserialize(JsonObject value) { return (value != null) ? new " + modelSimpleName + "(value) : null; }").newLine();
-    else if (!model.isConcrete() && model.hasDecodeStaticMethod()) {
-      codeWriter.codeln("@Override public " + modelSimpleName + " deserialize(JsonObject value) { return (value != null) ? " + modelSimpleName + ".deserialize(value) : null; }").newLine();
-    } else {
-      codeWriter
-        .codeln("@Override")
-        .codeln("public " + modelSimpleName + " deserialize(JsonObject value) {")
-        .indented(() -> codeWriter
-          .codeln("if (value == null) return null;")
-          .codeln(modelSimpleName + " newInstance = new " + modelSimpleName + "();")
-          .codeln("fromJson(value, newInstance);")
-          .codeln("return newInstance;")
-        )
-        .codeln("}")
-        .newLine();
-    }
-  }
-
-  private void genSerializeMethod(DataObjectModel model, CodeWriter codeWriter) {
-    String modelSimpleName = model.getType().getSimpleName();
-    if (model.hasToJsonMethod())
-      codeWriter.codeln("@Override public JsonObject serialize(" + modelSimpleName + " value) { return (value != null) ? value.toJson() : null; }").newLine();
-    else {
-      codeWriter
-        .codeln("@Override")
-        .codeln("public JsonObject serialize(" + modelSimpleName + " value) {")
-        .indented(() -> codeWriter
-          .codeln("if (value == null) return null;")
-          .codeln("JsonObject json = new JsonObject();")
-          .codeln("toJson(value, json);")
-          .codeln("return json;")
-        )
-        .codeln("}")
-        .newLine();
-    }
-  }
-
-  private void writeGetTargetClassMethod(DataObjectModel model, CodeWriter codeWriter) {
-    String modelSimpleName = model.getType().getSimpleName();
-    codeWriter.codeln("@Override public Class<" + modelSimpleName + "> getTargetClass() { return " + modelSimpleName + ".class; }");
   }
 }

@@ -55,6 +55,7 @@ public class MvelCodeGenerator extends Generator<Model> {
     vars.putAll(ClassKind.vars());
     vars.putAll(MethodKind.vars());
     vars.putAll(Case.vars());
+    vars.putAll(MapperKind.vars());
 
     vars.putAll(TypeNameTranslator.vars(name));
 

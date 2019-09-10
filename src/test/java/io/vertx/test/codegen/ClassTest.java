@@ -36,7 +36,6 @@ import io.vertx.test.codegen.testapi.javatypes.MethodWithInvalidJavaTypeReturn;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeParams;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeReturn;
 import io.vertx.test.codegen.testapi.jsonmapper.MyPojo;
-import io.vertx.test.codegen.testapi.jsonmapper.MyPojoJsonMapper;
 import io.vertx.test.codegen.testapi.jsonmapper.WithMyPojo;
 import io.vertx.test.codegen.testapi.overloadcheck.OverloadCheckIgnoreEnhancedMethod;
 import io.vertx.test.codegen.testapi.overloadcheck.OverloadCheckInvalidMethodOverloading;
@@ -52,6 +51,7 @@ import io.vertx.test.codegen.testapi.streams.ReadStreamWithParameterizedTypeArg;
 import org.junit.Test;
 
 import java.net.Socket;
+import java.net.URI;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -1110,13 +1110,17 @@ public class ClassTest extends ClassTestBase {
     assertEquals(MethodWithDataObjectParam.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(1, model.getMethods().size());
-    String methodName = "methodWithDataObjectParam";
+    assertEquals(2, model.getMethods().size());
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, methodName, 1, "void", MethodKind.OTHER);
+    checkMethod(method, "methodWithDataObjectParam", 1, "void", MethodKind.OTHER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "dataObject", PlainDataObject.class);
+
+    method = model.getMethods().get(1);
+    checkMethod(method, "methodWithMappedDataObjectParam", 1, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "uri", "java.net.URI", ClassKind.DATA_OBJECT);
   }
 
   @Test
@@ -1222,10 +1226,11 @@ public class ClassTest extends ClassTestBase {
     assertEquals(MethodWithValidDataObjectReturn.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(3, model.getMethods().size());
+    assertEquals(4, model.getMethods().size());
     checkMethod(model.getMethods().get(0), "methodWithDataObjectReturn", 0, PlainDataObjectWithToJson.class.getName(), MethodKind.OTHER);
     checkMethod(model.getMethods().get(1), "methodWithAbstractDataObjectReturn", 0, AbstractDataObjectWithToJson.class.getName(), MethodKind.OTHER);
     checkMethod(model.getMethods().get(2), "methodWithInterfaceDataObjectReturn", 0, InterfaceDataObjectWithToJson.class.getName(), MethodKind.OTHER);
+    checkMethod(model.getMethods().get(3), "methodWithMappedDataObjectReturn", 0, URI.class.getName(), MethodKind.OTHER);
   }
 
   @Test
@@ -2493,8 +2498,6 @@ public class ClassTest extends ClassTestBase {
 
     assertEquals(1, model.getReferencedDataObjectTypes().size());
     assertEquals("MyPojo", model.getReferencedDataObjectTypes().iterator().next().getSimpleName());
-    assertEquals(MyPojoJsonMapper.class.getName(), model.getReferencedDataObjectTypes().iterator().next().getJsonMapperInfo().getJsonSerializerFQCN());
-    assertEquals(MyPojoJsonMapper.class.getName(), model.getReferencedDataObjectTypes().iterator().next().getJsonMapperInfo().getJsonDeserializerFQCN());
 
     checkMethod(model.getMethodMap().get("returnMyPojo").get(0), "returnMyPojo", 0, new TypeLiteral<MyPojo>() {}, MethodKind.OTHER);
 

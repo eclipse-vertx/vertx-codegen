@@ -4,21 +4,13 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import io.vertx.core.spi.json.JsonMapper;
 
 /**
  * Converter and mapper for {@link io.vertx.codegen.testmodel.DataObjectWithNestedBuffer}.
  * NOTE: This class has been automatically generated from the {@link io.vertx.codegen.testmodel.DataObjectWithNestedBuffer} original class using Vert.x codegen.
  */
-public class DataObjectWithNestedBufferConverter implements JsonMapper<DataObjectWithNestedBuffer, JsonObject> {
+public class DataObjectWithNestedBufferConverter {
 
-  public static final DataObjectWithNestedBufferConverter INSTANCE = new DataObjectWithNestedBufferConverter();
-
-  @Override public JsonObject serialize(DataObjectWithNestedBuffer value) { return (value != null) ? value.toJson() : null; }
-
-  @Override public DataObjectWithNestedBuffer deserialize(JsonObject value) { return (value != null) ? new DataObjectWithNestedBuffer(value) : null; }
-
-  @Override public Class<DataObjectWithNestedBuffer> getTargetClass() { return DataObjectWithNestedBuffer.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, DataObjectWithNestedBuffer obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
