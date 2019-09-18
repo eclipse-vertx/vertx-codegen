@@ -545,14 +545,12 @@ public class ClassModel implements Model {
   }
 
   private void logNonFutures() {
-/*
     methods.values()
       .stream()
       .filter(m -> m.getKind() == MethodKind.FUTURE && !futureMethods.contains(m))
       .forEach(meth -> {
         CodeGenProcessor.log.info("Non future method " + type.getRaw().getName() + ": " + meth);
     });
-*/
   }
 
   private void processTypeAnnotations() {
