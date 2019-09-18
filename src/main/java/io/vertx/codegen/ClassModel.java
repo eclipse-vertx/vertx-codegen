@@ -549,7 +549,7 @@ public class ClassModel implements Model {
       .stream()
       .filter(m -> m.getKind() == MethodKind.FUTURE && !futureMethods.contains(m))
       .forEach(meth -> {
-        CodeGenProcessor.log.info("Non future method " + type.getRaw().getName() + ": " + meth);
+        messager.printMessage(Diagnostic.Kind.NOTE, "Non future method " + type.getRaw().getName() + ": " + meth);
     });
   }
 

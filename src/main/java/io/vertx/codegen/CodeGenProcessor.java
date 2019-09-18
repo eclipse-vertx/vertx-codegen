@@ -61,7 +61,7 @@ public class CodeGenProcessor extends AbstractProcessor {
     if (generatorsOption == null) {
       generatorsOption = processingEnv.getOptions().get("codeGenerators");
       if (generatorsOption != null) {
-        log.warning("Please use 'codegen.generators' option instead of 'codeGenerators' option");
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Please use 'codegen.generators' option instead of 'codeGenerators' option");
       }
     }
     if (generatorsOption != null) {
@@ -82,7 +82,8 @@ public class CodeGenProcessor extends AbstractProcessor {
       if (outputDirectoryOption == null) {
         outputDirectoryOption = processingEnv.getOptions().get("outputDirectory");
         if (outputDirectoryOption != null) {
-          log.warning("Please use 'codegen.output' option instead of 'outputDirectory' option");
+          processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
+            "Please use 'codegen.output' option instead of 'outputDirectory' option");
         }
       }
       if (outputDirectoryOption != null) {
@@ -106,7 +107,7 @@ public class CodeGenProcessor extends AbstractProcessor {
       }
       generators = generators.peek(gen -> {
         gen.load(processingEnv);
-        log.info("Loaded " + gen.name + " code generator");
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded " + gen.name + " code generator");
       });
       relocations = processingEnv.getOptions()
         .entrySet()
@@ -193,7 +194,7 @@ public class CodeGenProcessor extends AbstractProcessor {
               try (Writer writer = target.openWriter()) {
                 writer.write(content);
               }
-              log.info("Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
+              processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
             }
           } catch (GenException e) {
             reportGenException(e);
@@ -226,7 +227,7 @@ public class CodeGenProcessor extends AbstractProcessor {
                 w.write(content);
               }
             }
-            log.info("Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
           }
         } catch (GenException e) {
           reportGenException(e);
@@ -256,7 +257,7 @@ public class CodeGenProcessor extends AbstractProcessor {
           } catch (Exception e) {
             reportException(e, generated.get(0).model.getElement());
           }
-          log.info("Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
+          processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
         }
       });
     }
