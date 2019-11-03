@@ -217,6 +217,8 @@
 |[[notConvertibleDataObjectMap]]`@notConvertibleDataObjectMap`|`link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
 |[[notConvertibleDataObjectSet]]`@notConvertibleDataObjectSet`|`Array of link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
 |[[notConvertibleDataObjects]]`@notConvertibleDataObjects`|`Array of link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
+|[[packagePrivateValue]]`@packagePrivateValue`|`Number (int)`|-
+|[[protectedValue]]`@protectedValue`|`Number (int)`|-
 |[[shortValue]]`@shortValue`|`Number (short)`|-
 |[[stringSet]]`@stringSet`|`Array of String`|-
 |[[stringValue]]`@stringValue`|`String`|-

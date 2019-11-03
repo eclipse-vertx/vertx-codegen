@@ -348,7 +348,7 @@ public class DataObjectModel implements Model {
       ExecutableElement methodElt = methodsElt.remove(0);
       if (((TypeElement) methodElt.getEnclosingElement()).getQualifiedName().toString().equals("java.lang.Object") ||
         methodElt.getModifiers().contains(Modifier.STATIC) ||
-        !methodElt.getModifiers().contains(Modifier.PUBLIC)) {
+        methodElt.getModifiers().contains(Modifier.PRIVATE)) {
         continue;
       }
       String methodName = methodElt.getSimpleName().toString();
