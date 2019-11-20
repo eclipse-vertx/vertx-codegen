@@ -1,10 +1,11 @@
 package io.vertx.codegen.generators.mvel;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.vertx.codegen.*;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import io.vertx.codegen.CodeGenProcessor;
+import io.vertx.codegen.Generator;
+import io.vertx.codegen.GeneratorLoader;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.tools.Diagnostic;
@@ -16,7 +17,7 @@ import java.util.stream.Stream;
 
 public class MvelCodeGeneratorLoader implements GeneratorLoader {
 
-  private final static ObjectMapper mapper = new ObjectMapper();
+  private final static JsonFactory factory = new JsonFactory();
 
   @Override
   public Stream<Generator<?>> loadGenerators(ProcessingEnvironment processingEnv) {
@@ -30,38 +31,11 @@ public class MvelCodeGeneratorLoader implements GeneratorLoader {
     Set<String> templates = new HashSet<>();
     while (descriptors.hasMoreElements()) {
       URL descriptor = descriptors.nextElement();
-      try (Scanner scanner = new Scanner(descriptor.openStream(), "UTF-8").useDelimiter("\\A")) {
-        String s = scanner.next();
-        ObjectNode obj = (ObjectNode) mapper.readTree(s);
-        String name = obj.get("name").asText();
-        ArrayNode generatorsCfg = (ArrayNode) obj.get("generators");
-        for (JsonNode generator : generatorsCfg) {
-          Set<String> kinds = new HashSet<>();
-          if(generator.get("kind").isArray()) {
-            generator.get("kind").forEach(v -> kinds.add(v.asText()));
-          }
-          else {
-            kinds.add(generator.get("kind").asText());
-          }
-          JsonNode templateFilenameNode = generator.get("templateFilename");
-          if (templateFilenameNode == null) {
-            templateFilenameNode = generator.get("templateFileName");
-          }
-          String templateFilename = templateFilenameNode.asText();
-          JsonNode filenameNode = generator.get("filename");
-          if (filenameNode == null) {
-            filenameNode = generator.get("fileName");
-          }
-          String filename = filenameNode.asText();
-          boolean incremental = generator.has("incremental") && generator.get("incremental").asBoolean();
-          if (!templates.contains(templateFilename)) {
-            templates.add(templateFilename);
-            MvelCodeGenerator gen = new MvelCodeGenerator();
-            gen.name = name;
-            gen.kinds = kinds;
-            gen.incremental = incremental;
-            gen.filename = filename;
-            gen.templateFilename = templateFilename;
+      try (JsonParser parser = factory.createParser(descriptor)) {
+        List<MvelCodeGenerator> parsed = parseContent(parser);
+        for (MvelCodeGenerator gen : parsed) {
+          if (!templates.contains(gen.templateFilename)) {
+            templates.add(gen.templateFilename);
             generators.add(gen);
           }
         }
@@ -72,5 +46,61 @@ public class MvelCodeGeneratorLoader implements GeneratorLoader {
       }
     }
     return generators.stream();
+  }
+
+  private List<MvelCodeGenerator> parseContent(JsonParser parser) throws IOException {
+    List<MvelCodeGenerator> generators = null;
+    String name = null;
+    while (parser.nextToken() != JsonToken.END_OBJECT) {
+      String tokenName = parser.getCurrentName();
+      if ("name".equals(tokenName)) {
+        parser.nextToken();
+        name = parser.getValueAsString();
+      } else if ("generators".equals(tokenName)) {
+        parser.nextToken();
+        generators = parseGenerators(parser);
+      }
+    }
+    for (MvelCodeGenerator generator : generators) {
+      generator.name = name;
+    }
+    return generators;
+  }
+
+  private List<MvelCodeGenerator> parseGenerators(JsonParser parser) throws IOException {
+    List<MvelCodeGenerator> generators = new ArrayList<>();
+    while (parser.nextToken() != JsonToken.END_ARRAY) {
+      generators.add(parseGenerator(parser));
+    }
+    return generators;
+  }
+
+  private MvelCodeGenerator parseGenerator(JsonParser parser) throws IOException {
+    MvelCodeGenerator gen = new MvelCodeGenerator();
+    Set<String> kinds = new HashSet<>();
+    while (parser.nextToken() != JsonToken.END_OBJECT) {
+      String tokenName = parser.getCurrentName();
+      if ("kind".equals(tokenName)) {
+        parser.nextToken();
+        if (parser.currentToken() == JsonToken.START_ARRAY) {
+          while (parser.nextToken() != JsonToken.END_ARRAY) {
+            kinds.add(parser.getValueAsString());
+          }
+        } else {
+          kinds.add(parser.getValueAsString());
+        }
+      } else if ("incremental".equals(tokenName)) {
+        parser.nextToken();
+        gen.incremental = parser.getValueAsBoolean();
+      } else if ("filename".equals(tokenName)) {
+        parser.nextToken();
+        gen.filename = parser.getValueAsString();
+      } else if ("templateFilename".equals(tokenName)) {
+        parser.nextToken();
+        gen.templateFilename = parser.getValueAsString();
+      }
+    }
+    gen.kinds = kinds;
+    return gen;
   }
 }
