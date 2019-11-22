@@ -547,6 +547,7 @@ public class ClassModel implements Model {
   private void logNonFutures() {
     methods.values()
       .stream()
+      .filter(m -> m.getOwnerTypes().size() == 1)
       .filter(m -> m.getKind() == MethodKind.FUTURE && !futureMethods.contains(m))
       .forEach(meth -> {
         messager.printMessage(Diagnostic.Kind.NOTE, "Non future method " + type.getRaw().getName() + ": " + meth);
