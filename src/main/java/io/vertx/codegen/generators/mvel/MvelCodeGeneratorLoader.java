@@ -92,10 +92,10 @@ public class MvelCodeGeneratorLoader implements GeneratorLoader {
       } else if ("incremental".equals(tokenName)) {
         parser.nextToken();
         gen.incremental = parser.getValueAsBoolean();
-      } else if ("filename".equals(tokenName) || "fileName".equals(tokenName)) {
+      } else if ("filename".equals(tokenName)) {
         parser.nextToken();
         gen.filename = parser.getValueAsString();
-      } else if ("templateFilename".equals(tokenName) || "templateFileName".equals(tokenName)) {
+      } else if ("templateFilename".equals(tokenName)) {
         parser.nextToken();
         gen.templateFilename = parser.getValueAsString();
       }
