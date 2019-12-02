@@ -856,8 +856,8 @@ quite simple:
   "name": "Groovy", <1>
   "generators": [ { <2>
     "kind": "class", <3>
-    "fileName": "'groovy/' + module.translateQualifiedName(fqn, 'groovy').replace('.', '/') + '.groovy'", <4>
-    "templateFileName": "vertx-groovy/template/groovy.templ" <5>
+    "filename": "'groovy/' + module.translateQualifiedName(fqn, 'groovy').replace('.', '/') + '.groovy'", <4>
+    "templateFilename": "vertx-groovy/template/groovy.templ" <5>
   } ]
 }
 ----
@@ -920,8 +920,8 @@ With `codegen.json`:
   "generators": [ {
     "kind": "class",
     "incremental": true,
-    "fileName": "'index.html'",
-    "templateFileName": "html-index.templ"
+    "filename": "'index.html'",
+    "templateFilename": "html-index.templ"
   } ]
 }
 ----
