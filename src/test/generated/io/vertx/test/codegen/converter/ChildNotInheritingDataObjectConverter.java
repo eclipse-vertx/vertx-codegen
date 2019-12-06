@@ -4,12 +4,27 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import io.vertx.core.spi.json.JsonCodec;
 
 /**
- * Converter for {@link io.vertx.test.codegen.converter.ChildNotInheritingDataObject}.
+ * Converter and Codec for {@link io.vertx.test.codegen.converter.ChildNotInheritingDataObject}.
  * NOTE: This class has been automatically generated from the {@link io.vertx.test.codegen.converter.ChildNotInheritingDataObject} original class using Vert.x codegen.
  */
-public class ChildNotInheritingDataObjectConverter {
+public class ChildNotInheritingDataObjectConverter implements JsonCodec<ChildNotInheritingDataObject, JsonObject> {
+
+  public static final ChildNotInheritingDataObjectConverter INSTANCE = new ChildNotInheritingDataObjectConverter();
+
+  @Override
+  public JsonObject encode(ChildNotInheritingDataObject value) {
+    if (value == null) return null;
+    JsonObject json = new JsonObject();
+    toJson(value, json);
+    return json;
+  }
+
+  @Override public ChildNotInheritingDataObject decode(JsonObject value) { return (value != null) ? new ChildNotInheritingDataObject(value) : null; }
+
+  @Override public Class<ChildNotInheritingDataObject> getTargetClass() { return ChildNotInheritingDataObject.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ChildNotInheritingDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {

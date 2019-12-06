@@ -6,7 +6,6 @@ import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,5 +26,9 @@ public interface MethodWithValidMapReturn {
 
   Map<String, JsonArray> jsonArrayMap();
   Map<String, JsonObject> jsonObjectMap();
+  Map<String, VertxGenClass1> vertxGenMap();
+  Map<String, TestDataObject> dataObjectMap();
+  Map<String, TestEnum> enumMap();
   Map<String, Object> objectMap();
+
 }

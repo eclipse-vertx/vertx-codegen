@@ -7,15 +7,7 @@ import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.codegen.testmodel.TestGenEnum;
-import io.vertx.codegen.type.ApiTypeInfo;
-import io.vertx.codegen.type.ClassKind;
-import io.vertx.codegen.type.ClassTypeInfo;
-import io.vertx.codegen.type.EnumTypeInfo;
-import io.vertx.codegen.type.ParameterizedTypeInfo;
-import io.vertx.codegen.type.PrimitiveTypeInfo;
-import io.vertx.codegen.type.TypeInfo;
-import io.vertx.codegen.type.TypeReflectionFactory;
-import io.vertx.codegen.type.TypeVariableInfo;
+import io.vertx.codegen.type.*;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
@@ -25,48 +17,34 @@ import io.vertx.test.codegen.annotations.EmptyAnnotation;
 import io.vertx.test.codegen.testapi.*;
 import io.vertx.test.codegen.testapi.constant.InterfaceWithConstants;
 import io.vertx.test.codegen.testapi.constant.InterfaceWithIllegalConstantType;
-import io.vertx.test.codegen.testapi.javatypes.MethodWithInvalidJavaTypeParam;
-import io.vertx.test.codegen.testapi.javatypes.MethodWithInvalidJavaTypeReturn;
-import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeParams;
-import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeReturn;
-import io.vertx.test.codegen.testapi.overloadcheck.OverloadCheckIgnoreEnhancedMethod;
-import io.vertx.test.codegen.testapi.overloadcheck.OverloadCheckInvalidMethodOverloading;
-import io.vertx.test.codegen.testapi.fluent.AbstractInterfaceWithFluentMethods;
-import io.vertx.test.codegen.testapi.fluent.ConcreteInterfaceWithFluentMethods;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodOverrideWithSuperType;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodWithGenericReturn;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodWithIllegalParameterizedReturn;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodWithIllegalReturn;
-import io.vertx.test.codegen.testapi.fluent.FluentMethodWithVoidReturn;
-import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromAbstract;
-import io.vertx.test.codegen.testapi.fluent.InterfaceWithFluentMethodOverrideFromConcrete;
+import io.vertx.test.codegen.testapi.fluent.*;
 import io.vertx.test.codegen.testapi.handler.FutureLike;
 import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerStringSubtype;
 import io.vertx.test.codegen.testapi.handler.InterfaceExtendingHandlerVertxGenSubtype;
 import io.vertx.test.codegen.testapi.impl.InterfaceInImplPackage;
 import io.vertx.test.codegen.testapi.impl.sub.InterfaceInImplParentPackage;
+import io.vertx.test.codegen.testapi.javatypes.MethodWithInvalidJavaTypeParam;
+import io.vertx.test.codegen.testapi.javatypes.MethodWithInvalidJavaTypeReturn;
+import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeParams;
+import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeReturn;
+import io.vertx.test.codegen.testapi.jsoncodec.MyPojo;
+import io.vertx.test.codegen.testapi.jsoncodec.MyPojoJsonCodec;
+import io.vertx.test.codegen.testapi.jsoncodec.WithMyPojo;
+import io.vertx.test.codegen.testapi.overloadcheck.OverloadCheckIgnoreEnhancedMethod;
+import io.vertx.test.codegen.testapi.overloadcheck.OverloadCheckInvalidMethodOverloading;
 import io.vertx.test.codegen.testapi.simple.InterfaceInImplContainingPackage;
-import io.vertx.test.codegen.testapi.streams.GenericInterfaceExtentingReadStream;
-import io.vertx.test.codegen.testapi.streams.GenericInterfaceExtentingReadStreamAndWriteStream;
-import io.vertx.test.codegen.testapi.streams.GenericInterfaceExtentingWriteStream;
-import io.vertx.test.codegen.testapi.streams.InterfaceExtentingReadStream;
-import io.vertx.test.codegen.testapi.streams.InterfaceExtentingReadStreamAndWriteStream;
-import io.vertx.test.codegen.testapi.streams.InterfaceExtentingWriteStream;
-import io.vertx.test.codegen.testapi.streams.InterfaceSubtypingReadStream;
-import io.vertx.test.codegen.testapi.streams.ReadStreamWithParameterizedTypeArg;
+import io.vertx.test.codegen.testapi.streams.*;
 import org.junit.Test;
 
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 /**
@@ -244,7 +222,6 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testMethodWithIllegalGenericsReturn() throws Exception {
     assertGenInvalid(MethodWithInvalidTypeParamByObjectReturn.class);
-    assertGenInvalid(MethodWithInvalidTypeParamByParameterizedReturn.class);
     assertGenInvalid(MethodWithInvalidTypeParamByThrowableReturn.class);
   }
 
@@ -420,14 +397,16 @@ public class ClassTest extends ClassTestBase {
     String methodName = "methodWithMapParams";
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, methodName, 6, "void", MethodKind.OTHER);
+    checkMethod(method, methodName, 8, "void", MethodKind.OTHER);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "mapString", new TypeLiteral<Map<String, String>>(){});
     checkParam(params.get(1), "mapLong", new TypeLiteral<Map<String, Long>>(){});
     checkParam(params.get(2), "mapJsonObject", new TypeLiteral<Map<String, JsonObject>>(){});
     checkParam(params.get(3), "mapJsonArray", new TypeLiteral<Map<String, JsonArray>>(){});
     checkParam(params.get(4), "mapVertxGen", new TypeLiteral<Map<String, VertxGenClass1>>(){});
-    checkParam(params.get(5), "mapObject", new TypeLiteral<Map<String, Object>>(){});
+    checkParam(params.get(5), "mapDataObject", new TypeLiteral<Map<String, TestDataObject>>(){});
+    checkParam(params.get(6), "mapEnum", new TypeLiteral<Map<String, TestEnum>>(){});
+    checkParam(params.get(7), "mapObject", new TypeLiteral<Map<String, Object>>(){});
   }
 
   @Test
@@ -1121,10 +1100,10 @@ public class ClassTest extends ClassTestBase {
     ClassModel model = new GeneratorHelper().generateClass(MethodWithValidMapReturn.class);
     assertEquals(MethodWithValidMapReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidMapReturn.class.getSimpleName(), model.getIfaceSimpleName());
-    assertEquals(0, model.getReferencedTypes().size());
+    assertEquals(1, model.getReferencedTypes().size());
     assertTrue(model.getSuperTypes().isEmpty());
     List<MethodInfo> methods = model.getMethods();
-    assertEquals(12, methods.size());
+    assertEquals(15, methods.size());
     checkMethod(methods.get(0), "byteMap", 0, new TypeLiteral<Map<String, Byte>>() {
     }, MethodKind.OTHER);
     checkMethod(methods.get(1), "shortMap", 0, new TypeLiteral<Map<String, Short>>() {}, MethodKind.OTHER);
@@ -1137,7 +1116,10 @@ public class ClassTest extends ClassTestBase {
     checkMethod(methods.get(8), "stringMap", 0, new TypeLiteral<Map<String, String>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(9), "jsonArrayMap", 0, new TypeLiteral<Map<String, JsonArray>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(10), "jsonObjectMap", 0, new TypeLiteral<Map<String, JsonObject>>() {}, MethodKind.OTHER);
-    checkMethod(methods.get(11), "objectMap", 0, new TypeLiteral<Map<String, Object>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(11), "vertxGenMap", 0, new TypeLiteral<Map<String, VertxGenClass1>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(12), "dataObjectMap", 0, new TypeLiteral<Map<String, TestDataObject>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(13), "enumMap", 0, new TypeLiteral<Map<String, TestEnum>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(14), "objectMap", 0, new TypeLiteral<Map<String, Object>>() {}, MethodKind.OTHER);
   }
 
   @Test
@@ -1288,6 +1270,90 @@ public class ClassTest extends ClassTestBase {
     List<MethodInfo> methods = model.getMethods();
     assertEquals(1, methods.size());
     checkMethod(methods.get(0), "foo", 1, "void", MethodKind.OTHER);
+  }
+
+  @Test
+  public void testIterableValidSuperType() throws Exception {
+    Map<Class<?>, Class<?>> valid = new HashMap<>();
+    valid.put(InterfaceWithIterableStringSuperType.class, String.class);
+    valid.put(InterfaceWithIterableApiSuperType.class, VertxGenClass1.class);
+
+    for (Map.Entry<Class<?>, Class<?>> entry : valid.entrySet()) {
+      Class<?> interfaceClass = entry.getKey();
+      Class<?> valueClass = entry.getValue();
+      ClassModel model = new GeneratorHelper().generateClass(interfaceClass);
+      assertEquals(interfaceClass.getName(), model.getIfaceFQCN());
+      assertEquals(interfaceClass.getSimpleName(), model.getIfaceSimpleName());
+      assertEquals(0, model.getSuperTypes().size());
+      assertEquals(0, model.getMethods().size());
+      assertTrue(model.isIterable());
+      assertEquals(valueClass.getName(), model.getIterableArg().getName());
+    }
+  }
+
+  @Test
+  public void testParameterizedIterableSuperType() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithParameterizedIterableSuperType.class);
+    assertEquals(InterfaceWithParameterizedIterableSuperType.class.getName() + "<U>", model.getIfaceFQCN());
+    assertEquals(InterfaceWithParameterizedIterableSuperType.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(0, model.getSuperTypes().size());
+    assertEquals(0, model.getMethods().size());
+    assertTrue(model.isIterable());
+    TypeInfo iterableType = model.getIterableArg();
+    assertThat(iterableType, is(instanceOf(TypeVariableInfo.class)));
+  }
+
+  @Test
+  public void testIterableInvalidSuperType() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithIllegalArgumentIterableSuperType.class);
+    assertEquals(InterfaceWithIllegalArgumentIterableSuperType.class.getName(), model.getIfaceFQCN());
+    assertEquals(InterfaceWithIllegalArgumentIterableSuperType.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(0, model.getSuperTypes().size());
+    assertEquals(0, model.getMethods().size());
+    assertFalse(model.isIterable());
+  }
+
+  @Test
+  public void testFunctionValidSuperType() throws Exception {
+    Map<Class<?>, Class<?>> valid = new HashMap<>();
+    valid.put(InterfaceWithFunctionStringSuperType.class, String.class);
+    valid.put(InterfaceWithFunctionApiSuperType.class, VertxGenClass1.class);
+
+    for (Map.Entry<Class<?>, Class<?>> entry : valid.entrySet()) {
+      Class<?> interfaceClass = entry.getKey();
+      Class<?> valueClass = entry.getValue();
+      ClassModel model = new GeneratorHelper().generateClass(interfaceClass);
+      assertEquals(interfaceClass.getName(), model.getIfaceFQCN());
+      assertEquals(interfaceClass.getSimpleName(), model.getIfaceSimpleName());
+      assertEquals(0, model.getSuperTypes().size());
+      assertEquals(0, model.getMethods().size());
+      assertTrue(model.isFunction());
+      assertEquals(valueClass.getName(), model.getFunctionArgs()[0].getName());
+      assertEquals(valueClass.getName(), model.getFunctionArgs()[1].getName());
+    }
+  }
+
+  @Test
+  public void testParameterizedFunctionSuperType() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithParameterizedFunctionSuperType.class);
+    assertEquals(InterfaceWithParameterizedFunctionSuperType.class.getName() + "<T,R>", model.getIfaceFQCN());
+    assertEquals(InterfaceWithParameterizedFunctionSuperType.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(0, model.getSuperTypes().size());
+    assertEquals(0, model.getMethods().size());
+    assertTrue(model.isFunction());
+    TypeInfo[] functionArgs = model.getFunctionArgs();
+    assertThat(functionArgs[0], is(instanceOf(TypeVariableInfo.class)));
+    assertThat(functionArgs[1], is(instanceOf(TypeVariableInfo.class)));
+  }
+
+  @Test
+  public void testFunctionInvalidSuperType() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithIllegalArgumentFunctionSuperType.class);
+    assertEquals(InterfaceWithIllegalArgumentFunctionSuperType.class.getName(), model.getIfaceFQCN());
+    assertEquals(InterfaceWithIllegalArgumentFunctionSuperType.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(0, model.getSuperTypes().size());
+    assertEquals(0, model.getMethods().size());
+    assertFalse(model.isFunction());
   }
 
   @Test
@@ -1460,13 +1526,16 @@ public class ClassTest extends ClassTestBase {
   public void testMethodOverride() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(InterfaceWithMethodOverride.class, VertxGenInterface.class);
     List<MethodInfo> methods = model.getMethods();
-    assertEquals(1, methods.size());
+    assertEquals(2, methods.size());
     checkMethod(methods.get(0), "bar", 1, "void", MethodKind.OTHER);
     assertEquals(set(
       TypeReflectionFactory.create(InterfaceWithMethodOverride.class),
       TypeReflectionFactory.create(VertxGenInterface.class)
     ), methods.get(0).getOwnerTypes());
     checkParam(methods.get(0).getParams().get(0), "str", String.class);
+    checkMethod(methods.get(1), "foo", 1, "void", MethodKind.OTHER);
+    checkParam(methods.get(1).getParams().get(0), "str", String.class);
+    assertEquals(set(TypeReflectionFactory.create(InterfaceWithMethodOverride.class)), methods.get(1).getOwnerTypes());
   }
 
   @Test
@@ -1483,41 +1552,94 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
-  public void testInterfaceWithGenericMethodOverride() throws Exception {
-    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithGenericMethodOverride.class, GenericAbstractInterface.class);
+  public void testInterfaceParameterizedByClassArgMethodOverride() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceParameterizedByClassArgMethodOverride.class, GenericAbstractInterface.class);
     List<MethodInfo> methods = model.getMethods();
-    assertEquals(5, methods.size());
-    checkMethod(methods.get(0), "foo", 0, String.class, MethodKind.OTHER);
-    checkMethod(methods.get(1), "bar", 0, new TypeLiteral<List<String>>() {}, MethodKind.OTHER);
-    checkMethod(methods.get(2), "juu", 1, "void", MethodKind.FUTURE);
-    checkMethod(methods.get(3), "daa", 1, "void", MethodKind.HANDLER);
-    checkMethod(methods.get(4), "collargol", 1, "void", MethodKind.OTHER);
-    for (int i = 0;i < 5;i++) {
+    assertEquals(7, methods.size());
+    // Inherited methods
+    checkMethod(methods.get(0), "inheritedSelfArg", 1, "void", MethodKind.OTHER);
+    for (int i = 0;i < 1;i++) {
       assertEquals(set(
-        TypeReflectionFactory.create(InterfaceWithGenericMethodOverride.class),
         TypeReflectionFactory.create(GenericAbstractInterface.class)
       ), methods.get(i).getOwnerTypes());
     }
-    checkParam(methods.get(2).getParams().get(0), "handler", new TypeLiteral<Handler<AsyncResult<String>>>() {
-    });
-    checkParam(methods.get(3).getParams().get(0), "handler", new TypeLiteral<Handler<String>>() {
-    });
-    checkParam(methods.get(4).getParams().get(0), "t", String.class);
+    checkParam(methods.get(0).getParams().get(0), "self", new TypeLiteral<GenericAbstractInterface<String>>() {});
+    // Overriden methods
+    checkMethod(methods.get(1), "foo", 0, String.class, MethodKind.OTHER);
+    checkMethod(methods.get(2), "bar", 0, new TypeLiteral<List<String>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(3), "juu", 1, "void", MethodKind.FUTURE);
+    checkMethod(methods.get(4), "daa", 1, "void", MethodKind.HANDLER);
+    checkMethod(methods.get(5), "collargol", 1, "void", MethodKind.OTHER);
+    checkMethod(methods.get(6), "selfArg", 1, "void", MethodKind.OTHER);
+    for (int i = 1;i < 7;i++) {
+      assertEquals(set(
+        TypeReflectionFactory.create(InterfaceParameterizedByClassArgMethodOverride.class),
+        TypeReflectionFactory.create(GenericAbstractInterface.class)
+      ), methods.get(i).getOwnerTypes());
+    }
+    checkParam(methods.get(3).getParams().get(0), "handler", new TypeLiteral<Handler<AsyncResult<String>>>() {});
+    checkParam(methods.get(4).getParams().get(0), "handler", new TypeLiteral<Handler<String>>() {});
+    checkParam(methods.get(5).getParams().get(0), "t", String.class);
+    checkParam(methods.get(6).getParams().get(0), "self", new TypeLiteral<GenericAbstractInterface<String>>() {});
+  }
+
+  @Test
+  public <T> void testInterfaceParameterizedByParameterizedTypeArgMethodOverride() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceParameterizedByParameterizedTypeArgMethodOverride.class, GenericInterface.class);
+    List<MethodInfo> methods = model.getMethods();
+    assertEquals(7, methods.size());
+    // Inherited methods
+    checkMethod(methods.get(0), "inheritedSelfArg", 1, "void", MethodKind.OTHER);
+    for (int i = 0;i < 1;i++) {
+      assertEquals(set(
+        TypeReflectionFactory.create(GenericAbstractInterface.class)
+      ), methods.get(i).getOwnerTypes());
+    }
+    checkParam(methods.get(0).getParams().get(0), "arg0", new TypeLiteral<GenericAbstractInterface<GenericInterface<T>>>() {});
+    // Overriden methods
+    checkMethod(methods.get(1), "foo", 0, new TypeLiteral<GenericInterface<T>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(2), "bar", 0, new TypeLiteral<List<GenericInterface<T>>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(3), "juu", 1, "void", MethodKind.FUTURE);
+    checkMethod(methods.get(4), "daa", 1, "void", MethodKind.HANDLER);
+    checkMethod(methods.get(5), "collargol", 1, "void", MethodKind.OTHER);
+    checkMethod(methods.get(6), "selfArg", 1, "void", MethodKind.OTHER);
+    for (int i = 1;i < 7;i++) {
+      assertEquals(set(
+        TypeReflectionFactory.create(InterfaceParameterizedByParameterizedTypeArgMethodOverride.class),
+        TypeReflectionFactory.create(GenericAbstractInterface.class)
+      ), methods.get(i).getOwnerTypes());
+    }
+    checkParam(methods.get(3).getParams().get(0), "handler", new TypeLiteral<Handler<AsyncResult<GenericInterface<T>>>>() {});
+    checkParam(methods.get(4).getParams().get(0), "handler", new TypeLiteral<Handler<GenericInterface<T>>>() {});
+    checkParam(methods.get(5).getParams().get(0), "t", new TypeLiteral<GenericInterface<T>>() {});
+    checkParam(methods.get(6).getParams().get(0), "self", new TypeLiteral<GenericAbstractInterface<GenericInterface<T>>>() {});
+  }
+
+  @Test
+  public void testInterfaceParameterizedByOtherType() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceParameterizedByOtherType.class);
+    ParameterizedTypeInfo parameterizedType = (ParameterizedTypeInfo) model.getSuperTypes().get(0);
+    assertEquals(1, parameterizedType.getArgs().size());
+    assertEquals(Locale.class.getName(), parameterizedType.getArg(0).getName());
   }
 
   @Test
   public void testInterfaceExtendingGenericAbstractInterface() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(InterfaceExtendingGenericAbstractInterface.class, GenericAbstractInterface.class);
     List<MethodInfo> methods = model.getMethods();
-    assertEquals(5, methods.size());
+    assertEquals(7, methods.size());
     checkMethod(methods.get(0), "foo", 0, String.class, MethodKind.OTHER);
     checkMethod(methods.get(1), "bar", 0, new TypeLiteral<List<String>>(){}, MethodKind.OTHER);
     checkMethod(methods.get(2), "juu", 1, "void", MethodKind.FUTURE);
     checkMethod(methods.get(3), "daa", 1, "void", MethodKind.HANDLER);
     checkMethod(methods.get(4), "collargol", 1, "void", MethodKind.OTHER);
+    checkMethod(methods.get(5), "selfArg", 1, "void", MethodKind.OTHER);
+    checkMethod(methods.get(6), "inheritedSelfArg", 1, "void", MethodKind.OTHER);
     checkParam(methods.get(2).getParams().get(0), "handler", new TypeLiteral<Handler<AsyncResult<String>>>() {});
     checkParam(methods.get(3).getParams().get(0), "handler", new TypeLiteral<Handler<String>>() {});
     checkParam(methods.get(4).getParams().get(0), "t", String.class);
+    checkParam(methods.get(5).getParams().get(0), "self", new TypeLiteral<GenericAbstractInterface<String>>() {});
+    checkParam(methods.get(6).getParams().get(0), "self", new TypeLiteral<GenericAbstractInterface<String>>() {});
   }
 
   @Test
@@ -1868,125 +1990,110 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
-  public void testMethodInvalidMapReturn3() throws Exception {
-    assertGenFail(MethodWithInvalidMapReturn3.class, "Invalid Map return should fail");
-  }
-
-  @Test
-  public void testMethodInvalidMapReturn4() throws Exception {
-    assertGenFail(MethodWithInvalidMapReturn4.class, "Invalid Map return should fail");
-  }
-
-  @Test
-  public void testMethodInvalidMapReturn5() throws Exception {
-    assertGenFail(MethodWithInvalidMapReturn5.class, "Invalid Map return should fail");
-  }
-
-  @Test
   public void testInterfaceExtendingReadStream() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(InterfaceExtentingReadStream.class);
+    assertTrue(model.isReadStream());
+    assertEquals(TypeReflectionFactory.create(String.class), model.getReadStreamArg());
+    assertFalse(model.isWriteStream());
+    assertNull(model.getWriteStreamArg());
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
-    assertTrue(apiType.isReadStream());
-    assertEquals(TypeReflectionFactory.create(String.class), apiType.getReadStreamArg());
-    assertFalse(apiType.isWriteStream());
-    assertNull(apiType.getWriteStreamArg());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testGenericInterfaceExtendingReadStream() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(GenericInterfaceExtentingReadStream.class);
+    assertTrue(model.isReadStream());
+    TypeInfo readStreamType = model.getReadStreamArg();
+    assertEquals("U", readStreamType.getName());
+    assertFalse(model.isWriteStream());
+    assertNull(model.getWriteStreamArg());
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType().getRaw();
-    assertTrue(apiType.isReadStream());
-    TypeVariableInfo readStreamArg = (TypeVariableInfo) apiType.getReadStreamArg();
-    assertEquals("U", readStreamArg.getName());
-    assertFalse(apiType.isWriteStream());
-    assertNull(apiType.getWriteStreamArg());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testInterfaceExtendingWriteStream() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(InterfaceExtentingWriteStream.class);
+    assertFalse(model.isReadStream());
+    assertNull(model.getReadStreamArg());
+    assertTrue(model.isWriteStream());
+    assertEquals(TypeReflectionFactory.create(String.class), model.getWriteStreamArg());
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
-    assertFalse(apiType.isReadStream());
-    assertNull(apiType.getReadStreamArg());
-    assertTrue(apiType.isWriteStream());
-    assertEquals(TypeReflectionFactory.create(String.class), apiType.getWriteStreamArg());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testGenericInterfaceExtendingWriteStream() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(GenericInterfaceExtentingWriteStream.class);
+    assertFalse(model.isReadStream());
+    assertNull(model.getReadStreamArg());
+    assertTrue(model.isWriteStream());
+    TypeVariableInfo writeStreamType = (TypeVariableInfo) model.getWriteStreamArg();
+    assertEquals("U", writeStreamType.getName());
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType().getRaw();
-    assertFalse(apiType.isReadStream());
-    assertNull(apiType.getReadStreamArg());
-    assertTrue(apiType.isWriteStream());
-    TypeVariableInfo writeStreamArg = (TypeVariableInfo) apiType.getWriteStreamArg();
-    assertEquals("U", writeStreamArg.getName());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testInterfaceExtendingReadStreamAndWriteStream() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(InterfaceExtentingReadStreamAndWriteStream.class);
+    assertTrue(model.isReadStream());
+    assertEquals(TypeReflectionFactory.create(String.class), model.getReadStreamArg());
+    assertTrue(model.isWriteStream());
+    assertEquals(TypeReflectionFactory.create(String.class), model.getWriteStreamArg());
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
-    assertTrue(apiType.isReadStream());
-    assertEquals(TypeReflectionFactory.create(String.class), apiType.getReadStreamArg());
-    assertTrue(apiType.isWriteStream());
-    assertEquals(TypeReflectionFactory.create(String.class), apiType.getWriteStreamArg());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testGenericInterfaceExtendingReadStreamAndWriteStream() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(GenericInterfaceExtentingReadStreamAndWriteStream.class);
+    assertTrue(model.isReadStream());
+    TypeVariableInfo readStreamType = (TypeVariableInfo) model.getReadStreamArg();
+    assertEquals("U", readStreamType.getName());
+    assertTrue(model.isWriteStream());
+    TypeVariableInfo writeStreamType = (TypeVariableInfo) model.getWriteStreamArg();
+    assertEquals("U", writeStreamType.getName());
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType().getRaw();
-    assertTrue(apiType.isReadStream());
-    TypeVariableInfo readStreamArg = (TypeVariableInfo) apiType.getReadStreamArg();
-    assertEquals("U", readStreamArg.getName());
-    assertTrue(apiType.isWriteStream());
-    TypeVariableInfo writeStreamArg = (TypeVariableInfo) apiType.getWriteStreamArg();
-    assertEquals("U", writeStreamArg.getName());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testInterfaceSubtypingReadStream() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(InterfaceSubtypingReadStream.class);
+    assertTrue(model.isReadStream());
+    assertEquals(TypeReflectionFactory.create(String.class), model.getReadStreamArg());
+    assertFalse(model.isWriteStream());
+    assertNull(model.getWriteStreamArg());
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
-    assertTrue(apiType.isReadStream());
-    assertEquals(TypeReflectionFactory.create(String.class), apiType.getReadStreamArg());
-    assertFalse(apiType.isWriteStream());
-    assertNull(apiType.getWriteStreamArg());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testReadStreamWithParameterizedTypeArg() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(ReadStreamWithParameterizedTypeArg.class);
+    assertTrue(model.isReadStream());
+    ParameterizedTypeInfo readStreamType = (ParameterizedTypeInfo) model.getReadStreamArg();
+    assertEquals(TypeReflectionFactory.create(GenericInterface.class), readStreamType.getRaw());
+    assertEquals(1, readStreamType.getArgs().size());
+    assertEquals("T", readStreamType.getArgs().get(0).getName());
+    assertFalse(model.isWriteStream());
+    assertNull(model.getWriteStreamArg());
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType().getRaw();
-    assertTrue(apiType.isReadStream());
-    ParameterizedTypeInfo readStreamArg = (ParameterizedTypeInfo) apiType.getReadStreamArg();
-    assertEquals(TypeReflectionFactory.create(List.class), readStreamArg.getRaw());
-    assertEquals(1, readStreamArg.getArgs().size());
-    assertEquals("T", readStreamArg.getArgs().get(0).getName());
-    assertFalse(apiType.isWriteStream());
-    assertNull(apiType.getWriteStreamArg());
     assertFalse(apiType.isHandler());
   }
 
   @Test
   public void testInterfaceExtendingHandlerStringSubtype() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(InterfaceExtendingHandlerStringSubtype.class);
-    TypeInfo handlerSuperType = model.getHandlerType();
+    TypeInfo handlerSuperType = model.getHandlerArg();
     assertEquals(TypeReflectionFactory.create(String.class), handlerSuperType);
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
     assertTrue(apiType.isHandler());
-    assertEquals(TypeReflectionFactory.create(String.class), apiType.getHandlerArg());
-    assertFalse(apiType.isReadStream());
-    assertFalse(apiType.isWriteStream());
+    assertEquals(TypeReflectionFactory.create(String.class), model.getHandlerArg());
+    assertFalse(model.isReadStream());
+    assertFalse(model.isWriteStream());
     assertEquals(1, model.getMethodMap().size());
     assertEquals(1, model.getMethodMap().get("handle").size());
     checkMethod(model.getMethodMap().get("handle").get(0), "handle", 1, "void", MethodKind.OTHER);
@@ -1995,13 +2102,13 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testInterfaceExtendingHandlerVertxGenSubtype() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(InterfaceExtendingHandlerVertxGenSubtype.class, VertxGenClass1.class);
-    TypeInfo handlerSuperType = model.getHandlerType();
+    TypeInfo handlerSuperType = model.getHandlerArg();
     assertEquals(TypeReflectionFactory.create(VertxGenClass1.class), handlerSuperType);
     ApiTypeInfo apiType = (ApiTypeInfo) model.getType();
     assertTrue(apiType.isHandler());
-    assertEquals(TypeReflectionFactory.create(VertxGenClass1.class), apiType.getHandlerArg());
-    assertFalse(apiType.isReadStream());
-    assertFalse(apiType.isWriteStream());
+    assertEquals(TypeReflectionFactory.create(VertxGenClass1.class), model.getHandlerArg());
+    assertFalse(model.isReadStream());
+    assertFalse(model.isWriteStream());
     assertEquals(1, model.getMethodMap().size());
     assertEquals(1, model.getMethodMap().get("handle").size());
     checkMethod(model.getMethodMap().get("handle").get(0), "handle", 1, "void", MethodKind.OTHER);
@@ -2011,14 +2118,14 @@ public class ClassTest extends ClassTestBase {
   public void testRecursiveFuture() throws Exception {
     // Check we can build this type
     ClassModel model = new GeneratorHelper().generateClass(RecursiveFuture.class);
-    assertNull(model.getHandlerType());
+    assertNull(model.getHandlerArg());
   }
 
   @Test
   public void testFutureLike() throws Exception {
     // Check we can build this type
     ClassModel model = new GeneratorHelper().generateClass(FutureLike.class);
-    assertNull(model.getHandlerType());
+    assertNull(model.getHandlerArg());
   }
 
   @Test
@@ -2213,6 +2320,68 @@ public class ClassTest extends ClassTestBase {
   @Test(expected = GenException.class)
   public void testInterfaceUnrelatedCompanionObject() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(InterfaceWithUnrelatedCompanionClass.class);
+  }
+
+  public void testJsonCodec() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(WithMyPojo.class);
+    assertFalse(model.getAnnotations().isEmpty());
+    assertEquals(1, model.getAnnotations().size());
+    assertEquals(VertxGen.class.getName(), model.getAnnotations().get(0).getName());
+
+    assertEquals(1, model.getReferencedDataObjectTypes().size());
+    assertEquals("MyPojo", model.getReferencedDataObjectTypes().iterator().next().getSimpleName());
+    assertEquals(MyPojoJsonCodec.class.getName(), model.getReferencedDataObjectTypes().iterator().next().getJsonDecoderFQCN());
+    assertEquals(MyPojoJsonCodec.class.getName(), model.getReferencedDataObjectTypes().iterator().next().getJsonEncoderFQCN());
+
+    checkMethod(model.getMethodMap().get("returnMyPojo").get(0), "returnMyPojo", 0, new TypeLiteral<MyPojo>() {}, MethodKind.OTHER);
+
+    MethodInfo returnMyPojoList = model.getMethodMap().get("returnMyPojoList").get(0);
+    checkMethod(returnMyPojoList, "returnMyPojoList", 0, new TypeLiteral<List<MyPojo>>() {}, MethodKind.OTHER);
+    assertEquals(ClassKind.LIST, returnMyPojoList.getReturnType().getKind());
+    assertEquals(ClassKind.DATA_OBJECT, ((ParameterizedTypeInfo)returnMyPojoList.getReturnType()).getArg(0).getKind());
+    assertEquals(MyPojo.class.getName(), ((ParameterizedTypeInfo)returnMyPojoList.getReturnType()).getArg(0).getName());
+
+    MethodInfo returnMyPojoSet = model.getMethodMap().get("returnMyPojoSet").get(0);
+    checkMethod(returnMyPojoSet, "returnMyPojoSet", 0, new TypeLiteral<Set<MyPojo>>() {}, MethodKind.OTHER);
+    assertEquals(ClassKind.SET, returnMyPojoSet.getReturnType().getKind());
+    assertEquals(ClassKind.DATA_OBJECT, ((ParameterizedTypeInfo)returnMyPojoSet.getReturnType()).getArg(0).getKind());
+    assertEquals(MyPojo.class.getName(), ((ParameterizedTypeInfo)returnMyPojoSet.getReturnType()).getArg(0).getName());
+
+    MethodInfo returnMyPojoMap = model.getMethodMap().get("returnMyPojoMap").get(0);
+    checkMethod(returnMyPojoMap, "returnMyPojoMap", 0, new TypeLiteral<Map<String, MyPojo>>() {}, MethodKind.OTHER);
+    assertEquals(ClassKind.MAP, returnMyPojoMap.getReturnType().getKind());
+    assertEquals(ClassKind.DATA_OBJECT, ((ParameterizedTypeInfo)returnMyPojoMap.getReturnType()).getArg(1).getKind());
+    assertEquals(MyPojo.class.getName(), ((ParameterizedTypeInfo)returnMyPojoMap.getReturnType()).getArg(1).getName());
+
+    MethodInfo myPojoParam = model.getMethodMap().get("myPojoParam").get(0);
+    checkMethod(myPojoParam, "myPojoParam", 1, "void", MethodKind.OTHER);
+    checkParam(myPojoParam.getParam(0), "p", MyPojo.class.getName(), ClassKind.DATA_OBJECT);
+
+    MethodInfo myPojoListParam = model.getMethodMap().get("myPojoListParam").get(0);
+    checkMethod(myPojoListParam, "myPojoListParam", 1, "void", MethodKind.OTHER);
+    checkParam(myPojoListParam.getParam(0), "p", new TypeLiteral<List<MyPojo>>() {}.type.getTypeName(), ClassKind.LIST);
+    assertEquals(ClassKind.DATA_OBJECT, ((ParameterizedTypeInfo)myPojoListParam.getParam(0).getType()).getArg(0).getKind());
+    
+    MethodInfo myPojoSetParam = model.getMethodMap().get("myPojoSetParam").get(0);
+    checkMethod(myPojoSetParam, "myPojoSetParam", 1, "void", MethodKind.OTHER);
+    checkParam(myPojoSetParam.getParam(0), "p", new TypeLiteral<Set<MyPojo>>() {}.type.getTypeName(), ClassKind.SET);
+    assertEquals(ClassKind.DATA_OBJECT, ((ParameterizedTypeInfo)myPojoSetParam.getParam(0).getType()).getArg(0).getKind());
+
+    MethodInfo myPojoMapParam = model.getMethodMap().get("myPojoMapParam").get(0);
+    checkMethod(myPojoMapParam, "myPojoMapParam", 1, "void", MethodKind.OTHER);
+    checkParam(myPojoMapParam.getParam(0), "p", new TypeLiteral<Map<String, MyPojo>>() {}.type.getTypeName(), ClassKind.MAP);
+    assertEquals(ClassKind.DATA_OBJECT, ((ParameterizedTypeInfo)myPojoMapParam.getParam(0).getType()).getArg(1).getKind());
+
+    MethodInfo myPojoHandler = model.getMethodMap().get("myPojoHandler").get(0);
+    checkMethod(myPojoHandler, "myPojoHandler", 1, "void", MethodKind.HANDLER);
+    checkParam(myPojoHandler.getParam(0), "handler", new TypeLiteral<Handler<MyPojo>>() {}.type.getTypeName(), ClassKind.HANDLER);
+    assertEquals(ClassKind.DATA_OBJECT, ((ParameterizedTypeInfo)myPojoHandler.getParam(0).getType()).getArg(0).getKind());
+
+    MethodInfo myPojoAsyncResultHandler = model.getMethodMap().get("myPojoAsyncResultHandler").get(0);
+    checkMethod(myPojoAsyncResultHandler, "myPojoAsyncResultHandler", 1, "void", MethodKind.FUTURE);
+    checkParam(myPojoAsyncResultHandler.getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<MyPojo>>>() {}.type.getTypeName(), ClassKind.HANDLER);
+    assertEquals(ClassKind.DATA_OBJECT, ((ParameterizedTypeInfo)((ParameterizedTypeInfo)myPojoAsyncResultHandler.getParam(0).getType()).getArg(0)).getArg(0).getKind());
+    
   }
 
 }

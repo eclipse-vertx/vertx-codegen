@@ -1,32 +1,14 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.Helper;
-import io.vertx.codegen.type.*;
 import io.vertx.codegen.TypeParamInfo;
 import io.vertx.codegen.testmodel.TestDataObject;
-import io.vertx.codegen.type.VoidTypeInfo;
+import io.vertx.codegen.type.*;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.testapi.GenericInterface;
-import io.vertx.test.codegen.testapi.streams.InterfaceExtentingReadStream;
-import io.vertx.test.codegen.testapi.streams.InterfaceSubtypingReadStream;
-import io.vertx.test.codegen.testapi.streams.ReadStreamWithParameterizedTypeArg;
-import io.vertx.test.codegen.testtype.ApiHolder;
-import io.vertx.test.codegen.testtype.ApiObject;
-import io.vertx.test.codegen.testtype.AsyncHolder;
-import io.vertx.test.codegen.testtype.BasicHolder;
-import io.vertx.test.codegen.testtype.CollectionHolder;
-import io.vertx.test.codegen.testtype.DataObjectHolder;
-import io.vertx.test.codegen.testtype.EnumHolder;
-import io.vertx.test.codegen.testtype.HandlerHolder;
-import io.vertx.test.codegen.testtype.JsonHolder;
-import io.vertx.test.codegen.testtype.OtherHolder;
-import io.vertx.test.codegen.testtype.StreamHolder;
-import io.vertx.test.codegen.testtype.ThrowableHolder;
-import io.vertx.test.codegen.testtype.TypeParamHolder;
-import io.vertx.test.codegen.testtype.VoidHolder;
+import io.vertx.test.codegen.testtype.*;
 import org.junit.Test;
 
 import javax.lang.model.element.TypeElement;
@@ -52,8 +34,8 @@ public class TypeInfoTest {
         collect(Collectors.toMap(Method::getName, m -> TypeReflectionFactory.create(m.getGenericReturnType())));
     assertion.accept(reflectedMap);
     Utils.assertProcess((proc, env) -> {
-      TypeMirrorFactory factory = new TypeMirrorFactory(proc.getElementUtils(), proc.getTypeUtils());
       TypeElement modelMap = proc.getElementUtils().getTypeElement(container.getName());
+      TypeMirrorFactory factory = new TypeMirrorFactory(proc.getElementUtils(), proc.getTypeUtils(), proc.getElementUtils().getPackageOf(modelMap));
       Map<String, TypeInfo> collect = modelMap.getEnclosedElements().stream().
           flatMap(Helper.FILTER_METHOD).
           filter(elt -> elt.getModifiers().contains(javax.lang.model.element.Modifier.PUBLIC)).
@@ -297,20 +279,6 @@ public class TypeInfoTest {
         assertEquals(ParameterizedTypeInfo.class, ofEnum.getClass());
         assertEquals(map.get("Enum"), ofEnum.getArg(typeParamIndex));
       }
-    });
-  }
-
-  @Test
-  public void testStream() throws Exception {
-    doTest(StreamHolder.class, map -> {
-      ApiTypeInfo readStreamOfString = assertApi(assertParameterized(map.get("readStreamOfString"), "io.vertx.core.streams.ReadStream<java.lang.String>", ClassKind.API).getRaw(), "io.vertx.core.streams.ReadStream");
-      assertTypeVariable(readStreamOfString.getReadStreamArg(), "T");
-      ApiTypeInfo extendsReadStreamWithClassArg = assertApi(map.get("extendsReadStreamWithClassArg"), InterfaceExtentingReadStream.class.getName());
-      assertClass(extendsReadStreamWithClassArg.getReadStreamArg(), "java.lang.String", ClassKind.STRING);
-      ApiTypeInfo extendsGenericReadStreamSubTypeWithClassArg = assertApi(map.get("extendsGenericReadStreamSubTypeWithClassArg"), InterfaceSubtypingReadStream.class.getName());
-      assertClass(extendsGenericReadStreamSubTypeWithClassArg.getReadStreamArg(), "java.lang.String", ClassKind.STRING);
-      ApiTypeInfo genericReadStreamSubTypeWithClassTypeParamArg = assertApi(assertParameterized(map.get("genericReadStreamSubTypeWithClassTypeParamArg"), ReadStreamWithParameterizedTypeArg.class.getName() + "<ClassTypeParam>", ClassKind.API).getRaw(), "io.vertx.test.codegen.testapi.streams.ReadStreamWithParameterizedTypeArg");
-      // Cannot assert the correct value for now becasue Java does not provide enough info
     });
   }
 

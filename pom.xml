@@ -156,6 +156,7 @@
             <configuration>
               <sources>
                 <source>${basedir}/src/tck/java</source>
+                <source>${basedir}/src/tck/generated</source>
                 <source>${basedir}/src/test/generated</source>
               </sources>
             </configuration>
@@ -174,7 +175,7 @@
         </configuration>
         <executions>
           <execution>
-            <id>generate-sources</id>
+            <id>generate-test-sources</id>
             <goals>
               <goal>process-test</goal>
             </goals>
@@ -189,6 +190,26 @@
               </optionMap>
               <includes>
                 <include>io/vertx/test/codegen/converter/*.java</include>
+              </includes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-tck-sources</id>
+            <goals>
+              <goal>process-test</goal>
+            </goals>
+            <phase>generate-test-sources</phase>
+            <configuration>
+              <processors>
+                <processor>io.vertx.codegen.CodeGenProcessor</processor>
+              </processors>
+              <optionMap>
+                <codegen.output>${project.basedir}/src/tck</codegen.output>
+                <codegen.output.data_object_converters>generated</codegen.output.data_object_converters>
+              </optionMap>
+              <sourceDirectory>${project.basedir}/src/tck/java</sourceDirectory>
+              <includes>
+                <include>io/vertx/codegen/testmodel/*.java</include>
               </includes>
             </configuration>
           </execution>
