@@ -119,8 +119,8 @@ public class CodeGeneratorTest {
     assertEquals("false", props.remove("hasEmptyConstructor"));
     assertEquals("false", props.remove("hasJsonConstructor"));
     assertEquals("false", props.remove("hasToJsonMethod"));
-    assertEquals("false", props.remove("encodable"));
-    assertEquals("false", props.remove("decodable"));
+    assertEquals("false", props.remove("serializable"));
+    assertEquals("false", props.remove("deserializable"));
     assertEquals(new Properties(), props);
   }
 

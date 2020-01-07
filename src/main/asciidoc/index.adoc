@@ -55,52 +55,65 @@ A _Data object_ is a type that can be converted back and forth to a Json type.
 
 You can declare data objects by:
 
-* Defining a `io.vertx.core.spi.json.JsonCodec` for it
+* Defining an annotated `@Mapper` method or function for it
 * Or annotating the type itself with `@DataObject`
 
-==== Json codecs
+==== Json mappers
 
-A json codec for type `T` is a concrete class that implements the interface `JsonCodec<T, J>`, where `J` can be:
+A json mapper for type `T` is a method or function that maps any object of type `Type`, where `J` can be:
 
 * `JsonArray` or `JsonObject`
-* `Number`
+* a concrete type extending `Number` such as `Long` or `Double`
 * `String`
 * `Boolean`
 
-If you want to use a `JsonCodec`, you need to declare a `public static final [JsonCodecType] INSTANCE` field in the codec class
-to expose the codec instance.
+Json mapped types can be used anywhere a json types used are.
 
-You need to declare the codec class in the `@ModuleGen` annotation of the `package-info.java` file, e.g.:
+A json mapper turns any Java type into a data object type.
+
+You can declare them as public static methods:
 
 ```java
-@ModuleGen(
-  name = "my-package",
-  groupPackage = "my.package",
-  codecs = {
-    ZonedDateTimeCodec.class
-  }
-)
+@Mapper
+public static String serialize(ZonedDateTime date) {
+  return date.toString();
+}
+
+@Mapper
+public static ZonedDateTime deserialize(String s) {
+  return ZonedDateTime.parse(s);
+}
+```
+
+Or as functions:
+
+```java
+@Mapper
+public static final Function<ZonedDateTime, String> SERIALIZER = date -> date.toString();
+
+@Mapper
+public static final Function<String, ZonedDateTime> DESERIALIZER = s -> ZonedDateTime.parse(s);
 ```
 
 ==== `@DataObject` annotated types
 
 A `@DataObject` annotated type is a Java class with the only purpose to be a container for data.
 
-They can be converted back and forth Json using the generated `JsonEncoder`/`JsonDecoder`/`JsonCodec`.
+They can be converted back and forth Json using the generated `JsonSerializer`/`JsonDeserializer`/`JsonMapper`.
 
-A codec instance is automatically generated for each annotated data object class:
+A mapper instance is automatically generated for each annotated data object class:
 
-* The codec implements the `JsonDecoder` interface when the annotated type
+* The mapper implements the `JsonDeserializer` interface when the annotated type
 - has a `io.vertx.core.json.JsonObject` constructor
 - is an interface or an abstract class with a `public static [DataObjectType] decode(io.vertx.core.json.JsonObject value)` method
 - generates the converter, i.e `@DataObject(generateConverter = true)`, has an empty constructor and is concrete
-* The codec implements the `JsonEncoder` interface when the annotated type:
+* The mapper implements the `JsonDeserialiezr` interface when the annotated type:
 - has a `io.vertx.core.json.JsonObject toJson()` method
 - generates the converter, i.e `@DataObject(generateConverter = true)`
 
-When both encoder and decoder can be created then a `JsonCodec` interface is generated instead.
+When both serializer and deserializer can be created then a `JsonMapper` interface is generated instead.
 
-The generated codec class is named `[DataObjectType]Converter`.
+The generated mapper class is named `[DataObjectType]Converter`.
 
 Data object annotated classes can also inherit from other data objects annotated types.
 
@@ -163,10 +176,9 @@ encouraged.
 
 ==== Json -> Data Object conversion
 
-When a data object has an associated `JsonDecoder` (or inherited via `JsonCodec`), it can be instantiated from a json value
-and is said _decodable_. For POJO to json object mapping, although there are no strict rules of mapping between the data
-object properties and the json structure, it is a good thing to follow a common mapping for users using json data
-objects (like in JavaScript shim).
+When a data object has an associated deserializer, it can be instantiated from a json value and is said _deserializable_.
+For POJO to json object mapping, although there are no strict rules of mapping between the data object properties and
+the json structure, it is a good thing to follow a common mapping for users using json data objects (like in JavaScript shim).
 
 In particular json object properties should be named after properties according to JavaBean conversion rules:
 
@@ -183,10 +195,9 @@ In all case, property names are _normalized_, i.e:
 
 ==== Data Object -> json conversion
 
-When a data object has an associated `JsonEncoder` (or inherited via `JsonCodec`), it can be converted to the json format
-and is said _encodable_. Vert.x API types have restriction in the declared method return types, a jsonifiable
-data object can be used in Vert.x API method return types or handlers because it can be converted to a json
-format, otherwise it is not permitted.
+When a data object has an associated serializer, it can be converted to the json format and is said _serializable_.
+Vert.x API types have restriction in the declared method return types, a jsonifiable data object can be used in
+Vert.x API method return types or handlers because it can be converted to a json format, otherwise it is not permitted.
 
 ===== Data object converter
 
@@ -309,7 +320,7 @@ The following method parameter types are allowed:
 . any _json_ type
 . the `java.lang.Throwable` type
 . any _enum_ type
-. any _data object_ that provides a decoder
+. any _data object_ that provides a deserializer
 . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
 . `java.lang.Object`
 . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
@@ -325,7 +336,7 @@ Callback parameters are allowed, i.e types declaring `io.vertx.core.Handler<E>` 
 . any _json_ type
 . the `java.lang.Throwable` type - only for `Handler<R>`
 . any _enum_ type
-. any _data object_ that provides an encoder
+. any _data object_ that provides an serializer
 . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
 . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
 a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
@@ -339,7 +350,7 @@ be same than for handlers and `<R>` can be:
 . any _json_ type
 . the `java.lang.Throwable` type
 . any _enum_ type
-. any _data object_ that provides a decoder
+. any _data object_ that provides a deserializer
 . an unbounded type variable
 . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
 a _json_ type or a `java` type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
@@ -355,7 +366,7 @@ The following return types are allowed:
 . any _json_ type
 . the `java.lang.Throwable` type
 . any _enum_ type
-. any _data object_ that provides an encoder
+. any _data object_ that provides an serializer
 . an https://docs.oracle.com/javase/tutorial/java/generics/bounded.html[unbounded type variable], i.e `T extends Number` or `T super Number` are not permitted
 . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
 a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
@@ -544,7 +555,7 @@ A shim implements several strategies when returning values from the Vert.x API:
 1. a _basic_ value is usually handled by the shim interop
 2. an _API_ value creates a proxy to wrap the value
 3. a _json_ (object or array) value is translated to the shim equivalent
-4. a _data object_ that provides an encoder is converted to json or an equivalent
+4. a _data object_ that provides an serializer is converted to json or an equivalent
 5. an _enum_ value is converted to a string or an equivalent
 6. a _collection_ is usually translated to the shim equivalent
 7. a `java.lang.Throwable` is usually translated to the shim equivalent
@@ -562,7 +573,7 @@ A shim implements several strategies when passing values to the Vert.x API:
 1. a _basic_ value is usually handled by the shim interop
 2. an _API_ value is unwrapped from the shim proxy
 3. a _json_ (object or array) value is translated from the shim equivalent
-4. a _data object_ that provides a decoder is instantiated from the shim equivalent
+4. a _data object_ that provides a deserializer is instantiated from the shim equivalent
 5. an _enum_ is converted from a string or an equivalent
 6. a _collection_ is usually translated from the shim equivalent
 7. a type variable or `java.lang.Object` is converted dynamically converted to a _basic_ type or a _json_ type
@@ -845,8 +856,8 @@ quite simple:
   "name": "Groovy", <1>
   "generators": [ { <2>
     "kind": "class", <3>
-    "fileName": "'groovy/' + module.translateQualifiedName(fqn, 'groovy').replace('.', '/') + '.groovy'", <4>
-    "templateFileName": "vertx-groovy/template/groovy.templ" <5>
+    "filename": "'groovy/' + module.translateQualifiedName(fqn, 'groovy').replace('.', '/') + '.groovy'", <4>
+    "templateFilename": "vertx-groovy/template/groovy.templ" <5>
   } ]
 }
 ----
@@ -909,8 +920,8 @@ With `codegen.json`:
   "generators": [ {
     "kind": "class",
     "incremental": true,
-    "fileName": "'index.html'",
-    "templateFileName": "html-index.templ"
+    "filename": "'index.html'",
+    "templateFilename": "html-index.templ"
   } ]
 }
 ----

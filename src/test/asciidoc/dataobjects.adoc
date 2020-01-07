@@ -1,16 +1,5 @@
 = Cheatsheets
 
-[[AbstractConverterGeneratesEncoderWithToJsonDataObject]]
-== AbstractConverterGeneratesEncoderWithToJsonDataObject
-
-
-[cols=">25%,25%,50%"]
-[frame="topbot"]
-|===
-^|Name | Type ^| Description
-|[[a]]`@a`|`Number (int)`|-
-|===
-
 [[AggregatedDataObject]]
 == AggregatedDataObject
 
@@ -55,8 +44,8 @@
 |[[parentProperty]]`@parentProperty`|`String`|-
 |===
 
-[[ConverterGeneratesCompleteCodecDataObject]]
-== ConverterGeneratesCompleteCodecDataObject
+[[ConverterGeneratesDeserializerWithFromJsonDataObject]]
+== ConverterGeneratesDeserializerWithFromJsonDataObject
 
 
 [cols=">25%,25%,50%"]
@@ -66,19 +55,8 @@
 |[[a]]`@a`|`Number (int)`|-
 |===
 
-[[ConverterGeneratesDecoderWithFromJsonDataObject]]
-== ConverterGeneratesDecoderWithFromJsonDataObject
-
-
-[cols=">25%,25%,50%"]
-[frame="topbot"]
-|===
-^|Name | Type ^| Description
-|[[a]]`@a`|`Number (int)`|-
-|===
-
-[[ConverterGeneratesEncoderWithToJsonDataObject]]
-== ConverterGeneratesEncoderWithToJsonDataObject
+[[ConverterGeneratesSerializerWithToJsonDataObject]]
+== ConverterGeneratesSerializerWithToJsonDataObject
 
 
 [cols=">25%,25%,50%"]
@@ -155,6 +133,7 @@
 |[[addedJsonArrays]]`@addedJsonArrays`|`Array of Json array`|-
 |[[addedJsonObjects]]`@addedJsonObjects`|`Array of Json object`|-
 |[[addedStringValues]]`@addedStringValues`|`Array of String`|-
+|[[addedUris]]`@addedUris`|`Array of link:dataobjects.html#URI[URI]`|-
 |[[aggregatedDataObject]]`@aggregatedDataObject`|`link:dataobjects.html#AggregatedDataObject[AggregatedDataObject]`|-
 |[[aggregatedDataObjectMap]]`@aggregatedDataObjectMap`|`link:dataobjects.html#AggregatedDataObject[AggregatedDataObject]`|-
 |[[aggregatedDataObjectSet]]`@aggregatedDataObjectSet`|`Array of link:dataobjects.html#AggregatedDataObject[AggregatedDataObject]`|-
@@ -232,11 +211,20 @@
 |[[keyedJsonArrayValues]]`@keyedJsonArrayValues`|`Json array`|-
 |[[keyedJsonObjectValues]]`@keyedJsonObjectValues`|`Json object`|-
 |[[keyedStringValues]]`@keyedStringValues`|`String`|-
+|[[keyedUriValues]]`@keyedUriValues`|`link:dataobjects.html#URI[URI]`|-
 |[[longValue]]`@longValue`|`Number (long)`|-
+|[[notConvertibleDataObject]]`@notConvertibleDataObject`|`link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
+|[[notConvertibleDataObjectMap]]`@notConvertibleDataObjectMap`|`link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
+|[[notConvertibleDataObjectSet]]`@notConvertibleDataObjectSet`|`Array of link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
+|[[notConvertibleDataObjects]]`@notConvertibleDataObjects`|`Array of link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
 |[[shortValue]]`@shortValue`|`Number (short)`|-
 |[[stringSet]]`@stringSet`|`Array of String`|-
 |[[stringValue]]`@stringValue`|`String`|-
 |[[stringValueMap]]`@stringValueMap`|`String`|-
 |[[stringValues]]`@stringValues`|`Array of String`|-
+|[[uri]]`@uri`|`link:dataobjects.html#URI[URI]`|-
+|[[uriMap]]`@uriMap`|`link:dataobjects.html#URI[URI]`|-
+|[[uriSet]]`@uriSet`|`Array of link:dataobjects.html#URI[URI]`|-
+|[[uris]]`@uris`|`Array of link:dataobjects.html#URI[URI]`|-
 |===
 

@@ -1,87 +1,49 @@
 package io.vertx.codegen.type;
 
+import io.vertx.codegen.MapperKind;
 import io.vertx.codegen.ModuleInfo;
 import io.vertx.codegen.TypeParamInfo;
 
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 import java.util.List;
 
 /**
+ * DataObject could be of two types: static methods annotated with {@link io.vertx.codegen.annotations.Mapper} and the one that is annotated with {@link io.vertx.codegen.annotations.DataObject}
+ *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
+ * @author <a href="slinkydeveloper.com">Francesco Guardiani</a>
  */
 public class DataObjectTypeInfo extends ClassTypeInfo {
 
-  private final String jsonEncoderSimpleName;
-  private final String jsonEncoderPackage;
-  private final String jsonEncoderEnclosingClass;
-  private final String jsonDecoderSimpleName;
-  private final String jsonDecoderEnclosingClass;
-  private final String jsonDecoderPackage;
-  private final TypeInfo targetJsonType;
+  private final MapperInfo serializer;
+  private final MapperInfo deserializer;
 
-  public DataObjectTypeInfo(String name, ModuleInfo module, boolean nullable, List<TypeParamInfo.Class> params, String jsonEncoderSimpleName, String jsonEncoderEnclosingClass, String jsonEncoderPackage, String jsonDecoderSimpleName, String jsonDecoderEnclosingClass, String jsonDecoderPackage, TypeInfo targetJsonType) {
+  public DataObjectTypeInfo(String name, ModuleInfo module, boolean nullable, List<TypeParamInfo.Class> params, MapperInfo serializer, MapperInfo deserializer, TypeInfo jsonType) {
     super(ClassKind.DATA_OBJECT, name, module, nullable, params);
-    this.jsonEncoderSimpleName = jsonEncoderSimpleName;
-    this.jsonEncoderEnclosingClass = jsonEncoderEnclosingClass;
-    this.jsonEncoderPackage = jsonEncoderPackage;
-    this.jsonDecoderSimpleName = jsonDecoderSimpleName;
-    this.jsonDecoderEnclosingClass = jsonDecoderEnclosingClass;
-    this.jsonDecoderPackage = jsonDecoderPackage;
-    this.targetJsonType = targetJsonType;
+    this.serializer = serializer;
+    this.deserializer = deserializer;
   }
 
-  public String getJsonEncoderFQCN() {
-    if (hasJsonEncoder())
-      if (getJsonEncoderEnclosingClass() != null)
-        return jsonEncoderPackage + "." + getJsonEncoderEnclosingClass() + "." + jsonEncoderSimpleName;
-      else
-        return jsonEncoderPackage + "." + jsonEncoderSimpleName;
-    else return null;
+  public boolean isDataObjectAnnotatedType() {
+    return deserializer != null && deserializer.getKind() == MapperKind.SELF || serializer != null && serializer.getKind() == MapperKind.SELF;
   }
 
-  public String getJsonEncoderSimpleName() {
-    return jsonEncoderSimpleName;
+  public TypeInfo getTargetType() {
+    return deserializer != null ? deserializer.getTargetType() : serializer.getTargetType();
   }
 
-  public String getJsonEncoderEnclosingClass() {
-    return jsonEncoderEnclosingClass;
+  public MapperInfo getSerializer() {
+    return serializer;
   }
 
-  public String getJsonEncoderPackage() {
-    return jsonEncoderPackage;
+  public MapperInfo getDeserializer() {
+    return deserializer;
   }
 
-  public String getJsonDecoderFQCN() {
-    if (hasJsonDecoder())
-      if (getJsonDecoderEnclosingClass() != null)
-        return jsonDecoderPackage + "." + getJsonDecoderEnclosingClass() + "." + jsonDecoderSimpleName;
-      else
-        return jsonDecoderPackage + "." + jsonDecoderSimpleName;
-    else return null;
+  public boolean isSerializable() {
+    return serializer != null;
   }
 
-  public String getJsonDecoderSimpleName() {
-    return jsonDecoderSimpleName;
-  }
-
-  public String getJsonDecoderEnclosingClass() {
-    return jsonDecoderEnclosingClass;
-  }
-
-  public String getJsonDecoderPackage() {
-    return jsonDecoderPackage;
-  }
-
-  public TypeInfo getTargetJsonType() {
-    return targetJsonType;
-  }
-
-  public boolean hasJsonEncoder() {
-    return getJsonEncoderSimpleName() != null;
-  }
-
-  public boolean hasJsonDecoder() {
-    return getJsonDecoderSimpleName() != null;
+  public boolean isDeserializable() {
+    return deserializer != null;
   }
 }

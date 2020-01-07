@@ -1,12 +1,21 @@
 package io.vertx.codegen;
 
+import io.vertx.codegen.annotations.Mapper;
 import io.vertx.codegen.annotations.ModuleGen;
+import io.vertx.codegen.type.ClassKind;
+import io.vertx.codegen.type.TypeInfo;
+import io.vertx.codegen.type.TypeMirrorFactory;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.*;
@@ -43,6 +52,7 @@ public class CodeGen {
 
   private final Map<String, Map<String, Map.Entry<TypeElement, Model>>> models = new HashMap<>();
   private final Set<TypeElement> all = new HashSet<>();
+  private final Set<ExecutableElement> mapperElts = new HashSet<>();
 
   private final HashMap<String, PackageElement> modules = new HashMap<>();
   private final Elements elementUtils;
@@ -61,12 +71,64 @@ public class CodeGen {
         return true;
       }
     };
+
+    TypeMirrorFactory tmf = new TypeMirrorFactory(elementUtils, typeUtils);
+
+    round.getElementsAnnotatedWith(Mapper.class)
+      .stream()
+      .forEach(elt -> {
+        if (!elt.getModifiers().contains(Modifier.STATIC)) {
+          throw new GenException(elt, "Annotated mapper element must be static");
+        }
+        if (!elt.getModifiers().contains(Modifier.PUBLIC)) {
+          throw new GenException(elt, "Annotated mapper element must be public");
+        }
+        if (elt instanceof ExecutableElement) {
+          ExecutableElement methElt = (ExecutableElement) elt;
+          if (methElt.getParameters().size() < 1) {
+            throw new GenException(elt, "Annotated method mapper cannot have empty arguments");
+          }
+          if (methElt.getParameters().size() > 1) {
+            throw new GenException(elt, "Annotated method mapper must have one argument");
+          }
+          TypeMirror paramType = methElt.getParameters().get(0).asType();
+          TypeMirror returnType = methElt.getReturnType();
+          ClassKind paramKind = ClassKind.getKind(paramType.toString(), false, false);
+          ClassKind returnKind = ClassKind.getKind(returnType.toString(), false, false);
+          if (paramKind.json || paramKind.basic || paramKind == ClassKind.OBJECT) {
+            tmf.addDataObjectDeserializer(methElt, returnType, paramType);
+          } else if (returnKind.json || returnKind.basic || returnKind == ClassKind.OBJECT) {
+            tmf.addDataObjectSerializer(methElt, paramType, returnType);
+          } else {
+            throw new GenException(methElt, "Mapper method doees not declare a JSON type");
+          }
+        } else {
+          VariableElement variableElt = (VariableElement) elt;
+          TypeElement parameterizedElt = elementUtils.getTypeElement("java.util.function.Function");
+          TypeMirror parameterizedType = parameterizedElt.asType();
+          TypeMirror rawType = typeUtils.erasure(parameterizedType);
+          DeclaredType blah = (DeclaredType) variableElt.asType();
+          if (typeUtils.isSubtype(blah, rawType)) {
+            TypeMirror paramType = Helper.resolveTypeParameter(typeUtils, blah, parameterizedElt.getTypeParameters().get(0));
+            TypeMirror returnType = Helper.resolveTypeParameter(typeUtils, blah, parameterizedElt.getTypeParameters().get(1));
+            ClassKind paramKind = ClassKind.getKind(paramType.toString(), false, false);
+            ClassKind returnKind = ClassKind.getKind(returnType.toString(), false, false);
+            if (paramKind.json || paramKind.basic || paramKind == ClassKind.OBJECT) {
+              tmf.addDataObjectDeserializer(variableElt, returnType, paramType);
+            } else if (returnKind.json || returnKind.basic || returnKind == ClassKind.OBJECT) {
+              tmf.addDataObjectSerializer(variableElt, paramType, returnType);
+            } else {
+              throw new GenException(variableElt, "Mapper method doees not declare a JSON type");
+            }
+          }
+        }
+      });
     round.getRootElements().stream()
       .filter(implFilter)
       .filter(elt -> elt instanceof TypeElement)
       .map(elt -> (TypeElement)elt).forEach(te -> {
         for (ModelProvider provider : PROVIDERS) {
-          Model model = provider.getModel(env, te);
+          Model model = provider.getModel(env, tmf, te);
           if (model != null) {
             String kind = model.getKind();
             all.add(te);

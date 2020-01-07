@@ -18,6 +18,7 @@ package io.vertx.test.codegen;
 
 import io.vertx.codegen.*;
 import io.vertx.codegen.Compiler;
+import io.vertx.codegen.annotations.Mapper;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ProxyGen;
@@ -131,6 +132,7 @@ public class GeneratorHelper {
       this.supportedAnnotations.add(VertxGen.class.getCanonicalName());
       this.supportedAnnotations.add(DataObject.class.getCanonicalName());
       this.supportedAnnotations.add(ModuleGen.class.getCanonicalName());
+      this.supportedAnnotations.add(Mapper.class.getCanonicalName());
       this.supportedAnnotations.addAll(otherSupportedAnnotations);
     }
 

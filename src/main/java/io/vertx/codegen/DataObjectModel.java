@@ -7,7 +7,6 @@ import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.doc.Text;
 import io.vertx.codegen.doc.Token;
 import io.vertx.codegen.type.*;
-import io.vertx.core.json.JsonObject;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
@@ -60,10 +59,10 @@ public class DataObjectModel implements Model {
   private boolean hasDecodeStaticMethod;
   private List<AnnotationValueInfo> annotations;
 
-  public DataObjectModel(ProcessingEnvironment env, TypeElement modelElt) {
+  public DataObjectModel(ProcessingEnvironment env, TypeMirrorFactory typeFactory, TypeElement modelElt) {
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
-    this.typeFactory = new TypeMirrorFactory(elementUtils, typeUtils, elementUtils.getPackageOf(modelElt));
+    this.typeFactory = typeFactory;
     this.docFactory = new Doc.Factory(env.getMessager(), elementUtils, typeUtils, typeFactory, modelElt);
     this.modelElt = modelElt;
     this.annotationValueInfoFactory = new AnnotationValueInfoFactory(typeFactory);
@@ -146,9 +145,9 @@ public class DataObjectModel implements Model {
     return publicConverter;
   }
 
-  public boolean isEncodable() { return type.hasJsonEncoder(); }
+  public boolean isSerializable() { return type.isSerializable(); }
 
-  public boolean isDecodable() { return type.hasJsonDecoder(); }
+  public boolean isDeserializable() { return type.isDeserializable(); }
 
   public boolean hasToJsonMethod() { return hasToJsonMethod; }
 
@@ -193,8 +192,8 @@ public class DataObjectModel implements Model {
     vars.put("hasToJsonMethod", hasToJsonMethod);
     vars.put("hasEmptyConstructor", hasEmptyConstructor());
     vars.put("hasJsonConstructor", hasJsonConstructor());
-    vars.put("encodable", isEncodable());
-    vars.put("decodable", isDecodable());
+    vars.put("serializable", isSerializable());
+    vars.put("deserializable", isDeserializable());
     vars.put("deprecated", deprecated);
     vars.put("deprecatedDesc", getDeprecatedDesc());
     return vars;
@@ -523,7 +522,7 @@ public class DataObjectModel implements Model {
         jsonifiable = true;
         break;
       case DATA_OBJECT:
-        jsonifiable = ((DataObjectTypeInfo)propType).hasJsonEncoder();
+        jsonifiable = ((DataObjectTypeInfo)propType).isSerializable();
         break;
       case OTHER:
         if (propType.getName().equals(Instant.class.getName())) {

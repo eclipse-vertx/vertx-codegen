@@ -10,7 +10,9 @@ import javax.lang.model.type.*;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Type info factory based on <i>javax.lang.model</i> and type mirrors.
@@ -21,12 +23,40 @@ public class TypeMirrorFactory {
 
   final Elements elementUtils;
   final Types typeUtils;
-  final PackageElement p;
+  final Map<String, MapperInfo> serializers = new HashMap<>();
+  final Map<String, MapperInfo> deserializers = new HashMap<>();
 
-  public TypeMirrorFactory(Elements elementUtils, Types typeUtils, PackageElement pkgElt) {
+  public TypeMirrorFactory(Elements elementUtils, Types typeUtils) {
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
-    this.p = pkgElt;
+  }
+
+  public void addDataObjectDeserializer(Element elt, TypeMirror dataObjectType, TypeMirror jsonType) {
+    String key = dataObjectType.toString();
+    MapperInfo mapper = deserializers.computeIfAbsent(key, k -> new MapperInfo());
+    TypeElement a = (TypeElement) elt.getEnclosingElement();
+    mapper.setQualifiedName(a.getQualifiedName().toString());
+    TypeInfo jsonTypeInfo = create(jsonType);
+    if (serializers.containsKey(key) && !serializers.get(key).getTargetType().equals(jsonTypeInfo)) {
+      throw new GenException(elt, "Mapper cannot declare mixed JSON types");
+    }
+    mapper.setTargetType(jsonTypeInfo);
+    mapper.setName(elt.getSimpleName().toString());
+    mapper.setKind(elt.getKind() == ElementKind.METHOD ? MapperKind.STATIC_METHOD : MapperKind.FUNCTION);
+  }
+
+  public void addDataObjectSerializer(Element elt, TypeMirror dataObjectType, TypeMirror jsonType) {
+    String key = dataObjectType.toString();
+    MapperInfo mapper = serializers.computeIfAbsent(key, k -> new MapperInfo());
+    TypeElement a = (TypeElement) elt.getEnclosingElement();
+    mapper.setQualifiedName(a.getQualifiedName().toString());
+    TypeInfo jsonTypeInfo = create(jsonType);
+    if (deserializers.containsKey(key) && !deserializers.get(key).getTargetType().equals(jsonTypeInfo)) {
+      throw new GenException(elt, "Mapper cannot declare mixed JSON types");
+    }
+    mapper.setTargetType(jsonTypeInfo);
+    mapper.setName(elt.getSimpleName().toString());
+    mapper.setKind(elt.getKind() == ElementKind.METHOD ? MapperKind.STATIC_METHOD : MapperKind.FUNCTION);
   }
 
   public TypeInfo create(TypeMirror type) {
@@ -128,45 +158,46 @@ public class TypeMirrorFactory {
               }
             }
             raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, handlerArg, module, nullable, proxyGen);
-          } else if (kind == ClassKind.DATA_OBJECT) {
-            boolean encodable = Helper.isDataObjectAnnotatedEncodable(elementUtils, elt);
-            boolean decodable = Helper.isDataObjectAnnotatedDecodable(elementUtils, typeUtils, elt);
+          } else if (elt.getAnnotation(DataObject.class) != null) {
+            boolean serializable = Helper.isDataObjectAnnotatedSerializable(elementUtils, elt);
+            boolean deserializable = Helper.isDataObjectAnnotatedDeserializable(elementUtils, typeUtils, elt);
+            TypeInfo jsonType = this.create(elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType());
+            // Data object annotated here
+            MapperInfo serializer = null;
+            if (serializable) {
+              serializer = new MapperInfo();
+              serializer.setQualifiedName(fqcn);
+              serializer.setKind(MapperKind.SELF);
+              serializer.setTargetType(jsonType);
+            }
+            MapperInfo deserializer = null;
+            if (deserializable) {
+              deserializer = new MapperInfo();
+              deserializer.setQualifiedName(fqcn);
+              deserializer.setKind(MapperKind.SELF);
+              deserializer.setTargetType(jsonType);
+            }
             raw = new DataObjectTypeInfo(
               fqcn,
               module,
               nullable,
               typeParams,
-              (encodable) ? simpleName + "Converter" : null,
-              null,
-              (encodable) ? pkgElt.toString() : null,
-              (decodable) ? simpleName + "Converter" : null,
-              null,
-              (decodable) ? pkgElt.toString() : null,
-              this.create(elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType())
+              serializer,
+              deserializer,
+              jsonType
             );
           } else {
-            DeclaredType jsonCodecType = ModuleInfo.resolveJsonCodec(elementUtils, typeUtils, p, type);
-            if (jsonCodecType != null) {
-              TypeElement jsonCodecElt = elementUtils.getTypeElement("io.vertx.core.spi.json.JsonCodec");
-              TypeParameterElement typeParamElt = jsonCodecElt.getTypeParameters().get(1);
-              TypeMirror jsonType = Helper.resolveTypeParameter(typeUtils, jsonCodecType, typeParamElt);
-              String codecSimpleName = jsonCodecType.asElement().getSimpleName().toString();
-              String codecEnclosingClass =
-                jsonCodecType.asElement().getEnclosingElement().getKind() != ElementKind.PACKAGE ?
-                  jsonCodecType.asElement().getEnclosingElement().getSimpleName().toString() : null;
-              String codecPkgName = elementUtils.getPackageOf(jsonCodecType.asElement()).toString();
+            MapperInfo serializer = serializers.get(type.toString());
+            MapperInfo deserializer = deserializers.get(type.toString());
+            if (serializer != null || deserializer != null) {
               raw = new DataObjectTypeInfo(
                 fqcn,
                 module,
                 nullable,
                 typeParams,
-                codecSimpleName,
-                codecEnclosingClass,
-                codecPkgName,
-                codecSimpleName,
-                codecEnclosingClass,
-                codecPkgName,
-                create(jsonType)
+                serializer,
+                deserializer,
+                serializer != null ? serializer.getTargetType() : deserializer.getTargetType()
               );
             } else {
               raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams);

@@ -40,10 +40,6 @@
       <artifactId>jackson-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.mvel</groupId>
       <artifactId>mvel2</artifactId>
       <version>2.3.1.Final</version>
@@ -83,11 +79,6 @@
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <configuration>
-            <archive>
-              <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-            </archive>
-          </configuration>
           <executions>
             <execution>
               <id>default-jar</id>
@@ -228,9 +219,6 @@
             <configuration>
               <attach>true</attach>
               <appendAssemblyId>false</appendAssemblyId>
-              <archive>
-                    <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
-                </archive>
               <descriptors>
                 <descriptor>src/main/assembly/jar.xml</descriptor>
               </descriptors>
@@ -265,29 +253,6 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>biz.aQute.bnd</groupId>
-        <artifactId>bnd-maven-plugin</artifactId>
-        <version>3.3.0</version>
-        <executions>
-          <execution>
-            <id>default-bnd-process</id>
-            <goals>
-              <goal>bnd-process</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <bnd><![CDATA[
-          Import-Package: \
-                org.mvel2*;resolution:=optional, \
-                io.vertx.core, \
-                io.vertx.core.buffer, \
-                  *;resolution:=optional
-                -exportcontents: !*impl, !examples, !io.vertx.core*,*
-          ]]></bnd>
-        </configuration>
       </plugin>
     </plugins>
   </build>

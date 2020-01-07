@@ -12,19 +12,45 @@
 package io.vertx.test.codegen.converter;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.Mapper;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @DataObject(generateConverter = true)
 public class TestDataObject {
+
+  @Mapper
+  public static ZonedDateTime serializeZonedDateTime(String s) {
+    return ZonedDateTime.parse(s);
+  }
+
+  @Mapper
+  public static String deserializeZonedDateTime(ZonedDateTime s) {
+    return s.toString();
+  }
+
+  @Mapper
+  public static Function<URI, String> uriSerializer = URI::toString;
+
+  @Mapper
+  public static Function<String, URI> uriDeserializer = s -> {
+    try {
+      return new URI(s);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  };
 
   private String stringValue;
   private boolean booleanValue;
@@ -49,6 +75,8 @@ public class TestDataObject {
   private JsonArray jsonArray;
   private TimeUnit httpMethod;
   private ZonedDateTime dateTime;
+  private URI uri;
+  private NoConverterDataObject notConvertibleDataObject;
 
   private List<String> stringValues;
   private List<Boolean> boxedBooleanValues;
@@ -65,7 +93,9 @@ public class TestDataObject {
   private List<JsonArray> jsonArrays;
   private List<TimeUnit> httpMethods;
   private List<ZonedDateTime> dateTimes;
+  private List<URI> uris;
   private List<Object> objects;
+  private List<NoConverterDataObject> notConvertibleDataObjects;
 
   private Set<String> stringSet;
   private Set<Boolean> boxedBooleanSet;
@@ -82,7 +112,9 @@ public class TestDataObject {
   private Set<JsonArray> jsonArraySet;
   private Set<TimeUnit> httpMethodSet;
   private Set<ZonedDateTime> dateTimeSet;
+  private Set<URI> uriSet;
   private Set<Object> objectSet;
+  private Set<NoConverterDataObject> notConvertibleDataObjectSet;
 
   private List<String> addedStringValues = new ArrayList<>();
   private List<Boolean> addedBoxedBooleanValues = new ArrayList<>();
@@ -99,6 +131,7 @@ public class TestDataObject {
   private List<JsonArray> addedJsonArrays = new ArrayList<>();
   private List<TimeUnit> addedHttpMethods = new ArrayList<>();
   private List<ZonedDateTime> addedDateTimes = new ArrayList<>();
+  private List<URI> addedUris = new ArrayList<>();
   private List<Object> addedObjects = new ArrayList<>();
 
   private Map<String, String> stringValueMap;
@@ -116,7 +149,9 @@ public class TestDataObject {
   private Map<String, JsonArray> jsonArrayMap;
   private Map<String, TimeUnit> httpMethodMap;
   private Map<String, ZonedDateTime> dateTimeMap;
+  private Map<String, URI> uriMap;
   private Map<String, Object> objectMap;
+  private Map<String, NoConverterDataObject> notConvertibleDataObjectMap;
 
   private Map<String, String> keyedStringValues = new HashMap<>();
   private Map<String, Boolean> keyedBoxedBooleanValues = new HashMap<>();
@@ -133,6 +168,7 @@ public class TestDataObject {
   private Map<String, JsonArray> keyedJsonArrayValues = new HashMap<>();
   private Map<String, TimeUnit> keyedEnumValues = new HashMap<>();
   private Map<String, ZonedDateTime> keyedDateTimeValues = new HashMap<>();
+  private Map<String, URI> keyedUriValues = new HashMap<>();
   private Map<String, Object> keyedObjectValues = new HashMap<>();
 
   public TestDataObject() {
@@ -351,6 +387,24 @@ public class TestDataObject {
     return this;
   }
 
+  public URI getUri() {
+    return uri;
+  }
+
+  public TestDataObject setUri(URI uri) {
+    this.uri = uri;
+    return this;
+  }
+
+  public NoConverterDataObject getNotConvertibleDataObject() {
+    return notConvertibleDataObject;
+  }
+
+  public TestDataObject setNotConvertibleDataObject(NoConverterDataObject notConvertibleDataObject) {
+    this.notConvertibleDataObject = notConvertibleDataObject;
+    return this;
+  }
+
   public List<String> getStringValues() {
     return stringValues;
   }
@@ -483,6 +537,15 @@ public class TestDataObject {
 
   public TestDataObject setDateTimes(List<ZonedDateTime> dateTimes) {
     this.dateTimes = dateTimes;
+    return this;
+  }
+
+  public List<URI> getUris() {
+    return uris;
+  }
+
+  public TestDataObject setUris(List<URI> uris) {
+    this.uris = uris;
     return this;
   }
 
@@ -631,6 +694,15 @@ public class TestDataObject {
     return this;
   }
 
+  public Set<URI> getUriSet() {
+    return uriSet;
+  }
+
+  public TestDataObject setUriSet(Set<URI> uriSet) {
+    this.uriSet = uriSet;
+    return this;
+  }
+
   public Set<Object> getObjectSet() {
     return objectSet;
   }
@@ -772,6 +844,15 @@ public class TestDataObject {
 
   public TestDataObject addAddedDateTime(ZonedDateTime addedDateTime) {
     this.addedDateTimes.add(addedDateTime);
+    return this;
+  }
+
+  public List<URI> getAddedUris() {
+    return addedUris;
+  }
+
+  public TestDataObject addAddedUri(URI addedUri) {
+    this.addedUris.add(addedUri);
     return this;
   }
 
@@ -919,6 +1000,15 @@ public class TestDataObject {
     return this;
   }
 
+  public Map<String, URI> getUriMap() {
+    return uriMap;
+  }
+
+  public TestDataObject setUriMap(Map<String, URI> uriMap) {
+    this.uriMap = uriMap;
+    return this;
+  }
+
   public Map<String, Object> getObjectMap() {
     return objectMap;
   }
@@ -1063,12 +1153,48 @@ public class TestDataObject {
     return this;
   }
 
+  public Map<String, URI> getKeyedUriValues() {
+    return keyedUriValues;
+  }
+
+  public TestDataObject addKeyedUriValue(String key, URI value) {
+    this.keyedUriValues.put(key, value);
+    return this;
+  }
+
   public Map<String, Object> getKeyedObjectValues() {
     return keyedObjectValues;
   }
 
   public TestDataObject addKeyedObjectValue(String key, Object value) {
     keyedObjectValues.put(key, value);
+    return this;
+  }
+
+  public List<NoConverterDataObject> getNotConvertibleDataObjects() {
+    return notConvertibleDataObjects;
+  }
+
+  public TestDataObject setNotConvertibleDataObjects(List<NoConverterDataObject> notConvertibleDataObjects) {
+    this.notConvertibleDataObjects = notConvertibleDataObjects;
+    return this;
+  }
+
+  public Set<NoConverterDataObject> getNotConvertibleDataObjectSet() {
+    return notConvertibleDataObjectSet;
+  }
+
+  public TestDataObject setNotConvertibleDataObjectSet(Set<NoConverterDataObject> notConvertibleDataObjectSet) {
+    this.notConvertibleDataObjectSet = notConvertibleDataObjectSet;
+    return this;
+  }
+
+  public Map<String, NoConverterDataObject> getNotConvertibleDataObjectMap() {
+    return notConvertibleDataObjectMap;
+  }
+
+  public TestDataObject setNotConvertibleDataObjectMap(Map<String, NoConverterDataObject> notConvertibleDataObjectMap) {
+    this.notConvertibleDataObjectMap = notConvertibleDataObjectMap;
     return this;
   }
 }

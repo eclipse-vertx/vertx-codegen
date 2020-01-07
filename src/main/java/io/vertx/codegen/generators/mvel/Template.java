@@ -1,6 +1,7 @@
 package io.vertx.codegen.generators.mvel;
 
 import io.vertx.codegen.Case;
+import io.vertx.codegen.MapperKind;
 import io.vertx.codegen.MethodKind;
 import io.vertx.codegen.Model;
 import io.vertx.codegen.type.ClassKind;
@@ -128,6 +129,7 @@ class Template {
     vars.putAll(ClassKind.vars());
     vars.putAll(MethodKind.vars());
     vars.putAll(Case.vars());
+    vars.putAll(MapperKind.vars());
 
     TemplateRegistry registry = new SimpleTemplateRegistry() {
       @Override

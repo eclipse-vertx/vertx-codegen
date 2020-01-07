@@ -57,7 +57,7 @@ public class ModuleModel implements Model {
       throw new GenException(element, "Invalid group package name " + groupPackage);
     }
     ModuleInfo info = new ModuleInfo(modulePackage, moduleName, groupPackage);
-    AnnotationValueInfoFactory annotationFactory = new AnnotationValueInfoFactory(new TypeMirrorFactory(elementUtils, typeUtils, element));
+    AnnotationValueInfoFactory annotationFactory = new AnnotationValueInfoFactory(new TypeMirrorFactory(elementUtils, typeUtils));
     List<AnnotationValueInfo> annotationValueInfos = element
       .getAnnotationMirrors()
       .stream()
@@ -71,39 +71,39 @@ public class ModuleModel implements Model {
         .getElementValues()
         .entrySet()
         .stream()
-        .filter(e -> e.getKey().getSimpleName().toString().equals("codecs"))
+        .filter(e -> e.getKey().getSimpleName().toString().equals("mappers"))
         .flatMap(e -> ((List<AnnotationValue>)e.getValue().getValue())
           .stream()
           .map(dt -> (DeclaredType)dt.getValue()))
       ).collect(Collectors.toList());
     a.forEach(dt -> {
-      isLegalJsonCodec(elementUtils, typeUtils, dt);
+      isLegalJsonMapper(elementUtils, typeUtils, dt);
     });
     this.element = element;
     this.info = info;
     this.annotationValueInfos = annotationValueInfos;
   }
 
-  private void isLegalJsonCodec(Elements elementUtils, Types typeUtils, DeclaredType codecType) {
-    TypeElement codecDeclaredElement = (TypeElement) codecType.asElement();
+  private void isLegalJsonMapper(Elements elementUtils, Types typeUtils, DeclaredType mapperType) {
+    TypeElement mapperDeclaredElement = (TypeElement) mapperType.asElement();
     if (elementUtils
-      .getAllMembers(codecDeclaredElement)
+      .getAllMembers(mapperDeclaredElement)
       .stream()
       .noneMatch(e ->
         e.getKind() == ElementKind.FIELD &&
           e.getModifiers().containsAll(Arrays.asList(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)) &&
           e.getSimpleName().contentEquals("INSTANCE") &&
-          typeUtils.isSameType(e.asType(), codecType)
+          typeUtils.isSameType(e.asType(), mapperType)
       )) {
-      throw new GenException(codecDeclaredElement, "The json codec " + codecType.toString() + " must have a public static final INSTANCE field of the codec type");
+      throw new GenException(mapperDeclaredElement, "The json mapper " + mapperType.toString() + " must have a public static final INSTANCE field of the mapper type");
     }
-    TypeElement codecElt = elementUtils.getTypeElement("io.vertx.core.spi.json.JsonCodec");
-    TypeParameterElement jsonElt = codecElt.getTypeParameters().get(1);
-    TypeMirror jsonType = Helper.resolveTypeParameter(typeUtils, codecType, jsonElt);
+    TypeElement mapperElt = elementUtils.getTypeElement("io.vertx.core.spi.json.JsonMapper");
+    TypeParameterElement jsonElt = mapperElt.getTypeParameters().get(1);
+    TypeMirror jsonType = Helper.resolveTypeParameter(typeUtils, mapperType, jsonElt);
     if (jsonType != null && !isLegalJsonType(jsonType)) {
       throw new GenException(
-        codecType.asElement(),
-        "The specified json type in codec " + codecType.toString() + " is not a valid json type. Allowed types are java.lang.Boolean, java.lang.Number, java.lang.String and BOXED_PRIMITIVE"
+        mapperType.asElement(),
+        "The specified json type in mapper " + mapperType.toString() + " is not a valid json type. Allowed types are java.lang.Boolean, java.lang.Number, java.lang.String and BOXED_PRIMITIVE"
       );
     }
   }

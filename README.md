@@ -200,7 +200,7 @@ The constraints are
 * Methods where the return value must be cached in the API shim must be annotated with the `io.vertx.codegen.annotations.CacheReturn` annotation
 * Only certain types are allowed as parameter or return value types for any API methods (defined below).
 * Custom enums should be annotated with `@VertxGen`, although this is not mandatory to allow the usage of existing Java enums
-* JsonCodec implementations must expose an instance as a `public static final [JsonCodecType] INSTANCE` field
+* JsonMapper implementations must expose an instance as a `public static final [JsonDesdeType] INSTANCE` field
 
 ### Permitted types
 
@@ -215,7 +215,7 @@ We define _`Json`_ as the set of types `io.vertx.core.json.JsonObject` and `io.v
 We define _`DataObject`_:
 
 * The set of user defined API types which are defined in its own class and annotated with `@DataObject`
-* The set of types that have an associated `JsonCodec` declared in `@ModuleGen` annotation
+* The set of types that have an associated `JsonMapper` declared in `@ModuleGen` annotation
 
 We define _`TypeVar`_ as the set of of types variables where the variable is either declared by its generic method or its generic type
 
@@ -391,52 +391,52 @@ A _Data object_ is a type that can be converted back and forth to a Json type.
 
 You can declare data objects by:
 
-* Defining a `io.vertx.core.spi.json.JsonCodec` for it
+* Defining an annotated `@Mapper` method or function for it
 * Or annotating the type itself with `@DataObject`
 
-==== Json codecs
+### Json mappers
 
-A json codec for type `T` is a concrete class that implements the interface `JsonCodec<T, J>`, where `J` can be:
+A json mapper for type `T` is a method or function that maps any object of type `Type`, where `J` can be:
 
 * `JsonArray` or `JsonObject`
-* `Number`
+* a concrete type extending `Number` such as `Long` or `Double`
 * `String`
 * `Boolean`
 
-If you want to use a `JsonCodec`, you need to declare a `public static final [JsonCodecType] INSTANCE` field in the codec class
-to expose the codec instance.
+Json mapped types can be used anywhere a json types used are.
 
-You need to declare the codec class in the `@ModuleGen` annotation of the `package-info.java` file, e.g.:
+A json mapper turns any Java type into a data object type.
+
+You can declare them as public static methods:
 
 ```java
-@ModuleGen(
-  name = "my-package",
-  groupPackage = "my.package",
-  codecs = {
-    ZonedDateTimeCodec.class
-  }
-)
+@Mapper
+public static String serialize(ZonedDateTime date) {
+  return date.toString();
+}
+
+@Mapper
+public static ZonedDateTime deserialize(String s) {
+  return ZonedDateTime.parse(s);
+}
 ```
 
-==== `@DataObject` annotated types
+Or as functions:
+
+```java
+@Mapper
+public static final Function<ZonedDateTime, String> SERIALIZER = date -> date.toString();
+
+@Mapper
+public static final Function<String, ZonedDateTime> DESERIALIZER = s -> ZonedDateTime.parse(s);
+```
+
+### `@DataObject` annotated types
 
 A `@DataObject` annotated type is a Java class with the only purpose to be a container for data.
 
-They can be converted back and forth Json using the generated `JsonEncoder`/`JsonDecoder`/`JsonCodec`.
-
-A codec instance is automatically generated for each annotated data object class:
-
-* The codec implements the `JsonDecoder` interface when the annotated type
-- has a `io.vertx.core.json.JsonObject` constructor
-- is an interface or an abstract class with a `public static [DataObjectType] decode(io.vertx.core.json.JsonObject value)` method
-- generates the converter, i.e `@DataObject(generateConverter = true)`, has an empty constructor and is concrete
-* The codec implements the `JsonEncoder` interface when the annotated type:
-- has a `io.vertx.core.json.JsonObject toJson()` method
-- generates the converter, i.e `@DataObject(generateConverter = true)`
-
-When both encoder and decoder can be created then a `JsonCodec` interface is generated instead.
-
-The generated codec class is named `[DataObjectType]Converter`.
+* Codegen recognizes the type as deserializable when the annotated type has a `io.vertx.core.json.JsonObject` constructor
+* The mapper recognizes the type as serializable when the annotated type has a `io.vertx.core.json.JsonObject toJson()` method
 
 Data object conversion recognize the following types as _member_ of any `@DataObject`:
 

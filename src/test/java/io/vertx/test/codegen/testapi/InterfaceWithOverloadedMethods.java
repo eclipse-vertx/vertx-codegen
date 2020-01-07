@@ -24,4 +24,9 @@ public interface InterfaceWithOverloadedMethods {
   void juu(String str, long time);
 
   <T> void juu(String str, long time, Handler<T> handler);
+
+  // The generic type name does not matter when checking return type overloaded
+  <T> GenericInterface<T> method();
+  <U> GenericInterface<U> method(String s);
+
 }

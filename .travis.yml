@@ -1,13 +1,22 @@
+dist: xenial
 language: java
 branches:
   only:
   - master
   - /^\d+\.\d+$/
+cache:
+  directories:
+    - $HOME/.m2
+before_cache:
+  - rm -rf $HOME/.m2/repository/io/vertx/
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install --only-upgrade openjdk-8-jdk
 jobs:
   include:
     - stage: test
-      name: "OracleJDK 8"
-      jdk: oraclejdk8
+      name: "OpenJDK 8"
+      jdk: openjdk8
       script: mvn -q clean verify -B
     - if: type != pull_request
       name: "OpenJDK 11"
@@ -15,6 +24,7 @@ jobs:
       script: mvn -q clean verify -B
     - stage: deploy
       name: "Deploy to Sonatype's snapshots repository"
+      jdk: openjdk8
       if: type != pull_request AND env(SONATYPE_NEXUS_USERNAME) IS present
       script: bash .travis.deploy.artifacts.sh
 notifications:
