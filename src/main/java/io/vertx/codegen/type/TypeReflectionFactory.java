@@ -76,7 +76,8 @@ public class TypeReflectionFactory {
             return new ApiTypeInfo(fqcn, true, typeParams, handlerArg != null ? create(handlerArg) : null, module, false, false);
           } else if (kind == ClassKind.DATA_OBJECT) {
             boolean _abstract = Modifier.isAbstract(classType.getModifiers());
-            return new DataObjectTypeInfo(kind, fqcn, module, _abstract, false, typeParams);
+            boolean _interface = ((Class<?>) type).isInterface();
+            return new DataObjectTypeInfo(kind, fqcn, module, _abstract, false, _interface, typeParams);
           } else {
             return new ClassTypeInfo(kind, fqcn, module, false, typeParams);
           }
