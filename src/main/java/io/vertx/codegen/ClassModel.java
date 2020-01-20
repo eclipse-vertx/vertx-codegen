@@ -808,7 +808,9 @@ public class ClassModel implements Model {
         try {
           MethodOverloadChecker.INSTANCE.checkAmbiguous(meths.stream().filter(m -> !anyJavaTypeMethods.containsValue(m)));
         } catch (RuntimeException e) {
-          throw new GenException(elem, e.getMessage());
+          GenException genException = new GenException(elem, e.getMessage());
+          genException.initCause(e);
+          throw genException;
         }
 
         // Cannot be both static and non static

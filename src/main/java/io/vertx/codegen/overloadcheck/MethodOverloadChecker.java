@@ -147,9 +147,6 @@ public class MethodOverloadChecker {
         // Try with type name appended
         String lhs = param.classKind.toString() + "." + param.typeName;
         langType = typeMapping.get(lhs);
-        if (langType == null) {
-          throw new IllegalStateException("No type mapping found for param type " + lhs);
-        }
       }
       langParamTypes.add(new SimpleType(langType, param.nullable));
     }

@@ -16,6 +16,7 @@
 
 package io.vertx.test.codegen;
 
+import io.vertx.codegen.testmodel.RefedInterface2;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
 import io.vertx.codegen.overloadcheck.SimpleMethod;
@@ -32,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -111,11 +111,6 @@ public class MethodOverloadHelperTest {
   @Test
   public void testFunctionClash1() throws Exception {
     testAmbiguousMethods(ClassKind.HANDLER, Handler.class.getName(), ClassKind.HANDLER, Handler.class.getName());
-  }
-
-  @Test
-  public void testVertxGenClash1() throws Exception {
-    testAmbiguousMethods(ClassKind.API, RefedInterface1.class.getName(), ClassKind.API, RefedInterface1.class.getName());
   }
 
   @Test
@@ -231,11 +226,6 @@ public class MethodOverloadHelperTest {
   }
 
   @Test
-  public void testAllClash4() throws Exception {
-    testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.API, Object.class.getName());
-  }
-
-  @Test
   public void testAllClash5() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.JSON_OBJECT, JsonObject.class.getName());
   }
@@ -259,7 +249,6 @@ public class MethodOverloadHelperTest {
   public void testAllClash9() throws Exception {
     testAmbiguousMethods(ClassKind.OBJECT, TestEnum.class.getName(), ClassKind.OBJECT, TestEnum.class.getName());
   }
-
 
 
   private void testAmbiguousMethods(ClassKind kind1, String typeName1, ClassKind kind2, String typeName2) throws Exception {
@@ -412,6 +401,20 @@ public class MethodOverloadHelperTest {
 
     testAmbiguousMethods(Arrays.asList(meth1, meth2));
     testAmbiguousMethods(Arrays.asList(meth2, meth3));
+  }
+
+  @Test
+  public void testVertxGen1() throws Exception {
+    SimpleMethod meth1 = new SimpleMethod("meth", new SimpleParam("arg0", ClassKind.OBJECT, JsonArray.class.getName()));
+    SimpleMethod meth2 = new SimpleMethod("meth", new SimpleParam("arg0", ClassKind.API, RefedInterface1.class.getName()));
+    testAmbiguousMethodsOK(Arrays.asList(meth1, meth2));
+  }
+
+  @Test
+  public void testVertxGen2() throws Exception {
+    SimpleMethod meth1 = new SimpleMethod("meth", new SimpleParam("arg0", ClassKind.API, RefedInterface1.class.getName()));
+    SimpleMethod meth2 = new SimpleMethod("meth", new SimpleParam("arg0", ClassKind.API, RefedInterface2.class.getName()));
+    testAmbiguousMethodsOK(Arrays.asList(meth1, meth2));
   }
 
   private void testAmbiguousMethods(List<SimpleMethod> meths) throws Exception {
