@@ -22,7 +22,7 @@ public class ClassTypeInfo extends TypeInfo {
         Float.class, Double.class, Character.class};
     for (Class<?> boxe : boxes) {
       String name = boxe.getName();
-      PRIMITIVES.put(name, new io.vertx.codegen.type.ClassTypeInfo(ClassKind.BOXED_PRIMITIVE, name, null, false, Collections.emptyList()));
+      PRIMITIVES.put(name, new io.vertx.codegen.type.ClassTypeInfo(ClassKind.BOXED_PRIMITIVE, name, null, false, Collections.emptyList(), null));
     }
   }
 
@@ -33,8 +33,9 @@ public class ClassTypeInfo extends TypeInfo {
   final ModuleInfo module;
   final boolean nullable;
   final List<TypeParamInfo.Class> params;
+  final DataObjectInfo dataObject;
 
-  public ClassTypeInfo(ClassKind kind, String name, ModuleInfo module, boolean nullable, List<TypeParamInfo.Class> params) {
+  public ClassTypeInfo(ClassKind kind, String name, ModuleInfo module, boolean nullable, List<TypeParamInfo.Class> params, DataObjectInfo dataObject) {
     this.kind = kind;
     this.name = name;
     this.simpleName = Helper.getSimpleName(name);
@@ -42,6 +43,7 @@ public class ClassTypeInfo extends TypeInfo {
     this.module = module;
     this.nullable = nullable;
     this.params = params;
+    this.dataObject = dataObject;
   }
 
   public List<TypeParamInfo.Class> getParams() {
@@ -86,6 +88,10 @@ public class ClassTypeInfo extends TypeInfo {
   @Override
   public void collectImports(Collection<io.vertx.codegen.type.ClassTypeInfo> imports) {
     imports.add(this);
+  }
+
+  public DataObjectInfo getDataObject() {
+    return dataObject;
   }
 
   @Override

@@ -698,8 +698,6 @@ A type info has a {@link io.vertx.codegen.type.ClassKind} usually used to determ
 | `java.util.Map<String,V>`
 | {@link io.vertx.codegen.type.ClassKind#API}
 | any _api_ type
-| {@link io.vertx.codegen.type.ClassKind#DATA_OBJECT}
-| any _data object_ type
 | {@link io.vertx.codegen.type.ClassKind#HANDLER}
 | `io.vertx.core.Handler<E>`
 | {@link io.vertx.codegen.type.ClassKind#FUNCTION}

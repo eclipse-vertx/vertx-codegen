@@ -29,6 +29,4 @@ public interface IgnoreMethods {
 
   void setWithTwoArguments(String s1, String s2);
 
-  void setWithIgnoredArgument(Locale locale);
-
 }

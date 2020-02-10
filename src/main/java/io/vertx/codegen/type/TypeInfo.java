@@ -1,8 +1,6 @@
 package io.vertx.codegen.type;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Describes a java type.
@@ -100,6 +98,20 @@ public abstract class TypeInfo {
    */
   public boolean isVariable() {
     return false;
+  }
+
+  /**
+   * @return {@code true} if this type holds a {@link DataObjectInfo}
+   */
+  public boolean isDataObjectHolder() {
+    return getDataObject() != null;
+  }
+
+  /**
+   * @return the {@link DataObjectInfo} when this type can be adapted to a data object otherwise {@code null}
+   */
+  public DataObjectInfo getDataObject() {
+    return null;
   }
 
   /**

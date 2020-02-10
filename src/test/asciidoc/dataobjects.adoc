@@ -118,7 +118,6 @@
 [frame="topbot"]
 |===
 ^|Name | Type ^| Description
-|[[addedAggregatedDataObjects]]`@addedAggregatedDataObjects`|`Array of link:dataobjects.html#AggregatedDataObject[AggregatedDataObject]`|-
 |[[addedBoxedBooleanValues]]`@addedBoxedBooleanValues`|`Array of Boolean`|-
 |[[addedBoxedByteValues]]`@addedBoxedByteValues`|`Array of Number (Byte)`|-
 |[[addedBoxedCharValues]]`@addedBoxedCharValues`|`Array of Char`|-
@@ -128,16 +127,10 @@
 |[[addedBoxedLongValues]]`@addedBoxedLongValues`|`Array of Number (Long)`|-
 |[[addedBoxedShortValues]]`@addedBoxedShortValues`|`Array of Number (Short)`|-
 |[[addedBuffers]]`@addedBuffers`|`Array of Buffer`|-
-|[[addedFunctionMappeds]]`@addedFunctionMappeds`|`Array of link:dataobjects.html#URI[URI]`|-
 |[[addedHttpMethods]]`@addedHttpMethods`|`Array of link:enums.html#TimeUnit[TimeUnit]`|-
 |[[addedJsonArrays]]`@addedJsonArrays`|`Array of Json array`|-
 |[[addedJsonObjects]]`@addedJsonObjects`|`Array of Json object`|-
-|[[addedMethodMappeds]]`@addedMethodMappeds`|`Array of link:dataobjects.html#ZonedDateTime[ZonedDateTime]`|-
 |[[addedStringValues]]`@addedStringValues`|`Array of String`|-
-|[[aggregatedDataObject]]`@aggregatedDataObject`|`link:dataobjects.html#AggregatedDataObject[AggregatedDataObject]`|-
-|[[aggregatedDataObjectMap]]`@aggregatedDataObjectMap`|`link:dataobjects.html#AggregatedDataObject[AggregatedDataObject]`|-
-|[[aggregatedDataObjectSet]]`@aggregatedDataObjectSet`|`Array of link:dataobjects.html#AggregatedDataObject[AggregatedDataObject]`|-
-|[[aggregatedDataObjects]]`@aggregatedDataObjects`|`Array of link:dataobjects.html#AggregatedDataObject[AggregatedDataObject]`|-
 |[[booleanValue]]`@booleanValue`|`Boolean`|-
 |[[boxedBooleanSet]]`@boxedBooleanSet`|`Array of Boolean`|-
 |[[boxedBooleanValue]]`@boxedBooleanValue`|`Boolean`|-
@@ -179,10 +172,6 @@
 |[[charValue]]`@charValue`|`Char`|-
 |[[doubleValue]]`@doubleValue`|`Number (double)`|-
 |[[floatValue]]`@floatValue`|`Number (float)`|-
-|[[functionMapped]]`@functionMapped`|`link:dataobjects.html#URI[URI]`|-
-|[[functionMappedMap]]`@functionMappedMap`|`link:dataobjects.html#URI[URI]`|-
-|[[functionMappedSet]]`@functionMappedSet`|`Array of link:dataobjects.html#URI[URI]`|-
-|[[functionMappeds]]`@functionMappeds`|`Array of link:dataobjects.html#URI[URI]`|-
 |[[httpMethod]]`@httpMethod`|`link:enums.html#TimeUnit[TimeUnit]`|-
 |[[httpMethodMap]]`@httpMethodMap`|`link:enums.html#TimeUnit[TimeUnit]`|-
 |[[httpMethodSet]]`@httpMethodSet`|`Array of link:enums.html#TimeUnit[TimeUnit]`|-
@@ -205,22 +194,11 @@
 |[[keyedBoxedLongValues]]`@keyedBoxedLongValues`|`Number (Long)`|-
 |[[keyedBoxedShortValues]]`@keyedBoxedShortValues`|`Number (Short)`|-
 |[[keyedBufferValues]]`@keyedBufferValues`|`Buffer`|-
-|[[keyedDataObjectValues]]`@keyedDataObjectValues`|`link:dataobjects.html#AggregatedDataObject[AggregatedDataObject]`|-
 |[[keyedEnumValues]]`@keyedEnumValues`|`link:enums.html#TimeUnit[TimeUnit]`|-
-|[[keyedFunctionMappedValues]]`@keyedFunctionMappedValues`|`link:dataobjects.html#URI[URI]`|-
 |[[keyedJsonArrayValues]]`@keyedJsonArrayValues`|`Json array`|-
 |[[keyedJsonObjectValues]]`@keyedJsonObjectValues`|`Json object`|-
-|[[keyedMethodMappedValues]]`@keyedMethodMappedValues`|`link:dataobjects.html#ZonedDateTime[ZonedDateTime]`|-
 |[[keyedStringValues]]`@keyedStringValues`|`String`|-
 |[[longValue]]`@longValue`|`Number (long)`|-
-|[[methodMapped]]`@methodMapped`|`link:dataobjects.html#ZonedDateTime[ZonedDateTime]`|-
-|[[methodMappedMap]]`@methodMappedMap`|`link:dataobjects.html#ZonedDateTime[ZonedDateTime]`|-
-|[[methodMappedSet]]`@methodMappedSet`|`Array of link:dataobjects.html#ZonedDateTime[ZonedDateTime]`|-
-|[[methodMappeds]]`@methodMappeds`|`Array of link:dataobjects.html#ZonedDateTime[ZonedDateTime]`|-
-|[[notConvertibleDataObject]]`@notConvertibleDataObject`|`link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
-|[[notConvertibleDataObjectMap]]`@notConvertibleDataObjectMap`|`link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
-|[[notConvertibleDataObjectSet]]`@notConvertibleDataObjectSet`|`Array of link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
-|[[notConvertibleDataObjects]]`@notConvertibleDataObjects`|`Array of link:dataobjects.html#NoConverterDataObject[NoConverterDataObject]`|-
 |[[shortValue]]`@shortValue`|`Number (short)`|-
 |[[stringSet]]`@stringSet`|`Array of String`|-
 |[[stringValue]]`@stringValue`|`String`|-

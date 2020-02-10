@@ -6,7 +6,8 @@ import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.type.ClassKind;
-import io.vertx.codegen.type.DataObjectTypeInfo;
+import io.vertx.codegen.type.ClassTypeInfo;
+import io.vertx.codegen.type.DataObjectInfo;
 import io.vertx.codegen.type.MapperInfo;
 import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.writer.CodeWriter;
@@ -46,10 +47,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     PrintWriter writer = new PrintWriter(buffer);
     CodeWriter code = new CodeWriter(writer);
     String visibility= model.isPublicConverter() ? "public" : "";
-    String simpleName = model.getType().getSimpleName();
     boolean inheritConverter = model.getInheritConverter();
-    boolean genSerialize = model.isSerializable();
-    boolean genDeserialize = model.isDeserializable();
 
     writer.print("package " + model.getType().getPackageName() + ";\n");
     writer.print("\n");
@@ -99,48 +97,49 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             }
           }
         } else {
-          switch (propKind) {
-            case API:
-              if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
-                genPropToJson("java.util.Base64.getEncoder().encodeToString(", ".getBytes())", prop, writer);
+          DataObjectInfo dataObject = prop.getType().getDataObject();
+          if (dataObject != null) {
+            if (dataObject.isSerializable()) {
+              String m;
+              MapperInfo mapperInfo = dataObject.getSerializer();
+              String match;
+              switch (mapperInfo.getKind()) {
+                case SELF:
+                  m = "";
+                  match = ".toJson()";
+                  break;
+                case STATIC_METHOD:
+                  m = mapperInfo.getQualifiedName() + "." + String.join(".", mapperInfo.getSelectors()) + "(";
+                  match = ")";
+                  break;
+                default:
+                  throw new UnsupportedOperationException();
               }
-              break;
-            case ENUM:
-              genPropToJson("", ".name()", prop, writer);
-              break;
-            case JSON_OBJECT:
-            case JSON_ARRAY:
-            case OBJECT:
-              genPropToJson("", "", prop, writer);
-              break;
-            case DATA_OBJECT:
-              DataObjectTypeInfo dataObjectType = ((DataObjectTypeInfo)prop.getType());
-              if (dataObjectType.isSerializable()) {
-                String m;
-                MapperInfo mapperInfo = dataObjectType.getSerializer();
-                String match;
-                switch (mapperInfo.getKind()) {
-                  case SELF:
-                    m = "";
-                    match = ".toJson()";
-                    break;
-                  case STATIC_METHOD:
-                    m = mapperInfo.getQualifiedName() + "." + String.join(".", mapperInfo.getSelectors()) + "(";
-                    match = ")";
-                    break;
-                  default:
-                    throw new UnsupportedOperationException();
+              genPropToJson(m, match, prop, writer);
+            } else {
+              return;
+            }
+          } else {
+            switch (propKind) {
+              case API:
+                if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
+                  genPropToJson("java.util.Base64.getEncoder().encodeToString(", ".getBytes())", prop, writer);
                 }
-                genPropToJson(m, match, prop, writer);
-              } else {
-                return;
-              }
-              break;
-            case OTHER:
-              if (prop.getType().getName().equals(Instant.class.getName())) {
-                genPropToJson("DateTimeFormatter.ISO_INSTANT.format(", ")", prop, writer);
-              }
-              break;
+                break;
+              case ENUM:
+                genPropToJson("", ".name()", prop, writer);
+                break;
+              case JSON_OBJECT:
+              case JSON_ARRAY:
+              case OBJECT:
+                genPropToJson("", "", prop, writer);
+                break;
+              case OTHER:
+                if (prop.getType().getName().equals(Instant.class.getName())) {
+                  genPropToJson("DateTimeFormatter.ISO_INSTANT.format(", ")", prop, writer);
+                }
+                break;
+            }
           }
         }
       }
@@ -223,60 +222,61 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             }
           }
         } else {
-          switch (propKind) {
-            case API:
-              if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
-                genPropFromJson("String", "io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)", "))", prop, writer);
+          TypeInfo type = prop.getType();
+          DataObjectInfo dataObject = type.getDataObject();
+          if (dataObject != null) {
+            if (dataObject.isDeserializable()) {
+              String simpleName;
+              String match;
+              MapperInfo mapper = dataObject.getDeserializer();
+              TypeInfo jsonType = mapper.getJsonType();
+              switch (mapper.getKind()) {
+                case SELF:
+                  match = "new " + type.getName() + "((JsonObject)";
+                  simpleName = jsonType.getSimpleName();
+                  break;
+                case STATIC_METHOD:
+                  match = mapper.getQualifiedName() + "." + String.join(".", mapper.getSelectors()) + "((" + jsonType.getSimpleName() + ")";
+                  simpleName = jsonType.getSimpleName();
+                  break;
+                default:
+                  throw new AssertionError();
               }
-              break;
-            case JSON_OBJECT:
-              genPropFromJson("JsonObject", "((JsonObject)", ").copy()", prop, writer);
-              break;
-            case JSON_ARRAY:
-              genPropFromJson("JsonArray", "((JsonArray)", ").copy()", prop, writer);
-              break;
-            case DATA_OBJECT:
-              DataObjectTypeInfo dataObjectTypeInfo = ((DataObjectTypeInfo)prop.getType());
-              if (dataObjectTypeInfo.isDeserializable()) {
-                String simpleName;
-                String match;
-                MapperInfo mapper = dataObjectTypeInfo.getDeserializer();
-                TypeInfo jsonType = mapper.getTargetType();
-                switch (mapper.getKind()) {
-                  case SELF:
-                    match = "new " + dataObjectTypeInfo.getName() + "((JsonObject)";
-                    simpleName = jsonType.getSimpleName();
-                    break;
-                  case STATIC_METHOD:
-                    match = mapper.getQualifiedName() + "." + String.join(".", mapper.getSelectors()) + "((" + jsonType.getSimpleName() + ")";
-                    simpleName = jsonType.getSimpleName();
-                    break;
-                  default:
-                    throw new AssertionError();
+              genPropFromJson(
+                simpleName,
+                match,
+                ")",
+                prop,
+                writer
+              );
+
+            }
+          } else {
+            switch (propKind) {
+              case API:
+                if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
+                  genPropFromJson("String", "io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)", "))", prop, writer);
                 }
-                genPropFromJson(
-                  simpleName,
-                  match,
-                  ")",
-                  prop,
-                  writer
-                );
-              } else {
-                return;
-              }
-              break;
-            case ENUM:
-              genPropFromJson("String", prop.getType().getName() + ".valueOf((String)", ")", prop, writer);
-              break;
-            case OBJECT:
-              genPropFromJson("Object", "", "", prop, writer);
-              break;
-            case OTHER:
-              if (prop.getType().getName().equals(Instant.class.getName())) {
-                genPropFromJson("String", "Instant.from(DateTimeFormatter.ISO_INSTANT.parse((String)", "))", prop, writer);
-              }
-              break;
-            default:
+                break;
+              case JSON_OBJECT:
+                genPropFromJson("JsonObject", "((JsonObject)", ").copy()", prop, writer);
+                break;
+              case JSON_ARRAY:
+                genPropFromJson("JsonArray", "((JsonArray)", ").copy()", prop, writer);
+                break;
+              case ENUM:
+                genPropFromJson("String", prop.getType().getName() + ".valueOf((String)", ")", prop, writer);
+                break;
+              case OBJECT:
+                genPropFromJson("Object", "", "", prop, writer);
+                break;
+              case OTHER:
+                if (prop.getType().getName().equals(Instant.class.getName())) {
+                  genPropFromJson("String", "Instant.from(DateTimeFormatter.ISO_INSTANT.parse((String)", "))", prop, writer);
+                }
+                break;
+              default:
+            }
           }
         }
       }
