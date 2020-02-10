@@ -125,11 +125,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
                     match = ".toJson()";
                     break;
                   case STATIC_METHOD:
-                    m = mapperInfo.getQualifiedName() + "." + mapperInfo.getName() + "(";
-                    match = ")";
-                    break;
-                  case FUNCTION:
-                    m = mapperInfo.getQualifiedName() + "." + mapperInfo.getName() + ".apply(";
+                    m = mapperInfo.getQualifiedName() + "." + String.join(".", mapperInfo.getSelectors()) + "(";
                     match = ")";
                     break;
                   default:
@@ -252,11 +248,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
                     simpleName = jsonType.getSimpleName();
                     break;
                   case STATIC_METHOD:
-                    match = mapper.getQualifiedName() + "." + mapper.getName() + "((" + jsonType.getSimpleName() + ")";
-                    simpleName = jsonType.getSimpleName();
-                    break;
-                  case FUNCTION:
-                    match = mapper.getQualifiedName() + "." + mapper.getName() + ".apply((" + jsonType.getSimpleName() + ")";
+                    match = mapper.getQualifiedName() + "." + String.join(".", mapper.getSelectors()) + "((" + jsonType.getSimpleName() + ")";
                     simpleName = jsonType.getSimpleName();
                     break;
                   default:

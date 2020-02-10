@@ -3,7 +3,7 @@ package io.vertx.codegen;
 import io.vertx.codegen.annotations.Mapper;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.type.ClassKind;
-import io.vertx.codegen.type.TypeInfo;
+import io.vertx.codegen.type.MapperInfo;
 import io.vertx.codegen.type.TypeMirrorFactory;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -13,12 +13,14 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
@@ -55,12 +57,19 @@ public class CodeGen {
   private final Set<ExecutableElement> mapperElts = new HashSet<>();
 
   private final HashMap<String, PackageElement> modules = new HashMap<>();
+  private final ProcessingEnvironment env;
   private final Elements elementUtils;
   private final Types typeUtils;
+  private final TypeMirrorFactory tmf;
 
-  public CodeGen(ProcessingEnvironment env, RoundEnvironment round, ClassLoader loader) {
+  public CodeGen(ProcessingEnvironment env) {
+    this.env = env;
     this.elementUtils = env.getElementUtils();
     this.typeUtils = env.getTypeUtils();
+    this.tmf = new TypeMirrorFactory(elementUtils, typeUtils);
+  }
+
+  public void init(RoundEnvironment round, ClassLoader loader) {
     loaderMap.put(env, loader);
     Predicate<Element> implFilter = elt -> {
       String fqn = elementUtils.getPackageOf(elt).getQualifiedName().toString();
@@ -72,76 +81,150 @@ public class CodeGen {
       }
     };
 
-    TypeMirrorFactory tmf = new TypeMirrorFactory(elementUtils, typeUtils);
+    // Only for the scope of this method
+    class Converter {
+      public final TypeElement converter;
+      public final List<String> selectors;
+      public Converter(TypeElement converter, List<String> selectors) {
+        this.converter = converter;
+        this.selectors = selectors;
+      }
+    }
+    List<Converter> converters = new ArrayList<>();
 
+    // Discover serializers based on @Mapper annotation
     round.getElementsAnnotatedWith(Mapper.class)
-      .stream()
       .forEach(elt -> {
-        if (!elt.getModifiers().contains(Modifier.STATIC)) {
-          throw new GenException(elt, "Annotated mapper element must be static");
-        }
-        if (!elt.getModifiers().contains(Modifier.PUBLIC)) {
-          throw new GenException(elt, "Annotated mapper element must be public");
-        }
-        if (elt instanceof ExecutableElement) {
-          ExecutableElement methElt = (ExecutableElement) elt;
-          if (methElt.getParameters().size() < 1) {
-            throw new GenException(elt, "Annotated method mapper cannot have empty arguments");
-          }
-          if (methElt.getParameters().size() > 1) {
-            throw new GenException(elt, "Annotated method mapper must have one argument");
-          }
-          TypeMirror paramType = methElt.getParameters().get(0).asType();
-          TypeMirror returnType = methElt.getReturnType();
-          ClassKind paramKind = ClassKind.getKind(paramType.toString(), false, false);
-          ClassKind returnKind = ClassKind.getKind(returnType.toString(), false, false);
-          if (paramKind.json || paramKind.basic || paramKind == ClassKind.OBJECT) {
-            tmf.addDataObjectDeserializer(methElt, returnType, paramType);
-          } else if (returnKind.json || returnKind.basic || returnKind == ClassKind.OBJECT) {
-            tmf.addDataObjectSerializer(methElt, paramType, returnType);
-          } else {
-            throw new GenException(methElt, "Mapper method doees not declare a JSON type");
-          }
-        } else {
-          VariableElement variableElt = (VariableElement) elt;
-          TypeElement parameterizedElt = elementUtils.getTypeElement("java.util.function.Function");
-          TypeMirror parameterizedType = parameterizedElt.asType();
-          TypeMirror rawType = typeUtils.erasure(parameterizedType);
-          DeclaredType blah = (DeclaredType) variableElt.asType();
-          if (typeUtils.isSubtype(blah, rawType)) {
-            TypeMirror paramType = Helper.resolveTypeParameter(typeUtils, blah, parameterizedElt.getTypeParameters().get(0));
-            TypeMirror returnType = Helper.resolveTypeParameter(typeUtils, blah, parameterizedElt.getTypeParameters().get(1));
-            ClassKind paramKind = ClassKind.getKind(paramType.toString(), false, false);
-            ClassKind returnKind = ClassKind.getKind(returnType.toString(), false, false);
-            if (paramKind.json || paramKind.basic || paramKind == ClassKind.OBJECT) {
-              tmf.addDataObjectDeserializer(variableElt, returnType, paramType);
-            } else if (returnKind.json || returnKind.basic || returnKind == ClassKind.OBJECT) {
-              tmf.addDataObjectSerializer(variableElt, paramType, returnType);
-            } else {
-              throw new GenException(variableElt, "Mapper method doees not declare a JSON type");
-            }
-          }
+        TypeElement serializerElt = (TypeElement) elt.getEnclosingElement();
+        switch (elt.getKind()) {
+          case FIELD:
+            converters.add(new Converter(serializerElt, Collections.singletonList(elt.getSimpleName().toString())));
+            break;
+          case METHOD:
+            converters.add(new Converter(serializerElt, Collections.singletonList(elt.getSimpleName().toString())));
+            break;
         }
       });
+
+    // Process serializers
+    converters.forEach(converter -> {
+      // TypeElement typeElt = elementUtils.getTypeElement(c.type);
+      TypeElement converterElt = converter.converter;
+      TypeMirror converterType = converterElt.asType();
+      for (int i = 0;i < converter.selectors.size();i++) {
+        Resolved next = resolveMember(converterElt, converterType, converter.selectors.get(i));
+        Set<Modifier> modifiers = next.element.getModifiers();
+        if (!modifiers.contains(Modifier.PUBLIC)) {
+          throw new GenException(converterElt, "Annotated mapper element must be public");
+        }
+        if (i == 0 && !modifiers.contains(Modifier.STATIC)) {
+          throw new GenException(converterElt, "Annotated mapper element must be static");
+        }
+        converterType = next.type;
+      }
+      if (converterType.getKind() == TypeKind.EXECUTABLE) {
+        ExecutableType execType = (ExecutableType) converterType;
+        processSerializerOrDeserializer(converterElt, /*typeElt, */converter.selectors, execType);
+      } else if (converterType.getKind() == TypeKind.DECLARED) {
+        // Handle function automatically
+        TypeElement functionElt = elementUtils.getTypeElement(Function.class.getName());
+        TypeMirror t2 = typeUtils.erasure(functionElt.asType());
+        if (typeUtils.isSubtype(converterType, t2)) {
+          Resolved apply = resolveMember(converterElt, converterType, "apply");
+          ArrayList<String> selectors = new ArrayList<>(converter.selectors);
+          selectors.add("apply");
+          processSerializerOrDeserializer(converterElt, /*typeElt, */selectors, (ExecutableType) apply.type);
+        }
+        // Incorrect
+      }
+    });
     round.getRootElements().stream()
       .filter(implFilter)
       .filter(elt -> elt instanceof TypeElement)
       .map(elt -> (TypeElement)elt).forEach(te -> {
-        for (ModelProvider provider : PROVIDERS) {
-          Model model = provider.getModel(env, tmf, te);
-          if (model != null) {
-            String kind = model.getKind();
-            all.add(te);
-            Map<String, Map.Entry<TypeElement, Model>> map = models.computeIfAbsent(kind, a -> new HashMap<>());
-            ModelEntry<TypeElement, Model> entry = new ModelEntry<>(te, () -> model);
-            map.put(Helper.getNonGenericType(te.asType().toString()), entry);
-          }
+      for (ModelProvider provider : PROVIDERS) {
+        Model model = provider.getModel(env, tmf, te);
+        if (model != null) {
+          String kind = model.getKind();
+          all.add(te);
+          Map<String, Map.Entry<TypeElement, Model>> map = models.computeIfAbsent(kind, a -> new HashMap<>());
+          ModelEntry<TypeElement, Model> entry = new ModelEntry<>(te, () -> model);
+          map.put(Helper.getNonGenericType(te.asType().toString()), entry);
         }
+      }
     });
     round.getElementsAnnotatedWith(ModuleGen.class).
       stream().
       map(element -> (PackageElement) element).
       forEach(element -> modules.put(element.getQualifiedName().toString(), element));
+  }
+
+  private static class Resolved {
+    final Element element;
+    final TypeMirror type;
+    private Resolved(Element element, TypeMirror type) {
+      this.element = element;
+      this.type = type;
+    }
+  }
+
+  /**
+   * Resolve the {@code member} of a given {@code type}
+   *
+   * @param elt for reporting properly error
+   * @param type the type to resolve the member from
+   * @param member the member string name to resolve
+   * @return the resolved member
+   */
+  private Resolved resolveMember(Element elt, TypeMirror type, String member) {
+    TypeKind kind = type.getKind();
+    if (kind == TypeKind.DECLARED) {
+      // For now only support this
+      DeclaredType declaredType = (DeclaredType) type;
+      return declaredType
+        .asElement()
+        .getEnclosedElements()
+        .stream()
+        .filter(e -> e.getSimpleName().toString().equals(member))
+        .findFirst()
+        .map(memberElt -> new Resolved(memberElt, typeUtils.asMemberOf(declaredType, memberElt)))
+        .orElse(null);
+    }
+    throw new GenException(elt, "Only declared element are supported");
+  }
+
+  private void processSerializerOrDeserializer(TypeElement converterElt, /*TypeElement typeElt, */List<String> selectors, ExecutableType methodType) {
+    if (methodType.getParameterTypes().size() < 1) {
+      throw new GenException(converterElt, "Annotated method mapper cannot have empty arguments");
+    }
+    if (methodType.getParameterTypes().size() > 1) {
+      throw new GenException(converterElt, "Annotated method mapper must have one argument");
+    }
+    TypeMirror paramType = methodType.getParameterTypes().get(0);
+//    if (paramType.toString().equals("java.lang.CharSequence")) {
+//      // Special handling
+//      paramType = elementUtils.getTypeElement("java.lang.String").asType();
+//    }
+    TypeMirror returnType = methodType.getReturnType();
+    ClassKind paramKind = ClassKind.getKind(paramType.toString(), false, false);
+    ClassKind returnKind = ClassKind.getKind(returnType.toString(), false, false);
+    if (paramKind.json || paramKind.basic || paramKind == ClassKind.OBJECT) {
+      MapperInfo mapper = new MapperInfo();
+      mapper.setQualifiedName(converterElt.getQualifiedName().toString());
+      mapper.setTargetType(tmf.create(paramType));
+      mapper.setSelectors(selectors);
+      mapper.setKind(MapperKind.STATIC_METHOD);
+      tmf.addDataObjectDeserializer(converterElt, returnType, mapper);
+    } else if (returnKind.json || returnKind.basic || returnKind == ClassKind.OBJECT) {
+      MapperInfo mapper = new MapperInfo();
+      mapper.setQualifiedName(converterElt.getQualifiedName().toString());
+      mapper.setTargetType(tmf.create(returnType));
+      mapper.setSelectors(selectors);
+      mapper.setKind(MapperKind.STATIC_METHOD);
+      tmf.addDataObjectSerializer(converterElt, paramType, mapper);
+    } else {
+      throw new GenException(converterElt, "Mapper method does not declare a JSON type");
+    }
   }
 
   public Stream<Map.Entry<? extends Element, ? extends Model>> getModels() {

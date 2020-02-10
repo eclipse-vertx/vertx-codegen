@@ -31,6 +31,24 @@ public class TypeMirrorFactory {
     this.typeUtils = typeUtils;
   }
 
+  public void addDataObjectDeserializer(Element elt, TypeMirror dataObjectType, MapperInfo mapper) {
+    String key = dataObjectType.toString();
+    if (serializers.containsKey(key) && !serializers.get(key).getTargetType().equals(mapper.getTargetType())) {
+      throw new GenException(elt, "Mapper cannot declare mixed JSON types");
+    }
+    deserializers.putIfAbsent(key, mapper);
+  }
+
+  public void addDataObjectSerializer(Element elt, TypeMirror dataObjectType, MapperInfo mapper) {
+    String key = dataObjectType.toString();
+    if (deserializers.containsKey(key) && !deserializers.get(key).getTargetType().equals(mapper.getTargetType())) {
+      throw new GenException(elt, "Mapper cannot declare mixed JSON types " + deserializers.get(key).getTargetType() + " " + mapper.getTargetType());
+    }
+    serializers.putIfAbsent(key, mapper);
+  }
+
+
+/*
   public void addDataObjectDeserializer(Element elt, TypeMirror dataObjectType, TypeMirror jsonType) {
     String key = dataObjectType.toString();
     MapperInfo mapper = deserializers.computeIfAbsent(key, k -> new MapperInfo());
@@ -41,11 +59,12 @@ public class TypeMirrorFactory {
       throw new GenException(elt, "Mapper cannot declare mixed JSON types");
     }
     mapper.setTargetType(jsonTypeInfo);
-    mapper.setName(elt.getSimpleName().toString());
+    mapper.setMethod(elt.getSimpleName().toString());
     mapper.setKind(elt.getKind() == ElementKind.METHOD ? MapperKind.STATIC_METHOD : MapperKind.FUNCTION);
   }
+*/
 
-  public void addDataObjectSerializer(Element elt, TypeMirror dataObjectType, TypeMirror jsonType) {
+/*  public void addDataObjectSerializer(Element elt, TypeMirror dataObjectType, TypeMirror jsonType) {
     String key = dataObjectType.toString();
     MapperInfo mapper = serializers.computeIfAbsent(key, k -> new MapperInfo());
     TypeElement a = (TypeElement) elt.getEnclosingElement();
@@ -55,9 +74,9 @@ public class TypeMirrorFactory {
       throw new GenException(elt, "Mapper cannot declare mixed JSON types");
     }
     mapper.setTargetType(jsonTypeInfo);
-    mapper.setName(elt.getSimpleName().toString());
+    mapper.setMethod(elt.getSimpleName().toString());
     mapper.setKind(elt.getKind() == ElementKind.METHOD ? MapperKind.STATIC_METHOD : MapperKind.FUNCTION);
-  }
+  }*/
 
   public TypeInfo create(TypeMirror type) {
     return create(null, type);
