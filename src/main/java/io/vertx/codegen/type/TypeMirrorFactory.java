@@ -47,37 +47,6 @@ public class TypeMirrorFactory {
     serializers.putIfAbsent(key, mapper);
   }
 
-
-/*
-  public void addDataObjectDeserializer(Element elt, TypeMirror dataObjectType, TypeMirror jsonType) {
-    String key = dataObjectType.toString();
-    MapperInfo mapper = deserializers.computeIfAbsent(key, k -> new MapperInfo());
-    TypeElement a = (TypeElement) elt.getEnclosingElement();
-    mapper.setQualifiedName(a.getQualifiedName().toString());
-    TypeInfo jsonTypeInfo = create(jsonType);
-    if (serializers.containsKey(key) && !serializers.get(key).getTargetType().equals(jsonTypeInfo)) {
-      throw new GenException(elt, "Mapper cannot declare mixed JSON types");
-    }
-    mapper.setTargetType(jsonTypeInfo);
-    mapper.setMethod(elt.getSimpleName().toString());
-    mapper.setKind(elt.getKind() == ElementKind.METHOD ? MapperKind.STATIC_METHOD : MapperKind.FUNCTION);
-  }
-*/
-
-/*  public void addDataObjectSerializer(Element elt, TypeMirror dataObjectType, TypeMirror jsonType) {
-    String key = dataObjectType.toString();
-    MapperInfo mapper = serializers.computeIfAbsent(key, k -> new MapperInfo());
-    TypeElement a = (TypeElement) elt.getEnclosingElement();
-    mapper.setQualifiedName(a.getQualifiedName().toString());
-    TypeInfo jsonTypeInfo = create(jsonType);
-    if (deserializers.containsKey(key) && !deserializers.get(key).getTargetType().equals(jsonTypeInfo)) {
-      throw new GenException(elt, "Mapper cannot declare mixed JSON types");
-    }
-    mapper.setTargetType(jsonTypeInfo);
-    mapper.setMethod(elt.getSimpleName().toString());
-    mapper.setKind(elt.getKind() == ElementKind.METHOD ? MapperKind.STATIC_METHOD : MapperKind.FUNCTION);
-  }*/
-
   public TypeInfo create(TypeMirror type) {
     return create(null, type);
   }
