@@ -21,8 +21,9 @@ public class ApiTypeInfo extends ClassTypeInfo {
       TypeInfo handlerArg,
       ModuleInfo module,
       boolean nullable,
-      boolean proxyGen) {
-    super(ClassKind.API, fqcn, module, nullable, params);
+      boolean proxyGen,
+      DataObjectInfo dataObject) {
+    super(ClassKind.API, fqcn, module, nullable, params, dataObject);
     this.concrete = concrete;
     this.proxyGen = proxyGen;
     this.handlerArg = handlerArg;

@@ -119,8 +119,8 @@ public class DataObjectCheatsheetGen extends Generator<DataObjectModel> {
           return "Json object";
         case JSON_ARRAY:
           return "Json array";
-        case DATA_OBJECT:
-          return "link:dataobjects.html#" + type.getRaw().getSimpleName() + '[' + type.getRaw().getSimpleName() + ']';
+//        case DATA_OBJECT:
+//          return "link:dataobjects.html#" + type.getRaw().getSimpleName() + '[' + type.getRaw().getSimpleName() + ']';
         case ENUM:
           return "link:enums.html#" + type.getRaw().getSimpleName() + '[' + type.getRaw().getSimpleName() + ']';
         case API:

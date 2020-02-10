@@ -351,7 +351,7 @@ public class ClassTest extends ClassTestBase {
     assertEquals(1, model.getMethods().size());
     MethodInfo mi = model.getMethods().get(0);
     assertEquals("foo", mi.getName());
-    assertEquals(new ParameterizedTypeInfo(new ClassTypeInfo(ClassKind.API, GenericInterface.class.getName(), null, false, Collections.emptyList()), false, Arrays.asList(TypeReflectionFactory.create(Void.class))), mi.getParams().get(0).getType());
+    assertEquals(new ParameterizedTypeInfo(new ClassTypeInfo(ClassKind.API, GenericInterface.class.getName(), null, false, Collections.emptyList(), null), false, Arrays.asList(TypeReflectionFactory.create(Void.class))), mi.getParams().get(0).getType());
     ParameterizedTypeInfo genericType = (ParameterizedTypeInfo) mi.getParams().get(0).getType();
     ClassTypeInfo voidType = (ClassTypeInfo) genericType.getArgs().get(0);
     assertEquals(ClassKind.VOID, voidType.getKind());
@@ -1120,7 +1120,7 @@ public class ClassTest extends ClassTestBase {
     method = model.getMethods().get(1);
     checkMethod(method, "methodWithMappedDataObjectParam", 1, "void", MethodKind.OTHER);
     params = method.getParams();
-    checkParam(params.get(0), "uri", "java.net.URI", ClassKind.DATA_OBJECT);
+    checkParam(params.get(0), "uri", "java.net.URI", ClassKind.OTHER);
   }
 
   @Test
@@ -2504,49 +2504,49 @@ public class ClassTest extends ClassTestBase {
     MethodInfo returnMyPojoList = model.getMethodMap().get("returnMyPojoList").get(0);
     checkMethod(returnMyPojoList, "returnMyPojoList", 0, new TypeLiteral<List<MyPojo>>() {}, MethodKind.OTHER);
     assertEquals(ClassKind.LIST, returnMyPojoList.getReturnType().getKind());
-    assertEquals(ClassKind.DATA_OBJECT, ((ParameterizedTypeInfo)returnMyPojoList.getReturnType()).getArg(0).getKind());
+    assertEquals(ClassKind.OTHER, ((ParameterizedTypeInfo)returnMyPojoList.getReturnType()).getArg(0).getKind());
     assertEquals(MyPojo.class.getName(), ((ParameterizedTypeInfo)returnMyPojoList.getReturnType()).getArg(0).getName());
 
     MethodInfo returnMyPojoSet = model.getMethodMap().get("returnMyPojoSet").get(0);
     checkMethod(returnMyPojoSet, "returnMyPojoSet", 0, new TypeLiteral<Set<MyPojo>>() {}, MethodKind.OTHER);
     assertEquals(ClassKind.SET, returnMyPojoSet.getReturnType().getKind());
-    assertEquals(ClassKind.DATA_OBJECT, ((ParameterizedTypeInfo)returnMyPojoSet.getReturnType()).getArg(0).getKind());
+    assertEquals(ClassKind.OTHER, ((ParameterizedTypeInfo)returnMyPojoSet.getReturnType()).getArg(0).getKind());
     assertEquals(MyPojo.class.getName(), ((ParameterizedTypeInfo)returnMyPojoSet.getReturnType()).getArg(0).getName());
 
     MethodInfo returnMyPojoMap = model.getMethodMap().get("returnMyPojoMap").get(0);
     checkMethod(returnMyPojoMap, "returnMyPojoMap", 0, new TypeLiteral<Map<String, MyPojo>>() {}, MethodKind.OTHER);
     assertEquals(ClassKind.MAP, returnMyPojoMap.getReturnType().getKind());
-    assertEquals(ClassKind.DATA_OBJECT, ((ParameterizedTypeInfo)returnMyPojoMap.getReturnType()).getArg(1).getKind());
+    assertEquals(ClassKind.OTHER, ((ParameterizedTypeInfo)returnMyPojoMap.getReturnType()).getArg(1).getKind());
     assertEquals(MyPojo.class.getName(), ((ParameterizedTypeInfo)returnMyPojoMap.getReturnType()).getArg(1).getName());
 
     MethodInfo myPojoParam = model.getMethodMap().get("myPojoParam").get(0);
     checkMethod(myPojoParam, "myPojoParam", 1, "void", MethodKind.OTHER);
-    checkParam(myPojoParam.getParam(0), "p", MyPojo.class.getName(), ClassKind.DATA_OBJECT);
+    checkParam(myPojoParam.getParam(0), "p", MyPojo.class.getName(), ClassKind.OTHER);
 
     MethodInfo myPojoListParam = model.getMethodMap().get("myPojoListParam").get(0);
     checkMethod(myPojoListParam, "myPojoListParam", 1, "void", MethodKind.OTHER);
     checkParam(myPojoListParam.getParam(0), "p", new TypeLiteral<List<MyPojo>>() {}.type.getTypeName(), ClassKind.LIST);
-    assertEquals(ClassKind.DATA_OBJECT, ((ParameterizedTypeInfo)myPojoListParam.getParam(0).getType()).getArg(0).getKind());
+    assertEquals(ClassKind.OTHER, ((ParameterizedTypeInfo)myPojoListParam.getParam(0).getType()).getArg(0).getKind());
 
     MethodInfo myPojoSetParam = model.getMethodMap().get("myPojoSetParam").get(0);
     checkMethod(myPojoSetParam, "myPojoSetParam", 1, "void", MethodKind.OTHER);
     checkParam(myPojoSetParam.getParam(0), "p", new TypeLiteral<Set<MyPojo>>() {}.type.getTypeName(), ClassKind.SET);
-    assertEquals(ClassKind.DATA_OBJECT, ((ParameterizedTypeInfo)myPojoSetParam.getParam(0).getType()).getArg(0).getKind());
+    assertEquals(ClassKind.OTHER, ((ParameterizedTypeInfo)myPojoSetParam.getParam(0).getType()).getArg(0).getKind());
 
     MethodInfo myPojoMapParam = model.getMethodMap().get("myPojoMapParam").get(0);
     checkMethod(myPojoMapParam, "myPojoMapParam", 1, "void", MethodKind.OTHER);
     checkParam(myPojoMapParam.getParam(0), "p", new TypeLiteral<Map<String, MyPojo>>() {}.type.getTypeName(), ClassKind.MAP);
-    assertEquals(ClassKind.DATA_OBJECT, ((ParameterizedTypeInfo)myPojoMapParam.getParam(0).getType()).getArg(1).getKind());
+    assertEquals(ClassKind.OTHER, ((ParameterizedTypeInfo)myPojoMapParam.getParam(0).getType()).getArg(1).getKind());
 
     MethodInfo myPojoHandler = model.getMethodMap().get("myPojoHandler").get(0);
     checkMethod(myPojoHandler, "myPojoHandler", 1, "void", MethodKind.HANDLER);
     checkParam(myPojoHandler.getParam(0), "handler", new TypeLiteral<Handler<MyPojo>>() {}.type.getTypeName(), ClassKind.HANDLER);
-    assertEquals(ClassKind.DATA_OBJECT, ((ParameterizedTypeInfo)myPojoHandler.getParam(0).getType()).getArg(0).getKind());
+    assertEquals(ClassKind.OTHER, ((ParameterizedTypeInfo)myPojoHandler.getParam(0).getType()).getArg(0).getKind());
 
     MethodInfo myPojoAsyncResultHandler = model.getMethodMap().get("myPojoAsyncResultHandler").get(0);
     checkMethod(myPojoAsyncResultHandler, "myPojoAsyncResultHandler", 1, "void", MethodKind.FUTURE);
     checkParam(myPojoAsyncResultHandler.getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<MyPojo>>>() {}.type.getTypeName(), ClassKind.HANDLER);
-    assertEquals(ClassKind.DATA_OBJECT, ((ParameterizedTypeInfo)((ParameterizedTypeInfo)myPojoAsyncResultHandler.getParam(0).getType()).getArg(0)).getArg(0).getKind());
+    assertEquals(ClassKind.OTHER, ((ParameterizedTypeInfo)((ParameterizedTypeInfo)myPojoAsyncResultHandler.getParam(0).getType()).getArg(0)).getArg(0).getKind());
 
   }
 

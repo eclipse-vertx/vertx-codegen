@@ -10,6 +10,7 @@ import javax.lang.model.type.*;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,10 @@ import java.util.Map;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class TypeMirrorFactory {
+
+  private static final ModuleInfo VERTX_CORE_MOD = new ModuleInfo("io.vertx.core", "vertx", "io.vertx");
+  private static final ClassTypeInfo JSON_OBJECT = new ClassTypeInfo(ClassKind.JSON_OBJECT, "io.vertx.core.json.JsonObject", VERTX_CORE_MOD, false, Collections.emptyList(), null);
+  private static final ClassTypeInfo JSON_ARRAY = new ClassTypeInfo(ClassKind.JSON_ARRAY, "io.vertx.core.json.JsonArray", VERTX_CORE_MOD, false, Collections.emptyList(), null);
 
   final Elements elementUtils;
   final Types typeUtils;
@@ -33,7 +38,7 @@ public class TypeMirrorFactory {
 
   public void addDataObjectDeserializer(Element elt, TypeMirror dataObjectType, MapperInfo mapper) {
     String key = dataObjectType.toString();
-    if (serializers.containsKey(key) && !serializers.get(key).getTargetType().equals(mapper.getTargetType())) {
+    if (serializers.containsKey(key) && !serializers.get(key).getJsonType().equals(mapper.getJsonType())) {
       throw new GenException(elt, "Mapper cannot declare mixed JSON types");
     }
     deserializers.putIfAbsent(key, mapper);
@@ -41,8 +46,8 @@ public class TypeMirrorFactory {
 
   public void addDataObjectSerializer(Element elt, TypeMirror dataObjectType, MapperInfo mapper) {
     String key = dataObjectType.toString();
-    if (deserializers.containsKey(key) && !deserializers.get(key).getTargetType().equals(mapper.getTargetType())) {
-      throw new GenException(elt, "Mapper cannot declare mixed JSON types " + deserializers.get(key).getTargetType() + " " + mapper.getTargetType());
+    if (deserializers.containsKey(key) && !deserializers.get(key).getJsonType().equals(mapper.getJsonType())) {
+      throw new GenException(elt, "Mapper cannot declare mixed JSON types " + deserializers.get(key).getJsonType() + " " + mapper.getJsonType());
     }
     serializers.putIfAbsent(key, mapper);
   }
@@ -123,7 +128,7 @@ public class TypeMirrorFactory {
         if (kind == ClassKind.BOXED_PRIMITIVE) {
           raw = ClassTypeInfo.PRIMITIVES.get(fqcn);
           if (nullable) {
-            raw = new ClassTypeInfo(raw.kind, raw.name, raw.module, true, raw.params);
+            raw = new ClassTypeInfo(raw.kind, raw.name, raw.module, true, raw.params, null);
           }
         } else {
           List<TypeParamInfo.Class> typeParams = createTypeParams(type);
@@ -145,51 +150,34 @@ public class TypeMirrorFactory {
                 handlerArg = create(resolved);
               }
             }
-            raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, handlerArg, module, nullable, proxyGen);
-          } else if (elt.getAnnotation(DataObject.class) != null) {
-            boolean serializable = Helper.isDataObjectAnnotatedSerializable(elementUtils, elt);
-            boolean deserializable = Helper.isDataObjectAnnotatedDeserializable(elementUtils, typeUtils, elt);
-            TypeInfo jsonType = this.create(elementUtils.getTypeElement("io.vertx.core.json.JsonObject").asType());
-            // Data object annotated here
-            MapperInfo serializer = null;
-            if (serializable) {
-              serializer = new MapperInfo();
-              serializer.setQualifiedName(fqcn);
-              serializer.setKind(MapperKind.SELF);
-              serializer.setTargetType(jsonType);
-            }
-            MapperInfo deserializer = null;
-            if (deserializable) {
-              deserializer = new MapperInfo();
-              deserializer.setQualifiedName(fqcn);
-              deserializer.setKind(MapperKind.SELF);
-              deserializer.setTargetType(jsonType);
-            }
-            raw = new DataObjectTypeInfo(
-              fqcn,
-              module,
-              nullable,
-              typeParams,
-              serializer,
-              deserializer,
-              jsonType
-            );
+            raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, handlerArg, module, nullable, proxyGen, null);
           } else {
             MapperInfo serializer = serializers.get(type.toString());
             MapperInfo deserializer = deserializers.get(type.toString());
-            if (serializer != null || deserializer != null) {
-              raw = new DataObjectTypeInfo(
-                fqcn,
-                module,
-                nullable,
-                typeParams,
-                serializer,
-                deserializer,
-                serializer != null ? serializer.getTargetType() : deserializer.getTargetType()
-              );
-            } else {
-              raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams);
+            if (elt.getAnnotation(DataObject.class) != null) {
+              boolean serializable = Helper.isDataObjectAnnotatedSerializable(elementUtils, elt);
+              boolean deserializable = Helper.isDataObjectAnnotatedDeserializable(elementUtils, typeUtils, elt);
+              TypeInfo jsonType = JSON_OBJECT;
+              if (serializer == null && serializable) {
+                serializer = new MapperInfo();
+                serializer.setQualifiedName(fqcn);
+                serializer.setKind(MapperKind.SELF);
+                serializer.setTargetType(jsonType);
+              }
+              if (deserializer == null && deserializable) {
+                deserializer = new MapperInfo();
+                deserializer.setQualifiedName(fqcn);
+                deserializer.setKind(MapperKind.SELF);
+                deserializer.setTargetType(jsonType);
+              }
             }
+            DataObjectInfo dataObject = null;
+            if (serializer != null || deserializer != null) {
+              dataObject = new DataObjectInfo(
+                serializer,
+                deserializer);
+            }
+            raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams, dataObject);
           }
         }
         return raw;

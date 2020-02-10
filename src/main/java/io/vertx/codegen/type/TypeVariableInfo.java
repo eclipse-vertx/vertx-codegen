@@ -48,7 +48,7 @@ public class TypeVariableInfo extends TypeInfo {
 
   @Override
   public TypeInfo getErased() {
-    return new ClassTypeInfo(ClassKind.OBJECT, Object.class.getName(), null, false, Collections.emptyList());
+    return new ClassTypeInfo(ClassKind.OBJECT, Object.class.getName(), null, false, Collections.emptyList(), null);
   }
 
   @Override

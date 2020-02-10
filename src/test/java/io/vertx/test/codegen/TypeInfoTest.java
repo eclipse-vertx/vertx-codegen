@@ -125,7 +125,7 @@ public class TypeInfoTest {
   @Test
   public void testDataObject() throws Exception {
     doTest(DataObjectHolder.class, map -> {
-      assertDataObject(map.get("dataObject"), TestDataObject.class.getName(), ClassKind.DATA_OBJECT);
+      assertDataObject(map.get("dataObject"), TestDataObject.class.getName(), ClassKind.OTHER);
     });
   }
 
@@ -198,12 +198,12 @@ public class TypeInfoTest {
     return apiType;
   }
 
-  private DataObjectTypeInfo assertDataObject(TypeInfo type, String expectedName, ClassKind expectedKind) {
-    assertEquals(DataObjectTypeInfo.class, type.getClass());
-    DataObjectTypeInfo classType = (DataObjectTypeInfo) type;
-    assertEquals(expectedKind, classType.getKind());
-    assertEquals(expectedName, classType.getName());
-    return classType;
+  private DataObjectInfo assertDataObject(TypeInfo type, String expectedName, ClassKind expectedKind) {
+    DataObjectInfo dataObject = type.getDataObject();
+    assertNotNull(dataObject);
+    assertEquals(expectedKind, type.getKind());
+    assertEquals(expectedName, type.getName());
+    return dataObject;
   }
 
   private ParameterizedTypeInfo assertParameterized(TypeInfo type, String expectedName, ClassKind expectedKind) {

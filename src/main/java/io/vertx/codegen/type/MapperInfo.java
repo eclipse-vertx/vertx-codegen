@@ -14,7 +14,7 @@ public class MapperInfo {
   public MapperInfo() {
   }
 
-  public TypeInfo getTargetType() {
+  public TypeInfo getJsonType() {
     return targetType;
   }
 

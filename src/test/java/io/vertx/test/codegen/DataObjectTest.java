@@ -379,7 +379,7 @@ public class DataObjectTest {
   public void testIgnoreMethods() throws Exception {
     DataObjectModel model = new GeneratorHelper().generateDataObject(IgnoreMethods.class);
     assertNotNull(model);
-    assertEquals(0, model.getPropertyMap().size());
+    assertEquals(Collections.emptyMap(), model.getPropertyMap());
   }
 
   @Test
@@ -836,9 +836,9 @@ public class DataObjectTest {
     assertTrue(model.isPublicConverter());
 
     PropertyInfo myPojoProperty = model.getPropertyMap().get("myPojo");
-    assertEquals(ClassKind.DATA_OBJECT, myPojoProperty.getType().getKind());
-    assertTrue(((DataObjectTypeInfo)myPojoProperty.getType()).isDeserializable());
-    assertTrue(((DataObjectTypeInfo)myPojoProperty.getType()).isSerializable());
+    assertEquals(ClassKind.OTHER, myPojoProperty.getType().getKind());
+    assertTrue(myPojoProperty.getType().getDataObject().isDeserializable());
+    assertTrue(myPojoProperty.getType().getDataObject().isSerializable());
   }
 
   private void assertInvalidDataObject(Class<?> dataObjectClass) throws Exception {

@@ -19,6 +19,7 @@ import io.vertx.core.json.JsonObject;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -77,6 +78,7 @@ public class TestDataObject {
   private ZonedDateTime methodMapped;
   private URI functionMapped;
   private NoConverterDataObject notConvertibleDataObject;
+  private ByteBuffer unmapped;
 
   private List<String> stringValues;
   private List<Boolean> boxedBooleanValues;
@@ -402,6 +404,15 @@ public class TestDataObject {
 
   public TestDataObject setNotConvertibleDataObject(NoConverterDataObject notConvertibleDataObject) {
     this.notConvertibleDataObject = notConvertibleDataObject;
+    return this;
+  }
+
+  public ByteBuffer getUnmapped() {
+    return unmapped;
+  }
+
+  public TestDataObject setUnmapped(ByteBuffer unmapped) {
+    this.unmapped = unmapped;
     return this;
   }
 

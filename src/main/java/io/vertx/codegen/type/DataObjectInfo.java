@@ -1,10 +1,6 @@
 package io.vertx.codegen.type;
 
 import io.vertx.codegen.MapperKind;
-import io.vertx.codegen.ModuleInfo;
-import io.vertx.codegen.TypeParamInfo;
-
-import java.util.List;
 
 /**
  * DataObject could be of two types: static methods annotated with {@link io.vertx.codegen.annotations.Mapper} and the one that is annotated with {@link io.vertx.codegen.annotations.DataObject}
@@ -12,23 +8,22 @@ import java.util.List;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  * @author <a href="slinkydeveloper.com">Francesco Guardiani</a>
  */
-public class DataObjectTypeInfo extends ClassTypeInfo {
+public class DataObjectInfo {
 
   private final MapperInfo serializer;
   private final MapperInfo deserializer;
 
-  public DataObjectTypeInfo(String name, ModuleInfo module, boolean nullable, List<TypeParamInfo.Class> params, MapperInfo serializer, MapperInfo deserializer, TypeInfo jsonType) {
-    super(ClassKind.DATA_OBJECT, name, module, nullable, params);
+  public DataObjectInfo(MapperInfo serializer, MapperInfo deserializer) {
     this.serializer = serializer;
     this.deserializer = deserializer;
   }
 
-  public boolean isDataObjectAnnotatedType() {
+  public boolean isAnnotated() {
     return deserializer != null && deserializer.getKind() == MapperKind.SELF || serializer != null && serializer.getKind() == MapperKind.SELF;
   }
 
-  public TypeInfo getTargetType() {
-    return deserializer != null ? deserializer.getTargetType() : serializer.getTargetType();
+  public TypeInfo getJsonType() {
+    return deserializer != null ? deserializer.getJsonType() : serializer.getJsonType();
   }
 
   public MapperInfo getSerializer() {

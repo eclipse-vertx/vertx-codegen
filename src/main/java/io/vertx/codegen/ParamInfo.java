@@ -18,7 +18,6 @@ package io.vertx.codegen;
 
 import io.vertx.codegen.doc.Text;
 import io.vertx.codegen.type.ClassKind;
-import io.vertx.codegen.type.ClassTypeInfo;
 import io.vertx.codegen.type.ParameterizedTypeInfo;
 import io.vertx.codegen.type.TypeInfo;
 
@@ -98,7 +97,7 @@ public class ParamInfo {
   }
 
   public boolean isDataObject() {
-    return type instanceof ClassTypeInfo && (type).getKind() == ClassKind.DATA_OBJECT;
+    return type.isDataObjectHolder();
   }
 
   @Override

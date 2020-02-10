@@ -2,7 +2,6 @@ package io.vertx.codegen.type;
 
 import io.vertx.codegen.ClassModel;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +37,6 @@ public enum ClassKind {
 
   // API types
   API(false, false, false),
-
-  // Data objects
-  DATA_OBJECT(false, false, false),
 
   // Handler
   HANDLER(false, false, false),
@@ -85,9 +81,7 @@ public enum ClassKind {
       String fqcn,
       boolean isDataObjectAnnotated,
       boolean isVertxGenAnnotated) {
-    if (isDataObjectAnnotated) {
-      return DATA_OBJECT;
-    } else if (isVertxGenAnnotated) {
+    if (isVertxGenAnnotated) {
       return API;
     } else if (fqcn.equals("java.lang.Class")) {
       return CLASS_TYPE;

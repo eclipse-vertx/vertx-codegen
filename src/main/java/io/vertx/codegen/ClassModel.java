@@ -59,8 +59,8 @@ public class ClassModel implements Model {
   public static final String FUNCTION = "java.util.function.Function";
   private static final Logger logger = Logger.getLogger(ClassModel.class.getName());
 
-  private static final ClassTypeInfo ASYNC_RESULT_TYPE = new ClassTypeInfo(ClassKind.ASYNC_RESULT, "io.vertx.core.AsyncResult", null, false, Arrays.asList(new TypeParamInfo.Class("io.vertx.core.AsyncResult", 0, "T")));
-  private static final ClassTypeInfo HANDLER_TYPE = new ClassTypeInfo(ClassKind.HANDLER, "io.vertx.core.Handler", null, false, Arrays.asList(new TypeParamInfo.Class("io.vertx.core.Handler", 0, "T")));
+  private static final ClassTypeInfo ASYNC_RESULT_TYPE = new ClassTypeInfo(ClassKind.ASYNC_RESULT, "io.vertx.core.AsyncResult", null, false, Arrays.asList(new TypeParamInfo.Class("io.vertx.core.AsyncResult", 0, "T")), null);
+  private static final ClassTypeInfo HANDLER_TYPE = new ClassTypeInfo(ClassKind.HANDLER, "io.vertx.core.Handler", null, false, Arrays.asList(new TypeParamInfo.Class("io.vertx.core.Handler", 0, "T")), null);
 
   protected final ProcessingEnvironment env;
   protected final AnnotationValueInfoFactory annotationValueInfoFactory;
@@ -78,7 +78,7 @@ public class ClassModel implements Model {
   protected Set<ClassTypeInfo> collectedTypes = new HashSet<>();
   protected Set<ClassTypeInfo> importedTypes = new HashSet<>();
   protected Set<ApiTypeInfo> referencedTypes = new HashSet<>();
-  protected Set<DataObjectTypeInfo> referencedDataObjectTypes = new HashSet<>();
+  protected Set<ClassTypeInfo> referencedDataObjectTypes = new HashSet<>();
   protected Set<EnumTypeInfo> referencedEnumTypes = new HashSet<>();
   protected boolean concrete;
   protected ClassTypeInfo type;
@@ -183,7 +183,7 @@ public class ClassModel implements Model {
   /**
    * @return all the referenced data object types
    */
-  public Set<DataObjectTypeInfo> getReferencedDataObjectTypes() {
+  public Set<ClassTypeInfo> getReferencedDataObjectTypes() {
     return referencedDataObjectTypes;
   }
 
@@ -395,7 +395,7 @@ public class ClassModel implements Model {
   }
 
   private boolean isLegalDataObjectTypeParam(TypeInfo type) {
-    return type.getKind() == ClassKind.DATA_OBJECT && ((DataObjectTypeInfo) type).isDeserializable();
+    return type.isDataObjectHolder() && type.getDataObject().isDeserializable();
   }
 
   private boolean isLegalClassTypeParam(ExecutableElement elt, TypeInfo type) {
@@ -415,7 +415,7 @@ public class ClassModel implements Model {
   }
 
   protected boolean isLegalDataObjectTypeReturn(TypeInfo type) {
-    return type.getKind() == ClassKind.DATA_OBJECT && ((DataObjectTypeInfo) type).isSerializable();
+    return type.isDataObjectHolder() && type.getDataObject().isSerializable();
   }
 
   protected boolean isLegalContainer(TypeInfo type, boolean allowAnyJavaType) {
@@ -444,8 +444,8 @@ public class ClassModel implements Model {
 
   private boolean isLegalVertxGenTypeArgument(TypeInfo arg) {
     ClassKind kind = arg.getKind();
-    return kind == ClassKind.API || arg.isVariable() || kind == ClassKind.VOID
-      || kind.basic || kind.json || kind == ClassKind.DATA_OBJECT || kind == ClassKind.ENUM || kind == ClassKind.OTHER;
+    return kind == ClassKind.API || arg.isVariable() || kind == ClassKind.VOID || kind.basic || kind.json
+      || kind == ClassKind.ENUM || kind == ClassKind.OTHER;
   }
 
   private boolean isLegalVertxGenInterface(TypeInfo type, boolean allowParameterized) {
@@ -520,8 +520,7 @@ public class ClassModel implements Model {
 
     referencedDataObjectTypes = collectedTypes.stream().
         map(ClassTypeInfo::getRaw).
-        flatMap(Helper.instanceOf(DataObjectTypeInfo.class)).
-        filter(t -> t.getKind() == ClassKind.DATA_OBJECT).
+        filter(TypeInfo::isDataObjectHolder).
         collect(Collectors.toSet());
 
     referencedEnumTypes = collectedTypes.stream().

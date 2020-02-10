@@ -73,8 +73,9 @@ public class TypeReflectionFactory {
           if (kind == ClassKind.API) {
             java.lang.reflect.TypeVariable<Class<Handler>> classTypeVariable = Handler.class.getTypeParameters()[0];
             Type handlerArg = Helper.resolveTypeParameter(type, classTypeVariable);
-            return new ApiTypeInfo(fqcn, true, typeParams, handlerArg != null ? create(handlerArg) : null, module, false, false);
-          } else if (kind == ClassKind.DATA_OBJECT) {
+            return new ApiTypeInfo(fqcn, true, typeParams, handlerArg != null ? create(handlerArg) : null, module, false, false, null);
+          } else {
+
             boolean serializable = isDataObjectAnnotatedSerializable(classType);
             boolean deserializable = isDataObjectAnnotatedDeserializable(classType);
             MapperInfo serializer = null;
@@ -89,18 +90,11 @@ public class TypeReflectionFactory {
               deserializer.setQualifiedName(fqcn);
               deserializer.setKind(MapperKind.SELF);
             }
-            TypeInfo jsonType = create(JsonObject.class);
-            return new DataObjectTypeInfo(
-              fqcn,
-              module,
-              false,
-              typeParams,
-              serializer,
-              deserializer,
-              create(JsonObject.class)
-            );
-          } else {
-            return new ClassTypeInfo(kind, fqcn, module, false, typeParams);
+            DataObjectInfo dataObject = null;
+            if (serializable || serializable) {
+              dataObject = new DataObjectInfo(serializer, deserializer);
+            }
+            return new ClassTypeInfo(kind, fqcn, module, false, typeParams, dataObject);
           }
         }
       }

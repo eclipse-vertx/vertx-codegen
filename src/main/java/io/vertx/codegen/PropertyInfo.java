@@ -182,4 +182,9 @@ public class PropertyInfo {
   public Text getDeprecatedDesc() {
     return deprecatedDesc;
   }
+
+  @Override
+  public String toString() {
+    return "PropertyInfo(name=" + name + ")";
+  }
 }
