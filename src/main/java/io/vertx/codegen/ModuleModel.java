@@ -1,6 +1,5 @@
 package io.vertx.codegen;
 
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.type.AnnotationValueInfo;
@@ -109,7 +108,7 @@ public class ModuleModel implements Model {
   }
 
   private static boolean isLegalJsonType(TypeMirror type) {
-    ClassKind kind = ClassKind.getKind(type.toString(), type.getAnnotation(DataObject.class) != null, type.getAnnotation(VertxGen.class) != null);
+    ClassKind kind = ClassKind.getKind(type.toString(), type.getAnnotation(VertxGen.class) != null);
     return kind.json ||
       type.toString().equals("java.lang.Boolean") ||
       type.toString().equals("java.lang.Number") ||

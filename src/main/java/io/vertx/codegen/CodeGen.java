@@ -206,8 +206,8 @@ public class CodeGen {
 //      paramType = elementUtils.getTypeElement("java.lang.String").asType();
 //    }
     TypeMirror returnType = methodType.getReturnType();
-    ClassKind paramKind = ClassKind.getKind(paramType.toString(), false, false);
-    ClassKind returnKind = ClassKind.getKind(returnType.toString(), false, false);
+    ClassKind paramKind = ClassKind.getKind(paramType.toString(), false);
+    ClassKind returnKind = ClassKind.getKind(returnType.toString(), false);
     if (paramKind.json || paramKind.basic || paramKind == ClassKind.OBJECT) {
       MapperInfo mapper = new MapperInfo();
       mapper.setQualifiedName(converterElt.getQualifiedName().toString());

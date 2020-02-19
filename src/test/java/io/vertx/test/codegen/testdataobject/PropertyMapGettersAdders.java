@@ -34,6 +34,8 @@ public interface PropertyMapGettersAdders {
   PropertyMapGettersAdders addBoxedLong(String key, Long b);
   Map<String, ApiObject> getApiObjects();
   PropertyMapGettersAdders addApiObject(String key, ApiObject s);
+  Map<String, ApiObjectWithMapper> getApiObjectWithMappers();
+  PropertyMapGettersAdders addApiObjectWithMapper(String key, ApiObjectWithMapper s);
   Map<String, EmptyDataObject> getDataObjects();
   PropertyMapGettersAdders addDataObject(String key, EmptyDataObject nested);
   Map<String, ToJsonDataObject> getToJsonDataObjects();

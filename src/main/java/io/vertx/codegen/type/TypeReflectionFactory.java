@@ -4,7 +4,6 @@ import io.vertx.codegen.Helper;
 import io.vertx.codegen.MapperKind;
 import io.vertx.codegen.ModuleInfo;
 import io.vertx.codegen.TypeParamInfo;
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
@@ -64,7 +63,7 @@ public class TypeReflectionFactory {
             false
           );
         } else {
-          ClassKind kind = ClassKind.getKind(fqcn, classType.getAnnotation(DataObject.class) != null, classType.getAnnotation(VertxGen.class) != null);
+          ClassKind kind = ClassKind.getKind(fqcn, classType.getAnnotation(VertxGen.class) != null);
           List<TypeParamInfo.Class> typeParams = new ArrayList<>();
           int index = 0;
           for (java.lang.reflect.TypeVariable<? extends Class<?>> var : classType.getTypeParameters()) {

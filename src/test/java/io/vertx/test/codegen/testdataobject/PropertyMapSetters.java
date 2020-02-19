@@ -29,6 +29,7 @@ public interface PropertyMapSetters {
   PropertyMapSetters setBoxedBooleanMap(Map<String, Boolean> b);
   PropertyMapSetters setBoxedLongMap(Map<String, Long> b);
   PropertyMapSetters setApiObjectMap(Map<String, ApiObject> s);
+  PropertyMapSetters setApiObjectWithMapperMap(Map<String, ApiObjectWithMapper> s);
   PropertyMapSetters setDataObjectMap(Map<String, EmptyDataObject> nested);
   PropertyMapSetters setToJsonDataObjectMap(Map<String, ToJsonDataObject> nested);
   PropertyMapSetters setJsonObjectMap(Map<String, JsonObject> jsonObject);

@@ -31,6 +31,7 @@ public interface PropertyMapAdders {
   PropertyMapAdders addBoxedLong(String key, Long b);
   PropertyMapAdders addPrimitiveLong(String key, long b);
   PropertyMapAdders addApiObject(String key, ApiObject s);
+  PropertyMapAdders addApiObjectWithMapper(String key, ApiObjectWithMapper s);
   PropertyMapAdders addDataObject(String key, EmptyDataObject nested);
   PropertyMapAdders addToJsonDataObject(String key, ToJsonDataObject nested);
   PropertyMapAdders addJsonObject(String key, JsonObject jsonObject);

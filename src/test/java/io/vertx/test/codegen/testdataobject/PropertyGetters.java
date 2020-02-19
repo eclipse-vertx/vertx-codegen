@@ -34,6 +34,7 @@ public class PropertyGetters {
   public Instant getInstant() { throw new UnsupportedOperationException(); }
 
   public ApiObject getApiObject() { throw new UnsupportedOperationException(); }
+  public ApiObjectWithMapper getApiObjectWithMapper() { throw new UnsupportedOperationException(); }
   public EmptyDataObject getDataObject() { throw new UnsupportedOperationException(); }
   public ToJsonDataObject getToJsonDataObject() { throw new UnsupportedOperationException(); }
 

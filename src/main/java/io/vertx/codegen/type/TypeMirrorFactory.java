@@ -110,7 +110,7 @@ public class TypeMirrorFactory {
       boolean gen = elt.getAnnotation(VertxGen.class) != null;
       return new EnumTypeInfo(fqcn, gen, values, module, nullable);
     } else {
-      ClassKind kind = ClassKind.getKind(fqcn, elt.getAnnotation(DataObject.class) != null, elt.getAnnotation(VertxGen.class) != null);
+      ClassKind kind = ClassKind.getKind(fqcn, elt.getAnnotation(VertxGen.class) != null);
       List<? extends TypeMirror> typeArgs = type.getTypeArguments();
       if (checkTypeArgs && typeArgs.size() > 0) {
         List<TypeInfo> typeArguments;
@@ -131,6 +131,31 @@ public class TypeMirrorFactory {
             raw = new ClassTypeInfo(raw.kind, raw.name, raw.module, true, raw.params, null);
           }
         } else {
+          MapperInfo serializer = serializers.get(type.toString());
+          MapperInfo deserializer = deserializers.get(type.toString());
+          if (elt.getAnnotation(DataObject.class) != null) {
+            boolean serializable = Helper.isDataObjectAnnotatedSerializable(elementUtils, elt);
+            boolean deserializable = Helper.isDataObjectAnnotatedDeserializable(elementUtils, typeUtils, elt);
+            TypeInfo jsonType = JSON_OBJECT;
+            if (serializer == null && serializable) {
+              serializer = new MapperInfo();
+              serializer.setQualifiedName(fqcn);
+              serializer.setKind(MapperKind.SELF);
+              serializer.setTargetType(jsonType);
+            }
+            if (deserializer == null && deserializable) {
+              deserializer = new MapperInfo();
+              deserializer.setQualifiedName(fqcn);
+              deserializer.setKind(MapperKind.SELF);
+              deserializer.setTargetType(jsonType);
+            }
+          }
+          DataObjectInfo dataObject = null;
+          if (serializer != null || deserializer != null) {
+            dataObject = new DataObjectInfo(
+              serializer,
+              deserializer);
+          }
           List<TypeParamInfo.Class> typeParams = createTypeParams(type);
           if (kind == ClassKind.API) {
             VertxGen genAnn = elt.getAnnotation(VertxGen.class);
@@ -150,33 +175,8 @@ public class TypeMirrorFactory {
                 handlerArg = create(resolved);
               }
             }
-            raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, handlerArg, module, nullable, proxyGen, null);
+            raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, handlerArg, module, nullable, proxyGen, dataObject);
           } else {
-            MapperInfo serializer = serializers.get(type.toString());
-            MapperInfo deserializer = deserializers.get(type.toString());
-            if (elt.getAnnotation(DataObject.class) != null) {
-              boolean serializable = Helper.isDataObjectAnnotatedSerializable(elementUtils, elt);
-              boolean deserializable = Helper.isDataObjectAnnotatedDeserializable(elementUtils, typeUtils, elt);
-              TypeInfo jsonType = JSON_OBJECT;
-              if (serializer == null && serializable) {
-                serializer = new MapperInfo();
-                serializer.setQualifiedName(fqcn);
-                serializer.setKind(MapperKind.SELF);
-                serializer.setTargetType(jsonType);
-              }
-              if (deserializer == null && deserializable) {
-                deserializer = new MapperInfo();
-                deserializer.setQualifiedName(fqcn);
-                deserializer.setKind(MapperKind.SELF);
-                deserializer.setTargetType(jsonType);
-              }
-            }
-            DataObjectInfo dataObject = null;
-            if (serializer != null || deserializer != null) {
-              dataObject = new DataObjectInfo(
-                serializer,
-                deserializer);
-            }
             raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams, dataObject);
           }
         }

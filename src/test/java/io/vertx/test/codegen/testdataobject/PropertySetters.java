@@ -34,6 +34,7 @@ public class PropertySetters {
   public PropertySetters setInstant(Instant i) { throw new UnsupportedOperationException(); }
 
   public PropertySetters setApiObject(ApiObject s) { throw new UnsupportedOperationException(); }
+  public PropertySetters setApiObjectWithMapper(ApiObjectWithMapper s) { throw new UnsupportedOperationException(); }
   public PropertySetters setDataObject(EmptyDataObject nested) { throw new UnsupportedOperationException(); }
   public PropertySetters setToJsonDataObject(ToJsonDataObject nested) { throw new UnsupportedOperationException(); }
 

@@ -35,6 +35,8 @@ public interface PropertyMapGettersSetters {
   PropertyMapGettersSetters setBoxedLongMap(Map<String, Long> b);
   Map<String, ApiObject> getApiObjectMap();
   PropertyMapGettersSetters setApiObjectMap(Map<String, ApiObject> s);
+  Map<String, ApiObjectWithMapper> getApiObjectWithMapperMap();
+  PropertyMapGettersSetters setApiObjectWithMapperMap(Map<String, ApiObjectWithMapper> s);
   Map<String, EmptyDataObject> getDataObjectMap();
   PropertyMapGettersSetters setDataObjectMap(Map<String, EmptyDataObject> nested);
   Map<String, ToJsonDataObject> getToJsonDataObjectMap();

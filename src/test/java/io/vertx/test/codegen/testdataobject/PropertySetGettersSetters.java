@@ -38,6 +38,8 @@ public interface PropertySetGettersSetters {
   PropertySetGettersSetters setBoxedLongs(Set<Long> b);
   Set<ApiObject> getApiObjects();
   PropertySetGettersSetters setApiObjects(Set<ApiObject> s);
+  Set<ApiObjectWithMapper> getApiObjectWithMappers();
+  PropertySetGettersSetters setApiObjectWithMappers(Set<ApiObjectWithMapper> s);
   Set<EmptyDataObject> getDataObjects();
   PropertySetGettersSetters setDataObjects(Set<EmptyDataObject> nested);
   Set<ToJsonDataObject> getToJsonDataObjects();

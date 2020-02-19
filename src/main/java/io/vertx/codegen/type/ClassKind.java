@@ -77,10 +77,7 @@ public enum ClassKind {
     return vars;
   }
 
-  public static ClassKind getKind(
-      String fqcn,
-      boolean isDataObjectAnnotated,
-      boolean isVertxGenAnnotated) {
+  public static ClassKind getKind(String fqcn, boolean isVertxGenAnnotated) {
     if (isVertxGenAnnotated) {
       return API;
     } else if (fqcn.equals("java.lang.Class")) {
