@@ -40,6 +40,8 @@ public interface PropertyGettersSetters {
 
   PropertyGettersSetters setApiObject(ApiObject s);
   ApiObject getApiObject();
+  PropertyGettersSetters setApiObjectWithMapper(ApiObjectWithMapper s);
+  ApiObjectWithMapper getApiObjectWithMapper();
   PropertyGettersSetters setDataObject(EmptyDataObject obj);
   EmptyDataObject getDataObject();
   PropertyGettersSetters setToJsonDataObject(ToJsonDataObject obj);

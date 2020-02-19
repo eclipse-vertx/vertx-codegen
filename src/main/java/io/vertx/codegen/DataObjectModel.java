@@ -515,14 +515,15 @@ public class DataObjectModel implements Model {
       case PRIMITIVE:
       case BOXED_PRIMITIVE:
       case STRING:
-      case API:
       case JSON_OBJECT:
       case JSON_ARRAY:
       case ENUM:
         jsonifiable = true;
         break;
+      case API:
       case OTHER:
         jsonifiable = propType.getName().equals(Instant.class.getName()) ||
+          propType.getName().equals("io.vertx.core.buffer.Buffer") ||
           (propType.isDataObjectHolder() && propType.getDataObject().isSerializable());
         break;
       default:

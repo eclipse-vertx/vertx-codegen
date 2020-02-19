@@ -30,6 +30,7 @@ public interface PropertyListAdders {
   PropertyListAdders addPrimitiveLong(long b);
 
   PropertyListAdders addApiObject(ApiObject s);
+  PropertyListAdders addApiObjectWithMapper(ApiObjectWithMapper s);
   PropertyListAdders addDataObject(EmptyDataObject s);
   PropertyListAdders addToJsonDataObject(ToJsonDataObject s);
 

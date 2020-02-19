@@ -31,6 +31,7 @@ public interface PropertySetSetters {
   PropertySetSetters setBoxedBooleans(Set<Boolean> b);
   PropertySetSetters setBoxedLongs(Set<Long> b);
   PropertySetSetters setApiObjects(Set<ApiObject> s);
+  PropertySetSetters setApiObjectWithMappers(Set<ApiObjectWithMapper> s);
   PropertySetSetters setDataObjects(Set<EmptyDataObject> nested);
   PropertySetSetters setToJsonDataObjects(Set<ToJsonDataObject> nested);
   PropertySetSetters setJsonObjects(Set<JsonObject> jsonObject);

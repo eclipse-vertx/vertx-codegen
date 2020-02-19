@@ -34,6 +34,8 @@ public interface PropertyListGettersAdders {
 
   List<ApiObject> getApiObjects();
   PropertyListGettersAdders addApiObject(ApiObject s);
+  List<ApiObjectWithMapper> getApiObjectWithMappers();
+  PropertyListGettersAdders addApiObjectWithMapper(ApiObjectWithMapper s);
   List<EmptyDataObject> getDataObjects();
   PropertyListGettersAdders addDataObject(EmptyDataObject s);
   List<ToJsonDataObject> getToJsonDataObjects();

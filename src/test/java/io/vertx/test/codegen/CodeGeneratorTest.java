@@ -103,6 +103,7 @@ public class CodeGeneratorTest {
     assertEquals("[]", props.remove("abstractSuperTypes"));
     assertEquals("null", props.remove("superType"));
     assertEquals("io.vertx.test.codegen.testdataobject.ApiObject", props.remove("property.apiObject"));
+    assertEquals("io.vertx.test.codegen.testdataobject.ApiObjectWithMapper", props.remove("property.apiObjectWithMapper"));
     assertEquals("java.lang.Boolean", props.remove("property.boxedBoolean"));
     assertEquals("java.lang.Integer", props.remove("property.boxedInteger"));
     assertEquals("java.lang.Long", props.remove("property.boxedLong"));
