@@ -8,11 +8,14 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>${project.basedir}/src/tck/generated</directory>
+      <directory>${project.basedir}/src/tck/java</directory>
       <outputDirectory>/</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/src/tck/java</directory>
+      <directory>${project.basedir}/src/tck/resources</directory>
+      <includes>
+        <include>META-INF/vertx/json-mappers.properties</include>
+      </includes>
       <outputDirectory>/</outputDirectory>
     </fileSet>
   </fileSets>

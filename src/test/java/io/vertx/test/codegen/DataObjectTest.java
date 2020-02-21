@@ -15,6 +15,7 @@ import io.vertx.test.codegen.testapi.InterfaceDataObject;
 import io.vertx.test.codegen.testdataobject.*;
 import io.vertx.test.codegen.testdataobject.imported.Imported;
 import io.vertx.test.codegen.testdataobject.jsonmapper.DataObjectWithPojoWithMapper;
+import io.vertx.test.codegen.testdataobject.jsonmapper.MyPojo;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -84,7 +85,9 @@ public class DataObjectTest {
 
   @Test
   public void testPropertySetters() throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertySetters.class, ApiObjectWithMapper.class);
+    DataObjectModel model = new GeneratorHelper()
+      .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
+      .generateDataObject(PropertySetters.class, ApiObjectWithMapper.class);
     assertNotNull(model);
     assertEquals(15, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("string"), "string", "setString", null, null, TypeReflectionFactory.create(String.class), true, PropertyKind.VALUE, true);
@@ -125,7 +128,9 @@ public class DataObjectTest {
   }
 
   private void testPropertyCollectionSetters(Class<?> dataObjectClass, PropertyKind expectedKind) throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(dataObjectClass, ApiObjectWithMapper.class);
+    DataObjectModel model = new GeneratorHelper()
+      .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
+      .generateDataObject(dataObjectClass, ApiObjectWithMapper.class);
     assertNotNull(model);
     assertEquals(13, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("extraClassPath"), "extraClassPath", "setExtraClassPath", null, null, TypeReflectionFactory.create(String.class), true, expectedKind, true);
@@ -154,7 +159,10 @@ public class DataObjectTest {
   }
 
   private void testPropertyCollectionGettersSetters(Class<?> dataObjectClass, PropertyKind expectedKind) throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(dataObjectClass, ApiObjectWithMapper.class);
+    DataObjectModel model = new GeneratorHelper()
+      .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "fromJson")
+      .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
+      .generateDataObject(dataObjectClass, ApiObjectWithMapper.class);
     assertNotNull(model);
     assertEquals(13, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("extraClassPath"), "extraClassPath", "setExtraClassPath", null, "getExtraClassPath", TypeReflectionFactory.create(String.class), true, expectedKind, true);
@@ -178,7 +186,10 @@ public class DataObjectTest {
   }
   @Test
   public void testPropertyMapGettersSetters() throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyMapGettersSetters.class, ApiObjectWithMapper.class);
+    DataObjectModel model = new GeneratorHelper()
+      .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "fromJson")
+      .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
+      .generateDataObject(PropertyMapGettersSetters.class, ApiObjectWithMapper.class);
     assertNotNull(model);
     assertEquals(13, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("stringMap"), "stringMap", "setStringMap", null, "getStringMap", TypeReflectionFactory.create(String.class), true, PropertyKind.MAP, true);
@@ -198,7 +209,9 @@ public class DataObjectTest {
 
   @Test
   public void testPropertyMapAdders() throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyMapAdders.class, ApiObjectWithMapper.class);
+    DataObjectModel model = new GeneratorHelper()
+      .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
+      .generateDataObject(PropertyMapAdders.class, ApiObjectWithMapper.class);
     assertNotNull(model);
     assertEquals(16, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("strings"), "strings", null, "addString", null, TypeReflectionFactory.create(String.class), true, PropertyKind.MAP, true);
@@ -221,7 +234,9 @@ public class DataObjectTest {
 
   @Test
   public void testPropertyMapSetters() throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyMapSetters.class, ApiObjectWithMapper.class);
+    DataObjectModel model = new GeneratorHelper()
+      .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
+      .generateDataObject(PropertyMapSetters.class, ApiObjectWithMapper.class);
     assertNotNull(model);
     assertEquals(13, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("stringMap"), "stringMap", "setStringMap", null, null, TypeReflectionFactory.create(String.class), true, PropertyKind.MAP, true);
@@ -241,7 +256,9 @@ public class DataObjectTest {
 
   @Test
   public void testPropertyMapSetterAdders() throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyMapGettersAdders.class, ApiObjectWithMapper.class);
+    DataObjectModel model = new GeneratorHelper()
+      .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
+      .generateDataObject(PropertyMapGettersAdders.class, ApiObjectWithMapper.class);
     assertNotNull(model);
     assertEquals(13, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("strings"), "strings", null, "addString", "getStrings", TypeReflectionFactory.create(String.class), true, PropertyKind.MAP, true);
@@ -261,7 +278,9 @@ public class DataObjectTest {
 
   @Test
   public void testPropertyGetters() throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyGetters.class, ApiObjectWithMapper.class);
+    DataObjectModel model = new GeneratorHelper()
+      .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
+      .generateDataObject(PropertyGetters.class, ApiObjectWithMapper.class);
     assertNotNull(model);
     assertEquals(15, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("string"), "string", null, null, "getString", TypeReflectionFactory.create(String.class), true, PropertyKind.VALUE, true);
@@ -283,7 +302,10 @@ public class DataObjectTest {
 
   @Test
   public void testPropertyGettersSetters() throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyGettersSetters.class, ApiObjectWithMapper.class);
+    DataObjectModel model = new GeneratorHelper()
+      .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "fromJson")
+      .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
+      .generateDataObject(PropertyGettersSetters.class, ApiObjectWithMapper.class);
     assertNotNull(model);
     assertEquals(15, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("string"), "string", "setString", null, "getString", TypeReflectionFactory.create(String.class), true, PropertyKind.VALUE, true);
@@ -313,7 +335,9 @@ public class DataObjectTest {
 
   @Test
   public void testPropertyListAdders() throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyListAdders.class, ApiObjectWithMapper.class);
+    DataObjectModel model = new GeneratorHelper()
+      .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
+      .generateDataObject(PropertyListAdders.class, ApiObjectWithMapper.class);
     assertNotNull(model);
     assertEquals(15, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("strings"), "strings", null, "addString", null, TypeReflectionFactory.create(String.class), true, PropertyKind.LIST, true);
@@ -335,7 +359,10 @@ public class DataObjectTest {
 
   @Test
   public void testPropertyListGettersAdders() throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(PropertyListGettersAdders.class, ApiObjectWithMapper.class);
+    DataObjectModel model = new GeneratorHelper()
+      .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "fromJson")
+      .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
+      .generateDataObject(PropertyListGettersAdders.class, ApiObjectWithMapper.class);
     assertNotNull(model);
     assertEquals(12, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("strings"), "strings", null, "addString", "getStrings", TypeReflectionFactory.create(String.class), true, PropertyKind.LIST, true);
@@ -840,7 +867,10 @@ public class DataObjectTest {
 
   @Test
   public void testDataObjectWithJsonMapper() throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(DataObjectWithPojoWithMapper.class);
+    DataObjectModel model = new GeneratorHelper()
+      .registerConverter(MyPojo.class, DataObjectWithPojoWithMapper.class.getName(), "serializeMyPojo")
+      .registerConverter(MyPojo.class, DataObjectWithPojoWithMapper.class.getName(), "deserializeMyPojo")
+      .generateDataObject(DataObjectWithPojoWithMapper.class);
     assertNotNull(model);
     assertTrue(model.isClass());
     assertTrue(model.getGenerateConverter());

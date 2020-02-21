@@ -1105,7 +1105,9 @@ public class ClassTest extends ClassTestBase {
 
   @Test
   public void testValidDataObjectsParam() throws Exception {
-    ClassModel model = new GeneratorHelper().generateClass(MethodWithDataObjectParam.class);
+    ClassModel model = new GeneratorHelper()
+      .registerConverter(URI.class, MethodWithDataObjectParam.class.getName(), "deserializeURI")
+      .generateClass(MethodWithDataObjectParam.class);
     assertEquals(MethodWithDataObjectParam.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithDataObjectParam.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -1221,7 +1223,9 @@ public class ClassTest extends ClassTestBase {
 
   @Test
   public void testValidDataObjectReturn() throws Exception {
-    ClassModel model = new GeneratorHelper().generateClass(MethodWithValidDataObjectReturn.class);
+    ClassModel model = new GeneratorHelper()
+      .registerConverter(URI.class, MethodWithValidDataObjectReturn.class.getName(), "serializeURI")
+      .generateClass(MethodWithValidDataObjectReturn.class);
     assertEquals(MethodWithValidDataObjectReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidDataObjectReturn.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
@@ -2491,7 +2495,10 @@ public class ClassTest extends ClassTestBase {
 
   @Test
   public void testJsonMapper() throws Exception {
-    ClassModel model = new GeneratorHelper().generateClass(WithMyPojo.class);
+    ClassModel model = new GeneratorHelper()
+      .registerConverter(MyPojo.class, WithMyPojo.class.getName(), "serializeMyPojo")
+      .registerConverter(MyPojo.class, WithMyPojo.class.getName(), "deserializeMyPojo")
+      .generateClass(WithMyPojo.class);
     assertFalse(model.getAnnotations().isEmpty());
     assertEquals(1, model.getAnnotations().size());
     assertEquals(VertxGen.class.getName(), model.getAnnotations().get(0).getName());

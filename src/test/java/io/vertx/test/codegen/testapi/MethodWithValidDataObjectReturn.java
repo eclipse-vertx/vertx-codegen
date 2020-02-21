@@ -1,7 +1,6 @@
 package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.GenIgnore;
-import io.vertx.codegen.annotations.Mapper;
 import io.vertx.codegen.annotations.VertxGen;
 
 import java.net.URI;
@@ -13,7 +12,6 @@ import java.net.URI;
 public interface MethodWithValidDataObjectReturn {
 
   @GenIgnore
-  @Mapper
   static String serializeURI(URI uri) {
     throw new UnsupportedOperationException();
   }

@@ -12,13 +12,12 @@
 package io.vertx.test.codegen.converter;
 
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.annotations.Mapper;
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -31,27 +30,16 @@ import java.util.function.Function;
 @DataObject(generateConverter = true)
 public class TestDataObject {
 
-  @Mapper
-  public static ZonedDateTime serializeZonedDateTime(String s) {
-    return ZonedDateTime.parse(s);
+  public static String serializeZoneDateTime(ZonedDateTime value) {
+    return value.toString();
   }
 
-  @Mapper
-  public static String deserializeZonedDateTime(ZonedDateTime s) {
-    return s.toString();
+  public static ZonedDateTime deserializeZoneDateTime(String value) {
+    return ZonedDateTime.parse(value);
   }
 
-  @Mapper
-  public static Function<URI, String> uriSerializer = URI::toString;
-
-  @Mapper
-  public static Function<String, URI> uriDeserializer = s -> {
-    try {
-      return new URI(s);
-    } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
-    }
-  };
+  public static final Function<String, Locale> LOCALE_DESERIALIZER = Locale::new;
+  public static final Function<Locale, String> LOCALE_SERIALIZER = Locale::toString;
 
   private String stringValue;
   private boolean booleanValue;
@@ -76,7 +64,7 @@ public class TestDataObject {
   private JsonArray jsonArray;
   private TimeUnit httpMethod;
   private ZonedDateTime methodMapped;
-  private URI functionMapped;
+  private Locale functionMapped;
   private NoConverterDataObject notConvertibleDataObject;
   private ByteBuffer unmapped;
 
@@ -95,7 +83,7 @@ public class TestDataObject {
   private List<JsonArray> jsonArrays;
   private List<TimeUnit> httpMethods;
   private List<ZonedDateTime> methodMappeds;
-  private List<URI> functionMappeds;
+  private List<Locale> functionMappeds;
   private List<Object> objects;
   private List<NoConverterDataObject> notConvertibleDataObjects;
 
@@ -114,7 +102,7 @@ public class TestDataObject {
   private Set<JsonArray> jsonArraySet;
   private Set<TimeUnit> httpMethodSet;
   private Set<ZonedDateTime> methodMappedSet;
-  private Set<URI> functionMappedSet;
+  private Set<Locale> functionMappedSet;
   private Set<Object> objectSet;
   private Set<NoConverterDataObject> notConvertibleDataObjectSet;
 
@@ -133,7 +121,7 @@ public class TestDataObject {
   private List<JsonArray> addedJsonArrays = new ArrayList<>();
   private List<TimeUnit> addedHttpMethods = new ArrayList<>();
   private List<ZonedDateTime> addedMethodMappeds = new ArrayList<>();
-  private List<URI> addedFunctionMappeds = new ArrayList<>();
+  private List<Locale> addedFunctionMappeds = new ArrayList<>();
   private List<Object> addedObjects = new ArrayList<>();
 
   private Map<String, String> stringValueMap;
@@ -151,7 +139,7 @@ public class TestDataObject {
   private Map<String, JsonArray> jsonArrayMap;
   private Map<String, TimeUnit> httpMethodMap;
   private Map<String, ZonedDateTime> methodMappedMap;
-  private Map<String, URI> functionMappedMap;
+  private Map<String, Locale> functionMappedMap;
   private Map<String, Object> objectMap;
   private Map<String, NoConverterDataObject> notConvertibleDataObjectMap;
 
@@ -170,7 +158,7 @@ public class TestDataObject {
   private Map<String, JsonArray> keyedJsonArrayValues = new HashMap<>();
   private Map<String, TimeUnit> keyedEnumValues = new HashMap<>();
   private Map<String, ZonedDateTime> keyedMethodMappedValues = new HashMap<>();
-  private Map<String, URI> keyedFunctionMappedValues = new HashMap<>();
+  private Map<String, Locale> keyedFunctionMappedValues = new HashMap<>();
   private Map<String, Object> keyedObjectValues = new HashMap<>();
 
   public TestDataObject() {
@@ -389,11 +377,11 @@ public class TestDataObject {
     return this;
   }
 
-  public URI getFunctionMapped() {
+  public Locale getFunctionMapped() {
     return functionMapped;
   }
 
-  public TestDataObject setFunctionMapped(URI functionMapped) {
+  public TestDataObject setFunctionMapped(Locale functionMapped) {
     this.functionMapped = functionMapped;
     return this;
   }
@@ -551,11 +539,11 @@ public class TestDataObject {
     return this;
   }
 
-  public List<URI> getFunctionMappeds() {
+  public List<Locale> getFunctionMappeds() {
     return functionMappeds;
   }
 
-  public TestDataObject setFunctionMappeds(List<URI> functionMappeds) {
+  public TestDataObject setFunctionMappeds(List<Locale> functionMappeds) {
     this.functionMappeds = functionMappeds;
     return this;
   }
@@ -705,11 +693,11 @@ public class TestDataObject {
     return this;
   }
 
-  public Set<URI> getFunctionMappedSet() {
+  public Set<Locale> getFunctionMappedSet() {
     return functionMappedSet;
   }
 
-  public TestDataObject setFunctionMappedSet(Set<URI> functionMappedSet) {
+  public TestDataObject setFunctionMappedSet(Set<Locale> functionMappedSet) {
     this.functionMappedSet = functionMappedSet;
     return this;
   }
@@ -858,11 +846,11 @@ public class TestDataObject {
     return this;
   }
 
-  public List<URI> getAddedFunctionMappeds() {
+  public List<Locale> getAddedFunctionMappeds() {
     return addedFunctionMappeds;
   }
 
-  public TestDataObject addAddedFunctionMapped(URI addedUri) {
+  public TestDataObject addAddedFunctionMapped(Locale addedUri) {
     this.addedFunctionMappeds.add(addedUri);
     return this;
   }
@@ -1011,11 +999,11 @@ public class TestDataObject {
     return this;
   }
 
-  public Map<String, URI> getFunctionMappedMap() {
+  public Map<String, Locale> getFunctionMappedMap() {
     return functionMappedMap;
   }
 
-  public TestDataObject setFunctionMappedMap(Map<String, URI> functionMappedMap) {
+  public TestDataObject setFunctionMappedMap(Map<String, Locale> functionMappedMap) {
     this.functionMappedMap = functionMappedMap;
     return this;
   }
@@ -1164,11 +1152,11 @@ public class TestDataObject {
     return this;
   }
 
-  public Map<String, URI> getKeyedFunctionMappedValues() {
+  public Map<String, Locale> getKeyedFunctionMappedValues() {
     return keyedFunctionMappedValues;
   }
 
-  public TestDataObject addKeyedFunctionMappedValue(String key, URI value) {
+  public TestDataObject addKeyedFunctionMappedValue(String key, Locale value) {
     this.keyedFunctionMappedValues.put(key, value);
     return this;
   }

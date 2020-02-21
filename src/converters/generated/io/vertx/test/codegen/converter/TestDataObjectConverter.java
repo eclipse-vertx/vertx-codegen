@@ -99,7 +99,7 @@ public class TestDataObjectConverter {
           if (member.getValue() instanceof JsonArray) {
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                obj.addAddedFunctionMapped(io.vertx.test.codegen.converter.TestDataObject.uriDeserializer.apply((String)item));
+                obj.addAddedFunctionMapped(io.vertx.test.codegen.converter.TestDataObject.LOCALE_DESERIALIZER.apply((String)item));
             });
           }
           break;
@@ -131,7 +131,7 @@ public class TestDataObjectConverter {
           if (member.getValue() instanceof JsonArray) {
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                obj.addAddedMethodMapped(io.vertx.test.codegen.converter.TestDataObject.serializeZonedDateTime((String)item));
+                obj.addAddedMethodMapped(io.vertx.test.codegen.converter.TestDataObject.deserializeZoneDateTime((String)item));
             });
           }
           break;
@@ -528,35 +528,35 @@ public class TestDataObjectConverter {
           break;
         case "functionMapped":
           if (member.getValue() instanceof String) {
-            obj.setFunctionMapped(io.vertx.test.codegen.converter.TestDataObject.uriDeserializer.apply((String)member.getValue()));
+            obj.setFunctionMapped(io.vertx.test.codegen.converter.TestDataObject.LOCALE_DESERIALIZER.apply((String)member.getValue()));
           }
           break;
         case "functionMappedMap":
           if (member.getValue() instanceof JsonObject) {
-            java.util.Map<String, java.net.URI> map = new java.util.LinkedHashMap<>();
+            java.util.Map<String, java.util.Locale> map = new java.util.LinkedHashMap<>();
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                map.put(entry.getKey(), io.vertx.test.codegen.converter.TestDataObject.uriDeserializer.apply((String)entry.getValue()));
+                map.put(entry.getKey(), io.vertx.test.codegen.converter.TestDataObject.LOCALE_DESERIALIZER.apply((String)entry.getValue()));
             });
             obj.setFunctionMappedMap(map);
           }
           break;
         case "functionMappedSet":
           if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<java.net.URI> list =  new java.util.LinkedHashSet<>();
+            java.util.LinkedHashSet<java.util.Locale> list =  new java.util.LinkedHashSet<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(io.vertx.test.codegen.converter.TestDataObject.uriDeserializer.apply((String)item));
+                list.add(io.vertx.test.codegen.converter.TestDataObject.LOCALE_DESERIALIZER.apply((String)item));
             });
             obj.setFunctionMappedSet(list);
           }
           break;
         case "functionMappeds":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.net.URI> list =  new java.util.ArrayList<>();
+            java.util.ArrayList<java.util.Locale> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(io.vertx.test.codegen.converter.TestDataObject.uriDeserializer.apply((String)item));
+                list.add(io.vertx.test.codegen.converter.TestDataObject.LOCALE_DESERIALIZER.apply((String)item));
             });
             obj.setFunctionMappeds(list);
           }
@@ -763,7 +763,7 @@ public class TestDataObjectConverter {
           if (member.getValue() instanceof JsonObject) {
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                obj.addKeyedFunctionMappedValue(entry.getKey(), io.vertx.test.codegen.converter.TestDataObject.uriDeserializer.apply((String)entry.getValue()));
+                obj.addKeyedFunctionMappedValue(entry.getKey(), io.vertx.test.codegen.converter.TestDataObject.LOCALE_DESERIALIZER.apply((String)entry.getValue()));
             });
           }
           break;
@@ -787,7 +787,7 @@ public class TestDataObjectConverter {
           if (member.getValue() instanceof JsonObject) {
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                obj.addKeyedMethodMappedValue(entry.getKey(), io.vertx.test.codegen.converter.TestDataObject.serializeZonedDateTime((String)entry.getValue()));
+                obj.addKeyedMethodMappedValue(entry.getKey(), io.vertx.test.codegen.converter.TestDataObject.deserializeZoneDateTime((String)entry.getValue()));
             });
           }
           break;
@@ -814,7 +814,7 @@ public class TestDataObjectConverter {
           break;
         case "methodMapped":
           if (member.getValue() instanceof String) {
-            obj.setMethodMapped(io.vertx.test.codegen.converter.TestDataObject.serializeZonedDateTime((String)member.getValue()));
+            obj.setMethodMapped(io.vertx.test.codegen.converter.TestDataObject.deserializeZoneDateTime((String)member.getValue()));
           }
           break;
         case "methodMappedMap":
@@ -822,7 +822,7 @@ public class TestDataObjectConverter {
             java.util.Map<String, java.time.ZonedDateTime> map = new java.util.LinkedHashMap<>();
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                map.put(entry.getKey(), io.vertx.test.codegen.converter.TestDataObject.serializeZonedDateTime((String)entry.getValue()));
+                map.put(entry.getKey(), io.vertx.test.codegen.converter.TestDataObject.deserializeZoneDateTime((String)entry.getValue()));
             });
             obj.setMethodMappedMap(map);
           }
@@ -832,7 +832,7 @@ public class TestDataObjectConverter {
             java.util.LinkedHashSet<java.time.ZonedDateTime> list =  new java.util.LinkedHashSet<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(io.vertx.test.codegen.converter.TestDataObject.serializeZonedDateTime((String)item));
+                list.add(io.vertx.test.codegen.converter.TestDataObject.deserializeZoneDateTime((String)item));
             });
             obj.setMethodMappedSet(list);
           }
@@ -842,7 +842,7 @@ public class TestDataObjectConverter {
             java.util.ArrayList<java.time.ZonedDateTime> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(io.vertx.test.codegen.converter.TestDataObject.serializeZonedDateTime((String)item));
+                list.add(io.vertx.test.codegen.converter.TestDataObject.deserializeZoneDateTime((String)item));
             });
             obj.setMethodMappeds(list);
           }
@@ -1013,7 +1013,7 @@ public class TestDataObjectConverter {
     }
     if (obj.getAddedFunctionMappeds() != null) {
       JsonArray array = new JsonArray();
-      obj.getAddedFunctionMappeds().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.uriSerializer.apply(item)));
+      obj.getAddedFunctionMappeds().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.LOCALE_SERIALIZER.apply(item)));
       json.put("addedFunctionMappeds", array);
     }
     if (obj.getAddedHttpMethods() != null) {
@@ -1033,7 +1033,7 @@ public class TestDataObjectConverter {
     }
     if (obj.getAddedMethodMappeds() != null) {
       JsonArray array = new JsonArray();
-      obj.getAddedMethodMappeds().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.deserializeZonedDateTime(item)));
+      obj.getAddedMethodMappeds().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.serializeZoneDateTime(item)));
       json.put("addedMethodMappeds", array);
     }
     if (obj.getAddedObjects() != null) {
@@ -1232,21 +1232,21 @@ public class TestDataObjectConverter {
     json.put("doubleValue", obj.getDoubleValue());
     json.put("floatValue", obj.getFloatValue());
     if (obj.getFunctionMapped() != null) {
-      json.put("functionMapped", io.vertx.test.codegen.converter.TestDataObject.uriSerializer.apply(obj.getFunctionMapped()));
+      json.put("functionMapped", io.vertx.test.codegen.converter.TestDataObject.LOCALE_SERIALIZER.apply(obj.getFunctionMapped()));
     }
     if (obj.getFunctionMappedMap() != null) {
       JsonObject map = new JsonObject();
-      obj.getFunctionMappedMap().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.TestDataObject.uriSerializer.apply(value)));
+      obj.getFunctionMappedMap().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.TestDataObject.LOCALE_SERIALIZER.apply(value)));
       json.put("functionMappedMap", map);
     }
     if (obj.getFunctionMappedSet() != null) {
       JsonArray array = new JsonArray();
-      obj.getFunctionMappedSet().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.uriSerializer.apply(item)));
+      obj.getFunctionMappedSet().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.LOCALE_SERIALIZER.apply(item)));
       json.put("functionMappedSet", array);
     }
     if (obj.getFunctionMappeds() != null) {
       JsonArray array = new JsonArray();
-      obj.getFunctionMappeds().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.uriSerializer.apply(item)));
+      obj.getFunctionMappeds().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.LOCALE_SERIALIZER.apply(item)));
       json.put("functionMappeds", array);
     }
     if (obj.getHttpMethod() != null) {
@@ -1361,7 +1361,7 @@ public class TestDataObjectConverter {
     }
     if (obj.getKeyedFunctionMappedValues() != null) {
       JsonObject map = new JsonObject();
-      obj.getKeyedFunctionMappedValues().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.TestDataObject.uriSerializer.apply(value)));
+      obj.getKeyedFunctionMappedValues().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.TestDataObject.LOCALE_SERIALIZER.apply(value)));
       json.put("keyedFunctionMappedValues", map);
     }
     if (obj.getKeyedJsonArrayValues() != null) {
@@ -1376,7 +1376,7 @@ public class TestDataObjectConverter {
     }
     if (obj.getKeyedMethodMappedValues() != null) {
       JsonObject map = new JsonObject();
-      obj.getKeyedMethodMappedValues().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.TestDataObject.deserializeZonedDateTime(value)));
+      obj.getKeyedMethodMappedValues().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.TestDataObject.serializeZoneDateTime(value)));
       json.put("keyedMethodMappedValues", map);
     }
     if (obj.getKeyedObjectValues() != null) {
@@ -1391,21 +1391,21 @@ public class TestDataObjectConverter {
     }
     json.put("longValue", obj.getLongValue());
     if (obj.getMethodMapped() != null) {
-      json.put("methodMapped", io.vertx.test.codegen.converter.TestDataObject.deserializeZonedDateTime(obj.getMethodMapped()));
+      json.put("methodMapped", io.vertx.test.codegen.converter.TestDataObject.serializeZoneDateTime(obj.getMethodMapped()));
     }
     if (obj.getMethodMappedMap() != null) {
       JsonObject map = new JsonObject();
-      obj.getMethodMappedMap().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.TestDataObject.deserializeZonedDateTime(value)));
+      obj.getMethodMappedMap().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.TestDataObject.serializeZoneDateTime(value)));
       json.put("methodMappedMap", map);
     }
     if (obj.getMethodMappedSet() != null) {
       JsonArray array = new JsonArray();
-      obj.getMethodMappedSet().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.deserializeZonedDateTime(item)));
+      obj.getMethodMappedSet().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.serializeZoneDateTime(item)));
       json.put("methodMappedSet", array);
     }
     if (obj.getMethodMappeds() != null) {
       JsonArray array = new JsonArray();
-      obj.getMethodMappeds().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.deserializeZonedDateTime(item)));
+      obj.getMethodMappeds().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.serializeZoneDateTime(item)));
       json.put("methodMappeds", array);
     }
     if (obj.getObjectMap() != null) {
