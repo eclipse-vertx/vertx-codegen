@@ -55,7 +55,7 @@ A _Data object_ is a type that can be converted back and forth to a Json type.
 
 You can declare data objects by:
 
-* Defining an annotated `@Mapper` method or function for it
+* Defining a mapper in the `META-INF/vertx/json-mappers.properties` file
 * Or annotating the type itself with `@DataObject`
 
 ==== Json mappers
@@ -73,27 +73,50 @@ A json mapper turns any Java type into a data object type.
 
 You can declare them as public static methods:
 
-```java
-@Mapper
-public static String serialize(ZonedDateTime date) {
-  return date.toString();
-}
+[source,java]
+----
+package com.example;
 
-@Mapper
-public static ZonedDateTime deserialize(String s) {
-  return ZonedDateTime.parse(s);
+public class MyMappers {
+
+  public static String serialize(ZonedDateTime date) {
+    return date.toString();
+  }
+
+  public static ZonedDateTime deserialize(String s) {
+    return ZonedDateTime.parse(s);
+  }
 }
-```
+----
+
+These mappers needs to be declared in a `META-INF/vertx/json-mappers.properties` file as follow:
+
+[source]
+----
+java.time.ZonedDateTime.serializer=com.example.MyMappers#serializeZoneDateTime
+java.time.ZonedDateTime.deserializer=com.example.MyMappers#deserializeZoneDateTime
+----
 
 Or as functions:
 
-```java
-@Mapper
-public static final Function<ZonedDateTime, String> SERIALIZER = date -> date.toString();
+[source,java]
+----
+package com.example;
 
-@Mapper
-public static final Function<String, ZonedDateTime> DESERIALIZER = s -> ZonedDateTime.parse(s);
-```
+public class MyMappers {
+
+  public static final Function<ZonedDateTime, String> SERIALIZER = date -> date.toString();
+  public static final Function<String, ZonedDateTime> DESERIALIZER = s -> ZonedDateTime.parse(s);
+}
+----
+
+Again the mappers needs to be declared in a `json-mappers.properties` file:
+
+[source]
+----
+java.time.ZonedDateTime.serializer=com.example.MyMappers#SERIALIZER
+java.time.ZonedDateTime.deserializer=com.example.MyMappers#DESERIALIZER
+----
 
 ==== `@DataObject` annotated types
 
@@ -119,7 +142,7 @@ Data object annotated classes can also inherit from other data objects annotated
 
 ===== Properties
 
-DataObject annotated types properties are declared via _getters_, _setters_ or _adders_:
+Data object annotated types properties are declared via _getters_, _setters_ or _adders_:
 
 .a getter and a setter
 [source,java]
@@ -193,7 +216,7 @@ In all case, property names are _normalized_, i.e:
 - _URL_ -> _url_
 - _URLFactory_ -> _urlFactory_
 
-==== Data Object -> json conversion
+==== Data object -> json conversion
 
 When a data object has an associated serializer, it can be converted to the json format and is said _serializable_.
 Vert.x API types have restriction in the declared method return types, a jsonifiable data object can be used in

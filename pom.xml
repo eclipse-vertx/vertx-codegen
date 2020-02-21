@@ -56,6 +56,22 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>default-clean</id>
+              <configuration>
+                <filesets>
+                  <fileset>
+                    <directory>${project.basedir}/src/converters/generated</directory>
+                    <directory>${project.basedir}/src/tck/generated</directory>
+                  </fileset>
+                </filesets>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <executions>
@@ -124,9 +140,36 @@
     </pluginManagement>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>com.fasterxml.jackson.core</groupId>
+                  <artifactId>jackson-core</artifactId>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>junit</groupId>
+                  <artifactId>junit</artifactId>
+                  <type>jar</type>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}/test-classpath</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.9.1</version>
         <executions>
           <execution>
             <id>add-source</id>
@@ -146,15 +189,14 @@
             </goals>
             <configuration>
               <sources>
+                <source>${basedir}/src/converters/java</source>
+                <source>${basedir}/src/converters/generated</source>
                 <source>${basedir}/src/tck/java</source>
-                <source>${basedir}/src/tck/generated</source>
-                <source>${basedir}/src/test/generated</source>
               </sources>
             </configuration>
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.bsc.maven</groupId>
         <artifactId>maven-processor-plugin</artifactId>
@@ -165,25 +207,30 @@
           </systemProperties>
         </configuration>
         <executions>
+          <!-- Converters -->
           <execution>
-            <id>generate-test-sources</id>
+            <id>generate-converters-sources</id>
             <goals>
               <goal>process-test</goal>
             </goals>
             <phase>generate-test-sources</phase>
             <configuration>
+              <!-- We use this workaround to have a specific json-mappers.properties file for this gen -->
+              <classpathElements>
+                <classpathElement>${project.build.outputDirectory}</classpathElement>
+                <classpathElement>${project.build.directory}/test-classpath</classpathElement>
+                <classpathElement>${project.basedir}/src/converters/resources</classpathElement>
+              </classpathElements>
               <processors>
                 <processor>io.vertx.codegen.CodeGenProcessor</processor>
               </processors>
               <optionMap>
-                <codegen.output>${project.basedir}/src/test</codegen.output>
-                <codegen.output.data_object_converters>generated</codegen.output.data_object_converters>
               </optionMap>
-              <includes>
-                <include>io/vertx/test/codegen/converter/*.java</include>
-              </includes>
+              <sourceDirectory>${project.basedir}/src/converters/java</sourceDirectory>
+              <outputDirectory>${project.basedir}/src/converters/generated</outputDirectory>
             </configuration>
           </execution>
+          <!-- TCK -->
           <execution>
             <id>generate-tck-sources</id>
             <goals>
@@ -191,17 +238,19 @@
             </goals>
             <phase>generate-test-sources</phase>
             <configuration>
+              <!-- We use this workaround to have a specific json-mappers.properties file for this gen -->
+              <classpathElements>
+                <classpathElement>${project.build.outputDirectory}</classpathElement>
+                <classpathElement>${project.build.directory}/test-classpath</classpathElement>
+                <classpathElement>${project.basedir}/src/tck/resources</classpathElement>
+              </classpathElements>
               <processors>
                 <processor>io.vertx.codegen.CodeGenProcessor</processor>
               </processors>
               <optionMap>
-                <codegen.output>${project.basedir}/src/tck</codegen.output>
-                <codegen.output.data_object_converters>generated</codegen.output.data_object_converters>
               </optionMap>
               <sourceDirectory>${project.basedir}/src/tck/java</sourceDirectory>
-              <includes>
-                <include>io/vertx/codegen/testmodel/*.java</include>
-              </includes>
+              <outputDirectory>${project.basedir}/src/tck/generated</outputDirectory>
             </configuration>
           </execution>
         </executions>

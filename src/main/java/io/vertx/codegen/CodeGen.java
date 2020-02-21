@@ -1,6 +1,5 @@
 package io.vertx.codegen;
 
-import io.vertx.codegen.annotations.Mapper;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.MapperInfo;
@@ -54,13 +53,13 @@ public class CodeGen {
 
   private final Map<String, Map<String, Map.Entry<TypeElement, Model>>> models = new HashMap<>();
   private final Set<TypeElement> all = new HashSet<>();
-  private final Set<ExecutableElement> mapperElts = new HashSet<>();
 
   private final HashMap<String, PackageElement> modules = new HashMap<>();
   private final ProcessingEnvironment env;
   private final Elements elementUtils;
   private final Types typeUtils;
   private final TypeMirrorFactory tmf;
+  private final List<Converter> converters = new ArrayList<>();
 
   public CodeGen(ProcessingEnvironment env) {
     this.env = env;
@@ -81,35 +80,19 @@ public class CodeGen {
       }
     };
 
-    // Only for the scope of this method
-    class Converter {
-      public final TypeElement converter;
-      public final List<String> selectors;
-      public Converter(TypeElement converter, List<String> selectors) {
-        this.converter = converter;
-        this.selectors = selectors;
-      }
-    }
-    List<Converter> converters = new ArrayList<>();
-
-    // Discover serializers based on @Mapper annotation
-    round.getElementsAnnotatedWith(Mapper.class)
-      .forEach(elt -> {
-        TypeElement serializerElt = (TypeElement) elt.getEnclosingElement();
-        switch (elt.getKind()) {
-          case FIELD:
-            converters.add(new Converter(serializerElt, Collections.singletonList(elt.getSimpleName().toString())));
-            break;
-          case METHOD:
-            converters.add(new Converter(serializerElt, Collections.singletonList(elt.getSimpleName().toString())));
-            break;
-        }
-      });
-
     // Process serializers
     converters.forEach(converter -> {
-      // TypeElement typeElt = elementUtils.getTypeElement(c.type);
-      TypeElement converterElt = converter.converter;
+      TypeMirror type = null;
+      if (converter.className != null) {
+        TypeElement typeElt = elementUtils.getTypeElement(converter.className);
+        if (typeElt != null) {
+          type = typeElt.asType();
+        }
+      }
+      TypeElement converterElt = elementUtils.getTypeElement(converter.converter);
+      if (converterElt == null) {
+        throw new RuntimeException("Cannot load " + converter.converter + " converter class");
+      }
       TypeMirror converterType = converterElt.asType();
       for (int i = 0;i < converter.selectors.size();i++) {
         Resolved next = resolveMember(converterElt, converterType, converter.selectors.get(i));
@@ -124,7 +107,7 @@ public class CodeGen {
       }
       if (converterType.getKind() == TypeKind.EXECUTABLE) {
         ExecutableType execType = (ExecutableType) converterType;
-        processSerializerOrDeserializer(converterElt, /*typeElt, */converter.selectors, execType);
+        processConverter(converterElt, type, converter.selectors, execType);
       } else if (converterType.getKind() == TypeKind.DECLARED) {
         // Handle function automatically
         TypeElement functionElt = elementUtils.getTypeElement(Function.class.getName());
@@ -133,7 +116,7 @@ public class CodeGen {
           Resolved apply = resolveMember(converterElt, converterType, "apply");
           ArrayList<String> selectors = new ArrayList<>(converter.selectors);
           selectors.add("apply");
-          processSerializerOrDeserializer(converterElt, /*typeElt, */selectors, (ExecutableType) apply.type);
+          processConverter(converterElt, type, selectors, (ExecutableType) apply.type);
         }
         // Incorrect
       }
@@ -193,7 +176,7 @@ public class CodeGen {
     throw new GenException(elt, "Only declared element are supported");
   }
 
-  private void processSerializerOrDeserializer(TypeElement converterElt, /*TypeElement typeElt, */List<String> selectors, ExecutableType methodType) {
+  private void processConverter(TypeElement converterElt, TypeMirror type, List<String> selectors, ExecutableType methodType) {
     if (methodType.getParameterTypes().size() < 1) {
       throw new GenException(converterElt, "Annotated method mapper cannot have empty arguments");
     }
@@ -201,10 +184,11 @@ public class CodeGen {
       throw new GenException(converterElt, "Annotated method mapper must have one argument");
     }
     TypeMirror paramType = methodType.getParameterTypes().get(0);
-//    if (paramType.toString().equals("java.lang.CharSequence")) {
-//      // Special handling
-//      paramType = elementUtils.getTypeElement("java.lang.String").asType();
-//    }
+    if (paramType.toString().equals("java.lang.CharSequence")) {
+      // Special handling for ZonedDateTime.parse(CharSequence) and such
+      // this only works for parameters
+      paramType = elementUtils.getTypeElement("java.lang.String").asType();
+    }
     TypeMirror returnType = methodType.getReturnType();
     ClassKind paramKind = ClassKind.getKind(paramType.toString(), false);
     ClassKind returnKind = ClassKind.getKind(returnType.toString(), false);
@@ -214,17 +198,51 @@ public class CodeGen {
       mapper.setTargetType(tmf.create(paramType));
       mapper.setSelectors(selectors);
       mapper.setKind(MapperKind.STATIC_METHOD);
-      tmf.addDataObjectDeserializer(converterElt, returnType, mapper);
+      if (type == null) {
+        type = returnType;
+      } else {
+        // Check extend or super ?
+      }
+      tmf.addDataObjectDeserializer(converterElt, type, mapper);
     } else if (returnKind.json || returnKind.basic || returnKind == ClassKind.OBJECT) {
       MapperInfo mapper = new MapperInfo();
       mapper.setQualifiedName(converterElt.getQualifiedName().toString());
       mapper.setTargetType(tmf.create(returnType));
       mapper.setSelectors(selectors);
       mapper.setKind(MapperKind.STATIC_METHOD);
-      tmf.addDataObjectSerializer(converterElt, paramType, mapper);
+      if (type == null) {
+        type = paramType;
+      } else {
+        // Check extend or super ?
+      }
+      tmf.addDataObjectSerializer(converterElt, type, mapper);
     } else {
       throw new GenException(converterElt, "Mapper method does not declare a JSON type");
     }
+  }
+
+  public static class Converter {
+    public final String className;
+    public final String converter;
+    public final List<String> selectors;
+    public Converter(String className, String converter, List<String> selectors) {
+      this.className = className;
+      this.converter = converter;
+      this.selectors = selectors;
+    }
+
+    @Override
+    public String toString() {
+      return className + "=" + converter + "#" + selectors;
+    }
+  }
+
+  public void registerConverter(Converter b) {
+    converters.add(b);
+  }
+
+  public void registerConverter(String className, String serializer, String... selectors) {
+    converters.add(new Converter(className, serializer, Arrays.asList(selectors)));
   }
 
   public Stream<Map.Entry<? extends Element, ? extends Model>> getModels() {

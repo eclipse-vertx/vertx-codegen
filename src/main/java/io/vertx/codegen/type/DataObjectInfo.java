@@ -3,7 +3,7 @@ package io.vertx.codegen.type;
 import io.vertx.codegen.MapperKind;
 
 /**
- * DataObject could be of two types: static methods annotated with {@link io.vertx.codegen.annotations.Mapper} and the one that is annotated with {@link io.vertx.codegen.annotations.DataObject}
+ * Data object info.
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  * @author <a href="slinkydeveloper.com">Francesco Guardiani</a>

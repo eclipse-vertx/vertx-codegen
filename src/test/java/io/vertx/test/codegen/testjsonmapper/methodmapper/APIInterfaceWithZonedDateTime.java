@@ -1,6 +1,6 @@
 package io.vertx.test.codegen.testjsonmapper.methodmapper;
 
-import io.vertx.codegen.annotations.Mapper;
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 
 import java.time.ZonedDateTime;
@@ -11,12 +11,12 @@ import java.time.ZonedDateTime;
 @VertxGen
 public interface APIInterfaceWithZonedDateTime {
 
-  @Mapper
+  @GenIgnore
   static ZonedDateTime deserialize(String s) {
     throw new UnsupportedOperationException();
   }
 
-  @Mapper
+  @GenIgnore
   static String serialize(ZonedDateTime s) {
     throw new UnsupportedOperationException();
   }

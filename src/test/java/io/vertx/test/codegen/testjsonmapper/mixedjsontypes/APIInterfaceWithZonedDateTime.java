@@ -1,6 +1,5 @@
 package io.vertx.test.codegen.testjsonmapper.mixedjsontypes;
 
-import io.vertx.codegen.annotations.Mapper;
 import io.vertx.codegen.annotations.VertxGen;
 
 import java.time.ZonedDateTime;
@@ -12,10 +11,8 @@ import java.util.function.Function;
 @VertxGen
 public interface APIInterfaceWithZonedDateTime {
 
-  @Mapper
   Function<String, ZonedDateTime> deserializer = null;
 
-  @Mapper
   Function<ZonedDateTime, Integer> serializer = null;
 
 }

@@ -16,8 +16,11 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
+import java.net.URL;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -123,8 +126,51 @@ public class CodeGenProcessor extends AbstractProcessor {
     return codeGenerators;
   }
 
+  private List<CodeGen.Converter> loadJsonMappers() {
+    List<CodeGen.Converter> merged = new ArrayList<>();
+    try {
+      Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/vertx/json-mappers.properties");
+      while (resources.hasMoreElements()) {
+        URL url = resources.nextElement();
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded json-mappers.properties " + url);
+        try (InputStream is = url.openStream()) {
+          Properties tmp = new Properties();
+          tmp.load(is);
+          tmp.stringPropertyNames().forEach(name -> {
+            int idx = name.lastIndexOf('.');
+            if (idx != -1) {
+              String type = name.substring(0, idx);
+              String value = tmp.getProperty(name);
+              int idx1 = value.indexOf('#');
+              if (idx1 != -1) {
+                String className = value.substring(0, idx1);
+                String rest = value.substring(idx1 + 1);
+                int idx2 = rest.indexOf('.');
+                if (idx2 != -1) {
+                  merged.add(new CodeGen.Converter(type, className, Arrays.asList(rest.substring(0, idx2), rest.substring(idx2 + 1))));
+                } else {
+                  merged.add(new CodeGen.Converter(type, className, Collections.singletonList(rest)));
+                }
+              }
+            }
+          });
+        }
+      }
+    } catch (IOException e) {
+      log.log(Level.SEVERE, "Could not load json-mappers.properties", e);
+    }
+    return merged;
+  }
+
+  private List<CodeGen.Converter> mappers;
+
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+
+    // Load mappers
+    if (mappers == null) {
+      mappers = loadJsonMappers();
+    }
 
     // find elements annotated with @SuppressWarnings("codegen-enhanced-method")
     if (!roundEnv.processingOver()) {
@@ -132,6 +178,7 @@ public class CodeGenProcessor extends AbstractProcessor {
 
       if (!roundEnv.errorRaised()) {
         CodeGen codegen = new CodeGen(processingEnv);
+        mappers.forEach(codegen::registerConverter);
         codegen.init(roundEnv, getClass().getClassLoader());
         Map<String, GeneratedFile> generatedClasses = new HashMap<>();
 

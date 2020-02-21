@@ -1,18 +1,18 @@
 package io.vertx.test.codegen.testdataobject.jsonmapper;
 
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.annotations.Mapper;
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.json.JsonObject;
 
 @DataObject(generateConverter = true, publicConverter = true)
 public class DataObjectWithPojoWithMapper {
 
-  @Mapper
+  @GenIgnore
   public static MyPojo serializeMyPojo(Integer val) {
     return new MyPojo().setA(val);
   }
 
-  @Mapper
+  @GenIgnore
   public static Integer deserializeMyPojo(MyPojo val) {
     return val.getA();
   }

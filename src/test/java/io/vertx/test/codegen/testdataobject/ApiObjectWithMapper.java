@@ -1,6 +1,6 @@
 package io.vertx.test.codegen.testdataobject;
 
-import io.vertx.codegen.annotations.Mapper;
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.json.JsonObject;
 
@@ -10,12 +10,12 @@ import io.vertx.core.json.JsonObject;
 @VertxGen
 public interface ApiObjectWithMapper {
 
-  @Mapper
+  @GenIgnore
   static ApiObjectWithMapper fromJson(JsonObject json) {
     throw new UnsupportedOperationException();
   }
 
-  @Mapper
+  @GenIgnore
   static JsonObject toJson(ApiObjectWithMapper obj) {
     throw new UnsupportedOperationException();
   }

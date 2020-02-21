@@ -1,7 +1,5 @@
 package io.vertx.test.codegen.testjsonmapper.nonstaticfunctionmapper;
 
-import io.vertx.codegen.annotations.Mapper;
-
 import java.time.ZonedDateTime;
 import java.util.function.Function;
 
@@ -10,10 +8,8 @@ import java.util.function.Function;
  */
 public class APIInterfaceWithZonedDateTime {
 
-  @Mapper
   public Function<String, ZonedDateTime> deserializer = null;
 
-  @Mapper
   public Function<ZonedDateTime, String> serializer = null;
 
 }
