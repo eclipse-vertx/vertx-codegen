@@ -30,11 +30,11 @@ import java.util.function.Function;
 @DataObject(generateConverter = true)
 public class TestDataObject {
 
-  public static String serializeZoneDateTime(ZonedDateTime value) {
+  public static String serializeZonedDateTime(ZonedDateTime value) {
     return value.toString();
   }
 
-  public static ZonedDateTime deserializeZoneDateTime(String value) {
+  public static ZonedDateTime deserializeZonedDateTime(String value) {
     return ZonedDateTime.parse(value);
   }
 

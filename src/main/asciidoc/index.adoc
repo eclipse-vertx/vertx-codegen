@@ -93,8 +93,8 @@ These mappers needs to be declared in a `META-INF/vertx/json-mappers.properties`
 
 [source]
 ----
-java.time.ZonedDateTime.serializer=com.example.MyMappers#serializeZoneDateTime
-java.time.ZonedDateTime.deserializer=com.example.MyMappers#deserializeZoneDateTime
+java.time.ZonedDateTime.serializer=com.example.MyMappers#serializeZonedDateTime
+java.time.ZonedDateTime.deserializer=com.example.MyMappers#deserializedZoneDateTime
 ----
 
 Or as functions:
