@@ -115,6 +115,46 @@ public class JsonMapperTest extends ClassTestBase {
     } catch (GenException expected) { }
   }
 
+  @Test
+  public void testJsonMapperInvalidMethodReturnType() throws Exception {
+    try {
+      new GeneratorHelper()
+        .registerConverter(ZonedDateTime.class, io.vertx.test.codegen.testjsonmapper.invalidmethodreturntype.APIInterfaceWithZonedDateTime.class.getName(), "deserialize")
+        .generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.invalidmethodreturntype");
+      fail();
+    } catch (GenException expected) { }
+  }
+
+  @Test
+  public void testJsonMapperInvalidMethodParamType() throws Exception {
+    try {
+      new GeneratorHelper()
+        .registerConverter(ZonedDateTime.class, io.vertx.test.codegen.testjsonmapper.invalidmethodparamtype.APIInterfaceWithZonedDateTime.class.getName(), "serialize")
+        .generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.invalidmethodparamtype");
+      fail();
+    } catch (GenException expected) { }
+  }
+
+  @Test
+  public void testJsonMapperInvalidFunctionReturnType() throws Exception {
+    try {
+      new GeneratorHelper()
+        .registerConverter(ZonedDateTime.class, io.vertx.test.codegen.testjsonmapper.invalidfunctionreturntype.APIInterfaceWithZonedDateTime.class.getName(), "DESERIALIZER")
+        .generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.invalidfunctionreturntype");
+      fail();
+    } catch (GenException expected) { }
+  }
+
+  @Test
+  public void testJsonMapperInvalidFunctionParamType() throws Exception {
+    try {
+      new GeneratorHelper()
+        .registerConverter(ZonedDateTime.class, io.vertx.test.codegen.testjsonmapper.invalidfunctionparamtype.APIInterfaceWithZonedDateTime.class.getName(), "SERIALIZER")
+        .generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.invalidfunctionparamtype");
+      fail();
+    } catch (GenException expected) { }
+  }
+
   // Test valid stuff
   // ----------------
 

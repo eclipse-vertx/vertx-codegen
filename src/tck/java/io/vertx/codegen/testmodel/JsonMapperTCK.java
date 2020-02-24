@@ -49,12 +49,12 @@ public interface JsonMapperTCK {
   }
 
   @GenIgnore
-  static String serializeZoneDateTime(ZonedDateTime value) {
+  static String serializeZonedDateTime(ZonedDateTime value) {
     return value.toString();
   }
 
   @GenIgnore
-  static ZonedDateTime deserializeZoneDateTime(String value) {
+  static ZonedDateTime deserializeZonedDateTime(String value) {
     return ZonedDateTime.parse(value);
   }
 

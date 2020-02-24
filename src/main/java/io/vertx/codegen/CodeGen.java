@@ -96,7 +96,8 @@ public class CodeGen {
       TypeMirror converterType = converterElt.asType();
       for (int i = 0;i < converter.selectors.size();i++) {
         Resolved next = resolveMember(converterElt, converterType, converter.selectors.get(i));
-        Set<Modifier> modifiers = next.element.getModifiers();
+        Element nextElt = next.element;
+        Set<Modifier> modifiers = nextElt.getModifiers();
         if (!modifiers.contains(Modifier.PUBLIC)) {
           throw new GenException(converterElt, "Annotated mapper element must be public");
         }
@@ -171,12 +172,12 @@ public class CodeGen {
         .filter(e -> e.getSimpleName().toString().equals(member))
         .findFirst()
         .map(memberElt -> new Resolved(memberElt, typeUtils.asMemberOf(declaredType, memberElt)))
-        .orElse(null);
+        .orElseThrow(() -> new GenException(elt, "Cannot find member " + member + " of type " + type));
     }
     throw new GenException(elt, "Only declared element are supported");
   }
 
-  private void processConverter(TypeElement converterElt, TypeMirror type, List<String> selectors, ExecutableType methodType) {
+  private void processConverter(TypeElement converterElt, TypeMirror dataObjectType, List<String> selectors, ExecutableType methodType) {
     if (methodType.getParameterTypes().size() < 1) {
       throw new GenException(converterElt, "Annotated method mapper cannot have empty arguments");
     }
@@ -198,24 +199,20 @@ public class CodeGen {
       mapper.setTargetType(tmf.create(paramType));
       mapper.setSelectors(selectors);
       mapper.setKind(MapperKind.STATIC_METHOD);
-      if (type == null) {
-        type = returnType;
-      } else {
-        // Check extend or super ?
+      if (!typeUtils.isSubtype(returnType, dataObjectType)) {
+        throw new GenException(converterElt, methodType + " return should be the same or extend " + dataObjectType);
       }
-      tmf.addDataObjectDeserializer(converterElt, type, mapper);
+      tmf.addDataObjectDeserializer(converterElt, dataObjectType, mapper);
     } else if (returnKind.json || returnKind.basic || returnKind == ClassKind.OBJECT) {
       MapperInfo mapper = new MapperInfo();
       mapper.setQualifiedName(converterElt.getQualifiedName().toString());
       mapper.setTargetType(tmf.create(returnType));
       mapper.setSelectors(selectors);
       mapper.setKind(MapperKind.STATIC_METHOD);
-      if (type == null) {
-        type = paramType;
-      } else {
-        // Check extend or super ?
+      if (!typeUtils.isSubtype(dataObjectType, paramType)) {
+        throw new GenException(converterElt, methodType + " parameter should be the same or be a super type of " + dataObjectType);
       }
-      tmf.addDataObjectSerializer(converterElt, type, mapper);
+      tmf.addDataObjectSerializer(converterElt, dataObjectType, mapper);
     } else {
       throw new GenException(converterElt, "Mapper method does not declare a JSON type");
     }
