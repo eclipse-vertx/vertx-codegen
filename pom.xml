@@ -88,7 +88,6 @@
                 <excludes>
                   <exclude>**/TreeTypeInternal.java</exclude>
                 </excludes>
-                <generatedSourcesDirectory>${generated.dir}</generatedSourcesDirectory>
               </configuration>
             </execution>
           </executions>
