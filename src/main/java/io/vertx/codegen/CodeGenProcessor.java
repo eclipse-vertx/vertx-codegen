@@ -12,6 +12,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
+import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.File;
@@ -45,6 +46,7 @@ public class CodeGenProcessor extends AbstractProcessor {
   private Map<String, GeneratedFile> generatedResources = new HashMap<>();
   private Map<String, String> relocations = new HashMap<>();
   private Set<Class<? extends Annotation>> supportedAnnotation = new HashSet<>();
+  private List<CodeGen.Converter> mappers;
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
@@ -126,34 +128,52 @@ public class CodeGenProcessor extends AbstractProcessor {
     return codeGenerators;
   }
 
+  private static void loadJsonMappers(List<CodeGen.Converter> list, InputStream is) throws IOException {
+    Properties tmp = new Properties();
+    tmp.load(is);
+    tmp.stringPropertyNames().forEach(name -> {
+      int idx = name.lastIndexOf('.');
+      if (idx != -1) {
+        String type = name.substring(0, idx);
+        String value = tmp.getProperty(name);
+        int idx1 = value.indexOf('#');
+        if (idx1 != -1) {
+          String className = value.substring(0, idx1);
+          String rest = value.substring(idx1 + 1);
+          int idx2 = rest.indexOf('.');
+          if (idx2 != -1) {
+            list.add(new CodeGen.Converter(type, className, Arrays.asList(rest.substring(0, idx2), rest.substring(idx2 + 1))));
+          } else {
+            list.add(new CodeGen.Converter(type, className, Collections.singletonList(rest)));
+          }
+        }
+      }
+    });
+  }
+
   private List<CodeGen.Converter> loadJsonMappers() {
     List<CodeGen.Converter> merged = new ArrayList<>();
+    for (StandardLocation loc : StandardLocation.values()) {
+      try {
+        FileObject file = processingEnv.getFiler().getResource(loc, "", "META-INF/vertx/json-mappers.properties");
+        try(InputStream is = file.openInputStream()) {
+          try {
+            loadJsonMappers(merged, is);
+          } catch (IOException e) {
+            log.log(Level.SEVERE, "Could not load json-mappers.properties", e);
+          }
+        }
+      } catch (Exception ignore) {
+        // Filer#getResource and openInputStream will throw IOException when not found
+      }
+    }
     try {
       Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/vertx/json-mappers.properties");
       while (resources.hasMoreElements()) {
         URL url = resources.nextElement();
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded json-mappers.properties " + url);
         try (InputStream is = url.openStream()) {
-          Properties tmp = new Properties();
-          tmp.load(is);
-          tmp.stringPropertyNames().forEach(name -> {
-            int idx = name.lastIndexOf('.');
-            if (idx != -1) {
-              String type = name.substring(0, idx);
-              String value = tmp.getProperty(name);
-              int idx1 = value.indexOf('#');
-              if (idx1 != -1) {
-                String className = value.substring(0, idx1);
-                String rest = value.substring(idx1 + 1);
-                int idx2 = rest.indexOf('.');
-                if (idx2 != -1) {
-                  merged.add(new CodeGen.Converter(type, className, Arrays.asList(rest.substring(0, idx2), rest.substring(idx2 + 1))));
-                } else {
-                  merged.add(new CodeGen.Converter(type, className, Collections.singletonList(rest)));
-                }
-              }
-            }
-          });
+          loadJsonMappers(merged, is);
         }
       }
     } catch (IOException e) {
@@ -161,8 +181,6 @@ public class CodeGenProcessor extends AbstractProcessor {
     }
     return merged;
   }
-
-  private List<CodeGen.Converter> mappers;
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
