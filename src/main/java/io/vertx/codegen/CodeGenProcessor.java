@@ -63,12 +63,6 @@ public class CodeGenProcessor extends AbstractProcessor {
 
   private Predicate<Generator> filterGenerators() {
     String generatorsOption = processingEnv.getOptions().get("codegen.generators");
-    if (generatorsOption == null) {
-      generatorsOption = processingEnv.getOptions().get("codeGenerators");
-      if (generatorsOption != null) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Please use 'codegen.generators' option instead of 'codeGenerators' option");
-      }
-    }
     if (generatorsOption != null) {
       List<Pattern> wanted = Stream.of(generatorsOption.split(","))
         .map(String::trim)
@@ -84,13 +78,6 @@ public class CodeGenProcessor extends AbstractProcessor {
   private Collection<? extends Generator<?>> getCodeGenerators() {
     if (codeGenerators == null) {
       String outputDirectoryOption = processingEnv.getOptions().get("codegen.output");
-      if (outputDirectoryOption == null) {
-        outputDirectoryOption = processingEnv.getOptions().get("outputDirectory");
-        if (outputDirectoryOption != null) {
-          processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
-            "Please use 'codegen.output' option instead of 'outputDirectory' option");
-        }
-      }
       if (outputDirectoryOption != null) {
         outputDirectory = new File(outputDirectoryOption);
         if (!outputDirectory.exists()) {
