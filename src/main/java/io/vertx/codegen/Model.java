@@ -1,6 +1,7 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.type.AnnotationValueInfo;
+import io.vertx.codegen.type.TypeInfo;
 
 import javax.lang.model.element.Element;
 import java.util.Collections;

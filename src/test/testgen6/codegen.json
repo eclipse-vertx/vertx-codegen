@@ -1,9 +1,0 @@
-{
-  "name": "testgen6",
-  "generators": [{
-    "kind": ["class","dataObject"],
-    "incremental": true,
-    "filename": "'resource/result.txt'",
-    "templateFilename": "templates/multiple_types.templ"
-  }]
-}

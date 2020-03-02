@@ -27,25 +27,25 @@ import static org.junit.Assert.*;
  */
 public class Utils {
 
-  static File assertMkDirs(File f) {
+  public static File assertMkDirs(File f) {
     assertTrue(f.mkdirs());
     return f;
   }
 
-  static void assertFile(String expected, File f) throws IOException {
+  public static void assertFile(String expected, File f) throws IOException {
     assertTrue(f.exists());
     assertTrue(f.isFile());
     String s = new String(Files.readAllBytes(f.toPath()));
     assertEquals(expected, s);
   }
 
-  static <E> HashSet<E> set(E... elements) {
+  public static <E> HashSet<E> set(E... elements) {
     HashSet<E> set = new HashSet<>();
     Collections.addAll(set, elements);
     return set;
   }
 
-  static void assertProcess(BiConsumer<ProcessingEnvironment, RoundEnvironment> test) {
+  public static void assertProcess(BiConsumer<ProcessingEnvironment, RoundEnvironment> test) {
     File f = null;
     try {
       f = Files.createTempFile("test", ".java").toFile();
@@ -79,7 +79,7 @@ public class Utils {
     assertTrue(task.call());
   }
 
-  static void assertThrow(Runnable r, Class<? extends Throwable> exception) {
+  public static void assertThrow(Runnable r, Class<? extends Throwable> exception) {
     try {
       r.run();
       fail(exception.getName() + " not thrown");
@@ -88,7 +88,7 @@ public class Utils {
     }
   }
 
-  static void assertNotThrow(Runnable r) {
+  public static void assertNotThrow(Runnable r) {
     try {
       r.run();
     } catch (Exception e) {

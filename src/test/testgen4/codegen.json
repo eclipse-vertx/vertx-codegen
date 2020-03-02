@@ -1,9 +1,0 @@
-{
-  "name": "testgen4",
-  "generators": [{
-    "kind": "class",
-    "incremental": false,
-    "filename": "'resources/file.txt'",
-    "templateFilename": "the.templ"
-  }]
-}
