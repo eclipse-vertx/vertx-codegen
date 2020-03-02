@@ -16,29 +16,8 @@
 
 ## API generator
 
-A code generator consist of an _MVEL_ template declared in a `codegen.json` descriptor:
-
-~~~~
-{
-  "name": "Groovy",
-  "generators": [ {
-    "kind": "class",
-    "filename": "'groovy/' + fqn.replace('io.vertx', 'io.vertx.groovy').replace('.', '/') + '.groovy'",
-    "templateFilename": "vertx-groovy/template/groovy.templ"
-  } ]
-}
-~~~~
-
-- `filename` is an _MVEL_ expression for the file name, returning null skips the generation.
-- `templateFilename` is the name of the _MVEL_ template to apply
-- `incremental` true when the template performs incremental processing, false or absent otherwise
-- `kind`: can be a String or an Array of Strings each representing a generator type. There are several kinds of generators for different use cases:
-    - `class` : applied on each API classes
-    - `package` : applied on each Java package
-    - `module` : applied on each declared module, a module uniquely identifies an API
-    - `dataObject`: applied on each data object class
-    - `proxy`: applied on each proxy class
-    - `enum`: applied on each enum class annotated with `@VertxGen`
+A code generator is a class extending `io.vertx.codegen.Generator` loaded by a custom `io.vertx.codegen.GeneratorLoader`
+declared as a `META-INF/services/io.vertx.codegen.GeneratorLoader` JVM service.
 
 There can be as many generators as you like.
 

@@ -772,8 +772,7 @@ The codegen processor _validates_ annotated Java program elements (i.e type decl
 5. `ModuleModel`
 6. `ProxyModel`
 
-Models are processed by https://en.wikisource.org/wiki/MVEL_Language_Guide[MVEL] templates, when a template is executed it gets access to implicit properties
-(i.e properties that are declared by the model).
+Models are processed by generators. Generators declare which model it wants to process.
 
 For `ClassModel` and `DataObjectModel, annotations on methods/properties can be accessed.
 
