@@ -30,7 +30,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
 
   @Override
   public Collection<Class<? extends Annotation>> annotations() {
-    return Arrays.asList(DataObject.class, ModuleGen.class);
+    return Collections.singletonList(DataObject.class);
   }
 
   @Override
