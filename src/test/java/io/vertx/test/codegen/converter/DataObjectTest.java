@@ -56,6 +56,7 @@ public class DataObjectTest {
     Double boxedDoubleValue = TestUtils.randomDouble();
     Character boxedCharValue = TestUtils.randomChar();
     NestedJsonObjectDataObject jsonObjectDataObject = new NestedJsonObjectDataObject().setValue(TestUtils.randomAlphaString(20));
+    NestedStringDataObject stringDataObject = new NestedStringDataObject().setValue(TestUtils.randomAlphaString(20));
     Buffer buffer = TestUtils.randomBuffer(20);
     JsonObject jsonObject = new JsonObject().put("wibble", TestUtils.randomAlphaString(20));
     JsonArray jsonArray = new JsonArray().add(TestUtils.randomAlphaString(20));
@@ -91,6 +92,7 @@ public class DataObjectTest {
     json.put("boxedDouble", boxedDoubleValue);
     json.put("boxedChar", Character.toString(boxedCharValue));
     json.put("jsonObjectDataObject", jsonObjectDataObject.toJson());
+    json.put("stringDataObject", stringDataObject.toJson());
     json.put("buffer", toBase64(buffer));
     json.put("jsonObject", jsonObject);
     json.put("jsonArray", jsonArray);
@@ -107,6 +109,7 @@ public class DataObjectTest {
     json.put("boxedDoubleList", new JsonArray().add(boxedDoubleValue));
     json.put("boxedCharList", new JsonArray().add(Character.toString(boxedCharValue)));
     json.put("jsonObjectDataObjectList", new JsonArray().add(jsonObjectDataObject.toJson()));
+    json.put("stringDataObjectList", new JsonArray().add(stringDataObject.toJson()));
     json.put("bufferList", new JsonArray().add(toBase64(buffer)));
     json.put("jsonObjectList", new JsonArray().add(jsonObject));
     json.put("jsonArrayList", new JsonArray().add(jsonArray));
@@ -124,6 +127,7 @@ public class DataObjectTest {
     json.put("boxedDoubleSet", new JsonArray().add(boxedDoubleValue));
     json.put("boxedCharSet", new JsonArray().add(Character.toString(boxedCharValue)));
     json.put("jsonObjectDataObjectSet", new JsonArray().add(jsonObjectDataObject.toJson()));
+    json.put("stringDataObjectSet", new JsonArray().add(stringDataObject.toJson()));
     json.put("bufferSet", new JsonArray().add(toBase64(buffer)));
     json.put("jsonObjectSet", new JsonArray().add(jsonObject));
     json.put("jsonArraySet", new JsonArray().add(jsonArray));
@@ -149,6 +153,7 @@ public class DataObjectTest {
     json.put("addedBoxedDoubleValues", new JsonArray().add(boxedDoubleValue));
     json.put("addedBoxedCharValues", new JsonArray().add(Character.toString(boxedCharValue)));
     json.put("addedJsonObjectDataObjects", new JsonArray().add(jsonObjectDataObject.toJson()));
+    json.put("addedStringDataObjects", new JsonArray().add(stringDataObject.toJson()));
     json.put("addedBuffers", new JsonArray().add(toBase64(buffer)));
     json.put("addedJsonObjects", new JsonArray().add(jsonObject));
     json.put("addedJsonArrays", new JsonArray().add(jsonArray));
@@ -166,6 +171,7 @@ public class DataObjectTest {
     json.put("boxedDoubleValueMap", new JsonObject().put(key, boxedDoubleValue));
     json.put("boxedCharValueMap", new JsonObject().put(key, Character.toString(boxedCharValue)));
     json.put("jsonObjectDataObjectMap", new JsonObject().put(key, jsonObjectDataObject.toJson()));
+    json.put("stringDataObjectMap", new JsonObject().put(key, stringDataObject.toJson()));
     json.put("bufferMap", new JsonObject().put(key, toBase64(buffer)));
     json.put("jsonObjectMap", new JsonObject().put(key, jsonObject));
     json.put("jsonArrayMap", new JsonObject().put(key, jsonArray));
@@ -183,6 +189,7 @@ public class DataObjectTest {
     json.put("keyedBoxedDoubleValues", new JsonObject().put(key, boxedDoubleValue));
     json.put("keyedBoxedCharValues", new JsonObject().put(key, Character.toString(boxedCharValue)));
     json.put("keyedJsonObjectDataObjectValues", new JsonObject().put(key, jsonObjectDataObject.toJson()));
+    json.put("keyedStringDataObjectValues", new JsonObject().put(key, stringDataObject.toJson()));
     json.put("keyedBufferValues", new JsonObject().put(key, toBase64(buffer)));
     json.put("keyedJsonObjectValues", new JsonObject().put(key, jsonObject));
     json.put("keyedJsonArrayValues", new JsonObject().put(key, jsonArray));
@@ -212,6 +219,7 @@ public class DataObjectTest {
     Assert.assertEquals(boxedDoubleValue, obj.getBoxedDouble(), 0);
     Assert.assertEquals(boxedCharValue, obj.getBoxedChar());
     assertEquals(jsonObjectDataObject, obj.getJsonObjectDataObject());
+    assertEquals(stringDataObject, obj.getStringDataObject());
     Assert.assertEquals(buffer, obj.getBuffer());
     Assert.assertEquals(jsonObject, obj.getJsonObject());
     Assert.assertEquals(jsonArray, obj.getJsonArray());
@@ -228,6 +236,7 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singletonList(boxedDoubleValue), obj.getBoxedDoubleList());
     Assert.assertEquals(Collections.singletonList(boxedCharValue), obj.getBoxedCharList());
     Assert.assertEquals(Collections.singletonList(jsonObjectDataObject), obj.getJsonObjectDataObjectList());
+    Assert.assertEquals(Collections.singletonList(stringDataObject), obj.getStringDataObjectList());
     Assert.assertEquals(Collections.singletonList(buffer), obj.getBufferList());
     Assert.assertEquals(Collections.singletonList(jsonObject), obj.getJsonObjectList());
     Assert.assertEquals(Collections.singletonList(jsonArray), obj.getJsonArrayList());
@@ -245,6 +254,7 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singleton(boxedDoubleValue), obj.getBoxedDoubleSet());
     Assert.assertEquals(Collections.singleton(boxedCharValue), obj.getBoxedCharSet());
     Assert.assertEquals(Collections.singleton(jsonObjectDataObject), obj.getJsonObjectDataObjectSet());
+    Assert.assertEquals(Collections.singleton(stringDataObject), obj.getStringDataObjectSet());
     Assert.assertEquals(Collections.singleton(buffer), obj.getBufferSet());
     Assert.assertEquals(Collections.singleton(jsonObject), obj.getJsonObjectSet());
     Assert.assertEquals(Collections.singleton(jsonArray), obj.getJsonArraySet());
@@ -262,6 +272,7 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singletonList(boxedDoubleValue), obj.getAddedBoxedDoubleValues());
     Assert.assertEquals(Collections.singletonList(boxedCharValue), obj.getAddedBoxedCharValues());
     Assert.assertEquals(Collections.singletonList(jsonObjectDataObject), obj.getAddedJsonObjectDataObjects());
+    Assert.assertEquals(Collections.singletonList(stringDataObject), obj.getAddedStringDataObjects());
     Assert.assertEquals(Collections.singletonList(buffer), obj.getAddedBuffers());
     Assert.assertEquals(Collections.singletonList(jsonObject), obj.getAddedJsonObjects());
     Assert.assertEquals(Collections.singletonList(jsonArray), obj.getAddedJsonArrays());
@@ -279,6 +290,7 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singletonMap(key, boxedDoubleValue), obj.getBoxedDoubleValueMap());
     Assert.assertEquals(Collections.singletonMap(key, boxedCharValue), obj.getBoxedCharValueMap());
     Assert.assertEquals(Collections.singletonMap(key, jsonObjectDataObject), obj.getJsonObjectDataObjectMap());
+    Assert.assertEquals(Collections.singletonMap(key, stringDataObject), obj.getStringDataObjectMap());
     Assert.assertEquals(Collections.singletonMap(key, buffer), obj.getBufferMap());
     Assert.assertEquals(Collections.singletonMap(key, jsonObject), obj.getJsonObjectMap());
     Assert.assertEquals(Collections.singletonMap(key, jsonArray), obj.getJsonArrayMap());
@@ -296,6 +308,7 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singletonMap(key, boxedDoubleValue), obj.getKeyedBoxedDoubleValues());
     Assert.assertEquals(Collections.singletonMap(key, boxedCharValue), obj.getKeyedBoxedCharValues());
     Assert.assertEquals(Collections.singletonMap(key, jsonObjectDataObject), obj.getKeyedJsonObjectDataObjectValues());
+    Assert.assertEquals(Collections.singletonMap(key, stringDataObject), obj.getKeyedStringDataObjectValues());
     Assert.assertEquals(Collections.singletonMap(key, buffer), obj.getKeyedBufferValues());
     Assert.assertEquals(Collections.singletonMap(key, jsonObject), obj.getKeyedJsonObjectValues());
     Assert.assertEquals(Collections.singletonMap(key, jsonArray), obj.getKeyedJsonArrayValues());
@@ -342,6 +355,7 @@ public class DataObjectTest {
     Assert.assertEquals(null, obj.getBoxedDouble());
     Assert.assertEquals(null, obj.getBoxedChar());
     assertEquals(null, obj.getJsonObjectDataObject());
+    assertEquals(null, obj.getStringDataObject());
     Assert.assertEquals(null, obj.getBuffer());
     Assert.assertEquals(null, obj.getJsonObject());
     Assert.assertEquals(null, obj.getJsonArray());
@@ -357,6 +371,7 @@ public class DataObjectTest {
     Assert.assertEquals(null, obj.getBoxedDoubleList());
     Assert.assertEquals(null, obj.getBoxedCharList());
     Assert.assertEquals(null, obj.getJsonObjectDataObjectList());
+    Assert.assertEquals(null, obj.getStringDataObjectList());
     Assert.assertEquals(null, obj.getBufferList());
     Assert.assertEquals(null, obj.getJsonObjectList());
     Assert.assertEquals(null, obj.getJsonArrayList());
@@ -374,6 +389,7 @@ public class DataObjectTest {
     Assert.assertEquals(null, obj.getBoxedDoubleSet());
     Assert.assertEquals(null, obj.getBoxedCharSet());
     Assert.assertEquals(null, obj.getJsonObjectDataObjectSet());
+    Assert.assertEquals(null, obj.getStringDataObjectSet());
     Assert.assertEquals(null, obj.getBufferSet());
     Assert.assertEquals(null, obj.getJsonObjectSet());
     Assert.assertEquals(null, obj.getJsonArraySet());
@@ -391,6 +407,7 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.emptyList(), obj.getAddedBoxedDoubleValues());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedBoxedCharValues());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedJsonObjectDataObjects());
+    Assert.assertEquals(Collections.emptyList(), obj.getAddedStringDataObjects());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedBuffers());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedJsonObjects());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedJsonArrays());
@@ -408,6 +425,7 @@ public class DataObjectTest {
     Assert.assertEquals(null, obj.getBoxedDoubleValueMap());
     Assert.assertEquals(null, obj.getBoxedCharValueMap());
     Assert.assertEquals(null, obj.getJsonObjectDataObjectMap());
+    Assert.assertEquals(null, obj.getStringDataObjectMap());
     Assert.assertEquals(null, obj.getBufferMap());
     Assert.assertEquals(null, obj.getJsonObjectMap());
     Assert.assertEquals(null, obj.getJsonArrayMap());
@@ -438,6 +456,7 @@ public class DataObjectTest {
     Double boxedDoubleValue = TestUtils.randomDouble();
     Character boxedCharValue = TestUtils.randomChar();
     NestedJsonObjectDataObject jsonObjectDataObject = new NestedJsonObjectDataObject().setValue(TestUtils.randomAlphaString(20));
+    NestedStringDataObject stringDataObject = new NestedStringDataObject().setValue(TestUtils.randomAlphaString(20));
     Buffer buffer = TestUtils.randomBuffer(20);
     JsonObject jsonObject = new JsonObject().put("wibble", TestUtils.randomAlphaString(20));
     JsonArray jsonArray = new JsonArray().add(TestUtils.randomAlphaString(20));
@@ -473,6 +492,7 @@ public class DataObjectTest {
     obj.setBoxedDouble(boxedDoubleValue);
     obj.setBoxedChar(boxedCharValue);
     obj.setJsonObjectDataObject(jsonObjectDataObject);
+    obj.setStringDataObject(stringDataObject);
     obj.setBuffer(buffer);
     obj.setJsonObject(jsonObject);
     obj.setJsonArray(jsonArray);
@@ -489,6 +509,7 @@ public class DataObjectTest {
     obj.setBoxedDoubleList(Collections.singletonList(boxedDoubleValue));
     obj.setBoxedCharList(Collections.singletonList(boxedCharValue));
     obj.setJsonObjectDataObjectList(Collections.singletonList(jsonObjectDataObject));
+    obj.setStringDataObjectList(Collections.singletonList(stringDataObject));
     obj.setBufferList(Collections.singletonList(buffer));
     obj.setJsonObjectList(Collections.singletonList(jsonObject));
     obj.setJsonArrayList(Collections.singletonList(jsonArray));
@@ -507,6 +528,7 @@ public class DataObjectTest {
     obj.setBoxedDoubleSet(Collections.singleton(boxedDoubleValue));
     obj.setBoxedCharSet(Collections.singleton(boxedCharValue));
     obj.setJsonObjectDataObjectSet(Collections.singleton(jsonObjectDataObject));
+    obj.setStringDataObjectSet(Collections.singleton(stringDataObject));
     obj.setBufferSet(Collections.singleton(buffer));
     obj.setJsonObjectSet(Collections.singleton(jsonObject));
     obj.setJsonArraySet(Collections.singleton(jsonArray));
@@ -523,6 +545,7 @@ public class DataObjectTest {
     obj.setBoxedDoubleValueMap(Collections.singletonMap(key, boxedDoubleValue));
     obj.setBoxedCharValueMap(Collections.singletonMap(key, boxedCharValue));
     obj.setJsonObjectDataObjectMap(Collections.singletonMap(key, jsonObjectDataObject));
+    obj.setStringDataObjectMap(Collections.singletonMap(key, stringDataObject));
     obj.setBufferMap(Collections.singletonMap(key, buffer));
     obj.setJsonObjectMap(Collections.singletonMap(key, jsonObject));
     obj.setJsonArrayMap(Collections.singletonMap(key, jsonArray));
@@ -540,6 +563,7 @@ public class DataObjectTest {
     obj.addKeyedBoxedDoubleValue(key, boxedDoubleValue);
     obj.addKeyedBoxedCharValue(key, boxedCharValue);
     obj.addKeyedJsonObjectDataObjectValue(key, jsonObjectDataObject);
+    obj.addKeyedStringDataObjectValue(key, stringDataObject);
     obj.addKeyedBufferValue(key, buffer);
     obj.addKeyedJsonObjectValue(key, jsonObject);
     obj.addKeyedJsonArrayValue(key, jsonArray);
@@ -569,6 +593,7 @@ public class DataObjectTest {
     assertEquals(boxedDoubleValue, (double) json.get("boxedDouble"), 0.001);
     assertEquals(Character.toString(boxedCharValue), json.get("boxedChar"));
     assertEquals(jsonObjectDataObject.toJson(), json.get("jsonObjectDataObject"));
+    assertEquals(stringDataObject.toJson(), json.get("stringDataObject"));
     assertEquals(buffer, Buffer.buffer(Base64.getDecoder().decode((String)json.get("buffer"))));
     assertEquals(jsonObject, json.get("jsonObject"));
     assertEquals(jsonArray, json.get("jsonArray"));
@@ -587,6 +612,7 @@ public class DataObjectTest {
     assertEquals(boxedDoubleValue, (double)((JsonArray)json.get("boxedDoubleList")).getValue(0), 0.001);
     assertEquals(new JsonArray().add(Character.toString(boxedCharValue)), json.get("boxedCharList"));
     assertEquals(new JsonArray().add(jsonObjectDataObject.toJson()), json.get("jsonObjectDataObjectList"));
+    assertEquals(new JsonArray().add(stringDataObject.toJson()), json.get("stringDataObjectList"));
     assertEquals(Base64.getEncoder().encodeToString(buffer.getBytes()), ((JsonArray)json.get("bufferList")).getValue(0));
     assertEquals(new JsonArray().add(jsonObject), json.get("jsonObjectList"));
     assertEquals(new JsonArray().add(jsonArray), json.get("jsonArrayList"));
@@ -606,6 +632,7 @@ public class DataObjectTest {
     assertEquals(boxedDoubleValue, (double)((JsonArray)json.get("boxedDoubleSet")).getValue(0), 0.001);
     assertEquals(new JsonArray().add(Character.toString(boxedCharValue)), json.get("boxedCharSet"));
     assertEquals(new JsonArray().add(jsonObjectDataObject.toJson()), json.get("jsonObjectDataObjectSet"));
+    assertEquals(new JsonArray().add(stringDataObject.toJson()), json.get("stringDataObjectSet"));
     assertEquals(Base64.getEncoder().encodeToString(buffer.getBytes()), ((JsonArray)json.get("bufferSet")).getValue(0));
     assertEquals(new JsonArray().add(jsonObject), json.get("jsonObjectSet"));
     assertEquals(new JsonArray().add(jsonArray), json.get("jsonArraySet"));
@@ -625,6 +652,7 @@ public class DataObjectTest {
     assertEquals(boxedDoubleValue, (double)((JsonObject)json.get("boxedDoubleValueMap")).getValue(key), 0.001);
     assertEquals(new JsonObject().put(key, Character.toString(boxedCharValue)), json.get("boxedCharValueMap"));
     assertEquals(new JsonObject().put(key, jsonObjectDataObject.toJson()), json.get("jsonObjectDataObjectMap"));
+    assertEquals(new JsonObject().put(key, stringDataObject.toJson()), json.get("stringDataObjectMap"));
     assertEquals(Base64.getEncoder().encodeToString(buffer.getBytes()), ((JsonObject)json.get("bufferMap")).getValue(key));
     assertEquals(new JsonObject().put(key, jsonObject), json.get("jsonObjectMap"));
     assertEquals(new JsonObject().put(key, jsonArray), json.get("jsonArrayMap"));
@@ -644,6 +672,7 @@ public class DataObjectTest {
     assertEquals(boxedDoubleValue, (double)((JsonObject)json.get("keyedBoxedDoubleValues")).getValue(key), 0.001);
     assertEquals(new JsonObject().put(key, Character.toString(boxedCharValue)), json.get("keyedBoxedCharValues"));
     assertEquals(new JsonObject().put(key, jsonObjectDataObject.toJson()), json.get("keyedJsonObjectDataObjectValues"));
+    assertEquals(new JsonObject().put(key, stringDataObject.toJson()), json.get("keyedStringDataObjectValues"));
     assertEquals(Base64.getEncoder().encodeToString(buffer.getBytes()), ((JsonObject)json.get("keyedBufferValues")).getValue(key));
     assertEquals(new JsonObject().put(key, jsonObject), json.get("keyedJsonObjectValues"));
     assertEquals(new JsonObject().put(key, jsonArray), json.get("keyedJsonArrayValues"));
@@ -679,6 +708,7 @@ public class DataObjectTest {
     assertEquals(null, json.get("boxedDouble"));
     assertEquals(null, json.get("boxedChar"));
     assertEquals(null, json.get("jsonObjectDataObject"));
+    assertEquals(null, json.get("stringDataObject"));
     assertEquals(null, json.get("buffer"));
     assertEquals(null, json.get("jsonObject"));
     assertEquals(null, json.get("jsonArray"));
@@ -695,6 +725,7 @@ public class DataObjectTest {
     assertEquals(null, json.get("boxedDoubleList"));
     assertEquals(null, json.get("boxedCharList"));
     assertEquals(null, json.get("jsonObjectDataObjectList"));
+    assertEquals(null, json.get("stringDataObjectList"));
     assertEquals(null, json.get("bufferList"));
     assertEquals(null, json.get("jsonObjectList"));
     assertEquals(null, json.get("jsonArrayList"));
@@ -712,6 +743,7 @@ public class DataObjectTest {
     assertEquals(null, json.get("boxedDoubleSet"));
     assertEquals(null, json.get("boxedCharSet"));
     assertEquals(null, json.get("jsonObjectDataObjectSet"));
+    assertEquals(null, json.get("stringDataObjectSet"));
     assertEquals(null, json.get("bufferSet"));
     assertEquals(null, json.get("jsonObjectSet"));
     assertEquals(null, json.get("jsonArraySet"));
@@ -728,7 +760,7 @@ public class DataObjectTest {
     assertEquals(new JsonArray(), json.get("addedBoxedFloatValues"));
     assertEquals(new JsonArray(), json.get("addedBoxedDoubleValues"));
     assertEquals(new JsonArray(), json.get("addedBoxedCharValues"));
-    assertEquals(new JsonArray(), json.get("addedJsonObjectDataObjects"));
+    assertEquals(new JsonArray(), json.get("addedStringDataObjects"));
     assertEquals(new JsonArray(), json.get("addedBuffers"));
     assertEquals(new JsonArray(), json.get("addedJsonObjects"));
     assertEquals(new JsonArray(), json.get("addedJsonArrays"));
@@ -745,7 +777,7 @@ public class DataObjectTest {
     assertEquals(null, json.get("boxedFloatValueMap"));
     assertEquals(null, json.get("boxedDoubleValueMap"));
     assertEquals(null, json.get("boxedCharValueMap"));
-    assertEquals(null, json.get("jsonObjectDataObjectMap"));
+    assertEquals(null, json.get("stringDataObjectMap"));
     assertEquals(null, json.get("bufferMap"));
     assertEquals(null, json.get("jsonObjectMap"));
     assertEquals(null, json.get("jsonArrayMap"));

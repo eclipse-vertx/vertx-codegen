@@ -27,7 +27,7 @@ public class DataObjectWithMapAddersConverter {
           if (member.getValue() instanceof JsonObject) {
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof JsonObject)
-                obj.addDataObjectValue(entry.getKey(), new io.vertx.codegen.testmodel.TestDataObject((JsonObject)entry.getValue()));
+                obj.addDataObjectValue(entry.getKey(), new io.vertx.codegen.testmodel.TestDataObject((io.vertx.core.json.JsonObject)entry.getValue()));
             });
           }
           break;

@@ -10,6 +10,7 @@ import javax.lang.model.type.*;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,7 @@ public class TypeMirrorFactory {
   private static final ModuleInfo VERTX_CORE_MOD = new ModuleInfo("io.vertx.core", "vertx", "io.vertx");
   private static final ClassTypeInfo JSON_OBJECT = new ClassTypeInfo(ClassKind.JSON_OBJECT, "io.vertx.core.json.JsonObject", VERTX_CORE_MOD, false, Collections.emptyList(), null);
   private static final ClassTypeInfo JSON_ARRAY = new ClassTypeInfo(ClassKind.JSON_ARRAY, "io.vertx.core.json.JsonArray", VERTX_CORE_MOD, false, Collections.emptyList(), null);
+  private static final ClassTypeInfo STRING = new ClassTypeInfo(ClassKind.STRING, "java.lang.String", null, false, Collections.emptyList(), null);
 
   final Elements elementUtils;
   final Types typeUtils;
@@ -134,20 +136,29 @@ public class TypeMirrorFactory {
           MapperInfo serializer = serializers.get(type.toString());
           MapperInfo deserializer = deserializers.get(type.toString());
           if (elt.getAnnotation(DataObject.class) != null) {
-            boolean serializable = Helper.isDataObjectAnnotatedSerializable(elementUtils, elt);
-            boolean deserializable = Helper.isDataObjectAnnotatedDeserializable(elementUtils, typeUtils, elt);
-            TypeInfo jsonType = JSON_OBJECT;
-            if (serializer == null && serializable) {
+            ClassKind serializable = Helper.getAnnotatedDataObjectAnnotatedSerializationType(elementUtils, elt);
+            ClassKind deserializable = Helper.getAnnotatedDataObjectDeserialisationType(elementUtils, typeUtils, elt);
+            if (serializer == null && serializable != null) {
               serializer = new MapperInfo();
               serializer.setQualifiedName(fqcn);
               serializer.setKind(MapperKind.SELF);
-              serializer.setTargetType(jsonType);
+              if (serializable == ClassKind.JSON_OBJECT) {
+                serializer.setTargetType(JSON_OBJECT);
+                serializer.setSelectors(Collections.singletonList("toJson"));
+              } else {
+                serializer.setTargetType(STRING);
+                serializer.setSelectors(Collections.singletonList("toJson"));
+              }
             }
-            if (deserializer == null && deserializable) {
+            if (deserializer == null && deserializable != null) {
               deserializer = new MapperInfo();
               deserializer.setQualifiedName(fqcn);
               deserializer.setKind(MapperKind.SELF);
-              deserializer.setTargetType(jsonType);
+              if (deserializable == ClassKind.JSON_OBJECT) {
+                deserializer.setTargetType(JSON_OBJECT);
+              } else {
+                deserializer.setTargetType(STRING);
+              }
             }
           }
           DataObjectInfo dataObject = null;

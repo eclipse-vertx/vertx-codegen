@@ -30,9 +30,19 @@ import static org.junit.Assert.*;
 public class DataObjectTest {
 
   @Test
-  public void testDataObjectWithEmptyConstructor() throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(DataObjectWithEmptyConstructor.class);
+  public void testDataObjectWithConstructor() throws Exception {
+    DataObjectModel model = new GeneratorHelper().generateDataObject(DataObjectWithNoArgConstructor.class);
     assertTrue(model.hasEmptyConstructor());
+    assertFalse(model.hasJsonConstructor());
+    assertFalse(model.hasStringConstructor());
+    model = new GeneratorHelper().generateDataObject(DataObjectWithJsonObjectConstructor.class);
+    assertFalse(model.hasEmptyConstructor());
+    assertTrue(model.hasJsonConstructor());
+    assertFalse(model.hasStringConstructor());
+    model = new GeneratorHelper().generateDataObject(DataObjectWithStringConstructor.class);
+    assertFalse(model.hasEmptyConstructor());
+    assertFalse(model.hasJsonConstructor());
+    assertTrue(model.hasStringConstructor());
   }
 
   @Test

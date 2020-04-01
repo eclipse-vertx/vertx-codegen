@@ -30,7 +30,7 @@ public class DataObjectWithMapsConverter {
             java.util.Map<String, io.vertx.codegen.testmodel.TestDataObject> map = new java.util.LinkedHashMap<>();
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof JsonObject)
-                map.put(entry.getKey(), new io.vertx.codegen.testmodel.TestDataObject((JsonObject)entry.getValue()));
+                map.put(entry.getKey(), new io.vertx.codegen.testmodel.TestDataObject((io.vertx.core.json.JsonObject)entry.getValue()));
             });
             obj.setDataObjectValues(map);
           }

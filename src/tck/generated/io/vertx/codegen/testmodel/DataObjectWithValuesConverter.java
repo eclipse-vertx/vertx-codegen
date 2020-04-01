@@ -52,7 +52,7 @@ public class DataObjectWithValuesConverter {
           break;
         case "dataObjectValue":
           if (member.getValue() instanceof JsonObject) {
-            obj.setDataObjectValue(new io.vertx.codegen.testmodel.TestDataObject((JsonObject)member.getValue()));
+            obj.setDataObjectValue(new io.vertx.codegen.testmodel.TestDataObject((io.vertx.core.json.JsonObject)member.getValue()));
           }
           break;
         case "doubleValue":

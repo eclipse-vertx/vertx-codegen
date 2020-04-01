@@ -27,7 +27,7 @@ public class DataObjectWithListAddersConverter {
           if (member.getValue() instanceof JsonArray) {
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                obj.addDataObjectValue(new io.vertx.codegen.testmodel.TestDataObject((JsonObject)item));
+                obj.addDataObjectValue(new io.vertx.codegen.testmodel.TestDataObject((io.vertx.core.json.JsonObject)item));
             });
           }
           break;

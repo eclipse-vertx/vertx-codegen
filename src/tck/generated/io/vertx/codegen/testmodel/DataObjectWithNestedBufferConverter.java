@@ -32,7 +32,7 @@ public class DataObjectWithNestedBufferConverter {
           break;
         case "nested":
           if (member.getValue() instanceof JsonObject) {
-            obj.setNested(new io.vertx.codegen.testmodel.DataObjectWithBuffer((JsonObject)member.getValue()));
+            obj.setNested(new io.vertx.codegen.testmodel.DataObjectWithBuffer((io.vertx.core.json.JsonObject)member.getValue()));
           }
           break;
       }

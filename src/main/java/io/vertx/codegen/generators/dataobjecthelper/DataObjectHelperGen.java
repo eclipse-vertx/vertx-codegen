@@ -106,7 +106,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               switch (mapperInfo.getKind()) {
                 case SELF:
                   m = "";
-                  match = ".toJson()";
+                  match = "." + String.join(".", mapperInfo.getSelectors()) + "()";
                   break;
                 case STATIC_METHOD:
                   m = mapperInfo.getQualifiedName() + "." + String.join(".", mapperInfo.getSelectors()) + "(";
@@ -232,7 +232,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               TypeInfo jsonType = mapper.getJsonType();
               switch (mapper.getKind()) {
                 case SELF:
-                  match = "new " + type.getName() + "((JsonObject)";
+                  match = "new " + type.getName() + "((" + mapper.getJsonType().getName() + ")";
                   simpleName = jsonType.getSimpleName();
                   break;
                 case STATIC_METHOD:

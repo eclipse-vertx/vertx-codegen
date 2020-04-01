@@ -1112,7 +1112,7 @@ public class ClassTest extends ClassTestBase {
     assertEquals(MethodWithValidDataObjectParam.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(2, model.getMethods().size());
+    assertEquals(3, model.getMethods().size());
 
     MethodInfo method = model.getMethods().get(0);
     checkMethod(method, "methodWithJsonObjectDataObjectParam", 1, "void", MethodKind.OTHER);
@@ -1120,6 +1120,11 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(0), "dataObject", WriteOnlyJsonObjectDataObject.class);
 
     method = model.getMethods().get(1);
+    checkMethod(method, "methodWithStringDataObjectParam", 1, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "dataObject", WriteOnlyStringDataObject.class);
+
+    method = model.getMethods().get(2);
     checkMethod(method, "methodWithMappedDataObjectParam", 1, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "uri", "java.net.URI", ClassKind.OTHER);
@@ -1230,11 +1235,12 @@ public class ClassTest extends ClassTestBase {
     assertEquals(MethodWithValidDataObjectReturn.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(4, model.getMethods().size());
+    assertEquals(5, model.getMethods().size());
     checkMethod(model.getMethods().get(0), "methodWithJsonObjectDataObjectReturn", 0, ReadOnlyJsonObjectDataObject.class.getName(), MethodKind.OTHER);
-    checkMethod(model.getMethods().get(1), "methodWithAbstractJsonObjectDataObjectReturn", 0, ReadOnlyAbstractJsonObjectDataObject.class.getName(), MethodKind.OTHER);
-    checkMethod(model.getMethods().get(2), "methodWithInterfaceJsonObjectDataObjectReturn", 0, ReadOnlyInterfaceJsonObjectDataObject.class.getName(), MethodKind.OTHER);
-    checkMethod(model.getMethods().get(3), "methodWithMappedDataObjectReturn", 0, URI.class.getName(), MethodKind.OTHER);
+    checkMethod(model.getMethods().get(1), "methodWithStringDataObjectReturn", 0, ReadOnlyStringDataObject.class.getName(), MethodKind.OTHER);
+    checkMethod(model.getMethods().get(2), "methodWithAbstractJsonObjectDataObjectReturn", 0, ReadOnlyAbstractJsonObjectDataObject.class.getName(), MethodKind.OTHER);
+    checkMethod(model.getMethods().get(3), "methodWithInterfaceJsonObjectDataObjectReturn", 0, ReadOnlyInterfaceJsonObjectDataObject.class.getName(), MethodKind.OTHER);
+    checkMethod(model.getMethods().get(4), "methodWithMappedDataObjectReturn", 0, URI.class.getName(), MethodKind.OTHER);
   }
 
   @Test

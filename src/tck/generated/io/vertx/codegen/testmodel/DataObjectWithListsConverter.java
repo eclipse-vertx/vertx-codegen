@@ -30,7 +30,7 @@ public class DataObjectWithListsConverter {
             java.util.ArrayList<io.vertx.codegen.testmodel.TestDataObject> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                list.add(new io.vertx.codegen.testmodel.TestDataObject((JsonObject)item));
+                list.add(new io.vertx.codegen.testmodel.TestDataObject((io.vertx.core.json.JsonObject)item));
             });
             obj.setDataObjectValues(list);
           }

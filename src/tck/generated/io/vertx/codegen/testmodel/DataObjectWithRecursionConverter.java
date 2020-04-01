@@ -22,7 +22,7 @@ public class DataObjectWithRecursionConverter {
           break;
         case "next":
           if (member.getValue() instanceof JsonObject) {
-            obj.setNext(new io.vertx.codegen.testmodel.DataObjectWithRecursion((JsonObject)member.getValue()));
+            obj.setNext(new io.vertx.codegen.testmodel.DataObjectWithRecursion((io.vertx.core.json.JsonObject)member.getValue()));
           }
           break;
       }

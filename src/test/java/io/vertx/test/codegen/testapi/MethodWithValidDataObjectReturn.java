@@ -17,6 +17,7 @@ public interface MethodWithValidDataObjectReturn {
   }
 
   ReadOnlyJsonObjectDataObject methodWithJsonObjectDataObjectReturn();
+  ReadOnlyStringDataObject methodWithStringDataObjectReturn();
   ReadOnlyAbstractJsonObjectDataObject methodWithAbstractJsonObjectDataObjectReturn();
   ReadOnlyInterfaceJsonObjectDataObject methodWithInterfaceJsonObjectDataObjectReturn();
   URI methodWithMappedDataObjectReturn();

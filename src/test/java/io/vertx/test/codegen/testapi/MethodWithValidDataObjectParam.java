@@ -17,6 +17,7 @@ public interface MethodWithValidDataObjectParam {
   }
 
   void methodWithJsonObjectDataObjectParam(WriteOnlyJsonObjectDataObject dataObject);
+  void methodWithStringDataObjectParam(WriteOnlyStringDataObject dataObject);
 
   void methodWithMappedDataObjectParam(URI uri);
 

@@ -115,7 +115,7 @@ public class TestDataObjectConverter {
           if (member.getValue() instanceof JsonArray) {
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                obj.addAddedJsonObjectDataObject(new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((JsonObject)item));
+                obj.addAddedJsonObjectDataObject(new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((io.vertx.core.json.JsonObject)item));
             });
           }
           break;
@@ -140,6 +140,14 @@ public class TestDataObjectConverter {
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Object)
                 obj.addAddedObject(item);
+            });
+          }
+          break;
+        case "addedStringDataObjects":
+          if (member.getValue() instanceof JsonArray) {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                obj.addAddedStringDataObject(new io.vertx.test.codegen.converter.NestedStringDataObject((java.lang.String)item));
             });
           }
           break;
@@ -578,7 +586,7 @@ public class TestDataObjectConverter {
           break;
         case "jsonObjectDataObject":
           if (member.getValue() instanceof JsonObject) {
-            obj.setJsonObjectDataObject(new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((JsonObject)member.getValue()));
+            obj.setJsonObjectDataObject(new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((io.vertx.core.json.JsonObject)member.getValue()));
           }
           break;
         case "jsonObjectDataObjectList":
@@ -586,7 +594,7 @@ public class TestDataObjectConverter {
             java.util.ArrayList<io.vertx.test.codegen.converter.NestedJsonObjectDataObject> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                list.add(new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((JsonObject)item));
+                list.add(new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((io.vertx.core.json.JsonObject)item));
             });
             obj.setJsonObjectDataObjectList(list);
           }
@@ -596,7 +604,7 @@ public class TestDataObjectConverter {
             java.util.Map<String, io.vertx.test.codegen.converter.NestedJsonObjectDataObject> map = new java.util.LinkedHashMap<>();
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof JsonObject)
-                map.put(entry.getKey(), new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((JsonObject)entry.getValue()));
+                map.put(entry.getKey(), new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((io.vertx.core.json.JsonObject)entry.getValue()));
             });
             obj.setJsonObjectDataObjectMap(map);
           }
@@ -606,7 +614,7 @@ public class TestDataObjectConverter {
             java.util.LinkedHashSet<io.vertx.test.codegen.converter.NestedJsonObjectDataObject> list =  new java.util.LinkedHashSet<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                list.add(new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((JsonObject)item));
+                list.add(new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((io.vertx.core.json.JsonObject)item));
             });
             obj.setJsonObjectDataObjectSet(list);
           }
@@ -741,7 +749,7 @@ public class TestDataObjectConverter {
           if (member.getValue() instanceof JsonObject) {
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof JsonObject)
-                obj.addKeyedJsonObjectDataObjectValue(entry.getKey(), new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((JsonObject)entry.getValue()));
+                obj.addKeyedJsonObjectDataObjectValue(entry.getKey(), new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((io.vertx.core.json.JsonObject)entry.getValue()));
             });
           }
           break;
@@ -766,6 +774,14 @@ public class TestDataObjectConverter {
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof Object)
                 obj.addKeyedObjectValue(entry.getKey(), entry.getValue());
+            });
+          }
+          break;
+        case "keyedStringDataObjectValues":
+          if (member.getValue() instanceof JsonObject) {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
+              if (entry.getValue() instanceof String)
+                obj.addKeyedStringDataObjectValue(entry.getKey(), new io.vertx.test.codegen.converter.NestedStringDataObject((java.lang.String)entry.getValue()));
             });
           }
           break;
@@ -814,7 +830,7 @@ public class TestDataObjectConverter {
           break;
         case "notConvertibleDataObject":
           if (member.getValue() instanceof JsonObject) {
-            obj.setNotConvertibleDataObject(new io.vertx.test.codegen.converter.NoConverterDataObject((JsonObject)member.getValue()));
+            obj.setNotConvertibleDataObject(new io.vertx.test.codegen.converter.NoConverterDataObject((io.vertx.core.json.JsonObject)member.getValue()));
           }
           break;
         case "notConvertibleDataObjectList":
@@ -822,7 +838,7 @@ public class TestDataObjectConverter {
             java.util.ArrayList<io.vertx.test.codegen.converter.NoConverterDataObject> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                list.add(new io.vertx.test.codegen.converter.NoConverterDataObject((JsonObject)item));
+                list.add(new io.vertx.test.codegen.converter.NoConverterDataObject((io.vertx.core.json.JsonObject)item));
             });
             obj.setNotConvertibleDataObjectList(list);
           }
@@ -832,7 +848,7 @@ public class TestDataObjectConverter {
             java.util.Map<String, io.vertx.test.codegen.converter.NoConverterDataObject> map = new java.util.LinkedHashMap<>();
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof JsonObject)
-                map.put(entry.getKey(), new io.vertx.test.codegen.converter.NoConverterDataObject((JsonObject)entry.getValue()));
+                map.put(entry.getKey(), new io.vertx.test.codegen.converter.NoConverterDataObject((io.vertx.core.json.JsonObject)entry.getValue()));
             });
             obj.setNotConvertibleDataObjectMap(map);
           }
@@ -842,7 +858,7 @@ public class TestDataObjectConverter {
             java.util.LinkedHashSet<io.vertx.test.codegen.converter.NoConverterDataObject> list =  new java.util.LinkedHashSet<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                list.add(new io.vertx.test.codegen.converter.NoConverterDataObject((JsonObject)item));
+                list.add(new io.vertx.test.codegen.converter.NoConverterDataObject((io.vertx.core.json.JsonObject)item));
             });
             obj.setNotConvertibleDataObjectSet(list);
           }
@@ -920,6 +936,41 @@ public class TestDataObjectConverter {
         case "string":
           if (member.getValue() instanceof String) {
             obj.setString((String)member.getValue());
+          }
+          break;
+        case "stringDataObject":
+          if (member.getValue() instanceof String) {
+            obj.setStringDataObject(new io.vertx.test.codegen.converter.NestedStringDataObject((java.lang.String)member.getValue()));
+          }
+          break;
+        case "stringDataObjectList":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<io.vertx.test.codegen.converter.NestedStringDataObject> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                list.add(new io.vertx.test.codegen.converter.NestedStringDataObject((java.lang.String)item));
+            });
+            obj.setStringDataObjectList(list);
+          }
+          break;
+        case "stringDataObjectMap":
+          if (member.getValue() instanceof JsonObject) {
+            java.util.Map<String, io.vertx.test.codegen.converter.NestedStringDataObject> map = new java.util.LinkedHashMap<>();
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
+              if (entry.getValue() instanceof String)
+                map.put(entry.getKey(), new io.vertx.test.codegen.converter.NestedStringDataObject((java.lang.String)entry.getValue()));
+            });
+            obj.setStringDataObjectMap(map);
+          }
+          break;
+        case "stringDataObjectSet":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.LinkedHashSet<io.vertx.test.codegen.converter.NestedStringDataObject> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                list.add(new io.vertx.test.codegen.converter.NestedStringDataObject((java.lang.String)item));
+            });
+            obj.setStringDataObjectSet(list);
           }
           break;
         case "stringList":
@@ -1040,6 +1091,11 @@ public class TestDataObjectConverter {
       JsonArray array = new JsonArray();
       obj.getAddedObjects().forEach(item -> array.add(item));
       json.put("addedObjects", array);
+    }
+    if (obj.getAddedStringDataObjects() != null) {
+      JsonArray array = new JsonArray();
+      obj.getAddedStringDataObjects().forEach(item -> array.add(item.toJson()));
+      json.put("addedStringDataObjects", array);
     }
     if (obj.getAddedStringValues() != null) {
       JsonArray array = new JsonArray();
@@ -1378,6 +1434,11 @@ public class TestDataObjectConverter {
       obj.getKeyedObjectValues().forEach((key, value) -> map.put(key, value));
       json.put("keyedObjectValues", map);
     }
+    if (obj.getKeyedStringDataObjectValues() != null) {
+      JsonObject map = new JsonObject();
+      obj.getKeyedStringDataObjectValues().forEach((key, value) -> map.put(key, value.toJson()));
+      json.put("keyedStringDataObjectValues", map);
+    }
     if (obj.getKeyedStringValues() != null) {
       JsonObject map = new JsonObject();
       obj.getKeyedStringValues().forEach((key, value) -> map.put(key, value));
@@ -1426,6 +1487,24 @@ public class TestDataObjectConverter {
     json.put("primitiveShort", obj.getPrimitiveShort());
     if (obj.getString() != null) {
       json.put("string", obj.getString());
+    }
+    if (obj.getStringDataObject() != null) {
+      json.put("stringDataObject", obj.getStringDataObject().toJson());
+    }
+    if (obj.getStringDataObjectList() != null) {
+      JsonArray array = new JsonArray();
+      obj.getStringDataObjectList().forEach(item -> array.add(item.toJson()));
+      json.put("stringDataObjectList", array);
+    }
+    if (obj.getStringDataObjectMap() != null) {
+      JsonObject map = new JsonObject();
+      obj.getStringDataObjectMap().forEach((key, value) -> map.put(key, value.toJson()));
+      json.put("stringDataObjectMap", map);
+    }
+    if (obj.getStringDataObjectSet() != null) {
+      JsonArray array = new JsonArray();
+      obj.getStringDataObjectSet().forEach(item -> array.add(item.toJson()));
+      json.put("stringDataObjectSet", array);
     }
     if (obj.getStringList() != null) {
       JsonArray array = new JsonArray();

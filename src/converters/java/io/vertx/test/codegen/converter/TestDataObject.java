@@ -57,6 +57,7 @@ public class TestDataObject {
   private Double boxedDouble;
   private Character boxedChar;
   private NestedJsonObjectDataObject jsonObjectDataObject;
+  private NestedStringDataObject stringDataObject;
   private Buffer buffer;
   private JsonObject jsonObject;
   private JsonArray jsonArray;
@@ -76,6 +77,7 @@ public class TestDataObject {
   private List<Double> boxedDoubleList;
   private List<Character> boxedCharList;
   private List<NestedJsonObjectDataObject> jsonObjectDataObjectList;
+  private List<NestedStringDataObject> stringDataObjectList;
   private List<Buffer> bufferList;
   private List<JsonObject> jsonObjectList;
   private List<JsonArray> jsonArrayList;
@@ -95,6 +97,7 @@ public class TestDataObject {
   private Set<Double> boxedDoubleSet;
   private Set<Character> boxedCharSet;
   private Set<NestedJsonObjectDataObject> jsonObjectDataObjectSet;
+  private Set<NestedStringDataObject> stringDataObjectSet;
   private Set<Buffer> bufferSet;
   private Set<JsonObject> jsonObjectSet;
   private Set<JsonArray> jsonArraySet;
@@ -114,6 +117,7 @@ public class TestDataObject {
   private List<Double> addedBoxedDoubleValues = new ArrayList<>();
   private List<Character> addedBoxedCharValues = new ArrayList<>();
   private List<NestedJsonObjectDataObject> addedJsonObjectDataObjects = new ArrayList<>();
+  private List<NestedStringDataObject> addedStringDataObjects = new ArrayList<>();
   private List<Buffer> addedBuffers = new ArrayList<>();
   private List<JsonObject> addedJsonObjects = new ArrayList<>();
   private List<JsonArray> addedJsonArrays = new ArrayList<>();
@@ -132,6 +136,7 @@ public class TestDataObject {
   private Map<String, Double> boxedDoubleValueMap;
   private Map<String, Character> boxedCharValueMap;
   private Map<String, NestedJsonObjectDataObject> jsonObjectDataObjectMap;
+  private Map<String, NestedStringDataObject> stringDataObjectMap;
   private Map<String, Buffer> bufferMap;
   private Map<String, JsonObject> jsonObjectMap;
   private Map<String, JsonArray> jsonArrayMap;
@@ -151,6 +156,7 @@ public class TestDataObject {
   private Map<String, Double> keyedBoxedDoubleValues = new HashMap<>();
   private Map<String, Character> keyedBoxedCharValues = new HashMap<>();
   private Map<String, NestedJsonObjectDataObject> keyedJsonObjectDataObjectValues = new HashMap<>();
+  private Map<String, NestedStringDataObject> keyedStringDataObjectValues = new HashMap<>();
   private Map<String, Buffer> keyedBufferValues = new HashMap<>();
   private Map<String, JsonObject> keyedJsonObjectValues = new HashMap<>();
   private Map<String, JsonArray> keyedJsonArrayValues = new HashMap<>();
@@ -330,6 +336,15 @@ public class TestDataObject {
     return this;
   }
 
+  public NestedStringDataObject getStringDataObject() {
+    return stringDataObject;
+  }
+
+  public TestDataObject setStringDataObject(NestedStringDataObject stringDataObject) {
+    this.stringDataObject = stringDataObject;
+    return this;
+  }
+
   public Buffer getBuffer() {
     return buffer;
   }
@@ -492,6 +507,15 @@ public class TestDataObject {
     return this;
   }
 
+  public List<NestedStringDataObject> getStringDataObjectList() {
+    return stringDataObjectList;
+  }
+
+  public TestDataObject setStringDataObjectList(List<NestedStringDataObject> stringDataObjectList) {
+    this.stringDataObjectList = stringDataObjectList;
+    return this;
+  }
+
   public List<Buffer> getBufferList() {
     return bufferList;
   }
@@ -643,6 +667,15 @@ public class TestDataObject {
 
   public TestDataObject setJsonObjectDataObjectSet(Set<NestedJsonObjectDataObject> jsonObjectDataObjectSet) {
     this.jsonObjectDataObjectSet = jsonObjectDataObjectSet;
+    return this;
+  }
+
+  public Set<NestedStringDataObject> getStringDataObjectSet() {
+    return stringDataObjectSet;
+  }
+
+  public TestDataObject setStringDataObjectSet(Set<NestedStringDataObject> stringDataObjectSet) {
+    this.stringDataObjectSet = stringDataObjectSet;
     return this;
   }
 
@@ -799,6 +832,15 @@ public class TestDataObject {
     return this;
   }
 
+  public List<NestedStringDataObject> getAddedStringDataObjects() {
+    return addedStringDataObjects;
+  }
+
+  public TestDataObject addAddedStringDataObject(NestedStringDataObject addedAggregatedDataObject) {
+    this.addedStringDataObjects.add(addedAggregatedDataObject);
+    return this;
+  }
+
   public List<Buffer> getAddedBuffers() {
     return addedBuffers;
   }
@@ -952,6 +994,15 @@ public class TestDataObject {
     return this;
   }
 
+  public Map<String, NestedStringDataObject> getStringDataObjectMap() {
+    return stringDataObjectMap;
+  }
+
+  public TestDataObject setStringDataObjectMap(Map<String, NestedStringDataObject> nestedJsonObjectDataObjectMap) {
+    this.stringDataObjectMap = nestedJsonObjectDataObjectMap;
+    return this;
+  }
+
   public Map<String, Buffer> getBufferMap() {
     return bufferMap;
   }
@@ -1102,6 +1153,15 @@ public class TestDataObject {
 
   public TestDataObject addKeyedJsonObjectDataObjectValue(String key, NestedJsonObjectDataObject value) {
     keyedJsonObjectDataObjectValues.put(key, value);
+    return this;
+  }
+
+  public Map<String, NestedStringDataObject> getKeyedStringDataObjectValues() {
+    return keyedStringDataObjectValues;
+  }
+
+  public TestDataObject addKeyedStringDataObjectValue(String key, NestedStringDataObject value) {
+    keyedStringDataObjectValues.put(key, value);
     return this;
   }
 

@@ -29,6 +29,10 @@ import static java.util.stream.Collectors.toList;
  */
 public class DataObjectModel implements Model {
 
+  private static final int CTOR_NO_ARG = 1;
+  private static final int CTOR_JSON_OBJECT = 2;
+  private static final int CTOR_STRING = 4;
+
   private final Elements elementUtils;
   private final Types typeUtils;
   private final Doc.Factory docFactory;
@@ -152,10 +156,12 @@ public class DataObjectModel implements Model {
   public boolean hasToJsonMethod() { return hasToJsonMethod; }
 
   public boolean hasEmptyConstructor() {
-    return (constructors & 1) == 1;
+    return (constructors & CTOR_NO_ARG) == CTOR_NO_ARG;
   }
 
-  public boolean hasJsonConstructor() { return (constructors & 2) == 2; }
+  public boolean hasJsonConstructor() { return (constructors & CTOR_JSON_OBJECT) == CTOR_JSON_OBJECT; }
+
+  public boolean hasStringConstructor() { return (constructors & CTOR_STRING) == CTOR_STRING; }
 
   public boolean hasDecodeStaticMethod() {
     return hasDecodeStaticMethod;
@@ -192,6 +198,7 @@ public class DataObjectModel implements Model {
     vars.put("hasToJsonMethod", hasToJsonMethod);
     vars.put("hasEmptyConstructor", hasEmptyConstructor());
     vars.put("hasJsonConstructor", hasJsonConstructor());
+    vars.put("hasStringConstructor", hasStringConstructor());
     vars.put("serializable", isSerializable());
     vars.put("deserializable", isDeserializable());
     vars.put("deprecated", deprecated);
@@ -313,12 +320,17 @@ public class DataObjectModel implements Model {
           TypeInfo ti = typeFactory.create(parameters.get(0).asType());
           if (ti instanceof ClassTypeInfo) {
             ClassTypeInfo cl = (ClassTypeInfo) ti;
-            if (cl.getKind() == ClassKind.JSON_OBJECT) {
-              constructors |= 2;
+            switch (cl.getKind()) {
+              case JSON_OBJECT:
+                constructors |= CTOR_JSON_OBJECT;
+                break;
+              case STRING:
+                constructors |= CTOR_STRING;
+                break;
             }
           }
         } else if (size == 0) {
-          constructors |= 1;
+          constructors |= CTOR_NO_ARG;
         }
       }
     }

@@ -16,7 +16,6 @@ package io.vertx.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.type.ClassKind;
 
@@ -677,15 +676,23 @@ public class Helper {
     return method;
   }
 
-  public static boolean isDataObjectAnnotatedSerializable(Elements elementUtils, TypeElement dataObjectElt) {
-    return
-      elementUtils.getAllMembers(dataObjectElt)
+  public static ClassKind getAnnotatedDataObjectAnnotatedSerializationType(Elements elementUtils, TypeElement dataObjectElt) {
+    return elementUtils.getAllMembers(dataObjectElt)
       .stream()
       .flatMap(Helper.FILTER_METHOD)
-      .anyMatch(exeElt ->
-        exeElt.getSimpleName().toString().equals("toJson") &&
-          exeElt.getReturnType().toString().equals("io.vertx.core.json.JsonObject")
-      );
+      .filter(exeElt -> exeElt.getParameters().isEmpty() && exeElt.getSimpleName().toString().equals("toJson"))
+      .flatMap(exeElt -> {
+        ClassKind ck;
+        switch (exeElt.getReturnType().toString()) {
+          case "io.vertx.core.json.JsonObject":
+            return Stream.of(ClassKind.JSON_OBJECT);
+          case "java.lang.String":
+            return Stream.of(ClassKind.STRING);
+        }
+        return Stream.empty();
+      })
+      .findFirst()
+      .orElse(null);
   }
 
   public static boolean isConcreteClass(TypeElement element) {
@@ -697,19 +704,29 @@ public class Helper {
       (element.getKind() == ElementKind.CLASS && element.getModifiers().contains(Modifier.ABSTRACT));
   }
 
-  public static boolean isDataObjectAnnotatedDeserializable(Elements elementUtils, Types typeUtils, TypeElement dataObjectElt) {
-    return
-      isConcreteClass(dataObjectElt) &&
-        elementUtils
-          .getAllMembers(dataObjectElt)
-          .stream()
-          .filter(e -> e.getKind() == ElementKind.CONSTRUCTOR)
-          .map(e -> (ExecutableElement)e)
-          .anyMatch(constructor ->
-            constructor.getParameters().size() == 1 &&
-              constructor.getModifiers().contains(Modifier.PUBLIC) &&
-              constructor.getParameters().get(0).asType().toString().equals("io.vertx.core.json.JsonObject")
-          );
+  private static final Set<String> dataObjectTypes = new HashSet<>(Arrays.asList("io.vertx.core.json.JsonObject", "java.lang.String"));
+
+  public static ClassKind getAnnotatedDataObjectDeserialisationType(Elements elementUtils, Types typeUtils, TypeElement dataObjectElt) {
+    if (isConcreteClass(dataObjectElt)) {
+      Set<String> types = elementUtils
+        .getAllMembers(dataObjectElt)
+        .stream()
+        .filter(e -> e.getKind() == ElementKind.CONSTRUCTOR)
+        .map(e -> (ExecutableElement) e)
+        .filter(constructor ->
+          constructor.getParameters().size() == 1 &&
+            constructor.getModifiers().contains(Modifier.PUBLIC) &&
+            dataObjectTypes.contains(constructor.getParameters().get(0).asType().toString()))
+        .map(ctor -> ctor.getParameters().get(0).asType().toString())
+        .collect(Collectors.toSet());
+      // Order matter
+      if (types.contains("io.vertx.core.json.JsonObject")) {
+        return ClassKind.JSON_OBJECT;
+      } else if (types.contains("java.lang.String")) {
+        return ClassKind.STRING;
+      }
+    }
+    return null;
   }
 
   /**
