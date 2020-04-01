@@ -15,14 +15,6 @@ public class TestDataObjectConverter {
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, TestDataObject obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
       switch (member.getKey()) {
-        case "addedAggregatedDataObjects":
-          if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof JsonObject)
-                obj.addAddedAggregatedDataObject(new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)item));
-            });
-          }
-          break;
         case "addedBoxedBooleanValues":
           if (member.getValue() instanceof JsonArray) {
             ((Iterable<Object>)member.getValue()).forEach( item -> {
@@ -119,6 +111,14 @@ public class TestDataObjectConverter {
             });
           }
           break;
+        case "addedJsonObjectDataObjects":
+          if (member.getValue() instanceof JsonArray) {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof JsonObject)
+                obj.addAddedJsonObjectDataObject(new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((JsonObject)item));
+            });
+          }
+          break;
         case "addedJsonObjects":
           if (member.getValue() instanceof JsonArray) {
             ((Iterable<Object>)member.getValue()).forEach( item -> {
@@ -151,44 +151,19 @@ public class TestDataObjectConverter {
             });
           }
           break;
-        case "aggregatedDataObject":
-          if (member.getValue() instanceof JsonObject) {
-            obj.setAggregatedDataObject(new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)member.getValue()));
-          }
-          break;
-        case "aggregatedDataObjectMap":
-          if (member.getValue() instanceof JsonObject) {
-            java.util.Map<String, io.vertx.test.codegen.converter.AggregatedDataObject> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
-              if (entry.getValue() instanceof JsonObject)
-                map.put(entry.getKey(), new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)entry.getValue()));
-            });
-            obj.setAggregatedDataObjectMap(map);
-          }
-          break;
-        case "aggregatedDataObjectSet":
-          if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<io.vertx.test.codegen.converter.AggregatedDataObject> list =  new java.util.LinkedHashSet<>();
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof JsonObject)
-                list.add(new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)item));
-            });
-            obj.setAggregatedDataObjectSet(list);
-          }
-          break;
-        case "aggregatedDataObjects":
-          if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<io.vertx.test.codegen.converter.AggregatedDataObject> list =  new java.util.ArrayList<>();
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof JsonObject)
-                list.add(new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)item));
-            });
-            obj.setAggregatedDataObjects(list);
-          }
-          break;
-        case "booleanValue":
+        case "boxedBoolean":
           if (member.getValue() instanceof Boolean) {
-            obj.setBooleanValue((Boolean)member.getValue());
+            obj.setBoxedBoolean((Boolean)member.getValue());
+          }
+          break;
+        case "boxedBooleanList":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<java.lang.Boolean> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof Boolean)
+                list.add((Boolean)item);
+            });
+            obj.setBoxedBooleanList(list);
           }
           break;
         case "boxedBooleanSet":
@@ -201,11 +176,6 @@ public class TestDataObjectConverter {
             obj.setBoxedBooleanSet(list);
           }
           break;
-        case "boxedBooleanValue":
-          if (member.getValue() instanceof Boolean) {
-            obj.setBoxedBooleanValue((Boolean)member.getValue());
-          }
-          break;
         case "boxedBooleanValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Boolean> map = new java.util.LinkedHashMap<>();
@@ -216,14 +186,19 @@ public class TestDataObjectConverter {
             obj.setBoxedBooleanValueMap(map);
           }
           break;
-        case "boxedBooleanValues":
+        case "boxedByte":
+          if (member.getValue() instanceof Number) {
+            obj.setBoxedByte(((Number)member.getValue()).byteValue());
+          }
+          break;
+        case "boxedByteList":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Boolean> list =  new java.util.ArrayList<>();
+            java.util.ArrayList<java.lang.Byte> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof Boolean)
-                list.add((Boolean)item);
+              if (item instanceof Number)
+                list.add(((Number)item).byteValue());
             });
-            obj.setBoxedBooleanValues(list);
+            obj.setBoxedByteList(list);
           }
           break;
         case "boxedByteSet":
@@ -236,11 +211,6 @@ public class TestDataObjectConverter {
             obj.setBoxedByteSet(list);
           }
           break;
-        case "boxedByteValue":
-          if (member.getValue() instanceof Number) {
-            obj.setBoxedByteValue(((Number)member.getValue()).byteValue());
-          }
-          break;
         case "boxedByteValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Byte> map = new java.util.LinkedHashMap<>();
@@ -251,14 +221,19 @@ public class TestDataObjectConverter {
             obj.setBoxedByteValueMap(map);
           }
           break;
-        case "boxedByteValues":
+        case "boxedChar":
+          if (member.getValue() instanceof String) {
+            obj.setBoxedChar(((String)member.getValue()).charAt(0));
+          }
+          break;
+        case "boxedCharList":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Byte> list =  new java.util.ArrayList<>();
+            java.util.ArrayList<java.lang.Character> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof Number)
-                list.add(((Number)item).byteValue());
+              if (item instanceof String)
+                list.add(((String)item).charAt(0));
             });
-            obj.setBoxedByteValues(list);
+            obj.setBoxedCharList(list);
           }
           break;
         case "boxedCharSet":
@@ -271,11 +246,6 @@ public class TestDataObjectConverter {
             obj.setBoxedCharSet(list);
           }
           break;
-        case "boxedCharValue":
-          if (member.getValue() instanceof String) {
-            obj.setBoxedCharValue(((String)member.getValue()).charAt(0));
-          }
-          break;
         case "boxedCharValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Character> map = new java.util.LinkedHashMap<>();
@@ -286,14 +256,19 @@ public class TestDataObjectConverter {
             obj.setBoxedCharValueMap(map);
           }
           break;
-        case "boxedCharValues":
+        case "boxedDouble":
+          if (member.getValue() instanceof Number) {
+            obj.setBoxedDouble(((Number)member.getValue()).doubleValue());
+          }
+          break;
+        case "boxedDoubleList":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Character> list =  new java.util.ArrayList<>();
+            java.util.ArrayList<java.lang.Double> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof String)
-                list.add(((String)item).charAt(0));
+              if (item instanceof Number)
+                list.add(((Number)item).doubleValue());
             });
-            obj.setBoxedCharValues(list);
+            obj.setBoxedDoubleList(list);
           }
           break;
         case "boxedDoubleSet":
@@ -306,11 +281,6 @@ public class TestDataObjectConverter {
             obj.setBoxedDoubleSet(list);
           }
           break;
-        case "boxedDoubleValue":
-          if (member.getValue() instanceof Number) {
-            obj.setBoxedDoubleValue(((Number)member.getValue()).doubleValue());
-          }
-          break;
         case "boxedDoubleValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Double> map = new java.util.LinkedHashMap<>();
@@ -321,14 +291,19 @@ public class TestDataObjectConverter {
             obj.setBoxedDoubleValueMap(map);
           }
           break;
-        case "boxedDoubleValues":
+        case "boxedFloat":
+          if (member.getValue() instanceof Number) {
+            obj.setBoxedFloat(((Number)member.getValue()).floatValue());
+          }
+          break;
+        case "boxedFloatList":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Double> list =  new java.util.ArrayList<>();
+            java.util.ArrayList<java.lang.Float> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                list.add(((Number)item).doubleValue());
+                list.add(((Number)item).floatValue());
             });
-            obj.setBoxedDoubleValues(list);
+            obj.setBoxedFloatList(list);
           }
           break;
         case "boxedFloatSet":
@@ -341,11 +316,6 @@ public class TestDataObjectConverter {
             obj.setBoxedFloatSet(list);
           }
           break;
-        case "boxedFloatValue":
-          if (member.getValue() instanceof Number) {
-            obj.setBoxedFloatValue(((Number)member.getValue()).floatValue());
-          }
-          break;
         case "boxedFloatValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Float> map = new java.util.LinkedHashMap<>();
@@ -356,14 +326,19 @@ public class TestDataObjectConverter {
             obj.setBoxedFloatValueMap(map);
           }
           break;
-        case "boxedFloatValues":
+        case "boxedInt":
+          if (member.getValue() instanceof Number) {
+            obj.setBoxedInt(((Number)member.getValue()).intValue());
+          }
+          break;
+        case "boxedIntList":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Float> list =  new java.util.ArrayList<>();
+            java.util.ArrayList<java.lang.Integer> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                list.add(((Number)item).floatValue());
+                list.add(((Number)item).intValue());
             });
-            obj.setBoxedFloatValues(list);
+            obj.setBoxedIntList(list);
           }
           break;
         case "boxedIntSet":
@@ -376,11 +351,6 @@ public class TestDataObjectConverter {
             obj.setBoxedIntSet(list);
           }
           break;
-        case "boxedIntValue":
-          if (member.getValue() instanceof Number) {
-            obj.setBoxedIntValue(((Number)member.getValue()).intValue());
-          }
-          break;
         case "boxedIntValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Integer> map = new java.util.LinkedHashMap<>();
@@ -391,14 +361,19 @@ public class TestDataObjectConverter {
             obj.setBoxedIntValueMap(map);
           }
           break;
-        case "boxedIntValues":
+        case "boxedLong":
+          if (member.getValue() instanceof Number) {
+            obj.setBoxedLong(((Number)member.getValue()).longValue());
+          }
+          break;
+        case "boxedLongList":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Integer> list =  new java.util.ArrayList<>();
+            java.util.ArrayList<java.lang.Long> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                list.add(((Number)item).intValue());
+                list.add(((Number)item).longValue());
             });
-            obj.setBoxedIntValues(list);
+            obj.setBoxedLongList(list);
           }
           break;
         case "boxedLongSet":
@@ -411,11 +386,6 @@ public class TestDataObjectConverter {
             obj.setBoxedLongSet(list);
           }
           break;
-        case "boxedLongValue":
-          if (member.getValue() instanceof Number) {
-            obj.setBoxedLongValue(((Number)member.getValue()).longValue());
-          }
-          break;
         case "boxedLongValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Long> map = new java.util.LinkedHashMap<>();
@@ -426,14 +396,19 @@ public class TestDataObjectConverter {
             obj.setBoxedLongValueMap(map);
           }
           break;
-        case "boxedLongValues":
+        case "boxedShort":
+          if (member.getValue() instanceof Number) {
+            obj.setBoxedShort(((Number)member.getValue()).shortValue());
+          }
+          break;
+        case "boxedShortList":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Long> list =  new java.util.ArrayList<>();
+            java.util.ArrayList<java.lang.Short> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof Number)
-                list.add(((Number)item).longValue());
+                list.add(((Number)item).shortValue());
             });
-            obj.setBoxedLongValues(list);
+            obj.setBoxedShortList(list);
           }
           break;
         case "boxedShortSet":
@@ -446,11 +421,6 @@ public class TestDataObjectConverter {
             obj.setBoxedShortSet(list);
           }
           break;
-        case "boxedShortValue":
-          if (member.getValue() instanceof Number) {
-            obj.setBoxedShortValue(((Number)member.getValue()).shortValue());
-          }
-          break;
         case "boxedShortValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.Short> map = new java.util.LinkedHashMap<>();
@@ -461,19 +431,19 @@ public class TestDataObjectConverter {
             obj.setBoxedShortValueMap(map);
           }
           break;
-        case "boxedShortValues":
-          if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Short> list =  new java.util.ArrayList<>();
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof Number)
-                list.add(((Number)item).shortValue());
-            });
-            obj.setBoxedShortValues(list);
-          }
-          break;
         case "buffer":
           if (member.getValue() instanceof String) {
             obj.setBuffer(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)member.getValue())));
+          }
+          break;
+        case "bufferList":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<io.vertx.core.buffer.Buffer> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                list.add(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)item)));
+            });
+            obj.setBufferList(list);
           }
           break;
         case "bufferMap":
@@ -496,39 +466,19 @@ public class TestDataObjectConverter {
             obj.setBufferSet(list);
           }
           break;
-        case "buffers":
-          if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<io.vertx.core.buffer.Buffer> list =  new java.util.ArrayList<>();
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof String)
-                list.add(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)item)));
-            });
-            obj.setBuffers(list);
-          }
-          break;
-        case "byteValue":
-          if (member.getValue() instanceof Number) {
-            obj.setByteValue(((Number)member.getValue()).byteValue());
-          }
-          break;
-        case "charValue":
-          if (member.getValue() instanceof String) {
-            obj.setCharValue(((String)member.getValue()).charAt(0));
-          }
-          break;
-        case "doubleValue":
-          if (member.getValue() instanceof Number) {
-            obj.setDoubleValue(((Number)member.getValue()).doubleValue());
-          }
-          break;
-        case "floatValue":
-          if (member.getValue() instanceof Number) {
-            obj.setFloatValue(((Number)member.getValue()).floatValue());
-          }
-          break;
         case "functionMapped":
           if (member.getValue() instanceof String) {
             obj.setFunctionMapped(io.vertx.test.codegen.converter.TestDataObject.LOCALE_DESERIALIZER.apply((String)member.getValue()));
+          }
+          break;
+        case "functionMappedList":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<java.util.Locale> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                list.add(io.vertx.test.codegen.converter.TestDataObject.LOCALE_DESERIALIZER.apply((String)item));
+            });
+            obj.setFunctionMappedList(list);
           }
           break;
         case "functionMappedMap":
@@ -551,19 +501,19 @@ public class TestDataObjectConverter {
             obj.setFunctionMappedSet(list);
           }
           break;
-        case "functionMappeds":
-          if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.util.Locale> list =  new java.util.ArrayList<>();
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof String)
-                list.add(io.vertx.test.codegen.converter.TestDataObject.LOCALE_DESERIALIZER.apply((String)item));
-            });
-            obj.setFunctionMappeds(list);
-          }
-          break;
         case "httpMethod":
           if (member.getValue() instanceof String) {
             obj.setHttpMethod(java.util.concurrent.TimeUnit.valueOf((String)member.getValue()));
+          }
+          break;
+        case "httpMethodList":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<java.util.concurrent.TimeUnit> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                list.add(java.util.concurrent.TimeUnit.valueOf((String)item));
+            });
+            obj.setHttpMethodList(list);
           }
           break;
         case "httpMethodMap":
@@ -586,24 +536,19 @@ public class TestDataObjectConverter {
             obj.setHttpMethodSet(list);
           }
           break;
-        case "httpMethods":
-          if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.util.concurrent.TimeUnit> list =  new java.util.ArrayList<>();
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof String)
-                list.add(java.util.concurrent.TimeUnit.valueOf((String)item));
-            });
-            obj.setHttpMethods(list);
-          }
-          break;
-        case "intValue":
-          if (member.getValue() instanceof Number) {
-            obj.setIntValue(((Number)member.getValue()).intValue());
-          }
-          break;
         case "jsonArray":
           if (member.getValue() instanceof JsonArray) {
             obj.setJsonArray(((JsonArray)member.getValue()).copy());
+          }
+          break;
+        case "jsonArrayList":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<io.vertx.core.json.JsonArray> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof JsonArray)
+                list.add(((JsonArray)item).copy());
+            });
+            obj.setJsonArrayList(list);
           }
           break;
         case "jsonArrayMap":
@@ -626,19 +571,54 @@ public class TestDataObjectConverter {
             obj.setJsonArraySet(list);
           }
           break;
-        case "jsonArrays":
-          if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<io.vertx.core.json.JsonArray> list =  new java.util.ArrayList<>();
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof JsonArray)
-                list.add(((JsonArray)item).copy());
-            });
-            obj.setJsonArrays(list);
-          }
-          break;
         case "jsonObject":
           if (member.getValue() instanceof JsonObject) {
             obj.setJsonObject(((JsonObject)member.getValue()).copy());
+          }
+          break;
+        case "jsonObjectDataObject":
+          if (member.getValue() instanceof JsonObject) {
+            obj.setJsonObjectDataObject(new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((JsonObject)member.getValue()));
+          }
+          break;
+        case "jsonObjectDataObjectList":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<io.vertx.test.codegen.converter.NestedJsonObjectDataObject> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof JsonObject)
+                list.add(new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((JsonObject)item));
+            });
+            obj.setJsonObjectDataObjectList(list);
+          }
+          break;
+        case "jsonObjectDataObjectMap":
+          if (member.getValue() instanceof JsonObject) {
+            java.util.Map<String, io.vertx.test.codegen.converter.NestedJsonObjectDataObject> map = new java.util.LinkedHashMap<>();
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
+              if (entry.getValue() instanceof JsonObject)
+                map.put(entry.getKey(), new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((JsonObject)entry.getValue()));
+            });
+            obj.setJsonObjectDataObjectMap(map);
+          }
+          break;
+        case "jsonObjectDataObjectSet":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.LinkedHashSet<io.vertx.test.codegen.converter.NestedJsonObjectDataObject> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof JsonObject)
+                list.add(new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((JsonObject)item));
+            });
+            obj.setJsonObjectDataObjectSet(list);
+          }
+          break;
+        case "jsonObjectList":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<io.vertx.core.json.JsonObject> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof JsonObject)
+                list.add(((JsonObject)item).copy());
+            });
+            obj.setJsonObjectList(list);
           }
           break;
         case "jsonObjectMap":
@@ -659,16 +639,6 @@ public class TestDataObjectConverter {
                 list.add(((JsonObject)item).copy());
             });
             obj.setJsonObjectSet(list);
-          }
-          break;
-        case "jsonObjects":
-          if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<io.vertx.core.json.JsonObject> list =  new java.util.ArrayList<>();
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof JsonObject)
-                list.add(((JsonObject)item).copy());
-            });
-            obj.setJsonObjects(list);
           }
           break;
         case "keyedBoxedBooleanValues":
@@ -743,14 +713,6 @@ public class TestDataObjectConverter {
             });
           }
           break;
-        case "keyedDataObjectValues":
-          if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
-              if (entry.getValue() instanceof JsonObject)
-                obj.addKeyedDataObjectValue(entry.getKey(), new io.vertx.test.codegen.converter.AggregatedDataObject((JsonObject)entry.getValue()));
-            });
-          }
-          break;
         case "keyedEnumValues":
           if (member.getValue() instanceof JsonObject) {
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
@@ -772,6 +734,14 @@ public class TestDataObjectConverter {
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof JsonArray)
                 obj.addKeyedJsonArrayValue(entry.getKey(), ((JsonArray)entry.getValue()).copy());
+            });
+          }
+          break;
+        case "keyedJsonObjectDataObjectValues":
+          if (member.getValue() instanceof JsonObject) {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
+              if (entry.getValue() instanceof JsonObject)
+                obj.addKeyedJsonObjectDataObjectValue(entry.getKey(), new io.vertx.test.codegen.converter.NestedJsonObjectDataObject((JsonObject)entry.getValue()));
             });
           }
           break;
@@ -807,14 +777,19 @@ public class TestDataObjectConverter {
             });
           }
           break;
-        case "longValue":
-          if (member.getValue() instanceof Number) {
-            obj.setLongValue(((Number)member.getValue()).longValue());
-          }
-          break;
         case "methodMapped":
           if (member.getValue() instanceof String) {
             obj.setMethodMapped(io.vertx.test.codegen.converter.TestDataObject.deserializeZonedDateTime((String)member.getValue()));
+          }
+          break;
+        case "methodMappedList":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<java.time.ZonedDateTime> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                list.add(io.vertx.test.codegen.converter.TestDataObject.deserializeZonedDateTime((String)item));
+            });
+            obj.setMethodMappedList(list);
           }
           break;
         case "methodMappedMap":
@@ -837,19 +812,19 @@ public class TestDataObjectConverter {
             obj.setMethodMappedSet(list);
           }
           break;
-        case "methodMappeds":
-          if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.time.ZonedDateTime> list =  new java.util.ArrayList<>();
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof String)
-                list.add(io.vertx.test.codegen.converter.TestDataObject.deserializeZonedDateTime((String)item));
-            });
-            obj.setMethodMappeds(list);
-          }
-          break;
         case "notConvertibleDataObject":
           if (member.getValue() instanceof JsonObject) {
             obj.setNotConvertibleDataObject(new io.vertx.test.codegen.converter.NoConverterDataObject((JsonObject)member.getValue()));
+          }
+          break;
+        case "notConvertibleDataObjectList":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<io.vertx.test.codegen.converter.NoConverterDataObject> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof JsonObject)
+                list.add(new io.vertx.test.codegen.converter.NoConverterDataObject((JsonObject)item));
+            });
+            obj.setNotConvertibleDataObjectList(list);
           }
           break;
         case "notConvertibleDataObjectMap":
@@ -872,14 +847,14 @@ public class TestDataObjectConverter {
             obj.setNotConvertibleDataObjectSet(list);
           }
           break;
-        case "notConvertibleDataObjects":
+        case "objectList":
           if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<io.vertx.test.codegen.converter.NoConverterDataObject> list =  new java.util.ArrayList<>();
+            java.util.ArrayList<java.lang.Object> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof JsonObject)
-                list.add(new io.vertx.test.codegen.converter.NoConverterDataObject((JsonObject)item));
+              if (item instanceof Object)
+                list.add(item);
             });
-            obj.setNotConvertibleDataObjects(list);
+            obj.setObjectList(list);
           }
           break;
         case "objectMap":
@@ -902,19 +877,59 @@ public class TestDataObjectConverter {
             obj.setObjectSet(list);
           }
           break;
-        case "objects":
-          if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.Object> list =  new java.util.ArrayList<>();
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof Object)
-                list.add(item);
-            });
-            obj.setObjects(list);
+        case "primitiveBoolean":
+          if (member.getValue() instanceof Boolean) {
+            obj.setPrimitiveBoolean((Boolean)member.getValue());
           }
           break;
-        case "shortValue":
+        case "primitiveByte":
           if (member.getValue() instanceof Number) {
-            obj.setShortValue(((Number)member.getValue()).shortValue());
+            obj.setPrimitiveByte(((Number)member.getValue()).byteValue());
+          }
+          break;
+        case "primitiveChar":
+          if (member.getValue() instanceof String) {
+            obj.setPrimitiveChar(((String)member.getValue()).charAt(0));
+          }
+          break;
+        case "primitiveDouble":
+          if (member.getValue() instanceof Number) {
+            obj.setPrimitiveDouble(((Number)member.getValue()).doubleValue());
+          }
+          break;
+        case "primitiveFloat":
+          if (member.getValue() instanceof Number) {
+            obj.setPrimitiveFloat(((Number)member.getValue()).floatValue());
+          }
+          break;
+        case "primitiveInt":
+          if (member.getValue() instanceof Number) {
+            obj.setPrimitiveInt(((Number)member.getValue()).intValue());
+          }
+          break;
+        case "primitiveLong":
+          if (member.getValue() instanceof Number) {
+            obj.setPrimitiveLong(((Number)member.getValue()).longValue());
+          }
+          break;
+        case "primitiveShort":
+          if (member.getValue() instanceof Number) {
+            obj.setPrimitiveShort(((Number)member.getValue()).shortValue());
+          }
+          break;
+        case "string":
+          if (member.getValue() instanceof String) {
+            obj.setString((String)member.getValue());
+          }
+          break;
+        case "stringList":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<java.lang.String> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                list.add((String)item);
+            });
+            obj.setStringList(list);
           }
           break;
         case "stringSet":
@@ -927,11 +942,6 @@ public class TestDataObjectConverter {
             obj.setStringSet(list);
           }
           break;
-        case "stringValue":
-          if (member.getValue() instanceof String) {
-            obj.setStringValue((String)member.getValue());
-          }
-          break;
         case "stringValueMap":
           if (member.getValue() instanceof JsonObject) {
             java.util.Map<String, java.lang.String> map = new java.util.LinkedHashMap<>();
@@ -940,16 +950,6 @@ public class TestDataObjectConverter {
                 map.put(entry.getKey(), (String)entry.getValue());
             });
             obj.setStringValueMap(map);
-          }
-          break;
-        case "stringValues":
-          if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.String> list =  new java.util.ArrayList<>();
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof String)
-                list.add((String)item);
-            });
-            obj.setStringValues(list);
           }
           break;
       }
@@ -961,11 +961,6 @@ public class TestDataObjectConverter {
   }
 
   public static void toJson(TestDataObject obj, java.util.Map<String, Object> json) {
-    if (obj.getAddedAggregatedDataObjects() != null) {
-      JsonArray array = new JsonArray();
-      obj.getAddedAggregatedDataObjects().forEach(item -> array.add(item.toJson()));
-      json.put("addedAggregatedDataObjects", array);
-    }
     if (obj.getAddedBoxedBooleanValues() != null) {
       JsonArray array = new JsonArray();
       obj.getAddedBoxedBooleanValues().forEach(item -> array.add(item));
@@ -1026,6 +1021,11 @@ public class TestDataObjectConverter {
       obj.getAddedJsonArrays().forEach(item -> array.add(item));
       json.put("addedJsonArrays", array);
     }
+    if (obj.getAddedJsonObjectDataObjects() != null) {
+      JsonArray array = new JsonArray();
+      obj.getAddedJsonObjectDataObjects().forEach(item -> array.add(item.toJson()));
+      json.put("addedJsonObjectDataObjects", array);
+    }
     if (obj.getAddedJsonObjects() != null) {
       JsonArray array = new JsonArray();
       obj.getAddedJsonObjects().forEach(item -> array.add(item));
@@ -1046,171 +1046,157 @@ public class TestDataObjectConverter {
       obj.getAddedStringValues().forEach(item -> array.add(item));
       json.put("addedStringValues", array);
     }
-    if (obj.getAggregatedDataObject() != null) {
-      json.put("aggregatedDataObject", obj.getAggregatedDataObject().toJson());
+    if (obj.isBoxedBoolean() != null) {
+      json.put("boxedBoolean", obj.isBoxedBoolean());
     }
-    if (obj.getAggregatedDataObjectMap() != null) {
-      JsonObject map = new JsonObject();
-      obj.getAggregatedDataObjectMap().forEach((key, value) -> map.put(key, value.toJson()));
-      json.put("aggregatedDataObjectMap", map);
-    }
-    if (obj.getAggregatedDataObjectSet() != null) {
+    if (obj.getBoxedBooleanList() != null) {
       JsonArray array = new JsonArray();
-      obj.getAggregatedDataObjectSet().forEach(item -> array.add(item.toJson()));
-      json.put("aggregatedDataObjectSet", array);
+      obj.getBoxedBooleanList().forEach(item -> array.add(item));
+      json.put("boxedBooleanList", array);
     }
-    if (obj.getAggregatedDataObjects() != null) {
-      JsonArray array = new JsonArray();
-      obj.getAggregatedDataObjects().forEach(item -> array.add(item.toJson()));
-      json.put("aggregatedDataObjects", array);
-    }
-    json.put("booleanValue", obj.isBooleanValue());
     if (obj.getBoxedBooleanSet() != null) {
       JsonArray array = new JsonArray();
       obj.getBoxedBooleanSet().forEach(item -> array.add(item));
       json.put("boxedBooleanSet", array);
-    }
-    if (obj.isBoxedBooleanValue() != null) {
-      json.put("boxedBooleanValue", obj.isBoxedBooleanValue());
     }
     if (obj.getBoxedBooleanValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBoxedBooleanValueMap().forEach((key, value) -> map.put(key, value));
       json.put("boxedBooleanValueMap", map);
     }
-    if (obj.getBoxedBooleanValues() != null) {
+    if (obj.getBoxedByte() != null) {
+      json.put("boxedByte", obj.getBoxedByte());
+    }
+    if (obj.getBoxedByteList() != null) {
       JsonArray array = new JsonArray();
-      obj.getBoxedBooleanValues().forEach(item -> array.add(item));
-      json.put("boxedBooleanValues", array);
+      obj.getBoxedByteList().forEach(item -> array.add(item));
+      json.put("boxedByteList", array);
     }
     if (obj.getBoxedByteSet() != null) {
       JsonArray array = new JsonArray();
       obj.getBoxedByteSet().forEach(item -> array.add(item));
       json.put("boxedByteSet", array);
     }
-    if (obj.getBoxedByteValue() != null) {
-      json.put("boxedByteValue", obj.getBoxedByteValue());
-    }
     if (obj.getBoxedByteValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBoxedByteValueMap().forEach((key, value) -> map.put(key, value));
       json.put("boxedByteValueMap", map);
     }
-    if (obj.getBoxedByteValues() != null) {
+    if (obj.getBoxedChar() != null) {
+      json.put("boxedChar", Character.toString(obj.getBoxedChar()));
+    }
+    if (obj.getBoxedCharList() != null) {
       JsonArray array = new JsonArray();
-      obj.getBoxedByteValues().forEach(item -> array.add(item));
-      json.put("boxedByteValues", array);
+      obj.getBoxedCharList().forEach(item -> array.add(Character.toString(item)));
+      json.put("boxedCharList", array);
     }
     if (obj.getBoxedCharSet() != null) {
       JsonArray array = new JsonArray();
       obj.getBoxedCharSet().forEach(item -> array.add(Character.toString(item)));
       json.put("boxedCharSet", array);
     }
-    if (obj.getBoxedCharValue() != null) {
-      json.put("boxedCharValue", Character.toString(obj.getBoxedCharValue()));
-    }
     if (obj.getBoxedCharValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBoxedCharValueMap().forEach((key, value) -> map.put(key, Character.toString(value)));
       json.put("boxedCharValueMap", map);
     }
-    if (obj.getBoxedCharValues() != null) {
+    if (obj.getBoxedDouble() != null) {
+      json.put("boxedDouble", obj.getBoxedDouble());
+    }
+    if (obj.getBoxedDoubleList() != null) {
       JsonArray array = new JsonArray();
-      obj.getBoxedCharValues().forEach(item -> array.add(Character.toString(item)));
-      json.put("boxedCharValues", array);
+      obj.getBoxedDoubleList().forEach(item -> array.add(item));
+      json.put("boxedDoubleList", array);
     }
     if (obj.getBoxedDoubleSet() != null) {
       JsonArray array = new JsonArray();
       obj.getBoxedDoubleSet().forEach(item -> array.add(item));
       json.put("boxedDoubleSet", array);
     }
-    if (obj.getBoxedDoubleValue() != null) {
-      json.put("boxedDoubleValue", obj.getBoxedDoubleValue());
-    }
     if (obj.getBoxedDoubleValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBoxedDoubleValueMap().forEach((key, value) -> map.put(key, value));
       json.put("boxedDoubleValueMap", map);
     }
-    if (obj.getBoxedDoubleValues() != null) {
+    if (obj.getBoxedFloat() != null) {
+      json.put("boxedFloat", obj.getBoxedFloat());
+    }
+    if (obj.getBoxedFloatList() != null) {
       JsonArray array = new JsonArray();
-      obj.getBoxedDoubleValues().forEach(item -> array.add(item));
-      json.put("boxedDoubleValues", array);
+      obj.getBoxedFloatList().forEach(item -> array.add(item));
+      json.put("boxedFloatList", array);
     }
     if (obj.getBoxedFloatSet() != null) {
       JsonArray array = new JsonArray();
       obj.getBoxedFloatSet().forEach(item -> array.add(item));
       json.put("boxedFloatSet", array);
     }
-    if (obj.getBoxedFloatValue() != null) {
-      json.put("boxedFloatValue", obj.getBoxedFloatValue());
-    }
     if (obj.getBoxedFloatValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBoxedFloatValueMap().forEach((key, value) -> map.put(key, value));
       json.put("boxedFloatValueMap", map);
     }
-    if (obj.getBoxedFloatValues() != null) {
+    if (obj.getBoxedInt() != null) {
+      json.put("boxedInt", obj.getBoxedInt());
+    }
+    if (obj.getBoxedIntList() != null) {
       JsonArray array = new JsonArray();
-      obj.getBoxedFloatValues().forEach(item -> array.add(item));
-      json.put("boxedFloatValues", array);
+      obj.getBoxedIntList().forEach(item -> array.add(item));
+      json.put("boxedIntList", array);
     }
     if (obj.getBoxedIntSet() != null) {
       JsonArray array = new JsonArray();
       obj.getBoxedIntSet().forEach(item -> array.add(item));
       json.put("boxedIntSet", array);
     }
-    if (obj.getBoxedIntValue() != null) {
-      json.put("boxedIntValue", obj.getBoxedIntValue());
-    }
     if (obj.getBoxedIntValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBoxedIntValueMap().forEach((key, value) -> map.put(key, value));
       json.put("boxedIntValueMap", map);
     }
-    if (obj.getBoxedIntValues() != null) {
+    if (obj.getBoxedLong() != null) {
+      json.put("boxedLong", obj.getBoxedLong());
+    }
+    if (obj.getBoxedLongList() != null) {
       JsonArray array = new JsonArray();
-      obj.getBoxedIntValues().forEach(item -> array.add(item));
-      json.put("boxedIntValues", array);
+      obj.getBoxedLongList().forEach(item -> array.add(item));
+      json.put("boxedLongList", array);
     }
     if (obj.getBoxedLongSet() != null) {
       JsonArray array = new JsonArray();
       obj.getBoxedLongSet().forEach(item -> array.add(item));
       json.put("boxedLongSet", array);
     }
-    if (obj.getBoxedLongValue() != null) {
-      json.put("boxedLongValue", obj.getBoxedLongValue());
-    }
     if (obj.getBoxedLongValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBoxedLongValueMap().forEach((key, value) -> map.put(key, value));
       json.put("boxedLongValueMap", map);
     }
-    if (obj.getBoxedLongValues() != null) {
+    if (obj.getBoxedShort() != null) {
+      json.put("boxedShort", obj.getBoxedShort());
+    }
+    if (obj.getBoxedShortList() != null) {
       JsonArray array = new JsonArray();
-      obj.getBoxedLongValues().forEach(item -> array.add(item));
-      json.put("boxedLongValues", array);
+      obj.getBoxedShortList().forEach(item -> array.add(item));
+      json.put("boxedShortList", array);
     }
     if (obj.getBoxedShortSet() != null) {
       JsonArray array = new JsonArray();
       obj.getBoxedShortSet().forEach(item -> array.add(item));
       json.put("boxedShortSet", array);
     }
-    if (obj.getBoxedShortValue() != null) {
-      json.put("boxedShortValue", obj.getBoxedShortValue());
-    }
     if (obj.getBoxedShortValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getBoxedShortValueMap().forEach((key, value) -> map.put(key, value));
       json.put("boxedShortValueMap", map);
     }
-    if (obj.getBoxedShortValues() != null) {
-      JsonArray array = new JsonArray();
-      obj.getBoxedShortValues().forEach(item -> array.add(item));
-      json.put("boxedShortValues", array);
-    }
     if (obj.getBuffer() != null) {
       json.put("buffer", java.util.Base64.getEncoder().encodeToString(obj.getBuffer().getBytes()));
+    }
+    if (obj.getBufferList() != null) {
+      JsonArray array = new JsonArray();
+      obj.getBufferList().forEach(item -> array.add(java.util.Base64.getEncoder().encodeToString(item.getBytes())));
+      json.put("bufferList", array);
     }
     if (obj.getBufferMap() != null) {
       JsonObject map = new JsonObject();
@@ -1222,17 +1208,13 @@ public class TestDataObjectConverter {
       obj.getBufferSet().forEach(item -> array.add(java.util.Base64.getEncoder().encodeToString(item.getBytes())));
       json.put("bufferSet", array);
     }
-    if (obj.getBuffers() != null) {
-      JsonArray array = new JsonArray();
-      obj.getBuffers().forEach(item -> array.add(java.util.Base64.getEncoder().encodeToString(item.getBytes())));
-      json.put("buffers", array);
-    }
-    json.put("byteValue", obj.getByteValue());
-    json.put("charValue", Character.toString(obj.getCharValue()));
-    json.put("doubleValue", obj.getDoubleValue());
-    json.put("floatValue", obj.getFloatValue());
     if (obj.getFunctionMapped() != null) {
       json.put("functionMapped", io.vertx.test.codegen.converter.TestDataObject.LOCALE_SERIALIZER.apply(obj.getFunctionMapped()));
+    }
+    if (obj.getFunctionMappedList() != null) {
+      JsonArray array = new JsonArray();
+      obj.getFunctionMappedList().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.LOCALE_SERIALIZER.apply(item)));
+      json.put("functionMappedList", array);
     }
     if (obj.getFunctionMappedMap() != null) {
       JsonObject map = new JsonObject();
@@ -1244,13 +1226,13 @@ public class TestDataObjectConverter {
       obj.getFunctionMappedSet().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.LOCALE_SERIALIZER.apply(item)));
       json.put("functionMappedSet", array);
     }
-    if (obj.getFunctionMappeds() != null) {
-      JsonArray array = new JsonArray();
-      obj.getFunctionMappeds().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.LOCALE_SERIALIZER.apply(item)));
-      json.put("functionMappeds", array);
-    }
     if (obj.getHttpMethod() != null) {
       json.put("httpMethod", obj.getHttpMethod().name());
+    }
+    if (obj.getHttpMethodList() != null) {
+      JsonArray array = new JsonArray();
+      obj.getHttpMethodList().forEach(item -> array.add(item.name()));
+      json.put("httpMethodList", array);
     }
     if (obj.getHttpMethodMap() != null) {
       JsonObject map = new JsonObject();
@@ -1262,14 +1244,13 @@ public class TestDataObjectConverter {
       obj.getHttpMethodSet().forEach(item -> array.add(item.name()));
       json.put("httpMethodSet", array);
     }
-    if (obj.getHttpMethods() != null) {
-      JsonArray array = new JsonArray();
-      obj.getHttpMethods().forEach(item -> array.add(item.name()));
-      json.put("httpMethods", array);
-    }
-    json.put("intValue", obj.getIntValue());
     if (obj.getJsonArray() != null) {
       json.put("jsonArray", obj.getJsonArray());
+    }
+    if (obj.getJsonArrayList() != null) {
+      JsonArray array = new JsonArray();
+      obj.getJsonArrayList().forEach(item -> array.add(item));
+      json.put("jsonArrayList", array);
     }
     if (obj.getJsonArrayMap() != null) {
       JsonObject map = new JsonObject();
@@ -1281,13 +1262,31 @@ public class TestDataObjectConverter {
       obj.getJsonArraySet().forEach(item -> array.add(item));
       json.put("jsonArraySet", array);
     }
-    if (obj.getJsonArrays() != null) {
-      JsonArray array = new JsonArray();
-      obj.getJsonArrays().forEach(item -> array.add(item));
-      json.put("jsonArrays", array);
-    }
     if (obj.getJsonObject() != null) {
       json.put("jsonObject", obj.getJsonObject());
+    }
+    if (obj.getJsonObjectDataObject() != null) {
+      json.put("jsonObjectDataObject", obj.getJsonObjectDataObject().toJson());
+    }
+    if (obj.getJsonObjectDataObjectList() != null) {
+      JsonArray array = new JsonArray();
+      obj.getJsonObjectDataObjectList().forEach(item -> array.add(item.toJson()));
+      json.put("jsonObjectDataObjectList", array);
+    }
+    if (obj.getJsonObjectDataObjectMap() != null) {
+      JsonObject map = new JsonObject();
+      obj.getJsonObjectDataObjectMap().forEach((key, value) -> map.put(key, value.toJson()));
+      json.put("jsonObjectDataObjectMap", map);
+    }
+    if (obj.getJsonObjectDataObjectSet() != null) {
+      JsonArray array = new JsonArray();
+      obj.getJsonObjectDataObjectSet().forEach(item -> array.add(item.toJson()));
+      json.put("jsonObjectDataObjectSet", array);
+    }
+    if (obj.getJsonObjectList() != null) {
+      JsonArray array = new JsonArray();
+      obj.getJsonObjectList().forEach(item -> array.add(item));
+      json.put("jsonObjectList", array);
     }
     if (obj.getJsonObjectMap() != null) {
       JsonObject map = new JsonObject();
@@ -1298,11 +1297,6 @@ public class TestDataObjectConverter {
       JsonArray array = new JsonArray();
       obj.getJsonObjectSet().forEach(item -> array.add(item));
       json.put("jsonObjectSet", array);
-    }
-    if (obj.getJsonObjects() != null) {
-      JsonArray array = new JsonArray();
-      obj.getJsonObjects().forEach(item -> array.add(item));
-      json.put("jsonObjects", array);
     }
     if (obj.getKeyedBoxedBooleanValues() != null) {
       JsonObject map = new JsonObject();
@@ -1349,11 +1343,6 @@ public class TestDataObjectConverter {
       obj.getKeyedBufferValues().forEach((key, value) -> map.put(key, java.util.Base64.getEncoder().encodeToString(value.getBytes())));
       json.put("keyedBufferValues", map);
     }
-    if (obj.getKeyedDataObjectValues() != null) {
-      JsonObject map = new JsonObject();
-      obj.getKeyedDataObjectValues().forEach((key, value) -> map.put(key, value.toJson()));
-      json.put("keyedDataObjectValues", map);
-    }
     if (obj.getKeyedEnumValues() != null) {
       JsonObject map = new JsonObject();
       obj.getKeyedEnumValues().forEach((key, value) -> map.put(key, value.name()));
@@ -1368,6 +1357,11 @@ public class TestDataObjectConverter {
       JsonObject map = new JsonObject();
       obj.getKeyedJsonArrayValues().forEach((key, value) -> map.put(key, value));
       json.put("keyedJsonArrayValues", map);
+    }
+    if (obj.getKeyedJsonObjectDataObjectValues() != null) {
+      JsonObject map = new JsonObject();
+      obj.getKeyedJsonObjectDataObjectValues().forEach((key, value) -> map.put(key, value.toJson()));
+      json.put("keyedJsonObjectDataObjectValues", map);
     }
     if (obj.getKeyedJsonObjectValues() != null) {
       JsonObject map = new JsonObject();
@@ -1389,9 +1383,13 @@ public class TestDataObjectConverter {
       obj.getKeyedStringValues().forEach((key, value) -> map.put(key, value));
       json.put("keyedStringValues", map);
     }
-    json.put("longValue", obj.getLongValue());
     if (obj.getMethodMapped() != null) {
       json.put("methodMapped", io.vertx.test.codegen.converter.TestDataObject.serializeZonedDateTime(obj.getMethodMapped()));
+    }
+    if (obj.getMethodMappedList() != null) {
+      JsonArray array = new JsonArray();
+      obj.getMethodMappedList().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.serializeZonedDateTime(item)));
+      json.put("methodMappedList", array);
     }
     if (obj.getMethodMappedMap() != null) {
       JsonObject map = new JsonObject();
@@ -1403,10 +1401,10 @@ public class TestDataObjectConverter {
       obj.getMethodMappedSet().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.serializeZonedDateTime(item)));
       json.put("methodMappedSet", array);
     }
-    if (obj.getMethodMappeds() != null) {
+    if (obj.getObjectList() != null) {
       JsonArray array = new JsonArray();
-      obj.getMethodMappeds().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.serializeZonedDateTime(item)));
-      json.put("methodMappeds", array);
+      obj.getObjectList().forEach(item -> array.add(item));
+      json.put("objectList", array);
     }
     if (obj.getObjectMap() != null) {
       JsonObject map = new JsonObject();
@@ -1418,29 +1416,31 @@ public class TestDataObjectConverter {
       obj.getObjectSet().forEach(item -> array.add(item));
       json.put("objectSet", array);
     }
-    if (obj.getObjects() != null) {
-      JsonArray array = new JsonArray();
-      obj.getObjects().forEach(item -> array.add(item));
-      json.put("objects", array);
+    json.put("primitiveBoolean", obj.isPrimitiveBoolean());
+    json.put("primitiveByte", obj.getPrimitiveByte());
+    json.put("primitiveChar", Character.toString(obj.getPrimitiveChar()));
+    json.put("primitiveDouble", obj.getPrimitiveDouble());
+    json.put("primitiveFloat", obj.getPrimitiveFloat());
+    json.put("primitiveInt", obj.getPrimitiveInt());
+    json.put("primitiveLong", obj.getPrimitiveLong());
+    json.put("primitiveShort", obj.getPrimitiveShort());
+    if (obj.getString() != null) {
+      json.put("string", obj.getString());
     }
-    json.put("shortValue", obj.getShortValue());
+    if (obj.getStringList() != null) {
+      JsonArray array = new JsonArray();
+      obj.getStringList().forEach(item -> array.add(item));
+      json.put("stringList", array);
+    }
     if (obj.getStringSet() != null) {
       JsonArray array = new JsonArray();
       obj.getStringSet().forEach(item -> array.add(item));
       json.put("stringSet", array);
     }
-    if (obj.getStringValue() != null) {
-      json.put("stringValue", obj.getStringValue());
-    }
     if (obj.getStringValueMap() != null) {
       JsonObject map = new JsonObject();
       obj.getStringValueMap().forEach((key, value) -> map.put(key, value));
       json.put("stringValueMap", map);
-    }
-    if (obj.getStringValues() != null) {
-      JsonArray array = new JsonArray();
-      obj.getStringValues().forEach(item -> array.add(item));
-      json.put("stringValues", array);
     }
   }
 }

@@ -24,7 +24,7 @@ public interface MethodWithValidHandlerTypeParamByInterface {
   void withString(Handler<GenericInterface<String>> handler);
   void withJsonObject(Handler<GenericInterface<JsonObject>> handler);
   void withJsonArray(Handler<GenericInterface<JsonArray>> handler);
-  void withDataObject(Handler<GenericInterface<PlainDataObjectWithToJson>> handler);
+  void withDataObject(Handler<GenericInterface<ReadOnlyJsonObjectDataObject>> handler);
   void withEnum(Handler<GenericInterface<TestEnum>> handler);
   void withGenEnum(Handler<GenericInterface<TestGenEnum>> handler);
   void withUserType(Handler<GenericInterface<VertxGenClass1>> handler);

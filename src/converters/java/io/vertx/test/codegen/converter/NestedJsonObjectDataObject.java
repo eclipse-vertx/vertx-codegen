@@ -18,17 +18,17 @@ import io.vertx.core.json.JsonObject;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @DataObject
-public class AggregatedDataObject {
+public class NestedJsonObjectDataObject {
 
   private String value;
 
-  public AggregatedDataObject() {
+  public NestedJsonObjectDataObject() {
   }
 
-  public AggregatedDataObject(AggregatedDataObject copy) {
+  public NestedJsonObjectDataObject(NestedJsonObjectDataObject copy) {
   }
 
-  public AggregatedDataObject(JsonObject json) {
+  public NestedJsonObjectDataObject(JsonObject json) {
     value = (String)json.getValue("value");
   }
 
@@ -36,7 +36,7 @@ public class AggregatedDataObject {
     return value;
   }
 
-  public AggregatedDataObject setValue(String value) {
+  public NestedJsonObjectDataObject setValue(String value) {
     this.value = value;
     return this;
   }
@@ -51,8 +51,8 @@ public class AggregatedDataObject {
 
   @Override
   public boolean equals(Object obj) {
-    if (obj instanceof AggregatedDataObject) {
-      AggregatedDataObject that = (AggregatedDataObject) obj;
+    if (obj instanceof NestedJsonObjectDataObject) {
+      NestedJsonObjectDataObject that = (NestedJsonObjectDataObject) obj;
       return value.equals(that.value);
     }
     return false;

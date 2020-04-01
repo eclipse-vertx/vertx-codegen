@@ -1104,20 +1104,20 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
-  public void testValidDataObjectsParam() throws Exception {
+  public void testMethodWithValidDataObjectParam() throws Exception {
     ClassModel model = new GeneratorHelper()
-      .registerConverter(URI.class, MethodWithDataObjectParam.class.getName(), "deserializeURI")
-      .generateClass(MethodWithDataObjectParam.class);
-    assertEquals(MethodWithDataObjectParam.class.getName(), model.getIfaceFQCN());
-    assertEquals(MethodWithDataObjectParam.class.getSimpleName(), model.getIfaceSimpleName());
+      .registerConverter(URI.class, MethodWithValidDataObjectParam.class.getName(), "deserializeURI")
+      .generateClass(MethodWithValidDataObjectParam.class);
+    assertEquals(MethodWithValidDataObjectParam.class.getName(), model.getIfaceFQCN());
+    assertEquals(MethodWithValidDataObjectParam.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
     assertEquals(2, model.getMethods().size());
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, "methodWithDataObjectParam", 1, "void", MethodKind.OTHER);
+    checkMethod(method, "methodWithJsonObjectDataObjectParam", 1, "void", MethodKind.OTHER);
     List<ParamInfo> params = method.getParams();
-    checkParam(params.get(0), "dataObject", PlainDataObject.class);
+    checkParam(params.get(0), "dataObject", WriteOnlyJsonObjectDataObject.class);
 
     method = model.getMethods().get(1);
     checkMethod(method, "methodWithMappedDataObjectParam", 1, "void", MethodKind.OTHER);
@@ -1126,7 +1126,7 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
-  public void testInvalidDataObjectsParam() throws Exception {
+  public void testMethodWithInvalidDataObjectParam() throws Exception {
     assertGenInvalid(MethodWithInvalidAbstractDataObjectParam.class);
     assertGenInvalid(MethodWithInvalidInterfaceDataObjectParam.class);
   }
@@ -1222,7 +1222,7 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
-  public void testValidDataObjectReturn() throws Exception {
+  public void testMethodWithValidDataObjectReturn() throws Exception {
     ClassModel model = new GeneratorHelper()
       .registerConverter(URI.class, MethodWithValidDataObjectReturn.class.getName(), "serializeURI")
       .generateClass(MethodWithValidDataObjectReturn.class);
@@ -1231,9 +1231,9 @@ public class ClassTest extends ClassTestBase {
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
     assertEquals(4, model.getMethods().size());
-    checkMethod(model.getMethods().get(0), "methodWithDataObjectReturn", 0, PlainDataObjectWithToJson.class.getName(), MethodKind.OTHER);
-    checkMethod(model.getMethods().get(1), "methodWithAbstractDataObjectReturn", 0, AbstractDataObjectWithToJson.class.getName(), MethodKind.OTHER);
-    checkMethod(model.getMethods().get(2), "methodWithInterfaceDataObjectReturn", 0, InterfaceDataObjectWithToJson.class.getName(), MethodKind.OTHER);
+    checkMethod(model.getMethods().get(0), "methodWithJsonObjectDataObjectReturn", 0, ReadOnlyJsonObjectDataObject.class.getName(), MethodKind.OTHER);
+    checkMethod(model.getMethods().get(1), "methodWithAbstractJsonObjectDataObjectReturn", 0, ReadOnlyAbstractJsonObjectDataObject.class.getName(), MethodKind.OTHER);
+    checkMethod(model.getMethods().get(2), "methodWithInterfaceJsonObjectDataObjectReturn", 0, ReadOnlyInterfaceJsonObjectDataObject.class.getName(), MethodKind.OTHER);
     checkMethod(model.getMethods().get(3), "methodWithMappedDataObjectReturn", 0, URI.class.getName(), MethodKind.OTHER);
   }
 
@@ -2087,7 +2087,7 @@ public class ClassTest extends ClassTestBase {
     checkMethod(model.getMethods().get(8), "withString", 0, new TypeLiteral<GenericInterface<String>>() {}, MethodKind.OTHER);
     checkMethod(model.getMethods().get(9), "withJsonObject", 0, new TypeLiteral<GenericInterface<JsonObject>>() {}, MethodKind.OTHER);
     checkMethod(model.getMethods().get(10), "withJsonArray", 0, new TypeLiteral<GenericInterface<JsonArray>>() {}, MethodKind.OTHER);
-    checkMethod(model.getMethods().get(11), "withDataObject", 0, new TypeLiteral<GenericInterface<PlainDataObjectWithToJson>>() {}, MethodKind.OTHER);
+    checkMethod(model.getMethods().get(11), "withDataObject", 0, new TypeLiteral<GenericInterface<ReadOnlyJsonObjectDataObject>>() {}, MethodKind.OTHER);
     checkMethod(model.getMethods().get(12), "withEnum", 0, new TypeLiteral<GenericInterface<TestEnum>>() {}, MethodKind.OTHER);
     checkMethod(model.getMethods().get(13), "withGenEnum", 0, new TypeLiteral<GenericInterface<TestGenEnum>>() {}, MethodKind.OTHER);
     checkMethod(model.getMethods().get(14), "withUserType", 0, new TypeLiteral<GenericInterface<VertxGenClass1>>() {}, MethodKind.OTHER);
@@ -2128,7 +2128,7 @@ public class ClassTest extends ClassTestBase {
     checkMethod(model.getMethods().get(10), "withJsonArray", 1, "void", MethodKind.HANDLER);
     checkParam(model.getMethods().get(10).getParams().get(0), "handler", new TypeLiteral<Handler<GenericInterface<JsonArray>>>(){});
     checkMethod(model.getMethods().get(11), "withDataObject", 1, "void", MethodKind.HANDLER);
-    checkParam(model.getMethods().get(11).getParams().get(0), "handler", new TypeLiteral<Handler<GenericInterface<PlainDataObjectWithToJson>>>(){});
+    checkParam(model.getMethods().get(11).getParams().get(0), "handler", new TypeLiteral<Handler<GenericInterface<ReadOnlyJsonObjectDataObject>>>(){});
     checkMethod(model.getMethods().get(12), "withEnum", 1, "void", MethodKind.HANDLER);
     checkParam(model.getMethods().get(12).getParams().get(0), "handler", new TypeLiteral<Handler<GenericInterface<TestEnum>>>(){});
     checkMethod(model.getMethods().get(13), "withGenEnum", 1, "void", MethodKind.HANDLER);
@@ -2440,7 +2440,7 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
-  public void testMethodInvalidHandlerDataObjectsParam() throws Exception {
+  public void testMethodInvalidHandlerDataObjectParam() throws Exception {
     assertGenFail(MethodWithInvalidHandlerDataObjectParam.class, "Option without toJson() in Handler param should fail");
   }
 

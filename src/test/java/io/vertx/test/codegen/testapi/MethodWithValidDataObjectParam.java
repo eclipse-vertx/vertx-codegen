@@ -9,14 +9,14 @@ import java.net.URI;
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @VertxGen
-public interface MethodWithDataObjectParam {
+public interface MethodWithValidDataObjectParam {
 
   @GenIgnore
   static URI deserializeURI(String s) {
     throw new UnsupportedOperationException();
   }
 
-  void methodWithDataObjectParam(PlainDataObject dataObject);
+  void methodWithJsonObjectDataObjectParam(WriteOnlyJsonObjectDataObject dataObject);
 
   void methodWithMappedDataObjectParam(URI uri);
 

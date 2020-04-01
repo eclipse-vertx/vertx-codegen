@@ -23,7 +23,7 @@ public interface MethodWithValidTypeParamByInterfaceReturn {
   GenericInterface<String> withString();
   GenericInterface<JsonObject> withJsonObject();
   GenericInterface<JsonArray> withJsonArray();
-  GenericInterface<PlainDataObjectWithToJson> withDataObject();
+  GenericInterface<ReadOnlyJsonObjectDataObject> withDataObject();
   GenericInterface<TestEnum> withEnum();
   GenericInterface<TestGenEnum> withGenEnum();
   GenericInterface<VertxGenClass1> withUserType();

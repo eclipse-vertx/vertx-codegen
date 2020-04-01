@@ -4,7 +4,7 @@ import io.vertx.codegen.CodeGenProcessor;
 import io.vertx.codegen.Compiler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.test.codegen.testapi.InterfaceDataObject;
+import io.vertx.test.codegen.testapi.InvalidInterfaceDataObject;
 import io.vertx.test.codegen.testapi.MethodWithValidVertxGenParams;
 import io.vertx.test.codegen.testapi.VertxGenClass1;
 import io.vertx.test.codegen.testapi.VertxGenClass2;
@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Files;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -242,7 +241,7 @@ public class CodeGeneratorTest {
 
   @Test
   public void testServiceLoader() throws Exception {
-    Properties props = assertCompile("testgen7", InterfaceDataObject.class);
+    Properties props = assertCompile("testgen7", InvalidInterfaceDataObject.class);
     assertEquals(props.remove("MyGenerator"), "true");
   }
 

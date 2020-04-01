@@ -7,8 +7,9 @@ import io.vertx.core.json.JsonObject;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @DataObject
-public class PlainDataObject {
+public class ReadOnlyJsonObjectDataObject {
 
-  public PlainDataObject(JsonObject json) {
+  public JsonObject toJson() {
+    throw new UnsupportedOperationException();
   }
 }

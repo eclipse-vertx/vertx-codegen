@@ -4,13 +4,10 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
 /**
- * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
+ * @author Julien Viet
  */
 @DataObject
-public class PlainDataObjectWithToJson {
-
-  public PlainDataObjectWithToJson(JsonObject json) {
-  }
+public abstract class ReadOnlyAbstractJsonObjectDataObject {
 
   public JsonObject toJson() {
     throw new UnsupportedOperationException();

@@ -11,7 +11,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.annotations.EmptyAnnotation;
 import io.vertx.test.codegen.testdataobject.Foo;
 import io.vertx.test.codegen.annotations.TestEnum;
-import io.vertx.test.codegen.testapi.InterfaceDataObject;
+import io.vertx.test.codegen.testapi.InvalidInterfaceDataObject;
 import io.vertx.test.codegen.testdataobject.*;
 import io.vertx.test.codegen.testdataobject.imported.Imported;
 import io.vertx.test.codegen.testdataobject.jsonmapper.DataObjectWithPojoWithMapper;
@@ -37,7 +37,7 @@ public class DataObjectTest {
 
   @Test
   public void testDataObjectInterface() throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(InterfaceDataObject.class);
+    DataObjectModel model = new GeneratorHelper().generateDataObject(InvalidInterfaceDataObject.class);
     assertNotNull(model);
     assertFalse(model.isClass());
   }

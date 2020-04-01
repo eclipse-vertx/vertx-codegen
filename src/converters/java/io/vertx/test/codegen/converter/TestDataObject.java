@@ -12,12 +12,10 @@
 package io.vertx.test.codegen.converter;
 
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
-import java.net.URI;
 import java.nio.ByteBuffer;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -41,24 +39,24 @@ public class TestDataObject {
   public static final Function<String, Locale> LOCALE_DESERIALIZER = Locale::new;
   public static final Function<Locale, String> LOCALE_SERIALIZER = Locale::toString;
 
-  private String stringValue;
-  private boolean booleanValue;
-  private byte byteValue;
-  private short shortValue;
-  private int intValue;
-  private long longValue;
-  private float floatValue;
-  private double doubleValue;
-  private char charValue;
-  private Boolean boxedBooleanValue;
-  private Byte boxedByteValue;
-  private Short boxedShortValue;
-  private Integer boxedIntValue;
-  private Long boxedLongValue;
-  private Float boxedFloatValue;
-  private Double boxedDoubleValue;
-  private Character boxedCharValue;
-  private AggregatedDataObject aggregatedDataObject;
+  private String string;
+  private boolean primitiveBoolean;
+  private byte primitiveByte;
+  private short primitiveShort;
+  private int primitiveInt;
+  private long primitiveLong;
+  private float primitiveFloat;
+  private double primitiveDouble;
+  private char primitiveChar;
+  private Boolean boxedBoolean;
+  private Byte boxedByte;
+  private Short boxedShort;
+  private Integer boxedInt;
+  private Long boxedLong;
+  private Float boxedFloat;
+  private Double boxedDouble;
+  private Character boxedChar;
+  private NestedJsonObjectDataObject jsonObjectDataObject;
   private Buffer buffer;
   private JsonObject jsonObject;
   private JsonArray jsonArray;
@@ -68,24 +66,24 @@ public class TestDataObject {
   private NoConverterDataObject notConvertibleDataObject;
   private ByteBuffer unmapped;
 
-  private List<String> stringValues;
-  private List<Boolean> boxedBooleanValues;
-  private List<Byte> boxedByteValues;
-  private List<Short> boxedShortValues;
-  private List<Integer> boxedIntValues;
-  private List<Long> boxedLongValues;
-  private List<Float> boxedFloatValues;
-  private List<Double> boxedDoubleValues;
-  private List<Character> boxedCharValues;
-  private List<AggregatedDataObject> aggregatedDataObjects;
-  private List<Buffer> buffers;
-  private List<JsonObject> jsonObjects;
-  private List<JsonArray> jsonArrays;
-  private List<TimeUnit> httpMethods;
-  private List<ZonedDateTime> methodMappeds;
-  private List<Locale> functionMappeds;
-  private List<Object> objects;
-  private List<NoConverterDataObject> notConvertibleDataObjects;
+  private List<String> stringList;
+  private List<Boolean> boxedBooleanList;
+  private List<Byte> boxedByteList;
+  private List<Short> boxedShortList;
+  private List<Integer> boxedIntList;
+  private List<Long> boxedLongList;
+  private List<Float> boxedFloatList;
+  private List<Double> boxedDoubleList;
+  private List<Character> boxedCharList;
+  private List<NestedJsonObjectDataObject> jsonObjectDataObjectList;
+  private List<Buffer> bufferList;
+  private List<JsonObject> jsonObjectList;
+  private List<JsonArray> jsonArrayList;
+  private List<TimeUnit> httpMethodList;
+  private List<ZonedDateTime> methodMappedList;
+  private List<Locale> functionMappedList;
+  private List<Object> objectList;
+  private List<NoConverterDataObject> notConvertibleDataObjectList;
 
   private Set<String> stringSet;
   private Set<Boolean> boxedBooleanSet;
@@ -96,7 +94,7 @@ public class TestDataObject {
   private Set<Float> boxedFloatSet;
   private Set<Double> boxedDoubleSet;
   private Set<Character> boxedCharSet;
-  private Set<AggregatedDataObject> aggregatedDataObjectSet;
+  private Set<NestedJsonObjectDataObject> jsonObjectDataObjectSet;
   private Set<Buffer> bufferSet;
   private Set<JsonObject> jsonObjectSet;
   private Set<JsonArray> jsonArraySet;
@@ -115,7 +113,7 @@ public class TestDataObject {
   private List<Float> addedBoxedFloatValues = new ArrayList<>();
   private List<Double> addedBoxedDoubleValues = new ArrayList<>();
   private List<Character> addedBoxedCharValues = new ArrayList<>();
-  private List<AggregatedDataObject> addedAggregatedDataObjects = new ArrayList<>();
+  private List<NestedJsonObjectDataObject> addedJsonObjectDataObjects = new ArrayList<>();
   private List<Buffer> addedBuffers = new ArrayList<>();
   private List<JsonObject> addedJsonObjects = new ArrayList<>();
   private List<JsonArray> addedJsonArrays = new ArrayList<>();
@@ -133,7 +131,7 @@ public class TestDataObject {
   private Map<String, Float> boxedFloatValueMap;
   private Map<String, Double> boxedDoubleValueMap;
   private Map<String, Character> boxedCharValueMap;
-  private Map<String, AggregatedDataObject> aggregatedDataObjectMap;
+  private Map<String, NestedJsonObjectDataObject> jsonObjectDataObjectMap;
   private Map<String, Buffer> bufferMap;
   private Map<String, JsonObject> jsonObjectMap;
   private Map<String, JsonArray> jsonArrayMap;
@@ -152,7 +150,7 @@ public class TestDataObject {
   private Map<String, Float> keyedBoxedFloatValues = new HashMap<>();
   private Map<String, Double> keyedBoxedDoubleValues = new HashMap<>();
   private Map<String, Character> keyedBoxedCharValues = new HashMap<>();
-  private Map<String, AggregatedDataObject> keyedDataObjectValues = new HashMap<>();
+  private Map<String, NestedJsonObjectDataObject> keyedJsonObjectDataObjectValues = new HashMap<>();
   private Map<String, Buffer> keyedBufferValues = new HashMap<>();
   private Map<String, JsonObject> keyedJsonObjectValues = new HashMap<>();
   private Map<String, JsonArray> keyedJsonArrayValues = new HashMap<>();
@@ -170,165 +168,165 @@ public class TestDataObject {
   public TestDataObject(JsonObject json) {
   }
 
-  public String getStringValue() {
-    return stringValue;
+  public String getString() {
+    return string;
   }
 
-  public TestDataObject setStringValue(String value) {
-    this.stringValue = value;
+  public TestDataObject setString(String value) {
+    this.string = value;
     return this;
   }
 
-  public boolean isBooleanValue() {
-    return booleanValue;
+  public boolean isPrimitiveBoolean() {
+    return primitiveBoolean;
   }
 
-  public TestDataObject setBooleanValue(boolean value) {
-    this.booleanValue = value;
+  public TestDataObject setPrimitiveBoolean(boolean value) {
+    this.primitiveBoolean = value;
     return this;
   }
 
-  public byte getByteValue() {
-    return byteValue;
+  public byte getPrimitiveByte() {
+    return primitiveByte;
   }
 
-  public TestDataObject setByteValue(byte byteValue) {
-    this.byteValue = byteValue;
+  public TestDataObject setPrimitiveByte(byte primitiveByte) {
+    this.primitiveByte = primitiveByte;
     return this;
   }
 
-  public short getShortValue() {
-    return shortValue;
+  public short getPrimitiveShort() {
+    return primitiveShort;
   }
 
-  public TestDataObject setShortValue(short shortValue) {
-    this.shortValue = shortValue;
+  public TestDataObject setPrimitiveShort(short primitiveShort) {
+    this.primitiveShort = primitiveShort;
     return this;
   }
 
-  public int getIntValue() {
-    return intValue;
+  public int getPrimitiveInt() {
+    return primitiveInt;
   }
 
-  public TestDataObject setIntValue(int intValue) {
-    this.intValue = intValue;
+  public TestDataObject setPrimitiveInt(int primitiveInt) {
+    this.primitiveInt = primitiveInt;
     return this;
   }
 
-  public long getLongValue() {
-    return longValue;
+  public long getPrimitiveLong() {
+    return primitiveLong;
   }
 
-  public TestDataObject setLongValue(long longValue) {
-    this.longValue = longValue;
+  public TestDataObject setPrimitiveLong(long primitiveLong) {
+    this.primitiveLong = primitiveLong;
     return this;
   }
 
-  public float getFloatValue() {
-    return floatValue;
+  public float getPrimitiveFloat() {
+    return primitiveFloat;
   }
 
-  public TestDataObject setFloatValue(float floatValue) {
-    this.floatValue = floatValue;
+  public TestDataObject setPrimitiveFloat(float primitiveFloat) {
+    this.primitiveFloat = primitiveFloat;
     return this;
   }
 
-  public double getDoubleValue() {
-    return doubleValue;
+  public double getPrimitiveDouble() {
+    return primitiveDouble;
   }
 
-  public TestDataObject setDoubleValue(double doubleValue) {
-    this.doubleValue = doubleValue;
+  public TestDataObject setPrimitiveDouble(double primitiveDouble) {
+    this.primitiveDouble = primitiveDouble;
     return this;
   }
 
-  public char getCharValue() {
-    return charValue;
+  public char getPrimitiveChar() {
+    return primitiveChar;
   }
 
-  public TestDataObject setCharValue(char charValue) {
-    this.charValue = charValue;
+  public TestDataObject setPrimitiveChar(char primitiveChar) {
+    this.primitiveChar = primitiveChar;
     return this;
   }
 
-  public Boolean isBoxedBooleanValue() {
-    return boxedBooleanValue;
+  public Boolean isBoxedBoolean() {
+    return boxedBoolean;
   }
 
-  public TestDataObject setBoxedBooleanValue(Boolean value) {
-    this.boxedBooleanValue = value;
+  public TestDataObject setBoxedBoolean(Boolean value) {
+    this.boxedBoolean = value;
     return this;
   }
 
-  public Byte getBoxedByteValue() {
-    return boxedByteValue;
+  public Byte getBoxedByte() {
+    return boxedByte;
   }
 
-  public TestDataObject setBoxedByteValue(Byte boxedByteValue) {
-    this.boxedByteValue = boxedByteValue;
+  public TestDataObject setBoxedByte(Byte boxedByte) {
+    this.boxedByte = boxedByte;
     return this;
   }
 
-  public Short getBoxedShortValue() {
-    return boxedShortValue;
+  public Short getBoxedShort() {
+    return boxedShort;
   }
 
-  public TestDataObject setBoxedShortValue(Short boxedShortValue) {
-    this.boxedShortValue = boxedShortValue;
+  public TestDataObject setBoxedShort(Short boxedShort) {
+    this.boxedShort = boxedShort;
     return this;
   }
 
-  public Integer getBoxedIntValue() {
-    return boxedIntValue;
+  public Integer getBoxedInt() {
+    return boxedInt;
   }
 
-  public TestDataObject setBoxedIntValue(Integer boxedIntValue) {
-    this.boxedIntValue = boxedIntValue;
+  public TestDataObject setBoxedInt(Integer boxedInt) {
+    this.boxedInt = boxedInt;
     return this;
   }
 
-  public Long getBoxedLongValue() {
-    return boxedLongValue;
+  public Long getBoxedLong() {
+    return boxedLong;
   }
 
-  public TestDataObject setBoxedLongValue(Long boxedLongValue) {
-    this.boxedLongValue = boxedLongValue;
+  public TestDataObject setBoxedLong(Long boxedLong) {
+    this.boxedLong = boxedLong;
     return this;
   }
 
-  public Float getBoxedFloatValue() {
-    return boxedFloatValue;
+  public Float getBoxedFloat() {
+    return boxedFloat;
   }
 
-  public TestDataObject setBoxedFloatValue(Float boxedFloatValue) {
-    this.boxedFloatValue = boxedFloatValue;
+  public TestDataObject setBoxedFloat(Float boxedFloat) {
+    this.boxedFloat = boxedFloat;
     return this;
   }
 
-  public Double getBoxedDoubleValue() {
-    return boxedDoubleValue;
+  public Double getBoxedDouble() {
+    return boxedDouble;
   }
 
-  public TestDataObject setBoxedDoubleValue(Double boxedDoubleValue) {
-    this.boxedDoubleValue = boxedDoubleValue;
+  public TestDataObject setBoxedDouble(Double boxedDouble) {
+    this.boxedDouble = boxedDouble;
     return this;
   }
 
-  public Character getBoxedCharValue() {
-    return boxedCharValue;
+  public Character getBoxedChar() {
+    return boxedChar;
   }
 
-  public TestDataObject setBoxedCharValue(Character boxedCharValue) {
-    this.boxedCharValue = boxedCharValue;
+  public TestDataObject setBoxedChar(Character boxedChar) {
+    this.boxedChar = boxedChar;
     return this;
   }
 
-  public AggregatedDataObject getAggregatedDataObject() {
-    return aggregatedDataObject;
+  public NestedJsonObjectDataObject getJsonObjectDataObject() {
+    return jsonObjectDataObject;
   }
 
-  public TestDataObject setAggregatedDataObject(AggregatedDataObject aggregatedDataObject) {
-    this.aggregatedDataObject = aggregatedDataObject;
+  public TestDataObject setJsonObjectDataObject(NestedJsonObjectDataObject jsonObjectDataObject) {
+    this.jsonObjectDataObject = jsonObjectDataObject;
     return this;
   }
 
@@ -404,156 +402,156 @@ public class TestDataObject {
     return this;
   }
 
-  public List<String> getStringValues() {
-    return stringValues;
+  public List<String> getStringList() {
+    return stringList;
   }
 
-  public TestDataObject setStringValues(List<String> stringValues) {
-    this.stringValues = stringValues;
+  public TestDataObject setStringList(List<String> stringList) {
+    this.stringList = stringList;
     return this;
   }
 
-  public List<Boolean> getBoxedBooleanValues() {
-    return boxedBooleanValues;
+  public List<Boolean> getBoxedBooleanList() {
+    return boxedBooleanList;
   }
 
-  public TestDataObject setBoxedBooleanValues(List<Boolean> boxedBooleanValues) {
-    this.boxedBooleanValues = boxedBooleanValues;
+  public TestDataObject setBoxedBooleanList(List<Boolean> boxedBooleanList) {
+    this.boxedBooleanList = boxedBooleanList;
     return this;
   }
 
-  public List<Byte> getBoxedByteValues() {
-    return boxedByteValues;
+  public List<Byte> getBoxedByteList() {
+    return boxedByteList;
   }
 
-  public TestDataObject setBoxedByteValues(List<Byte> boxedByteValues) {
-    this.boxedByteValues = boxedByteValues;
+  public TestDataObject setBoxedByteList(List<Byte> boxedByteList) {
+    this.boxedByteList = boxedByteList;
     return this;
   }
 
-  public List<Short> getBoxedShortValues() {
-    return boxedShortValues;
+  public List<Short> getBoxedShortList() {
+    return boxedShortList;
   }
 
-  public TestDataObject setBoxedShortValues(List<Short> boxedShortValues) {
-    this.boxedShortValues = boxedShortValues;
+  public TestDataObject setBoxedShortList(List<Short> boxedShortList) {
+    this.boxedShortList = boxedShortList;
     return this;
   }
 
-  public List<Integer> getBoxedIntValues() {
-    return boxedIntValues;
+  public List<Integer> getBoxedIntList() {
+    return boxedIntList;
   }
 
-  public TestDataObject setBoxedIntValues(List<Integer> boxedIntValues) {
-    this.boxedIntValues = boxedIntValues;
+  public TestDataObject setBoxedIntList(List<Integer> boxedIntList) {
+    this.boxedIntList = boxedIntList;
     return this;
   }
 
-  public List<Long> getBoxedLongValues() {
-    return boxedLongValues;
+  public List<Long> getBoxedLongList() {
+    return boxedLongList;
   }
 
-  public TestDataObject setBoxedLongValues(List<Long> boxedLongValues) {
-    this.boxedLongValues = boxedLongValues;
+  public TestDataObject setBoxedLongList(List<Long> boxedLongList) {
+    this.boxedLongList = boxedLongList;
     return this;
   }
 
-  public List<Float> getBoxedFloatValues() {
-    return boxedFloatValues;
+  public List<Float> getBoxedFloatList() {
+    return boxedFloatList;
   }
 
-  public TestDataObject setBoxedFloatValues(List<Float> boxedFloatValues) {
-    this.boxedFloatValues = boxedFloatValues;
+  public TestDataObject setBoxedFloatList(List<Float> boxedFloatList) {
+    this.boxedFloatList = boxedFloatList;
     return this;
   }
 
-  public List<Double> getBoxedDoubleValues() {
-    return boxedDoubleValues;
+  public List<Double> getBoxedDoubleList() {
+    return boxedDoubleList;
   }
 
-  public TestDataObject setBoxedDoubleValues(List<Double> boxedDoubleValues) {
-    this.boxedDoubleValues = boxedDoubleValues;
+  public TestDataObject setBoxedDoubleList(List<Double> boxedDoubleList) {
+    this.boxedDoubleList = boxedDoubleList;
     return this;
   }
 
-  public List<Character> getBoxedCharValues() {
-    return boxedCharValues;
+  public List<Character> getBoxedCharList() {
+    return boxedCharList;
   }
 
-  public TestDataObject setBoxedCharValues(List<Character> boxedCharValues) {
-    this.boxedCharValues = boxedCharValues;
+  public TestDataObject setBoxedCharList(List<Character> boxedCharList) {
+    this.boxedCharList = boxedCharList;
     return this;
   }
 
-  public List<AggregatedDataObject> getAggregatedDataObjects() {
-    return aggregatedDataObjects;
+  public List<NestedJsonObjectDataObject> getJsonObjectDataObjectList() {
+    return jsonObjectDataObjectList;
   }
 
-  public TestDataObject setAggregatedDataObjects(List<AggregatedDataObject> aggregatedDataObjects) {
-    this.aggregatedDataObjects = aggregatedDataObjects;
+  public TestDataObject setJsonObjectDataObjectList(List<NestedJsonObjectDataObject> jsonObjectDataObjectList) {
+    this.jsonObjectDataObjectList = jsonObjectDataObjectList;
     return this;
   }
 
-  public List<Buffer> getBuffers() {
-    return buffers;
+  public List<Buffer> getBufferList() {
+    return bufferList;
   }
 
-  public TestDataObject setBuffers(List<Buffer> buffers) {
-    this.buffers = buffers;
+  public TestDataObject setBufferList(List<Buffer> bufferList) {
+    this.bufferList = bufferList;
     return this;
   }
 
-  public List<JsonObject> getJsonObjects() {
-    return jsonObjects;
+  public List<JsonObject> getJsonObjectList() {
+    return jsonObjectList;
   }
 
-  public TestDataObject setJsonObjects(List<JsonObject> jsonObjects) {
-    this.jsonObjects = jsonObjects;
+  public TestDataObject setJsonObjectList(List<JsonObject> jsonObjectList) {
+    this.jsonObjectList = jsonObjectList;
     return this;
   }
 
-  public List<JsonArray> getJsonArrays() {
-    return jsonArrays;
+  public List<JsonArray> getJsonArrayList() {
+    return jsonArrayList;
   }
 
-  public TestDataObject setJsonArrays(List<JsonArray> jsonArrays) {
-    this.jsonArrays = jsonArrays;
+  public TestDataObject setJsonArrayList(List<JsonArray> jsonArrayList) {
+    this.jsonArrayList = jsonArrayList;
     return this;
   }
 
-  public List<TimeUnit> getHttpMethods() {
-    return httpMethods;
+  public List<TimeUnit> getHttpMethodList() {
+    return httpMethodList;
   }
 
-  public TestDataObject setHttpMethods(List<TimeUnit> httpMethods) {
-    this.httpMethods = httpMethods;
+  public TestDataObject setHttpMethodList(List<TimeUnit> httpMethodList) {
+    this.httpMethodList = httpMethodList;
     return this;
   }
 
-  public List<ZonedDateTime> getMethodMappeds() {
-    return methodMappeds;
+  public List<ZonedDateTime> getMethodMappedList() {
+    return methodMappedList;
   }
 
-  public TestDataObject setMethodMappeds(List<ZonedDateTime> methodMappeds) {
-    this.methodMappeds = methodMappeds;
+  public TestDataObject setMethodMappedList(List<ZonedDateTime> methodMappedList) {
+    this.methodMappedList = methodMappedList;
     return this;
   }
 
-  public List<Locale> getFunctionMappeds() {
-    return functionMappeds;
+  public List<Locale> getFunctionMappedList() {
+    return functionMappedList;
   }
 
-  public TestDataObject setFunctionMappeds(List<Locale> functionMappeds) {
-    this.functionMappeds = functionMappeds;
+  public TestDataObject setFunctionMappedList(List<Locale> functionMappedList) {
+    this.functionMappedList = functionMappedList;
     return this;
   }
 
-  public List<Object> getObjects() {
-    return objects;
+  public List<Object> getObjectList() {
+    return objectList;
   }
 
-  public TestDataObject setObjects(List<Object> objects) {
-    this.objects = objects;
+  public TestDataObject setObjectList(List<Object> objectList) {
+    this.objectList = objectList;
     return this;
   }
 
@@ -639,12 +637,12 @@ public class TestDataObject {
     return this;
   }
 
-  public Set<AggregatedDataObject> getAggregatedDataObjectSet() {
-    return aggregatedDataObjectSet;
+  public Set<NestedJsonObjectDataObject> getJsonObjectDataObjectSet() {
+    return jsonObjectDataObjectSet;
   }
 
-  public TestDataObject setAggregatedDataObjectSet(Set<AggregatedDataObject> aggregatedDataObjectSet) {
-    this.aggregatedDataObjectSet = aggregatedDataObjectSet;
+  public TestDataObject setJsonObjectDataObjectSet(Set<NestedJsonObjectDataObject> jsonObjectDataObjectSet) {
+    this.jsonObjectDataObjectSet = jsonObjectDataObjectSet;
     return this;
   }
 
@@ -792,12 +790,12 @@ public class TestDataObject {
     return this;
   }
 
-  public List<AggregatedDataObject> getAddedAggregatedDataObjects() {
-    return addedAggregatedDataObjects;
+  public List<NestedJsonObjectDataObject> getAddedJsonObjectDataObjects() {
+    return addedJsonObjectDataObjects;
   }
 
-  public TestDataObject addAddedAggregatedDataObject(AggregatedDataObject addedAggregatedDataObject) {
-    this.addedAggregatedDataObjects.add(addedAggregatedDataObject);
+  public TestDataObject addAddedJsonObjectDataObject(NestedJsonObjectDataObject addedAggregatedDataObject) {
+    this.addedJsonObjectDataObjects.add(addedAggregatedDataObject);
     return this;
   }
 
@@ -945,12 +943,12 @@ public class TestDataObject {
     return this;
   }
 
-  public Map<String, AggregatedDataObject> getAggregatedDataObjectMap() {
-    return aggregatedDataObjectMap;
+  public Map<String, NestedJsonObjectDataObject> getJsonObjectDataObjectMap() {
+    return jsonObjectDataObjectMap;
   }
 
-  public TestDataObject setAggregatedDataObjectMap(Map<String, AggregatedDataObject> aggregatedDataObjectMap) {
-    this.aggregatedDataObjectMap = aggregatedDataObjectMap;
+  public TestDataObject setJsonObjectDataObjectMap(Map<String, NestedJsonObjectDataObject> nestedJsonObjectDataObjectMap) {
+    this.jsonObjectDataObjectMap = nestedJsonObjectDataObjectMap;
     return this;
   }
 
@@ -1098,12 +1096,12 @@ public class TestDataObject {
     return this;
   }
 
-  public Map<String, AggregatedDataObject> getKeyedDataObjectValues() {
-    return keyedDataObjectValues;
+  public Map<String, NestedJsonObjectDataObject> getKeyedJsonObjectDataObjectValues() {
+    return keyedJsonObjectDataObjectValues;
   }
 
-  public TestDataObject addKeyedDataObjectValue(String key, AggregatedDataObject value) {
-    keyedDataObjectValues.put(key, value);
+  public TestDataObject addKeyedJsonObjectDataObjectValue(String key, NestedJsonObjectDataObject value) {
+    keyedJsonObjectDataObjectValues.put(key, value);
     return this;
   }
 
@@ -1170,12 +1168,12 @@ public class TestDataObject {
     return this;
   }
 
-  public List<NoConverterDataObject> getNotConvertibleDataObjects() {
-    return notConvertibleDataObjects;
+  public List<NoConverterDataObject> getNotConvertibleDataObjectList() {
+    return notConvertibleDataObjectList;
   }
 
-  public TestDataObject setNotConvertibleDataObjects(List<NoConverterDataObject> notConvertibleDataObjects) {
-    this.notConvertibleDataObjects = notConvertibleDataObjects;
+  public TestDataObject setNotConvertibleDataObjectList(List<NoConverterDataObject> notConvertibleDataObjectList) {
+    this.notConvertibleDataObjectList = notConvertibleDataObjectList;
     return this;
   }
 

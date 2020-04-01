@@ -16,9 +16,9 @@ public interface MethodWithValidDataObjectReturn {
     throw new UnsupportedOperationException();
   }
 
-  PlainDataObjectWithToJson methodWithDataObjectReturn();
-  AbstractDataObjectWithToJson methodWithAbstractDataObjectReturn();
-  InterfaceDataObjectWithToJson methodWithInterfaceDataObjectReturn();
+  ReadOnlyJsonObjectDataObject methodWithJsonObjectDataObjectReturn();
+  ReadOnlyAbstractJsonObjectDataObject methodWithAbstractJsonObjectDataObjectReturn();
+  ReadOnlyInterfaceJsonObjectDataObject methodWithInterfaceJsonObjectDataObjectReturn();
   URI methodWithMappedDataObjectReturn();
 
 

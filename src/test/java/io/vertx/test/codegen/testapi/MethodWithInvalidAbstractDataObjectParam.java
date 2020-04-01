@@ -8,5 +8,5 @@ import io.vertx.codegen.annotations.VertxGen;
 @VertxGen
 public interface MethodWithInvalidAbstractDataObjectParam {
 
-  void methodWithAbstractDataObjectParam(AbstractDataObject dataObject);
+  void methodWithAbstractDataObjectParam(InvalidDataObject dataObject);
 }
