@@ -175,7 +175,7 @@ The constraints are
 * All interfaces to have generation performed on them must be annotated with the `io.vertx.codegen.annotations.VertxGen` annotation
 * Fluent methods (methods which return a reference to this) must be annotated with the `io.vertx.codegen.annotations.Fluent` annotation
 * Data object classes (classes which provide data (e.g. configuration) to methods) must be annotated with the `io.vertx.codegen.annotations.DataObject` annotation
-* Data object classes must provide a constructor which takes a single `io.vertx.core.json.JsonObject` parameter.
+* Data object classes must provide a constructor which takes a single `io.vertx.core.json.JsonObject` or `java.lang.String` parameter.
 * Methods where the return value must be cached in the API shim must be annotated with the `io.vertx.codegen.annotations.CacheReturn` annotation
 * Only certain types are allowed as parameter or return value types for any API methods (defined below).
 * Custom enums should be annotated with `@VertxGen`, although this is not mandatory to allow the usage of existing Java enums

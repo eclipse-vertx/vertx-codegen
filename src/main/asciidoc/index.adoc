@@ -122,21 +122,7 @@ java.time.ZonedDateTime.deserializer=com.example.MyMappers#DESERIALIZER
 
 A `@DataObject` annotated type is a Java class with the only purpose to be a container for data.
 
-They can be converted back and forth Json using the generated `JsonSerializer`/`JsonDeserializer`/`JsonMapper`.
-
-A mapper instance is automatically generated for each annotated data object class:
-
-* The mapper implements the `JsonDeserializer` interface when the annotated type
-- has a `io.vertx.core.json.JsonObject` constructor
-- is an interface or an abstract class with a `public static [DataObjectType] decode(io.vertx.core.json.JsonObject value)` method
-- generates the converter, i.e `@DataObject(generateConverter = true)`, has an empty constructor and is concrete
-* The mapper implements the `JsonDeserialiezr` interface when the annotated type:
-- has a `io.vertx.core.json.JsonObject toJson()` method
-- generates the converter, i.e `@DataObject(generateConverter = true)`
-
-When both serializer and deserializer can be created then a `JsonMapper` interface is generated instead.
-
-The generated mapper class is named `[DataObjectType]Converter`.
+A converter instance is automatically generated when the class is annotated with `@DataObject(generateConverter = true)`
 
 Data object annotated classes can also inherit from other data objects annotated types.
 
@@ -225,6 +211,7 @@ Vert.x API method return types or handlers because it can be converted to a json
 ===== Data object converter
 
 The data object/json conversion can be tedious and error prone.
+
 Vertx-codegen can automate it, generating for you an auxiliary class that implements the conversion logic.
 The generated converter handles the type mapping as well as the json naming convention.
 
@@ -578,7 +565,7 @@ A shim implements several strategies when returning values from the Vert.x API:
 1. a _basic_ value is usually handled by the shim interop
 2. an _API_ value creates a proxy to wrap the value
 3. a _json_ (object or array) value is translated to the shim equivalent
-4. a _data object_ that provides an serializer is converted to json or an equivalent
+4. a _data object_ that provides an serializer is converted to a json or an equivalent
 5. an _enum_ value is converted to a string or an equivalent
 6. a _collection_ is usually translated to the shim equivalent
 7. a `java.lang.Throwable` is usually translated to the shim equivalent
