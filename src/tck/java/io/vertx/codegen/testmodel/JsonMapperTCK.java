@@ -11,8 +11,6 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Locale;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @VertxGen
@@ -57,12 +55,6 @@ public interface JsonMapperTCK {
   static ZonedDateTime deserializeZonedDateTime(String value) {
     return ZonedDateTime.parse(value);
   }
-
-  @GenIgnore
-  Function<String, Locale> LOCALE_DESERIALIZER = Locale::new;
-
-  @GenIgnore
-  Function<Locale, String> LOCALE_SERIALIZER = Locale::toString;
 
   // Java Type <-> Integer
 
@@ -152,23 +144,4 @@ public interface JsonMapperTCK {
   void methodWithHandlerAsyncResultSetOfTypeToJsonObjectParam(Handler<AsyncResult<Set<MyPojoToJsonObject>>> myPojoToJsonObjectSetHandler);
   void methodWithHandlerAsyncResultMapOfTypeToJsonObjectParam(Handler<AsyncResult<Map<String, MyPojoToJsonObject>>> myPojoToJsonObjectMapHandler);
 
-  void methodWithFunctionMappedParam(Locale locale);
-  void methodWithListOfFunctionMappedParam(List<Locale> localeList);
-  void methodWithSetOfFunctionMappedParam(Set<Locale> localeSet);
-  void methodWithMapOfFunctionMappedParam(Map<String, Locale> localeMap);
-
-  Locale methodWithFunctionMappedReturn();
-  List<Locale> methodWithListOfFunctionMappedReturn();
-  Set<Locale> methodWithSetOfFunctionMappedReturn();
-  Map<String, Locale> methodWithMapOfFunctionMappedReturn();
-
-  void methodWithHandlerFunctionMapped(Handler<Locale> handler);
-  void methodWithHandlerListOfFunctionMapped(Handler<List<Locale>> handler);
-  void methodWithHandlerSetOfFunctionMapped(Handler<Set<Locale>> handler);
-  void methodWithHandlerMapOfFunctionMapped(Handler<Map<String, Locale>> handler);
-
-  void methodWithHandlerAsyncResultFunctionMapped(Handler<AsyncResult<Locale>> handler);
-  void methodWithHandlerAsyncResultListOfFunctionMapped(Handler<AsyncResult<List<Locale>>> handler);
-  void methodWithHandlerAsyncResultSetOfFunctionMapped(Handler<AsyncResult<Set<Locale>>> handler);
-  void methodWithHandlerAsyncResultMapOfFunctionMapped(Handler<AsyncResult<Map<String, Locale>>> handler);
 }

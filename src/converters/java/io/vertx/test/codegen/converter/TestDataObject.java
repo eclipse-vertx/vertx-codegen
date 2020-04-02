@@ -20,7 +20,6 @@ import java.nio.ByteBuffer;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -35,9 +34,6 @@ public class TestDataObject {
   public static ZonedDateTime deserializeZonedDateTime(String value) {
     return ZonedDateTime.parse(value);
   }
-
-  public static final Function<String, Locale> LOCALE_DESERIALIZER = Locale::new;
-  public static final Function<Locale, String> LOCALE_SERIALIZER = Locale::toString;
 
   private String string;
   private boolean primitiveBoolean;
@@ -63,7 +59,6 @@ public class TestDataObject {
   private JsonArray jsonArray;
   private TimeUnit httpMethod;
   private ZonedDateTime methodMapped;
-  private Locale functionMapped;
   private NoConverterDataObject notConvertibleDataObject;
   private ByteBuffer unmapped;
 
@@ -83,7 +78,6 @@ public class TestDataObject {
   private List<JsonArray> jsonArrayList;
   private List<TimeUnit> httpMethodList;
   private List<ZonedDateTime> methodMappedList;
-  private List<Locale> functionMappedList;
   private List<Object> objectList;
   private List<NoConverterDataObject> notConvertibleDataObjectList;
 
@@ -103,7 +97,6 @@ public class TestDataObject {
   private Set<JsonArray> jsonArraySet;
   private Set<TimeUnit> httpMethodSet;
   private Set<ZonedDateTime> methodMappedSet;
-  private Set<Locale> functionMappedSet;
   private Set<Object> objectSet;
   private Set<NoConverterDataObject> notConvertibleDataObjectSet;
 
@@ -123,7 +116,6 @@ public class TestDataObject {
   private List<JsonArray> addedJsonArrays = new ArrayList<>();
   private List<TimeUnit> addedHttpMethods = new ArrayList<>();
   private List<ZonedDateTime> addedMethodMappeds = new ArrayList<>();
-  private List<Locale> addedFunctionMappeds = new ArrayList<>();
   private List<Object> addedObjects = new ArrayList<>();
 
   private Map<String, String> stringValueMap;
@@ -142,7 +134,6 @@ public class TestDataObject {
   private Map<String, JsonArray> jsonArrayMap;
   private Map<String, TimeUnit> httpMethodMap;
   private Map<String, ZonedDateTime> methodMappedMap;
-  private Map<String, Locale> functionMappedMap;
   private Map<String, Object> objectMap;
   private Map<String, NoConverterDataObject> notConvertibleDataObjectMap;
 
@@ -162,7 +153,6 @@ public class TestDataObject {
   private Map<String, JsonArray> keyedJsonArrayValues = new HashMap<>();
   private Map<String, TimeUnit> keyedEnumValues = new HashMap<>();
   private Map<String, ZonedDateTime> keyedMethodMappedValues = new HashMap<>();
-  private Map<String, Locale> keyedFunctionMappedValues = new HashMap<>();
   private Map<String, Object> keyedObjectValues = new HashMap<>();
 
   public TestDataObject() {
@@ -390,15 +380,6 @@ public class TestDataObject {
     return this;
   }
 
-  public Locale getFunctionMapped() {
-    return functionMapped;
-  }
-
-  public TestDataObject setFunctionMapped(Locale functionMapped) {
-    this.functionMapped = functionMapped;
-    return this;
-  }
-
   public NoConverterDataObject getNotConvertibleDataObject() {
     return notConvertibleDataObject;
   }
@@ -561,15 +542,6 @@ public class TestDataObject {
     return this;
   }
 
-  public List<Locale> getFunctionMappedList() {
-    return functionMappedList;
-  }
-
-  public TestDataObject setFunctionMappedList(List<Locale> functionMappedList) {
-    this.functionMappedList = functionMappedList;
-    return this;
-  }
-
   public List<Object> getObjectList() {
     return objectList;
   }
@@ -721,15 +693,6 @@ public class TestDataObject {
 
   public TestDataObject setMethodMappedSet(Set<ZonedDateTime> methodMappedSet) {
     this.methodMappedSet = methodMappedSet;
-    return this;
-  }
-
-  public Set<Locale> getFunctionMappedSet() {
-    return functionMappedSet;
-  }
-
-  public TestDataObject setFunctionMappedSet(Set<Locale> functionMappedSet) {
-    this.functionMappedSet = functionMappedSet;
     return this;
   }
 
@@ -886,15 +849,6 @@ public class TestDataObject {
     return this;
   }
 
-  public List<Locale> getAddedFunctionMappeds() {
-    return addedFunctionMappeds;
-  }
-
-  public TestDataObject addAddedFunctionMapped(Locale addedUri) {
-    this.addedFunctionMappeds.add(addedUri);
-    return this;
-  }
-
   public List<Object> getAddedObjects() {
     return addedObjects;
   }
@@ -1048,15 +1002,6 @@ public class TestDataObject {
     return this;
   }
 
-  public Map<String, Locale> getFunctionMappedMap() {
-    return functionMappedMap;
-  }
-
-  public TestDataObject setFunctionMappedMap(Map<String, Locale> functionMappedMap) {
-    this.functionMappedMap = functionMappedMap;
-    return this;
-  }
-
   public Map<String, Object> getObjectMap() {
     return objectMap;
   }
@@ -1207,15 +1152,6 @@ public class TestDataObject {
 
   public TestDataObject addKeyedMethodMappedValue(String key, ZonedDateTime value) {
     this.keyedMethodMappedValues.put(key, value);
-    return this;
-  }
-
-  public Map<String, Locale> getKeyedFunctionMappedValues() {
-    return keyedFunctionMappedValues;
-  }
-
-  public TestDataObject addKeyedFunctionMappedValue(String key, Locale value) {
-    this.keyedFunctionMappedValues.put(key, value);
     return this;
   }
 

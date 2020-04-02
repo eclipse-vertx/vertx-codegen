@@ -45,42 +45,11 @@ public class JsonMapperTest extends ClassTestBase {
   // Illegal Json type in JsonMapper
 
   @Test
-  public void testJsonMapperMustHaveSameJsonType() throws Exception {
-    try {
-      new GeneratorHelper()
-        .registerConverter(ZonedDateTime.class, io.vertx.test.codegen.testjsonmapper.mixedjsontypes.APIInterfaceWithZonedDateTime.class.getName(), "serializer")
-        .registerConverter(ZonedDateTime.class, io.vertx.test.codegen.testjsonmapper.mixedjsontypes.APIInterfaceWithZonedDateTime.class.getName(), "deserializer")
-        .generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.mixedjsontypes");
-      fail();
-    } catch (GenException expected) { }
-  }
-
-  @Test
-  public void testFunctionMapperMustBeStatic() throws Exception {
-    try {
-      new GeneratorHelper()
-        .registerConverter(ZonedDateTime.class, io.vertx.test.codegen.testjsonmapper.nonstaticfunctionmapper.APIInterfaceWithZonedDateTime.class.getName(), "serializer")
-        .generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.nonstaticfunctionmapper");
-      fail();
-    } catch (GenException expected) { }
-  }
-
-  @Test
   public void testMethodMapperMustBeStatic() throws Exception {
     try {
       new GeneratorHelper()
         .registerConverter(ZonedDateTime.class, io.vertx.test.codegen.testjsonmapper.nonstaticmethodmapper.APIInterfaceWithZonedDateTime.class.getName(), "serialize"
         ).generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.nonstaticmethodmapper");
-      fail();
-    } catch (GenException expected) { }
-  }
-
-  @Test
-  public void testFunctionMapperMustBePublic() throws Exception {
-    try {
-      new GeneratorHelper()
-        .registerConverter(ZonedDateTime.class, io.vertx.test.codegen.testjsonmapper.nonpublicfunctionmapper.APIInterfaceWithZonedDateTime.class.getName(), "serializer")
-        .generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.nonpublicfunctionmapper");
       fail();
     } catch (GenException expected) { }
   }
@@ -135,26 +104,6 @@ public class JsonMapperTest extends ClassTestBase {
     } catch (GenException expected) { }
   }
 
-  @Test
-  public void testJsonMapperInvalidFunctionReturnType() throws Exception {
-    try {
-      new GeneratorHelper()
-        .registerConverter(ZonedDateTime.class, io.vertx.test.codegen.testjsonmapper.invalidfunctionreturntype.APIInterfaceWithZonedDateTime.class.getName(), "DESERIALIZER")
-        .generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.invalidfunctionreturntype");
-      fail();
-    } catch (GenException expected) { }
-  }
-
-  @Test
-  public void testJsonMapperInvalidFunctionParamType() throws Exception {
-    try {
-      new GeneratorHelper()
-        .registerConverter(ZonedDateTime.class, io.vertx.test.codegen.testjsonmapper.invalidfunctionparamtype.APIInterfaceWithZonedDateTime.class.getName(), "SERIALIZER")
-        .generateModule(ModuleTest.class.getClassLoader(), "io.vertx.test.codegen.testjsonmapper.invalidfunctionparamtype");
-      fail();
-    } catch (GenException expected) { }
-  }
-
   // Test valid stuff
   // ----------------
 
@@ -164,33 +113,6 @@ public class JsonMapperTest extends ClassTestBase {
       .registerConverter(ZonedDateTime.class, APIInterfaceWithZonedDateTime.class.getName(), "serialize")
       .registerConverter(ZonedDateTime.class, APIInterfaceWithZonedDateTime.class.getName(), "deserialize")
       .generateClass(APIInterfaceWithZonedDateTime.class);
-    testMapper(model);
-  }
-
-  @Test
-  public void testValidFunctionMapper() throws Exception {
-    ClassModel model = new GeneratorHelper()
-      .registerConverter(ZonedDateTime.class, io.vertx.test.codegen.testjsonmapper.functionmapper.APIInterfaceWithZonedDateTime.class.getName(), "serializer", "apply")
-      .registerConverter(ZonedDateTime.class, io.vertx.test.codegen.testjsonmapper.functionmapper.APIInterfaceWithZonedDateTime.class.getName(), "deserializer", "apply")
-      .generateClass(io.vertx.test.codegen.testjsonmapper.functionmapper.APIInterfaceWithZonedDateTime.class);
-    testMapper(model);
-  }
-
-  @Test
-  public void testMixedMapper() throws Exception {
-    ClassModel model = new GeneratorHelper()
-      .registerConverter(ZonedDateTime.class, io.vertx.test.codegen.testjsonmapper.mixedmapper.APIInterfaceWithZonedDateTime.class.getName(), "serialize")
-      .registerConverter(ZonedDateTime.class, io.vertx.test.codegen.testjsonmapper.mixedmapper.APIInterfaceWithZonedDateTime.class.getName(), "deserializer", "apply")
-      .generateClass(io.vertx.test.codegen.testjsonmapper.mixedmapper.APIInterfaceWithZonedDateTime.class);
-    testMapper(model);
-  }
-
-  @Test
-  public void testBilto() throws Exception {
-    ClassModel model = new GeneratorHelper()
-      .registerConverter(ZonedDateTime.class, DateTimeFormatter.class.getName(), "ISO_ZONED_DATE_TIME", "format")
-      .registerConverter(ZonedDateTime.class, ZonedDateTime.class.getName(), "parse")
-      .generateClass(io.vertx.test.codegen.testjsonmapper.functionmapper.APIInterfaceWithZonedDateTime.class);
     testMapper(model);
   }
 

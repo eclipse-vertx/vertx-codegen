@@ -87,14 +87,6 @@ public class TestDataObjectConverter {
             });
           }
           break;
-        case "addedFunctionMappeds":
-          if (member.getValue() instanceof JsonArray) {
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof String)
-                obj.addAddedFunctionMapped(io.vertx.test.codegen.converter.TestDataObject.LOCALE_DESERIALIZER.apply((String)item));
-            });
-          }
-          break;
         case "addedHttpMethods":
           if (member.getValue() instanceof JsonArray) {
             ((Iterable<Object>)member.getValue()).forEach( item -> {
@@ -474,41 +466,6 @@ public class TestDataObjectConverter {
             obj.setBufferSet(list);
           }
           break;
-        case "functionMapped":
-          if (member.getValue() instanceof String) {
-            obj.setFunctionMapped(io.vertx.test.codegen.converter.TestDataObject.LOCALE_DESERIALIZER.apply((String)member.getValue()));
-          }
-          break;
-        case "functionMappedList":
-          if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.util.Locale> list =  new java.util.ArrayList<>();
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof String)
-                list.add(io.vertx.test.codegen.converter.TestDataObject.LOCALE_DESERIALIZER.apply((String)item));
-            });
-            obj.setFunctionMappedList(list);
-          }
-          break;
-        case "functionMappedMap":
-          if (member.getValue() instanceof JsonObject) {
-            java.util.Map<String, java.util.Locale> map = new java.util.LinkedHashMap<>();
-            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
-              if (entry.getValue() instanceof String)
-                map.put(entry.getKey(), io.vertx.test.codegen.converter.TestDataObject.LOCALE_DESERIALIZER.apply((String)entry.getValue()));
-            });
-            obj.setFunctionMappedMap(map);
-          }
-          break;
-        case "functionMappedSet":
-          if (member.getValue() instanceof JsonArray) {
-            java.util.LinkedHashSet<java.util.Locale> list =  new java.util.LinkedHashSet<>();
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof String)
-                list.add(io.vertx.test.codegen.converter.TestDataObject.LOCALE_DESERIALIZER.apply((String)item));
-            });
-            obj.setFunctionMappedSet(list);
-          }
-          break;
         case "httpMethod":
           if (member.getValue() instanceof String) {
             obj.setHttpMethod(java.util.concurrent.TimeUnit.valueOf((String)member.getValue()));
@@ -726,14 +683,6 @@ public class TestDataObjectConverter {
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
                 obj.addKeyedEnumValue(entry.getKey(), java.util.concurrent.TimeUnit.valueOf((String)entry.getValue()));
-            });
-          }
-          break;
-        case "keyedFunctionMappedValues":
-          if (member.getValue() instanceof JsonObject) {
-            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
-              if (entry.getValue() instanceof String)
-                obj.addKeyedFunctionMappedValue(entry.getKey(), io.vertx.test.codegen.converter.TestDataObject.LOCALE_DESERIALIZER.apply((String)entry.getValue()));
             });
           }
           break;
@@ -1057,11 +1006,6 @@ public class TestDataObjectConverter {
       obj.getAddedBuffers().forEach(item -> array.add(java.util.Base64.getEncoder().encodeToString(item.getBytes())));
       json.put("addedBuffers", array);
     }
-    if (obj.getAddedFunctionMappeds() != null) {
-      JsonArray array = new JsonArray();
-      obj.getAddedFunctionMappeds().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.LOCALE_SERIALIZER.apply(item)));
-      json.put("addedFunctionMappeds", array);
-    }
     if (obj.getAddedHttpMethods() != null) {
       JsonArray array = new JsonArray();
       obj.getAddedHttpMethods().forEach(item -> array.add(item.name()));
@@ -1264,24 +1208,6 @@ public class TestDataObjectConverter {
       obj.getBufferSet().forEach(item -> array.add(java.util.Base64.getEncoder().encodeToString(item.getBytes())));
       json.put("bufferSet", array);
     }
-    if (obj.getFunctionMapped() != null) {
-      json.put("functionMapped", io.vertx.test.codegen.converter.TestDataObject.LOCALE_SERIALIZER.apply(obj.getFunctionMapped()));
-    }
-    if (obj.getFunctionMappedList() != null) {
-      JsonArray array = new JsonArray();
-      obj.getFunctionMappedList().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.LOCALE_SERIALIZER.apply(item)));
-      json.put("functionMappedList", array);
-    }
-    if (obj.getFunctionMappedMap() != null) {
-      JsonObject map = new JsonObject();
-      obj.getFunctionMappedMap().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.TestDataObject.LOCALE_SERIALIZER.apply(value)));
-      json.put("functionMappedMap", map);
-    }
-    if (obj.getFunctionMappedSet() != null) {
-      JsonArray array = new JsonArray();
-      obj.getFunctionMappedSet().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.LOCALE_SERIALIZER.apply(item)));
-      json.put("functionMappedSet", array);
-    }
     if (obj.getHttpMethod() != null) {
       json.put("httpMethod", obj.getHttpMethod().name());
     }
@@ -1403,11 +1329,6 @@ public class TestDataObjectConverter {
       JsonObject map = new JsonObject();
       obj.getKeyedEnumValues().forEach((key, value) -> map.put(key, value.name()));
       json.put("keyedEnumValues", map);
-    }
-    if (obj.getKeyedFunctionMappedValues() != null) {
-      JsonObject map = new JsonObject();
-      obj.getKeyedFunctionMappedValues().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.TestDataObject.LOCALE_SERIALIZER.apply(value)));
-      json.put("keyedFunctionMappedValues", map);
     }
     if (obj.getKeyedJsonArrayValues() != null) {
       JsonObject map = new JsonObject();

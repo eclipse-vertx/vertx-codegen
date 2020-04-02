@@ -60,7 +60,7 @@ You can declare data objects by:
 
 ==== Json mappers
 
-A json mapper for type `T` is a method or function that maps any object of type `Type`, where `J` can be:
+A json mapper for type `T` is a method that maps any object of type `Type`, where `J` can be:
 
 * `JsonArray` or `JsonObject`
 * a concrete type extending `Number` such as `Long` or `Double`
@@ -95,19 +95,6 @@ These mappers needs to be declared in a `META-INF/vertx/json-mappers.properties`
 ----
 java.time.ZonedDateTime.serializer=com.example.MyMappers#serializeZonedDateTime
 java.time.ZonedDateTime.deserializer=com.example.MyMappers#deserializedZoneDateTime
-----
-
-Or as functions:
-
-[source,java]
-----
-package com.example;
-
-public class MyMappers {
-
-  public static final Function<ZonedDateTime, String> SERIALIZER = date -> date.toString();
-  public static final Function<String, ZonedDateTime> DESERIALIZER = s -> ZonedDateTime.parse(s);
-}
 ----
 
 Again the mappers needs to be declared in a `json-mappers.properties` file:

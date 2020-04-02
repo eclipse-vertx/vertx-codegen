@@ -370,12 +370,12 @@ A _Data object_ is a type that can be converted back and forth to a Json type.
 
 You can declare data objects by:
 
-* Defining an annotated `@Mapper` method or function for it
+* Defining an annotated `@Mapper` method for it
 * Or annotating the type itself with `@DataObject`
 
 ### Json mappers
 
-A json mapper for type `T` is a method or function that maps any object of type `Type`, where `J` can be:
+A json mapper for type `T` is a method that maps any object of type `Type`, where `J` can be:
 
 * `JsonArray` or `JsonObject`
 * a concrete type extending `Number` such as `Long` or `Double`
@@ -398,16 +398,6 @@ public static String serialize(ZonedDateTime date) {
 public static ZonedDateTime deserialize(String s) {
   return ZonedDateTime.parse(s);
 }
-```
-
-Or as functions:
-
-```java
-@Mapper
-public static final Function<ZonedDateTime, String> SERIALIZER = date -> date.toString();
-
-@Mapper
-public static final Function<String, ZonedDateTime> DESERIALIZER = s -> ZonedDateTime.parse(s);
 ```
 
 ### `@DataObject` annotated types

@@ -62,7 +62,6 @@ public class DataObjectTest {
     JsonArray jsonArray = new JsonArray().add(TestUtils.randomAlphaString(20));
     TimeUnit httpMethod = TimeUnit.values()[TestUtils.randomPositiveInt() % TimeUnit.values().length];
     ZonedDateTime methodMapped = ZonedDateTime.now();
-    Locale functionMapped = new Locale("en");
 
     Map<String, Object> map = new HashMap<>();
     map.put(TestUtils.randomAlphaString(10), TestUtils.randomAlphaString(20));
@@ -98,7 +97,6 @@ public class DataObjectTest {
     json.put("jsonArray", jsonArray);
     json.put("httpMethod", httpMethod.toString());
     json.put("methodMapped", methodMapped.toString());
-    json.put("functionMapped", functionMapped.toString());
     json.put("stringList", new JsonArray().add(stringValue));
     json.put("boxedBooleanList", new JsonArray().add(boxedBooleanValue));
     json.put("boxedByteList", new JsonArray().add(boxedByteValue));
@@ -115,7 +113,6 @@ public class DataObjectTest {
     json.put("jsonArrayList", new JsonArray().add(jsonArray));
     json.put("httpMethodList", new JsonArray().add(httpMethod.toString()));
     json.put("methodMappedList", new JsonArray().add(methodMapped.toString()));
-    json.put("functionMappedList", new JsonArray().add(functionMapped.toString()));
     json.put("objectList", new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)));
     json.put("stringSet", new JsonArray().add(stringValue));
     json.put("boxedBooleanSet", new JsonArray().add(boxedBooleanValue));
@@ -133,7 +130,6 @@ public class DataObjectTest {
     json.put("jsonArraySet", new JsonArray().add(jsonArray));
     json.put("httpMethodSet", new JsonArray().add(httpMethod.toString()));
     json.put("methodMappedSet", new JsonArray().add(methodMapped.toString()));
-    json.put("functionMappedSet", new JsonArray().add(functionMapped.toString()));
     json.put("objectSet", new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)));
     json.put("addedStringValues", new JsonArray().add(stringValue));
     json.put("addedBooleanValues", new JsonArray().add(boxedBooleanValue));
@@ -159,7 +155,6 @@ public class DataObjectTest {
     json.put("addedJsonArrays", new JsonArray().add(jsonArray));
     json.put("addedHttpMethods", new JsonArray().add(httpMethod.toString()));
     json.put("addedMethodMappeds", new JsonArray().add(methodMapped.toString()));
-    json.put("addedFunctionMappeds", new JsonArray().add(functionMapped.toString()));
     json.put("addedObjects", new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)));
     json.put("stringValueMap", new JsonObject().put(key, stringValue));
     json.put("boxedBooleanValueMap", new JsonObject().put(key, boxedBooleanValue));
@@ -177,7 +172,6 @@ public class DataObjectTest {
     json.put("jsonArrayMap", new JsonObject().put(key, jsonArray));
     json.put("httpMethodMap", new JsonObject().put(key, httpMethod.toString()));
     json.put("methodMappedMap", new JsonObject().put(key, methodMapped.toString()));
-    json.put("functionMappedMap", new JsonObject().put(key, functionMapped.toString()));
     json.put("objectMap", toJson(map));
     json.put("keyedStringValues", new JsonObject().put(key, stringValue));
     json.put("keyedBoxedBooleanValues", new JsonObject().put(key, boxedBooleanValue));
@@ -195,7 +189,6 @@ public class DataObjectTest {
     json.put("keyedJsonArrayValues", new JsonObject().put(key, jsonArray));
     json.put("keyedEnumValues", new JsonObject().put(key, httpMethod.name()));
     json.put("keyedMethodMappedValues", new JsonObject().put(key, methodMapped.toString()));
-    json.put("keyedFunctionMappedValues", new JsonObject().put(key, functionMapped.toString()));
     json.put("keyedObjectValues", toJson(map));
 
     TestDataObject obj = new TestDataObject();
@@ -225,7 +218,6 @@ public class DataObjectTest {
     Assert.assertEquals(jsonArray, obj.getJsonArray());
     Assert.assertEquals(httpMethod, obj.getHttpMethod());
     Assert.assertEquals(methodMapped, obj.getMethodMapped());
-    Assert.assertEquals(functionMapped, obj.getFunctionMapped());
     Assert.assertEquals(Collections.singletonList(stringValue), obj.getStringList());
     Assert.assertEquals(Collections.singletonList(boxedBooleanValue), obj.getBoxedBooleanList());
     Assert.assertEquals(Collections.singletonList(boxedByteValue), obj.getBoxedByteList());
@@ -242,7 +234,6 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singletonList(jsonArray), obj.getJsonArrayList());
     Assert.assertEquals(Collections.singletonList(httpMethod), obj.getHttpMethodList());
     Assert.assertEquals(Collections.singletonList(methodMapped), obj.getMethodMappedList());
-    Assert.assertEquals(Collections.singletonList(functionMapped), obj.getFunctionMappedList());
     Assert.assertEquals(list, obj.getObjectList());
     Assert.assertEquals(Collections.singleton(stringValue), obj.getStringSet());
     Assert.assertEquals(Collections.singleton(boxedBooleanValue), obj.getBoxedBooleanSet());
@@ -260,7 +251,6 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singleton(jsonArray), obj.getJsonArraySet());
     Assert.assertEquals(Collections.singleton(httpMethod), obj.getHttpMethodSet());
     Assert.assertEquals(Collections.singleton(methodMapped), obj.getMethodMappedSet());
-    Assert.assertEquals(Collections.singleton(functionMapped), obj.getFunctionMappedSet());
     Assert.assertEquals(new LinkedHashSet<>(list), obj.getObjectSet());
     Assert.assertEquals(Collections.singletonList(stringValue), obj.getAddedStringValues());
     Assert.assertEquals(Collections.singletonList(boxedBooleanValue), obj.getAddedBoxedBooleanValues());
@@ -278,7 +268,6 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singletonList(jsonArray), obj.getAddedJsonArrays());
     Assert.assertEquals(Collections.singletonList(httpMethod), obj.getAddedHttpMethods());
     Assert.assertEquals(Collections.singletonList(methodMapped), obj.getAddedMethodMappeds());
-    Assert.assertEquals(Collections.singletonList(functionMapped), obj.getAddedFunctionMappeds());
     Assert.assertEquals(list, obj.getAddedObjects());
     Assert.assertEquals(Collections.singletonMap(key, stringValue), obj.getStringValueMap());
     Assert.assertEquals(Collections.singletonMap(key, boxedBooleanValue), obj.getBoxedBooleanValueMap());
@@ -296,7 +285,6 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singletonMap(key, jsonArray), obj.getJsonArrayMap());
     Assert.assertEquals(Collections.singletonMap(key, httpMethod), obj.getHttpMethodMap());
     Assert.assertEquals(Collections.singletonMap(key, methodMapped), obj.getMethodMappedMap());
-    Assert.assertEquals(Collections.singletonMap(key, functionMapped), obj.getFunctionMappedMap());
     Assert.assertEquals(map, obj.getObjectMap());
     Assert.assertEquals(Collections.singletonMap(key, stringValue), obj.getKeyedStringValues());
     Assert.assertEquals(Collections.singletonMap(key, boxedBooleanValue), obj.getKeyedBoxedBooleanValues());
@@ -314,7 +302,6 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singletonMap(key, jsonArray), obj.getKeyedJsonArrayValues());
     Assert.assertEquals(Collections.singletonMap(key, httpMethod), obj.getKeyedEnumValues());
     Assert.assertEquals(Collections.singletonMap(key, methodMapped), obj.getKeyedMethodMappedValues());
-    Assert.assertEquals(Collections.singletonMap(key, functionMapped), obj.getKeyedFunctionMappedValues());
     Assert.assertEquals(map, obj.getObjectMap());
 
     // Sometimes json can use java collections so test it runs fine in this case
@@ -360,7 +347,6 @@ public class DataObjectTest {
     Assert.assertEquals(null, obj.getJsonObject());
     Assert.assertEquals(null, obj.getJsonArray());
     Assert.assertEquals(null, obj.getMethodMapped());
-    Assert.assertEquals(null, obj.getFunctionMapped());
     Assert.assertEquals(null, obj.getStringList());
     Assert.assertEquals(null, obj.getBoxedBooleanList());
     Assert.assertEquals(null, obj.getBoxedByteList());
@@ -377,7 +363,6 @@ public class DataObjectTest {
     Assert.assertEquals(null, obj.getJsonArrayList());
     Assert.assertEquals(null, obj.getHttpMethodList());
     Assert.assertEquals(null, obj.getMethodMappedList());
-    Assert.assertEquals(null, obj.getFunctionMappedList());
     Assert.assertEquals(null, obj.getObjectList());
     Assert.assertEquals(null, obj.getStringSet());
     Assert.assertEquals(null, obj.getBoxedBooleanSet());
@@ -395,7 +380,6 @@ public class DataObjectTest {
     Assert.assertEquals(null, obj.getJsonArraySet());
     Assert.assertEquals(null, obj.getHttpMethodSet());
     Assert.assertEquals(null, obj.getMethodMappedSet());
-    Assert.assertEquals(null, obj.getFunctionMappedSet());
     Assert.assertEquals(null, obj.getObjectSet());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedStringValues());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedBoxedBooleanValues());
@@ -413,7 +397,6 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.emptyList(), obj.getAddedJsonArrays());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedHttpMethods());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedMethodMappeds());
-    Assert.assertEquals(Collections.emptyList(), obj.getAddedFunctionMappeds());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedObjects());
     Assert.assertEquals(null, obj.getStringValueMap());
     Assert.assertEquals(null, obj.getBoxedBooleanValueMap());
@@ -431,7 +414,6 @@ public class DataObjectTest {
     Assert.assertEquals(null, obj.getJsonArrayMap());
     Assert.assertEquals(null, obj.getHttpMethodMap());
     Assert.assertEquals(null, obj.getMethodMappedMap());
-    Assert.assertEquals(null, obj.getFunctionMappedMap());
     Assert.assertEquals(null, obj.getObjectMap());
   }
 
@@ -498,7 +480,6 @@ public class DataObjectTest {
     obj.setJsonArray(jsonArray);
     obj.setHttpMethod(httpMethod);
     obj.setMethodMapped(dateTime);
-    obj.setFunctionMapped(uri);
     obj.setStringList(Collections.singletonList(stringValue));
     obj.setBoxedBooleanList(Collections.singletonList(boxedBooleanValue));
     obj.setBoxedByteList(Collections.singletonList(boxedByteValue));
@@ -515,7 +496,6 @@ public class DataObjectTest {
     obj.setJsonArrayList(Collections.singletonList(jsonArray));
     obj.setHttpMethodList(Collections.singletonList(httpMethod));
     obj.setMethodMappedList(Collections.singletonList(dateTime));
-    obj.setFunctionMappedList(Collections.singletonList(uri));
     obj.setObjectList(list);
     obj.setStringValueMap(Collections.singletonMap(key, stringValue));
     obj.setStringSet(Collections.singleton(stringValue));
@@ -534,7 +514,6 @@ public class DataObjectTest {
     obj.setJsonArraySet(Collections.singleton(jsonArray));
     obj.setHttpMethodSet(Collections.singleton(httpMethod));
     obj.setMethodMappedSet(Collections.singleton(dateTime));
-    obj.setFunctionMappedSet(Collections.singleton(uri));
     obj.setObjectSet(new LinkedHashSet<>(list));
     obj.setBoxedBooleanValueMap(Collections.singletonMap(key, boxedBooleanValue));
     obj.setBoxedByteValueMap(Collections.singletonMap(key, boxedByteValue));
@@ -551,7 +530,6 @@ public class DataObjectTest {
     obj.setJsonArrayMap(Collections.singletonMap(key, jsonArray));
     obj.setHttpMethodMap(Collections.singletonMap(key, httpMethod));
     obj.setMethodMappedMap(Collections.singletonMap(key, dateTime));
-    obj.setFunctionMappedMap(Collections.singletonMap(key, uri));
     obj.setObjectMap(map);
     obj.addKeyedStringValue(key, stringValue);
     obj.addKeyedBoxedBooleanValue(key, boxedBooleanValue);
@@ -569,7 +547,6 @@ public class DataObjectTest {
     obj.addKeyedJsonArrayValue(key, jsonArray);
     obj.addKeyedEnumValue(key, httpMethod);
     obj.addKeyedMethodMappedValue(key, dateTime);
-    obj.addKeyedFunctionMappedValue(key, uri);
     map.forEach(obj::addKeyedObjectValue);
 
     Map<String, Object> json = new HashMap<>();
@@ -599,7 +576,6 @@ public class DataObjectTest {
     assertEquals(jsonArray, json.get("jsonArray"));
     assertEquals(httpMethod.name(), json.get("httpMethod"));
     assertEquals(dateTime.toString(), json.get("methodMapped"));
-    assertEquals(uri.toString(), json.get("functionMapped"));
     assertEquals(new JsonArray().add(stringValue), json.get("stringList"));
     assertEquals(new JsonArray().add(boxedBooleanValue), json.get("boxedBooleanList"));
     assertEquals(new JsonArray().add(boxedByteValue), json.get("boxedByteList"));
@@ -618,7 +594,6 @@ public class DataObjectTest {
     assertEquals(new JsonArray().add(jsonArray), json.get("jsonArrayList"));
     assertEquals(new JsonArray().add(httpMethod.name()), json.get("httpMethodList"));
     assertEquals(new JsonArray().add(dateTime.toString()), json.get("methodMappedList"));
-    assertEquals(new JsonArray().add(uri.toString()), json.get("functionMappedList"));
     assertEquals(new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)), json.get("objectList"));
     assertEquals(new JsonArray().add(stringValue), json.get("stringSet"));
     assertEquals(new JsonArray().add(boxedBooleanValue), json.get("boxedBooleanSet"));
@@ -638,7 +613,6 @@ public class DataObjectTest {
     assertEquals(new JsonArray().add(jsonArray), json.get("jsonArraySet"));
     assertEquals(new JsonArray().add(httpMethod.name()), json.get("httpMethodSet"));
     assertEquals(new JsonArray().add(dateTime.toString()), json.get("methodMappedSet"));
-    assertEquals(new JsonArray().add(uri.toString()), json.get("functionMappedSet"));
     assertEquals(new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)), json.get("objectSet"));
     assertEquals(new JsonObject().put(key, stringValue), json.get("stringValueMap"));
     assertEquals(new JsonObject().put(key, boxedBooleanValue), json.get("boxedBooleanValueMap"));
@@ -658,7 +632,6 @@ public class DataObjectTest {
     assertEquals(new JsonObject().put(key, jsonArray), json.get("jsonArrayMap"));
     assertEquals(new JsonObject().put(key, httpMethod.name()), json.get("httpMethodMap"));
     assertEquals(new JsonObject().put(key, dateTime.toString()), json.get("methodMappedMap"));
-    assertEquals(new JsonObject().put(key, uri.toString()), json.get("functionMappedMap"));
     assertEquals(toJson(map), json.get("objectMap"));
     assertEquals(new JsonObject().put(key, stringValue), json.get("keyedStringValues"));
     assertEquals(new JsonObject().put(key, boxedBooleanValue), json.get("keyedBoxedBooleanValues"));
@@ -678,7 +651,6 @@ public class DataObjectTest {
     assertEquals(new JsonObject().put(key, jsonArray), json.get("keyedJsonArrayValues"));
     assertEquals(new JsonObject().put(key, httpMethod.name()), json.get("keyedEnumValues"));
     assertEquals(new JsonObject().put(key, dateTime.toString()), json.get("keyedMethodMappedValues"));
-    assertEquals(new JsonObject().put(key, uri.toString()), json.get("keyedFunctionMappedValues"));
     assertEquals(toJson(map), json.get("keyedObjectValues"));
   }
 
@@ -714,7 +686,6 @@ public class DataObjectTest {
     assertEquals(null, json.get("jsonArray"));
     assertEquals(null, json.get("httpMethod"));
     assertEquals(null, json.get("methodMapped"));
-    assertEquals(null, json.get("functionMapped"));
     assertEquals(null, json.get("stringList"));
     assertEquals(null, json.get("boxedBooleanList"));
     assertEquals(null, json.get("boxedByteList"));
@@ -731,7 +702,6 @@ public class DataObjectTest {
     assertEquals(null, json.get("jsonArrayList"));
     assertEquals(null, json.get("httpMethodList"));
     assertEquals(null, json.get("methodMappedList"));
-    assertEquals(null, json.get("functionMappedList"));
     assertEquals(null, json.get("objectList"));
     assertEquals(null, json.get("stringSet"));
     assertEquals(null, json.get("boxedBooleanSet"));
@@ -749,7 +719,6 @@ public class DataObjectTest {
     assertEquals(null, json.get("jsonArraySet"));
     assertEquals(null, json.get("httpMethodSet"));
     assertEquals(null, json.get("methodMappedSet"));
-    assertEquals(null, json.get("functionMappedSet"));
     assertEquals(null, json.get("objectSet"));
     assertEquals(new JsonArray(), json.get("addedStringValues"));
     assertEquals(new JsonArray(), json.get("addedBoxedBooleanValues"));
@@ -766,7 +735,6 @@ public class DataObjectTest {
     assertEquals(new JsonArray(), json.get("addedJsonArrays"));
     assertEquals(new JsonArray(), json.get("addedHttpMethods"));
     assertEquals(new JsonArray(), json.get("addedMethodMappeds"));
-    assertEquals(new JsonArray(), json.get("addedFunctionMappeds"));
     assertEquals(new JsonArray(), json.get("addedObjects"));
     assertEquals(null, json.get("stringValueMap"));
     assertEquals(null, json.get("boxedBooleanValueMap"));
@@ -783,7 +751,6 @@ public class DataObjectTest {
     assertEquals(null, json.get("jsonArrayMap"));
     assertEquals(null, json.get("httpMethodMap"));
     assertEquals(null, json.get("methodMappedMap"));
-    assertEquals(null, json.get("functionMappedMap"));
     assertEquals(null, json.get("objectMap"));
   }
 

@@ -8,7 +8,6 @@ import io.vertx.codegen.type.TypeMirrorFactory;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -19,7 +18,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
@@ -109,17 +107,6 @@ public class CodeGen {
       if (converterType.getKind() == TypeKind.EXECUTABLE) {
         ExecutableType execType = (ExecutableType) converterType;
         processConverter(converterElt, type, converter.selectors, execType);
-      } else if (converterType.getKind() == TypeKind.DECLARED) {
-        // Handle function automatically
-        TypeElement functionElt = elementUtils.getTypeElement(Function.class.getName());
-        TypeMirror t2 = typeUtils.erasure(functionElt.asType());
-        if (typeUtils.isSubtype(converterType, t2)) {
-          Resolved apply = resolveMember(converterElt, converterType, "apply");
-          ArrayList<String> selectors = new ArrayList<>(converter.selectors);
-          selectors.add("apply");
-          processConverter(converterElt, type, selectors, (ExecutableType) apply.type);
-        }
-        // Incorrect
       }
     });
     round.getRootElements().stream()
