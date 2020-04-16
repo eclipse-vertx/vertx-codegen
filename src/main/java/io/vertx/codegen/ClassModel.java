@@ -24,7 +24,6 @@ import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.doc.Text;
 import io.vertx.codegen.doc.Token;
-import io.vertx.codegen.overloadcheck.MethodOverloadChecker;
 import io.vertx.codegen.type.*;
 
 import javax.annotation.processing.Messager;
@@ -801,15 +800,6 @@ public class ClassModel implements Model {
 
         // checkMethod hook validation
         meths.forEach(this::checkMethod);
-
-        // Ambiguous
-        try {
-          MethodOverloadChecker.INSTANCE.checkAmbiguous(meths.stream().filter(m -> !anyJavaTypeMethods.containsValue(m)));
-        } catch (RuntimeException e) {
-          GenException genException = new GenException(elem, e.getMessage());
-          genException.initCause(e);
-          throw genException;
-        }
 
         // Cannot be both static and non static
         MethodInfo first = meths.get(0);

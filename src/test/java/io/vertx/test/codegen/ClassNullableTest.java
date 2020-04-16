@@ -47,7 +47,6 @@ import io.vertx.test.codegen.testapi.nullable.MethodWithInvalidNullableFluentRet
 import io.vertx.test.codegen.testapi.nullable.MethodWithInvalidNullableIntReturn;
 import io.vertx.test.codegen.testapi.nullable.MethodWithInvalidNullableLongReturn;
 import io.vertx.test.codegen.testapi.nullable.MethodWithInvalidNullableShortReturn;
-import io.vertx.test.codegen.testapi.nullable.MethodWithInvalidOverloadedNullableParam;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableHandler;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableHandlerAsyncResult;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableParam;
@@ -151,11 +150,6 @@ public class ClassNullableTest extends ClassTestBase {
   @Test
   public void testMethodWithInvalidNullableCharReturn() throws Exception {
     assertGenInvalid(MethodWithInvalidNullableCharReturn.class);
-  }
-
-  @Test
-  public void testMethodWithInvalidOverloadedNullableParam() throws Exception {
-    assertGenInvalid(MethodWithInvalidOverloadedNullableParam.class);
   }
 
   @Test

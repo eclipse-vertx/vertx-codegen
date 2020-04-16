@@ -245,13 +245,6 @@ public class ClassTest extends ClassTestBase {
     assertGenInvalid(MethodWithInvalidTypeParamByThrowableReturn.class);
   }
 
-  // Invalid ambiguous overload
-
-  @Test
-  public void testOverloadCheckInvalidMethodOverloading() throws Exception {
-    assertGenInvalid(OverloadCheckInvalidMethodOverloading.class);
-  }
-
   // Invalid abstract/concrete interfaces
 
   @Test
@@ -772,6 +765,20 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(13), "genericVoidHandler",  new TypeLiteral<Handler<AsyncResult<GenericInterface<Void>>>>(){});
     checkParam(params.get(14), "genericDataObjectHandler", new TypeLiteral<Handler<AsyncResult<GenericInterface<TestDataObject>>>>(){});
     checkParam(params.get(15), "genericEnumHandler", new TypeLiteral<Handler<AsyncResult<GenericInterface<TestEnum>>>>(){});
+  }
+
+  @Test
+  public void testOverloadCheckInvalidMethodOverloading() throws Exception {
+    GeneratorHelper gen = new GeneratorHelper();
+    ClassModel model = gen.generateClass(OverloadCheckInvalidMethodOverloading.class);
+    List<MethodInfo> meths = model.getMethods();
+    assertEquals(2, meths.size());
+    MethodInfo method = meths.get(0);
+    checkMethod(method, "meth", 1, "void", MethodKind.OTHER);
+    assertEquals(ClassKind.JSON_ARRAY, method.getParam(0).getType().getKind());
+    method = meths.get(1);
+    checkMethod(method, "meth", 1, "void", MethodKind.OTHER);
+    assertEquals(ClassKind.LIST, method.getParam(0).getType().getKind());
   }
 
   @Test
