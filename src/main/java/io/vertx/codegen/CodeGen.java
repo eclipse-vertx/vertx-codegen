@@ -83,9 +83,11 @@ public class CodeGen {
       TypeMirror type = null;
       if (converter.className != null) {
         TypeElement typeElt = elementUtils.getTypeElement(converter.className);
-        if (typeElt != null) {
-          type = typeElt.asType();
-        }
+		if (typeElt != null) {
+			type = typeElt.asType();
+		} else {
+			throw new IllegalArgumentException("The class used in the converter doesn't exists: " + converter.className);
+		}
       }
       TypeElement converterElt = elementUtils.getTypeElement(converter.converter);
       if (converterElt == null) {
