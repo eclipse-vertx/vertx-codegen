@@ -114,7 +114,7 @@ public class CodeGenProcessor extends AbstractProcessor {
     return codeGenerators;
   }
 
-  private static void loadJsonMappers(Set<CodeGen.Converter> list, InputStream is) throws IOException {
+  private static void loadJsonMappers(Set<CodeGen.Converter> converterSet, InputStream is) throws IOException {
     Properties tmp = new Properties();
     tmp.load(is);
     tmp.stringPropertyNames().forEach(name -> {
@@ -128,9 +128,9 @@ public class CodeGenProcessor extends AbstractProcessor {
           String rest = value.substring(idx1 + 1);
           int idx2 = rest.indexOf('.');
           if (idx2 != -1) {
-            list.add(new CodeGen.Converter(type, className, Arrays.asList(rest.substring(0, idx2), rest.substring(idx2 + 1))));
+            converterSet.add(new CodeGen.Converter(type, className, Arrays.asList(rest.substring(0, idx2), rest.substring(idx2 + 1))));
           } else {
-            list.add(new CodeGen.Converter(type, className, Collections.singletonList(rest)));
+            converterSet.add(new CodeGen.Converter(type, className, Collections.singletonList(rest)));
           }
         }
       }
@@ -138,28 +138,39 @@ public class CodeGenProcessor extends AbstractProcessor {
   }
 
   private Set<CodeGen.Converter> loadJsonMappers() {
+//      processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,"classload"+getClass().getClassLoader());
+    Thread.currentThread().setContextClassLoader(getClass().getClassLoader());  
+//    processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "classload"+getClass().getClassLoader());
     Set<CodeGen.Converter> merged = new HashSet<>();
     for (StandardLocation loc : StandardLocation.values()) {
       try {
         FileObject file = processingEnv.getFiler().getResource(loc, "", "META-INF/vertx/json-mappers.properties");
+        
+//        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,  "Trying:"+ file!=null?file.getName(): "not_found");
+        
         try(InputStream is = file.openInputStream()) {
           try {
             loadJsonMappers(merged, is);
+//            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded json-mappers.properties " + file.toUri());
           } catch (IOException e) {
+              processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Could not load json-mappers.properties "+ e.getMessage());
             log.log(Level.SEVERE, "Could not load json-mappers.properties", e);
           }
         }
       } catch (Exception ignore) {
+          processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Could not load json-mappers.properties "+ ignore.getMessage());
         // Filer#getResource and openInputStream will throw IOException when not found
       }
     }
     try {
       Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/vertx/json-mappers.properties");
+      processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,  "Trying2:");
       while (resources.hasMoreElements()) {
         URL url = resources.nextElement();
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded json-mappers.properties " + url);
         try (InputStream is = url.openStream()) {
           loadJsonMappers(merged, is);
+          processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded json-mappers.properties " + url);
         }
       }
     } catch (IOException e) {

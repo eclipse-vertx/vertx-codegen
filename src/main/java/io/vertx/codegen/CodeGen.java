@@ -219,6 +219,26 @@ public class CodeGen {
     public String toString() {
       return className + "=" + converter + "#" + selectors;
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(className, converter, selectors);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Converter other = (Converter) obj;
+        return Objects.equals(className, other.className)
+                && Objects.equals(converter, other.converter)
+                && Objects.equals(selectors, other.selectors);
+    }
+
   }
 
   public void registerConverter(Converter b) {
