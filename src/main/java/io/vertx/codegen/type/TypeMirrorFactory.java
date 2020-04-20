@@ -95,6 +95,7 @@ public class TypeMirrorFactory {
   }
 
   public TypeInfo create(TypeUse use, DeclaredType type, boolean checkTypeArgs) {
+    DataObjectInfo dataObject = null;
     boolean nullable = use != null && use.isNullable();
     TypeElement elt = (TypeElement) type.asElement();
     PackageElement pkgElt = elementUtils.getPackageOf(elt);
@@ -109,8 +110,18 @@ public class TypeMirrorFactory {
           values.add(enclosedElt.getSimpleName().toString());
         }
       }
+      MapperInfo serializer = serializers.get(type.toString());
+      MapperInfo deserializer = deserializers.get(type.toString());
+      dataObject = null;
+      if (serializer != null || deserializer != null) {
+        dataObject = new DataObjectInfo(
+          serializer,
+          deserializer);
+      }
+
       boolean gen = elt.getAnnotation(VertxGen.class) != null;
-      return new EnumTypeInfo(fqcn, gen, values, module, nullable);
+      return new EnumTypeInfo(fqcn, gen, values, module, nullable, dataObject);
+      
     } else {
       ClassKind kind = ClassKind.getKind(fqcn, elt.getAnnotation(VertxGen.class) != null);
       List<? extends TypeMirror> typeArgs = type.getTypeArguments();
@@ -135,6 +146,12 @@ public class TypeMirrorFactory {
         } else {
           MapperInfo serializer = serializers.get(type.toString());
           MapperInfo deserializer = deserializers.get(type.toString());
+          dataObject = null;
+          if (serializer != null || deserializer != null) {
+            dataObject = new DataObjectInfo(
+              serializer,
+              deserializer);
+          }
           if (elt.getAnnotation(DataObject.class) != null) {
             ClassKind serializable = Helper.getAnnotatedDataObjectAnnotatedSerializationType(elementUtils, elt);
             ClassKind deserializable = Helper.getAnnotatedDataObjectDeserialisationType(elementUtils, typeUtils, elt);
@@ -161,7 +178,6 @@ public class TypeMirrorFactory {
               }
             }
           }
-          DataObjectInfo dataObject = null;
           if (serializer != null || deserializer != null) {
             dataObject = new DataObjectInfo(
               serializer,
