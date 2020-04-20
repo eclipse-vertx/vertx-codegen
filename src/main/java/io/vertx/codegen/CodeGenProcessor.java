@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -37,7 +39,8 @@ import java.util.stream.StreamSupport;
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)
 public class CodeGenProcessor extends AbstractProcessor {
 
-  private static final int JAVA= 0, RESOURCE = 1, OTHER = 2;
+  private static final String JSON_MAPPERS_PROPERTIES_PATH = "META-INF/vertx/json-mappers.properties";
+private static final int JAVA= 0, RESOURCE = 1, OTHER = 2;
   public static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
   private File outputDirectory;
   private List<? extends Generator<?>> codeGenerators;
@@ -57,7 +60,14 @@ public class CodeGenProcessor extends AbstractProcessor {
     super.init(processingEnv);
     generatedFiles.clear();
     generatedResources.clear();
-    supportedAnnotation = getCodeGenerators().stream().flatMap(gen -> gen.annotations().stream()).collect(Collectors.toSet());
+    supportedAnnotation = getCodeGenerators().stream()
+    		.flatMap(gen -> gen.annotations().stream()).collect(Collectors.toSet());
+    
+    // Load mappers
+    if (mappers == null) {
+      mappers = loadJsonMappers();
+    }
+
   }
 
   private Predicate<Generator> filterGenerators() {
@@ -138,43 +148,76 @@ public class CodeGenProcessor extends AbstractProcessor {
   }
 
   private Set<CodeGen.Converter> loadJsonMappers() {
+	boolean loadOK = false;
     Set<CodeGen.Converter> merged = new HashSet<>();
-    for (StandardLocation loc : StandardLocation.values()) {
+    
       try {
-        FileObject file = processingEnv.getFiler().getResource(loc, "", "META-INF/vertx/json-mappers.properties");
+        FileObject file = processingEnv.getFiler().
+        		getResource(StandardLocation.CLASS_OUTPUT, "", JSON_MAPPERS_PROPERTIES_PATH);
         try(InputStream is = file.openInputStream()) {
           try {
-            loadJsonMappers(merged, is);
+        	  processingEnv.getMessager().
+        	  printMessage(Diagnostic.Kind.OTHER, "Found json-mappers.properties: " + file.toUri().toString());
+        	  loadJsonMappers(merged, is);
+        	  loadOK = true;
+        	  processingEnv.getMessager().
+        		printMessage(Diagnostic.Kind.NOTE, "Loaded json-mappers.properties ");
           } catch (IOException e) {
             log.log(Level.SEVERE, "Could not load json-mappers.properties", e);
           }
         }
       } catch (Exception ignore) {
+    	  log.log(Level.SEVERE, "Could not find json-mappers.properties", ignore);
         // Filer#getResource and openInputStream will throw IOException when not found
       }
-    }
-    try {
-      Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/vertx/json-mappers.properties");
-      while (resources.hasMoreElements()) {
-        URL url = resources.nextElement();
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded json-mappers.properties " + url);
-        try (InputStream is = url.openStream()) {
-          loadJsonMappers(merged, is);
-        }
+      if (!loadOK) {
+		    try {
+		      Enumeration<URL> resources = getClass().getClassLoader().
+		    		  getResources(JSON_MAPPERS_PROPERTIES_PATH);
+		      while (resources.hasMoreElements()) {
+		        URL url = resources.nextElement();
+		        try (InputStream is = url.openStream()) {
+		          loadJsonMappers(merged, is);
+		          loadOK = true;
+		          processingEnv.getMessager().
+		          	printMessage(Diagnostic.Kind.NOTE, "Loaded json-mappers.properties " + url);
+		        }
+		      }
+		    } catch (IOException e) {
+		      log.log(Level.SEVERE, "Could not load json-mappers.properties", e);
+		    }
       }
-    } catch (IOException e) {
-      log.log(Level.SEVERE, "Could not load json-mappers.properties", e);
-    }
+		if (!loadOK) {
+			
+			Path source = fetchSourcePath().getParent().getParent().resolve("src/main/resources").resolve(JSON_MAPPERS_PROPERTIES_PATH);
+			
+			try (InputStream is = source.toUri().toURL().openStream()) {
+				loadJsonMappers(merged, is);
+				loadOK = true;
+				processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded json-mappers.properties from '" + source + "'");
+			} catch (IOException e) {
+				log.log(Level.SEVERE, "Could not load json-mappers.properties", e);
+				processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Unable to open properties file at " + source);
+			}
+		}
+      
     return merged;
   }
 
+	Path fetchSourcePath() {
+		try {
+			JavaFileObject generationForPath = processingEnv.getFiler()
+					.createClassFile("PathFor" + getClass().getSimpleName());
+			return Paths.get(generationForPath.toUri().getPath()).getParent();
+		} catch (IOException e) {
+			processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Unable to determine source file path!");
+		}
+
+		return Paths.get("");
+	}  
+  
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-
-    // Load mappers
-    if (mappers == null) {
-      mappers = loadJsonMappers();
-    }
 
     // find elements annotated with @SuppressWarnings("codegen-enhanced-method")
     if (!roundEnv.processingOver()) {
@@ -238,7 +281,6 @@ public class CodeGenProcessor extends AbstractProcessor {
 
         // Generate classes
         generatedClasses.values().forEach(generated -> {
-          boolean shouldWarningsBeSuppressed = false;
           try {
             String content = generated.generate();
             if (content.length() > 0) {
@@ -259,7 +301,6 @@ public class CodeGenProcessor extends AbstractProcessor {
 
       // Generate resources
       for (GeneratedFile generated : generatedResources.values()) {
-        boolean shouldWarningsBeSuppressed = false;
         try {
           String content = generated.generate();
           if (content.length() > 0) {
@@ -290,7 +331,6 @@ public class CodeGenProcessor extends AbstractProcessor {
       // Generate files
       generatedFiles.values().forEach(generated -> {
         // todo: need to rewrite "/" according to platform file separator
-        boolean shouldWarningsBeSuppressed = false;
         File file;
         if (generated.uri.startsWith("/")) {
           file = new File(generated.uri);
