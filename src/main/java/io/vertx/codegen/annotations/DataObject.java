@@ -69,7 +69,7 @@ public @interface DataObject {
   boolean inheritConverter() default false;
 
   /**
-   * @return wether the generated converter should be public or package private
+   * @return whether the generated converter should be public or package private
    */
   boolean publicConverter() default true;
 }
