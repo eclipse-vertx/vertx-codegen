@@ -374,7 +374,7 @@ public class ClassModel implements Model {
     if (typeInfo.getKind() == ClassKind.THROWABLE) {
       return true;
     }
-    if (type.isVariable()) {
+    if (typeInfo.isVariable()) {
       return true;
     }
     if (typeInfo.getKind() == ClassKind.OBJECT) {
