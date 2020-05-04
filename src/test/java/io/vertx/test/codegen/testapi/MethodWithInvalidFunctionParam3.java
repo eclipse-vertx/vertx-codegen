@@ -17,7 +17,7 @@
 package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.Handler;
+import io.vertx.core.AsyncResult;
 
 import java.util.function.Function;
 
@@ -26,5 +26,5 @@ import java.util.function.Function;
  */
 @VertxGen
 public interface MethodWithInvalidFunctionParam3 {
-  void method(Function<String, Void> func);
+  void method(Function<String, AsyncResult<String>> func);
 }

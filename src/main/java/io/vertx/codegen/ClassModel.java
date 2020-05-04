@@ -114,19 +114,6 @@ public class ClassModel implements Model {
     this.deprecated = modelElt.getAnnotation(Deprecated.class) != null;
   }
 
-  private static boolean rawTypeIs(TypeInfo type, Class<?>... classes) {
-    if (type instanceof ParameterizedTypeInfo) {
-      String rawClassName = type.getRaw().getName();
-      for (Class<?> c : classes) {
-        if (rawClassName.equals(c.getName())) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
   @Override
   public String getKind() {
     return "class";
@@ -264,245 +251,6 @@ public class ClassModel implements Model {
     }
   }
 
-  protected void checkSuperType(Element elt, TypeInfo type) {
-    if (type.getKind() == ClassKind.API) {
-      if (!isLegalVertxGenInterface(type, true)) {
-        throw new GenException(elt, "type " + type + " is not legal for use for super type in code generation");
-      }
-    }
-  }
-
-  protected void checkParamType(ExecutableElement elem, TypeInfo typeInfo, int pos, int numParams, boolean allowAnyJavaType) {
-    if (isLegalNonCallableParam(typeInfo, allowAnyJavaType)) {
-      return;
-    }
-    if (isLegalClassTypeParam(elem, typeInfo)) {
-      return;
-    }
-    if (isLegalHandlerType(typeInfo, allowAnyJavaType)) {
-      return;
-    }
-    if (isLegalHandlerAsyncResultType(typeInfo, allowAnyJavaType)) {
-      return;
-    }
-    if (isLegalFunctionType(typeInfo, allowAnyJavaType)) {
-      return;
-    }
-    throw new GenException(elem, "type " + typeInfo + " is not legal for use for a parameter in code generation");
-  }
-
-  protected void checkReturnType(ExecutableElement elem, TypeInfo type, boolean allowAnyJavaType) {
-    if (type.isVoid()) {
-      return;
-    }
-    if (isLegalNonCallableReturnType(type, allowAnyJavaType)) {
-      return;
-    }
-    if (isLegalHandlerType(type, allowAnyJavaType)) {
-      return;
-    }
-    if (isLegalHandlerAsyncResultType(type, allowAnyJavaType)) {
-      return;
-    }
-    throw new GenException(elem, "type " + type + " is not legal for use for a return type in code generation");
-  }
-
-  protected void checkConstantType(VariableElement elem, TypeInfo type, TypeMirror typeMirror, boolean allowAnyJavaType) {
-    if (isLegalNonCallableReturnType(type, allowAnyJavaType)) {
-      return;
-    }
-    throw new GenException(elem, "type " + type + " is not legal for use for a constant type in code generation");
-  }
-
-  /**
-   * The <i>Return</i> set but not `void`.
-   */
-  private boolean isLegalNonCallableReturnType(TypeInfo type, boolean allowAnyJavaType) {
-    if (type.getKind().basic) {
-      return true;
-    }
-    if (type.getKind().json) {
-      return true;
-    }
-    if (isLegalDataObjectTypeReturn(type)) {
-      return true;
-    }
-    if (isLegalEnum(type)) {
-      return true;
-    }
-    if (type.getKind() == ClassKind.THROWABLE) {
-      return true;
-    }
-    if (type.isVariable()) {
-      return true;
-    }
-    if (type.getKind() == ClassKind.OBJECT) {
-      return true;
-    }
-    if (isLegalVertxGenInterface(type, true)) {
-      return true;
-    }
-    if (allowAnyJavaType && type.getKind() == ClassKind.OTHER) {
-      return true;
-    }
-    if (isLegalContainer(type, allowAnyJavaType)) {
-      return true;
-    }
-    return false;
-  }
-
-  private boolean isLegalEnum(TypeInfo info) {
-    return info.getKind() == ClassKind.ENUM;
-  }
-
-  /**
-   * The set <i>Param</i>
-   */
-  private boolean isLegalNonCallableParam(TypeInfo typeInfo, boolean allowAnyJavaType) {
-    if (typeInfo.getKind().basic) {
-      return true;
-    }
-    if (typeInfo.getKind().json) {
-      return true;
-    }
-    if (isLegalDataObjectTypeParam(typeInfo)) {
-      return true;
-    }
-    if (isLegalEnum(typeInfo)) {
-      return true;
-    }
-    if (typeInfo.getKind() == ClassKind.THROWABLE) {
-      return true;
-    }
-    if (typeInfo.isVariable()) {
-      return true;
-    }
-    if (typeInfo.getKind() == ClassKind.OBJECT) {
-      return true;
-    }
-    if (isLegalVertxGenInterface(typeInfo, true)) {
-      return true;
-    }
-    if (allowAnyJavaType && typeInfo.getKind() == ClassKind.OTHER) {
-      return true;
-    }
-    if (isLegalContainer(typeInfo, allowAnyJavaType)) {
-      return true;
-    }
-    return false;
-  }
-
-  private boolean isLegalDataObjectTypeParam(TypeInfo type) {
-    return type.isDataObjectHolder() && type.getDataObject().isDeserializable();
-  }
-
-  private boolean isLegalClassTypeParam(ExecutableElement elt, TypeInfo type) {
-    if (type.getKind() == ClassKind.CLASS_TYPE && type.isParameterized()) {
-      ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
-      TypeInfo arg = parameterized.getArg(0);
-      if (arg.isVariable()) {
-        TypeVariableInfo variable = (TypeVariableInfo) arg;
-        for (TypeParameterElement typeParamElt : elt.getTypeParameters()) {
-          if (typeParamElt.getSimpleName().toString().equals(variable.getName())) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-
-  protected boolean isLegalDataObjectTypeReturn(TypeInfo type) {
-    return type.isDataObjectHolder() && type.getDataObject().isSerializable();
-  }
-
-  protected boolean isLegalContainer(TypeInfo type, boolean allowAnyJavaType) {
-    if (rawTypeIs(type, List.class, Set.class, Map.class)) {
-      ParameterizedTypeInfo parameterizedType = (ParameterizedTypeInfo) type;
-      TypeInfo argument = parameterizedType.getArgs().get(0);
-      if (type.getKind() != ClassKind.MAP) {
-        return isLegalContainerComponent(argument, allowAnyJavaType);
-      } else if (argument.getKind() == ClassKind.STRING) { // Only allow Map's with String's for keys
-        return isLegalContainerComponent(parameterizedType.getArgs().get(1), allowAnyJavaType);
-      }
-    }
-    return false;
-  }
-
-  private boolean isLegalContainerComponent(TypeInfo arg, boolean allowAnyJavaType) {
-    ClassKind argumentKind = arg.getKind();
-    return argumentKind.basic
-      || argumentKind.json
-      || isLegalVertxGenInterface(arg, false)
-      || argumentKind == ClassKind.OBJECT
-      || isLegalDataObjectTypeParam(arg)
-      || arg.getKind() == ClassKind.ENUM
-      || (allowAnyJavaType && argumentKind == ClassKind.OTHER);
-  }
-
-  private boolean isLegalVertxGenTypeArgument(TypeInfo arg) {
-    ClassKind kind = arg.getKind();
-    return kind == ClassKind.API || arg.isVariable() || kind == ClassKind.VOID || kind.basic || kind.json
-      || kind == ClassKind.ENUM || kind == ClassKind.OTHER;
-  }
-
-  private boolean isLegalVertxGenInterface(TypeInfo type, boolean allowParameterized) {
-    if (type.getKind() == ClassKind.API) {
-      if (type.isParameterized()) {
-        ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
-        return allowParameterized &&
-          parameterized
-            .getArgs()
-            .stream()
-            .noneMatch(arg -> !isLegalVertxGenTypeArgument(arg) || arg.isNullable());
-      } else {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private boolean isLegalFunctionType(TypeInfo typeInfo, boolean allowAnyJavaType) {
-    if (typeInfo.getErased().getKind() == ClassKind.FUNCTION) {
-      TypeInfo paramType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(0);
-      if (isLegalCallbackValueType(paramType, allowAnyJavaType) || paramType.getKind() == ClassKind.THROWABLE) {
-        TypeInfo returnType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(1);
-        return isLegalNonCallableParam(returnType, allowAnyJavaType);
-      }
-    }
-    return false;
-  }
-
-  private boolean isLegalHandlerType(TypeInfo type, boolean allowAnyJavaType) {
-    if (type.getErased().getKind() == ClassKind.HANDLER) {
-      TypeInfo eventType = ((ParameterizedTypeInfo) type).getArgs().get(0);
-      if (isLegalCallbackValueType(eventType, allowAnyJavaType) || eventType.getKind() == ClassKind.THROWABLE) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private boolean isLegalHandlerAsyncResultType(TypeInfo type, boolean allowAnyJavaType) {
-    if (type.getErased().getKind() == ClassKind.HANDLER) {
-      TypeInfo eventType = ((ParameterizedTypeInfo) type).getArgs().get(0);
-      if (eventType.getErased().getKind() == ClassKind.ASYNC_RESULT && !eventType.isNullable()) {
-        TypeInfo resultType = ((ParameterizedTypeInfo) eventType).getArgs().get(0);
-        if (isLegalCallbackValueType(resultType, allowAnyJavaType)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  private boolean isLegalCallbackValueType(TypeInfo type, boolean allowAnyJavaType) {
-    if (type.getKind() == ClassKind.VOID) {
-      return true;
-    }
-    return isLegalNonCallableReturnType(type, allowAnyJavaType);
-  }
-
   private void determineApiTypes() {
     importedTypes = collectedTypes.stream().
         map(ClassTypeInfo::getRaw).
@@ -601,7 +349,6 @@ public class ClassModel implements Model {
             } catch (IllegalArgumentException e) {
               throw new GenException(elem, e.getMessage());
             }
-            checkSuperType(modelElt, superTypeInfo);
             switch (superTypeInfo.getKind()) {
               case API: {
                 try {
@@ -812,6 +559,16 @@ public class ClassModel implements Model {
     }
   }
 
+  // Service proxy override
+  protected void checkParamType(ExecutableElement elem, TypeInfo typeInfo, int pos, int numParams, boolean allowAnyJavaType) {
+    TypeValidator.validateParamType(elem, typeInfo, allowAnyJavaType);
+  }
+
+  // Service proxy override
+  protected void checkReturnType(ExecutableElement elem, TypeInfo type, boolean allowAnyJavaType) {
+    TypeValidator.validateReturnType(elem, type, allowAnyJavaType);
+  }
+
   private TypeInfo extractArg(String subType, DeclaredType declaredType) {
     TypeInfo[] typeInfos = extractArgs(subType, declaredType);
     return typeInfos != null && typeInfos.length > 0 ? typeInfos[0] : null;
@@ -846,7 +603,7 @@ public class ClassModel implements Model {
       return null;
     }
     TypeInfo type = typeFactory.create(modelField.asType());
-    checkConstantType(modelField, type, modelField.asType(),allowAnyJavaType);
+    TypeValidator.validateConstantType(modelField, type, modelField.asType(),allowAnyJavaType);
     Doc doc = docFactory.createDoc(modelField);
     return new ConstantInfo(doc, modelField.getSimpleName().toString(), type);
   }

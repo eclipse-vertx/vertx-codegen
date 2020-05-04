@@ -239,12 +239,6 @@ public class ClassTest extends ClassTestBase {
     assertGenInvalid(MethodWithTypeParameterUpperBound.class);
   }
 
-  @Test
-  public void testMethodWithIllegalGenericsReturn() throws Exception {
-    assertGenInvalid(MethodWithInvalidTypeParamByObjectReturn.class);
-    assertGenInvalid(MethodWithInvalidTypeParamByThrowableReturn.class);
-  }
-
   // Invalid abstract/concrete interfaces
 
   @Test
@@ -579,7 +573,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(8), "strFunction", new TypeLiteral<Function<String, String>>(){});
     checkParam(params.get(9), "gen1Function", new TypeLiteral<Function<VertxGenClass1, VertxGenClass1>>(){});
     checkParam(params.get(10), "gen2Function", new TypeLiteral<Function<VertxGenClass2, VertxGenClass2>>(){});
-    checkParam(params.get(11), "voidFunction",  new TypeLiteral<Function<Void, String>>(){});
+    checkParam(params.get(11), "voidFunction",  new TypeLiteral<Function<Void, Void>>(){});
     checkParam(params.get(12), "throwableFunction",  new TypeLiteral<Function<Throwable, Throwable>>(){});
     checkParam(params.get(13), "dataObjectFunction", new TypeLiteral<Function<TestDataObject, TestDataObject>>(){});
     checkParam(params.get(14), "enumFunction", new TypeLiteral<Function<TestEnum, TestEnum>>(){});
@@ -648,7 +642,6 @@ public class ClassTest extends ClassTestBase {
     assertGenInvalid(MethodWithInvalidFunctionParam5.class);
     assertGenInvalid(MethodWithInvalidFunctionParam6.class);
     assertGenInvalid(MethodWithInvalidFunctionParam7.class);
-    assertGenInvalid(MethodWithInvalidFunctionParam8.class);
   }
 
   @Test
@@ -2088,7 +2081,7 @@ public class ClassTest extends ClassTestBase {
     assertEquals(MethodWithValidTypeParamByInterfaceReturn.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(model.getReferencedTypes(), set(GenericInterfaceInfo, VertxGenClass1Info));
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(18, model.getMethods().size());
+    assertEquals(23, model.getMethods().size());
     checkMethod(model.getMethods().get(0), "withByte", 0, new TypeLiteral<GenericInterface<Byte>>() {}, MethodKind.OTHER);
     checkMethod(model.getMethods().get(1), "withShort", 0, new TypeLiteral<GenericInterface<Short>>() {}, MethodKind.OTHER);
     checkMethod(model.getMethods().get(2), "withInteger", 0, new TypeLiteral<GenericInterface<Integer>>() {}, MethodKind.OTHER);
@@ -2105,9 +2098,11 @@ public class ClassTest extends ClassTestBase {
     checkMethod(model.getMethods().get(13), "withGenEnum", 0, new TypeLiteral<GenericInterface<TestGenEnum>>() {}, MethodKind.OTHER);
     checkMethod(model.getMethods().get(14), "withUserType", 0, new TypeLiteral<GenericInterface<VertxGenClass1>>() {}, MethodKind.OTHER);
     checkMethod(model.getMethods().get(15), "withVoid", 0, new TypeLiteral<GenericInterface<Void>>() {}, MethodKind.OTHER);
-    checkMethod(model.getMethods().get(16), "withGeneric", 0, new TypeLiteral<GenericInterface<T>>() {}, MethodKind.OTHER);
-    checkMethod(model.getMethods().get(17), "withClassType", 1, new TypeLiteral<GenericInterface<T>>() {}, MethodKind.OTHER);
-    checkParam(model.getMethods().get(17).getParams().get(0), "classType", new TypeLiteral<Class<T>>(){});
+    checkMethod(model.getMethods().get(16), "withObject", 0, new TypeLiteral<GenericInterface<Object>>() {}, MethodKind.OTHER);
+    checkMethod(model.getMethods().get(17), "withThrowable", 0, new TypeLiteral<GenericInterface<Throwable>>() {}, MethodKind.OTHER);
+    checkMethod(model.getMethods().get(18), "withTypeVariable", 0, new TypeLiteral<GenericInterface<T>>() {}, MethodKind.OTHER);
+    checkMethod(model.getMethods().get(19), "withClassType", 1, new TypeLiteral<GenericInterface<T>>() {}, MethodKind.OTHER);
+    checkParam(model.getMethods().get(19).getParams().get(0), "classType", new TypeLiteral<Class<T>>(){});
   }
 
   @Test
@@ -2413,16 +2408,6 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
-  public void testMethodInvalidListReturn2() throws Exception {
-    assertGenFail(MethodWithInvalidListReturn2.class, "Invalid Map return should fail");
-  }
-
-  @Test
-  public void testMethodInvalidSetReturn2() throws Exception {
-    assertGenFail(MethodWithInvalidSetReturn2.class, "Invalid Map return should fail");
-  }
-
-  @Test
   public void testMethodInvalidMapParams1() throws Exception {
     assertGenFail(MethodWithInvalidMapParams1.class, "Invalid Map return should fail");
   }
@@ -2438,18 +2423,8 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
-  public void testMethodInvalidListParams2() throws Exception {
-    assertGenFail(MethodWithInvalidListParams2.class, "Invalid Map return should fail");
-  }
-
-  @Test
   public void testMethodInvalidSetParams1() throws Exception {
     assertGenFail(MethodWithInvalidSetParams1.class, "Invalid Map return should fail");
-  }
-
-  @Test
-  public void testMethodInvalidSetParams2() throws Exception {
-    assertGenFail(MethodWithInvalidSetParams2.class, "Invalid Map return should fail");
   }
 
   @Test

@@ -6,6 +6,12 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -89,6 +95,21 @@ public class GenericsTCKImpl implements GenericsTCK {
   }
 
   @Override
+  public GenericRefedInterface<List<Object>> methodWithListOfObjectsParameterizedReturn() {
+    return methodWithClassTypeParameterizedReturn(Arrays.asList(0, "foo", true));
+  }
+
+  @Override
+  public GenericRefedInterface<Set<Object>> methodWithSetOfObjectsParameterizedReturn() {
+    return methodWithClassTypeParameterizedReturn(new HashSet<>(Arrays.asList(0, "foo", true)));
+  }
+
+  @Override
+  public GenericRefedInterface<Map<String, Object>> methodWithMapOfObjectsParameterizedReturn() {
+    return methodWithClassTypeParameterizedReturn(Collections.singletonMap("foo", "bar"));
+  }
+
+  @Override
   public void methodWithHandlerByteParameterized(Handler<GenericRefedInterface<Byte>> handler) {
     handler.handle(methodWithByteParameterizedReturn());
   }
@@ -161,6 +182,21 @@ public class GenericsTCKImpl implements GenericsTCK {
   @Override
   public void methodWithHandlerUserTypeParameterized(Handler<GenericRefedInterface<RefedInterface1>> handler) {
     handler.handle(methodWithUserTypeParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithHandlerListOfObjectsParameterized(Handler<GenericRefedInterface<List<Object>>> handler) {
+    handler.handle(methodWithListOfObjectsParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithHandlerSetOfObjectsParameterized(Handler<GenericRefedInterface<Set<Object>>> handler) {
+    handler.handle(methodWithSetOfObjectsParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithHandlerMapOfObjectsParameterized(Handler<GenericRefedInterface<Map<String, Object>>> handler) {
+    handler.handle(methodWithMapOfObjectsParameterizedReturn());
   }
 
   @Override
@@ -239,6 +275,21 @@ public class GenericsTCKImpl implements GenericsTCK {
   }
 
   @Override
+  public void methodWithHandlerAsyncResultListOfObjectsParameterized(Handler<AsyncResult<GenericRefedInterface<List<Object>>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithListOfObjectsParameterizedReturn()));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultSetOfObjectsParameterized(Handler<AsyncResult<GenericRefedInterface<Set<Object>>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithSetOfObjectsParameterizedReturn()));
+  }
+
+  @Override
+  public void methodWithHandlerAsyncResultMapOfObjectsParameterized(Handler<AsyncResult<GenericRefedInterface<Map<String, Object>>>> handler) {
+    handler.handle(Future.succeededFuture(methodWithMapOfObjectsParameterizedReturn()));
+  }
+
+  @Override
   public void methodWithFunctionParamByteParameterized(Function<GenericRefedInterface<Byte>, String> handler) {
     handler.apply(methodWithByteParameterizedReturn());
   }
@@ -311,6 +362,21 @@ public class GenericsTCKImpl implements GenericsTCK {
   @Override
   public void methodWithFunctionParamUserTypeParameterized(Function<GenericRefedInterface<RefedInterface1>, String> handler) {
     handler.apply(methodWithUserTypeParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamListOfObjectsParameterized(Function<GenericRefedInterface<List<Object>>, String> handler) {
+    handler.apply(methodWithListOfObjectsParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamSetOfObjectsParameterized(Function<GenericRefedInterface<Set<Object>>, String> handler) {
+    handler.apply(methodWithSetOfObjectsParameterizedReturn());
+  }
+
+  @Override
+  public void methodWithFunctionParamMapOfObjectsParameterized(Function<GenericRefedInterface<Map<String, Object>>, String> handler) {
+    handler.apply(methodWithMapOfObjectsParameterizedReturn());
   }
 
   @Override

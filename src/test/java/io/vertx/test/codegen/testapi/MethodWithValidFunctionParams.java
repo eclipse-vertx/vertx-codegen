@@ -39,7 +39,7 @@ public interface MethodWithValidFunctionParams {
                                Function<Long, Long> longFunction, Function<Float, Float> floatFunction, Function<Double, Double> doubleFunction,
                                Function<Boolean, Boolean> booleanFunction, Function<Character, Character> charFunction, Function<String, String> strFunction,
                                Function<VertxGenClass1, VertxGenClass1> gen1Function, Function<VertxGenClass2, VertxGenClass2> gen2Function,
-                               Function<Void, String> voidFunction, Function<Throwable, Throwable> throwableFunction, Function<TestDataObject, TestDataObject> dataObjectFunction,
+                               Function<Void, Void> voidFunction, Function<Throwable, Throwable> throwableFunction, Function<TestDataObject, TestDataObject> dataObjectFunction,
                                Function<TestEnum, TestEnum> enumFunction, Function<Object, Object> objectFunction, Function<T, T> genericFunction, Function<GenericInterface<T>, GenericInterface<T>> genericUserTypeFunction);
 
   void methodWithListFunctionParams(Function<List<Byte>, List<Byte>> listByteFunction, Function<List<Short>, List<Short>> listShortFunction, Function<List<Integer>, List<Integer>> listIntFunction,

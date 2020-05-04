@@ -6,6 +6,9 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -29,6 +32,9 @@ public interface GenericsTCK {
   GenericRefedInterface<TestEnum> methodWithEnumParameterizedReturn();
   GenericRefedInterface<TestGenEnum> methodWithGenEnumParameterizedReturn();
   GenericRefedInterface<RefedInterface1> methodWithUserTypeParameterizedReturn();
+  GenericRefedInterface<List<Object>> methodWithListOfObjectsParameterizedReturn();
+  GenericRefedInterface<Set<Object>> methodWithSetOfObjectsParameterizedReturn();
+  GenericRefedInterface<Map<String, Object>> methodWithMapOfObjectsParameterizedReturn();
 
   void methodWithHandlerByteParameterized(Handler<GenericRefedInterface<Byte>> handler);
   void methodWithHandlerShortParameterized(Handler<GenericRefedInterface<Short>> handler);
@@ -45,6 +51,9 @@ public interface GenericsTCK {
   void methodWithHandlerEnumParameterized(Handler<GenericRefedInterface<TestEnum>> handler);
   void methodWithHandlerGenEnumParameterized(Handler<GenericRefedInterface<TestGenEnum>> handler);
   void methodWithHandlerUserTypeParameterized(Handler<GenericRefedInterface<RefedInterface1>> handler);
+  void methodWithHandlerListOfObjectsParameterized(Handler<GenericRefedInterface<List<Object>>> handler);
+  void methodWithHandlerSetOfObjectsParameterized(Handler<GenericRefedInterface<Set<Object>>> handler);
+  void methodWithHandlerMapOfObjectsParameterized(Handler<GenericRefedInterface<Map<String, Object>>> handler);
 
   void methodWithHandlerAsyncResultByteParameterized(Handler<AsyncResult<GenericRefedInterface<Byte>>> handler);
   void methodWithHandlerAsyncResultShortParameterized(Handler<AsyncResult<GenericRefedInterface<Short>>> handler);
@@ -61,6 +70,9 @@ public interface GenericsTCK {
   void methodWithHandlerAsyncResultEnumParameterized(Handler<AsyncResult<GenericRefedInterface<TestEnum>>> handler);
   void methodWithHandlerAsyncResultGenEnumParameterized(Handler<AsyncResult<GenericRefedInterface<TestGenEnum>>> handler);
   void methodWithHandlerAsyncResultUserTypeParameterized(Handler<AsyncResult<GenericRefedInterface<RefedInterface1>>> handler);
+  void methodWithHandlerAsyncResultListOfObjectsParameterized(Handler<AsyncResult<GenericRefedInterface<List<Object>>>> handler);
+  void methodWithHandlerAsyncResultSetOfObjectsParameterized(Handler<AsyncResult<GenericRefedInterface<Set<Object>>>> handler);
+  void methodWithHandlerAsyncResultMapOfObjectsParameterized(Handler<AsyncResult<GenericRefedInterface<Map<String, Object>>>> handler);
 
   void methodWithFunctionParamByteParameterized(Function<GenericRefedInterface<Byte>, String> handler);
   void methodWithFunctionParamShortParameterized(Function<GenericRefedInterface<Short>, String> handler);
@@ -77,6 +89,9 @@ public interface GenericsTCK {
   void methodWithFunctionParamEnumParameterized(Function<GenericRefedInterface<TestEnum>, String> handler);
   void methodWithFunctionParamGenEnumParameterized(Function<GenericRefedInterface<TestGenEnum>, String> handler);
   void methodWithFunctionParamUserTypeParameterized(Function<GenericRefedInterface<RefedInterface1>, String> handler);
+  void methodWithFunctionParamListOfObjectsParameterized(Function<GenericRefedInterface<List<Object>>, String> handler);
+  void methodWithFunctionParamSetOfObjectsParameterized(Function<GenericRefedInterface<Set<Object>>, String> handler);
+  void methodWithFunctionParamMapOfObjectsParameterized(Function<GenericRefedInterface<Map<String, Object>>, String> handler);
 
   <U> GenericRefedInterface<U> methodWithClassTypeParameterizedReturn(Class<U> type);
   <U> void methodWithHandlerClassTypeParameterized(Class<U> type, Handler<GenericRefedInterface<U>> handler);

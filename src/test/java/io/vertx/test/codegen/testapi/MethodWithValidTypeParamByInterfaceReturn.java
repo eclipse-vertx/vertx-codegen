@@ -6,6 +6,10 @@ import io.vertx.codegen.testmodel.TestGenEnum;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
@@ -28,7 +32,12 @@ public interface MethodWithValidTypeParamByInterfaceReturn {
   GenericInterface<TestGenEnum> withGenEnum();
   GenericInterface<VertxGenClass1> withUserType();
   GenericInterface<Void> withVoid();
-  <T> GenericInterface<T> withGeneric();
+  GenericInterface<Object> withObject();
+  GenericInterface<Throwable> withThrowable();
+  <T> GenericInterface<T> withTypeVariable();
   <T> GenericInterface<T> withClassType(Class<T> classType);
+  GenericInterface<List<Object>> withListOfObjects();
+  GenericInterface<Set<Object>> withSetOfObjects();
+  GenericInterface<Map<String, Object>> withMapOfObjects();
 
 }
