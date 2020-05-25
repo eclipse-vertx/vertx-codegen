@@ -1,13 +1,11 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.ModuleGen;
+import io.vertx.codegen.format.Case;
+import io.vertx.codegen.format.KebabCase;
 import io.vertx.codegen.type.TypeNameTranslator;
 
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
@@ -19,11 +17,8 @@ import javax.lang.model.util.Types;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.stream.Stream;
 
 /**
  * Describes a module.
@@ -171,6 +166,6 @@ public class ModuleInfo {
    * @return the module name in the specified case
    */
   public String getName(Case _case) {
-    return _case.format(Case.KEBAB.parse(name));
+    return _case.format(KebabCase.INSTANCE.parse(name));
   }
 }

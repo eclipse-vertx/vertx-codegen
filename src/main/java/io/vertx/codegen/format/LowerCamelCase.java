@@ -1,11 +1,18 @@
-package io.vertx.codegen;
+package io.vertx.codegen.format;
 
 import java.util.Iterator;
 
 /**
+ * Camel case starting with a lower case, for instance {@literal fooBar}.
+ *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class LowerCamelCase extends Case {
+
+  /**
+   * A {@code LowerCamelCase} instance.
+   */
+  public static final Case INSTANCE = new LowerCamelCase();
 
   @Override
   public String name() {

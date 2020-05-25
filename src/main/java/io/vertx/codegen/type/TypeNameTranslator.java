@@ -1,7 +1,8 @@
 package io.vertx.codegen.type;
 
-import io.vertx.codegen.Case;
 import io.vertx.codegen.ModuleInfo;
+import io.vertx.codegen.format.KebabCase;
+import io.vertx.codegen.format.QualifiedCase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,9 +35,9 @@ public interface TypeNameTranslator {
 
   static TypeNameTranslator composite(String lang) {
     return (module, qualifiedName) -> {
-      List<String> def = new ArrayList<>(Case.QUALIFIED.parse(module.getGroupPackage()));
+      List<String> def = new ArrayList<>(QualifiedCase.QUALIFIED.parse(module.getGroupPackage()));
       def.add(lang);
-      List<String> abc = Case.KEBAB.parse(module.getName());
+      List<String> abc = KebabCase.INSTANCE.parse(module.getName());
       if (abc.get(0).equals("vertx")) {
         // Special case
         if (abc.size() == 1) {
@@ -53,10 +54,10 @@ public interface TypeNameTranslator {
         if (qualifiedName.equals(module.getPackageName())) {
         } else {
           String nameInPackage = qualifiedName.substring(module.getPackageName().length() + 1);
-          def.addAll(Case.QUALIFIED.parse(nameInPackage));
+          def.addAll(QualifiedCase.QUALIFIED.parse(nameInPackage));
         }
 
-        return Case.QUALIFIED.format(def);
+        return QualifiedCase.QUALIFIED.format(def);
       }
       return qualifiedName;
     };

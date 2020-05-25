@@ -1,12 +1,19 @@
-package io.vertx.codegen;
+package io.vertx.codegen.format;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
 /**
+ * Kebab case, for instance {@literal foo-bar}.
+ *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class KebabCase extends Case {
+
+  /**
+   * A {@code CamelCase} instance.
+   */
+  public static final Case INSTANCE = new KebabCase();
 
   private final Pattern validator = Pattern.compile("(?:\\p{Alnum}|(?:(?<=\\p{Alnum})-(?=\\p{Alnum})))*");
 

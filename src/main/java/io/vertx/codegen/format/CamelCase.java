@@ -1,13 +1,20 @@
-package io.vertx.codegen;
+package io.vertx.codegen.format;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 /**
+ * Camel case, for instance {@literal FooBar}.
+ *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class CamelCase extends Case {
+
+  /**
+   * A {@code CamelCase} instance.
+   */
+  public static final Case INSTANCE = new CamelCase();
 
   @Override
   public String name() {

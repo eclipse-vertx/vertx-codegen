@@ -1,6 +1,7 @@
 package io.vertx.codegen.type;
 
-import io.vertx.codegen.Case;
+import io.vertx.codegen.format.CamelCase;
+import io.vertx.codegen.format.Case;
 import io.vertx.codegen.Helper;
 import io.vertx.codegen.ModuleInfo;
 import io.vertx.codegen.TypeParamInfo;
@@ -77,7 +78,7 @@ public class ClassTypeInfo extends TypeInfo {
   }
 
   public String getSimpleName(Case _case) {
-    return _case.format(Case.CAMEL.parse(simpleName));
+    return _case.format(CamelCase.INSTANCE.parse(simpleName));
   }
 
   @Override

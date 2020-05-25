@@ -18,6 +18,8 @@ package io.vertx.codegen;
 
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Text;
+import io.vertx.codegen.format.CamelCase;
+import io.vertx.codegen.format.Case;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.ClassTypeInfo;
 import io.vertx.codegen.type.ParameterizedTypeInfo;
@@ -78,7 +80,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   }
 
   public String getName(Case _case) {
-    return _case.format(Case.CAMEL.parse(name));
+    return _case.format(CamelCase.INSTANCE.parse(name));
   }
 
   public MethodKind getKind() {

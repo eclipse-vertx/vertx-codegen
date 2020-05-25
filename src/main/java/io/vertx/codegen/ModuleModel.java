@@ -2,10 +2,11 @@ package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.codegen.format.KebabCase;
+import io.vertx.codegen.format.QualifiedCase;
 import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.AnnotationValueInfoFactory;
 import io.vertx.codegen.type.ClassKind;
-import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.type.TypeMirrorFactory;
 
 import javax.lang.model.element.AnnotationValue;
@@ -41,7 +42,7 @@ public class ModuleModel implements Model {
       throw new GenException(element, "A module name cannot be empty");
     }
     try {
-      Case.KEBAB.parse(moduleName);
+      KebabCase.INSTANCE.parse(moduleName);
     } catch (IllegalArgumentException e) {
       throw new GenException(element, "Module name '" + moduleName + "' does not follow the snake case format (dash separated name)");
     }
@@ -52,7 +53,7 @@ public class ModuleModel implements Model {
       throw new GenException(element, "A module package (" + modulePackage + ") must be prefixed by the group package (" + groupPackage + ")");
     }
     try {
-      Case.QUALIFIED.parse(groupPackage);
+      QualifiedCase.QUALIFIED.parse(groupPackage);
     } catch (Exception e) {
       throw new GenException(element, "Invalid group package name " + groupPackage);
     }

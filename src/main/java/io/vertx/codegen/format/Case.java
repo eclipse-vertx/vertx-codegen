@@ -1,4 +1,4 @@
-package io.vertx.codegen;
+package io.vertx.codegen.format;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,31 +10,6 @@ import java.util.Map;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public abstract class Case {
-
-  /**
-   * Camel case starting with a lower case, for instance {@literal fooBar}.
-   */
-  public static final Case LOWER_CAMEL = new LowerCamelCase();
-
-  /**
-   * Camel case, for instance {@literal FooBar}.
-   */
-  public static final Case CAMEL = new CamelCase();
-
-  /**
-   * Java full qualified case, for instance {@literal foo.bar}
-   */
-  public static final Case QUALIFIED = new QualifiedCase();
-
-  /**
-   * Kebab case, for instance {@literal foo-bar}.
-   */
-  public static final Case KEBAB = new KebabCase();
-
-  /**
-   * Snake case, for instance {@literal foo_bar}.
-   */
-  public static final Case SNAKE = new SnakeCase();
 
   public String name() {
     throw new UnsupportedOperationException();
@@ -79,7 +54,7 @@ public abstract class Case {
    */
   public static Map<String, Case> vars() {
     HashMap<String, Case> vars = new HashMap<>();
-    for (Case _case : Arrays.asList(CAMEL, QUALIFIED, SNAKE, KEBAB, LOWER_CAMEL)) {
+    for (Case _case : Arrays.asList(CamelCase.INSTANCE, QualifiedCase.QUALIFIED, SnakeCase.INSTANCE, KebabCase.INSTANCE, LowerCamelCase.INSTANCE)) {
       vars.put("CASE_" + _case.name(), _case);
     }
     return vars;
