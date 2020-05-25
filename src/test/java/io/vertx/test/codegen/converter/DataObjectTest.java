@@ -795,4 +795,21 @@ public class DataObjectTest {
     Assert.assertEquals(1, obj.sets);
     Assert.assertEquals(0, obj.adds);
   }
+
+  @Test
+  public void testSnakeFormatted() {
+    SnakeFormattedDataObject obj = new SnakeFormattedDataObject();
+    JsonObject expected = new JsonObject()
+      .put("foo", "val1")
+      .put("foo_bar", "val2")
+      .put("foo_bar_juu", "val3");
+    SnakeFormattedDataObjectConverter.fromJson(expected
+      , obj);
+    Assert.assertEquals("val1", obj.getFoo());
+    Assert.assertEquals("val2", obj.getFooBar());
+    Assert.assertEquals("val3", obj.getFooBarJuu());
+    JsonObject test = new JsonObject();
+    SnakeFormattedDataObjectConverter.toJson(obj, test);
+    Assert.assertEquals(expected, test);
+  }
 }

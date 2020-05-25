@@ -1,5 +1,8 @@
 package io.vertx.codegen.annotations;
 
+import io.vertx.codegen.format.Case;
+import io.vertx.codegen.format.LowerCamelCase;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -72,4 +75,10 @@ public @interface DataObject {
    * @return whether the generated converter should be public or package private
    */
   boolean publicConverter() default true;
+
+  /**
+   * @return todo
+   */
+  Class<? extends Case> jsonPropertyNameFormatter() default LowerCamelCase.class;
+
 }

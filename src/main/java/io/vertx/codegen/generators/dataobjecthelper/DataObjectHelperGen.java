@@ -4,7 +4,11 @@ import io.vertx.codegen.Generator;
 import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.annotations.ModuleGen;
+import io.vertx.codegen.format.CamelCase;
+import io.vertx.codegen.format.Case;
+import io.vertx.codegen.format.LowerCamelCase;
+import io.vertx.codegen.format.SnakeCase;
+import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.ClassTypeInfo;
 import io.vertx.codegen.type.DataObjectInfo;
@@ -22,6 +26,8 @@ import java.util.*;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class DataObjectHelperGen extends Generator<DataObjectModel> {
+
+  private Case formatter;
 
   public DataObjectHelperGen() {
     kinds = Collections.singleton("dataObject");
@@ -43,6 +49,9 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
 
   @Override
   public String render(DataObjectModel model, int index, int size, Map<String, Object> session) {
+
+    formatter = getCase(model);
+
     StringWriter buffer = new StringWriter();
     PrintWriter writer = new PrintWriter(buffer);
     CodeWriter code = new CodeWriter(writer);
@@ -149,18 +158,19 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
   }
 
   private void genPropToJson(String before, String after, PropertyInfo prop, PrintWriter writer) {
+    String jsonPropertyName = CamelCase.INSTANCE.to(formatter, prop.getName());
     String indent = "    ";
     if (prop.isList() || prop.isSet()) {
       writer.print(indent + "if (obj." + prop.getGetterMethod() + "() != null) {\n");
       writer.print(indent + "  JsonArray array = new JsonArray();\n");
       writer.print(indent + "  obj." + prop.getGetterMethod() + "().forEach(item -> array.add(" + before + "item" + after + "));\n");
-      writer.print(indent + "  json.put(\"" + prop.getName() + "\", array);\n");
+      writer.print(indent + "  json.put(\"" + jsonPropertyName + "\", array);\n");
       writer.print(indent + "}\n");
     } else if (prop.isMap()) {
       writer.print(indent + "if (obj." + prop.getGetterMethod() + "() != null) {\n");
       writer.print(indent + "  JsonObject map = new JsonObject();\n");
       writer.print(indent + "  obj." + prop.getGetterMethod() + "().forEach((key, value) -> map.put(key, " + before + "value" + after + "));\n");
-      writer.print(indent + "  json.put(\"" + prop.getName() + "\", map);\n");
+      writer.print(indent + "  json.put(\"" + jsonPropertyName + "\", map);\n");
       writer.print(indent + "}\n");
     } else {
       String sp = "";
@@ -168,7 +178,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         sp = "  ";
         writer.print(indent + "if (obj." + prop.getGetterMethod() + "() != null) {\n");
       }
-      writer.print(indent + sp + "json.put(\"" + prop.getName() + "\", " + before + "obj." + prop.getGetterMethod() + "()" + after + ");\n");
+      writer.print(indent + sp + "json.put(\"" + jsonPropertyName + "\", " + before + "obj." + prop.getGetterMethod() + "()" + after + ");\n");
       if (prop.getType().getKind() != ClassKind.PRIMITIVE) {
         writer.print(indent + "}\n");
       }
@@ -287,8 +297,9 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
   }
 
   private void genPropFromJson(String cast, String before, String after, PropertyInfo prop, PrintWriter writer) {
+    String jsonPropertyName = CamelCase.INSTANCE.to(formatter, prop.getName());
     String indent = "        ";
-    writer.print(indent + "case \"" + prop.getName() + "\":\n");
+    writer.print(indent + "case \"" + jsonPropertyName + "\":\n");
     if (prop.isList() || prop.isSet()) {
       writer.print(indent + "  if (member.getValue() instanceof JsonArray) {\n");
       if (prop.isSetter()) {
@@ -330,5 +341,23 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       }
     }
     writer.print(indent + "  break;\n");
+  }
+
+  private Case getCase(DataObjectModel model) {
+    AnnotationValueInfo abc = model
+      .getAnnotations()
+      .stream().filter(ann -> ann.getName().equals(DataObject.class.getName()))
+      .findFirst().get();
+    ClassTypeInfo cti = (ClassTypeInfo) abc.getMember("jsonPropertyNameFormatter");
+    switch (cti.getName()) {
+      case "io.vertx.codegen.format.CamelCase":
+        return CamelCase.INSTANCE;
+      case "io.vertx.codegen.format.SnakeCase":
+        return SnakeCase.INSTANCE;
+      case "io.vertx.codegen.format.LowerCamelCase":
+        return LowerCamelCase.INSTANCE;
+      default:
+        throw new UnsupportedOperationException("Todo");
+    }
   }
 }
