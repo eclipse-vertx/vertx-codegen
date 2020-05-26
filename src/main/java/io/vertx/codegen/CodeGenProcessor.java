@@ -39,8 +39,6 @@ import java.util.stream.StreamSupport;
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)
 public class CodeGenProcessor extends AbstractProcessor {
 
-  private static final String COULD_NOT_LOAD_JSON_MAPPERS_PROPERTIES = "Could not load json-mappers.properties";
-  private static final String JAVA_EXT = ".java";
   private static final int JAVA= 0, RESOURCE = 1, OTHER = 2;
   private static final String JSON_MAPPERS_PROPERTIES_PATH = "META-INF/vertx/json-mappers.properties";
   public static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
@@ -160,7 +158,7 @@ public class CodeGenProcessor extends AbstractProcessor {
   }  
   
   private List<CodeGen.Converter> loadJsonMappers() {
-    boolean loadOK = false;
+    Exception exception = null;
     List<CodeGen.Converter> merged = new ArrayList<>();
     for (StandardLocation loc : StandardLocation.values()) {
       try {
@@ -168,40 +166,41 @@ public class CodeGenProcessor extends AbstractProcessor {
         try(InputStream is = file.openInputStream()) {
           try {
             loadJsonMappers(merged, is);
-            loadOK = true;
+            exception = null;
           } catch (IOException e) {
-            log.log(Level.SEVERE, COULD_NOT_LOAD_JSON_MAPPERS_PROPERTIES, e);
+            exception = e;
           }
         }
       } catch (Exception ignore) {
+        exception = ignore;
         // Filer#getResource and openInputStream will throw IOException when not found
       }
     }
-    if (!loadOK) {
+    if (exception != null) {
       try {
         Enumeration<URL> resources = getClass().getClassLoader().getResources(JSON_MAPPERS_PROPERTIES_PATH);
         while (resources.hasMoreElements()) {
           URL url = resources.nextElement();
           try (InputStream is = url.openStream()) {
             loadJsonMappers(merged, is);
+            exception = null;
             processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded json-mappers.properties " + url);
-            loadOK = true;
           }
         }
       } catch (IOException e) {
+        exception = e;
         // ignore in order to looking for the file using the source path
       }
     }
     
-    if (!loadOK) {
+    if (exception != null) {
       Path source = fetchSourcePath().getParent().getParent().resolve("src/main/resources").resolve(JSON_MAPPERS_PROPERTIES_PATH);
       if (source.toFile().exists()) {
         try (InputStream is = source.toUri().toURL().openStream()) {
           loadJsonMappers(merged, is);
-          loadOK = true;
           processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded json-mappers.properties from '" + source + "'");
         } catch (IOException e) {
-          log.log(Level.SEVERE, COULD_NOT_LOAD_JSON_MAPPERS_PROPERTIES, e);
+          log.log(Level.SEVERE, "Could not load json-mappers.properties", e);
           processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Unable to open properties file at " + source);
         }
       }
@@ -231,12 +230,12 @@ public class CodeGenProcessor extends AbstractProcessor {
                 String relativeName = codeGenerator.filename(model);
                 if (relativeName != null) {
                   int kind;
-                  if (relativeName.endsWith(JAVA_EXT) && !relativeName.contains("/")) {
+                  if (relativeName.endsWith(".java") && !relativeName.contains("/")) {
                     String relocation = relocations.get(codeGenerator.name);
                     if (relocation != null) {
                       kind = OTHER;
                       relativeName = relocation + '/' +
-                        relativeName.substring(0, relativeName.length() - JAVA_EXT.length()).replace('.', '/') + JAVA_EXT;
+                        relativeName.substring(0, relativeName.length() - ".java".length()).replace('.', '/') + ".java";
                     } else {
                       kind = JAVA;
                     }
@@ -247,7 +246,7 @@ public class CodeGenProcessor extends AbstractProcessor {
                   }
                   if (kind == JAVA) {
                     // Special handling for .java
-                    String fqn = relativeName.substring(0, relativeName.length() - JAVA_EXT.length());
+                    String fqn = relativeName.substring(0, relativeName.length() - ".java".length());
                     // Avoid to recreate the same file (this may happen as we unzip and recompile source trees)
                     if (processingEnv.getElementUtils().getTypeElement(fqn) != null) {
                       continue;
