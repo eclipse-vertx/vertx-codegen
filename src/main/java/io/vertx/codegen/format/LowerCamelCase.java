@@ -1,6 +1,8 @@
 package io.vertx.codegen.format;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Camel case starting with a lower case, for instance {@literal fooBar}.
@@ -43,5 +45,10 @@ public class LowerCamelCase extends Case {
       }
     }
     return sb.toString();
+  }
+
+  @Override
+  public List<String> parse(String name) {
+    return CamelCase.INSTANCE.parse(name);
   }
 }

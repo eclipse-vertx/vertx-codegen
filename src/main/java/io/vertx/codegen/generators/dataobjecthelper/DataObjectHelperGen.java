@@ -158,7 +158,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
   }
 
   private void genPropToJson(String before, String after, PropertyInfo prop, PrintWriter writer) {
-    String jsonPropertyName = CamelCase.INSTANCE.to(formatter, prop.getName());
+    String jsonPropertyName = LowerCamelCase.INSTANCE.to(formatter, prop.getName());
     String indent = "    ";
     if (prop.isList() || prop.isSet()) {
       writer.print(indent + "if (obj." + prop.getGetterMethod() + "() != null) {\n");
@@ -297,7 +297,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
   }
 
   private void genPropFromJson(String cast, String before, String after, PropertyInfo prop, PrintWriter writer) {
-    String jsonPropertyName = CamelCase.INSTANCE.to(formatter, prop.getName());
+    String jsonPropertyName = LowerCamelCase.INSTANCE.to(formatter, prop.getName());
     String indent = "        ";
     writer.print(indent + "case \"" + jsonPropertyName + "\":\n");
     if (prop.isList() || prop.isSet()) {
