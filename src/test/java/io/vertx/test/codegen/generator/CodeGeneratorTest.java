@@ -13,6 +13,7 @@ import io.vertx.test.codegen.testdataobject.PropertyGettersSetters;
 import io.vertx.test.codegen.testenum.ValidEnum;
 import io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedApi;
 import io.vertx.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubApi;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -162,6 +163,8 @@ public class CodeGeneratorTest {
 
   @Test
   public void testAbsoluteFilename() throws Exception {
+    // Does not pass on windows because of drive letter
+    Assume.assumeFalse(System.getProperty("os.name").toLowerCase().contains("win"));
     Compiler compiler = new Compiler(new CodeGenProcessor());
     compiler.addOption("-Acodegen.generators=testgen3");
 

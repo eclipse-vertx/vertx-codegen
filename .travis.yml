@@ -4,28 +4,40 @@ branches:
   only:
   - master
   - /^\d+\.\d+$/
-cache:
-  directories:
-    - $HOME/.m2
-before_cache:
-  - rm -rf $HOME/.m2/repository/io/vertx/
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install --only-upgrade openjdk-8-jdk
 jobs:
   include:
     - stage: test
       name: "OpenJDK 8"
+      os: linux
       jdk: openjdk8
       script: mvn -q clean verify -B
     - if: type != pull_request
       name: "OpenJDK 11"
+      os: linux
       jdk: openjdk11
+      script: mvn -q clean verify -B
+    - stage: test
+      name: "OpenJDK 11"
+      os: windows
+      language: shell
+      before_install:
+        - wget --no-check-certificate https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_windows-x64_bin.zip
+        - wget --no-check-certificate https://www-eu.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.zip
+        - /C/Progra~1/7-Zip/7z.exe x apache-maven-3.6.3-bin.zip -o/c/mvn363
+        - /C/Progra~1/7-Zip/7z.exe x openjdk-11.0.2_windows-x64_bin.zip -o/c/java
+      before_script:
+        - export "JAVA_HOME=/c/java/jdk-11.0.2"
+        - export "PATH=$JAVA_HOME/bin:$PATH"
+        - export "PATH=$JAVA_HOME/jre/bin:$PATH"
+        - export "MAVEN_HOME=/c/mvn363/apache-maven-3.6.3"
+        - export "M2_HOME=/c/mvn363/apache-maven-3.6.3"
+        - export "PATH=/c/mvn363/apache-maven-3.6.3/bin:$PATH"
       script: mvn -q clean verify -B
     - stage: deploy
       name: "Deploy to Sonatype's snapshots repository"
+      os: linux
       jdk: openjdk8
-      if: type != pull_request AND env(SONATYPE_NEXUS_USERNAME) IS present
+      if: type != pull_request AND env(SONATYPE_NEXUS_USERNAME) IS present AND env(TRAVIS_OS_NAME) == windows
       script: bash .travis.deploy.artifacts.sh
 notifications:
   email:
