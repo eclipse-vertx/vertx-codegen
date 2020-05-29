@@ -149,14 +149,14 @@ public class CodeGenProcessor extends AbstractProcessor {
     try {
       JavaFileObject generationForPath = processingEnv.getFiler()
           .createClassFile("PathFor" + getClass().getSimpleName());
-      return Paths.get(generationForPath.toUri().getPath()).getParent();
+      return new File(generationForPath.toUri()).toPath().getParent();
     } catch (IOException e) {
       processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Unable to determine source file path!");
     }
 
     return Paths.get("");
-  }  
-  
+  }
+
   private List<CodeGen.Converter> loadJsonMappers() {
     Exception exception = null;
     List<CodeGen.Converter> merged = new ArrayList<>();
@@ -192,7 +192,7 @@ public class CodeGenProcessor extends AbstractProcessor {
         // ignore in order to looking for the file using the source path
       }
     }
-    
+
     if (exception != null) {
       Path source = fetchSourcePath().getParent().getParent().resolve("src/main/resources").resolve(JSON_MAPPERS_PROPERTIES_PATH);
       if (source.toFile().exists()) {
