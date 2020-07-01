@@ -90,7 +90,7 @@ public class TypeReflectionFactory {
               deserializer.setKind(MapperKind.SELF);
             }
             DataObjectInfo dataObject = null;
-            if (serializable || serializable) {
+            if (serializable || deserializable) {
               dataObject = new DataObjectInfo(serializer, deserializer);
             }
             return new ClassTypeInfo(kind, fqcn, module, false, typeParams, dataObject);
