@@ -134,24 +134,4 @@ public class TypeReflectionFactory {
     }
     return null;
   }
-
-  private static boolean isDataObjectAnnotatedSerializable(Class<?> type) {
-    try {
-      Method m = type.getMethod("toJson");
-      return m != null && Modifier.isPublic(m.getModifiers()) && m.getReturnType().equals(JsonObject.class);
-    } catch (NoSuchMethodException e) {
-      return false;
-    }
-  }
-
-  private static boolean isDataObjectAnnotatedDeserializable(Class<?> type) {
-    try {
-      return
-        !Modifier.isAbstract(type.getModifiers()) &&
-          !type.isInterface() &&
-          Modifier.isPublic(type.getConstructor(JsonObject.class).getModifiers());
-    } catch (NoSuchMethodException e) {
-      return false;
-    }
-  }
 }
