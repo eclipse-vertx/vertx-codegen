@@ -10,16 +10,18 @@ import io.vertx.codegen.MapperKind;
  */
 public class DataObjectInfo {
 
+  private final boolean annotated;
   private final MapperInfo serializer;
   private final MapperInfo deserializer;
 
-  public DataObjectInfo(MapperInfo serializer, MapperInfo deserializer) {
+  public DataObjectInfo(boolean annotated, MapperInfo serializer, MapperInfo deserializer) {
+    this.annotated = annotated;
     this.serializer = serializer;
     this.deserializer = deserializer;
   }
 
   public boolean isAnnotated() {
-    return deserializer != null && deserializer.getKind() == MapperKind.SELF || serializer != null && serializer.getKind() == MapperKind.SELF;
+    return annotated;
   }
 
   public TypeInfo getJsonType() {

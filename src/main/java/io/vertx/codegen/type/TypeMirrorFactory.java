@@ -135,6 +135,7 @@ public class TypeMirrorFactory {
         } else {
           MapperInfo serializer = serializers.get(type.toString());
           MapperInfo deserializer = deserializers.get(type.toString());
+          DataObjectInfo dataObject = null;
           if (elt.getAnnotation(DataObject.class) != null) {
             ClassKind serializable = Helper.getAnnotatedDataObjectAnnotatedSerializationType(elementUtils, elt);
             ClassKind deserializable = Helper.getAnnotatedDataObjectDeserialisationType(elementUtils, typeUtils, elt);
@@ -160,13 +161,11 @@ public class TypeMirrorFactory {
                 deserializer.setTargetType(STRING);
               }
             }
+            dataObject = new DataObjectInfo(true, serializer, deserializer);
+          } else if (serializer != null || deserializer != null) {
+            dataObject = new DataObjectInfo(false, serializer, deserializer);
           }
-          DataObjectInfo dataObject = null;
-          if (serializer != null || deserializer != null) {
-            dataObject = new DataObjectInfo(
-              serializer,
-              deserializer);
-          }
+
           List<TypeParamInfo.Class> typeParams = createTypeParams(type);
           if (kind == ClassKind.API) {
             VertxGen genAnn = elt.getAnnotation(VertxGen.class);
