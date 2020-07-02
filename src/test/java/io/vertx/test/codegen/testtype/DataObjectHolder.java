@@ -9,4 +9,6 @@ public interface DataObjectHolder {
 
   TestDataObject dataObject();
 
+  BareDataObject bareDataObject();
+
 }

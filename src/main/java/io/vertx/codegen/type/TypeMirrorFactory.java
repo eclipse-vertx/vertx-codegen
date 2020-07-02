@@ -100,7 +100,7 @@ public class TypeMirrorFactory {
     PackageElement pkgElt = elementUtils.getPackageOf(elt);
     ModuleInfo module = ModuleInfo.resolve(elementUtils, pkgElt);
     String fqcn = elt.getQualifiedName().toString();
-    String simpleName = elt.getSimpleName().toString();
+
     boolean proxyGen = elt.getAnnotation(ProxyGen.class) != null;
     if (elt.getKind() == ElementKind.ENUM) {
       ArrayList<String> values = new ArrayList<>();
@@ -110,7 +110,13 @@ public class TypeMirrorFactory {
         }
       }
       boolean gen = elt.getAnnotation(VertxGen.class) != null;
-      return new EnumTypeInfo(fqcn, gen, values, module, nullable);
+      MapperInfo serializer = serializers.get(type.toString());
+      MapperInfo deserializer = deserializers.get(type.toString());
+      DataObjectInfo dataObject = null;
+      if (serializer != null || deserializer != null) {
+        dataObject = new DataObjectInfo(false, serializer, deserializer);
+      }      
+      return new EnumTypeInfo(fqcn, gen, values, module, nullable, dataObject);
     } else {
       ClassKind kind = ClassKind.getKind(fqcn, elt.getAnnotation(VertxGen.class) != null);
       List<? extends TypeMirror> typeArgs = type.getTypeArguments();
@@ -135,6 +141,7 @@ public class TypeMirrorFactory {
         } else {
           MapperInfo serializer = serializers.get(type.toString());
           MapperInfo deserializer = deserializers.get(type.toString());
+          DataObjectInfo dataObject = null;
           if (elt.getAnnotation(DataObject.class) != null) {
             ClassKind serializable = Helper.getAnnotatedDataObjectAnnotatedSerializationType(elementUtils, elt);
             ClassKind deserializable = Helper.getAnnotatedDataObjectDeserialisationType(elementUtils, typeUtils, elt);
@@ -160,13 +167,11 @@ public class TypeMirrorFactory {
                 deserializer.setTargetType(STRING);
               }
             }
+            dataObject = new DataObjectInfo(true, serializer, deserializer);
+          } else if (serializer != null || deserializer != null) {
+            dataObject = new DataObjectInfo(false, serializer, deserializer);
           }
-          DataObjectInfo dataObject = null;
-          if (serializer != null || deserializer != null) {
-            dataObject = new DataObjectInfo(
-              serializer,
-              deserializer);
-          }
+
           List<TypeParamInfo.Class> typeParams = createTypeParams(type);
           if (kind == ClassKind.API) {
             VertxGen genAnn = elt.getAnnotation(VertxGen.class);

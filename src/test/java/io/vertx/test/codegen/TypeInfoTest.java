@@ -126,6 +126,10 @@ public class TypeInfoTest {
   public void testDataObject() throws Exception {
     doTest(DataObjectHolder.class, map -> {
       assertDataObject(map.get("dataObject"), TestDataObject.class.getName(), ClassKind.OTHER);
+      DataObjectInfo bareDataObject = assertDataObject(map.get("bareDataObject"), BareDataObject.class.getName(), ClassKind.OTHER);
+      assertFalse(bareDataObject.isSerializable());
+      assertFalse(bareDataObject.isDeserializable());
+      assertTrue(bareDataObject.isAnnotated());
     });
   }
 
