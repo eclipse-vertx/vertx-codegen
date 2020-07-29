@@ -57,7 +57,14 @@ public class CodeGen {
     this.typeUtils = env.getTypeUtils();
     loaderMap.put(env, loader);
     Predicate<Element> implFilter = elt -> {
-      String fqn = elementUtils.getPackageOf(elt).getQualifiedName().toString();
+      PackageElement pkg;
+      try {
+        pkg = elementUtils.getPackageOf(elt);
+      } catch (NullPointerException e) {
+        // This might happen with JDK 11 using modules and it looks like a JDK bug
+        return true;
+      }
+      String fqn = pkg.getQualifiedName().toString();
       if (fqn.contains(".impl.") || fqn.endsWith(".impl"))  {
         logger.warning("Processed element " + elt + " is in an implementation package");
         return false;
