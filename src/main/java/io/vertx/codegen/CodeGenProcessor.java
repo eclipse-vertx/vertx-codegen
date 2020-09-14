@@ -324,16 +324,15 @@ public class CodeGenProcessor extends AbstractProcessor {
       }
       // Generate files
       generatedFiles.values().forEach(generated -> {
-        // todo: need to rewrite "/" according to platform file separator
-        boolean shouldWarningsBeSuppressed = false;
-        File file;
-        if (generated.uri.startsWith("/")) {
-          file = new File(generated.uri);
+        Path path = new File(generated.uri).toPath();
+        if (path.isAbsolute()) {
+          // Nothing to do
         } else if (outputDirectory != null) {
-          file = new File(outputDirectory, generated.uri);
+          path = outputDirectory.toPath().resolve(path);
         } else {
           return;
         }
+        File file = path.toFile();
         Helper.ensureParentDir(file);
         String content = generated.generate();
         if (content.length() > 0) {
