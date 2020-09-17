@@ -62,6 +62,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print("\n");
     writer.print("import io.vertx.core.json.JsonObject;\n");
     writer.print("import io.vertx.core.json.JsonArray;\n");
+    writer.print("import io.vertx.core.json.impl.JsonUtil;\n");
     writer.print("import java.time.Instant;\n");
     writer.print("import java.time.format.DateTimeFormatter;\n");
     writer.print("\n");
@@ -132,7 +133,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             switch (propKind) {
               case API:
                 if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
-                  genPropToJson("java.util.Base64.getEncoder().encodeToString(", ".getBytes())", prop, writer);
+                  genPropToJson("JsonUtil.BASE64_ENCODER.encodeToString(", ".getBytes())", prop, writer);
                 }
                 break;
               case ENUM:
@@ -265,7 +266,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             switch (propKind) {
               case API:
                 if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
-                  genPropFromJson("String", "io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)", "))", prop, writer);
+                  genPropFromJson("String", "io.vertx.core.buffer.Buffer.buffer(JsonUtil.BASE64_DECODER.decode((String)", "))", prop, writer);
                 }
                 break;
               case JSON_OBJECT:

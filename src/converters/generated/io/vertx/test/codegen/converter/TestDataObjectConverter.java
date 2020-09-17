@@ -2,6 +2,7 @@ package io.vertx.test.codegen.converter;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.impl.JsonUtil;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
@@ -83,7 +84,7 @@ public class TestDataObjectConverter {
           if (member.getValue() instanceof JsonArray) {
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                obj.addAddedBuffer(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)item)));
+                obj.addAddedBuffer(io.vertx.core.buffer.Buffer.buffer(JsonUtil.BASE64_DECODER.decode((String)item)));
             });
           }
           break;
@@ -433,7 +434,7 @@ public class TestDataObjectConverter {
           break;
         case "buffer":
           if (member.getValue() instanceof String) {
-            obj.setBuffer(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)member.getValue())));
+            obj.setBuffer(io.vertx.core.buffer.Buffer.buffer(JsonUtil.BASE64_DECODER.decode((String)member.getValue())));
           }
           break;
         case "bufferList":
@@ -441,7 +442,7 @@ public class TestDataObjectConverter {
             java.util.ArrayList<io.vertx.core.buffer.Buffer> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)item)));
+                list.add(io.vertx.core.buffer.Buffer.buffer(JsonUtil.BASE64_DECODER.decode((String)item)));
             });
             obj.setBufferList(list);
           }
@@ -451,7 +452,7 @@ public class TestDataObjectConverter {
             java.util.Map<String, io.vertx.core.buffer.Buffer> map = new java.util.LinkedHashMap<>();
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                map.put(entry.getKey(), io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)entry.getValue())));
+                map.put(entry.getKey(), io.vertx.core.buffer.Buffer.buffer(JsonUtil.BASE64_DECODER.decode((String)entry.getValue())));
             });
             obj.setBufferMap(map);
           }
@@ -461,7 +462,7 @@ public class TestDataObjectConverter {
             java.util.LinkedHashSet<io.vertx.core.buffer.Buffer> list =  new java.util.LinkedHashSet<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)item)));
+                list.add(io.vertx.core.buffer.Buffer.buffer(JsonUtil.BASE64_DECODER.decode((String)item)));
             });
             obj.setBufferSet(list);
           }
@@ -674,7 +675,7 @@ public class TestDataObjectConverter {
           if (member.getValue() instanceof JsonObject) {
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
-                obj.addKeyedBufferValue(entry.getKey(), io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)entry.getValue())));
+                obj.addKeyedBufferValue(entry.getKey(), io.vertx.core.buffer.Buffer.buffer(JsonUtil.BASE64_DECODER.decode((String)entry.getValue())));
             });
           }
           break;
@@ -1003,7 +1004,7 @@ public class TestDataObjectConverter {
     }
     if (obj.getAddedBuffers() != null) {
       JsonArray array = new JsonArray();
-      obj.getAddedBuffers().forEach(item -> array.add(java.util.Base64.getEncoder().encodeToString(item.getBytes())));
+      obj.getAddedBuffers().forEach(item -> array.add(JsonUtil.BASE64_ENCODER.encodeToString(item.getBytes())));
       json.put("addedBuffers", array);
     }
     if (obj.getAddedHttpMethods() != null) {
@@ -1191,21 +1192,21 @@ public class TestDataObjectConverter {
       json.put("boxedShortValueMap", map);
     }
     if (obj.getBuffer() != null) {
-      json.put("buffer", java.util.Base64.getEncoder().encodeToString(obj.getBuffer().getBytes()));
+      json.put("buffer", JsonUtil.BASE64_ENCODER.encodeToString(obj.getBuffer().getBytes()));
     }
     if (obj.getBufferList() != null) {
       JsonArray array = new JsonArray();
-      obj.getBufferList().forEach(item -> array.add(java.util.Base64.getEncoder().encodeToString(item.getBytes())));
+      obj.getBufferList().forEach(item -> array.add(JsonUtil.BASE64_ENCODER.encodeToString(item.getBytes())));
       json.put("bufferList", array);
     }
     if (obj.getBufferMap() != null) {
       JsonObject map = new JsonObject();
-      obj.getBufferMap().forEach((key, value) -> map.put(key, java.util.Base64.getEncoder().encodeToString(value.getBytes())));
+      obj.getBufferMap().forEach((key, value) -> map.put(key, JsonUtil.BASE64_ENCODER.encodeToString(value.getBytes())));
       json.put("bufferMap", map);
     }
     if (obj.getBufferSet() != null) {
       JsonArray array = new JsonArray();
-      obj.getBufferSet().forEach(item -> array.add(java.util.Base64.getEncoder().encodeToString(item.getBytes())));
+      obj.getBufferSet().forEach(item -> array.add(JsonUtil.BASE64_ENCODER.encodeToString(item.getBytes())));
       json.put("bufferSet", array);
     }
     if (obj.getHttpMethod() != null) {
@@ -1322,7 +1323,7 @@ public class TestDataObjectConverter {
     }
     if (obj.getKeyedBufferValues() != null) {
       JsonObject map = new JsonObject();
-      obj.getKeyedBufferValues().forEach((key, value) -> map.put(key, java.util.Base64.getEncoder().encodeToString(value.getBytes())));
+      obj.getKeyedBufferValues().forEach((key, value) -> map.put(key, JsonUtil.BASE64_ENCODER.encodeToString(value.getBytes())));
       json.put("keyedBufferValues", map);
     }
     if (obj.getKeyedEnumValues() != null) {

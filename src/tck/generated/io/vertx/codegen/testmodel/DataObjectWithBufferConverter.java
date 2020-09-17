@@ -2,6 +2,7 @@ package io.vertx.codegen.testmodel;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.impl.JsonUtil;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
@@ -17,7 +18,7 @@ public class DataObjectWithBufferConverter {
       switch (member.getKey()) {
         case "buffer":
           if (member.getValue() instanceof String) {
-            obj.setBuffer(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)member.getValue())));
+            obj.setBuffer(io.vertx.core.buffer.Buffer.buffer(JsonUtil.BASE64_DECODER.decode((String)member.getValue())));
           }
           break;
       }
@@ -30,7 +31,7 @@ public class DataObjectWithBufferConverter {
 
   public static void toJson(DataObjectWithBuffer obj, java.util.Map<String, Object> json) {
     if (obj.getBuffer() != null) {
-      json.put("buffer", java.util.Base64.getEncoder().encodeToString(obj.getBuffer().getBytes()));
+      json.put("buffer", JsonUtil.BASE64_ENCODER.encodeToString(obj.getBuffer().getBytes()));
     }
   }
 }
