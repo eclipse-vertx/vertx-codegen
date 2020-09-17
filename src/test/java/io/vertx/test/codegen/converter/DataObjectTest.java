@@ -14,6 +14,7 @@ package io.vertx.test.codegen.converter;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.json.impl.JsonUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -571,7 +572,7 @@ public class DataObjectTest {
     assertEquals(Character.toString(boxedCharValue), json.get("boxedChar"));
     assertEquals(jsonObjectDataObject.toJson(), json.get("jsonObjectDataObject"));
     assertEquals(stringDataObject.toJson(), json.get("stringDataObject"));
-    assertEquals(buffer, Buffer.buffer(Base64.getDecoder().decode((String)json.get("buffer"))));
+    assertEquals(buffer, Buffer.buffer(JsonUtil.BASE64_DECODER.decode((String)json.get("buffer"))));
     assertEquals(jsonObject, json.get("jsonObject"));
     assertEquals(jsonArray, json.get("jsonArray"));
     assertEquals(httpMethod.name(), json.get("httpMethod"));
@@ -589,7 +590,7 @@ public class DataObjectTest {
     assertEquals(new JsonArray().add(Character.toString(boxedCharValue)), json.get("boxedCharList"));
     assertEquals(new JsonArray().add(jsonObjectDataObject.toJson()), json.get("jsonObjectDataObjectList"));
     assertEquals(new JsonArray().add(stringDataObject.toJson()), json.get("stringDataObjectList"));
-    assertEquals(Base64.getEncoder().encodeToString(buffer.getBytes()), ((JsonArray)json.get("bufferList")).getValue(0));
+    assertEquals(JsonUtil.BASE64_ENCODER.encodeToString(buffer.getBytes()), ((JsonArray)json.get("bufferList")).getValue(0));
     assertEquals(new JsonArray().add(jsonObject), json.get("jsonObjectList"));
     assertEquals(new JsonArray().add(jsonArray), json.get("jsonArrayList"));
     assertEquals(new JsonArray().add(httpMethod.name()), json.get("httpMethodList"));
@@ -608,7 +609,7 @@ public class DataObjectTest {
     assertEquals(new JsonArray().add(Character.toString(boxedCharValue)), json.get("boxedCharSet"));
     assertEquals(new JsonArray().add(jsonObjectDataObject.toJson()), json.get("jsonObjectDataObjectSet"));
     assertEquals(new JsonArray().add(stringDataObject.toJson()), json.get("stringDataObjectSet"));
-    assertEquals(Base64.getEncoder().encodeToString(buffer.getBytes()), ((JsonArray)json.get("bufferSet")).getValue(0));
+    assertEquals(JsonUtil.BASE64_ENCODER.encodeToString(buffer.getBytes()), ((JsonArray)json.get("bufferSet")).getValue(0));
     assertEquals(new JsonArray().add(jsonObject), json.get("jsonObjectSet"));
     assertEquals(new JsonArray().add(jsonArray), json.get("jsonArraySet"));
     assertEquals(new JsonArray().add(httpMethod.name()), json.get("httpMethodSet"));
@@ -627,7 +628,7 @@ public class DataObjectTest {
     assertEquals(new JsonObject().put(key, Character.toString(boxedCharValue)), json.get("boxedCharValueMap"));
     assertEquals(new JsonObject().put(key, jsonObjectDataObject.toJson()), json.get("jsonObjectDataObjectMap"));
     assertEquals(new JsonObject().put(key, stringDataObject.toJson()), json.get("stringDataObjectMap"));
-    assertEquals(Base64.getEncoder().encodeToString(buffer.getBytes()), ((JsonObject)json.get("bufferMap")).getValue(key));
+    assertEquals(JsonUtil.BASE64_ENCODER.encodeToString(buffer.getBytes()), ((JsonObject)json.get("bufferMap")).getValue(key));
     assertEquals(new JsonObject().put(key, jsonObject), json.get("jsonObjectMap"));
     assertEquals(new JsonObject().put(key, jsonArray), json.get("jsonArrayMap"));
     assertEquals(new JsonObject().put(key, httpMethod.name()), json.get("httpMethodMap"));
@@ -646,7 +647,7 @@ public class DataObjectTest {
     assertEquals(new JsonObject().put(key, Character.toString(boxedCharValue)), json.get("keyedBoxedCharValues"));
     assertEquals(new JsonObject().put(key, jsonObjectDataObject.toJson()), json.get("keyedJsonObjectDataObjectValues"));
     assertEquals(new JsonObject().put(key, stringDataObject.toJson()), json.get("keyedStringDataObjectValues"));
-    assertEquals(Base64.getEncoder().encodeToString(buffer.getBytes()), ((JsonObject)json.get("keyedBufferValues")).getValue(key));
+    assertEquals(JsonUtil.BASE64_ENCODER.encodeToString(buffer.getBytes()), ((JsonObject)json.get("keyedBufferValues")).getValue(key));
     assertEquals(new JsonObject().put(key, jsonObject), json.get("keyedJsonObjectValues"));
     assertEquals(new JsonObject().put(key, jsonArray), json.get("keyedJsonArrayValues"));
     assertEquals(new JsonObject().put(key, httpMethod.name()), json.get("keyedEnumValues"));
@@ -784,7 +785,7 @@ public class DataObjectTest {
   }
 
   private String toBase64(Buffer buffer) {
-    return Base64.getEncoder().encodeToString(buffer.getBytes());
+    return JsonUtil.BASE64_ENCODER.encodeToString(buffer.getBytes());
   }
 
   @Test
