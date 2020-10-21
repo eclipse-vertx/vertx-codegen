@@ -22,7 +22,6 @@ import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -145,16 +144,16 @@ public class CodeGenProcessor extends AbstractProcessor {
     });
   }
 
-  private Path fetchSourcePath() {
+  private Path determineSourcePath() {
     try {
       JavaFileObject generationForPath = processingEnv.getFiler()
           .createClassFile("PathFor" + getClass().getSimpleName());
       return new File(generationForPath.toUri()).toPath().getParent();
     } catch (IOException e) {
+      // Possible failure (e.g with JPMS will not accept this)
       processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Unable to determine source file path!");
+      return null;
     }
-
-    return Paths.get("");
   }
 
   private List<CodeGen.Converter> loadJsonMappers() {
@@ -192,16 +191,18 @@ public class CodeGenProcessor extends AbstractProcessor {
         // ignore in order to looking for the file using the source path
       }
     }
-
     if (exception != null) {
-      Path source = fetchSourcePath().getParent().getParent().resolve("src/main/resources").resolve(JSON_MAPPERS_PROPERTIES_PATH);
-      if (source.toFile().exists()) {
-        try (InputStream is = source.toUri().toURL().openStream()) {
-          loadJsonMappers(merged, is);
-          processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded json-mappers.properties from '" + source + "'");
-        } catch (IOException e) {
-          log.log(Level.SEVERE, "Could not load json-mappers.properties", e);
-          processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Unable to open properties file at " + source);
+      Path path = determineSourcePath();
+      if (path != null) {
+        Path source = path.getParent().getParent().resolve("src/main/resources").resolve(JSON_MAPPERS_PROPERTIES_PATH);
+        if (source.toFile().exists()) {
+          try (InputStream is = source.toUri().toURL().openStream()) {
+            loadJsonMappers(merged, is);
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded json-mappers.properties from '" + source + "'");
+          } catch (IOException e) {
+            log.log(Level.SEVERE, "Could not load json-mappers.properties", e);
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Unable to open properties file at " + source);
+          }
         }
       }
     }
