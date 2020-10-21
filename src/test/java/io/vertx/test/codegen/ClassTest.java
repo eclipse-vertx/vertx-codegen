@@ -1630,7 +1630,7 @@ public class ClassTest extends ClassTestBase {
     assertTrue(model.getSuperTypes().isEmpty());
 
     List<MethodInfo> methods = model.getMethods();
-    assertEquals(10, methods.size());
+    assertEquals(12, methods.size());
     checkMethod(methods.get(0), "foo", 1, "void", MethodKind.OTHER);
     checkParam(model.getMethods().get(0).getParams().get(0), "str", String.class);
 
@@ -1658,7 +1658,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(model.getMethods().get(7).getParams().get(0), "str", String.class);
     checkParam(model.getMethods().get(7).getParams().get(1), "time", long.class);
     checkParam(model.getMethods().get(7).getParams().get(2), "handler", new TypeLiteral<Handler<T>>(){});
-    assertEquals(4, model.getMethodMap().size());
+    assertEquals(5, model.getMethodMap().size());
     List<MethodInfo> meths1 = model.getMethodMap().get("foo");
     assertEquals(3, meths1.size());
     assertSame(model.getMethods().get(0), meths1.get(0));
@@ -1669,8 +1669,11 @@ public class ClassTest extends ClassTestBase {
     assertSame(model.getMethods().get(3), meths2.get(0));
     assertSame(model.getMethods().get(4), meths2.get(1));
 
-    checkMethod(methods.get(8), "method", 0, new TypeLiteral<GenericInterface<T>>() {}, MethodKind.OTHER);
-    checkMethod(methods.get(9), "method", 1, new TypeLiteral<GenericInterface<U>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(8), "daa", 0, new TypeLiteral<T>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(9), "daa", 1, new TypeLiteral<U>() {}, MethodKind.OTHER);
+
+    checkMethod(methods.get(10), "method", 0, new TypeLiteral<GenericInterface<T>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(11), "method", 1, new TypeLiteral<GenericInterface<U>>() {}, MethodKind.OTHER);
   }
 
   @Test

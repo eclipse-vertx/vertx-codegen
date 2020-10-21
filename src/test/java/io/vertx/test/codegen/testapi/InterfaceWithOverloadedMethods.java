@@ -10,20 +10,18 @@ import io.vertx.codegen.annotations.VertxGen;
 public interface InterfaceWithOverloadedMethods {
 
   void foo(String str);
-
   void foo(String str, Handler<VertxGenClass1> handler);
-
   void foo(String str, long time, Handler<VertxGenClass1> handler);
 
   void bar(VertxGenClass2 obj1);
-
   void bar(String obj1);
 
   void juu(String str);
-
   void juu(String str, long time);
-
   <T> void juu(String str, long time, Handler<T> handler);
+
+  <T> T daa();
+  <U> U daa(String s);
 
   // The generic type name does not matter when checking return type overloaded
   <T> GenericInterface<T> method();
