@@ -133,8 +133,8 @@ public class TypeMirrorFactory {
             raw = new ClassTypeInfo(raw.kind, raw.name, raw.module, true, raw.params, null);
           }
         } else {
-          MapperInfo serializer = serializers.get(type.toString());
-          MapperInfo deserializer = deserializers.get(type.toString());
+          MapperInfo serializer = serializers.get(fqcn);
+          MapperInfo deserializer = deserializers.get(fqcn);
           DataObjectInfo dataObject = null;
           if (elt.getAnnotation(DataObject.class) != null) {
             ClassKind serializable = Helper.getAnnotatedDataObjectAnnotatedSerializationType(elementUtils, elt);

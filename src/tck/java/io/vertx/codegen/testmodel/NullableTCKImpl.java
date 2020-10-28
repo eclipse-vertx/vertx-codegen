@@ -11,6 +11,10 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -358,6 +362,35 @@ public class NullableTCKImpl implements NullableTCK {
   @Override
   public @Nullable TestDataObject methodWithNullableDataObjectReturn(boolean notNull) {
     return notNull ? new TestDataObject().setFoo("foo_value").setBar(12345).setWibble(3.5) : null;
+  }
+
+  @Override
+  public boolean methodWithNonNullableJsonMappedParam(ZonedDateTime param) {
+    return param == null;
+  }
+
+  @Override
+  public void methodWithNullableJsonMappedParam(boolean expectNull, @Nullable ZonedDateTime param) {
+    if (expectNull) {
+      assertNull(param);
+    } else {
+      assertEquals(methodWithNullableJsonMappedReturn(true), param);
+    }
+  }
+
+  @Override
+  public void methodWithNullableJsonMappedHandler(boolean notNull, Handler<@Nullable ZonedDateTime> handler) {
+    handler.handle(methodWithNullableJsonMappedReturn(notNull));
+  }
+
+  @Override
+  public void methodWithNullableJsonMappedHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable ZonedDateTime>> handler) {
+    handler.handle(Future.succeededFuture(methodWithNullableJsonMappedReturn(notNull)));
+  }
+
+  @Override
+  public @Nullable ZonedDateTime methodWithNullableJsonMappedReturn(boolean notNull) {
+    return notNull ? LocalDate.now().atStartOfDay().atZone(ZoneId.systemDefault()) : null;
   }
 
   @Override
