@@ -7,6 +7,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -109,6 +110,13 @@ public interface NullableTCK {
   void methodWithNullableDataObjectHandler(boolean notNull, Handler<@Nullable TestDataObject> handler);
   void methodWithNullableDataObjectHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable TestDataObject>> handler);
   @Nullable TestDataObject methodWithNullableDataObjectReturn(boolean notNull);
+
+  // Test @Nullable json-mapped type
+  boolean methodWithNonNullableJsonMappedParam(ZonedDateTime param);
+  void methodWithNullableJsonMappedParam(boolean expectNull, @Nullable ZonedDateTime param);
+  void methodWithNullableJsonMappedHandler(boolean notNull, Handler<@Nullable ZonedDateTime> handler);
+  void methodWithNullableJsonMappedHandlerAsyncResult(boolean notNull, Handler<AsyncResult<@Nullable ZonedDateTime>> handler);
+  @Nullable ZonedDateTime methodWithNullableJsonMappedReturn(boolean notNull);
 
   // Test @Nullable Enum type
   boolean methodWithNonNullableEnumParam(TestEnum param);
