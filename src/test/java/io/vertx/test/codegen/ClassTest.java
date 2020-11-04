@@ -836,7 +836,7 @@ public class ClassTest extends ClassTestBase {
     ClassModel model = new GeneratorHelper().generateClass(MethodWithValidFutureReturn.class);
     assertEquals(MethodWithValidFutureReturn.class.getName(), model.getIfaceFQCN());
     assertEquals(MethodWithValidFutureReturn.class.getSimpleName(), model.getIfaceSimpleName());
-    assertEquals(2, model.getReferencedTypes().size());
+    assertEquals(1, model.getReferencedTypes().size());
     assertTrue(model.getReferencedTypes().contains(VertxGenClass1Info));
     assertTrue(model.getSuperTypes().isEmpty());
     assertEquals(30, model.getMethods().size());
@@ -2049,6 +2049,35 @@ public class ClassTest extends ClassTestBase {
     assertEquals(2, model.getMethods().size());
     checkMethod(model.getMethods().get(0), "foo", 0, JsonObject.class, MethodKind.OTHER);
     checkMethod(model.getMethods().get(1), "bar", 0, JsonArray.class, MethodKind.OTHER);
+  }
+
+  @Test
+  public void testFutureParams() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(MethodWithValidFutureParams.class);
+    assertEquals(MethodWithValidFutureParams.class.getName(), model.getIfaceFQCN());
+    assertEquals(MethodWithValidFutureParams.class.getSimpleName(), model.getIfaceSimpleName());
+    assertTrue(model.getReferencedTypes().isEmpty());
+    assertTrue(model.getSuperTypes().isEmpty());
+    List<MethodInfo> methods = model.getMethods();
+    assertEquals(1, methods.size());
+    checkMethod(methods.get(0), "m1", 2, "void", MethodKind.OTHER);
+    checkParam(model.getMethods().get(0).getParams().get(0), "f1", new TypeLiteral<Future<Void>>() {});
+    assertEquals(model.getMethods().get(0).getParam(0).getType().getKind(), ClassKind.FUTURE);
+    checkParam(model.getMethods().get(0).getParams().get(1), "f2", new TypeLiteral<Future<String>>() {});
+    assertEquals(model.getMethods().get(0).getParam(1).getType().getKind(), ClassKind.FUTURE);
+  }
+
+  @Test
+  public void testFutureReturn() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(MethodWithValidFutureReturn.class);
+    assertEquals(MethodWithValidFutureReturn.class.getName(), model.getIfaceFQCN());
+    assertEquals(MethodWithValidFutureReturn.class.getSimpleName(), model.getIfaceSimpleName());
+    assertTrue(model.getReferencedTypes().isEmpty());
+    assertTrue(model.getSuperTypes().isEmpty());
+    List<MethodInfo> methods = model.getMethods();
+    assertEquals(2, methods.size());
+    checkMethod(methods.get(0), "m1", 0, new TypeLiteral<Future<Void>>() {}, MethodKind.OTHER);
+    checkMethod(methods.get(1), "m2", 0, new TypeLiteral<Future<String>>() {}, MethodKind.OTHER);
   }
 
   @Test

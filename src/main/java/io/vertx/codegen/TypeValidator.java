@@ -96,6 +96,9 @@ class TypeValidator {
     if (type.getKind() == ClassKind.OBJECT) {
       return true;
     }
+    if (isValidFutureType(elem, type, allowAnyJavaType)) {
+      return true;
+    }
     if (isValidVertxGenInterface(elem, type, allowParameterized, allowAnyJavaType)) {
       return true;
     }
@@ -165,6 +168,17 @@ class TypeValidator {
       } else {
         return true;
       }
+    }
+    return false;
+  }
+
+  private static boolean isValidFutureType(Element elem, TypeInfo type, boolean allowAnyJavaType) {
+    if (type.getKind() == ClassKind.FUTURE) {
+      ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
+      return parameterized
+          .getArgs()
+          .stream()
+          .allMatch(arg -> isValidCallbackValueType(elem, arg, allowAnyJavaType));
     }
     return false;
   }

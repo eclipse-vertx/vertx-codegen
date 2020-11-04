@@ -50,6 +50,9 @@ public enum ClassKind {
   // Class type, e.g Class<T>
   CLASS_TYPE(false, false, false),
 
+  // Future
+  FUTURE(false, false, false),
+
   // Anything else
   OTHER(false, false, false);
 
@@ -82,6 +85,8 @@ public enum ClassKind {
       return API;
     } else if (fqcn.equals("java.lang.Class")) {
       return CLASS_TYPE;
+    } else if (fqcn.equals("io.vertx.core.Future")) {
+      return FUTURE;
     } else if (fqcn.equals(ClassModel.VERTX_HANDLER)) {
       return HANDLER;
     } else if (fqcn.equals(ClassModel.VERTX_ASYNC_RESULT)) {
