@@ -1,4 +1,4 @@
-package io.vertx.test.codegen.testapi;
+package io.vertx.test.codegen.testapi.future;
 
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Future;
