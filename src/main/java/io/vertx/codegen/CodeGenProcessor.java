@@ -1,6 +1,5 @@
 package io.vertx.codegen;
 
-import io.vertx.codegen.generators.cheatsheet.CheatsheetGenLoader;
 import io.vertx.codegen.generators.dataobjecthelper.DataObjectHelperGenLoader;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -97,7 +96,7 @@ public class CodeGenProcessor extends AbstractProcessor {
       }
       // load GeneratorLoader by ServiceLoader
       Stream<GeneratorLoader> serviceLoader = StreamSupport.stream(ServiceLoader.load(GeneratorLoader.class, CodeGenProcessor.class.getClassLoader()).spliterator(), false);
-      Stream<GeneratorLoader> loaders = Stream.of(new CheatsheetGenLoader(), new DataObjectHelperGenLoader());
+      Stream<GeneratorLoader> loaders = Stream.of(new DataObjectHelperGenLoader());
       Stream<Generator<?>> generators = Stream.concat(serviceLoader, loaders).flatMap(l -> l.loadGenerators(processingEnv));
       Predicate<Generator> filter = filterGenerators();
       if (filter != null) {
