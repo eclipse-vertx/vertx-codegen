@@ -1,5 +1,7 @@
 package io.vertx.codegen;
 
+import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.generators.dataobjecthelper.DataObjectHelperGenLoader;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -58,7 +60,11 @@ public class CodeGenProcessor extends AbstractProcessor {
     super.init(processingEnv);
     generatedFiles.clear();
     generatedResources.clear();
-    supportedAnnotation = getCodeGenerators().stream().flatMap(gen -> gen.annotations().stream()).collect(Collectors.toSet());
+    supportedAnnotation = new HashSet<>(Arrays.asList(DataObject.class, VertxGen.class));
+    getCodeGenerators()
+      .stream()
+      .flatMap(gen -> gen.annotations().stream())
+      .forEach(supportedAnnotation::add);
 
     // Load mappers
     if (mappers == null) {
