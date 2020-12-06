@@ -135,7 +135,6 @@ public class DataObjectCheatsheetGen extends Generator<DataObjectModel> {
           break;
       }
     }
-    System.out.println("unhandled type " + type);
     return null;
   }
 }

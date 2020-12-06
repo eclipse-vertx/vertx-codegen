@@ -77,12 +77,7 @@ public class CodeGen {
         return true;
       }
       String fqn = pkg.getQualifiedName().toString();
-      if (fqn.contains(".impl.") || fqn.endsWith(".impl"))  {
-        logger.warning("Processed element " + elt + " is in an implementation package");
-        return false;
-      } else {
-        return true;
-      }
+      return !fqn.contains(".impl.") && !fqn.endsWith(".impl");
     };
 
     // Process serializers
