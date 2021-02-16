@@ -1,6 +1,6 @@
 # Vert.x API Generation
 
-[![Build Status](https://travis-ci.org/vert-x3/vertx-codegen.svg?branch=master?branch=master)](https://travis-ci.org/vert-x3/vertx-codegen)
+[![Build Status](https://github.com/vert-x3/vertx-codegen/workflows/CI/badge.svg?branch=3.9)](https://github.com/vert-x3/vertx-codegen/actions?query=workflow%3ACI)
 
 This projects contains tools which allow idiomatic other language API shims to be generated from Java APIs.
 
