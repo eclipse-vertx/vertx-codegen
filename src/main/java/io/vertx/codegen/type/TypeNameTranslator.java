@@ -35,7 +35,7 @@ public interface TypeNameTranslator {
 
   static TypeNameTranslator composite(String lang) {
     return (module, qualifiedName) -> {
-      List<String> def = new ArrayList<>(QualifiedCase.QUALIFIED.parse(module.getGroupPackage()));
+      List<String> def = new ArrayList<>(QualifiedCase.INSTANCE.parse(module.getGroupPackage()));
       def.add(lang);
       List<String> abc = KebabCase.INSTANCE.parse(module.getName());
       if (abc.get(0).equals("vertx")) {
@@ -54,10 +54,10 @@ public interface TypeNameTranslator {
         if (qualifiedName.equals(module.getPackageName())) {
         } else {
           String nameInPackage = qualifiedName.substring(module.getPackageName().length() + 1);
-          def.addAll(QualifiedCase.QUALIFIED.parse(nameInPackage));
+          def.addAll(QualifiedCase.INSTANCE.parse(nameInPackage));
         }
 
-        return QualifiedCase.QUALIFIED.format(def);
+        return QualifiedCase.INSTANCE.format(def);
       }
       return qualifiedName;
     };

@@ -53,7 +53,7 @@ public class ModuleModel implements Model {
       throw new GenException(element, "A module package (" + modulePackage + ") must be prefixed by the group package (" + groupPackage + ")");
     }
     try {
-      QualifiedCase.QUALIFIED.parse(groupPackage);
+      QualifiedCase.INSTANCE.parse(groupPackage);
     } catch (Exception e) {
       throw new GenException(element, "Invalid group package name " + groupPackage);
     }

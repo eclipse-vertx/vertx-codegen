@@ -13,7 +13,7 @@ public class QualifiedCase extends Case {
   /**
    * A {@code QualifiedCase} instance.
    */
-  public static final Case QUALIFIED = new QualifiedCase();
+  public static final Case INSTANCE = new QualifiedCase();
 
   private final Pattern validator = Pattern.compile("(?:\\p{Alnum}|(?:(?<=\\p{Alnum})\\.(?=\\p{Alnum})))*");
 

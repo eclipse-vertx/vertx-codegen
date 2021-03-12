@@ -54,7 +54,7 @@ public abstract class Case {
    */
   public static Map<String, Case> vars() {
     HashMap<String, Case> vars = new HashMap<>();
-    for (Case _case : Arrays.asList(CamelCase.INSTANCE, QualifiedCase.QUALIFIED, SnakeCase.INSTANCE, KebabCase.INSTANCE, LowerCamelCase.INSTANCE)) {
+    for (Case _case : Arrays.asList(CamelCase.INSTANCE, QualifiedCase.INSTANCE, SnakeCase.INSTANCE, KebabCase.INSTANCE, LowerCamelCase.INSTANCE)) {
       vars.put("CASE_" + _case.name(), _case);
     }
     return vars;

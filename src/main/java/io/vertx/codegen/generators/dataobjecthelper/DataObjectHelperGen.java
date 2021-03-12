@@ -6,7 +6,9 @@ import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.format.CamelCase;
 import io.vertx.codegen.format.Case;
+import io.vertx.codegen.format.KebabCase;
 import io.vertx.codegen.format.LowerCamelCase;
+import io.vertx.codegen.format.QualifiedCase;
 import io.vertx.codegen.format.SnakeCase;
 import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.ClassKind;
@@ -357,6 +359,10 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         return SnakeCase.INSTANCE;
       case "io.vertx.codegen.format.LowerCamelCase":
         return LowerCamelCase.INSTANCE;
+      case "io.vertx.codegen.format.KebabCase":
+        return KebabCase.INSTANCE;
+      case "io.vertx.codegen.format.QualifiedCase":
+        return QualifiedCase.INSTANCE;
       default:
         throw new UnsupportedOperationException("Todo");
     }

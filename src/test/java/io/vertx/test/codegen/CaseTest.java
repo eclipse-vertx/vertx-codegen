@@ -73,7 +73,7 @@ public class CaseTest {
     parseQualifiedCase("foo.bar.juu", "foo", "bar", "juu");
     for (String test : Arrays.asList(".", ".foo", "foo.", "foo..bar")) {
       try {
-        QualifiedCase.QUALIFIED.parse(test);
+        QualifiedCase.INSTANCE.parse(test);
         fail("Was expecting " + test + " to be rejected");
       } catch (Exception ignore) {
       }
@@ -147,7 +147,7 @@ public class CaseTest {
   }
 
   private void formatQualifiedCase(String expected, String... atoms) {
-    assertCase(QualifiedCase.QUALIFIED, expected, atoms);
+    assertCase(QualifiedCase.INSTANCE, expected, atoms);
   }
 
   private void formatSnakeCase(String expected, String... atoms) {
@@ -167,7 +167,7 @@ public class CaseTest {
   }
 
   private void parseQualifiedCase(String s, String... expected) {
-    parseCase(QualifiedCase.QUALIFIED, s, expected);
+    parseCase(QualifiedCase.INSTANCE, s, expected);
   }
 
   private void parseKebabCase(String s, String... expected) {
