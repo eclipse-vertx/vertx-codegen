@@ -87,7 +87,7 @@ You can configure the `CodeGenProcessor` as any Java annotation processor, here 
     <!-- Configure the execution of the compiler to execute the codegen processor -->
     <plugin>
       <artifactId>maven-compiler-plugin</artifactId>
-      <version>3.1</version>
+      <version>3.8.1</version>
       <configuration>
         <source>1.8</source>
         <target>1.8</target>
@@ -102,6 +102,15 @@ You can configure the `CodeGenProcessor` as any Java annotation processor, here 
             <annotationProcessors>
               <annotationProcessor>io.vertx.codegen.CodeGenProcessor</annotationProcessor>
             </annotationProcessors>
+             <!-- It is new option since v3.5 to instruct compiler detect annotation processors classpath -->
+            <annotationProcessorPaths>
+              <path>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-codegen</artifactId>
+                <version>${vertx.version}</version>
+              </path>
+              <!-- ... more path such as vertx-service-proxy/vertx-rx-java2 depends on what you want to generate ... -->
+            </annotationProcessorPaths>
             <compilerArgs>
               <arg>-Acodegen.output=${project.basedir}/src/main</arg>
             </compilerArgs>
@@ -113,13 +122,23 @@ You can configure the `CodeGenProcessor` as any Java annotation processor, here 
 </pluginManagement>
 ~~~~
 
-And here is a configuration example for Gradle:
+And here is a configuration example for Gradle (since `Gradle 5.0`):
+
+Gradle Groovy
 
 ```gradle
-task annotationProcessing(type: JavaCompile, group: 'build') { // codegen
+dependencies {
+    compileOnly("io.vertx:vertx-codegen:4.0.2")
+    // more vertx-service-proxy/vertx-rx-java2
+    // compileOnly("io.vertx:vertx-rx-java2:4.0.2")
+    annotationProcessor("io.vertx:vertx-codegen:4.0.2")
+}
+
+task annotationProcessing(type: JavaCompile, group: 'other') { // codegen
   source = sourceSets.main.java
-  classpath = configurations.compile + configurations.compileOnly
-  destinationDir = project.file('src/main/generated')
+  classpath = configurations.compile
+  destinationDir = project.file('${project.buildDir}/generated/main/java')
+  options.annotationProcessorPath = configurations.compileClasspath
   options.compilerArgs = [
     "-proc:only",
     "-processor", "io.vertx.codegen.CodeGenProcessor",
@@ -128,25 +147,58 @@ task annotationProcessing(type: JavaCompile, group: 'build') { // codegen
 }
 
 compileJava {
-  targetCompatibility = 1.8
-  sourceCompatibility = 1.8
-
   dependsOn annotationProcessing
 }
 
 sourceSets {
   main {
     java {
-      srcDirs += 'src/main/generated'
+      srcDirs += '${project.buildDir}/generated/main/java'
     }
   }
+}
+```
+
+Gradle Kotlin
+
+```gradle
+dependencies {
+    compileOnly("io.vertx:vertx-codegen:4.0.2")
+    // more vertx-service-proxy/vertx-rx-java2
+    // compileOnly("io.vertx:vertx-rx-java2:4.0.2")
+    annotationProcessor("io.vertx:vertx-codegen:4.0.2")
+}
+
+tasks.register<JavaCompile>("annotationProcessing") {
+    group = "other"
+    source = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME).java
+    destinationDir = project.file("${project.buildDir}/generated/main/java")
+    classpath = configurations.compileClasspath.get()
+    options.annotationProcessorPath = configurations.compileClasspath.get()
+    options.compilerArgs = listOf(
+        "-proc:only",
+        "-processor", "io.vertx.codegen.CodeGenProcessor",
+        "-Acodegen.output=${project.projectDir}/src/main"
+    )
+}
+
+tasks.compileJava {
+    dependsOn(tasks.named("annotationProcessing"))
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs(project.file("${project.buildDir}/generated/main/java"))
+        }
+    }
 }
 ```
 
 Besides you can use the `processor` classified dependency that declares the annotation processor as a
 `META-INF/services/javax.annotation.processing.Processor`, if you do so, code generation happens automatically:
 
-```
+```xml
 <dependency>
   <groupid>io.vertx</groupId>
   <artifactId>vertx-codegen</artifactId>
