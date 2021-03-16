@@ -61,7 +61,8 @@ public class TypeReflectionFactory {
             classType.getDeclaredAnnotation(VertxGen.class) != null,
             Stream.of(classType.getEnumConstants()).map(Object::toString).collect(Collectors.toList()),
             module,
-            false
+            false,
+            null
           );
         } else {
           ClassKind kind = ClassKind.getKind(fqcn, classType.getAnnotation(VertxGen.class) != null);

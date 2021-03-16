@@ -13,8 +13,9 @@ public class EnumTypeInfo extends ClassTypeInfo {
   final List<String> values;
   final boolean gen;
 
-  public EnumTypeInfo(String fqcn, boolean gen, List<String> values, ModuleInfo module, boolean nullable) {
-    super(ClassKind.ENUM, fqcn, module, nullable, Collections.emptyList(), null);
+  public EnumTypeInfo(String fqcn, boolean gen, List<String> values, 
+		  ModuleInfo module, boolean nullable, DataObjectInfo dataObject) {
+    super(ClassKind.ENUM, fqcn, module, nullable, Collections.emptyList(), dataObject);
 
     this.gen = gen;
     this.values = values;
