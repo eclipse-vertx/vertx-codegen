@@ -69,15 +69,18 @@ public class CodeGen {
   public void init(RoundEnvironment round, ClassLoader loader) {
     loaderMap.put(env, loader);
     Predicate<Element> implFilter = elt -> {
-      PackageElement pkg;
       try {
-        pkg = elementUtils.getPackageOf(elt);
+        // Since JDK 16, method elementUtils.getPackageOf(Element)
+        // can return null instead of throwing a NPE.
+        return Optional.ofNullable(elementUtils.getPackageOf(elt))
+                       .map(pkg -> pkg.getQualifiedName().toString())
+                       .map(fqn -> !fqn.contains(".impl.") && !fqn.endsWith(".impl"))
+                       .orElse(true);
       } catch (NullPointerException e) {
-        // This might happen with JDK 11 using modules and it looks like a JDK bug
+        // This might happen with JDK 11 using modules and it looks
+        // like a JDK bug
         return true;
       }
-      String fqn = pkg.getQualifiedName().toString();
-      return !fqn.contains(".impl.") && !fqn.endsWith(".impl");
     };
 
     // Process serializers
