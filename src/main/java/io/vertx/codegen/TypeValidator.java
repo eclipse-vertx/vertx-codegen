@@ -53,6 +53,11 @@ class TypeValidator {
     if (isValidNonCallableType(elem, type, false, true, true, allowAnyJavaType)) {
       return;
     }
+    // Workaround for Kotlin companion objects.
+    // https://github.com/vert-x3/vertx-lang-kotlin/issues/93
+    if (isValidKotlinCompanionObjet(elem, type)) {
+      return;
+    }
     throw new GenException(elem, "type " + type + " is not legal for use for a constant type in code generation");
   }
 
@@ -109,6 +114,16 @@ class TypeValidator {
       return true;
     }
     return false;
+  }
+
+  private static boolean isValidKotlinCompanionObjet(Element elem, TypeInfo type) {
+    String qualifiedName = type.getName(); // e.g. io.vertx.test.codegen.testapi.kotlin.InterfaceWithCompanionObject.Companion
+    String simpleName = type.getSimpleName(); // e.g. Companion
+    String enclosingElementName = elem.getEnclosingElement().getSimpleName().toString(); // e.g. InterfaceWithCompanionObject
+
+    // Ensure the object is declared in the enclosing element.
+    // (This only checks the last 2 segments; ideally we'd check against the enclosing element's qualified name.)
+    return qualifiedName.endsWith(enclosingElementName + "." + simpleName);
   }
 
   private static boolean isValidEnum(TypeInfo info) {

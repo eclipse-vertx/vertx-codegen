@@ -40,6 +40,8 @@ import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeParams;
 import io.vertx.test.codegen.testapi.javatypes.MethodWithValidJavaTypeReturn;
 import io.vertx.test.codegen.testapi.jsonmapper.MyPojo;
 import io.vertx.test.codegen.testapi.jsonmapper.WithMyPojo;
+import io.vertx.test.codegen.testapi.kotlin.InterfaceWithCompanionObject;
+import io.vertx.test.codegen.testapi.kotlin.InterfaceWithUnrelatedCompanionClass;
 import io.vertx.test.codegen.testapi.overloadcheck.OverloadCheckIgnoreEnhancedMethod;
 import io.vertx.test.codegen.testapi.overloadcheck.OverloadCheckInvalidMethodOverloading;
 import io.vertx.test.codegen.testapi.simple.InterfaceInImplContainingPackage;
@@ -2501,6 +2503,16 @@ public class ClassTest extends ClassTestBase {
     }
     ClassModel model = new GeneratorHelper().generateClass(InterfaceInImplContainingPackage.class);
     assertEquals(InterfaceInImplContainingPackage.class.getName(), model.getFqn());
+  }
+
+  @Test
+  public void testInterfaceWithKotlinCompanionObject() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithCompanionObject.class);
+  }
+
+  @Test(expected = GenException.class)
+  public void testInterfaceUnrelatedCompanionObject() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithUnrelatedCompanionClass.class);
   }
 
   @Test
