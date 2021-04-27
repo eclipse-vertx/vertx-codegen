@@ -31,10 +31,14 @@ public class ModuleInfo {
   private final String name;
   private final String groupPackage;
 
-  public ModuleInfo(String packageName, String name, String groupPackage) {
+  // Only used internally
+  final boolean useFutures;
+
+  public ModuleInfo(String packageName, String name, String groupPackage, boolean useFutures) {
     this.packageName = packageName;
     this.name = name;
     this.groupPackage = groupPackage;
+    this.useFutures = useFutures;
   }
 
   private static final BiFunction<Elements, String, Set<PackageElement>> getPackageElementJava8 = (elts, fqn) -> {
@@ -72,7 +76,7 @@ public class ModuleInfo {
     PackageElement result = resolveFirstModuleGenAnnotatedPackageElement(elementUtils, pkgElt);
     if (result != null) {
       ModuleGen annotation = result.getAnnotation(ModuleGen.class);
-      return new ModuleInfo(result.getQualifiedName().toString(), annotation.name(), annotation.groupPackage());
+      return new ModuleInfo(result.getQualifiedName().toString(), annotation.name(), annotation.groupPackage(), annotation.useFutures());
     } else return null;
   }
 
@@ -168,4 +172,12 @@ public class ModuleInfo {
   public String getName(Case _case) {
     return _case.format(KebabCase.INSTANCE.parse(name));
   }
+
+  /**
+   * @return whether the module declares asynchronous operations with future returning signatures
+   */
+  public boolean getUseFutures() {
+    return useFutures;
+  }
+
 }

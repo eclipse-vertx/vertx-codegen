@@ -477,30 +477,42 @@ public class ClassModel implements Model {
 
       // Erase futures
       for (Map<ExecutableElement, MethodInfo> blah : Arrays.asList(methods, anyJavaTypeMethods)) {
-        Iterator<MethodInfo> it = blah.values().iterator();
+        Iterator<Map.Entry<ExecutableElement, MethodInfo>> it = blah.entrySet().iterator();
         while (it.hasNext()) {
-          MethodInfo methodInfo = it.next();
-          TypeInfo returnType = methodInfo.getReturnType();
-          if (returnType.isParameterized() && returnType.getRaw().getName().equals("io.vertx.core.Future")) {
-            TypeInfo asyncType = ((ParameterizedTypeInfo)returnType).getArg(0);
-            List<ParamInfo> p = new ArrayList<>(methodInfo.getParams());
-            p.add(new ParamInfo(
-              p.size(),
-              "handler",
-              null,
-              new ParameterizedTypeInfo(
-                HANDLER_TYPE,
-                false,
-                Collections.singletonList(new ParameterizedTypeInfo(ASYNC_RESULT_TYPE, false, Collections.singletonList(asyncType))))));
-            Signature t = new Signature(methodInfo.getName(), p);
-            Optional<MethodInfo> opt = blah
-              .values()
-              .stream()
-              .filter(m -> m.getName().equals(methodInfo.getName()))
-              .filter(m -> m.getSignature().equals(t)).findFirst();
-            if (opt.isPresent())  {
-              futureMethods.add(opt.get());
-              it.remove();
+          Map.Entry<ExecutableElement, MethodInfo> entry = it.next();
+          MethodInfo methodInfo = entry.getValue();
+          List<ParamInfo> params = methodInfo.getParams();
+          int paramSize = params.size();
+          if (getModule().useFutures && paramSize > 0) {
+            TypeInfo callbackType = methodInfo.getCallbackType();
+            if (callbackType != null && callbackType.getKind() == ClassKind.ASYNC_RESULT) {
+              TypeInfo arg = ((ParameterizedTypeInfo) callbackType).getArg(0);
+              throw new GenException(entry.getKey(), "Cannot use Handler<AsyncResult<" + arg.getSimpleName() + ">>, instead use a Future<" + arg.getSimpleName() + "> return");
+            }
+          } else {
+            // Erase futures
+            TypeInfo returnType = methodInfo.getReturnType();
+            if (returnType.isParameterized() && returnType.getRaw().getName().equals("io.vertx.core.Future")) {
+              TypeInfo asyncType = ((ParameterizedTypeInfo)returnType).getArg(0);
+              List<ParamInfo> p = new ArrayList<>(params);
+              p.add(new ParamInfo(
+                p.size(),
+                "handler",
+                null,
+                new ParameterizedTypeInfo(
+                  HANDLER_TYPE,
+                  false,
+                  Collections.singletonList(new ParameterizedTypeInfo(ASYNC_RESULT_TYPE, false, Collections.singletonList(asyncType))))));
+              Signature t = new Signature(methodInfo.getName(), p);
+              Optional<MethodInfo> opt = blah
+                .values()
+                .stream()
+                .filter(m -> m.getName().equals(methodInfo.getName()))
+                .filter(m -> m.getSignature().equals(t)).findFirst();
+              if (opt.isPresent())  {
+                futureMethods.add(opt.get());
+                it.remove();
+              }
             }
           }
         }
@@ -800,7 +812,8 @@ public class ClassModel implements Model {
       typeParams,
       declaringElt,
       methodDeprecated,
-      methodDeprecatedDesc);
+      methodDeprecatedDesc,
+      getModule().useFutures);
 
     // Check we don't hide another method, we don't check overrides but we are more
     // interested by situations like diamond inheritance of the same method, in this case
@@ -833,9 +846,9 @@ public class ClassModel implements Model {
                                         Text returnDescription,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
                                         ExecutableElement methodElt, boolean isStatic, boolean isDefault, ArrayList<TypeParamInfo.Method> typeParams,
-                                        TypeElement declaringElt, boolean methodDeprecated, Text methodDeprecatedDesc) {
+                                        TypeElement declaringElt, boolean methodDeprecated, Text methodDeprecatedDesc, boolean useFutures) {
     return new MethodInfo(ownerTypes, methodName, returnType, returnDescription,
-      isFluent, isCacheReturn, mParams, comment, doc, isStatic, isDefault, typeParams, methodDeprecated, methodDeprecatedDesc);
+      isFluent, isCacheReturn, mParams, comment, doc, isStatic, isDefault, typeParams, methodDeprecated, methodDeprecatedDesc, useFutures);
   }
 
   // This is a hook to allow different model implementations to check methods in different ways

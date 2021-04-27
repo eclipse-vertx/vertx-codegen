@@ -47,13 +47,14 @@ public class MethodInfo implements Comparable<MethodInfo> {
   private List<ParamInfo> params;
   private boolean deprecated;
   private Text deprecatedDesc;
+  private boolean useFutures;
 
   public MethodInfo(Set<ClassTypeInfo> ownerTypes, String name,
                     TypeInfo returnType, Text returnDescription, boolean fluent,  boolean cacheReturn,
                     List<ParamInfo> params, String comment, Doc doc, boolean staticMethod, boolean defaultMethod,
-                    List<TypeParamInfo.Method> typeParams, boolean deprecated, Text deprecatedDesc) {
+                    List<TypeParamInfo.Method> typeParams, boolean deprecated, Text deprecatedDesc, boolean useFutures) {
 
-
+    this.useFutures = useFutures;
     this.comment = comment;
     this.name = name;
     this.returnType = returnType;
@@ -83,18 +84,31 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return _case.format(CamelCase.INSTANCE.parse(name));
   }
 
-  public MethodKind getKind() {
+  /**
+   * @return the callback type or {@code null} when the method is not a callback method
+   */
+  public TypeInfo getCallbackType() {
     int lastParamIndex = params.size() - 1;
     if (lastParamIndex >= 0 && (returnType.isVoid() || fluent)) {
       TypeInfo lastParamType = params.get(lastParamIndex).type;
       if (lastParamType.getKind() == ClassKind.HANDLER) {
-        TypeInfo typeArg = ((ParameterizedTypeInfo) lastParamType).getArgs().get(0);
-        if (typeArg.getKind() == ClassKind.ASYNC_RESULT) {
-          return MethodKind.CALLBACK;
-        } else {
-          return MethodKind.HANDLER;
-        }
+        return ((ParameterizedTypeInfo) lastParamType).getArgs().get(0);
       }
+    }
+    return null;
+  }
+
+  public MethodKind getKind() {
+    TypeInfo callbackType = getCallbackType();
+    if (callbackType != null) {
+      if (callbackType.getKind() == ClassKind.ASYNC_RESULT && !useFutures) {
+        return MethodKind.CALLBACK;
+      } else {
+        return MethodKind.HANDLER;
+      }
+    }
+    if (returnType.getKind() == ClassKind.FUTURE && useFutures) {
+      return MethodKind.FUTURE;
     }
     return MethodKind.OTHER;
   }
@@ -354,7 +368,8 @@ public class MethodInfo implements Comparable<MethodInfo> {
       defaultMethod,
       new ArrayList<>(typeParams),
       deprecated,
-      deprecatedDesc);
+      deprecatedDesc,
+      useFutures);
   }
 
   @Override

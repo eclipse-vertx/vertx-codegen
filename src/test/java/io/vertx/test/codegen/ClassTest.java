@@ -15,6 +15,8 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.WriteStream;
 import io.vertx.test.codegen.annotations.EmptyAnnotation;
+import io.vertx.test.codegen.nextgen.MethodWithCallback;
+import io.vertx.test.codegen.nextgen.MethodWithFutures;
 import io.vertx.test.codegen.testapi.*;
 import io.vertx.test.codegen.testapi.constant.InterfaceWithConstants;
 import io.vertx.test.codegen.testapi.constant.InterfaceWithIllegalConstantType;
@@ -2565,4 +2567,15 @@ public class ClassTest extends ClassTestBase {
 
   }
 
+  @Test
+  public void testUseFutures() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(MethodWithFutures.class);
+    MethodInfo mi = model.getMethods().get(0);
+    assertEquals(mi.getKind(), MethodKind.FUTURE);
+  }
+
+  @Test
+  public void testUseIllegalCallbacks() throws Exception {
+    assertGenInvalid(MethodWithCallback.class);
+  }
 }
