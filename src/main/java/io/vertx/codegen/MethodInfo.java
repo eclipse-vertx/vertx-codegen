@@ -90,7 +90,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
       if (lastParamType.getKind() == ClassKind.HANDLER) {
         TypeInfo typeArg = ((ParameterizedTypeInfo) lastParamType).getArgs().get(0);
         if (typeArg.getKind() == ClassKind.ASYNC_RESULT) {
-          return MethodKind.FUTURE;
+          return MethodKind.CALLBACK;
         } else {
           return MethodKind.HANDLER;
         }
