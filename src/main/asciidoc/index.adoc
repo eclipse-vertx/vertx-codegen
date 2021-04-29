@@ -17,7 +17,7 @@ of API types are grouped in modules.
 
 === Modules
 
-A module contains a collection of Vert.x API and data objects declarations, some shim uses modules for organizing
+A module contains a collection of Vert.x API and data objects declarations., some shim uses modules for organizing
 and loading the Vert.x api:
 
 - the JavaScript shim uses https://en.wikipedia.org/wiki/CommonJS[CommonJS] modules
@@ -338,6 +338,8 @@ Callback parameters are allowed, i.e types declaring `io.vertx.core.Handler<E>` 
 . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
 a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
 
+Future parameters are allowed, i.e types declaring `io.vertx.core.Future<T>` where `<T>` is valid if and only if `Handler<AsyncResult<T>>` is valid
+
 Function parameters are allowed, i.e types declaring `java.util.function.Function<E, R>` where `<E>` is defined to
 be same than for handlers and `<R>` can be:
 
@@ -368,7 +370,8 @@ The following return types are allowed:
 . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
 a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
 . an `Handler<T>` where T is is a among the method parameter types
-. an `Handler<AsyncResult<T>>` where T is is a among the method parameter types
+. an `Handler<AsyncResult<T>>` where `<T>` is a among the method parameter types
+.  a `io.vertx.core.Future<T>` where `<T>` is valid if and only if `Handler<AsyncResult<T>>` is valid
 
 ==== Method overloading
 
@@ -460,6 +463,44 @@ void write(@Nullable String s, String encoding);
 ----
 
 is permitted because the number of parameters differs.
+
+=== Asynchronous operations
+
+Asynchronous operations can be declared using method with callback or method returning futures.
+
+The default mode declares asynchronous operations with a method having a trailing callback, e.g
+
+[source,java]
+----
+// A callback methods that declares an synchronous operation yielding to a buffer or a failure
+void getValue(Handler<AsyncResult<Buffer>> handler);
+----
+
+Callback methods can have a future companion method with a future returning signature:
+
+[source,java]
+----
+Future<Buffer> getValue();
+----
+
+Such method is ignored by codegen because it represents the same asynchronous operation declared by the handler above.
+
+This specific schemes was developed with backward compatibility of Vert.x 3 and Vert.x modules that were developed
+in Vert.x 3 and still available in Vert.x 4 use it.
+
+New Vert.x modules developed exclusively for Vert.x 4 can declare methods with only future returning signatures.
+
+The module needs to be declared accordingly:
+
+[source,java]
+----
+@ModuleGen(name = "acme", groupPackage="com.acme", useFutures = true)
+package com.acme.myservice;
+
+import io.vertx.codegen.annotations.ModuleGen;
+----
+
+Then asynchronous operation only need to return a Vert.x future.
 
 === Static methods
 
