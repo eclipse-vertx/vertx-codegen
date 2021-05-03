@@ -291,6 +291,11 @@ The following set _`Return`_ of types are permitted as return types from any API
 * the set _`JavaType`_
 * type `java.util.List<C>`, `java.util.Set<C>` or `java.util.Map<String, C>` where `C` belongs to `ContainerValueType`
 
+In addition, when the module uses the future style
+
+* `io.vertx.core.Future<HA>` where `HA` contains
+  * the set _`Return`_ where `void` is interpreted as `java.lang.Void` minus `java.lang.Throwable`
+
 The following set _`Param`_ of types are permitted as parameters to any API method:
 
 * the set _`Basic`_
@@ -310,17 +315,16 @@ The following set _`Param`_ of types are permitted as parameters to any API meth
     * the set _`JavaType`_
 * type `java.util.List<C>`, `java.util.Set<C>` or `java.util.Map<String, C>` where `C` belongs to `ContainerValueType`
 
-In addition any _`Api_ method can have as parameter:
+In addition,
+
+* `java.util.Function<T, R>` where  `T` contains _`Return`_ and `R` contains _`Param`_
+
+when the module uses the callback style
 
 * `io.vertx.java.core.Handler<io.vertx.java.core.AsyncResult<HA>>` where `HA` contains
     * the set _`Return`_ where `void` is interpreted as `java.lang.Void` minus `java.lang.Throwable`
 * `io.vertx.java.core.Handler<H>` where `H` contains
     * the set _`Return`_ where `void` is interpreted as `java.lang.Void`
-* `java.util.Function<T, R>` where  `T` contains _`Return`_ and `R` contains _`Param`_
-
-Notes:
-
-* Why no support for data object in `Map` param values ?
 
 ### Instance Methods
 
@@ -402,12 +406,10 @@ package com.acme.myservice;
 The group package must be a prefix of the annotated module, it defines the naming of the generate packages o
  for the modules that belongs to the same group, in this case:
 
-- `com.acme.groovy...` for Groovy API
 - `com.acme.rxjava...` for RxJava API
 
 For this particular `com.acme.myservice` module we have:
 
-- `com.acme.groovy.myservice` for Groovy API
 - `com.acme.rxjava.myservice` for RxJava API
 
 Vert.x Apis uses the `io.vertx` group package and `vertx-XYZ` name, this naming is _exclusively_ reserved
@@ -415,6 +417,14 @@ to Vert.x Apis.
 
 NOTE: using Maven coordinates for name and group package is encouraged: the name corresponding to the
 Maven _artifactId_ and the group package corresponding to the `groupId`.
+
+The module declares also whether the module uses callback style or future style API, by default the callback style
+is used, to declare a future style instead use
+
+```
+@ModuleGen(name = "acme", groupPackage="com.acme", useFutures=true)
+package com.acme.myservice;
+```
 
 ## Data objects
 
