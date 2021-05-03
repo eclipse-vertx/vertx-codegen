@@ -16,8 +16,13 @@ public enum MethodKind {
   HANDLER,
 
   /**
-   * A method has a future kind when it has at least one parameter and its last parameter
+   * The method has a callback kind when it has at least one parameter and its last parameter
    * is a parameterized handler type having a <i>async_result</i> parameterized type argument.
+   */
+  CALLBACK,
+
+  /**
+   * The method has a future kind when it return type is a parameterized {@code io.vertx.core.Future} parameterized type argument.
    */
   FUTURE,
 

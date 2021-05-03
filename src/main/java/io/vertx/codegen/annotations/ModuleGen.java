@@ -54,4 +54,10 @@ public @interface ModuleGen {
    */
   String groupPackage();
 
+  /**
+   * @return {@code true} when asynchronous operations are declared by {@code Future<T>} returning signatures, {@code false}
+   *          when they are declared by {@code Handler<AsyncResult<T>>} callback signatures
+   */
+  boolean useFutures() default false;
+
 }

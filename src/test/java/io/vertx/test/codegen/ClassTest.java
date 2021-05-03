@@ -15,6 +15,8 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.WriteStream;
 import io.vertx.test.codegen.annotations.EmptyAnnotation;
+import io.vertx.test.codegen.nextgen.MethodWithCallback;
+import io.vertx.test.codegen.nextgen.MethodWithFutures;
 import io.vertx.test.codegen.testapi.*;
 import io.vertx.test.codegen.testapi.constant.InterfaceWithConstants;
 import io.vertx.test.codegen.testapi.constant.InterfaceWithIllegalConstantType;
@@ -657,7 +659,7 @@ public class ClassTest extends ClassTestBase {
     assertEquals(5, model.getMethods().size());
 
     MethodInfo method = model.getMethods().get(0);
-    checkMethod(method, "methodWithHandlerParams", 17, "void", MethodKind.FUTURE);
+    checkMethod(method, "methodWithHandlerParams", 17, "void", MethodKind.CALLBACK);
     List<ParamInfo> params = method.getParams();
     checkParam(params.get(0), "byteHandler", new TypeLiteral<Handler<AsyncResult<Byte>>>() {});
     checkParam(params.get(1), "shortHandler", new TypeLiteral<Handler<AsyncResult<Short>>>() {});
@@ -678,7 +680,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(16), "objectHandler", new TypeLiteral<Handler<AsyncResult<Object>>>(){});
 
     method = model.getMethods().get(1);
-    checkMethod(method, "methodWithListHandlerParams", 16, "void", MethodKind.FUTURE);
+    checkMethod(method, "methodWithListHandlerParams", 16, "void", MethodKind.CALLBACK);
     params = method.getParams();
     checkParam(params.get(0), "listByteHandler", new TypeLiteral<Handler<AsyncResult<List<Byte>>>>() {});
     checkParam(params.get(1), "listShortHandler", new TypeLiteral<Handler<AsyncResult<List<Short>>>>() {});
@@ -699,7 +701,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(15), "listObjectHandler", new TypeLiteral<Handler<AsyncResult<List<Object>>>>(){});
 
     method = model.getMethods().get(2);
-    checkMethod(method, "methodWithSetHandlerParams", 16, "void", MethodKind.FUTURE);
+    checkMethod(method, "methodWithSetHandlerParams", 16, "void", MethodKind.CALLBACK);
     params = method.getParams();
     checkParam(params.get(0), "setByteHandler", new TypeLiteral<Handler<AsyncResult<Set<Byte>>>>() {});
     checkParam(params.get(1), "setShortHandler", new TypeLiteral<Handler<AsyncResult<Set<Short>>>>() {});
@@ -720,7 +722,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(15), "setObjectHandler", new TypeLiteral<Handler<AsyncResult<Set<Object>>>>(){});
 
     method = model.getMethods().get(3);
-    checkMethod(method, "methodWithMapHandlerParams", 16, "void", MethodKind.FUTURE);
+    checkMethod(method, "methodWithMapHandlerParams", 16, "void", MethodKind.CALLBACK);
     params = method.getParams();
     checkParam(params.get(0), "mapByteHandler", new TypeLiteral<Handler<AsyncResult<Map<String, Byte>>>>() {});
     checkParam(params.get(1), "mapShortHandler", new TypeLiteral<Handler<AsyncResult<Map<String, Short>>>>() {});
@@ -741,7 +743,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(15), "mapObjectHandler", new TypeLiteral<Handler<AsyncResult<Map<String, Object>>>>(){});
 
     method = model.getMethods().get(4);
-    checkMethod(method, "methodWithGenericHandlerParams", 16, "void", MethodKind.FUTURE);
+    checkMethod(method, "methodWithGenericHandlerParams", 16, "void", MethodKind.CALLBACK);
     params = method.getParams();
     checkParam(params.get(0), "genericByteHandler", new TypeLiteral<Handler<AsyncResult<GenericInterface<Byte>>>>() {});
     checkParam(params.get(1), "genericShortHandler", new TypeLiteral<Handler<AsyncResult<GenericInterface<Short>>>>() {});
@@ -786,7 +788,7 @@ public class ClassTest extends ClassTestBase {
       List<MethodInfo> methods = model.getMethods();
       assertEquals(1, methods.size());
       MethodInfo method = methods.get(0);
-      checkMethod(method, "method", 1, "void", MethodKind.FUTURE);
+      checkMethod(method, "method", 1, "void", MethodKind.CALLBACK);
       assertEquals("the_handler", method.getParam(0).getName());
     }
   }
@@ -802,10 +804,10 @@ public class ClassTest extends ClassTestBase {
       List<MethodInfo> methods = model.getMethods();
       assertEquals(2, methods.size());
       MethodInfo method = methods.get(0);
-      checkMethod(method, "method", 1, model.getType().getName(), MethodKind.FUTURE, MethodCheck.FLUENT);
+      checkMethod(method, "method", 1, model.getType().getName(), MethodKind.CALLBACK, MethodCheck.FLUENT);
       assertEquals("the_handler", method.getParam(0).getName());
       method = methods.get(1);
-      checkMethod(method, "method", 2, model.getType().getName(), MethodKind.FUTURE, MethodCheck.FLUENT);
+      checkMethod(method, "method", 2, model.getType().getName(), MethodKind.CALLBACK, MethodCheck.FLUENT);
       assertEquals("s", method.getParam(0).getName());
       assertEquals("the_handler", method.getParam(1).getName());
     }
@@ -822,12 +824,12 @@ public class ClassTest extends ClassTestBase {
       List<MethodInfo> methods = model.getMethods();
       assertEquals(1, methods.size());
       MethodInfo method = methods.get(0);
-      checkMethod(method, "method1", 1, "void", MethodKind.FUTURE);
+      checkMethod(method, "method1", 1, "void", MethodKind.CALLBACK);
       assertEquals("the_handler", method.getParam(0).getName());
       methods = model.getAnyJavaTypeMethods();
       assertEquals(1, methods.size());
       method = methods.get(0);
-      checkMethod(method, "method2", 1, "void", MethodKind.FUTURE);
+      checkMethod(method, "method2", 1, "void", MethodKind.CALLBACK);
       assertEquals("the_handler", method.getParam(0).getName());
     }
   }
@@ -874,35 +876,35 @@ public class ClassTest extends ClassTestBase {
     checkMethod(model.getMethods().get(13), "regularDataObjectFuture", 0, new TypeLiteral<Future<TestDataObject>>() {}, MethodKind.OTHER);
     checkMethod(model.getMethods().get(14), "regularEnumFuture", 0, new TypeLiteral<Future<TestEnum>>() {}, MethodKind.OTHER);
 
-    checkMethod(model.getMethods().get(15), "byteFuture", 1, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(15), "byteFuture", 1, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(15).getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<Byte>>>(){});
-    checkMethod(model.getMethods().get(16), "shortFuture", 1, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(16), "shortFuture", 1, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(16).getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<Short>>>(){});
-    checkMethod(model.getMethods().get(17), "integerFuture", 1, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(17), "integerFuture", 1, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(17).getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<Integer>>>(){});
-    checkMethod(model.getMethods().get(18), "longFuture", 1, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(18), "longFuture", 1, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(18).getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<Long>>>(){});
-    checkMethod(model.getMethods().get(19), "floatFuture", 1, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(19), "floatFuture", 1, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(19).getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<Float>>>(){});
-    checkMethod(model.getMethods().get(20), "doubleFuture", 1, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(20), "doubleFuture", 1, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(20).getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<Double>>>(){});
-    checkMethod(model.getMethods().get(21), "booleanFuture", 1, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(21), "booleanFuture", 1, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(21).getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<Boolean>>>(){});
-    checkMethod(model.getMethods().get(22), "characterFuture", 1, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(22), "characterFuture", 1, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(22).getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<Character>>>(){});
-    checkMethod(model.getMethods().get(23), "stringFuture", 1, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(23), "stringFuture", 1, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(23).getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<String>>>(){});
-    checkMethod(model.getMethods().get(24), "vertxGenFuture", 1, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(24), "vertxGenFuture", 1, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(24).getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<VertxGenClass1>>>(){});
-    checkMethod(model.getMethods().get(25), "jsonObjectFuture", 1, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(25), "jsonObjectFuture", 1, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(25).getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<JsonObject>>>(){});
-    checkMethod(model.getMethods().get(26), "jsonArrayFuture", 1, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(26), "jsonArrayFuture", 1, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(26).getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<JsonArray>>>(){});
-    checkMethod(model.getMethods().get(27), "voidFuture", 1, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(27), "voidFuture", 1, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(27).getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<Void>>>(){});
-    checkMethod(model.getMethods().get(28), "dataObjectFuture", 1, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(28), "dataObjectFuture", 1, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(28).getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<TestDataObject>>>(){});
-    checkMethod(model.getMethods().get(29), "enumFuture", 1, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(29), "enumFuture", 1, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(29).getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<TestEnum>>>(){});
   }
 
@@ -930,7 +932,7 @@ public class ClassTest extends ClassTestBase {
     assertTrue(method.isContainingAnyJavaType());
 
     method = model.getAnyJavaTypeMethods().get(2);
-    checkMethod(method, "methodWithHandlerAsyncResultParams", 4, "void", MethodKind.FUTURE);
+    checkMethod(method, "methodWithHandlerAsyncResultParams", 4, "void", MethodKind.CALLBACK);
     params = method.getParams();
     checkParam(params.get(0), "socketHandler", new TypeLiteral<Handler<AsyncResult<Socket>>>(){});
     checkParam(params.get(1), "listSocketHandler", new TypeLiteral<Handler<AsyncResult<List<Socket>>>>(){});
@@ -1809,7 +1811,7 @@ public class ClassTest extends ClassTestBase {
     // Overriden methods
     checkMethod(methods.get(1), "foo", 0, String.class, MethodKind.OTHER);
     checkMethod(methods.get(2), "bar", 0, new TypeLiteral<List<String>>() {}, MethodKind.OTHER);
-    checkMethod(methods.get(3), "juu", 1, "void", MethodKind.FUTURE);
+    checkMethod(methods.get(3), "juu", 1, "void", MethodKind.CALLBACK);
     checkMethod(methods.get(4), "daa", 1, "void", MethodKind.HANDLER);
     checkMethod(methods.get(5), "collargol", 1, "void", MethodKind.OTHER);
     checkMethod(methods.get(6), "selfArg", 1, "void", MethodKind.OTHER);
@@ -1841,7 +1843,7 @@ public class ClassTest extends ClassTestBase {
     // Overriden methods
     checkMethod(methods.get(1), "foo", 0, new TypeLiteral<GenericInterface<T>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(2), "bar", 0, new TypeLiteral<List<GenericInterface<T>>>() {}, MethodKind.OTHER);
-    checkMethod(methods.get(3), "juu", 1, "void", MethodKind.FUTURE);
+    checkMethod(methods.get(3), "juu", 1, "void", MethodKind.CALLBACK);
     checkMethod(methods.get(4), "daa", 1, "void", MethodKind.HANDLER);
     checkMethod(methods.get(5), "collargol", 1, "void", MethodKind.OTHER);
     checkMethod(methods.get(6), "selfArg", 1, "void", MethodKind.OTHER);
@@ -1872,7 +1874,7 @@ public class ClassTest extends ClassTestBase {
     assertEquals(7, methods.size());
     checkMethod(methods.get(0), "foo", 0, String.class, MethodKind.OTHER);
     checkMethod(methods.get(1), "bar", 0, new TypeLiteral<List<String>>(){}, MethodKind.OTHER);
-    checkMethod(methods.get(2), "juu", 1, "void", MethodKind.FUTURE);
+    checkMethod(methods.get(2), "juu", 1, "void", MethodKind.CALLBACK);
     checkMethod(methods.get(3), "daa", 1, "void", MethodKind.HANDLER);
     checkMethod(methods.get(4), "collargol", 1, "void", MethodKind.OTHER);
     checkMethod(methods.get(5), "selfArg", 1, "void", MethodKind.OTHER);
@@ -2084,12 +2086,12 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testMethodHandlerAsyncResultParam() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(MethodWithHandlerAsyncResultParam.class);
-    checkMethod(model.getMethods().get(0), "foo_1", 1, "void", MethodKind.FUTURE);
-    checkMethod(model.getMethods().get(1), "foo_2", 2, "void", MethodKind.FUTURE);
-    checkMethod(model.getMethods().get(2), "foo_3", 2, "void", MethodKind.FUTURE);
-    checkMethod(model.getMethods().get(3), "foo_4", 1, MethodWithHandlerAsyncResultParam.class, MethodKind.FUTURE, MethodCheck.FLUENT);
-    checkMethod(model.getMethods().get(4), "foo_5", 2, MethodWithHandlerAsyncResultParam.class, MethodKind.FUTURE, MethodCheck.FLUENT);
-    checkMethod(model.getMethods().get(5), "foo_6", 2, MethodWithHandlerAsyncResultParam.class, MethodKind.FUTURE, MethodCheck.FLUENT);
+    checkMethod(model.getMethods().get(0), "foo_1", 1, "void", MethodKind.CALLBACK);
+    checkMethod(model.getMethods().get(1), "foo_2", 2, "void", MethodKind.CALLBACK);
+    checkMethod(model.getMethods().get(2), "foo_3", 2, "void", MethodKind.CALLBACK);
+    checkMethod(model.getMethods().get(3), "foo_4", 1, MethodWithHandlerAsyncResultParam.class, MethodKind.CALLBACK, MethodCheck.FLUENT);
+    checkMethod(model.getMethods().get(4), "foo_5", 2, MethodWithHandlerAsyncResultParam.class, MethodKind.CALLBACK, MethodCheck.FLUENT);
+    checkMethod(model.getMethods().get(5), "foo_6", 2, MethodWithHandlerAsyncResultParam.class, MethodKind.CALLBACK, MethodCheck.FLUENT);
     checkMethod(model.getMethods().get(6), "foo_7", 1, String.class.getName(), MethodKind.OTHER);
     checkMethod(model.getMethods().get(7), "foo_8", 2, "void", MethodKind.OTHER);
   }
@@ -2176,19 +2178,19 @@ public class ClassTest extends ClassTestBase {
     assertEquals(model.getReferencedTypes(), set(GenericInterfaceInfo));
     assertTrue(model.getSuperTypes().isEmpty());
     assertEquals(5, model.getMethods().size());
-    checkMethod(model.getMethods().get(0), "withType", 2, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(0), "withType", 2, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(0).getParams().get(0), "classType", new TypeLiteral<Class<T>>(){});
     checkParam(model.getMethods().get(0).getParams().get(1), "handler", new TypeLiteral<Handler<AsyncResult<T>>>(){});
-    checkMethod(model.getMethods().get(1), "withListType", 2, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(1), "withListType", 2, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(1).getParams().get(0), "classType", new TypeLiteral<Class<T>>(){});
     checkParam(model.getMethods().get(1).getParams().get(1), "handler", new TypeLiteral<Handler<AsyncResult<List<T>>>>(){});
-    checkMethod(model.getMethods().get(2), "withSetType", 2, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(2), "withSetType", 2, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(2).getParams().get(0), "classType", new TypeLiteral<Class<T>>(){});
     checkParam(model.getMethods().get(2).getParams().get(1), "handler", new TypeLiteral<Handler<AsyncResult<Set<T>>>>(){});
-    checkMethod(model.getMethods().get(3), "withMapType", 2, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(3), "withMapType", 2, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(3).getParams().get(0), "classType", new TypeLiteral<Class<T>>(){});
     checkParam(model.getMethods().get(3).getParams().get(1), "handler", new TypeLiteral<Handler<AsyncResult<Map<String, T>>>>(){});
-    checkMethod(model.getMethods().get(4), "withGenericType", 2, "void", MethodKind.FUTURE);
+    checkMethod(model.getMethods().get(4), "withGenericType", 2, "void", MethodKind.CALLBACK);
     checkParam(model.getMethods().get(4).getParams().get(0), "classType", new TypeLiteral<Class<T>>(){});
     checkParam(model.getMethods().get(4).getParams().get(1), "handler", new TypeLiteral<Handler<AsyncResult<GenericInterface<T>>>>(){});
   }
@@ -2559,10 +2561,21 @@ public class ClassTest extends ClassTestBase {
     assertEquals(ClassKind.OTHER, ((ParameterizedTypeInfo)myPojoHandler.getParam(0).getType()).getArg(0).getKind());
 
     MethodInfo myPojoAsyncResultHandler = model.getMethodMap().get("myPojoAsyncResultHandler").get(0);
-    checkMethod(myPojoAsyncResultHandler, "myPojoAsyncResultHandler", 1, "void", MethodKind.FUTURE);
+    checkMethod(myPojoAsyncResultHandler, "myPojoAsyncResultHandler", 1, "void", MethodKind.CALLBACK);
     checkParam(myPojoAsyncResultHandler.getParam(0), "handler", new TypeLiteral<Handler<AsyncResult<MyPojo>>>() {}.type.getTypeName(), ClassKind.HANDLER);
     assertEquals(ClassKind.OTHER, ((ParameterizedTypeInfo)((ParameterizedTypeInfo)myPojoAsyncResultHandler.getParam(0).getType()).getArg(0)).getArg(0).getKind());
 
   }
 
+  @Test
+  public void testUseFutures() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(MethodWithFutures.class);
+    MethodInfo mi = model.getMethods().get(0);
+    assertEquals(mi.getKind(), MethodKind.FUTURE);
+  }
+
+  @Test
+  public void testUseIllegalCallbacks() throws Exception {
+    assertGenInvalid(MethodWithCallback.class);
+  }
 }
