@@ -314,6 +314,10 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return this;
   }
 
+  public boolean isUseFutures() {
+    return useFutures;
+  }
+
   /**
    * @return the description of deprecated
    */
