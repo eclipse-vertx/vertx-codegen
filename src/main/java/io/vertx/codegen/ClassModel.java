@@ -440,7 +440,7 @@ public class ClassModel implements Model {
           } else {
             allowAnyJavaType = false;
           }
-          ConstantInfo cst = fieldMethod(elt, allowAnyJavaType);
+          ConstantInfo cst = fieldMethod(typeUtils, elt, allowAnyJavaType);
           if (cst != null) {
             cst.getType().collectImports(collectedTypes);
             constants.add(cst);
@@ -609,13 +609,13 @@ public class ClassModel implements Model {
     return null;
   }
 
-  private ConstantInfo fieldMethod(VariableElement modelField, boolean allowAnyJavaType) {
+  private ConstantInfo fieldMethod(Types typeUtils, VariableElement modelField, boolean allowAnyJavaType) {
     Set<Modifier> mods = modelField.getModifiers();
     if (!mods.contains(Modifier.PUBLIC)) {
       return null;
     }
     TypeInfo type = typeFactory.create(modelField.asType());
-    TypeValidator.validateConstantType(modelField, type, modelField.asType(),allowAnyJavaType);
+    TypeValidator.validateConstantType(typeUtils, modelField, type, modelField.asType(),allowAnyJavaType);
     Doc doc = docFactory.createDoc(modelField);
     return new ConstantInfo(doc, modelField.getSimpleName().toString(), type);
   }

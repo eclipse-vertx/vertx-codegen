@@ -7,10 +7,12 @@ import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.type.TypeVariableInfo;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,13 +51,13 @@ class TypeValidator {
     throw new GenException(elem, "type " + type + " is not legal for use for a return type in code generation");
   }
 
-  static void validateConstantType(VariableElement elem, TypeInfo type, TypeMirror typeMirror, boolean allowAnyJavaType) {
+  static void validateConstantType(Types typeUtils, VariableElement elem, TypeInfo type, TypeMirror typeMirror, boolean allowAnyJavaType) {
     if (isValidNonCallableType(elem, type, false, true, true, allowAnyJavaType)) {
       return;
     }
     // Workaround for Kotlin companion objects.
     // https://github.com/vert-x3/vertx-lang-kotlin/issues/93
-    if (isValidKotlinCompanionObjet(elem, type)) {
+    if (isValidKotlinCompanionObject(typeUtils, elem)) {
       return;
     }
     throw new GenException(elem, "type " + type + " is not legal for use for a constant type in code generation");
@@ -116,14 +118,18 @@ class TypeValidator {
     return false;
   }
 
-  private static boolean isValidKotlinCompanionObjet(Element elem, TypeInfo type) {
-    String qualifiedName = type.getName(); // e.g. io.vertx.test.codegen.testapi.kotlin.InterfaceWithCompanionObject.Companion
-    String simpleName = type.getSimpleName(); // e.g. Companion
-    String enclosingElementName = elem.getEnclosingElement().getSimpleName().toString(); // e.g. InterfaceWithCompanionObject
-
-    // Ensure the object is declared in the enclosing element.
-    // (This only checks the last 2 segments; ideally we'd check against the enclosing element's qualified name.)
-    return qualifiedName.endsWith(enclosingElementName + "." + simpleName);
+  /**
+   * @return check whether {@code constantElt} type is an inner type of the same class of the constant declaration
+   */
+  private static boolean isValidKotlinCompanionObject(Types typeUtils, VariableElement constantElt) {
+    TypeMirror contantType = constantElt.asType();
+    Element constantTypeContainerElt = typeUtils.asElement(contantType).getEnclosingElement();
+    if (constantTypeContainerElt.getKind() == ElementKind.INTERFACE) {
+      TypeMirror constantTypeContainerType = constantTypeContainerElt.asType();
+      TypeMirror constantContainerType = constantElt.getEnclosingElement().asType();
+      return typeUtils.isSameType(constantTypeContainerType, constantContainerType);
+    }
+    return false;
   }
 
   private static boolean isValidEnum(TypeInfo info) {
