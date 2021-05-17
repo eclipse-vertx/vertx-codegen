@@ -141,9 +141,9 @@ public class HelperTest {
   @Test
   public void testResolveMethodSignature() throws Exception {
     Utils.assertProcess((processingEnv, roundEnv) -> {
-      assertSignature(processingEnv, "java.util.Locale#createConstant", "java.util.Locale", "createConstant", "java.lang.String", "java.lang.String");
-      assertSignature(processingEnv, "java.util.Locale#createConstant(String,String)", "java.util.Locale", "createConstant", "java.lang.String", "java.lang.String");
-      assertSignature(processingEnv, "java.util.Locale#createConstant(java.lang.String,java.lang.String)", "java.util.Locale", "createConstant", "java.lang.String", "java.lang.String");
+      assertSignature(processingEnv, "java.util.Locale#getInstance", "java.util.Locale", "getInstance", "java.lang.String", "java.lang.String", "java.lang.String");
+      assertSignature(processingEnv, "java.util.Locale#getInstance(String,String,String)", "java.util.Locale", "getInstance", "java.lang.String", "java.lang.String", "java.lang.String");
+      assertSignature(processingEnv, "java.util.Locale#getInstance(java.lang.String,java.lang.String,java.lang.String)", "java.util.Locale", "getInstance", "java.lang.String", "java.lang.String", "java.lang.String");
       assertSignature(processingEnv, "java.util.List#containsAll", "java.util.List", "containsAll", "java.util.Collection<?>");
       assertSignature(processingEnv, "java.util.List#containsAll(Collection)", "java.util.List", "containsAll", "java.util.Collection<?>");
       assertSignature(processingEnv, "java.util.List#containsAll(java.util.Collection)", "java.util.List", "containsAll", "java.util.Collection<?>");
@@ -158,9 +158,9 @@ public class HelperTest {
     Utils.assertProcess((processingEnv, roundEnv) -> {
       TypeElement localeElt = processingEnv.getElementUtils().getTypeElement("java.util.Locale");
       TypeElement listElt = processingEnv.getElementUtils().getTypeElement("java.util.List");
-      assertSignature(processingEnv, localeElt, "#createConstant", "java.util.Locale", "createConstant", "java.lang.String", "java.lang.String");
-      assertSignature(processingEnv, localeElt, "#createConstant(String,String)", "java.util.Locale", "createConstant", "java.lang.String", "java.lang.String");
-      assertSignature(processingEnv, localeElt, "#createConstant(java.lang.String,java.lang.String)", "java.util.Locale", "createConstant", "java.lang.String", "java.lang.String");
+      assertSignature(processingEnv, localeElt, "#getInstance", "java.util.Locale", "getInstance", "java.lang.String", "java.lang.String", "java.lang.String");
+      assertSignature(processingEnv, localeElt, "#getInstance(String,String,String)", "java.util.Locale", "getInstance", "java.lang.String", "java.lang.String", "java.lang.String");
+      assertSignature(processingEnv, localeElt, "#getInstance(java.lang.String,java.lang.String,java.lang.String)", "java.util.Locale", "getInstance", "java.lang.String", "java.lang.String", "java.lang.String");
       assertSignature(processingEnv, listElt, "#containsAll", "java.util.List", "containsAll", "java.util.Collection<?>");
       assertSignature(processingEnv, listElt, "#containsAll(Collection)", "java.util.List", "containsAll", "java.util.Collection<?>");
       assertSignature(processingEnv, listElt, "#containsAll(java.util.Collection)", "java.util.List", "containsAll", "java.util.Collection<?>");
