@@ -48,11 +48,13 @@ public class MethodInfo implements Comparable<MethodInfo> {
   private boolean deprecated;
   private Text deprecatedDesc;
   private boolean useFutures;
+  private boolean methodOverride;
 
   public MethodInfo(Set<ClassTypeInfo> ownerTypes, String name,
                     TypeInfo returnType, Text returnDescription, boolean fluent,  boolean cacheReturn,
                     List<ParamInfo> params, String comment, Doc doc, boolean staticMethod, boolean defaultMethod,
-                    List<TypeParamInfo.Method> typeParams, boolean deprecated, Text deprecatedDesc, boolean useFutures) {
+                    List<TypeParamInfo.Method> typeParams, boolean deprecated, Text deprecatedDesc, boolean useFutures,
+                    boolean methodOverride) {
 
     this.useFutures = useFutures;
     this.comment = comment;
@@ -69,6 +71,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
     this.ownerTypes = ownerTypes;
     this.deprecated = deprecated;
     this.deprecatedDesc = deprecatedDesc;
+    this.methodOverride = methodOverride;
   }
 
   public String getName() {
@@ -318,6 +321,10 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return useFutures;
   }
 
+  public boolean isMethodOverride() {
+    return methodOverride;
+  }
+
   /**
    * @return the description of deprecated
    */
@@ -373,7 +380,8 @@ public class MethodInfo implements Comparable<MethodInfo> {
       new ArrayList<>(typeParams),
       deprecated,
       deprecatedDesc,
-      useFutures);
+      useFutures,
+      methodOverride);
   }
 
   @Override
