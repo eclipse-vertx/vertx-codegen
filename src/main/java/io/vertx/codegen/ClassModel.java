@@ -794,7 +794,6 @@ public class ClassModel implements Model {
     }
 
     boolean methodDeprecated = modelMethod.getAnnotation(Deprecated.class) != null || deprecatedDesc != null;
-    boolean methodOverride = modelMethod.getAnnotation(Override.class) != null;
     String methodName = modelMethod.getSimpleName().toString();
 
     MethodInfo methodInfo = createMethodInfo(
@@ -814,8 +813,7 @@ public class ClassModel implements Model {
       declaringElt,
       methodDeprecated,
       methodDeprecatedDesc,
-      getModule().useFutures,
-      methodOverride);
+      getModule().useFutures);
 
     // Check we don't hide another method, we don't check overrides but we are more
     // interested by situations like diamond inheritance of the same method, in this case
@@ -848,9 +846,9 @@ public class ClassModel implements Model {
                                         Text returnDescription,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
                                         ExecutableElement methodElt, boolean isStatic, boolean isDefault, ArrayList<TypeParamInfo.Method> typeParams,
-                                        TypeElement declaringElt, boolean methodDeprecated, Text methodDeprecatedDesc, boolean useFutures, boolean methodOverride) {
+                                        TypeElement declaringElt, boolean methodDeprecated, Text methodDeprecatedDesc, boolean useFutures) {
     return new MethodInfo(ownerTypes, methodName, returnType, returnDescription,
-      isFluent, isCacheReturn, mParams, comment, doc, isStatic, isDefault, typeParams, methodDeprecated, methodDeprecatedDesc, useFutures, methodOverride);
+      isFluent, isCacheReturn, mParams, comment, doc, isStatic, isDefault, typeParams, methodDeprecated, methodDeprecatedDesc, useFutures);
   }
 
   // This is a hook to allow different model implementations to check methods in different ways
