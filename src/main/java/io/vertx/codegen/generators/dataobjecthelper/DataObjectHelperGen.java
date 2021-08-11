@@ -84,14 +84,23 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         "  private static final Base64.Encoder BASE64_ENCODER;\n" +
         "\n" +
         "  static {\n");
-      if (model.isBase64UrlBuffers()) {
-        writer.print(
-          "    BASE64_DECODER = Base64.getDecoder();\n" +
-          "    BASE64_ENCODER = Base64.getEncoder();\n");
-      } else {
-        writer.print(
-          "    BASE64_DECODER = JsonUtil.BASE64_DECODER;\n" +
-          "    BASE64_ENCODER = JsonUtil.BASE64_ENCODER;\n");
+      switch (model.getBase64Type()) {
+        default:
+        case "system":
+          writer.print(
+            "    BASE64_DECODER = JsonUtil.BASE64_DECODER;\n" +
+            "    BASE64_ENCODER = JsonUtil.BASE64_ENCODER;\n");
+          break;
+        case "base64":
+          writer.print(
+            "    BASE64_DECODER = Base64.getDecoder();\n" +
+            "    BASE64_ENCODER = Base64.getEncoder();\n");
+          break;
+        case "base64url":
+          writer.print(
+            "    BASE64_DECODER = Base64.getUrlDecoder();\n" +
+            "    BASE64_ENCODER = Base64.getUrlEncoder();\n");
+          break;
       }
       writer.print("  }\n");
       writer.print("\n");

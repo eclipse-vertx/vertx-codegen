@@ -82,11 +82,18 @@ public @interface DataObject {
   Class<? extends Case> jsonPropertyNameFormatter() default LowerCamelCase.class;
 
   /**
-   * Returns the expected Base64 (RFC 4648) alphabet to be used. The default is {@code false}. This will use vert.x
-   * default alphabet, (RFC 4648 Table 2) also known as {@code base64url}.
+   * Returns the expected Base64 (RFC 4648) type to be used. The default is {@code "system"}. This is
+   * vert.x default alphabet, usually (RFC 4648 Table 2) also known as {@code base64url}.
    *
-   * @return {@code true} if generated converters for buffers should default to base64 basic encoding
-   * (RFC 4648 Table 1), else base64url (RFC 4648 Table 2).
+   * Allowed values are:
+   *
+   * <ul>
+   *   <li>{@code "system"} - Use the default type as defined in: {@link io.vertx.core.json.impl.JsonUtil}</li>
+   *   <li>{@code "base64"} - Base64 Basic as defined in (RFC 4648 Table 1) </li>
+   *   <li>{@code "base64url"} - Base64 URL and Filename Safe as defined in (RFC 4648 Table 2) </li>
+   * </ul>
+   *
+   * @return if generated converters are enabled, buffers should default to the configured type.
    */
-  boolean base64BasicBuffers() default false;
+  String base64Type() default "system";
 }
