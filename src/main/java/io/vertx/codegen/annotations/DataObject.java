@@ -82,8 +82,11 @@ public @interface DataObject {
   Class<? extends Case> jsonPropertyNameFormatter() default LowerCamelCase.class;
 
   /**
-   * @return true if buffers codec should default to base64 basic encoding.
-   * Default {@code false}, use the platform default.
+   * Returns the expected Base64 (RFC 4648) alphabet to be used. The default is {@code false}. This will use vert.x
+   * default alphabet, (RFC 4648 Table 2) also known as {@code base64url}.
+   *
+   * @return {@code true} if generated converters for buffers should default to base64 basic encoding
+   * (RFC 4648 Table 1), else base64url (RFC 4648 Table 2).
    */
   boolean base64BasicBuffers() default false;
 }
