@@ -52,6 +52,7 @@ public class DataObjectModel implements Model {
   private boolean generateConverter;
   private boolean inheritConverter;
   private boolean publicConverter;
+  private boolean base64UrlBuffers;
   private int constructors;
   // ----------------
   private boolean deprecated;
@@ -149,6 +150,10 @@ public class DataObjectModel implements Model {
     return publicConverter;
   }
 
+  public boolean isBase64UrlBuffers() {
+    return base64UrlBuffers;
+  }
+
   public boolean isSerializable() { return type.isDataObjectHolder() && type.getDataObject().isSerializable(); }
 
   public boolean isDeserializable() { return type.isDataObjectHolder() && type.getDataObject().isDeserializable(); }
@@ -188,6 +193,7 @@ public class DataObjectModel implements Model {
     vars.put("generateConverter", generateConverter);
     vars.put("inheritConverter", inheritConverter);
     vars.put("publicConverter", publicConverter);
+    vars.put("base64UrlBuffers", base64UrlBuffers);
     vars.put("concrete", concrete);
     vars.put("isClass", isClass);
     vars.put("properties", propertyMap.values());
@@ -226,6 +232,7 @@ public class DataObjectModel implements Model {
     this.generateConverter = ann.generateConverter();
     this.publicConverter = ann.publicConverter();
     this.inheritConverter = ann.inheritConverter();
+    this.base64UrlBuffers = ann.base64BasicBuffers();
     this.isClass = modelElt.getKind() == ElementKind.CLASS;
     this.concrete = isClass && !modelElt.getModifiers().contains(Modifier.ABSTRACT);
     try {

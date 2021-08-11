@@ -81,4 +81,9 @@ public @interface DataObject {
    */
   Class<? extends Case> jsonPropertyNameFormatter() default LowerCamelCase.class;
 
+  /**
+   * @return true if buffers codec should default to base64 basic encoding.
+   * Default {@code false}, use the platform default.
+   */
+  boolean base64BasicBuffers() default false;
 }

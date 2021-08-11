@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.impl.JsonUtil;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 
 /**
  * Converter and mapper for {@link io.vertx.codegen.testmodel.DataObjectWithNestedBuffer}.
@@ -13,12 +14,20 @@ import java.time.format.DateTimeFormatter;
 public class DataObjectWithNestedBufferConverter {
 
 
+  private static final Base64.Decoder BASE64_DECODER;
+  private static final Base64.Encoder BASE64_ENCODER;
+
+  static {
+    BASE64_DECODER = JsonUtil.BASE64_DECODER;
+    BASE64_ENCODER = JsonUtil.BASE64_ENCODER;
+  }
+
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, DataObjectWithNestedBuffer obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
       switch (member.getKey()) {
         case "buffer":
           if (member.getValue() instanceof String) {
-            obj.setBuffer(io.vertx.core.buffer.Buffer.buffer(JsonUtil.BASE64_DECODER.decode((String)member.getValue())));
+            obj.setBuffer(io.vertx.core.buffer.Buffer.buffer(BASE64_DECODER.decode((String)member.getValue())));
           }
           break;
         case "buffers":
@@ -26,7 +35,7 @@ public class DataObjectWithNestedBufferConverter {
             java.util.ArrayList<io.vertx.core.buffer.Buffer> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof String)
-                list.add(io.vertx.core.buffer.Buffer.buffer(JsonUtil.BASE64_DECODER.decode((String)item)));
+                list.add(io.vertx.core.buffer.Buffer.buffer(BASE64_DECODER.decode((String)item)));
             });
             obj.setBuffers(list);
           }
@@ -46,11 +55,11 @@ public class DataObjectWithNestedBufferConverter {
 
   public static void toJson(DataObjectWithNestedBuffer obj, java.util.Map<String, Object> json) {
     if (obj.getBuffer() != null) {
-      json.put("buffer", JsonUtil.BASE64_ENCODER.encodeToString(obj.getBuffer().getBytes()));
+      json.put("buffer", BASE64_ENCODER.encodeToString(obj.getBuffer().getBytes()));
     }
     if (obj.getBuffers() != null) {
       JsonArray array = new JsonArray();
-      obj.getBuffers().forEach(item -> array.add(JsonUtil.BASE64_ENCODER.encodeToString(item.getBytes())));
+      obj.getBuffers().forEach(item -> array.add(BASE64_ENCODER.encodeToString(item.getBytes())));
       json.put("buffers", array);
     }
     if (obj.getNested() != null) {
