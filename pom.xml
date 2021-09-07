@@ -1,264 +1,505 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-  <parent>
-    <groupId>io.vertx</groupId>
-    <artifactId>vertx-parent</artifactId>
-    <version>19</version>
-  </parent>
-
-  <modelVersion>4.0.0</modelVersion>
-
-  <artifactId>vertx-codegen</artifactId>
-  <version>3.9.9-SNAPSHOT</version>
-
-  <properties>
-    <asciidoc.dir>${project.basedir}/src/main/asciidoc</asciidoc.dir>
-    <stack.version>3.9.9-SNAPSHOT</stack.version>
-  </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
+      
+    <parent>
+            
         <groupId>io.vertx</groupId>
-        <artifactId>vertx-dependencies</artifactId>
-        <version>${stack.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
+            
+        <artifactId>vertx-parent</artifactId>
+            
+        <version>19</version>
+          
+    </parent>
+      
+    <modelVersion>4.0.0</modelVersion>
+      
+    <artifactId>vertx-codegen</artifactId>
+      
+    <version>3.9.9</version>
+      
+    <properties>
+            
+        <asciidoc.dir>${project.basedir}/src/main/asciidoc</asciidoc.dir>
+            
+        <stack.version>3.9.9</stack.version>
+          
+    </properties>
+      
+    <dependencyManagement>
+            
+        <dependencies>
+                  
+            <dependency>
+                        
+                <groupId>io.vertx</groupId>
+                        
+                <artifactId>vertx-dependencies</artifactId>
+                        
+                <version>${stack.version}</version>
+                        
+                <type>pom</type>
+                        
+                <scope>import</scope>
+                      
+            </dependency>
+                
+        </dependencies>
+          
+    </dependencyManagement>
+      
+    <dependencies>
+            
+        <dependency>
+                  
+            <groupId>io.vertx</groupId>
+                  
+            <artifactId>vertx-docgen</artifactId>
+                  
+            <optional>true</optional>
+                
+        </dependency>
+            
+        <dependency>
+                  
+            <groupId>com.fasterxml.jackson.core</groupId>
+                  
+            <artifactId>jackson-core</artifactId>
+                
+        </dependency>
+            
+        <dependency>
+                  
+            <groupId>com.fasterxml.jackson.core</groupId>
+                  
+            <artifactId>jackson-databind</artifactId>
+                
+        </dependency>
+            
+        <dependency>
+                  
+            <groupId>org.mvel</groupId>
+                  
+            <artifactId>mvel2</artifactId>
+                  
+            <version>2.3.1.Final</version>
+                
+        </dependency>
+            
+        <dependency>
+                  
+            <groupId>junit</groupId>
+                  
+            <artifactId>junit</artifactId>
+                  
+            <version>4.13.1</version>
+                  
+            <scope>test</scope>
+                
+        </dependency>
+          
     </dependencies>
-  </dependencyManagement>
-
-  <dependencies>
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-docgen</artifactId>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.mvel</groupId>
-      <artifactId>mvel2</artifactId>
-      <version>2.3.1.Final</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>default-compile</id>
-              <configuration>
-                <annotationProcessors>
-                  <annotationProcessor>io.vertx.docgen.JavaDocGenProcessor</annotationProcessor>
-                </annotationProcessors>
-                <compilerArgs>
-                  <arg>-Adocgen.source=${asciidoc.dir}</arg>
-                  <arg>-Adocgen.output=${project.build.directory}/asciidoc/java</arg>
-                </compilerArgs>
-                <excludes>
-                  <exclude>**/TreeTypeInternal.java</exclude>
-                </excludes>
-                <generatedSourcesDirectory>${generated.dir}</generatedSourcesDirectory>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <artifactId>maven-jar-plugin</artifactId>
-          <configuration>
-            <archive>
-              <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-            </archive>
-          </configuration>
-          <executions>
-            <execution>
-              <id>default-jar</id>
-              <configuration>
-                <excludes>
-                  <exclude>io/vertx/core/**</exclude>
-                  <exclude>io/vertx/codegen/testmodel/**</exclude>
-                  <exclude>com/acme/**</exclude>
-                  <exclude>examples/**</exclude>
-                </excludes>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <configuration>
-            <additionalClasspathElements>
-              <additionalClasspathElement>${project.build.testSourceDirectory}</additionalClasspathElement>
-              <additionalClasspathElement>${project.basedir}/src/test/testgen1</additionalClasspathElement>
-              <additionalClasspathElement>${project.basedir}/src/test/testgen2</additionalClasspathElement>
-              <additionalClasspathElement>${project.basedir}/src/test/testgen3</additionalClasspathElement>
-              <additionalClasspathElement>${project.basedir}/src/test/testgen4</additionalClasspathElement>
-              <additionalClasspathElement>${project.basedir}/src/test/testgen5</additionalClasspathElement>
-              <additionalClasspathElement>${project.basedir}/src/test/testgen6</additionalClasspathElement>
-              <additionalClasspathElement>${project.basedir}/src/test/testgen7</additionalClasspathElement>
-              <additionalClasspathElement>${project.basedir}/src/test/testgen8</additionalClasspathElement>
-            </additionalClasspathElements>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <configuration>
-            <excludes>
-              <exclude>io/vertx/core/**</exclude>
-              <exclude>examples/**</exclude>
-            </excludes>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.9.1</version>
-        <executions>
-          <execution>
-            <id>add-source</id>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>${basedir}/src/examples/java</source>
-              </sources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>add-test-source</id>
-            <goals>
-              <goal>add-test-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>${basedir}/src/tck/java</source>
-                <source>${basedir}/src/test/generated</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.bsc.maven</groupId>
-        <artifactId>maven-processor-plugin</artifactId>
-        <version>3.1.0</version>
-        <configuration>
-          <systemProperties>
-            <java.util.logging.SimpleFormatter.format>%4$s: %3$s - %5$s %6$s%n</java.util.logging.SimpleFormatter.format>
-          </systemProperties>
-        </configuration>
-        <executions>
-          <execution>
-            <id>generate-sources</id>
-            <goals>
-              <goal>process-test</goal>
-            </goals>
-            <phase>generate-test-sources</phase>
-            <configuration>
-              <processors>
-                <processor>io.vertx.codegen.CodeGenProcessor</processor>
-              </processors>
-              <optionMap>
-                <codegen.output>${project.basedir}/src/test</codegen.output>
-                <codegen.output.data_object_converters>generated</codegen.output.data_object_converters>
-              </optionMap>
-              <includes>
-                <include>io/vertx/test/codegen/converter/*.java</include>
-              </includes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>package</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <attach>true</attach>
-              <appendAssemblyId>false</appendAssemblyId>
-              <archive>
-                    <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
-                </archive>
-              <descriptors>
-                <descriptor>src/main/assembly/jar.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </execution>
-          <execution>
-            <id>package-others</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <attach>true</attach>
-              <descriptors>
-                <descriptor>src/main/assembly/processor.xml</descriptor>
-                <descriptor>src/main/assembly/tck.xml</descriptor>
-                <descriptor>src/main/assembly/tck-sources.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </execution>
-          <execution>
-            <id>package-docs</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <attach>true</attach>
-              <descriptors>
-                <descriptor>src/main/assembly/docs.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>biz.aQute.bnd</groupId>
-        <artifactId>bnd-maven-plugin</artifactId>
-        <version>3.3.0</version>
-        <executions>
-          <execution>
-            <id>default-bnd-process</id>
-            <goals>
-              <goal>bnd-process</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <bnd><![CDATA[
+      
+    <build>
+            
+        <pluginManagement>
+                  
+            <plugins>
+                        
+                <plugin>
+                              
+                    <groupId>org.apache.maven.plugins</groupId>
+                              
+                    <artifactId>maven-compiler-plugin</artifactId>
+                              
+                    <executions>
+                                    
+                        <execution>
+                                          
+                            <id>default-compile</id>
+                                          
+                            <configuration>
+                                                
+                                <annotationProcessors>
+                                                      
+                                    <annotationProcessor>io.vertx.docgen.JavaDocGenProcessor</annotationProcessor>
+                                                    
+                                </annotationProcessors>
+                                                
+                                <compilerArgs>
+                                                      
+                                    <arg>-Adocgen.source=${asciidoc.dir}</arg>
+                                                      
+                                    <arg>-Adocgen.output=${project.build.directory}/asciidoc/java</arg>
+                                                    
+                                </compilerArgs>
+                                                
+                                <excludes>
+                                                      
+                                    <exclude>**/TreeTypeInternal.java</exclude>
+                                                    
+                                </excludes>
+                                                
+                                <generatedSourcesDirectory>${generated.dir}</generatedSourcesDirectory>
+                                              
+                            </configuration>
+                                        
+                        </execution>
+                                  
+                    </executions>
+                            
+                </plugin>
+                        
+                <plugin>
+                              
+                    <artifactId>maven-jar-plugin</artifactId>
+                              
+                    <configuration>
+                                    
+                        <archive>
+                                          
+                            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                                        
+                        </archive>
+                                  
+                    </configuration>
+                              
+                    <executions>
+                                    
+                        <execution>
+                                          
+                            <id>default-jar</id>
+                                          
+                            <configuration>
+                                                
+                                <excludes>
+                                                      
+                                    <exclude>io/vertx/core/**</exclude>
+                                                      
+                                    <exclude>io/vertx/codegen/testmodel/**</exclude>
+                                                      
+                                    <exclude>com/acme/**</exclude>
+                                                      
+                                    <exclude>examples/**</exclude>
+                                                    
+                                </excludes>
+                                              
+                            </configuration>
+                                        
+                        </execution>
+                                  
+                    </executions>
+                            
+                </plugin>
+                        
+                <plugin>
+                              
+                    <groupId>org.apache.maven.plugins</groupId>
+                              
+                    <artifactId>maven-surefire-plugin</artifactId>
+                              
+                    <configuration>
+                                    
+                        <additionalClasspathElements>
+                                          
+                            <additionalClasspathElement>${project.build.testSourceDirectory}</additionalClasspathElement>
+                                          
+                            <additionalClasspathElement>${project.basedir}/src/test/testgen1</additionalClasspathElement>
+                                          
+                            <additionalClasspathElement>${project.basedir}/src/test/testgen2</additionalClasspathElement>
+                                          
+                            <additionalClasspathElement>${project.basedir}/src/test/testgen3</additionalClasspathElement>
+                                          
+                            <additionalClasspathElement>${project.basedir}/src/test/testgen4</additionalClasspathElement>
+                                          
+                            <additionalClasspathElement>${project.basedir}/src/test/testgen5</additionalClasspathElement>
+                                          
+                            <additionalClasspathElement>${project.basedir}/src/test/testgen6</additionalClasspathElement>
+                                          
+                            <additionalClasspathElement>${project.basedir}/src/test/testgen7</additionalClasspathElement>
+                                          
+                            <additionalClasspathElement>${project.basedir}/src/test/testgen8</additionalClasspathElement>
+                                        
+                        </additionalClasspathElements>
+                                  
+                    </configuration>
+                            
+                </plugin>
+                        
+                <plugin>
+                              
+                    <groupId>org.apache.maven.plugins</groupId>
+                              
+                    <artifactId>maven-source-plugin</artifactId>
+                              
+                    <configuration>
+                                    
+                        <excludes>
+                                          
+                            <exclude>io/vertx/core/**</exclude>
+                                          
+                            <exclude>examples/**</exclude>
+                                        
+                        </excludes>
+                                  
+                    </configuration>
+                            
+                </plugin>
+                      
+            </plugins>
+                
+        </pluginManagement>
+            
+        <plugins>
+                  
+            <plugin>
+                        
+                <groupId>org.codehaus.mojo</groupId>
+                        
+                <artifactId>build-helper-maven-plugin</artifactId>
+                        
+                <version>1.9.1</version>
+                        
+                <executions>
+                              
+                    <execution>
+                                    
+                        <id>add-source</id>
+                                    
+                        <goals>
+                                          
+                            <goal>add-source</goal>
+                                        
+                        </goals>
+                                    
+                        <configuration>
+                                          
+                            <sources>
+                                                
+                                <source>${basedir}/src/examples/java</source>
+                                              
+                            </sources>
+                                        
+                        </configuration>
+                                  
+                    </execution>
+                              
+                    <execution>
+                                    
+                        <id>add-test-source</id>
+                                    
+                        <goals>
+                                          
+                            <goal>add-test-source</goal>
+                                        
+                        </goals>
+                                    
+                        <configuration>
+                                          
+                            <sources>
+                                                
+                                <source>${basedir}/src/tck/java</source>
+                                                
+                                <source>${basedir}/src/test/generated</source>
+                                              
+                            </sources>
+                                        
+                        </configuration>
+                                  
+                    </execution>
+                            
+                </executions>
+                      
+            </plugin>
+                  
+            <plugin>
+                        
+                <groupId>org.bsc.maven</groupId>
+                        
+                <artifactId>maven-processor-plugin</artifactId>
+                        
+                <version>3.1.0</version>
+                        
+                <configuration>
+                              
+                    <systemProperties>
+                                    
+                        <java.util.logging.SimpleFormatter.format>%4$s: %3$s - %5$s %6$s%n</java.util.logging.SimpleFormatter.format>
+                                  
+                    </systemProperties>
+                            
+                </configuration>
+                        
+                <executions>
+                              
+                    <execution>
+                                    
+                        <id>generate-sources</id>
+                                    
+                        <goals>
+                                          
+                            <goal>process-test</goal>
+                                        
+                        </goals>
+                                    
+                        <phase>generate-test-sources</phase>
+                                    
+                        <configuration>
+                                          
+                            <processors>
+                                                
+                                <processor>io.vertx.codegen.CodeGenProcessor</processor>
+                                              
+                            </processors>
+                                          
+                            <optionMap>
+                                                
+                                <codegen.output>${project.basedir}/src/test</codegen.output>
+                                                
+                                <codegen.output.data_object_converters>generated</codegen.output.data_object_converters>
+                                              
+                            </optionMap>
+                                          
+                            <includes>
+                                                
+                                <include>io/vertx/test/codegen/converter/*.java</include>
+                                              
+                            </includes>
+                                        
+                        </configuration>
+                                  
+                    </execution>
+                            
+                </executions>
+                      
+            </plugin>
+                  
+            <plugin>
+                        
+                <artifactId>maven-assembly-plugin</artifactId>
+                        
+                <executions>
+                              
+                    <execution>
+                                    
+                        <id>package</id>
+                                    
+                        <phase>package</phase>
+                                    
+                        <goals>
+                                          
+                            <goal>single</goal>
+                                        
+                        </goals>
+                                    
+                        <configuration>
+                                          
+                            <attach>true</attach>
+                                          
+                            <appendAssemblyId>false</appendAssemblyId>
+                                          
+                            <archive>
+                                                    
+                                <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
+                                                
+                            </archive>
+                                          
+                            <descriptors>
+                                                
+                                <descriptor>src/main/assembly/jar.xml</descriptor>
+                                              
+                            </descriptors>
+                                        
+                        </configuration>
+                                  
+                    </execution>
+                              
+                    <execution>
+                                    
+                        <id>package-others</id>
+                                    
+                        <phase>package</phase>
+                                    
+                        <goals>
+                                          
+                            <goal>single</goal>
+                                        
+                        </goals>
+                                    
+                        <configuration>
+                                          
+                            <attach>true</attach>
+                                          
+                            <descriptors>
+                                                
+                                <descriptor>src/main/assembly/processor.xml</descriptor>
+                                                
+                                <descriptor>src/main/assembly/tck.xml</descriptor>
+                                                
+                                <descriptor>src/main/assembly/tck-sources.xml</descriptor>
+                                              
+                            </descriptors>
+                                        
+                        </configuration>
+                                  
+                    </execution>
+                              
+                    <execution>
+                                    
+                        <id>package-docs</id>
+                                    
+                        <phase>package</phase>
+                                    
+                        <goals>
+                                          
+                            <goal>single</goal>
+                                        
+                        </goals>
+                                    
+                        <configuration>
+                                          
+                            <attach>true</attach>
+                                          
+                            <descriptors>
+                                                
+                                <descriptor>src/main/assembly/docs.xml</descriptor>
+                                              
+                            </descriptors>
+                                        
+                        </configuration>
+                                  
+                    </execution>
+                            
+                </executions>
+                      
+            </plugin>
+                  
+            <plugin>
+                        
+                <groupId>biz.aQute.bnd</groupId>
+                        
+                <artifactId>bnd-maven-plugin</artifactId>
+                        
+                <version>3.3.0</version>
+                        
+                <executions>
+                              
+                    <execution>
+                                    
+                        <id>default-bnd-process</id>
+                                    
+                        <goals>
+                                          
+                            <goal>bnd-process</goal>
+                                        
+                        </goals>
+                                  
+                    </execution>
+                            
+                </executions>
+                        
+                <configuration>
+                              
+                    <bnd><![CDATA[
           Import-Package: \
                 org.mvel2*;resolution:=optional, \
                 io.vertx.core, \
@@ -266,91 +507,171 @@
                   *;resolution:=optional
                 -exportcontents: !*impl, !examples, !io.vertx.core*,*
           ]]></bnd>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
-  <profiles>
-
-    <profile>
-      <id>java-8</id>
-      <properties>
-        <tools.jar>${java.home}/../lib/tools.jar</tools.jar>
-      </properties>
-      <activation>
-        <jdk>1.8</jdk>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <executions>
-                <execution>
-                  <id>default-compile</id>
-                  <configuration>
-                    <excludes>
-                      <exclude>/whatever</exclude>
-                    </excludes>
-                  </configuration>
-                </execution>
-              </executions>
+                            
+                </configuration>
+                      
             </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-      <dependencies>
-        <dependency>
-          <groupId>com.sun</groupId>
-          <artifactId>tools</artifactId>
-          <version>1.8</version>
-          <scope>system</scope>
-          <systemPath>${tools.jar}</systemPath>
-          <optional>true</optional>
-        </dependency>
-      </dependencies>
-    </profile>
-
-    <!-- Documentation generation : activate with -Pdocs -->
-    <profile>
-      <id>docs</id>
-      <build>
-        <plugins>
-          <!-- Transform the Asciidoctor to html -->
-          <plugin>
-            <groupId>org.asciidoctor</groupId>
-            <artifactId>asciidoctor-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>process-asciidoc</goal>
-                </goals>
-                <configuration>
-                  <sourceDirectory>${project.build.directory}/asciidoc</sourceDirectory>
-                </configuration>
-                <phase>package</phase>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>javadoc</goal>
-                </goals>
-                <configuration>
-                  <reportOutputDirectory>${project.build.directory}/docs</reportOutputDirectory>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
+                
         </plugins>
-      </build>
-    </profile>
-  </profiles>
-
+          
+    </build>
+      
+    <profiles>
+            
+        <profile>
+                  
+            <id>java-8</id>
+                  
+            <properties>
+                        
+                <tools.jar>${java.home}/../lib/tools.jar</tools.jar>
+                      
+            </properties>
+                  
+            <activation>
+                        
+                <jdk>1.8</jdk>
+                      
+            </activation>
+                  
+            <build>
+                        
+                <pluginManagement>
+                              
+                    <plugins>
+                                    
+                        <plugin>
+                                          
+                            <groupId>org.apache.maven.plugins</groupId>
+                                          
+                            <artifactId>maven-compiler-plugin</artifactId>
+                                          
+                            <executions>
+                                                
+                                <execution>
+                                                      
+                                    <id>default-compile</id>
+                                                      
+                                    <configuration>
+                                                            
+                                        <excludes>
+                                                                  
+                                            <exclude>/whatever</exclude>
+                                                                
+                                        </excludes>
+                                                          
+                                    </configuration>
+                                                    
+                                </execution>
+                                              
+                            </executions>
+                                        
+                        </plugin>
+                                  
+                    </plugins>
+                            
+                </pluginManagement>
+                      
+            </build>
+                  
+            <dependencies>
+                        
+                <dependency>
+                              
+                    <groupId>com.sun</groupId>
+                              
+                    <artifactId>tools</artifactId>
+                              
+                    <version>1.8</version>
+                              
+                    <scope>system</scope>
+                              
+                    <systemPath>${tools.jar}</systemPath>
+                              
+                    <optional>true</optional>
+                            
+                </dependency>
+                      
+            </dependencies>
+                
+        </profile>
+            
+        <!-- Documentation generation : activate with -Pdocs -->
+            
+        <profile>
+                  
+            <id>docs</id>
+                  
+            <build>
+                        
+                <plugins>
+                              
+                    <!-- Transform the Asciidoctor to html -->
+                              
+                    <plugin>
+                                    
+                        <groupId>org.asciidoctor</groupId>
+                                    
+                        <artifactId>asciidoctor-maven-plugin</artifactId>
+                                    
+                        <executions>
+                                          
+                            <execution>
+                                                
+                                <goals>
+                                                      
+                                    <goal>process-asciidoc</goal>
+                                                    
+                                </goals>
+                                                
+                                <configuration>
+                                                      
+                                    <sourceDirectory>${project.build.directory}/asciidoc</sourceDirectory>
+                                                    
+                                </configuration>
+                                                
+                                <phase>package</phase>
+                                              
+                            </execution>
+                                        
+                        </executions>
+                                  
+                    </plugin>
+                              
+                    <plugin>
+                                    
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                                    
+                        <executions>
+                                          
+                            <execution>
+                                                
+                                <phase>package</phase>
+                                                
+                                <goals>
+                                                      
+                                    <goal>javadoc</goal>
+                                                    
+                                </goals>
+                                                
+                                <configuration>
+                                                      
+                                    <reportOutputDirectory>${project.build.directory}/docs</reportOutputDirectory>
+                                                    
+                                </configuration>
+                                              
+                            </execution>
+                                        
+                        </executions>
+                                  
+                    </plugin>
+                            
+                </plugins>
+                      
+            </build>
+                
+        </profile>
+          
+    </profiles>
+    
 </project>
