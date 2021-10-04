@@ -91,7 +91,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             "    BASE64_DECODER = JsonUtil.BASE64_DECODER;\n" +
             "    BASE64_ENCODER = JsonUtil.BASE64_ENCODER;\n");
           break;
-        case "base64":
+        case "basic":
           writer.print(
             "    BASE64_DECODER = Base64.getDecoder();\n" +
             "    BASE64_ENCODER = Base64.getEncoder();\n");

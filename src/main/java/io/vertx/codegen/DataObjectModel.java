@@ -238,7 +238,7 @@ public class DataObjectModel implements Model {
     } else {
       switch (base64Type) {
         case "system":
-        case "base64":
+        case "basic":
         case "base64url":
           // ok
           break;

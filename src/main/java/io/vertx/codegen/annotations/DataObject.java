@@ -89,7 +89,7 @@ public @interface DataObject {
    *
    * <ul>
    *   <li>{@code "system"} - Use the default type as defined in: {@link io.vertx.core.json.impl.JsonUtil}</li>
-   *   <li>{@code "base64"} - Base64 Basic as defined in (RFC 4648 Table 1) </li>
+   *   <li>{@code "basic"} - Base64 Basic as defined in (RFC 4648 Table 1) </li>
    *   <li>{@code "base64url"} - Base64 URL and Filename Safe as defined in (RFC 4648 Table 2) </li>
    * </ul>
    *
