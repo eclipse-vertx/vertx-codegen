@@ -35,6 +35,14 @@ public class TestDataObject {
     return ZonedDateTime.parse(value);
   }
 
+  public static String serializeCustomEnum(TestCustomEnum value) {
+    return (value != null) ? value.getShortName() : null;
+  }
+
+  public static TestCustomEnum deserializeCustomEnum(String value) {
+    return (value != null) ? TestCustomEnum.of(value) : null;
+  }
+
   private String string;
   private boolean primitiveBoolean;
   private byte primitiveByte;
@@ -61,6 +69,7 @@ public class TestDataObject {
   private ZonedDateTime methodMapped;
   private NoConverterDataObject notConvertibleDataObject;
   private ByteBuffer unmapped;
+  private TestCustomEnum enumMapped;
 
   private List<String> stringList;
   private List<Boolean> boxedBooleanList;
@@ -80,6 +89,7 @@ public class TestDataObject {
   private List<ZonedDateTime> methodMappedList;
   private List<Object> objectList;
   private List<NoConverterDataObject> notConvertibleDataObjectList;
+  private List<TestCustomEnum> enumMappedList;
 
   private Set<String> stringSet;
   private Set<Boolean> boxedBooleanSet;
@@ -99,6 +109,7 @@ public class TestDataObject {
   private Set<ZonedDateTime> methodMappedSet;
   private Set<Object> objectSet;
   private Set<NoConverterDataObject> notConvertibleDataObjectSet;
+  private Set<TestCustomEnum> enumMappedSet;
 
   private List<String> addedStringValues = new ArrayList<>();
   private List<Boolean> addedBoxedBooleanValues = new ArrayList<>();
@@ -117,6 +128,7 @@ public class TestDataObject {
   private List<TimeUnit> addedHttpMethods = new ArrayList<>();
   private List<ZonedDateTime> addedMethodMappeds = new ArrayList<>();
   private List<Object> addedObjects = new ArrayList<>();
+  private List<TestCustomEnum> addedEnumMappeds = new ArrayList<>();
 
   private Map<String, String> stringValueMap;
   private Map<String, Boolean> boxedBooleanValueMap;
@@ -136,6 +148,7 @@ public class TestDataObject {
   private Map<String, ZonedDateTime> methodMappedMap;
   private Map<String, Object> objectMap;
   private Map<String, NoConverterDataObject> notConvertibleDataObjectMap;
+  private Map<String, TestCustomEnum> enumMappedMap;
 
   private Map<String, String> keyedStringValues = new HashMap<>();
   private Map<String, Boolean> keyedBoxedBooleanValues = new HashMap<>();
@@ -154,6 +167,7 @@ public class TestDataObject {
   private Map<String, TimeUnit> keyedEnumValues = new HashMap<>();
   private Map<String, ZonedDateTime> keyedMethodMappedValues = new HashMap<>();
   private Map<String, Object> keyedObjectValues = new HashMap<>();
+  private Map<String, TestCustomEnum> keyedEnumMappedValues = new HashMap<>();
 
   public TestDataObject() {
   }
@@ -398,6 +412,15 @@ public class TestDataObject {
     return this;
   }
 
+  public TestCustomEnum getEnumMapped() {
+    return enumMapped;
+  }
+
+  public TestDataObject setEnumMapped(TestCustomEnum enumMapped) {
+    this.enumMapped = enumMapped;
+    return this;
+  }
+
   public List<String> getStringList() {
     return stringList;
   }
@@ -551,6 +574,14 @@ public class TestDataObject {
     return this;
   }
 
+  public List<TestCustomEnum> getEnumMappedList() {
+    return enumMappedList;
+  }
+
+  public TestDataObject setEnumMappedList(List<TestCustomEnum> enumMappedList) {
+    this.enumMappedList = enumMappedList;
+    return this;
+  }
 
   public Set<String> getStringSet() {
     return stringSet;
@@ -702,6 +733,15 @@ public class TestDataObject {
 
   public TestDataObject setObjectSet(Set<Object> objectSet) {
     this.objectSet = objectSet;
+    return this;
+  }
+
+  public Set<TestCustomEnum> getEnumMappedSet() {
+    return enumMappedSet;
+  }
+
+  public TestDataObject setEnumMappedSet(Set<TestCustomEnum> enumMappedSet) {
+    this.enumMappedSet = enumMappedSet;
     return this;
   }
 
@@ -858,6 +898,15 @@ public class TestDataObject {
     return this;
   }
 
+  public List<TestCustomEnum> getAddedEnumMappeds() {
+    return addedEnumMappeds;
+  }
+
+  public TestDataObject addAddedEnumMapped(TestCustomEnum addedEnumMappeds) {
+    this.addedEnumMappeds.add(addedEnumMappeds);
+    return this;
+  }
+
   public Map<String, String> getStringValueMap() {
     return stringValueMap;
   }
@@ -1011,6 +1060,15 @@ public class TestDataObject {
     return this;
   }
 
+  public Map<String, TestCustomEnum> getEnumMappedMap() {
+    return enumMappedMap;
+  }
+
+  public TestDataObject setEnumMappedMap(Map<String, TestCustomEnum> enumMappedMap) {
+    this.enumMappedMap = enumMappedMap;
+    return this;
+  }
+
   public Map<String, String> getKeyedStringValues() {
     return keyedStringValues;
   }
@@ -1161,6 +1219,15 @@ public class TestDataObject {
 
   public TestDataObject addKeyedObjectValue(String key, Object value) {
     keyedObjectValues.put(key, value);
+    return this;
+  }
+
+  public Map<String, TestCustomEnum> getKeyedEnumMappedValues() {
+    return keyedEnumMappedValues;
+  }
+
+  public TestDataObject addKeyedEnumMappedValue(String key, TestCustomEnum value) {
+    this.keyedEnumMappedValues.put(key, value);
     return this;
   }
 
