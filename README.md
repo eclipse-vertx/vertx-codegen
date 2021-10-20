@@ -432,12 +432,12 @@ A _Data object_ is a type that can be converted back and forth to a Json type.
 
 You can declare data objects by:
 
-* Defining an annotated `@Mapper` method for it
+* Defining a mapper in the `META-INF/vertx/json-mappers.properties` file
 * Or annotating the type itself with `@DataObject`
 
 ### Json mappers
 
-A json mapper for type `T` is a method that maps any object of type `Type`, where `J` can be:
+A json mapper for type `T` is a method that maps any object or enum of type `Type`, where `J` can be:
 
 * `JsonArray` or `JsonObject`
 * a concrete type extending `Number` such as `Long` or `Double`
@@ -448,18 +448,76 @@ Json mapped types can be used anywhere a json types used are.
 
 A json mapper turns any Java type into a data object type.
 
+####Object
 You can declare them as public static methods:
-
 ```java
-@Mapper
-public static String serialize(ZonedDateTime date) {
-  return date.toString();
+package com.example;
+
+public class MyMappers {
+
+  public static String serialize(ZonedDateTime date) {
+    return date.toString();
+  }
+
+  public static ZonedDateTime deserialize(String s) {
+    return ZonedDateTime.parse(s);
+  }
+}
+```
+These mappers needs to be declared in a `META-INF/vertx/json-mappers.properties` file as follow:
+```properties
+java.time.ZonedDateTime.serializer=com.example.MyMappers#serializeZonedDateTime
+java.time.ZonedDateTime.deserializer=com.example.MyMappers#deserializedZoneDateTime
+```
+####Enum
+Enum can be define with values parameters passed to a constructor. In this use case, you can't use default behavior of codegen (#valueOf() and #name()), you need to define like Object `serializer` and `deserializer`.
+```java
+package com.example;
+
+public enum MyEnumWithCustomFactory {
+  DEV("dev", "development"), ITEST("itest", "integration-test");
+
+  private String[] names = new String[2];
+
+  MyEnumWithCustomFactory(String pShortName, String pLongName) {
+    names[0] = pShortName;
+    names[1] = pLongName;
+  }
+
+  public String getLongName() {
+    return names[1];
+  }
+
+  public String getShortName() {
+    return names[0];
+  }
+  
+  public static MyEnumWithCustomFactory of(String pName) {
+    for (MyEnumWithCustomFactory item : MyEnumWithCustomFactory.values()) {
+      if (item.names[0].equalsIgnoreCase(pName) || item.names[1].equalsIgnoreCase(pName)
+              || pName.equalsIgnoreCase(item.name())) {
+        return item;
+      }
+    }
+    return DEV;
+  }
+  
+}
+```
+You can declare them as public static methods:
+```java
+public static String serialize(MyEnumWithCustomFactory value) {
+  return value.getLongName();
 }
 
-@Mapper
-public static ZonedDateTime deserialize(String s) {
-  return ZonedDateTime.parse(s);
+public static MyEnumWithCustomFactory deserialize(String value) {
+  return MyEnumWithCustomFactory.of(value);
 }
+```
+These mappers needs to be declared in a `META-INF/vertx/json-mappers.properties` file as follow:
+```properties
+com.example.MyEnumWithCustomFactory.serializer=com.example.MyEnumWithCustomFactory#serialize
+com.example.MyEnumWithCustomFactory.deserializer=com.example.MyEnumWithCustomFactory#deserialize
 ```
 
 ### `@DataObject` annotated types

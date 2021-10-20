@@ -88,6 +88,14 @@ public class TestDataObjectConverter {
             });
           }
           break;
+        case "addedEnumMappeds":
+          if (member.getValue() instanceof JsonArray) {
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                obj.addAddedEnumMapped(io.vertx.test.codegen.converter.TestDataObject.deserializeCustomEnum((String)item));
+            });
+          }
+          break;
         case "addedHttpMethods":
           if (member.getValue() instanceof JsonArray) {
             ((Iterable<Object>)member.getValue()).forEach( item -> {
@@ -467,6 +475,41 @@ public class TestDataObjectConverter {
             obj.setBufferSet(list);
           }
           break;
+        case "enumMapped":
+          if (member.getValue() instanceof String) {
+            obj.setEnumMapped(io.vertx.test.codegen.converter.TestDataObject.deserializeCustomEnum((String)member.getValue()));
+          }
+          break;
+        case "enumMappedList":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<io.vertx.test.codegen.converter.TestCustomEnum> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                list.add(io.vertx.test.codegen.converter.TestDataObject.deserializeCustomEnum((String)item));
+            });
+            obj.setEnumMappedList(list);
+          }
+          break;
+        case "enumMappedMap":
+          if (member.getValue() instanceof JsonObject) {
+            java.util.Map<String, io.vertx.test.codegen.converter.TestCustomEnum> map = new java.util.LinkedHashMap<>();
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
+              if (entry.getValue() instanceof String)
+                map.put(entry.getKey(), io.vertx.test.codegen.converter.TestDataObject.deserializeCustomEnum((String)entry.getValue()));
+            });
+            obj.setEnumMappedMap(map);
+          }
+          break;
+        case "enumMappedSet":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.LinkedHashSet<io.vertx.test.codegen.converter.TestCustomEnum> list =  new java.util.LinkedHashSet<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                list.add(io.vertx.test.codegen.converter.TestDataObject.deserializeCustomEnum((String)item));
+            });
+            obj.setEnumMappedSet(list);
+          }
+          break;
         case "httpMethod":
           if (member.getValue() instanceof String) {
             obj.setHttpMethod(java.util.concurrent.TimeUnit.valueOf((String)member.getValue()));
@@ -676,6 +719,14 @@ public class TestDataObjectConverter {
             ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
               if (entry.getValue() instanceof String)
                 obj.addKeyedBufferValue(entry.getKey(), io.vertx.core.buffer.Buffer.buffer(JsonUtil.BASE64_DECODER.decode((String)entry.getValue())));
+            });
+          }
+          break;
+        case "keyedEnumMappedValues":
+          if (member.getValue() instanceof JsonObject) {
+            ((Iterable<java.util.Map.Entry<String, Object>>)member.getValue()).forEach(entry -> {
+              if (entry.getValue() instanceof String)
+                obj.addKeyedEnumMappedValue(entry.getKey(), io.vertx.test.codegen.converter.TestDataObject.deserializeCustomEnum((String)entry.getValue()));
             });
           }
           break;
@@ -1007,6 +1058,11 @@ public class TestDataObjectConverter {
       obj.getAddedBuffers().forEach(item -> array.add(JsonUtil.BASE64_ENCODER.encodeToString(item.getBytes())));
       json.put("addedBuffers", array);
     }
+    if (obj.getAddedEnumMappeds() != null) {
+      JsonArray array = new JsonArray();
+      obj.getAddedEnumMappeds().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.serializeCustomEnum(item)));
+      json.put("addedEnumMappeds", array);
+    }
     if (obj.getAddedHttpMethods() != null) {
       JsonArray array = new JsonArray();
       obj.getAddedHttpMethods().forEach(item -> array.add(item.name()));
@@ -1209,6 +1265,24 @@ public class TestDataObjectConverter {
       obj.getBufferSet().forEach(item -> array.add(JsonUtil.BASE64_ENCODER.encodeToString(item.getBytes())));
       json.put("bufferSet", array);
     }
+    if (obj.getEnumMapped() != null) {
+      json.put("enumMapped", io.vertx.test.codegen.converter.TestDataObject.serializeCustomEnum(obj.getEnumMapped()));
+    }
+    if (obj.getEnumMappedList() != null) {
+      JsonArray array = new JsonArray();
+      obj.getEnumMappedList().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.serializeCustomEnum(item)));
+      json.put("enumMappedList", array);
+    }
+    if (obj.getEnumMappedMap() != null) {
+      JsonObject map = new JsonObject();
+      obj.getEnumMappedMap().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.TestDataObject.serializeCustomEnum(value)));
+      json.put("enumMappedMap", map);
+    }
+    if (obj.getEnumMappedSet() != null) {
+      JsonArray array = new JsonArray();
+      obj.getEnumMappedSet().forEach(item -> array.add(io.vertx.test.codegen.converter.TestDataObject.serializeCustomEnum(item)));
+      json.put("enumMappedSet", array);
+    }
     if (obj.getHttpMethod() != null) {
       json.put("httpMethod", obj.getHttpMethod().name());
     }
@@ -1325,6 +1399,11 @@ public class TestDataObjectConverter {
       JsonObject map = new JsonObject();
       obj.getKeyedBufferValues().forEach((key, value) -> map.put(key, JsonUtil.BASE64_ENCODER.encodeToString(value.getBytes())));
       json.put("keyedBufferValues", map);
+    }
+    if (obj.getKeyedEnumMappedValues() != null) {
+      JsonObject map = new JsonObject();
+      obj.getKeyedEnumMappedValues().forEach((key, value) -> map.put(key, io.vertx.test.codegen.converter.TestDataObject.serializeCustomEnum(value)));
+      json.put("keyedEnumMappedValues", map);
     }
     if (obj.getKeyedEnumValues() != null) {
       JsonObject map = new JsonObject();

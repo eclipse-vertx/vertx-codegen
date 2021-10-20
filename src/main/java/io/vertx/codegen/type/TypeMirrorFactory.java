@@ -10,7 +10,6 @@ import javax.lang.model.type.*;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +24,6 @@ public class TypeMirrorFactory {
 
   private static final ModuleInfo VERTX_CORE_MOD = new ModuleInfo("io.vertx.core", "vertx", "io.vertx", false);
   private static final ClassTypeInfo JSON_OBJECT = new ClassTypeInfo(ClassKind.JSON_OBJECT, "io.vertx.core.json.JsonObject", VERTX_CORE_MOD, false, Collections.emptyList(), null);
-  private static final ClassTypeInfo JSON_ARRAY = new ClassTypeInfo(ClassKind.JSON_ARRAY, "io.vertx.core.json.JsonArray", VERTX_CORE_MOD, false, Collections.emptyList(), null);
   private static final ClassTypeInfo STRING = new ClassTypeInfo(ClassKind.STRING, "java.lang.String", null, false, Collections.emptyList(), null);
 
   final Elements elementUtils;
@@ -100,7 +98,6 @@ public class TypeMirrorFactory {
     PackageElement pkgElt = elementUtils.getPackageOf(elt);
     ModuleInfo module = ModuleInfo.resolve(elementUtils, pkgElt);
     String fqcn = elt.getQualifiedName().toString();
-    String simpleName = elt.getSimpleName().toString();
     boolean proxyGen = elt.getAnnotation(ProxyGen.class) != null;
     if (elt.getKind() == ElementKind.ENUM) {
       ArrayList<String> values = new ArrayList<>();
@@ -110,7 +107,13 @@ public class TypeMirrorFactory {
         }
       }
       boolean gen = elt.getAnnotation(VertxGen.class) != null;
-      return new EnumTypeInfo(fqcn, gen, values, module, nullable);
+      MapperInfo serializer = serializers.get(type.toString());
+      MapperInfo deserializer = deserializers.get(type.toString());
+      DataObjectInfo dataObject = null;
+      if (serializer != null || deserializer != null) {
+        dataObject = new DataObjectInfo(false, serializer, deserializer);
+      }
+      return new EnumTypeInfo(fqcn, gen, values, module, nullable, dataObject);
     } else {
       ClassKind kind = ClassKind.getKind(fqcn, elt.getAnnotation(VertxGen.class) != null);
       List<? extends TypeMirror> typeArgs = type.getTypeArguments();
