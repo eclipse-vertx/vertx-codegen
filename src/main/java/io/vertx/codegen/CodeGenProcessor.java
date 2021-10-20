@@ -5,6 +5,7 @@ import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.generators.dataobjecthelper.DataObjectHelperGenLoader;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.FilerException;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -149,16 +150,24 @@ public class CodeGenProcessor extends AbstractProcessor {
     });
   }
 
-  private Path determineSourcePath() {
+  /**
+   * This is clearly a hack and javac will complain (warning: Unclosed files for the types '[PathForCodeGenProcessor]';
+   * these types will not undergo annotation processing) and possibly fail the build when the {@code -Werror} compiler
+   * option is set.
+   */
+  private Path determineSourcePathInEclipse() {
     try {
-      JavaFileObject generationForPath = processingEnv.getFiler()
+      Filer filer = processingEnv.getFiler();
+      if (!filer.getClass().getName().startsWith("com.sun.tools.javac")) {
+        JavaFileObject generationForPath = filer
           .createClassFile("PathFor" + getClass().getSimpleName());
-      return new File(generationForPath.toUri()).toPath().getParent();
+        return new File(generationForPath.toUri()).toPath().getParent();
+      }
     } catch (IOException e) {
       // Possible failure (e.g with JPMS will not accept this)
       processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Unable to determine source file path!");
-      return null;
     }
+    return null;
   }
 
   private List<CodeGen.Converter> loadJsonMappers() {
@@ -197,7 +206,7 @@ public class CodeGenProcessor extends AbstractProcessor {
       }
     }
     if (exception != null) {
-      Path path = determineSourcePath();
+      Path path = determineSourcePathInEclipse();
       if (path != null) {
         Path source = path.getParent().getParent().resolve("src/main/resources").resolve(JSON_MAPPERS_PROPERTIES_PATH);
         if (source.toFile().exists()) {
