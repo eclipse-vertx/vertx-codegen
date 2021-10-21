@@ -237,7 +237,8 @@ public class DataObjectModel implements Model {
       throw new GenException(modelElt, "Data object base64 type cannot be null");
     } else {
       switch (base64Type) {
-        case "system":
+        case "":
+          // special type to use vertx-core default
         case "basic":
         case "base64url":
           // ok
