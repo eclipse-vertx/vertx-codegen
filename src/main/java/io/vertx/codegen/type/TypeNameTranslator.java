@@ -1,6 +1,7 @@
 package io.vertx.codegen.type;
 
 import io.vertx.codegen.ModuleInfo;
+import io.vertx.codegen.PackageModel;
 import io.vertx.codegen.format.KebabCase;
 import io.vertx.codegen.format.QualifiedCase;
 
@@ -35,7 +36,7 @@ public interface TypeNameTranslator {
 
   static TypeNameTranslator composite(String lang) {
     return (module, qualifiedName) -> {
-      List<String> def = new ArrayList<>(QualifiedCase.INSTANCE.parse(module.getGroupPackage()));
+      List<String> def = new ArrayList<>(PackageModel.CASE.parse(module.getGroupPackage()));
       def.add(lang);
       List<String> abc = KebabCase.INSTANCE.parse(module.getName());
       if (abc.get(0).equals("vertx")) {

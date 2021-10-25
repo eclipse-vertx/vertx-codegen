@@ -10,12 +10,18 @@ import java.util.regex.Pattern;
  */
 public class QualifiedCase extends Case {
 
+  private static final Pattern VALIDATOR = Pattern.compile("(?:\\p{Alnum}|(?:(?<=\\p{Alnum})\\.(?=\\p{Alnum})))*");
+
   /**
    * A {@code QualifiedCase} instance.
    */
-  public static final Case INSTANCE = new QualifiedCase();
+  public static final Case INSTANCE = new QualifiedCase(VALIDATOR);
 
-  private final Pattern validator = Pattern.compile("(?:\\p{Alnum}|(?:(?<=\\p{Alnum})\\.(?=\\p{Alnum})))*");
+  private final Pattern validator;
+
+  public QualifiedCase(Pattern validator) {
+    this.validator = validator;
+  }
 
   @Override
   public String name() {

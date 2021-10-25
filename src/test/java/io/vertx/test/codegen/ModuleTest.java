@@ -184,4 +184,17 @@ public class ModuleTest {
     } catch (GenException expected) {
     }
   }
+
+  // io.vertx.test.codegen.testmodulewithunderscorepkg.TestApi.class
+
+  @Test
+  public void testVertxModuleWithUnderscorePkg() throws Exception {
+    ModuleModel model = new GeneratorHelper().generateModule(io.vertx.test.codegen.test_module_with_underscore_pkg.TestApi.class.getClassLoader(), "io.vertx.test.codegen.test_module_with_underscore_pkg");
+//    assertEquals(VertxOtherModuleScopedApi.class.getName(), model.getIfaceFQCN());
+//    assertEquals("io.vertx.test.codegen.testmodule.vertx.other", model.getModule().getPackageName());
+//    assertEquals("vertx-other", model.getModule().getName());
+//    ApiTypeInfo type = (ApiTypeInfo) model.getType();
+//    assertEquals("io.vertx.groovy.test.codegen.testmodule.vertx.other.VertxOtherModuleScopedApi", type.translateName("groovy"));
+//    assertEquals("io.vertx.ceylon.other.VertxOtherModuleScopedApi", type.translateName(TypeNameTranslator.composite("ceylon")));
+  }
 }

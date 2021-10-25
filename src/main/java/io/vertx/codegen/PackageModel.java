@@ -1,15 +1,23 @@
 package io.vertx.codegen;
 
+import io.vertx.codegen.format.QualifiedCase;
 import io.vertx.codegen.type.TypeInfo;
 
 import javax.lang.model.element.Element;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class PackageModel implements Model {
+
+  private final static String IDENTIFIER = "(\\p{Alnum}(\\p{Alnum}|$|_)*)";
+
+  private static final Pattern PACKAGE_NAME_VALIDATOR = Pattern.compile("^(" + IDENTIFIER + "(\\." + IDENTIFIER + ")*)?$");
+
+  public static final QualifiedCase CASE = new QualifiedCase(PACKAGE_NAME_VALIDATOR);
 
   private final String fqn;
   private final ModuleInfo module;
