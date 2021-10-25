@@ -67,6 +67,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print("import io.vertx.core.json.impl.JsonUtil;\n");
     writer.print("import java.time.Instant;\n");
     writer.print("import java.time.format.DateTimeFormatter;\n");
+    writer.print("import java.util.Base64;\n");
     writer.print("\n");
     writer.print("/**\n");
     writer.print(" * Converter and mapper for {@link " + model.getType() + "}.\n");
@@ -77,6 +78,25 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       ).newLine();
     if (model.getGenerateConverter()) {
       writer.print("\n");
+      switch (model.getBase64Type()) {
+        case "basic":
+          writer.print(
+            "  private static final Base64.Decoder BASE64_DECODER = Base64.getDecoder();\n" +
+            "  private static final Base64.Encoder BASE64_ENCODER = Base64.getEncoder();\n");
+          break;
+        case "base64url":
+          writer.print(
+            "  private static final Base64.Decoder BASE64_DECODER = Base64.getUrlDecoder();\n" +
+            "  private static final Base64.Encoder BASE64_ENCODER = Base64.getUrlEncoder().withoutPadding();\n");
+          break;
+        default:
+          writer.print(
+            "  private static final Base64.Decoder BASE64_DECODER = JsonUtil.BASE64_DECODER;\n" +
+            "  private static final Base64.Encoder BASE64_ENCODER = JsonUtil.BASE64_ENCODER;\n");
+          break;
+      }
+      writer.print("\n");
+
       genFromJson(visibility, inheritConverter, model, writer);
       writer.print("\n");
       genToJson(visibility, inheritConverter, model, writer);
@@ -135,7 +155,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             switch (propKind) {
               case API:
                 if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
-                  genPropToJson("JsonUtil.BASE64_ENCODER.encodeToString(", ".getBytes())", prop, writer);
+                  genPropToJson("BASE64_ENCODER.encodeToString(", ".getBytes())", prop, writer);
                 }
                 break;
               case ENUM:
@@ -268,7 +288,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             switch (propKind) {
               case API:
                 if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
-                  genPropFromJson("String", "io.vertx.core.buffer.Buffer.buffer(JsonUtil.BASE64_DECODER.decode((String)", "))", prop, writer);
+                  genPropFromJson("String", "io.vertx.core.buffer.Buffer.buffer(BASE64_DECODER.decode((String)", "))", prop, writer);
                 }
                 break;
               case JSON_OBJECT:

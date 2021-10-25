@@ -52,6 +52,7 @@ public class DataObjectModel implements Model {
   private boolean generateConverter;
   private boolean inheritConverter;
   private boolean publicConverter;
+  private String base64Type;
   private int constructors;
   // ----------------
   private boolean deprecated;
@@ -149,6 +150,10 @@ public class DataObjectModel implements Model {
     return publicConverter;
   }
 
+  public String getBase64Type() {
+    return base64Type;
+  }
+
   public boolean isSerializable() { return type.isDataObjectHolder() && type.getDataObject().isSerializable(); }
 
   public boolean isDeserializable() { return type.isDataObjectHolder() && type.getDataObject().isDeserializable(); }
@@ -188,6 +193,7 @@ public class DataObjectModel implements Model {
     vars.put("generateConverter", generateConverter);
     vars.put("inheritConverter", inheritConverter);
     vars.put("publicConverter", publicConverter);
+    vars.put("base64Type", base64Type);
     vars.put("concrete", concrete);
     vars.put("isClass", isClass);
     vars.put("properties", propertyMap.values());
@@ -226,6 +232,21 @@ public class DataObjectModel implements Model {
     this.generateConverter = ann.generateConverter();
     this.publicConverter = ann.publicConverter();
     this.inheritConverter = ann.inheritConverter();
+    this.base64Type = ann.base64Type();
+    if (base64Type == null) {
+      throw new GenException(modelElt, "Data object base64 type cannot be null");
+    } else {
+      switch (base64Type) {
+        case "":
+          // special type to use vertx-core default
+        case "basic":
+        case "base64url":
+          // ok
+          break;
+        default:
+          throw new GenException(modelElt, "Data object base64 unsupported type: " + base64Type);
+      }
+    }
     this.isClass = modelElt.getKind() == ElementKind.CLASS;
     this.concrete = isClass && !modelElt.getModifiers().contains(Modifier.ABSTRACT);
     try {
