@@ -1,4 +1,4 @@
-package io.vertx.codegen.testmodel.base64;
+package io.vertx.test.codegen.converter;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
@@ -8,16 +8,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 
 /**
- * Converter and mapper for {@link io.vertx.codegen.testmodel.base64.Base64Basic}.
- * NOTE: This class has been automatically generated from the {@link io.vertx.codegen.testmodel.base64.Base64Basic} original class using Vert.x codegen.
+ * Converter and mapper for {@link io.vertx.test.codegen.converter.TestDataObjectBase64Basic}.
+ * NOTE: This class has been automatically generated from the {@link io.vertx.test.codegen.converter.TestDataObjectBase64Basic} original class using Vert.x codegen.
  */
-public class Base64BasicConverter {
+public class TestDataObjectBase64BasicConverter {
 
 
   private static final Base64.Decoder BASE64_DECODER = Base64.getDecoder();
   private static final Base64.Encoder BASE64_ENCODER = Base64.getEncoder();
 
-  public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, Base64Basic obj) {
+  public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, TestDataObjectBase64Basic obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
       switch (member.getKey()) {
         case "data":
@@ -29,11 +29,11 @@ public class Base64BasicConverter {
     }
   }
 
-  public static void toJson(Base64Basic obj, JsonObject json) {
+  public static void toJson(TestDataObjectBase64Basic obj, JsonObject json) {
     toJson(obj, json.getMap());
   }
 
-  public static void toJson(Base64Basic obj, java.util.Map<String, Object> json) {
+  public static void toJson(TestDataObjectBase64Basic obj, java.util.Map<String, Object> json) {
     if (obj.getData() != null) {
       json.put("data", BASE64_ENCODER.encodeToString(obj.getData().getBytes()));
     }

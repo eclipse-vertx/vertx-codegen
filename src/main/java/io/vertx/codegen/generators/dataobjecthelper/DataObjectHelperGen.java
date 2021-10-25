@@ -87,7 +87,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         case "base64url":
           writer.print(
             "  private static final Base64.Decoder BASE64_DECODER = Base64.getUrlDecoder();\n" +
-            "  private static final Base64.Encoder BASE64_ENCODER = Base64.getUrlEncoder();\n");
+            "  private static final Base64.Encoder BASE64_ENCODER = Base64.getUrlEncoder().withoutPadding();\n");
           break;
         default:
           writer.print(

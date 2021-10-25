@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -812,5 +813,57 @@ public class DataObjectTest {
     JsonObject test = new JsonObject();
     SnakeFormattedDataObjectConverter.toJson(obj, test);
     Assert.assertEquals(expected, test);
+  }
+
+  @Test
+  public void testBase64Basic() {
+    TestDataObjectBase64Basic obj = new TestDataObjectBase64Basic();
+    JsonObject expected = new JsonObject()
+      .put("data", "PDw/Pz8+Pg==");
+
+    // parse
+    TestDataObjectBase64BasicConverter.fromJson(expected, obj);
+    Assert.assertEquals(Buffer.buffer("<<???>>".getBytes(StandardCharsets.UTF_8)), obj.getData());
+
+    // encode
+    JsonObject json = new JsonObject();
+    TestDataObjectBase64BasicConverter.toJson(obj, json);
+    Assert.assertEquals("PDw/Pz8+Pg==", json.getValue("data"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testBase64BasicBad() {
+    TestDataObjectBase64Basic obj = new TestDataObjectBase64Basic();
+    JsonObject expected = new JsonObject()
+      .put("data", "PDw_Pz8-Pg");
+
+    // parse should fail
+    TestDataObjectBase64BasicConverter.fromJson(expected, obj);
+  }
+
+  @Test
+  public void testBase64URL() {
+    TestDataObjectBase64URL obj = new TestDataObjectBase64URL();
+    JsonObject expected = new JsonObject()
+      .put("data", "PDw_Pz8-Pg");
+
+    // parse
+    TestDataObjectBase64URLConverter.fromJson(expected, obj);
+    Assert.assertEquals(Buffer.buffer("<<???>>".getBytes(StandardCharsets.UTF_8)), obj.getData());
+
+    // encode
+    JsonObject json = new JsonObject();
+    TestDataObjectBase64URLConverter.toJson(obj, json);
+    Assert.assertEquals("PDw_Pz8-Pg", json.getValue("data"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testBase64URLBad() {
+    TestDataObjectBase64URL obj = new TestDataObjectBase64URL();
+    JsonObject expected = new JsonObject()
+      .put("data", "PDw/Pz8+Pg==");
+
+    // parse should fail
+    TestDataObjectBase64URLConverter.fromJson(expected, obj);
   }
 }
