@@ -15,13 +15,13 @@
       
     <artifactId>vertx-codegen</artifactId>
       
-    <version>4.1.7-SNAPSHOT</version>
+    <version>4.1.7</version>
       
     <properties>
             
         <asciidoc.dir>${project.basedir}/src/main/asciidoc</asciidoc.dir>
             
-        <stack.version>4.1.7-SNAPSHOT</stack.version>
+        <stack.version>4.1.7</stack.version>
             
         <jar.manifest>${project.basedir}/src/main/resources/META-INF/MANIFEST.MF</jar.manifest>
           
