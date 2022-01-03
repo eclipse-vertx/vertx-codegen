@@ -5,6 +5,12 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -22,6 +28,11 @@ public interface PropertyListAdders {
 
   PropertyListAdders addString(String s);
   PropertyListAdders addInstant(Instant i);
+  PropertySetSetters addLocalDate(LocalDate localDate);
+  PropertySetSetters addLocalDateTime(LocalDateTime localDateTime);
+  PropertySetSetters addLocalTime(LocalTime localTime);
+  PropertySetSetters addOffsetDateTime(OffsetDateTime offsetDateTime);
+  PropertySetSetters addZonedDateTime(ZonedDateTime zonedDateTime);
   PropertyListAdders addBoxedInteger(Integer i);
   PropertyListAdders addPrimitiveInteger(int i);
   PropertyListAdders addBoxedBoolean(Boolean b);

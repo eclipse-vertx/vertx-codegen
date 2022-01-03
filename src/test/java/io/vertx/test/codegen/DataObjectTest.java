@@ -19,6 +19,11 @@ import io.vertx.test.codegen.testdataobject.jsonmapper.MyEnumWithCustomFactory;
 import io.vertx.test.codegen.testdataobject.jsonmapper.MyPojo;
 import io.vertx.test.codegen.testdataobject.jsonmapper.DataObjectWithMappedEnum;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -102,7 +107,7 @@ public class DataObjectTest {
       .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
       .generateDataObject(PropertySetters.class, ApiObjectWithMapper.class);
     assertNotNull(model);
-    assertEquals(15, model.getPropertyMap().size());
+    assertEquals(20, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("string"), "string", "setString", null, null, TypeReflectionFactory.create(String.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("boxedInteger"), "boxedInteger", "setBoxedInteger", null, null, TypeReflectionFactory.create(Integer.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("primitiveInteger"), "primitiveInteger", "setPrimitiveInteger", null, null, TypeReflectionFactory.create(int.class), true, PropertyKind.VALUE, true);
@@ -118,6 +123,11 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("jsonObject"), "jsonObject", "setJsonObject", null, null, TypeReflectionFactory.create(JsonObject.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("jsonArray"), "jsonArray", "setJsonArray", null, null, TypeReflectionFactory.create(JsonArray.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("enumerated"), "enumerated", "setEnumerated", null, null, TypeReflectionFactory.create(Enumerated.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("localDate"), "localDate", "setLocalDate", null, null, TypeReflectionFactory.create(LocalDate.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("localDateTime"), "localDateTime", "setLocalDateTime", null, null, TypeReflectionFactory.create(LocalDateTime.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("localTime"), "localTime", "setLocalTime", null, null, TypeReflectionFactory.create(LocalTime.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("offsetDateTime"), "offsetDateTime", "setOffsetDateTime", null, null, TypeReflectionFactory.create(OffsetDateTime.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("zonedDateTime"), "zonedDateTime", "setZonedDateTime", null, null, TypeReflectionFactory.create(ZonedDateTime.class), true, PropertyKind.VALUE, true);
   }
 
   @Test
@@ -145,7 +155,7 @@ public class DataObjectTest {
       .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
       .generateDataObject(dataObjectClass, ApiObjectWithMapper.class);
     assertNotNull(model);
-    assertEquals(13, model.getPropertyMap().size());
+    assertEquals(18, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("extraClassPath"), "extraClassPath", "setExtraClassPath", null, null, TypeReflectionFactory.create(String.class), true, expectedKind, true);
     assertProperty(model.getPropertyMap().get("strings"), "strings", "setStrings", null, null, TypeReflectionFactory.create(String.class), true, expectedKind, true);
     assertProperty(model.getPropertyMap().get("instants"), "instants", "setInstants", null, null, TypeReflectionFactory.create(Instant.class), true, expectedKind, true);
@@ -159,6 +169,11 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("jsonObjects"), "jsonObjects", "setJsonObjects", null, null, TypeReflectionFactory.create(JsonObject.class), true, expectedKind, true);
     assertProperty(model.getPropertyMap().get("jsonArrays"), "jsonArrays", "setJsonArrays", null, null, TypeReflectionFactory.create(JsonArray.class), true, expectedKind, true);
     assertProperty(model.getPropertyMap().get("enumerateds"), "enumerateds", "setEnumerateds", null, null, TypeReflectionFactory.create(Enumerated.class), true, expectedKind, true);
+    assertProperty(model.getPropertyMap().get("localDates"), "localDates", "setLocalDates", null, null, TypeReflectionFactory.create(LocalDate.class), true, expectedKind, true);
+    assertProperty(model.getPropertyMap().get("localDateTimes"), "localDateTimes", "setLocalDateTimes", null, null, TypeReflectionFactory.create(LocalDateTime.class), true, expectedKind, true);
+    assertProperty(model.getPropertyMap().get("localTimes"), "localTimes", "setLocalTimes", null, null, TypeReflectionFactory.create(LocalTime.class), true, expectedKind, true);
+    assertProperty(model.getPropertyMap().get("offsetDateTimes"), "offsetDateTimes", "setOffsetDateTimes", null, null, TypeReflectionFactory.create(OffsetDateTime.class), true, expectedKind, true);
+    assertProperty(model.getPropertyMap().get("zonedDateTimes"), "zonedDateTimes", "setZonedDateTimes", null, null, TypeReflectionFactory.create(ZonedDateTime.class), true, expectedKind, true);
   }
 
   @Test
@@ -177,7 +192,7 @@ public class DataObjectTest {
       .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
       .generateDataObject(dataObjectClass, ApiObjectWithMapper.class);
     assertNotNull(model);
-    assertEquals(13, model.getPropertyMap().size());
+    assertEquals(18, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("extraClassPath"), "extraClassPath", "setExtraClassPath", null, "getExtraClassPath", TypeReflectionFactory.create(String.class), true, expectedKind, true);
     assertProperty(model.getPropertyMap().get("strings"), "strings", "setStrings", null, "getStrings", TypeReflectionFactory.create(String.class), true, expectedKind, true);
     assertProperty(model.getPropertyMap().get("instants"), "instants", "setInstants", null, "getInstants", TypeReflectionFactory.create(Instant.class), true, expectedKind, true);
@@ -191,6 +206,11 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("jsonObjects"), "jsonObjects", "setJsonObjects", null, "getJsonObjects", TypeReflectionFactory.create(JsonObject.class), true, expectedKind, true);
     assertProperty(model.getPropertyMap().get("jsonArrays"), "jsonArrays", "setJsonArrays", null, "getJsonArrays", TypeReflectionFactory.create(JsonArray.class), true, expectedKind, true);
     assertProperty(model.getPropertyMap().get("enumerateds"), "enumerateds", "setEnumerateds", null, "getEnumerateds", TypeReflectionFactory.create(Enumerated.class), true, expectedKind, true);
+    assertProperty(model.getPropertyMap().get("localDates"), "localDates", "setLocalDates", null, "getLocalDates", TypeReflectionFactory.create(LocalDate.class), true, expectedKind, true);
+    assertProperty(model.getPropertyMap().get("localDateTimes"), "localDateTimes", "setLocalDateTimes", null, "getLocalDateTimes", TypeReflectionFactory.create(LocalDateTime.class), true, expectedKind, true);
+    assertProperty(model.getPropertyMap().get("localTimes"), "localTimes", "setLocalTimes", null, "getLocalTimes", TypeReflectionFactory.create(LocalTime.class), true, expectedKind, true);
+    assertProperty(model.getPropertyMap().get("offsetDateTimes"), "offsetDateTimes", "setOffsetDateTimes", null, "getOffsetDateTimes", TypeReflectionFactory.create(OffsetDateTime.class), true, expectedKind, true);
+    assertProperty(model.getPropertyMap().get("zonedDateTimes"), "zonedDateTimes", "setZonedDateTimes", null, "getZonedDateTimes", TypeReflectionFactory.create(ZonedDateTime.class), true, expectedKind, true);
   }
 
   @Test
@@ -204,7 +224,7 @@ public class DataObjectTest {
       .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
       .generateDataObject(PropertyMapGettersSetters.class, ApiObjectWithMapper.class);
     assertNotNull(model);
-    assertEquals(13, model.getPropertyMap().size());
+    assertEquals(18, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("stringMap"), "stringMap", "setStringMap", null, "getStringMap", TypeReflectionFactory.create(String.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("instantMap"), "instantMap", "setInstantMap", null, "getInstantMap", TypeReflectionFactory.create(Instant.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("boxedIntegerMap"), "boxedIntegerMap", "setBoxedIntegerMap", null, "getBoxedIntegerMap", TypeReflectionFactory.create(Integer.class), true, PropertyKind.MAP, true);
@@ -218,6 +238,11 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("jsonArrayMap"), "jsonArrayMap", "setJsonArrayMap", null, "getJsonArrayMap", TypeReflectionFactory.create(JsonArray.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("enumeratedMap"), "enumeratedMap", "setEnumeratedMap", null, "getEnumeratedMap", TypeReflectionFactory.create(Enumerated.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("objectMap"), "objectMap", "setObjectMap", null, "getObjectMap", TypeReflectionFactory.create(Object.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("localDateMap"), "localDateMap", "setLocalDateMap", null, "getLocalDateMap", TypeReflectionFactory.create(LocalDate.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("localDateTimeMap"), "localDateTimeMap", "setLocalDateTimeMap", null, "getLocalDateTimeMap", TypeReflectionFactory.create(LocalDateTime.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("localTimeMap"), "localTimeMap", "setLocalTimeMap", null, "getLocalTimeMap", TypeReflectionFactory.create(LocalTime.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("offsetDateTimeMap"), "offsetDateTimeMap", "setOffsetDateTimeMap", null, "getOffsetDateTimeMap", TypeReflectionFactory.create(OffsetDateTime.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("zonedDateTimeMap"), "zonedDateTimeMap", "setZonedDateTimeMap", null, "getZonedDateTimeMap", TypeReflectionFactory.create(ZonedDateTime.class), true, PropertyKind.MAP, true);
   }
 
   @Test
@@ -226,7 +251,7 @@ public class DataObjectTest {
       .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
       .generateDataObject(PropertyMapAdders.class, ApiObjectWithMapper.class);
     assertNotNull(model);
-    assertEquals(16, model.getPropertyMap().size());
+    assertEquals(21, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("strings"), "strings", null, "addString", null, TypeReflectionFactory.create(String.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("instants"), "instants", null, "addInstant", null, TypeReflectionFactory.create(Instant.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("boxedIntegers"), "boxedIntegers", null, "addBoxedInteger", null, TypeReflectionFactory.create(Integer.class), true, PropertyKind.MAP, true);
@@ -243,6 +268,11 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("jsonArrays"), "jsonArrays", null, "addJsonArray", null, TypeReflectionFactory.create(JsonArray.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("enumerateds"), "enumerateds", null, "addEnumerated", null, TypeReflectionFactory.create(Enumerated.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("objects"), "objects", null, "addObject", null, TypeReflectionFactory.create(Object.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("localDates"), "localDates", null, "addLocalDate", null, TypeReflectionFactory.create(LocalDate.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("localDateTimes"), "localDateTimes", null, "addLocalDateTime", null, TypeReflectionFactory.create(LocalDateTime.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("localTimes"), "localTimes", null, "addLocalTime", null, TypeReflectionFactory.create(LocalTime.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("offsetDateTimes"), "offsetDateTimes", null, "addOffsetDateTime", null, TypeReflectionFactory.create(OffsetDateTime.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("zonedDateTimes"), "zonedDateTimes", null, "addZonedDateTime", null, TypeReflectionFactory.create(ZonedDateTime.class), true, PropertyKind.MAP, true);
   }
 
   @Test
@@ -251,7 +281,7 @@ public class DataObjectTest {
       .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
       .generateDataObject(PropertyMapSetters.class, ApiObjectWithMapper.class);
     assertNotNull(model);
-    assertEquals(13, model.getPropertyMap().size());
+    assertEquals(18, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("stringMap"), "stringMap", "setStringMap", null, null, TypeReflectionFactory.create(String.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("instantMap"), "instantMap", "setInstantMap", null, null, TypeReflectionFactory.create(Instant.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("boxedIntegerMap"), "boxedIntegerMap", "setBoxedIntegerMap", null, null, TypeReflectionFactory.create(Integer.class), true, PropertyKind.MAP, true);
@@ -265,6 +295,11 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("jsonArrayMap"), "jsonArrayMap", "setJsonArrayMap", null, null, TypeReflectionFactory.create(JsonArray.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("enumeratedMap"), "enumeratedMap", "setEnumeratedMap", null, null, TypeReflectionFactory.create(Enumerated.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("objectMap"), "objectMap", "setObjectMap", null, null, TypeReflectionFactory.create(Object.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("localDateMap"), "localDateMap", "setLocalDateMap", null, null, TypeReflectionFactory.create(LocalDate.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("localDateTimeMap"), "localDateTimeMap", "setLocalDateTimeMap", null, null, TypeReflectionFactory.create(LocalDateTime.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("localTimeMap"), "localTimeMap", "setLocalTimeMap", null, null, TypeReflectionFactory.create(LocalTime.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("offsetDateTimeMap"), "offsetDateTimeMap", "setOffsetDateTimeMap", null, null, TypeReflectionFactory.create(OffsetDateTime.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("zonedDateTimeMap"), "zonedDateTimeMap", "setZonedDateTimeMap", null, null, TypeReflectionFactory.create(ZonedDateTime.class), true, PropertyKind.MAP, true);
   }
 
   @Test
@@ -273,7 +308,7 @@ public class DataObjectTest {
       .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
       .generateDataObject(PropertyMapGettersAdders.class, ApiObjectWithMapper.class);
     assertNotNull(model);
-    assertEquals(13, model.getPropertyMap().size());
+    assertEquals(18, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("strings"), "strings", null, "addString", "getStrings", TypeReflectionFactory.create(String.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("instants"), "instants", null, "addInstant", "getInstants", TypeReflectionFactory.create(Instant.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("boxedIntegers"), "boxedIntegers", null, "addBoxedInteger", "getBoxedIntegers", TypeReflectionFactory.create(Integer.class), true, PropertyKind.MAP, true);
@@ -287,6 +322,11 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("jsonArrays"), "jsonArrays", null, "addJsonArray", "getJsonArrays", TypeReflectionFactory.create(JsonArray.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("enumerateds"), "enumerateds", null, "addEnumerated", "getEnumerateds", TypeReflectionFactory.create(Enumerated.class), true, PropertyKind.MAP, true);
     assertProperty(model.getPropertyMap().get("objects"), "objects", null, "addObject", "getObjects", TypeReflectionFactory.create(Object.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("localDates"), "localDates", null, "addLocalDate", "getLocalDates", TypeReflectionFactory.create(LocalDate.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("localDateTimes"), "localDateTimes", null, "addLocalDateTime", "getLocalDateTimes", TypeReflectionFactory.create(LocalDateTime.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("localTimes"), "localTimes", null, "addLocalTime", "getLocalTimes", TypeReflectionFactory.create(LocalTime.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("offsetDateTimes"), "offsetDateTimes", null, "addOffsetDateTime", "getOffsetDateTimes", TypeReflectionFactory.create(OffsetDateTime.class), true, PropertyKind.MAP, true);
+    assertProperty(model.getPropertyMap().get("zonedDateTimes"), "zonedDateTimes", null, "addZonedDateTime", "getZonedDateTimes", TypeReflectionFactory.create(ZonedDateTime.class), true, PropertyKind.MAP, true);
   }
 
   @Test
@@ -295,7 +335,7 @@ public class DataObjectTest {
       .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
       .generateDataObject(PropertyGetters.class, ApiObjectWithMapper.class);
     assertNotNull(model);
-    assertEquals(15, model.getPropertyMap().size());
+    assertEquals(20, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("string"), "string", null, null, "getString", TypeReflectionFactory.create(String.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("boxedInteger"), "boxedInteger", null, null, "getBoxedInteger", TypeReflectionFactory.create(Integer.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("primitiveInteger"), "primitiveInteger", null, null, "getPrimitiveInteger", TypeReflectionFactory.create(int.class), true, PropertyKind.VALUE, true);
@@ -311,6 +351,11 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("jsonObject"), "jsonObject", null, null, "getJsonObject", TypeReflectionFactory.create(JsonObject.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("jsonArray"), "jsonArray", null, null, "getJsonArray", TypeReflectionFactory.create(JsonArray.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("enumerated"), "enumerated", null, null, "getEnumerated", TypeReflectionFactory.create(Enumerated.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("localDate"), "localDate", null, null, "getLocalDate", TypeReflectionFactory.create(LocalDate.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("localDateTime"), "localDateTime", null, null, "getLocalDateTime", TypeReflectionFactory.create(LocalDateTime.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("localTime"), "localTime", null, null, "getLocalTime", TypeReflectionFactory.create(LocalTime.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("offsetDateTime"), "offsetDateTime", null, null, "getOffsetDateTime", TypeReflectionFactory.create(OffsetDateTime.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("zonedDateTime"), "zonedDateTime", null, null, "getZonedDateTime", TypeReflectionFactory.create(ZonedDateTime.class), true, PropertyKind.VALUE, true);
   }
 
   @Test
@@ -320,7 +365,7 @@ public class DataObjectTest {
       .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
       .generateDataObject(PropertyGettersSetters.class, ApiObjectWithMapper.class);
     assertNotNull(model);
-    assertEquals(15, model.getPropertyMap().size());
+    assertEquals(20, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("string"), "string", "setString", null, "getString", TypeReflectionFactory.create(String.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("instant"), "instant", "setInstant", null, "getInstant", TypeReflectionFactory.create(Instant.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("boxedInteger"), "boxedInteger", "setBoxedInteger", null, "getBoxedInteger", TypeReflectionFactory.create(Integer.class), true, PropertyKind.VALUE, true);
@@ -336,6 +381,11 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("jsonObject"), "jsonObject", "setJsonObject", null, "getJsonObject", TypeReflectionFactory.create(JsonObject.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("jsonArray"), "jsonArray", "setJsonArray", null, "getJsonArray", TypeReflectionFactory.create(JsonArray.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("enumerated"), "enumerated", "setEnumerated", null, "getEnumerated", TypeReflectionFactory.create(Enumerated.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("localDate"), "localDate", "setLocalDate", null, "getLocalDate", TypeReflectionFactory.create(LocalDate.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("localDateTime"), "localDateTime", "setLocalDateTime", null, "getLocalDateTime", TypeReflectionFactory.create(LocalDateTime.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("localTime"), "localTime", "setLocalTime", null, "getLocalTime", TypeReflectionFactory.create(LocalTime.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("offsetDateTime"), "offsetDateTime", "setOffsetDateTime", null, "getOffsetDateTime", TypeReflectionFactory.create(OffsetDateTime.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("zonedDateTime"), "zonedDateTime", "setZonedDateTime", null, "getZonedDateTime", TypeReflectionFactory.create(ZonedDateTime.class), true, PropertyKind.VALUE, true);
   }
 
   @Test
@@ -352,7 +402,7 @@ public class DataObjectTest {
       .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
       .generateDataObject(PropertyListAdders.class, ApiObjectWithMapper.class);
     assertNotNull(model);
-    assertEquals(15, model.getPropertyMap().size());
+    assertEquals(20, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("strings"), "strings", null, "addString", null, TypeReflectionFactory.create(String.class), true, PropertyKind.LIST, true);
     assertProperty(model.getPropertyMap().get("instants"), "instants", null, "addInstant", null, TypeReflectionFactory.create(Instant.class), true, PropertyKind.LIST, true);
     assertProperty(model.getPropertyMap().get("boxedIntegers"), "boxedIntegers", null, "addBoxedInteger", null, TypeReflectionFactory.create(Integer.class), true, PropertyKind.LIST, true);
@@ -368,6 +418,11 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("jsonObjects"), "jsonObjects", null, "addJsonObject", null, TypeReflectionFactory.create(JsonObject.class), true, PropertyKind.LIST, true);
     assertProperty(model.getPropertyMap().get("jsonArrays"), "jsonArrays", null, "addJsonArray", null, TypeReflectionFactory.create(JsonArray.class), true, PropertyKind.LIST, true);
     assertProperty(model.getPropertyMap().get("enumerateds"), "enumerateds", null, "addEnumerated", null, TypeReflectionFactory.create(Enumerated.class), true, PropertyKind.LIST, true);
+    assertProperty(model.getPropertyMap().get("localDates"), "localDates", null, "addLocalDate", null, TypeReflectionFactory.create(LocalDate.class), true, PropertyKind.LIST, true);
+    assertProperty(model.getPropertyMap().get("localDateTimes"), "localDateTimes", null, "addLocalDateTime", null, TypeReflectionFactory.create(LocalDateTime.class), true, PropertyKind.LIST, true);
+    assertProperty(model.getPropertyMap().get("localTimes"), "localTimes", null, "addLocalTime", null, TypeReflectionFactory.create(LocalTime.class), true, PropertyKind.LIST, true);
+    assertProperty(model.getPropertyMap().get("offsetDateTimes"), "offsetDateTimes", null, "addOffsetDateTime", null, TypeReflectionFactory.create(OffsetDateTime.class), true, PropertyKind.LIST, true);
+    assertProperty(model.getPropertyMap().get("zonedDateTimes"), "zonedDateTimes", null, "addZonedDateTime", null, TypeReflectionFactory.create(ZonedDateTime.class), true, PropertyKind.LIST, true);
   }
 
   @Test
@@ -377,7 +432,7 @@ public class DataObjectTest {
       .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
       .generateDataObject(PropertyListGettersAdders.class, ApiObjectWithMapper.class);
     assertNotNull(model);
-    assertEquals(12, model.getPropertyMap().size());
+    assertEquals(17, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("strings"), "strings", null, "addString", "getStrings", TypeReflectionFactory.create(String.class), true, PropertyKind.LIST, true);
     assertProperty(model.getPropertyMap().get("instants"), "instants", null, "addInstant", "getInstants", TypeReflectionFactory.create(Instant.class), true, PropertyKind.LIST, true);
     assertProperty(model.getPropertyMap().get("boxedIntegers"), "boxedIntegers", null, "addBoxedInteger", "getBoxedIntegers", TypeReflectionFactory.create(Integer.class), true, PropertyKind.LIST, true);
@@ -390,6 +445,11 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("jsonObjects"), "jsonObjects", null, "addJsonObject", "getJsonObjects", TypeReflectionFactory.create(JsonObject.class), true, PropertyKind.LIST, true);
     assertProperty(model.getPropertyMap().get("jsonArrays"), "jsonArrays", null, "addJsonArray", "getJsonArrays", TypeReflectionFactory.create(JsonArray.class), true, PropertyKind.LIST, true);
     assertProperty(model.getPropertyMap().get("enumerateds"), "enumerateds", null, "addEnumerated", "getEnumerateds", TypeReflectionFactory.create(Enumerated.class), true, PropertyKind.LIST, true);
+    assertProperty(model.getPropertyMap().get("localDates"), "localDates", null, "addLocalDate", "getLocalDates", TypeReflectionFactory.create(LocalDate.class), true, PropertyKind.LIST, true);
+    assertProperty(model.getPropertyMap().get("localDateTimes"), "localDateTimes", null, "addLocalDateTime", "getLocalDateTimes", TypeReflectionFactory.create(LocalDateTime.class), true, PropertyKind.LIST, true);
+    assertProperty(model.getPropertyMap().get("localTimes"), "localTimes", null, "addLocalTime", "getLocalTimes", TypeReflectionFactory.create(LocalTime.class), true, PropertyKind.LIST, true);
+    assertProperty(model.getPropertyMap().get("offsetDateTimes"), "offsetDateTimes", null, "addOffsetDateTime", "getOffsetDateTimes", TypeReflectionFactory.create(OffsetDateTime.class), true, PropertyKind.LIST, true);
+    assertProperty(model.getPropertyMap().get("zonedDateTimes"), "zonedDateTimes", null, "addZonedDateTime", "getZonedDateTimes", TypeReflectionFactory.create(ZonedDateTime.class), true, PropertyKind.LIST, true);
   }
 
   @Test

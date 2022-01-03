@@ -5,6 +5,11 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -32,6 +37,11 @@ public class PropertySetters {
   public PropertySetters setBoxedLong(Long b) { throw new UnsupportedOperationException(); }
   public PropertySetters setPrimitiveLong(long b) { throw new UnsupportedOperationException(); }
   public PropertySetters setInstant(Instant i) { throw new UnsupportedOperationException(); }
+  public PropertySetters setLocalDate(LocalDate l) { throw new UnsupportedOperationException(); }
+  public PropertySetters setLocalDateTime(LocalDateTime l) { throw new UnsupportedOperationException(); }
+  public PropertySetters setLocalTime(LocalTime l) { throw new UnsupportedOperationException(); }
+  public PropertySetters setOffsetDateTime(OffsetDateTime o) { throw new UnsupportedOperationException(); }
+  public PropertySetters setZonedDateTime(ZonedDateTime z) { throw new UnsupportedOperationException(); }
 
   public PropertySetters setApiObject(ApiObject s) { throw new UnsupportedOperationException(); }
   public PropertySetters setApiObjectWithMapper(ApiObjectWithMapper s) { throw new UnsupportedOperationException(); }

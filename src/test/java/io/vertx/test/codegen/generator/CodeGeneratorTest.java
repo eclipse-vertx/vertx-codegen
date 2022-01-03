@@ -13,6 +13,11 @@ import io.vertx.test.codegen.testdataobject.PropertyGettersSetters;
 import io.vertx.test.codegen.testenum.ValidEnum;
 import io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedApi;
 import io.vertx.test.codegen.testmodule.modulescoped.sub.ModuleScopedSubApi;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -95,9 +100,25 @@ public class CodeGeneratorTest {
     assertEquals("true", props.remove("publicConverter"));
     assertEquals("false", props.remove("concrete"));
     assertEquals("false", props.remove("isClass"));
-    assertEquals("[" + JsonArray.class.getName() + ", " + JsonObject.class.getName() + ", " + Boolean.class.getName() + ", "
-        + Integer.class.getName() + ", " + Long.class.getName() + ", " + String.class.getName() + ", " + Instant.class.getName()
-        + "]", props.remove("importedTypes"));
+    assertEquals("false", props.remove("deprecated"));
+    assertEquals("null", props.remove("deprecatedDesc"));
+    assertEquals("false", props.remove("hasStringConstructor"));
+
+    List<String> classNames = Arrays.asList(
+      JsonArray.class.getName(),
+      JsonObject.class.getName(),
+      Boolean.class.getName(),
+      Integer.class.getName(),
+      Long.class.getName(),
+      String.class.getName(),
+      Instant.class.getName(),
+      LocalDate.class.getName(),
+      LocalDateTime.class.getName(),
+      LocalTime.class.getName(),
+      OffsetDateTime.class.getName(),
+      ZonedDateTime.class.getName()
+    );
+    assertEquals("[" + String.join(", ", classNames) + "]", props.remove("importedTypes"));
     assertEquals("[]", props.remove("superTypes"));
     assertEquals("[]", props.remove("abstractSuperTypes"));
     assertEquals("null", props.remove("superType"));
@@ -115,12 +136,20 @@ public class CodeGeneratorTest {
     assertEquals("long", props.remove("property.primitiveLong"));
     assertEquals("java.lang.String", props.remove("property.string"));
     assertEquals("java.time.Instant", props.remove("property.instant"));
+    assertEquals("java.time.LocalDate", props.remove("property.localDate"));
+    assertEquals("java.time.LocalDateTime", props.remove("property.localDateTime"));
+    assertEquals("java.time.LocalTime", props.remove("property.localTime"));
+    assertEquals("java.time.OffsetDateTime", props.remove("property.offsetDateTime"));
+    assertEquals("java.time.ZonedDateTime", props.remove("property.zonedDateTime"));
     assertEquals("io.vertx.test.codegen.testdataobject.ToJsonDataObject", props.remove("property.toJsonDataObject"));
     assertEquals("false", props.remove("hasEmptyConstructor"));
     assertEquals("false", props.remove("hasJsonConstructor"));
     assertEquals("false", props.remove("hasToJsonMethod"));
     assertEquals("false", props.remove("serializable"));
     assertEquals("false", props.remove("deserializable"));
+
+    int numberOfIgnoredProps = 4;
+    assertEquals(numberOfIgnoredProps, props.size());
   }
 
   @Test

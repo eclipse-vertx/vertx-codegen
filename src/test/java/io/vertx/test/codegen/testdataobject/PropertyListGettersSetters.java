@@ -5,6 +5,11 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
@@ -30,6 +35,16 @@ public interface PropertyListGettersSetters {
   PropertyListGettersSetters setStrings(List<String> s);
   List<Instant> getInstants();
   PropertyListGettersSetters setInstants(List<Instant> s);
+  List<LocalDate> getLocalDates();
+  PropertyListGettersSetters setLocalDates(List<LocalDate> l);
+  List<LocalDateTime> getLocalDateTimes();
+  PropertyListGettersSetters setLocalDateTimes(List<LocalDateTime> l);
+  List<LocalTime> getLocalTimes();
+  PropertyListGettersSetters setLocalTimes(List<LocalTime> l);
+  List<OffsetDateTime> getOffsetDateTimes();
+  PropertyListGettersSetters setOffsetDateTimes(List<OffsetDateTime> o);
+  List<ZonedDateTime> getZonedDateTimes();
+  PropertyListGettersSetters setZonedDateTimes(List<ZonedDateTime> z);
   List<Integer> getBoxedIntegers();
   PropertyListGettersSetters setBoxedIntegers(List<Integer> i);
   List<Boolean> getBoxedBooleans();
