@@ -1,6 +1,6 @@
 # Vert.x API Generation
 
-[![Build Status](https://github.com/vert-x3/vertx-codegen/workflows/CI/badge.svg?branch=master)](https://github.com/vert-x3/vertx-codegen/actions?query=workflow%3ACI)
+[![Build Status](https://github.com/eclipse-vertx/vertx-codegen/workflows/CI/badge.svg?branch=master)](https://github.com/eclipse-vertx/vertx-codegen/actions?query=workflow%3ACI)
 
 ## Render documentation
 
