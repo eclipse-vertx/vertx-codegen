@@ -546,17 +546,6 @@ public class ClassModel implements Model {
       // Now check for overloaded methods
       for (List<MethodInfo> meths: methodMap.values()) {
 
-        // Check return types are the same
-        TypeInfo[] returnTypes = meths.stream()
-          .filter(meth -> !meth.isContainingAnyJavaType())
-          .map(meth -> meth.getReturnType().getErased())
-          .distinct()
-          .toArray(TypeInfo[]::new);
-        if (returnTypes.length > 1) {
-          throw new GenException(this.modelElt, "Overloaded method " + meths.get(0).getName() + " must have the same return type "
-            + returnTypes[0] + " != " + returnTypes[1]);
-        }
-
         // checkMethod hook validation
         meths.forEach(this::checkMethod);
 

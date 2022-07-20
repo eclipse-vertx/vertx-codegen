@@ -27,4 +27,7 @@ public interface InterfaceWithOverloadedMethods {
   <T> GenericInterface<T> method();
   <U> GenericInterface<U> method(String s);
 
+  void differentReturnTypes();
+  String differentReturnTypes(String s);
+
 }

@@ -200,11 +200,6 @@ public class ClassTest extends ClassTestBase {
   // Invalid methods
 
   @Test
-  public void testOverloadedMethodsWithDifferentReturnType() throws Exception {
-    assertGenInvalid(OverloadedMethodsWithDifferentReturnType.class);
-  }
-
-  @Test
   public void testFluentMethodWithVoidReturn() throws Exception {
     assertGenInvalid(FluentMethodWithVoidReturn.class);
   }
@@ -1651,7 +1646,7 @@ public class ClassTest extends ClassTestBase {
     assertTrue(model.getSuperTypes().isEmpty());
 
     List<MethodInfo> methods = model.getMethods();
-    assertEquals(12, methods.size());
+    assertEquals(14, methods.size());
     checkMethod(methods.get(0), "foo", 1, "void", MethodKind.OTHER);
     checkParam(model.getMethods().get(0).getParams().get(0), "str", String.class);
 
@@ -1679,7 +1674,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(model.getMethods().get(7).getParams().get(0), "str", String.class);
     checkParam(model.getMethods().get(7).getParams().get(1), "time", long.class);
     checkParam(model.getMethods().get(7).getParams().get(2), "handler", new TypeLiteral<Handler<T>>(){});
-    assertEquals(5, model.getMethodMap().size());
+    assertEquals(6, model.getMethodMap().size());
     List<MethodInfo> meths1 = model.getMethodMap().get("foo");
     assertEquals(3, meths1.size());
     assertSame(model.getMethods().get(0), meths1.get(0));
@@ -1695,6 +1690,9 @@ public class ClassTest extends ClassTestBase {
 
     checkMethod(methods.get(10), "method", 0, new TypeLiteral<GenericInterface<T>>() {}, MethodKind.OTHER);
     checkMethod(methods.get(11), "method", 1, new TypeLiteral<GenericInterface<U>>() {}, MethodKind.OTHER);
+
+    checkMethod(methods.get(12), "differentReturnTypes", 0, "void", MethodKind.OTHER);
+    checkMethod(methods.get(13), "differentReturnTypes", 1, "java.lang.String", MethodKind.OTHER);
   }
 
   @Test
