@@ -220,6 +220,23 @@ public class CodeGenProcessor extends AbstractProcessor {
         }
       }
     }
+    if (exception != null) {
+      String kaptGeneratedLocation = processingEnv.getOptions().get("kapt.kotlin.generated");
+      String defaultKaptGeneratedLocation = "/build/generated/source/kaptKotlin/main";
+      if (kaptGeneratedLocation != null && kaptGeneratedLocation.endsWith(defaultKaptGeneratedLocation)) {
+        File projectDir = new File(kaptGeneratedLocation.substring(0, kaptGeneratedLocation.length() - defaultKaptGeneratedLocation.length()));
+        Path source = projectDir.toPath().resolve("src/main/resources").resolve(JSON_MAPPERS_PROPERTIES_PATH);
+        if (source.toFile().exists()) {
+          try (InputStream is = source.toUri().toURL().openStream()) {
+            loadJsonMappers(merged, is);
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded json-mappers.properties from '" + source + "'");
+          } catch (IOException e) {
+            log.log(Level.SEVERE, "Could not load json-mappers.properties", e);
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Unable to open properties file at " + source);
+          }
+        }
+      }
+    }
     return merged;
   }
 
