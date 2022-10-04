@@ -181,7 +181,12 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
   }
 
   private void genPropToJson(String before, String after, PropertyInfo prop, PrintWriter writer) {
-    String jsonPropertyName = LowerCamelCase.INSTANCE.to(formatter, prop.getName());
+    String jsonPropertyName = prop.getAnnotations().stream()
+      .filter(ann -> ann.getName().equals(DataObject.Property.class.getCanonicalName()))
+      .findFirst()
+      .map(ann -> (String) ann.getMember("value"))
+      .orElseGet(() -> LowerCamelCase.INSTANCE.to(formatter, prop.getName()));
+
     String indent = "    ";
     if (prop.isList() || prop.isSet()) {
       writer.print(indent + "if (obj." + prop.getGetterMethod() + "() != null) {\n");
@@ -320,7 +325,12 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
   }
 
   private void genPropFromJson(String cast, String before, String after, PropertyInfo prop, PrintWriter writer) {
-    String jsonPropertyName = LowerCamelCase.INSTANCE.to(formatter, prop.getName());
+    String jsonPropertyName = prop.getAnnotations().stream()
+      .filter(ann -> ann.getName().equals(DataObject.Property.class.getCanonicalName()))
+      .findFirst()
+      .map(ann -> (String) ann.getMember("value"))
+      .orElseGet(() -> LowerCamelCase.INSTANCE.to(formatter, prop.getName()));
+
     String indent = "        ";
     writer.print(indent + "case \"" + jsonPropertyName + "\":\n");
     if (prop.isList() || prop.isSet()) {
