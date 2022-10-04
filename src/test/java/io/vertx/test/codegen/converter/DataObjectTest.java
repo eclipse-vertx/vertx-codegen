@@ -850,6 +850,21 @@ public class DataObjectTest {
   }
 
   @Test
+  public void testDataObjectPropertyFormatted() {
+    DataObjectPropertyFormattedDataObject obj = new DataObjectPropertyFormattedDataObject();
+    JsonObject expected = new JsonObject()
+      .put("id", "val1")
+      .put(":ref", "self");
+    DataObjectPropertyFormattedDataObjectConverter.fromJson(expected
+      , obj);
+    Assert.assertEquals("val1", obj.getId());
+    Assert.assertEquals("self", obj.getRef());
+    JsonObject test = new JsonObject();
+    DataObjectPropertyFormattedDataObjectConverter.toJson(obj, test);
+    Assert.assertEquals(expected, test);
+  }
+
+  @Test
   public void testBase64Basic() {
     TestDataObjectBase64Basic obj = new TestDataObjectBase64Basic();
     JsonObject expected = new JsonObject()
