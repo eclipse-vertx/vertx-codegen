@@ -184,7 +184,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     String jsonPropertyName = prop.getAnnotations().stream()
       .filter(ann -> ann.getName().equals(DataObject.Property.class.getCanonicalName()))
       .findFirst()
-      .map(ann -> (String) ann.getMember("value"))
+      .map(ann -> (String) ann.getMember("name"))
       .orElseGet(() -> LowerCamelCase.INSTANCE.to(formatter, prop.getName()));
 
     String indent = "    ";
@@ -328,7 +328,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     String jsonPropertyName = prop.getAnnotations().stream()
       .filter(ann -> ann.getName().equals(DataObject.Property.class.getCanonicalName()))
       .findFirst()
-      .map(ann -> (String) ann.getMember("value"))
+      .map(ann -> (String) ann.getMember("name"))
       .orElseGet(() -> LowerCamelCase.INSTANCE.to(formatter, prop.getName()));
 
     String indent = "        ";

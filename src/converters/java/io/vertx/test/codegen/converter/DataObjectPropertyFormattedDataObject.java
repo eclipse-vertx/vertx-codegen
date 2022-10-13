@@ -35,7 +35,7 @@ public class DataObjectPropertyFormattedDataObject {
     return this;
   }
 
-  @DataObject.Property(":ref")
+  @DataObject.Property(name = ":ref")
   public String getRef() {
     return ref;
   }

@@ -107,6 +107,6 @@ public @interface DataObject {
     /**
      * @return the field name to use for the property.
      */
-    String value();
+    String name();
   }
 }
