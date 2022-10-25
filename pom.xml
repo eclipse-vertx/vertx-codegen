@@ -15,13 +15,13 @@
       
     <artifactId>vertx-codegen</artifactId>
       
-    <version>3.9.14-SNAPSHOT</version>
+    <version>3.9.14</version>
       
     <properties>
             
         <asciidoc.dir>${project.basedir}/src/main/asciidoc</asciidoc.dir>
             
-        <stack.version>3.9.14-SNAPSHOT</stack.version>
+        <stack.version>3.9.14</stack.version>
           
     </properties>
       
