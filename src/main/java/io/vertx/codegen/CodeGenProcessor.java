@@ -223,6 +223,8 @@ public class CodeGenProcessor extends AbstractProcessor {
     if (exception != null) {
       String kaptGeneratedLocation = processingEnv.getOptions().get("kapt.kotlin.generated");
       String defaultKaptGeneratedLocation = "/build/generated/source/kaptKotlin/main";
+      defaultKaptGeneratedLocation = defaultKaptGeneratedLocation.replace('/', File.separatorChar);
+
       if (kaptGeneratedLocation != null && kaptGeneratedLocation.endsWith(defaultKaptGeneratedLocation)) {
         File projectDir = new File(kaptGeneratedLocation.substring(0, kaptGeneratedLocation.length() - defaultKaptGeneratedLocation.length()));
         Path source = projectDir.toPath().resolve("src/main/resources").resolve(JSON_MAPPERS_PROPERTIES_PATH);
