@@ -2588,4 +2588,25 @@ public class ClassTest extends ClassTestBase {
   public void testUseIllegalCallbacks() throws Exception {
     assertGenInvalid(MethodWithCallback.class);
   }
+
+  @Test
+  public void testUseFutureExtendsNonFutureUse() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(io.vertx.test.codegen.nextgen2.n.MethodWithFutures.class);
+    assertEquals(5, model.getMethods().size());
+    MethodInfo mi = model.getMethods().get(0);
+    assertEquals("callbackStyle1", mi.getName());
+    assertEquals(MethodKind.CALLBACK, mi.getKind());
+    mi = model.getMethods().get(1);
+    assertEquals("callbackStyle2", mi.getName());
+    assertEquals(MethodKind.CALLBACK, mi.getKind());
+    mi = model.getMethods().get(2);
+    assertEquals("futureStyle", mi.getName());
+    assertEquals(MethodKind.FUTURE, mi.getKind());
+    mi = model.getMethods().get(3);
+    assertEquals("overridenCallbackStyle1", mi.getName());
+    assertEquals(MethodKind.CALLBACK, mi.getKind());
+    mi = model.getMethods().get(4);
+    assertEquals("overridenCallbackStyle2", mi.getName());
+    assertEquals(MethodKind.CALLBACK, mi.getKind());
+  }
 }
