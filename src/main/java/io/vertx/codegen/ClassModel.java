@@ -483,9 +483,9 @@ public class ClassModel implements Model {
           MethodInfo methodInfo = entry.getValue();
           List<ParamInfo> params = methodInfo.getParams();
           int paramSize = params.size();
-          if (getModule().useFutures && paramSize > 0) {
+          if (methodInfo.isUseFutures() && paramSize > 0) {
             TypeInfo callbackType = methodInfo.getCallbackType();
-            if (callbackType != null && callbackType.getKind() == ClassKind.ASYNC_RESULT) {
+            if (callbackType != null && callbackType.getKind() == ClassKind.ASYNC_RESULT && methodInfo.getOwnerTypes().contains(type) && methodInfo.getOwnerTypes().size() == 1) {
               TypeInfo arg = ((ParameterizedTypeInfo) callbackType).getArg(0);
               throw new GenException(entry.getKey(), "Cannot use Handler<AsyncResult<" + arg.getSimpleName() + ">>, instead use a Future<" + arg.getSimpleName() + "> return");
             }
@@ -658,7 +658,6 @@ public class ClassModel implements Model {
 
     // Owner types
     Set<ClassTypeInfo> ownerTypes = new HashSet<>();
-    ownerTypes.add(type);
 
     ArrayList<DeclaredType> ancestors = new ArrayList<>(Helper.resolveAncestorTypes(modelElt, true, true));
 
@@ -688,6 +687,22 @@ public class ClassModel implements Model {
             });
       }
     }
+
+    // Determine use futures
+    boolean useFutures;
+    if (ownerTypes.isEmpty()) {
+      Element enclosingElt = modelMethod.getEnclosingElement();
+      if (typeUtils.isSameType(modelElt.asType(), enclosingElt.asType())) {
+        useFutures = getModule().useFutures;
+      } else {
+        useFutures = typeFactory.create((DeclaredType) enclosingElt.asType()).getRaw().getModule().useFutures;
+      }
+    } else {
+      useFutures = ownerTypes.iterator().next().getModule().useFutures;
+    }
+
+    // Add this type too
+    ownerTypes.add(type);
 
     //
     Map<String, String> paramDescs = new HashMap<>();
@@ -803,7 +818,7 @@ public class ClassModel implements Model {
       declaringElt,
       methodDeprecated,
       methodDeprecatedDesc,
-      getModule().useFutures,
+      useFutures,
       methodOverride);
 
     // Check we don't hide another method, we don't check overrides but we are more
