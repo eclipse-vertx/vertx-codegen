@@ -60,4 +60,6 @@ public @interface ModuleGen {
    */
   boolean useFutures() default false;
 
+  boolean checkCallbackDeprecation() default false;
+
 }

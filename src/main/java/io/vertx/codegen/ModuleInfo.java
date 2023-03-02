@@ -33,12 +33,14 @@ public class ModuleInfo {
 
   // Only used internally
   final boolean useFutures;
+  final boolean checkCallbackDeprecation;
 
-  public ModuleInfo(String packageName, String name, String groupPackage, boolean useFutures) {
+  public ModuleInfo(String packageName, String name, String groupPackage, boolean useFutures, boolean checkCallbackDeprecation) {
     this.packageName = packageName;
     this.name = name;
     this.groupPackage = groupPackage;
     this.useFutures = useFutures;
+    this.checkCallbackDeprecation = checkCallbackDeprecation;
   }
 
   private static final BiFunction<Elements, String, Set<PackageElement>> getPackageElementJava8 = (elts, fqn) -> {
@@ -76,7 +78,7 @@ public class ModuleInfo {
     PackageElement result = resolveFirstModuleGenAnnotatedPackageElement(elementUtils, pkgElt);
     if (result != null) {
       ModuleGen annotation = result.getAnnotation(ModuleGen.class);
-      return new ModuleInfo(result.getQualifiedName().toString(), annotation.name(), annotation.groupPackage(), annotation.useFutures());
+      return new ModuleInfo(result.getQualifiedName().toString(), annotation.name(), annotation.groupPackage(), annotation.useFutures(), annotation.checkCallbackDeprecation());
     } else return null;
   }
 
