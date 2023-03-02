@@ -821,6 +821,11 @@ public class ClassModel implements Model {
       useFutures,
       methodOverride);
 
+    //
+    if (methodInfo.getKind() == MethodKind.CALLBACK && !methodInfo.isDeprecated() && getModule().checkCallbackDeprecation) {
+      throw new GenException(modelMethod, "Callback method must be deprecated");
+    }
+
     // Check we don't hide another method, we don't check overrides but we are more
     // interested by situations like diamond inheritance of the same method, in this case
     // we see two methods with the same signature that don't override each other

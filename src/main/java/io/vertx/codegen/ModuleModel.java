@@ -56,7 +56,7 @@ public class ModuleModel implements Model {
     } catch (Exception e) {
       throw new GenException(element, "Invalid group package name " + groupPackage);
     }
-    ModuleInfo info = new ModuleInfo(modulePackage, moduleName, groupPackage, annotation.useFutures());
+    ModuleInfo info = new ModuleInfo(modulePackage, moduleName, groupPackage, annotation.useFutures(), annotation.checkCallbackDeprecation());
     AnnotationValueInfoFactory annotationFactory = new AnnotationValueInfoFactory(new TypeMirrorFactory(elementUtils, typeUtils));
     List<AnnotationValueInfo> annotationValueInfos = element
       .getAnnotationMirrors()
