@@ -15,7 +15,6 @@ jobs:
         include:
           - os: ubuntu-latest
             jdk: 8
-            deploy: true
           - os: ubuntu-latest
             jdk: 17
           - os: windows-latest
@@ -25,4 +24,5 @@ jobs:
       branch: ${{ github.head_ref || github.ref_name }}
       jdk: ${{ matrix.jdk }}
       os: ${{ matrix.os }}
+      deploy: ${{ matrix.jdk == '8' && matrix.os == 'ubuntu-latest' }}
     secrets: inherit
