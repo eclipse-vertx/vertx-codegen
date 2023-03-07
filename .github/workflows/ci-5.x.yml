@@ -14,10 +14,19 @@ jobs:
     with:
       branch: ${{ github.head_ref || github.ref_name }}
       jdk: 8
+      os: ubuntu-latest
+    secrets: inherit
+  CI-5_x-Java_11-windows:
+    uses: ./.github/workflows/ci.yml
+    with:
+      branch: ${{ github.head_ref || github.ref_name }}
+      jdk: 8
+      os: windows-latest
     secrets: inherit
   CI-5_x-Java_17:
     uses: ./.github/workflows/ci.yml
     with:
       branch: ${{ github.head_ref || github.ref_name }}
       jdk: 17
+      os: ubuntu-latest
     secrets: inherit
