@@ -1,6 +1,6 @@
 # Vert.x API Generation
 
-[![Build Status](https://github.com/eclipse-vertx/vertx-codegen/workflows/CI/badge.svg?branch=master)](https://github.com/eclipse-vertx/vertx-codegen/actions?query=workflow%3ACI)
+[![Build Status (5.x)](https://github.com/eclipse-vertx/vertx-codegen/actions/workflows/ci-5.x.yml/badge.svg)](https://github.com/eclipse-vertx/vertx-codegen/actions/workflows/ci-5.x.yml) [![Build Status (4.x)](https://github.com/eclipse-vertx/vertx-codegen/actions/workflows/ci-4.x.yml/badge.svg)](https://github.com/eclipse-vertx/vertx-codegen/actions/workflows/ci-4.x.yml)
 
 ## Render documentation
 
@@ -490,7 +490,7 @@ public enum MyEnumWithCustomFactory {
   public String getShortName() {
     return names[0];
   }
-  
+
   public static MyEnumWithCustomFactory of(String pName) {
     for (MyEnumWithCustomFactory item : MyEnumWithCustomFactory.values()) {
       if (item.names[0].equalsIgnoreCase(pName) || item.names[1].equalsIgnoreCase(pName)
@@ -500,7 +500,7 @@ public enum MyEnumWithCustomFactory {
     }
     return DEV;
   }
-  
+
 }
 ```
 You can declare them as public static methods:
