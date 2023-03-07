@@ -13,6 +13,10 @@ on:
         default: ubuntu-latest
         required: false
         type: string
+      deploy:
+        default: false
+        required: false
+        type: boolean
 jobs:
   Test:
     name: Run tests
@@ -31,7 +35,7 @@ jobs:
         run: mvn -s .github/maven-ci-settings.xml -q clean verify -B
   Deploy:
     name: Deploy to OSSRH
-    if: ${{ inputs.jdk == '8' && inputs.os == 'ubuntu-latest' && github.repository_owner == 'eclipse-vertx' && (github.event_name == 'push' || github.event_name == 'schedule') }}
+    if: ${{ inputs.deploy && github.repository_owner == 'eclipse-vertx' && (github.event_name == 'push' || github.event_name == 'schedule') }}
     needs: Test
     runs-on: ubuntu-latest
     env:
