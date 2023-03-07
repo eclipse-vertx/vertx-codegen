@@ -7,15 +7,11 @@ on:
         type: string
       jdk:
         default: 8
-        required: false
         type: string
       os:
         default: ubuntu-latest
-        required: false
         type: string
       deploy:
-        default: false
-        required: false
         type: boolean
 jobs:
   Test:
