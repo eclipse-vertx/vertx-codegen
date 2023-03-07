@@ -1,15 +1,14 @@
 name: CI
 on:
-  push:
-    branches:
-      - master
-      - '[0-9]+.[0-9]+'
-  pull_request:
-    branches:
-      - master
-      - '[0-9]+.[0-9]+'
-  schedule:
-    - cron:  '0 4 * * *'
+  workflow_call:
+    inputs:
+      branch:
+        required: true
+        type: string
+      jdk:
+        default: 8
+        required: false
+        type: string
 jobs:
   Test:
     name: Run tests

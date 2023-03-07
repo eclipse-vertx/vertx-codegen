@@ -1,0 +1,23 @@
+name: CI (5.x)
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: '0 5 * * *'
+jobs:
+  CI-5_x-Java_11:
+    uses: ./.github/workflows/ci.yml
+    with:
+      branch: ${{ github.head_ref || github.ref_name }}
+      jdk: 11
+    secrets: inherit
+  CI-5_x-Java_17:
+    uses: ./.github/workflows/ci.yml
+    with:
+      branch: ${{ github.head_ref || github.ref_name }}
+      jdk: 17
+    secrets: inherit
