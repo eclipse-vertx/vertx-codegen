@@ -1,4 +1,4 @@
-name: CI (5.x)
+name: codegen (5.x)
 on:
   push:
     branches:
