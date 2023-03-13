@@ -9,6 +9,11 @@ on:
   schedule:
     - cron: '0 5 * * *'
 jobs:
+  Debug:
+    name: Debug
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "github.head_ref:${{ github.head_ref }}, github.ref_name:${{ github.ref_name }}, GITHUB_REF:${GITHUB_REF##*/}, repo:${{ github.repository }}"
   CI:
     strategy:
       matrix:
