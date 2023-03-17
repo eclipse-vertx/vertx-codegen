@@ -3,6 +3,7 @@ package io.vertx.test.codegen.testapi.jsonmapper;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 
 import java.util.List;
@@ -33,6 +34,6 @@ public interface WithMyPojo {
   void myPojoMapParam(Map<String, MyPojo> p);
 
   void myPojoHandler(Handler<MyPojo> handler);
-  void myPojoAsyncResultHandler(Handler<AsyncResult<MyPojo>> handler);
+  Future<MyPojo> myPojoAsyncResultHandler();
 
 }

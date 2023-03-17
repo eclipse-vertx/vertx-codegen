@@ -1,7 +1,8 @@
-package io.vertx.test.codegen.testapi;
+package io.vertx.test.codegen.future;
 
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public interface GenericAbstractInterface<T> {
 
   List<T> bar();
 
-  void juu(Handler<AsyncResult<T>> handler);
+  Future<T> juu();
 
   void daa(Handler<T> handler);
 

@@ -104,11 +104,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   public MethodKind getKind() {
     TypeInfo callbackType = getCallbackType();
     if (callbackType != null) {
-      if (callbackType.getKind() == ClassKind.ASYNC_RESULT && !useFutures) {
-        return MethodKind.CALLBACK;
-      } else {
-        return MethodKind.HANDLER;
-      }
+      return MethodKind.HANDLER;
     }
     if (returnType.getKind() == ClassKind.FUTURE && useFutures) {
       return MethodKind.FUTURE;
@@ -253,6 +249,19 @@ public class MethodInfo implements Comparable<MethodInfo> {
    */
   public boolean isNullableReturn() {
     return returnType.isNullable();
+  }
+
+  /**
+   * @return true when the returned future value is nullable, null when the return type is not a future
+   */
+  public Boolean isNullableFutureReturn() {
+    switch (returnType.getKind()) {
+      case FUTURE:
+        TypeInfo handler = ((ParameterizedTypeInfo)returnType).getArg(0);
+        return handler.isNullable();
+      default:
+        return null;
+    }
   }
 
   public List<ParamInfo> getParams() {

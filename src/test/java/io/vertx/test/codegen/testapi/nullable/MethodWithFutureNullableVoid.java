@@ -18,15 +18,14 @@ package io.vertx.test.codegen.testapi.nullable;
 
 import io.vertx.codegen.annotations.Nullable;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import io.vertx.core.Future;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @VertxGen
-public interface MethodWithHandlerAsyncResultNullableVoid {
+public interface MethodWithFutureNullableVoid {
 
-  void method(Handler<AsyncResult<@Nullable Void>> handler);
+  Future<@Nullable Void> method();
 
 }
