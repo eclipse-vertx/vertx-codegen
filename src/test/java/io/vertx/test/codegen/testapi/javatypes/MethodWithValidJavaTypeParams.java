@@ -47,12 +47,6 @@ public interface MethodWithValidJavaTypeParams {
                                Handler<Map<String, Socket>> mapSocketHandler);
 
   @GenIgnore(GenIgnore.PERMITTED_TYPE)
-  void methodWithHandlerAsyncResultParams(Handler<AsyncResult<Socket>> socketHandler,
-                                          Handler<AsyncResult<List<Socket>>> listSocketHandler,
-                                          Handler<AsyncResult<Set<Socket>>> setSocketHandler,
-                                          Handler<AsyncResult<Map<String, Socket>>> mapSocketHandler);
-
-  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   void methodWithFunctionParams(Function<Socket, Socket> socketFunction,
                                 Function<List<Socket>, List<Socket>> listSocketFunction,
                                 Function<Set<Socket>, Set<Socket>> setSocketFunction,

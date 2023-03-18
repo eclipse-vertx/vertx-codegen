@@ -1,8 +1,11 @@
-package io.vertx.test.codegen.testapi;
+package io.vertx.test.codegen.future;
 
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.test.codegen.future.GenericAbstractInterface;
+import io.vertx.test.codegen.testapi.GenericInterface;
 
 import java.util.List;
 
@@ -19,7 +22,7 @@ public interface InterfaceParameterizedByParameterizedTypeArgMethodOverride<T> e
   List<GenericInterface<T>> bar();
 
   @Override
-  void juu(Handler<AsyncResult<GenericInterface<T>>> handler);
+  Future<GenericInterface<T>> juu();
 
   @Override
   void daa(Handler<GenericInterface<T>> handler);
