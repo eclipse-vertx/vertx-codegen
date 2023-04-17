@@ -14,11 +14,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            jdk: 8
+            jdk: 11
           - os: ubuntu-latest
             jdk: 17
           - os: windows-latest
-            jdk: 8
+            jdk: 11
     uses: ./.github/workflows/ci.yml
     with:
       branch: ${{ github.event.pull_request.head.sha || github.ref_name }}
@@ -31,5 +31,5 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       branch: ${{ github.event.pull_request.head.sha || github.ref_name }}
-      jdk: 8
+      jdk: 11
     secrets: inherit
