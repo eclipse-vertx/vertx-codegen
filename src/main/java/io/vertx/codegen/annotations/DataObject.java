@@ -67,6 +67,11 @@ public @interface DataObject {
   boolean generateConverter() default false;
 
   /**
+   * @return true if converter should use Protobuf format instead of JSON
+   */
+  boolean protoConverter() default false;
+
+  /**
    * @return true if the converter should handle the state of the ancestors.
    */
   boolean inheritConverter() default false;

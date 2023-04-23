@@ -44,14 +44,42 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
   @Override
   public String filename(DataObjectModel model) {
     if (model.isClass() && model.getGenerateConverter()) {
-      return model.getFqn() + "Converter.java";
+      if (model.getProtoConverter()) {
+        return model.getFqn() + "ProtoConverter.java";
+      } else {
+        return model.getFqn() + "Converter.java";
+      }
     }
     return null;
   }
 
   @Override
   public String render(DataObjectModel model, int index, int size, Map<String, Object> session) {
+    if (model.getProtoConverter()) {
+      return renderProto(model, index, size, session);
+    } else {
+      return renderJson(model, index, size, session);
+    }
+  }
 
+  public String renderProto(DataObjectModel model, int index, int size, Map<String, Object> session) {
+    formatter = getCase(model);
+
+    StringWriter buffer = new StringWriter();
+    PrintWriter writer = new PrintWriter(buffer);
+    CodeWriter code = new CodeWriter(writer);
+
+    writer.print("package " + model.getType().getPackageName() + ";\n");
+    writer.print("\n");
+    code
+      .codeln("public class " + model.getType().getSimpleName() + "ProtoConverter {"
+      ).newLine();
+    writer.print("}\n");
+
+    return buffer.toString();
+  }
+
+  public String renderJson(DataObjectModel model, int index, int size, Map<String, Object> session) {
     formatter = getCase(model);
 
     StringWriter buffer = new StringWriter();
