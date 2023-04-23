@@ -68,12 +68,47 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     StringWriter buffer = new StringWriter();
     PrintWriter writer = new PrintWriter(buffer);
     CodeWriter code = new CodeWriter(writer);
+    String visibility = model.isPublicConverter() ? "public" : "";
+    boolean inheritConverter = model.getInheritConverter();
 
     writer.print("package " + model.getType().getPackageName() + ";\n");
+    writer.print("\n");
+    writer.print("import com.google.protobuf.CodedOutputStream;\n");
+    writer.print("import com.google.protobuf.CodedInputStream;\n");
     writer.print("\n");
     code
       .codeln("public class " + model.getType().getSimpleName() + "ProtoConverter {"
       ).newLine();
+
+    String simpleName = model.getType().getSimpleName();
+
+    // fromProto()
+    writer.print("  " + visibility + " static void fromProto(CodedInputStream input, " + simpleName + " obj) {\n");
+    model.getPropertyMap().values().forEach(prop -> {
+      writer.print("  // " + prop.getSetterMethod() + "\n");
+    });
+    writer.print("  }\n");
+    writer.print("\n");
+
+    // toProto()
+    writer.print("  " + visibility + " static void toProto(" + simpleName + " obj, CodedOutputStream output) {\n");
+    model.getPropertyMap().values().forEach(prop -> {
+      writer.print("  // " + prop.getGetterMethod() + "\n");
+    });
+    writer.print("  }\n");
+    writer.print("\n");
+
+    // Compute Size
+    writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj) {\n");
+    writer.print("    int size = 0;\n");
+    model.getPropertyMap().values().forEach(prop -> {
+      writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
+      writer.print("      // size += CodedOutputStream.computeSize(fieldNumber, obj." + prop.getGetterMethod() + "());\n");
+      writer.print("    }\n");
+    });
+    writer.print("    return size;\n");
+    writer.print("  }\n");
+    writer.print("\n");
     writer.print("}\n");
 
     return buffer.toString();
@@ -85,7 +120,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     StringWriter buffer = new StringWriter();
     PrintWriter writer = new PrintWriter(buffer);
     CodeWriter code = new CodeWriter(writer);
-    String visibility= model.isPublicConverter() ? "public" : "";
+    String visibility = model.isPublicConverter() ? "public" : "";
     boolean inheritConverter = model.getInheritConverter();
 
     writer.print("package " + model.getType().getPackageName() + ";\n");
