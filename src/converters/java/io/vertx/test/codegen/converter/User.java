@@ -2,6 +2,7 @@ package io.vertx.test.codegen.converter;
 
 import io.vertx.codegen.annotations.DataObject;
 
+// Temporary Test Object, maybe will switch to test with TestDataObject
 @DataObject(generateConverter = true, protoConverter = true)
 public class User {
   private String userName;
