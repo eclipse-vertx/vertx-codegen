@@ -10,32 +10,51 @@ public class UserProtoConverter {
     int tag;
     while ((tag = input.readTag()) != 0) {
       switch (tag) {
-      case 8:
-        obj.setAge(input.readInt32());
-        break;
-      case 18:
-        obj.setUserName(input.readString());
-        break;
+        case 10: {
+          int length = input.readUInt32();
+          int oldLimit = input.pushLimit(length);
+          Address address = new Address();
+          AddressProtoConverter.fromProto(input, address);
+          obj.setAddress(address);
+          input.popLimit(oldLimit);
+          break;
+        }
+        case 16: {
+          obj.setAge(input.readInt32());
+          break;
+        }
+        case 26: {
+          obj.setUserName(input.readString());
+          break;
+        }
       }
     }
   }
 
   public static void toProto(User obj, CodedOutputStream output) throws IOException {
+    if (obj.getAddress() != null) {
+      output.writeTag(1, 2);
+      output.writeUInt32NoTag(AddressProtoConverter.computeSize(obj.getAddress()));
+      AddressProtoConverter.toProto(obj.getAddress(), output);
+    }
     if (obj.getAge() != null) {
-      output.writeInt32(1, obj.getAge());
+      output.writeInt32(2, obj.getAge());
     }
     if (obj.getUserName() != null) {
-      output.writeString(2, obj.getUserName());
+      output.writeString(3, obj.getUserName());
     }
   }
 
   public static int computeSize(User obj) {
     int size = 0;
+    if (obj.getAddress() != null) {
+      size += AddressProtoConverter.computeSize(obj.getAddress());
+    }
     if (obj.getAge() != null) {
-      size += CodedOutputStream.computeInt32Size(1, obj.getAge());
+      size += CodedOutputStream.computeInt32Size(2, obj.getAge());
     }
     if (obj.getUserName() != null) {
-      size += CodedOutputStream.computeStringSize(2, obj.getUserName());
+      size += CodedOutputStream.computeStringSize(3, obj.getUserName());
     }
     return size;
   }
