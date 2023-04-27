@@ -3,6 +3,8 @@ package io.vertx.test.codegen.converter;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.CodedInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddressProtoConverter {
 

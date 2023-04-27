@@ -1,8 +1,9 @@
 package io.vertx.codegen.generators.dataobjecthelper;
 
-import io.vertx.codegen.Generator;
 import io.vertx.codegen.DataObjectModel;
+import io.vertx.codegen.Generator;
 import io.vertx.codegen.PropertyInfo;
+import io.vertx.codegen.PropertyKind;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.format.CamelCase;
 import io.vertx.codegen.format.Case;
@@ -22,7 +23,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.time.Instant;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -76,6 +79,8 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print("import com.google.protobuf.CodedOutputStream;\n");
     writer.print("import com.google.protobuf.CodedInputStream;\n");
     writer.print("import java.io.IOException;\n");
+    writer.print("import java.util.ArrayList;\n");
+    writer.print("import java.util.List;\n");
     writer.print("\n");
     code
       .codeln("public class " + model.getType().getSimpleName() + "ProtoConverter {"
@@ -119,23 +124,41 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
           }
         } else {
           protoType = prop.getType().getSimpleName();
-          wireType =  2;
+          wireType = 2;
         }
+
+        // Override wire type if property is a list
+        if (prop.getKind() == PropertyKind.LIST) {
+          wireType = 2;
+        }
+
         int tag = (fieldNumber << 3) | wireType;
 
         writer.print("        case " + tag + ": {\n");
-        if (propKind.basic) {
-          writer.print("          obj." + prop.getSetterMethod() + "(input.read" + protoType + "());\n");
+        if (prop.getKind() == PropertyKind.LIST) {
+          writer.print("          int length = input.readRawVarint32();\n");
+          writer.print("          int limit = input.pushLimit(length);\n");
+          writer.print("          List<Integer> list = new ArrayList<>();\n");
+          writer.print("          while (input.getBytesUntilLimit() > 0) {\n");
+          writer.print("            list.add(input.read" + protoType + "());\n");
+          writer.print("          }\n");
+          writer.print("          obj." +  prop.getSetterMethod() + "(list);\n");
+          writer.print("          input.popLimit(limit);\n");
+          writer.print("          break;\n");
         } else {
-          String dataObjectName = prop.getType().getSimpleName();
-          writer.print("          int length = input.readUInt32();\n");
-          writer.print("          int oldLimit = input.pushLimit(length);\n");
-          writer.print("          " + dataObjectName + " address = new " + dataObjectName + "();\n");
-          writer.print("          AddressProtoConverter.fromProto(input, address);\n");
-          writer.print("          obj." + prop.getSetterMethod() + "(address);\n");
-          writer.print("          input.popLimit(oldLimit);\n");
+          if (propKind.basic) {
+            writer.print("          obj." + prop.getSetterMethod() + "(input.read" + protoType + "());\n");
+          } else {
+            String dataObjectName = prop.getType().getSimpleName();
+            writer.print("          int length = input.readUInt32();\n");
+            writer.print("          int oldLimit = input.pushLimit(length);\n");
+            writer.print("          " + dataObjectName + " address = new " + dataObjectName + "();\n");
+            writer.print("          AddressProtoConverter.fromProto(input, address);\n");
+            writer.print("          obj." + prop.getSetterMethod() + "(address);\n");
+            writer.print("          input.popLimit(oldLimit);\n");
+          }
+          writer.print("          break;\n");
         }
-        writer.print("          break;\n");
         writer.print("        }\n");
         fieldNumber++;
       }
@@ -152,14 +175,29 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       for (PropertyInfo prop : model.getPropertyMap().values()) {
         ClassKind propKind = prop.getType().getKind();
         writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
-        if (propKind.basic) {
+        if (prop.getKind() == PropertyKind.LIST) {
           String protoType = getProtoDataType(prop.getType().getName());
-          writer.print("      output.write" + protoType + "(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");
+          writer.print("      if (obj." + prop.getGetterMethod() + "().size() > 0) {\n");
+          writer.print("        output.writeUInt32NoTag(26);\n"); // TODO calculate tag value
+          writer.print("        int dataSize = 0;\n");
+          writer.print("        for (Integer element: obj." + prop.getGetterMethod() + "()) {\n");
+          writer.print("          dataSize += CodedOutputStream.computeInt32SizeNoTag(element);\n");
+          writer.print("        }\n");
+          writer.print("        output.writeUInt32NoTag(dataSize);\n");
+          writer.print("        for (Integer element: obj." + prop.getGetterMethod() + "()) {\n");
+          writer.print("          output.write" + protoType + "NoTag(element);\n");
+          writer.print("        }\n");
+          writer.print("      }\n");
         } else {
-          String dataObjectName = prop.getType().getSimpleName();
-          writer.print("      output.writeTag(" + fieldNumber + ", 2);\n");
-          writer.print("      output.writeUInt32NoTag(" + dataObjectName + "ProtoConverter.computeSize(obj." + prop.getGetterMethod() + "()));\n");
-          writer.print("      " + dataObjectName + "ProtoConverter.toProto(obj." + prop.getGetterMethod() + "(), output);\n");
+          if (propKind.basic) {
+            String protoType = getProtoDataType(prop.getType().getName());
+            writer.print("      output.write" + protoType + "(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");
+          } else {
+            String dataObjectName = prop.getType().getSimpleName();
+            writer.print("      output.writeTag(" + fieldNumber + ", 2);\n");
+            writer.print("      output.writeUInt32NoTag(" + dataObjectName + "ProtoConverter.computeSize(obj." + prop.getGetterMethod() + "()));\n");
+            writer.print("      " + dataObjectName + "ProtoConverter.toProto(obj." + prop.getGetterMethod() + "(), output);\n");
+          }
         }
         writer.print("    }\n");
         fieldNumber++;
@@ -176,12 +214,16 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       for (PropertyInfo prop : model.getPropertyMap().values()) {
         ClassKind propKind = prop.getType().getKind();
         writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
-        if (propKind.basic) {
-          String protoType = getProtoDataType(prop.getType().getName());
-          writer.print("      size += CodedOutputStream.compute" + protoType + "Size(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");
+        if (prop.getKind() == PropertyKind.LIST) {
+          writer.print("      // TODO\n");
         } else {
-          String dataObjectName = prop.getType().getSimpleName();
-          writer.print("      size += " + dataObjectName + "ProtoConverter.computeSize(obj." + prop.getGetterMethod() + "());\n");
+          if (propKind.basic) {
+            String protoType = getProtoDataType(prop.getType().getName());
+            writer.print("      size += CodedOutputStream.compute" + protoType + "Size(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");
+          } else {
+            String dataObjectName = prop.getType().getSimpleName();
+            writer.print("      size += " + dataObjectName + "ProtoConverter.computeSize(obj." + prop.getGetterMethod() + "());\n");
+          }
         }
         writer.print("    }\n");
         fieldNumber++;

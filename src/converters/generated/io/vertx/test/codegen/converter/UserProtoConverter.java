@@ -3,6 +3,8 @@ package io.vertx.test.codegen.converter;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.CodedInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserProtoConverter {
 
@@ -24,6 +26,17 @@ public class UserProtoConverter {
           break;
         }
         case 26: {
+          int length = input.readRawVarint32();
+          int limit = input.pushLimit(length);
+          List<Integer> list = new ArrayList<>();
+          while (input.getBytesUntilLimit() > 0) {
+            list.add(input.readInt32());
+          }
+          obj.setIntegerListField(list);
+          input.popLimit(limit);
+          break;
+        }
+        case 34: {
           obj.setUserName(input.readString());
           break;
         }
@@ -40,8 +53,21 @@ public class UserProtoConverter {
     if (obj.getAge() != null) {
       output.writeInt32(2, obj.getAge());
     }
+    if (obj.getIntegerListField() != null) {
+      if (obj.getIntegerListField().size() > 0) {
+        output.writeUInt32NoTag(26);
+        int dataSize = 0;
+        for (Integer element: obj.getIntegerListField()) {
+          dataSize += CodedOutputStream.computeInt32SizeNoTag(element);
+        }
+        output.writeUInt32NoTag(dataSize);
+        for (Integer element: obj.getIntegerListField()) {
+          output.writeInt32NoTag(element);
+        }
+      }
+    }
     if (obj.getUserName() != null) {
-      output.writeString(3, obj.getUserName());
+      output.writeString(4, obj.getUserName());
     }
   }
 
@@ -53,8 +79,11 @@ public class UserProtoConverter {
     if (obj.getAge() != null) {
       size += CodedOutputStream.computeInt32Size(2, obj.getAge());
     }
+    if (obj.getIntegerListField() != null) {
+      // TODO
+    }
     if (obj.getUserName() != null) {
-      size += CodedOutputStream.computeStringSize(3, obj.getUserName());
+      size += CodedOutputStream.computeStringSize(4, obj.getUserName());
     }
     return size;
   }
