@@ -36,11 +36,15 @@ public class ProtoConverterTest {
     CodedInputStream input = CodedInputStream.newInstance(encoded);
     UserProtoConverter.fromProto(input, decoded);
 
+    // Assert decoded is same with original
     Assert.assertEquals(user.getUserName(), decoded.getUserName());
     Assert.assertEquals(user.getAge(), decoded.getAge());
     //Assert.assertEquals(user.getAddress(), decoded.getAddress()); // need equal and hash
     Assert.assertEquals(user.getAddress().getLatitude(), decoded.getAddress().getLatitude());
     Assert.assertEquals(user.getAddress().getLongitude(), decoded.getAddress().getLongitude());
     Assert.assertArrayEquals(user.getIntegerListField().toArray(), decoded.getIntegerListField().toArray());
+
+    // Assert total size is equal to computed size
+    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize(user));
   }
 }

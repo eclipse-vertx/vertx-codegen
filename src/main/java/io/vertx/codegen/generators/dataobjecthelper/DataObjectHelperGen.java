@@ -215,14 +215,26 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         ClassKind propKind = prop.getType().getKind();
         writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
         if (prop.getKind() == PropertyKind.LIST) {
-          writer.print("      // TODO\n");
+          String protoType = getProtoDataType(prop.getType().getName());
+          writer.print("      if (obj." + prop.getGetterMethod() + "().size() > 0) {\n");
+          writer.print("        size += CodedOutputStream.computeUInt32SizeNoTag(26);\n"); // TODO calculate tag value
+          writer.print("        int dataSize = 0;\n");
+          writer.print("        for (Integer element: obj." + prop.getGetterMethod() + "()) {\n");
+          writer.print("          dataSize += CodedOutputStream.compute" + protoType + "SizeNoTag(element);\n");
+          writer.print("        }\n");
+          writer.print("        size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
+          writer.print("        size += dataSize;\n");
+          writer.print("      }\n");
         } else {
           if (propKind.basic) {
             String protoType = getProtoDataType(prop.getType().getName());
             writer.print("      size += CodedOutputStream.compute" + protoType + "Size(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");
           } else {
             String dataObjectName = prop.getType().getSimpleName();
-            writer.print("      size += " + dataObjectName + "ProtoConverter.computeSize(obj." + prop.getGetterMethod() + "());\n");
+            writer.print("      size += CodedOutputStream.computeUInt32SizeNoTag(10);\n"); // TODO calculate tag value
+            writer.print("      int dataSize = " + dataObjectName + "ProtoConverter.computeSize(obj." + prop.getGetterMethod() + "());\n");
+            writer.print("      size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
+            writer.print("      size += dataSize;\n");
           }
         }
         writer.print("    }\n");

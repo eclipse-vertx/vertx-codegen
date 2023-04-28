@@ -74,13 +74,24 @@ public class UserProtoConverter {
   public static int computeSize(User obj) {
     int size = 0;
     if (obj.getAddress() != null) {
-      size += AddressProtoConverter.computeSize(obj.getAddress());
+      size += CodedOutputStream.computeUInt32SizeNoTag(10);
+      int dataSize = AddressProtoConverter.computeSize(obj.getAddress());
+      size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
+      size += dataSize;
     }
     if (obj.getAge() != null) {
       size += CodedOutputStream.computeInt32Size(2, obj.getAge());
     }
     if (obj.getIntegerListField() != null) {
-      // TODO
+      if (obj.getIntegerListField().size() > 0) {
+        size += CodedOutputStream.computeUInt32SizeNoTag(26);
+        int dataSize = 0;
+        for (Integer element: obj.getIntegerListField()) {
+          dataSize += CodedOutputStream.computeInt32SizeNoTag(element);
+        }
+        size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
+        size += dataSize;
+      }
     }
     if (obj.getUserName() != null) {
       size += CodedOutputStream.computeStringSize(4, obj.getUserName());
