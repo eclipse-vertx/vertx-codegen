@@ -27,6 +27,8 @@ public class ProtoConverterTest {
     user.setDoubleField(5.5);
     user.setLongField(1000L);
     user.setBoolField(true);
+    user.setShortField((short) 10);
+    user.setCharField((char) 1);
 
     // Encode
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -49,6 +51,8 @@ public class ProtoConverterTest {
     Assert.assertEquals(user.getDoubleField(), decoded.getDoubleField());
     Assert.assertEquals(user.getLongField(), decoded.getLongField());
     Assert.assertEquals(user.getBoolField(), decoded.getBoolField());
+    Assert.assertEquals(user.getShortField(), decoded.getShortField());
+    Assert.assertEquals(user.getCharField(), decoded.getCharField());
 
     // Assert total size is equal to computed size
     Assert.assertEquals(encoded.length, UserProtoConverter.computeSize(user));

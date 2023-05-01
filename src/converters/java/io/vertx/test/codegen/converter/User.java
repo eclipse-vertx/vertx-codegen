@@ -14,6 +14,8 @@ public class User {
   private Double doubleField;
   private Long longField;
   private Boolean boolField;
+  private Short shortField;
+  private Character charField;
 
   public String getUserName() {
     return userName;
@@ -69,5 +71,21 @@ public class User {
 
   public void setBoolField(Boolean boolField) {
     this.boolField = boolField;
+  }
+
+  public Short getShortField() {
+    return shortField;
+  }
+
+  public void setShortField(Short shortField) {
+    this.shortField = shortField;
+  }
+
+  public Character getCharField() {
+    return charField;
+  }
+
+  public void setCharField(Character charField) {
+    this.charField = charField;
   }
 }

@@ -73,6 +73,8 @@ public class ProtoProperty {
       return ProtoType.DOUBLE;
     } else if ("java.lang.Boolean".equals(javaDataType)) {
       return ProtoType.BOOL;
+    } else if ("java.lang.Character".equals(javaDataType)) {
+      return ProtoType.INT32;
     } else {
       throw new UnsupportedOperationException("Unsupported data-type " + javaDataType);
     }

@@ -113,7 +113,14 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
           writer.print("          break;\n");
         } else {
           if (propKind.basic) {
-            writer.print("          obj." + prop.getSetterMethod() + "(input." + protoProperty.getProtoType().read() + "());\n");
+            // need casting
+            String casting = "";
+            if ("java.lang.Short".equals(prop.getType().getName())) {
+              casting = "(short) ";
+            } else if ("java.lang.Character".equals(prop.getType().getName())) {
+              casting = "(char) ";
+            }
+            writer.print("          obj." + prop.getSetterMethod() + "(" + casting + "input." + protoProperty.getProtoType().read() + "());\n");
           } else {
             String dataObjectName = prop.getType().getSimpleName();
             writer.print("          int length = input.readUInt32();\n");

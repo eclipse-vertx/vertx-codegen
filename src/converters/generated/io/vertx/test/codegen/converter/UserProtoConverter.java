@@ -29,11 +29,15 @@ public class UserProtoConverter {
           obj.setBoolField(input.readBool());
           break;
         }
-        case 33: {
+        case 32: {
+          obj.setCharField((char) input.readInt32());
+          break;
+        }
+        case 41: {
           obj.setDoubleField(input.readDouble());
           break;
         }
-        case 42: {
+        case 50: {
           int length = input.readRawVarint32();
           int limit = input.pushLimit(length);
           List<Integer> list = new ArrayList<>();
@@ -44,11 +48,15 @@ public class UserProtoConverter {
           input.popLimit(limit);
           break;
         }
-        case 48: {
+        case 56: {
           obj.setLongField(input.readInt64());
           break;
         }
-        case 58: {
+        case 64: {
+          obj.setShortField((short) input.readInt32());
+          break;
+        }
+        case 74: {
           obj.setUserName(input.readString());
           break;
         }
@@ -68,12 +76,15 @@ public class UserProtoConverter {
     if (obj.getBoolField() != null) {
       output.writeBool(3, obj.getBoolField());
     }
+    if (obj.getCharField() != null) {
+      output.writeInt32(4, obj.getCharField());
+    }
     if (obj.getDoubleField() != null) {
-      output.writeDouble(4, obj.getDoubleField());
+      output.writeDouble(5, obj.getDoubleField());
     }
     if (obj.getIntegerListField() != null) {
       if (obj.getIntegerListField().size() > 0) {
-        output.writeUInt32NoTag(42);
+        output.writeUInt32NoTag(50);
         int dataSize = 0;
         for (Integer element: obj.getIntegerListField()) {
           dataSize += CodedOutputStream.computeInt32SizeNoTag(element);
@@ -85,10 +96,13 @@ public class UserProtoConverter {
       }
     }
     if (obj.getLongField() != null) {
-      output.writeInt64(6, obj.getLongField());
+      output.writeInt64(7, obj.getLongField());
+    }
+    if (obj.getShortField() != null) {
+      output.writeInt32(8, obj.getShortField());
     }
     if (obj.getUserName() != null) {
-      output.writeString(7, obj.getUserName());
+      output.writeString(9, obj.getUserName());
     }
   }
 
@@ -106,12 +120,15 @@ public class UserProtoConverter {
     if (obj.getBoolField() != null) {
       size += CodedOutputStream.computeBoolSize(3, obj.getBoolField());
     }
+    if (obj.getCharField() != null) {
+      size += CodedOutputStream.computeInt32Size(4, obj.getCharField());
+    }
     if (obj.getDoubleField() != null) {
-      size += CodedOutputStream.computeDoubleSize(4, obj.getDoubleField());
+      size += CodedOutputStream.computeDoubleSize(5, obj.getDoubleField());
     }
     if (obj.getIntegerListField() != null) {
       if (obj.getIntegerListField().size() > 0) {
-        size += CodedOutputStream.computeUInt32SizeNoTag(42);
+        size += CodedOutputStream.computeUInt32SizeNoTag(50);
         int dataSize = 0;
         for (Integer element: obj.getIntegerListField()) {
           dataSize += CodedOutputStream.computeInt32SizeNoTag(element);
@@ -121,10 +138,13 @@ public class UserProtoConverter {
       }
     }
     if (obj.getLongField() != null) {
-      size += CodedOutputStream.computeInt64Size(6, obj.getLongField());
+      size += CodedOutputStream.computeInt64Size(7, obj.getLongField());
+    }
+    if (obj.getShortField() != null) {
+      size += CodedOutputStream.computeInt32Size(8, obj.getShortField());
     }
     if (obj.getUserName() != null) {
-      size += CodedOutputStream.computeStringSize(7, obj.getUserName());
+      size += CodedOutputStream.computeStringSize(9, obj.getUserName());
     }
     return size;
   }
