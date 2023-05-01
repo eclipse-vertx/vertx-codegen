@@ -97,57 +97,21 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       int fieldNumber = 1;
       for (PropertyInfo prop : model.getPropertyMap().values()) {
         ClassKind propKind = prop.getType().getKind();
-
-        String protoType;
-        int wireType;
-        if (propKind.basic) {
-          protoType = getProtoDataType(prop.getType().getName());
-          switch (protoType) {
-            case "Bool":
-            case "Int64":
-            case "UInt64":
-            case "Int32":
-            case "UInt32":
-              wireType = 0;
-              break;
-            case "Double":
-              wireType = 1;
-              break;
-            case "String":
-              wireType = 2;
-              break;
-            case "Float":
-              wireType = 5;
-              break;
-            default:
-              throw new UnsupportedOperationException("Unsupported proto-type " + protoType);
-          }
-        } else {
-          protoType = prop.getType().getSimpleName();
-          wireType = 2;
-        }
-
-        // Override wire type if property is a list
-        if (prop.getKind() == PropertyKind.LIST) {
-          wireType = 2;
-        }
-
-        int tag = (fieldNumber << 3) | wireType;
-
-        writer.print("        case " + tag + ": {\n");
+        ProtoProperty protoProperty = getProtoProperty(prop, fieldNumber);
+        writer.print("        case " + protoProperty.tag + ": {\n");
         if (prop.getKind() == PropertyKind.LIST) {
           writer.print("          int length = input.readRawVarint32();\n");
           writer.print("          int limit = input.pushLimit(length);\n");
           writer.print("          List<Integer> list = new ArrayList<>();\n");
           writer.print("          while (input.getBytesUntilLimit() > 0) {\n");
-          writer.print("            list.add(input.read" + protoType + "());\n");
+          writer.print("            list.add(input.read" + protoProperty.protoType + "());\n");
           writer.print("          }\n");
           writer.print("          obj." +  prop.getSetterMethod() + "(list);\n");
           writer.print("          input.popLimit(limit);\n");
           writer.print("          break;\n");
         } else {
           if (propKind.basic) {
-            writer.print("          obj." + prop.getSetterMethod() + "(input.read" + protoType + "());\n");
+            writer.print("          obj." + prop.getSetterMethod() + "(input.read" + protoProperty.protoType + "());\n");
           } else {
             String dataObjectName = prop.getType().getSimpleName();
             writer.print("          int length = input.readUInt32();\n");
@@ -174,27 +138,26 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       int fieldNumber = 1;
       for (PropertyInfo prop : model.getPropertyMap().values()) {
         ClassKind propKind = prop.getType().getKind();
+        ProtoProperty protoProperty = getProtoProperty(prop, fieldNumber);
         writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
         if (prop.getKind() == PropertyKind.LIST) {
-          String protoType = getProtoDataType(prop.getType().getName());
           writer.print("      if (obj." + prop.getGetterMethod() + "().size() > 0) {\n");
-          writer.print("        output.writeUInt32NoTag(26);\n"); // TODO calculate tag value
+          writer.print("        output.writeUInt32NoTag(" + protoProperty.tag + ");\n");
           writer.print("        int dataSize = 0;\n");
           writer.print("        for (Integer element: obj." + prop.getGetterMethod() + "()) {\n");
           writer.print("          dataSize += CodedOutputStream.computeInt32SizeNoTag(element);\n");
           writer.print("        }\n");
           writer.print("        output.writeUInt32NoTag(dataSize);\n");
           writer.print("        for (Integer element: obj." + prop.getGetterMethod() + "()) {\n");
-          writer.print("          output.write" + protoType + "NoTag(element);\n");
+          writer.print("          output.write" + protoProperty.protoType + "NoTag(element);\n");
           writer.print("        }\n");
           writer.print("      }\n");
         } else {
           if (propKind.basic) {
-            String protoType = getProtoDataType(prop.getType().getName());
-            writer.print("      output.write" + protoType + "(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");
+            writer.print("      output.write" + protoProperty.protoType + "(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");
           } else {
             String dataObjectName = prop.getType().getSimpleName();
-            writer.print("      output.writeTag(" + fieldNumber + ", 2);\n");
+            writer.print("      output.writeTag(" + fieldNumber + ", " + protoProperty.wireType + ");\n");
             writer.print("      output.writeUInt32NoTag(" + dataObjectName + "ProtoConverter.computeSize(obj." + prop.getGetterMethod() + "()));\n");
             writer.print("      " + dataObjectName + "ProtoConverter.toProto(obj." + prop.getGetterMethod() + "(), output);\n");
           }
@@ -213,25 +176,24 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       int fieldNumber = 1;
       for (PropertyInfo prop : model.getPropertyMap().values()) {
         ClassKind propKind = prop.getType().getKind();
+        ProtoProperty protoProperty = getProtoProperty(prop, fieldNumber);
         writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
         if (prop.getKind() == PropertyKind.LIST) {
-          String protoType = getProtoDataType(prop.getType().getName());
           writer.print("      if (obj." + prop.getGetterMethod() + "().size() > 0) {\n");
-          writer.print("        size += CodedOutputStream.computeUInt32SizeNoTag(26);\n"); // TODO calculate tag value
+          writer.print("        size += CodedOutputStream.computeUInt32SizeNoTag(" + protoProperty.tag + ");\n");
           writer.print("        int dataSize = 0;\n");
           writer.print("        for (Integer element: obj." + prop.getGetterMethod() + "()) {\n");
-          writer.print("          dataSize += CodedOutputStream.compute" + protoType + "SizeNoTag(element);\n");
+          writer.print("          dataSize += CodedOutputStream.compute" + protoProperty.protoType + "SizeNoTag(element);\n");
           writer.print("        }\n");
           writer.print("        size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
           writer.print("        size += dataSize;\n");
           writer.print("      }\n");
         } else {
           if (propKind.basic) {
-            String protoType = getProtoDataType(prop.getType().getName());
-            writer.print("      size += CodedOutputStream.compute" + protoType + "Size(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");
+            writer.print("      size += CodedOutputStream.compute" + protoProperty.protoType + "Size(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");
           } else {
             String dataObjectName = prop.getType().getSimpleName();
-            writer.print("      size += CodedOutputStream.computeUInt32SizeNoTag(10);\n"); // TODO calculate tag value
+            writer.print("      size += CodedOutputStream.computeUInt32SizeNoTag(" + protoProperty.tag + ");\n");
             writer.print("      int dataSize = " + dataObjectName + "ProtoConverter.computeSize(obj." + prop.getGetterMethod() + "());\n");
             writer.print("      size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
             writer.print("      size += dataSize;\n");
@@ -253,15 +215,76 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     String protoType;
     if ("java.lang.Integer".equals(dataType)) {
       protoType = "Int32";
+    } else if ("java.lang.Long".equals(dataType)) {
+        protoType = "Int64";
+    } else if ("java.lang.Short".equals(dataType)) {
+      protoType = "Int32";
     } else if ("java.lang.String".equals(dataType)) {
       protoType = "String";
     } else if ("java.lang.Float".equals(dataType)) {
       protoType = "Float";
+    } else if ("java.lang.Double".equals(dataType)) {
+      protoType = "Double";
+    } else if ("java.lang.Boolean".equals(dataType)) {
+      protoType = "Bool";
     } else {
       // TODO Support more data type
       throw new UnsupportedOperationException("Unsupported data-type " + dataType);
     }
     return  protoType;
+  }
+
+  static class ProtoProperty {
+    int fieldNumber;
+    int wireType;
+    int tag;
+    String protoType;
+  }
+
+  private ProtoProperty getProtoProperty(PropertyInfo prop, int fieldNumber) {
+    ProtoProperty protoProperty = new ProtoProperty();
+    ClassKind propKind = prop.getType().getKind();
+    String protoType;
+    int wireType;
+    if (propKind.basic) {
+      protoType = getProtoDataType(prop.getType().getName());
+      switch (protoType) {
+        case "Bool":
+        case "Int64":
+        case "UInt64":
+        case "Int32":
+        case "UInt32":
+          wireType = 0;
+          break;
+        case "Double":
+          wireType = 1;
+          break;
+        case "String":
+          wireType = 2;
+          break;
+        case "Float":
+          wireType = 5;
+          break;
+        default:
+          throw new UnsupportedOperationException("Unsupported proto-type " + protoType);
+      }
+    } else {
+      protoType = prop.getType().getSimpleName();
+      wireType = 2;
+    }
+
+    // Override wire type if property is a list
+    if (prop.getKind() == PropertyKind.LIST) {
+      wireType = 2;
+    }
+
+    int tag = (fieldNumber << 3) | wireType;
+
+    protoProperty.fieldNumber = fieldNumber;
+    protoProperty.wireType = wireType;
+    protoProperty.tag = tag;
+    protoProperty.protoType = protoType;
+    return protoProperty;
   }
 
   public String renderJson(DataObjectModel model, int index, int size, Map<String, Object> session) {

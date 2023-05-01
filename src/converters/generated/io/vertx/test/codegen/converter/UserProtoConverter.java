@@ -25,7 +25,15 @@ public class UserProtoConverter {
           obj.setAge(input.readInt32());
           break;
         }
-        case 26: {
+        case 24: {
+          obj.setBoolField(input.readBool());
+          break;
+        }
+        case 33: {
+          obj.setDoubleField(input.readDouble());
+          break;
+        }
+        case 42: {
           int length = input.readRawVarint32();
           int limit = input.pushLimit(length);
           List<Integer> list = new ArrayList<>();
@@ -36,7 +44,11 @@ public class UserProtoConverter {
           input.popLimit(limit);
           break;
         }
-        case 34: {
+        case 48: {
+          obj.setLongField(input.readInt64());
+          break;
+        }
+        case 58: {
           obj.setUserName(input.readString());
           break;
         }
@@ -53,9 +65,15 @@ public class UserProtoConverter {
     if (obj.getAge() != null) {
       output.writeInt32(2, obj.getAge());
     }
+    if (obj.getBoolField() != null) {
+      output.writeBool(3, obj.getBoolField());
+    }
+    if (obj.getDoubleField() != null) {
+      output.writeDouble(4, obj.getDoubleField());
+    }
     if (obj.getIntegerListField() != null) {
       if (obj.getIntegerListField().size() > 0) {
-        output.writeUInt32NoTag(26);
+        output.writeUInt32NoTag(42);
         int dataSize = 0;
         for (Integer element: obj.getIntegerListField()) {
           dataSize += CodedOutputStream.computeInt32SizeNoTag(element);
@@ -66,8 +84,11 @@ public class UserProtoConverter {
         }
       }
     }
+    if (obj.getLongField() != null) {
+      output.writeInt64(6, obj.getLongField());
+    }
     if (obj.getUserName() != null) {
-      output.writeString(4, obj.getUserName());
+      output.writeString(7, obj.getUserName());
     }
   }
 
@@ -82,9 +103,15 @@ public class UserProtoConverter {
     if (obj.getAge() != null) {
       size += CodedOutputStream.computeInt32Size(2, obj.getAge());
     }
+    if (obj.getBoolField() != null) {
+      size += CodedOutputStream.computeBoolSize(3, obj.getBoolField());
+    }
+    if (obj.getDoubleField() != null) {
+      size += CodedOutputStream.computeDoubleSize(4, obj.getDoubleField());
+    }
     if (obj.getIntegerListField() != null) {
       if (obj.getIntegerListField().size() > 0) {
-        size += CodedOutputStream.computeUInt32SizeNoTag(26);
+        size += CodedOutputStream.computeUInt32SizeNoTag(42);
         int dataSize = 0;
         for (Integer element: obj.getIntegerListField()) {
           dataSize += CodedOutputStream.computeInt32SizeNoTag(element);
@@ -93,8 +120,11 @@ public class UserProtoConverter {
         size += dataSize;
       }
     }
+    if (obj.getLongField() != null) {
+      size += CodedOutputStream.computeInt64Size(6, obj.getLongField());
+    }
     if (obj.getUserName() != null) {
-      size += CodedOutputStream.computeStringSize(4, obj.getUserName());
+      size += CodedOutputStream.computeStringSize(7, obj.getUserName());
     }
     return size;
   }

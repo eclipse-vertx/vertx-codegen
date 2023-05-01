@@ -11,6 +11,9 @@ public class User {
   private Integer age;
   private List<Integer> integerListField;
   private Address address;
+  private Double doubleField;
+  private Long longField;
+  private Boolean boolField;
 
   public String getUserName() {
     return userName;
@@ -42,5 +45,29 @@ public class User {
 
   public void setAddress(Address address) {
     this.address = address;
+  }
+
+  public Double getDoubleField() {
+    return doubleField;
+  }
+
+  public void setDoubleField(Double doubleField) {
+    this.doubleField = doubleField;
+  }
+
+  public Long getLongField() {
+    return longField;
+  }
+
+  public void setLongField(Long longField) {
+    this.longField = longField;
+  }
+
+  public Boolean getBoolField() {
+    return boolField;
+  }
+
+  public void setBoolField(Boolean boolField) {
+    this.boolField = boolField;
   }
 }

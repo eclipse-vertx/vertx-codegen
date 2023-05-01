@@ -24,6 +24,9 @@ public class ProtoConverterTest {
     user.setAge(21);
     user.setAddress(address);
     user.setIntegerListField(Collections.unmodifiableList(Arrays.asList(100, 101)));
+    user.setDoubleField(5.5);
+    user.setLongField(1000L);
+    user.setBoolField(true);
 
     // Encode
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -43,6 +46,9 @@ public class ProtoConverterTest {
     Assert.assertEquals(user.getAddress().getLatitude(), decoded.getAddress().getLatitude());
     Assert.assertEquals(user.getAddress().getLongitude(), decoded.getAddress().getLongitude());
     Assert.assertArrayEquals(user.getIntegerListField().toArray(), decoded.getIntegerListField().toArray());
+    Assert.assertEquals(user.getDoubleField(), decoded.getDoubleField());
+    Assert.assertEquals(user.getLongField(), decoded.getLongField());
+    Assert.assertEquals(user.getBoolField(), decoded.getBoolField());
 
     // Assert total size is equal to computed size
     Assert.assertEquals(encoded.length, UserProtoConverter.computeSize(user));
