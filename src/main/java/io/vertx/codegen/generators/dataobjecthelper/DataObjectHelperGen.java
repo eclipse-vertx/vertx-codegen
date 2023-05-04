@@ -1,5 +1,6 @@
 package io.vertx.codegen.generators.dataobjecthelper;
 
+import com.google.protobuf.CodedOutputStream;
 import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.PropertyInfo;
@@ -27,6 +28,7 @@ import java.lang.annotation.Annotation;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -83,6 +85,8 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print("import java.io.IOException;\n");
     writer.print("import java.util.ArrayList;\n");
     writer.print("import java.util.List;\n");
+    writer.print("import java.util.HashMap;\n");
+    writer.print("import java.util.Map;\n");
     writer.print("\n");
     code
       .codeln("public class " + model.getType().getSimpleName() + "ProtoConverter {"
@@ -108,7 +112,22 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
           writer.print("          while (input.getBytesUntilLimit() > 0) {\n");
           writer.print("            list.add(input." + protoProperty.getProtoType().read() + "());\n");
           writer.print("          }\n");
-          writer.print("          obj." +  prop.getSetterMethod() + "(list);\n");
+          writer.print("          obj." + prop.getSetterMethod() + "(list);\n");
+          writer.print("          input.popLimit(limit);\n");
+          writer.print("          break;\n");
+        } else if (prop.getKind() == PropertyKind.MAP) {
+          writer.print("          int length = input.readRawVarint32();\n");
+          writer.print("          int limit = input.pushLimit(length);\n");
+          writer.print("          Map<String, " + prop.getType().getSimpleName() + "> map = obj." + prop.getGetterMethod() + "();\n");
+          writer.print("          if (map == null) {\n");
+          writer.print("            map = new HashMap<>();\n");
+          writer.print("          }\n");
+          writer.print("          input.readTag();\n");
+          writer.print("          String key = input.readString();\n");
+          writer.print("          input.readTag();\n");
+          writer.print("          " + prop.getType().getSimpleName() + " value = input." + protoProperty.getProtoType().read() + "();\n");
+          writer.print("          map.put(key, value);\n");
+          writer.print("          obj." + prop.getSetterMethod() + "(map);\n");
           writer.print("          input.popLimit(limit);\n");
           writer.print("          break;\n");
         } else {
@@ -161,6 +180,16 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
           writer.print("          output." + protoProperty.getProtoType().writeNoTag() + "(element);\n");
           writer.print("        }\n");
           writer.print("      }\n");
+        } else if (prop.getKind() == PropertyKind.MAP) {
+          writer.print("      for (Map.Entry<String, " + prop.getType().getSimpleName() + "> entry : obj." + prop.getGetterMethod() + "().entrySet()) {\n");
+          writer.print("        output.writeTag(" + fieldNumber + ", " + protoProperty.getWireType() + ");\n");
+          writer.print("        int dataSize = 0;\n");
+          writer.print("        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());\n");
+          writer.print("        dataSize += CodedOutputStream." + protoProperty.getProtoType().computeSize() + "(2, entry.getValue());\n");
+          writer.print("        output.writeUInt32NoTag(dataSize);\n");
+          writer.print("        output.writeString(1, entry.getKey());\n");
+          writer.print("        output." + protoProperty.getProtoType().write() + "(2, entry.getValue());\n");
+          writer.print("      }\n");
         } else {
           if (propKind.basic) {
             writer.print("      output." + protoProperty.getProtoType().write() + "(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");
@@ -196,6 +225,9 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
           writer.print("        size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
           writer.print("        size += dataSize;\n");
           writer.print("      }\n");
+        } else if (prop.getKind() == PropertyKind.MAP) {
+          // TODO
+          writer.print("      // TODO\n");
         } else {
           if (propKind.basic) {
             writer.print("      size += CodedOutputStream." + protoProperty.getProtoType().computeSize() + "(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");

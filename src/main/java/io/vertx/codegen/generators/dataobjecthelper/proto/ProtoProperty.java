@@ -43,8 +43,10 @@ public class ProtoProperty {
       wireType = 2;
     }
 
-    // Override wire type if property is a list
-    if (prop.getKind() == PropertyKind.LIST) {
+    // Override wire type if property is a list, map or set
+    if (prop.getKind() == PropertyKind.LIST ||
+      prop.getKind() == PropertyKind.MAP ||
+      prop.getKind() == PropertyKind.SET) {
       wireType = 2;
     }
 

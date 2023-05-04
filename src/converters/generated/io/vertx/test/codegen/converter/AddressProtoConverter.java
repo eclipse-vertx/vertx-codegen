@@ -5,6 +5,8 @@ import com.google.protobuf.CodedInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddressProtoConverter {
 

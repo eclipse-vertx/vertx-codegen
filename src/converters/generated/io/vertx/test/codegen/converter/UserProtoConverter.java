@@ -5,6 +5,8 @@ import com.google.protobuf.CodedInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserProtoConverter {
 
@@ -57,6 +59,22 @@ public class UserProtoConverter {
           break;
         }
         case 74: {
+          int length = input.readRawVarint32();
+          int limit = input.pushLimit(length);
+          Map<String, String> map = obj.getStringValueMap();
+          if (map == null) {
+            map = new HashMap<>();
+          }
+          input.readTag();
+          String key = input.readString();
+          input.readTag();
+          String value = input.readString();
+          map.put(key, value);
+          obj.setStringValueMap(map);
+          input.popLimit(limit);
+          break;
+        }
+        case 82: {
           obj.setUserName(input.readString());
           break;
         }
@@ -101,8 +119,19 @@ public class UserProtoConverter {
     if (obj.getShortField() != null) {
       output.writeInt32(8, obj.getShortField());
     }
+    if (obj.getStringValueMap() != null) {
+      for (Map.Entry<String, String> entry : obj.getStringValueMap().entrySet()) {
+        output.writeTag(9, 2);
+        int dataSize = 0;
+        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
+        dataSize += CodedOutputStream.computeStringSize(2, entry.getValue());
+        output.writeUInt32NoTag(dataSize);
+        output.writeString(1, entry.getKey());
+        output.writeString(2, entry.getValue());
+      }
+    }
     if (obj.getUserName() != null) {
-      output.writeString(9, obj.getUserName());
+      output.writeString(10, obj.getUserName());
     }
   }
 
@@ -143,8 +172,11 @@ public class UserProtoConverter {
     if (obj.getShortField() != null) {
       size += CodedOutputStream.computeInt32Size(8, obj.getShortField());
     }
+    if (obj.getStringValueMap() != null) {
+      // TODO
+    }
     if (obj.getUserName() != null) {
-      size += CodedOutputStream.computeStringSize(9, obj.getUserName());
+      size += CodedOutputStream.computeStringSize(10, obj.getUserName());
     }
     return size;
   }

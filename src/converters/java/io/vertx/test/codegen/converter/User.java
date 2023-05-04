@@ -3,6 +3,7 @@ package io.vertx.test.codegen.converter;
 import io.vertx.codegen.annotations.DataObject;
 
 import java.util.List;
+import java.util.Map;
 
 // Temporary Test Object, maybe will switch to test with TestDataObject
 @DataObject(generateConverter = true, protoConverter = true)
@@ -16,6 +17,7 @@ public class User {
   private Boolean boolField;
   private Short shortField;
   private Character charField;
+  private Map<String, String> stringValueMap;
 
   public String getUserName() {
     return userName;
@@ -87,5 +89,13 @@ public class User {
 
   public void setCharField(Character charField) {
     this.charField = charField;
+  }
+
+  public Map<String, String> getStringValueMap() {
+    return stringValueMap;
+  }
+
+  public void setStringValueMap(Map<String, String> stringValueMap) {
+    this.stringValueMap = stringValueMap;
   }
 }
