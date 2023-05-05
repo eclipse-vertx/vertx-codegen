@@ -35,6 +35,10 @@ public class ProtoConverterTest {
     stringValueMap.put("key1", "value1");
     stringValueMap.put("key2", "value2");
     user.setStringValueMap(stringValueMap);
+    Map<String, Integer> integerValueMap = new HashMap<>();
+    integerValueMap.put("key1", 1);
+    integerValueMap.put("key2", 2);
+    user.setIntegerValueMap(integerValueMap);
 
     // Encode
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -60,9 +64,9 @@ public class ProtoConverterTest {
     Assert.assertEquals(user.getShortField(), decoded.getShortField());
     Assert.assertEquals(user.getCharField(), decoded.getCharField());
     Assert.assertEquals(user.getStringValueMap(), decoded.getStringValueMap());
+    Assert.assertEquals(user.getIntegerValueMap(), decoded.getIntegerValueMap());
 
-    // TODO Fix Map field computeSize
     // Assert total size is equal to computed size
-    //Assert.assertEquals(encoded.length, UserProtoConverter.computeSize(user));
+    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize(user));
   }
 }

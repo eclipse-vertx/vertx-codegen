@@ -18,6 +18,7 @@ public class User {
   private Short shortField;
   private Character charField;
   private Map<String, String> stringValueMap;
+  private Map<String, Integer> integerValueMap;
 
   public String getUserName() {
     return userName;
@@ -97,5 +98,13 @@ public class User {
 
   public void setStringValueMap(Map<String, String> stringValueMap) {
     this.stringValueMap = stringValueMap;
+  }
+
+  public Map<String, Integer> getIntegerValueMap() {
+    return integerValueMap;
+  }
+
+  public void setIntegerValueMap(Map<String, Integer> integerValueMap) {
+    this.integerValueMap = integerValueMap;
   }
 }
