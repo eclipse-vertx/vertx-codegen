@@ -122,11 +122,12 @@ public class RecursiveItemProtoConverter {
     if (obj.getId() != null) {
       output.writeString(4, obj.getId());
     }
+    System.out.println("baseIndex at " + obj + " is " + baseIndex);
   }
 
   public static int computeSize2(RecursiveItem obj, int[] cache, final int baseIndex) {
-    if (cache[baseIndex] != 0) {
-      //System.out.println("to skip computing size 2 for " + obj);
+    if (cache[baseIndex] != -1) {
+      // System.out.println("to skip computing size 2 for " + obj);
       // TODO return correct index
     }
     System.out.println("computing size 2 for " + obj);

@@ -277,14 +277,16 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         writer.print("    }\n");
         fieldNumber++;
       }
+      //writer.print("    System.out.println(\"cache is \" + Arrays.toString(cache));\n");
+      writer.print("    System.out.println(\"baseIndex at \" + obj + \" is \" + baseIndex);\n");
       writer.print("  }\n");
       writer.print("\n");
     }
     // Compute Size 2
     {
       writer.print("  " + visibility + " static int computeSize2(" + simpleName + " obj, int[] cache, final int baseIndex) {\n");
-      writer.print("    if (cache[baseIndex] != 0) {\n");
-      writer.print("      //System.out.println(\"to skip computing size 2 for \" + obj);\n");
+      writer.print("    if (cache[baseIndex] != -1) {\n");
+      writer.print("      // System.out.println(\"to skip computing size 2 for \" + obj);\n");
       writer.print("      // TODO return correct index\n");
       writer.print("    }\n");
       writer.print("    System.out.println(\"computing size 2 for \" + obj);\n");

@@ -128,7 +128,9 @@ public class ProtoConverterTest {
     CodedOutputStream output = CodedOutputStream.newInstance(baos);
 
     int[] cache2 = new int[200];
+    Arrays.fill(cache2, -1);
     RecursiveItemProtoConverter.toProto2(root, output, cache2, 0);
+    System.out.println("cache is " + Arrays.toString(cache2));
     output.flush();
     byte[] encoded = baos.toByteArray();
     System.out.println("encoded 2 " + HexUtil.hexDump(encoded));

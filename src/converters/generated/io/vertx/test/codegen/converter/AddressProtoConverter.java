@@ -54,11 +54,12 @@ public class AddressProtoConverter {
     if (obj.getLongitude() != null) {
       output.writeFloat(2, obj.getLongitude());
     }
+    System.out.println("baseIndex at " + obj + " is " + baseIndex);
   }
 
   public static int computeSize2(Address obj, int[] cache, final int baseIndex) {
-    if (cache[baseIndex] != 0) {
-      //System.out.println("to skip computing size 2 for " + obj);
+    if (cache[baseIndex] != -1) {
+      // System.out.println("to skip computing size 2 for " + obj);
       // TODO return correct index
     }
     System.out.println("computing size 2 for " + obj);
