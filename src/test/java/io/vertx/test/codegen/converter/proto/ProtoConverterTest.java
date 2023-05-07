@@ -3,6 +3,8 @@ package io.vertx.test.codegen.converter.proto;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import io.vertx.test.codegen.converter.Address;
+import io.vertx.test.codegen.converter.RecursiveItem;
+import io.vertx.test.codegen.converter.RecursiveItemProtoConverter;
 import io.vertx.test.codegen.converter.User;
 import io.vertx.test.codegen.converter.UserProtoConverter;
 import org.junit.Assert;
@@ -14,6 +16,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 public class ProtoConverterTest {
   @Test
@@ -52,21 +56,89 @@ public class ProtoConverterTest {
     UserProtoConverter.fromProto(input, decoded);
 
     // Assert decoded is same with original
-    Assert.assertEquals(user.getUserName(), decoded.getUserName());
-    Assert.assertEquals(user.getAge(), decoded.getAge());
+    assertEquals(user.getUserName(), decoded.getUserName());
+    assertEquals(user.getAge(), decoded.getAge());
     //Assert.assertEquals(user.getAddress(), decoded.getAddress()); // need equal and hash
-    Assert.assertEquals(user.getAddress().getLatitude(), decoded.getAddress().getLatitude());
-    Assert.assertEquals(user.getAddress().getLongitude(), decoded.getAddress().getLongitude());
+    assertEquals(user.getAddress().getLatitude(), decoded.getAddress().getLatitude());
+    assertEquals(user.getAddress().getLongitude(), decoded.getAddress().getLongitude());
     Assert.assertArrayEquals(user.getIntegerListField().toArray(), decoded.getIntegerListField().toArray());
-    Assert.assertEquals(user.getDoubleField(), decoded.getDoubleField());
-    Assert.assertEquals(user.getLongField(), decoded.getLongField());
-    Assert.assertEquals(user.getBoolField(), decoded.getBoolField());
-    Assert.assertEquals(user.getShortField(), decoded.getShortField());
-    Assert.assertEquals(user.getCharField(), decoded.getCharField());
-    Assert.assertEquals(user.getStringValueMap(), decoded.getStringValueMap());
-    Assert.assertEquals(user.getIntegerValueMap(), decoded.getIntegerValueMap());
+    assertEquals(user.getDoubleField(), decoded.getDoubleField());
+    assertEquals(user.getLongField(), decoded.getLongField());
+    assertEquals(user.getBoolField(), decoded.getBoolField());
+    assertEquals(user.getShortField(), decoded.getShortField());
+    assertEquals(user.getCharField(), decoded.getCharField());
+    assertEquals(user.getStringValueMap(), decoded.getStringValueMap());
+    assertEquals(user.getIntegerValueMap(), decoded.getIntegerValueMap());
 
     // Assert total size is equal to computed size
-    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize(user));
+    assertEquals(encoded.length, UserProtoConverter.computeSize(user));
+  }
+
+  @Test
+  public void testCachedComputeSize() throws IOException {
+    int[] cache = new int[30];
+    RecursiveItem root = new RecursiveItem("root");
+    RecursiveItem a = new RecursiveItem("a");
+    RecursiveItem a_a = new RecursiveItem("a_a");
+    RecursiveItem a_b = new RecursiveItem("a_b");
+    RecursiveItem a_c = new RecursiveItem("a_c");
+    RecursiveItem b = new RecursiveItem("b");
+    RecursiveItem b_a = new RecursiveItem("b_a");
+    RecursiveItem b_b = new RecursiveItem("b_b");
+    RecursiveItem c = new RecursiveItem("c");
+    RecursiveItem c_b = new RecursiveItem("c_b");
+    RecursiveItem c_c = new RecursiveItem("c_c");
+
+    RecursiveItem a_a_a = new RecursiveItem("a_a_a");
+    RecursiveItem a_a_b = new RecursiveItem("a_a_b");
+    RecursiveItem a_a_c = new RecursiveItem("a_a_c");
+
+    RecursiveItem a_a_a_a = new RecursiveItem("a_a_a_a");
+    RecursiveItem a_a_a_b = new RecursiveItem("a_a_a_b");
+    RecursiveItem a_a_a_c = new RecursiveItem("a_a_a_c");
+
+    root.setChildA(a);
+
+    a.setChildA(a_a);
+    a.setChildB(a_b);
+    a.setChildC(a_c);
+
+    a_a.setChildA(a_a_a);
+    a_a.setChildB(a_a_b);
+    a_a.setChildC(a_a_c);
+
+    a_a_a.setChildA(a_a_a_a);
+    a_a_a.setChildB(a_a_a_b);
+    a_a_a.setChildC(a_a_a_c);
+
+    root.setChildB(b);
+    b.setChildA(b_a);
+    b.setChildB(b_b);
+
+    root.setChildC(c);
+    c.setChildB(c_b);
+    c.setChildC(c_c);
+    int val = RecursiveItemProtoConverter.computeSize2(root, cache, 0);
+    //assertEquals(11, val);
+    System.out.println("computed size " + cache[0]);
+
+    // Encode
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    CodedOutputStream output = CodedOutputStream.newInstance(baos);
+
+    int[] cache2 = new int[30];
+    RecursiveItemProtoConverter.toProto2(root, output, cache2, 0);
+    output.flush();
+    byte[] encoded = baos.toByteArray();
+    System.out.println("encoded " + HexUtil.hexDump(encoded));
+
+    ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+    CodedOutputStream output2 = CodedOutputStream.newInstance(baos2);
+    RecursiveItemProtoConverter.toProto(root, output2);
+    output2.flush();
+    byte[] encoded2 = baos2.toByteArray();
+    System.out.println("encoded " + HexUtil.hexDump(encoded2));
+
+    Assert.assertArrayEquals(encoded2, encoded);
   }
 }

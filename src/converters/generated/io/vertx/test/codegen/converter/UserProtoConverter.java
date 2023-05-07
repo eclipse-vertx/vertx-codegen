@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
 
 public class UserProtoConverter {
 
@@ -223,6 +224,89 @@ public class UserProtoConverter {
       size += CodedOutputStream.computeStringSize(11, obj.getUserName());
     }
     return size;
+  }
+
+  public static void toProto2(User obj, CodedOutputStream output, int[] cache, int baseIndex) throws IOException {
+    if (obj.getAddress() != null) {
+      output.writeUInt32NoTag(10);
+      int index = AddressProtoConverter.computeSize2(obj.getAddress(), cache, baseIndex);
+      System.out.println("cache of address " + Arrays.toString(cache));
+      System.out.println("index of address " + index);
+      System.out.println("length of address " + cache[baseIndex]);
+      output.writeUInt32NoTag(cache[baseIndex]);
+      baseIndex += index;
+      AddressProtoConverter.toProto(obj.getAddress(), output);
+    }
+    if (obj.getAge() != null) {
+      output.writeInt32(2, obj.getAge());
+    }
+    if (obj.getBoolField() != null) {
+      output.writeBool(3, obj.getBoolField());
+    }
+    if (obj.getCharField() != null) {
+      output.writeInt32(4, obj.getCharField());
+    }
+    if (obj.getDoubleField() != null) {
+      output.writeDouble(5, obj.getDoubleField());
+    }
+    if (obj.getIntegerListField() != null) {
+    }
+    if (obj.getIntegerValueMap() != null) {
+    }
+    if (obj.getLongField() != null) {
+      output.writeInt64(8, obj.getLongField());
+    }
+    if (obj.getShortField() != null) {
+      output.writeInt32(9, obj.getShortField());
+    }
+    if (obj.getStringValueMap() != null) {
+    }
+    if (obj.getUserName() != null) {
+      output.writeString(11, obj.getUserName());
+    }
+  }
+
+  public static int computeSize2(User obj, int[] cache, final int baseIndex) {
+    System.out.println("computing size for " + obj);
+    int size = 0;
+    int index = baseIndex + 1;
+    if (obj.getAddress() != null) {
+      size += CodedOutputStream.computeUInt32SizeNoTag(10);
+      int savedIndex = index;
+      index = AddressProtoConverter.computeSize2(obj.getAddress(), cache, index);
+      int dataSize = cache[savedIndex];
+      size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
+      size += dataSize;
+    }
+    if (obj.getAge() != null) {
+      size += CodedOutputStream.computeInt32Size(2, obj.getAge());
+    }
+    if (obj.getBoolField() != null) {
+      size += CodedOutputStream.computeBoolSize(3, obj.getBoolField());
+    }
+    if (obj.getCharField() != null) {
+      size += CodedOutputStream.computeInt32Size(4, obj.getCharField());
+    }
+    if (obj.getDoubleField() != null) {
+      size += CodedOutputStream.computeDoubleSize(5, obj.getDoubleField());
+    }
+    if (obj.getIntegerListField() != null) {
+    }
+    if (obj.getIntegerValueMap() != null) {
+    }
+    if (obj.getLongField() != null) {
+      size += CodedOutputStream.computeInt64Size(8, obj.getLongField());
+    }
+    if (obj.getShortField() != null) {
+      size += CodedOutputStream.computeInt32Size(9, obj.getShortField());
+    }
+    if (obj.getStringValueMap() != null) {
+    }
+    if (obj.getUserName() != null) {
+      size += CodedOutputStream.computeStringSize(11, obj.getUserName());
+    }
+    cache[baseIndex] = size;
+    return index;
   }
 
 }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
 
 public class AddressProtoConverter {
 
@@ -44,6 +45,29 @@ public class AddressProtoConverter {
       size += CodedOutputStream.computeFloatSize(2, obj.getLongitude());
     }
     return size;
+  }
+
+  public static void toProto2(Address obj, CodedOutputStream output, int[] cache, int baseIndex) throws IOException {
+    if (obj.getLatitude() != null) {
+      output.writeFloat(1, obj.getLatitude());
+    }
+    if (obj.getLongitude() != null) {
+      output.writeFloat(2, obj.getLongitude());
+    }
+  }
+
+  public static int computeSize2(Address obj, int[] cache, final int baseIndex) {
+    System.out.println("computing size for " + obj);
+    int size = 0;
+    int index = baseIndex + 1;
+    if (obj.getLatitude() != null) {
+      size += CodedOutputStream.computeFloatSize(1, obj.getLatitude());
+    }
+    if (obj.getLongitude() != null) {
+      size += CodedOutputStream.computeFloatSize(2, obj.getLongitude());
+    }
+    cache[baseIndex] = size;
+    return index;
   }
 
 }
