@@ -101,32 +101,23 @@ public class RecursiveItemProtoConverter {
     if (obj.getChildA() != null) {
       output.writeUInt32NoTag(10);
       int index = RecursiveItemProtoConverter.computeSize2(obj.getChildA(), cache, baseIndex);
-      System.out.println("cache of childA " + Arrays.toString(cache));
-      System.out.println("index of childA " + index);
-      System.out.println("length of childA " + cache[baseIndex]);
       output.writeUInt32NoTag(cache[baseIndex]);
+      RecursiveItemProtoConverter.toProto2(obj.getChildA(), output, cache, baseIndex);
       baseIndex += index;
-      RecursiveItemProtoConverter.toProto(obj.getChildA(), output);
     }
     if (obj.getChildB() != null) {
       output.writeUInt32NoTag(18);
       int index = RecursiveItemProtoConverter.computeSize2(obj.getChildB(), cache, baseIndex);
-      System.out.println("cache of childB " + Arrays.toString(cache));
-      System.out.println("index of childB " + index);
-      System.out.println("length of childB " + cache[baseIndex]);
       output.writeUInt32NoTag(cache[baseIndex]);
+      RecursiveItemProtoConverter.toProto2(obj.getChildB(), output, cache, baseIndex);
       baseIndex += index;
-      RecursiveItemProtoConverter.toProto(obj.getChildB(), output);
     }
     if (obj.getChildC() != null) {
       output.writeUInt32NoTag(26);
       int index = RecursiveItemProtoConverter.computeSize2(obj.getChildC(), cache, baseIndex);
-      System.out.println("cache of childC " + Arrays.toString(cache));
-      System.out.println("index of childC " + index);
-      System.out.println("length of childC " + cache[baseIndex]);
       output.writeUInt32NoTag(cache[baseIndex]);
+      RecursiveItemProtoConverter.toProto2(obj.getChildC(), output, cache, baseIndex);
       baseIndex += index;
-      RecursiveItemProtoConverter.toProto(obj.getChildC(), output);
     }
     if (obj.getId() != null) {
       output.writeString(4, obj.getId());
@@ -134,7 +125,11 @@ public class RecursiveItemProtoConverter {
   }
 
   public static int computeSize2(RecursiveItem obj, int[] cache, final int baseIndex) {
-    System.out.println("computing size for " + obj);
+    if (cache[baseIndex] != 0) {
+      //System.out.println("to skip computing size 2 for " + obj);
+      // TODO return correct index
+    }
+    System.out.println("computing size 2 for " + obj);
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getChildA() != null) {

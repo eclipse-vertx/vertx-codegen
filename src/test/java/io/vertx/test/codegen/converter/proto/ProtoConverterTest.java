@@ -76,7 +76,6 @@ public class ProtoConverterTest {
 
   @Test
   public void testCachedComputeSize() throws IOException {
-    int[] cache = new int[30];
     RecursiveItem root = new RecursiveItem("root");
     RecursiveItem a = new RecursiveItem("a");
     RecursiveItem a_a = new RecursiveItem("a_a");
@@ -118,26 +117,28 @@ public class ProtoConverterTest {
     root.setChildC(c);
     c.setChildB(c_b);
     c.setChildC(c_c);
-    int val = RecursiveItemProtoConverter.computeSize2(root, cache, 0);
+
+    //int[] cache = new int[100];
+    //int val = RecursiveItemProtoConverter.computeSize2(root, cache, 0);
     //assertEquals(11, val);
-    System.out.println("computed size " + cache[0]);
+    //System.out.println("computed size " + cache[0]);
 
     // Encode
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream output = CodedOutputStream.newInstance(baos);
 
-    int[] cache2 = new int[30];
+    int[] cache2 = new int[200];
     RecursiveItemProtoConverter.toProto2(root, output, cache2, 0);
     output.flush();
     byte[] encoded = baos.toByteArray();
-    System.out.println("encoded " + HexUtil.hexDump(encoded));
+    System.out.println("encoded 2 " + HexUtil.hexDump(encoded));
 
     ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
     CodedOutputStream output2 = CodedOutputStream.newInstance(baos2);
     RecursiveItemProtoConverter.toProto(root, output2);
     output2.flush();
     byte[] encoded2 = baos2.toByteArray();
-    System.out.println("encoded " + HexUtil.hexDump(encoded2));
+    System.out.println("encoded 1 " + HexUtil.hexDump(encoded2));
 
     Assert.assertArrayEquals(encoded2, encoded);
   }

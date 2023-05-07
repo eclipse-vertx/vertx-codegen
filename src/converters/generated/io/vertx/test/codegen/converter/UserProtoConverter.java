@@ -230,12 +230,9 @@ public class UserProtoConverter {
     if (obj.getAddress() != null) {
       output.writeUInt32NoTag(10);
       int index = AddressProtoConverter.computeSize2(obj.getAddress(), cache, baseIndex);
-      System.out.println("cache of address " + Arrays.toString(cache));
-      System.out.println("index of address " + index);
-      System.out.println("length of address " + cache[baseIndex]);
       output.writeUInt32NoTag(cache[baseIndex]);
+      AddressProtoConverter.toProto2(obj.getAddress(), output, cache, baseIndex);
       baseIndex += index;
-      AddressProtoConverter.toProto(obj.getAddress(), output);
     }
     if (obj.getAge() != null) {
       output.writeInt32(2, obj.getAge());
@@ -267,7 +264,11 @@ public class UserProtoConverter {
   }
 
   public static int computeSize2(User obj, int[] cache, final int baseIndex) {
-    System.out.println("computing size for " + obj);
+    if (cache[baseIndex] != 0) {
+      //System.out.println("to skip computing size 2 for " + obj);
+      // TODO return correct index
+    }
+    System.out.println("computing size 2 for " + obj);
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getAddress() != null) {

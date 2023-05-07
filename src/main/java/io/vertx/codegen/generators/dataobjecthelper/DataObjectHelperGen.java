@@ -206,6 +206,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     // Compute Size
     {
       writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj) {\n");
+      //writer.print("    System.out.println(\"computing size 1 for \" + obj);\n");
       writer.print("    int size = 0;\n");
       int fieldNumber = 1;
       for (PropertyInfo prop : model.getPropertyMap().values()) {
@@ -264,15 +265,13 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             writer.print("      output." + protoProperty.getProtoType().write() + "(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");
           } else {
             writer.print("      output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
-            //writer.print("      output.writeUInt32NoTag(" + protoProperty.getMessage() + "ProtoConverter.computeSize2(obj." + prop.getGetterMethod() + "(), cache, baseIndex));\n");
-            //writer.print("      int[] cache2 = new int[11];\n");
             writer.print("      int index = " + protoProperty.getMessage() + "ProtoConverter.computeSize2(obj." + prop.getGetterMethod() + "(), cache, baseIndex);\n");
-            writer.print("      System.out.println(\"cache of " + prop.getName() + " \" + Arrays.toString(cache));\n");
-            writer.print("      System.out.println(\"index of " + prop.getName() + " \" + index);\n");
-            writer.print("      System.out.println(\"length of " + prop.getName() + " \" + cache[baseIndex]);\n");
+            //writer.print("      System.out.println(\"cache of " + prop.getName() + " \" + Arrays.toString(cache));\n");
+            //writer.print("      System.out.println(\"index of " + prop.getName() + " \" + index);\n");
+            //writer.print("      System.out.println(\"obj=\" + obj + \"." + prop.getName() + " len=\" + cache[baseIndex]);\n");
             writer.print("      output.writeUInt32NoTag(cache[baseIndex]);\n");
+            writer.print("      " + protoProperty.getMessage() + "ProtoConverter.toProto2(obj." + prop.getGetterMethod() + "(), output, cache, baseIndex);\n");
             writer.print("      baseIndex += index;\n");
-            writer.print("      " + protoProperty.getMessage() + "ProtoConverter.toProto(obj." + prop.getGetterMethod() + "(), output);\n");
           }
         }
         writer.print("    }\n");
@@ -284,7 +283,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     // Compute Size 2
     {
       writer.print("  " + visibility + " static int computeSize2(" + simpleName + " obj, int[] cache, final int baseIndex) {\n");
-      writer.print("    System.out.println(\"computing size for \" + obj);\n");
+      writer.print("    if (cache[baseIndex] != 0) {\n");
+      writer.print("      //System.out.println(\"to skip computing size 2 for \" + obj);\n");
+      writer.print("      // TODO return correct index\n");
+      writer.print("    }\n");
+      writer.print("    System.out.println(\"computing size 2 for \" + obj);\n");
       writer.print("    int size = 0;\n");
       writer.print("    int index = baseIndex + 1;\n");
       int fieldNumber = 1;
