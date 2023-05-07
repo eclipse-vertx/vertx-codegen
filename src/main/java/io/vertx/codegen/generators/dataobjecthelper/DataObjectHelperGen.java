@@ -105,7 +105,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         ClassKind propKind = prop.getType().getKind();
         ProtoProperty protoProperty = ProtoProperty.getProtoProperty(prop, fieldNumber);
         writer.print("        case " + protoProperty.getTag() + ": {\n");
-        if (prop.getKind() == PropertyKind.LIST) {
+        if (prop.getKind().isList()) {
           writer.print("          int length = input.readRawVarint32();\n");
           writer.print("          int limit = input.pushLimit(length);\n");
           writer.print("          List<Integer> list = new ArrayList<>();\n");
@@ -115,7 +115,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
           writer.print("          obj." + prop.getSetterMethod() + "(list);\n");
           writer.print("          input.popLimit(limit);\n");
           writer.print("          break;\n");
-        } else if (prop.getKind() == PropertyKind.MAP) {
+        } else if (prop.getKind().isMap()) {
           writer.print("          int length = input.readRawVarint32();\n");
           writer.print("          int limit = input.pushLimit(length);\n");
           writer.print("          Map<String, " + prop.getType().getSimpleName() + "> map = obj." + prop.getGetterMethod() + "();\n");
@@ -141,12 +141,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             }
             writer.print("          obj." + prop.getSetterMethod() + "(" + casting + "input." + protoProperty.getProtoType().read() + "());\n");
           } else {
-            String dataObjectName = prop.getType().getSimpleName();
             writer.print("          int length = input.readUInt32();\n");
             writer.print("          int oldLimit = input.pushLimit(length);\n");
-            writer.print("          " + dataObjectName + " address = new " + dataObjectName + "();\n");
-            writer.print("          AddressProtoConverter.fromProto(input, address);\n");
-            writer.print("          obj." + prop.getSetterMethod() + "(address);\n");
+            writer.print("          " + protoProperty.getMessage() + " nested = new " + protoProperty.getMessage() + "();\n");
+            writer.print("          " + protoProperty.getMessage() + "ProtoConverter.fromProto(input, nested);\n");
+            writer.print("          obj." + prop.getSetterMethod() + "(nested);\n");
             writer.print("          input.popLimit(oldLimit);\n");
           }
           writer.print("          break;\n");
@@ -168,7 +167,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         ClassKind propKind = prop.getType().getKind();
         ProtoProperty protoProperty = ProtoProperty.getProtoProperty(prop, fieldNumber);
         writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
-        if (prop.getKind() == PropertyKind.LIST) {
+        if (prop.getKind().isList()) {
           writer.print("      if (obj." + prop.getGetterMethod() + "().size() > 0) {\n");
           writer.print("        output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
           writer.print("        int dataSize = 0;\n");
@@ -180,7 +179,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
           writer.print("          output." + protoProperty.getProtoType().writeNoTag() + "(element);\n");
           writer.print("        }\n");
           writer.print("      }\n");
-        } else if (prop.getKind() == PropertyKind.MAP) {
+        } else if (prop.getKind().isMap()) {
           writer.print("      for (Map.Entry<String, " + prop.getType().getSimpleName() + "> entry : obj." + prop.getGetterMethod() + "().entrySet()) {\n");
           writer.print("        output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
           writer.print("        int dataSize = 0;\n");
@@ -215,7 +214,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         ClassKind propKind = prop.getType().getKind();
         ProtoProperty protoProperty = ProtoProperty.getProtoProperty(prop, fieldNumber);
         writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
-        if (prop.getKind() == PropertyKind.LIST) {
+        if (prop.getKind().isList()) {
           writer.print("      if (obj." + prop.getGetterMethod() + "().size() > 0) {\n");
           writer.print("        size += CodedOutputStream.computeUInt32SizeNoTag(" + protoProperty.getTag() + ");\n");
           writer.print("        int dataSize = 0;\n");
@@ -225,7 +224,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
           writer.print("        size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
           writer.print("        size += dataSize;\n");
           writer.print("      }\n");
-        } else if (prop.getKind() == PropertyKind.MAP) {
+        } else if (prop.getKind().isMap()) {
           writer.print("      for (Map.Entry<String, " + prop.getType().getSimpleName() + "> entry : obj." + prop.getGetterMethod() + "().entrySet()) {\n");
           writer.print("        size += CodedOutputStream.computeUInt32SizeNoTag(" + protoProperty.getTag() + ");\n");
           writer.print("        int dataSize = 0;\n");

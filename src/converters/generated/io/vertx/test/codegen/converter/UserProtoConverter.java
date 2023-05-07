@@ -17,9 +17,9 @@ public class UserProtoConverter {
         case 10: {
           int length = input.readUInt32();
           int oldLimit = input.pushLimit(length);
-          Address address = new Address();
-          AddressProtoConverter.fromProto(input, address);
-          obj.setAddress(address);
+          Address nested = new Address();
+          AddressProtoConverter.fromProto(input, nested);
+          obj.setAddress(nested);
           input.popLimit(oldLimit);
           break;
         }
