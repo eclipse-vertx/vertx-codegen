@@ -8,6 +8,11 @@ import io.vertx.codegen.doc.Text;
 import io.vertx.codegen.doc.Token;
 import io.vertx.codegen.type.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
@@ -555,9 +560,14 @@ public class DataObjectModel implements Model {
         break;
       case API:
       case OTHER:
-        jsonifiable = propType.getName().equals(Instant.class.getName()) ||
-          propType.getName().equals("io.vertx.core.buffer.Buffer") ||
-          (propType.isDataObjectHolder() && propType.getDataObject().isSerializable());
+        jsonifiable = propType.getName().equals(Instant.class.getName())
+          || propType.getName().equals(LocalDate.class.getName())
+          || propType.getName().equals(LocalDateTime.class.getName())
+          || propType.getName().equals(LocalTime.class.getName())
+          || propType.getName().equals(OffsetDateTime.class.getName())
+          || propType.getName().equals(ZonedDateTime.class.getName())
+          || propType.getName().equals("io.vertx.core.buffer.Buffer")
+          || (propType.isDataObjectHolder() && propType.getDataObject().isSerializable());
         break;
       default:
         return;

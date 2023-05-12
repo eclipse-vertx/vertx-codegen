@@ -22,6 +22,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 /**
@@ -66,6 +71,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print("import io.vertx.core.json.JsonArray;\n");
     writer.print("import io.vertx.core.json.impl.JsonUtil;\n");
     writer.print("import java.time.Instant;\n");
+    writer.print("import java.time.LocalDate;\n");
+    writer.print("import java.time.LocalDateTime;\n");
+    writer.print("import java.time.LocalTime;\n");
+    writer.print("import java.time.OffsetDateTime;\n");
+    writer.print("import java.time.ZonedDateTime;\n");
     writer.print("import java.time.format.DateTimeFormatter;\n");
     writer.print("import java.util.Base64;\n");
     writer.print("\n");
@@ -169,6 +179,16 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               case OTHER:
                 if (prop.getType().getName().equals(Instant.class.getName())) {
                   genPropToJson("DateTimeFormatter.ISO_INSTANT.format(", ")", prop, writer);
+                } else if (prop.getType().getName().equals(LocalDate.class.getName())) {
+                  genPropToJson("DateTimeFormatter.ISO_LOCAL_DATE.format(", ")", prop, writer);
+                } else if (prop.getType().getName().equals(LocalTime.class.getName())) {
+                  genPropToJson("DateTimeFormatter.ISO_LOCAL_TIME.format(", ")", prop, writer);
+                } else if (prop.getType().getName().equals(LocalDateTime.class.getName())) {
+                  genPropToJson("DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(", ")", prop, writer);
+                } else if (prop.getType().getName().equals(OffsetDateTime.class.getName())) {
+                  genPropToJson("DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(", ")", prop, writer);
+                } else if (prop.getType().getName().equals(ZonedDateTime.class.getName())) {
+                  genPropToJson("DateTimeFormatter.ISO_ZONED_DATE_TIME.format(", ")", prop, writer);
                 }
                 break;
             }
@@ -306,6 +326,16 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               case OTHER:
                 if (prop.getType().getName().equals(Instant.class.getName())) {
                   genPropFromJson("String", "Instant.from(DateTimeFormatter.ISO_INSTANT.parse((String)", "))", prop, writer);
+                } else if (prop.getType().getName().equals(LocalDate.class.getName())) {
+                  genPropFromJson("String", "LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse((String)", "))", prop, writer);
+                } else if (prop.getType().getName().equals(LocalTime.class.getName())) {
+                  genPropFromJson("String", "LocalTime.from(DateTimeFormatter.ISO_LOCAL_TIME.parse((String)", "))", prop, writer);
+                } else if (prop.getType().getName().equals(LocalDateTime.class.getName())) {
+                  genPropFromJson("String", "LocalDateTime.from(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse((String)", "))", prop, writer);
+                } else if (prop.getType().getName().equals(OffsetDateTime.class.getName())) {
+                  genPropFromJson("String", "OffsetDateTime.from(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse((String)", "))", prop, writer);
+                } else if (prop.getType().getName().equals(ZonedDateTime.class.getName())) {
+                  genPropFromJson("String", "ZonedDateTime.from(DateTimeFormatter.ISO_ZONED_DATE_TIME.parse((String)", "))", prop, writer);
                 }
                 break;
               default:

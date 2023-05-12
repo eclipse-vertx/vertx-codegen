@@ -5,6 +5,11 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.Map;
 
 /**
@@ -26,6 +31,16 @@ public interface PropertyMapGettersAdders {
   PropertyMapGettersAdders addString(String key, String s);
   Map<String, Instant> getInstants();
   PropertyMapGettersAdders addInstant(String key, Instant i);
+  Map<String, LocalDate> getLocalDates();
+  PropertyMapGettersAdders addLocalDate(String key, LocalDate l);
+  Map<String, LocalDateTime> getLocalDateTimes();
+  PropertyMapGettersAdders addLocalDateTime(String key, LocalDateTime l);
+  Map<String, LocalTime> getLocalTimes();
+  PropertyMapGettersAdders addLocalTime(String key, LocalTime l);
+  Map<String, OffsetDateTime> getOffsetDateTimes();
+  PropertyMapGettersAdders addOffsetDateTime(String key, OffsetDateTime o);
+  Map<String, ZonedDateTime> getZonedDateTimes();
+  PropertyMapGettersAdders addZonedDateTime(String key, ZonedDateTime z);
   Map<String, Integer> getBoxedIntegers();
   PropertyMapGettersAdders addBoxedInteger(String key, Integer i);
   Map<String, Boolean> getBoxedBooleans();

@@ -5,6 +5,11 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -32,6 +37,12 @@ public class PropertyGetters {
   public Long getBoxedLong() { throw new UnsupportedOperationException(); }
   public long getPrimitiveLong() { throw new UnsupportedOperationException(); }
   public Instant getInstant() { throw new UnsupportedOperationException(); }
+
+  public LocalDate getLocalDate() { throw new UnsupportedOperationException(); }
+  public LocalDateTime getLocalDateTime() { throw new UnsupportedOperationException(); }
+  public LocalTime getLocalTime() { throw new UnsupportedOperationException(); }
+  public OffsetDateTime getOffsetDateTime() { throw new UnsupportedOperationException(); }
+  public ZonedDateTime getZonedDateTime() { throw new UnsupportedOperationException(); }
 
   public ApiObject getApiObject() { throw new UnsupportedOperationException(); }
   public ApiObjectWithMapper getApiObjectWithMapper() { throw new UnsupportedOperationException(); }
