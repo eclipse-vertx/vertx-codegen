@@ -97,39 +97,30 @@ public class RecursiveItemProtoConverter {
     return size;
   }
 
-  public static void toProto2(RecursiveItem obj, CodedOutputStream output, int[] cache, int baseIndex) throws IOException {
+  public static int toProto2(RecursiveItem obj, CodedOutputStream output, int[] cache, int index) throws IOException {
+    index = index + 1;
     if (obj.getChildA() != null) {
       output.writeUInt32NoTag(10);
-      int index = RecursiveItemProtoConverter.computeSize2(obj.getChildA(), cache, baseIndex);
-      output.writeUInt32NoTag(cache[baseIndex]);
-      RecursiveItemProtoConverter.toProto2(obj.getChildA(), output, cache, baseIndex);
-      baseIndex += index;
+      output.writeUInt32NoTag(cache[index]);
+      index = RecursiveItemProtoConverter.toProto2(obj.getChildA(), output, cache, index);
     }
     if (obj.getChildB() != null) {
       output.writeUInt32NoTag(18);
-      int index = RecursiveItemProtoConverter.computeSize2(obj.getChildB(), cache, baseIndex);
-      output.writeUInt32NoTag(cache[baseIndex]);
-      RecursiveItemProtoConverter.toProto2(obj.getChildB(), output, cache, baseIndex);
-      baseIndex += index;
+      output.writeUInt32NoTag(cache[index]);
+      index = RecursiveItemProtoConverter.toProto2(obj.getChildB(), output, cache, index);
     }
     if (obj.getChildC() != null) {
       output.writeUInt32NoTag(26);
-      int index = RecursiveItemProtoConverter.computeSize2(obj.getChildC(), cache, baseIndex);
-      output.writeUInt32NoTag(cache[baseIndex]);
-      RecursiveItemProtoConverter.toProto2(obj.getChildC(), output, cache, baseIndex);
-      baseIndex += index;
+      output.writeUInt32NoTag(cache[index]);
+      index = RecursiveItemProtoConverter.toProto2(obj.getChildC(), output, cache, index);
     }
     if (obj.getId() != null) {
       output.writeString(4, obj.getId());
     }
-    System.out.println("baseIndex at " + obj + " is " + baseIndex);
+    return index;
   }
 
   public static int computeSize2(RecursiveItem obj, int[] cache, final int baseIndex) {
-    if (cache[baseIndex] != -1) {
-      // System.out.println("to skip computing size 2 for " + obj);
-      // TODO return correct index
-    }
     System.out.println("computing size 2 for " + obj);
     int size = 0;
     int index = baseIndex + 1;

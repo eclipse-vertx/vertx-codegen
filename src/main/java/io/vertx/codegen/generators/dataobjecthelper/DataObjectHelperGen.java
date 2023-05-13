@@ -252,7 +252,8 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
 
     // toProto2()
     {
-      writer.print("  " + visibility + " static void toProto2(" + simpleName + " obj, CodedOutputStream output, int[] cache, int baseIndex) throws IOException {\n");
+      writer.print("  " + visibility + " static int toProto2(" + simpleName + " obj, CodedOutputStream output, int[] cache, int index) throws IOException {\n");
+      writer.print("    index = index + 1;\n");
       int fieldNumber = 1;
       for (PropertyInfo prop : model.getPropertyMap().values()) {
         ClassKind propKind = prop.getType().getKind();
@@ -265,30 +266,27 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             writer.print("      output." + protoProperty.getProtoType().write() + "(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");
           } else {
             writer.print("      output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
-            writer.print("      int index = " + protoProperty.getMessage() + "ProtoConverter.computeSize2(obj." + prop.getGetterMethod() + "(), cache, baseIndex);\n");
+            //writer.print("      int index = " + protoProperty.getMessage() + "ProtoConverter.computeSize2(obj." + prop.getGetterMethod() + "(), cache, baseIndex);\n");
             //writer.print("      System.out.println(\"cache of " + prop.getName() + " \" + Arrays.toString(cache));\n");
             //writer.print("      System.out.println(\"index of " + prop.getName() + " \" + index);\n");
             //writer.print("      System.out.println(\"obj=\" + obj + \"." + prop.getName() + " len=\" + cache[baseIndex]);\n");
-            writer.print("      output.writeUInt32NoTag(cache[baseIndex]);\n");
-            writer.print("      " + protoProperty.getMessage() + "ProtoConverter.toProto2(obj." + prop.getGetterMethod() + "(), output, cache, baseIndex);\n");
-            writer.print("      baseIndex += index;\n");
+            writer.print("      output.writeUInt32NoTag(cache[index]);\n");
+            writer.print("      index = "  + protoProperty.getMessage() + "ProtoConverter.toProto2(obj." + prop.getGetterMethod() + "(), output, cache, index);\n");
+            //writer.print("      baseIndex += index;\n");
           }
         }
         writer.print("    }\n");
         fieldNumber++;
       }
       //writer.print("    System.out.println(\"cache is \" + Arrays.toString(cache));\n");
-      writer.print("    System.out.println(\"baseIndex at \" + obj + \" is \" + baseIndex);\n");
+      //writer.print("    System.out.println(\"baseIndex at \" + obj + \" is \" + baseIndex);\n");
+      writer.print("    return index;\n");
       writer.print("  }\n");
       writer.print("\n");
     }
     // Compute Size 2
     {
       writer.print("  " + visibility + " static int computeSize2(" + simpleName + " obj, int[] cache, final int baseIndex) {\n");
-      writer.print("    if (cache[baseIndex] != -1) {\n");
-      writer.print("      // System.out.println(\"to skip computing size 2 for \" + obj);\n");
-      writer.print("      // TODO return correct index\n");
-      writer.print("    }\n");
       writer.print("    System.out.println(\"computing size 2 for \" + obj);\n");
       writer.print("    int size = 0;\n");
       writer.print("    int index = baseIndex + 1;\n");

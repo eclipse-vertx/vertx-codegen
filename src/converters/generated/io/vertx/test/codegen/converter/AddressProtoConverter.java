@@ -47,21 +47,18 @@ public class AddressProtoConverter {
     return size;
   }
 
-  public static void toProto2(Address obj, CodedOutputStream output, int[] cache, int baseIndex) throws IOException {
+  public static int toProto2(Address obj, CodedOutputStream output, int[] cache, int index) throws IOException {
+    index = index + 1;
     if (obj.getLatitude() != null) {
       output.writeFloat(1, obj.getLatitude());
     }
     if (obj.getLongitude() != null) {
       output.writeFloat(2, obj.getLongitude());
     }
-    System.out.println("baseIndex at " + obj + " is " + baseIndex);
+    return index;
   }
 
   public static int computeSize2(Address obj, int[] cache, final int baseIndex) {
-    if (cache[baseIndex] != -1) {
-      // System.out.println("to skip computing size 2 for " + obj);
-      // TODO return correct index
-    }
     System.out.println("computing size 2 for " + obj);
     int size = 0;
     int index = baseIndex + 1;
