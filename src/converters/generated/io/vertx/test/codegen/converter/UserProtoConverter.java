@@ -226,6 +226,12 @@ public class UserProtoConverter {
     return size;
   }
 
+  public static void toProto2(User obj, CodedOutputStream output) throws IOException {
+    int[] cache = new int[100];
+    UserProtoConverter.computeSize2(obj, cache, 0);
+    UserProtoConverter.toProto2(obj, output, cache, 0);
+  }
+
   public static int toProto2(User obj, CodedOutputStream output, int[] cache, int index) throws IOException {
     index = index + 1;
     if (obj.getAddress() != null) {

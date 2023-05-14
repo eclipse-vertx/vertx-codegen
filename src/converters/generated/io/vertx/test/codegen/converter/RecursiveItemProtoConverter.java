@@ -97,6 +97,12 @@ public class RecursiveItemProtoConverter {
     return size;
   }
 
+  public static void toProto2(RecursiveItem obj, CodedOutputStream output) throws IOException {
+    int[] cache = new int[100];
+    RecursiveItemProtoConverter.computeSize2(obj, cache, 0);
+    RecursiveItemProtoConverter.toProto2(obj, output, cache, 0);
+  }
+
   public static int toProto2(RecursiveItem obj, CodedOutputStream output, int[] cache, int index) throws IOException {
     index = index + 1;
     if (obj.getChildA() != null) {

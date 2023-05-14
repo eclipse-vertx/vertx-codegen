@@ -47,6 +47,12 @@ public class AddressProtoConverter {
     return size;
   }
 
+  public static void toProto2(Address obj, CodedOutputStream output) throws IOException {
+    int[] cache = new int[100];
+    AddressProtoConverter.computeSize2(obj, cache, 0);
+    AddressProtoConverter.toProto2(obj, output, cache, 0);
+  }
+
   public static int toProto2(Address obj, CodedOutputStream output, int[] cache, int index) throws IOException {
     index = index + 1;
     if (obj.getLatitude() != null) {

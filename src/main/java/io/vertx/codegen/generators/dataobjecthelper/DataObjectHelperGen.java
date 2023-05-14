@@ -3,7 +3,6 @@ package io.vertx.codegen.generators.dataobjecthelper;
 import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.PropertyInfo;
-import io.vertx.codegen.PropertyKind;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.format.CamelCase;
 import io.vertx.codegen.format.Case;
@@ -252,6 +251,13 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
 
     // toProto2()
     {
+
+      writer.print("  public static void toProto2(" + simpleName + " obj, CodedOutputStream output) throws IOException {\n");
+      writer.print("    int[] cache = new int[100];\n");
+      writer.print("    " + simpleName + "ProtoConverter.computeSize2(obj, cache, 0);\n");
+      writer.print("    " + simpleName + "ProtoConverter.toProto2(obj, output, cache, 0);\n");
+      writer.print("  }\n");
+      writer.print("\n");
       writer.print("  " + visibility + " static int toProto2(" + simpleName + " obj, CodedOutputStream output, int[] cache, int index) throws IOException {\n");
       writer.print("    index = index + 1;\n");
       int fieldNumber = 1;
