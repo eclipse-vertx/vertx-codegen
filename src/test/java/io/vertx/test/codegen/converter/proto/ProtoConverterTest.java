@@ -47,7 +47,7 @@ public class ProtoConverterTest {
     // Encode
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream output = CodedOutputStream.newInstance(baos);
-    UserProtoConverter.toProto(user, output);
+    UserProtoConverter.toProto2(user, output);
     output.flush();
     byte[] encoded = baos.toByteArray();
     // Decode
@@ -71,7 +71,7 @@ public class ProtoConverterTest {
     assertEquals(user.getIntegerValueMap(), decoded.getIntegerValueMap());
 
     // Assert total size is equal to computed size
-    assertEquals(encoded.length, UserProtoConverter.computeSize(user));
+    assertEquals(encoded.length, UserProtoConverter.computeSize2(user));
   }
 
   @Test

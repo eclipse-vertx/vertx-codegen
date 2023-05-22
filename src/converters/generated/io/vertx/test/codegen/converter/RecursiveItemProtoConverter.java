@@ -126,6 +126,12 @@ public class RecursiveItemProtoConverter {
     return index;
   }
 
+  public static int computeSize2(RecursiveItem obj) {
+    int[] cache = new int[100];
+    RecursiveItemProtoConverter.computeSize2(obj, cache, 0);
+    return cache[0];
+  }
+
   public static int computeSize2(RecursiveItem obj, int[] cache, final int baseIndex) {
     System.out.println("computing size 2 for " + obj);
     int size = 0;

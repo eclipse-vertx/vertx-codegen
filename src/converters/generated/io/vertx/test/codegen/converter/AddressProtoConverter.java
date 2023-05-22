@@ -64,6 +64,12 @@ public class AddressProtoConverter {
     return index;
   }
 
+  public static int computeSize2(Address obj) {
+    int[] cache = new int[100];
+    AddressProtoConverter.computeSize2(obj, cache, 0);
+    return cache[0];
+  }
+
   public static int computeSize2(Address obj, int[] cache, final int baseIndex) {
     System.out.println("computing size 2 for " + obj);
     int size = 0;
