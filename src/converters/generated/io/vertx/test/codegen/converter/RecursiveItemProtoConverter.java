@@ -17,29 +17,29 @@ public class RecursiveItemProtoConverter {
       switch (tag) {
         case 10: {
           int length = input.readUInt32();
-          int oldLimit = input.pushLimit(length);
+          int limit = input.pushLimit(length);
           RecursiveItem nested = new RecursiveItem();
           RecursiveItemProtoConverter.fromProto(input, nested);
           obj.setChildA(nested);
-          input.popLimit(oldLimit);
+          input.popLimit(limit);
           break;
         }
         case 18: {
           int length = input.readUInt32();
-          int oldLimit = input.pushLimit(length);
+          int limit = input.pushLimit(length);
           RecursiveItem nested = new RecursiveItem();
           RecursiveItemProtoConverter.fromProto(input, nested);
           obj.setChildB(nested);
-          input.popLimit(oldLimit);
+          input.popLimit(limit);
           break;
         }
         case 26: {
           int length = input.readUInt32();
-          int oldLimit = input.pushLimit(length);
+          int limit = input.pushLimit(length);
           RecursiveItem nested = new RecursiveItem();
           RecursiveItemProtoConverter.fromProto(input, nested);
           obj.setChildC(nested);
-          input.popLimit(oldLimit);
+          input.popLimit(limit);
           break;
         }
         case 34: {

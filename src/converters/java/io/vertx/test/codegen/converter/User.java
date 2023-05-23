@@ -20,6 +20,7 @@ public class User {
   private Character charField;
   private Map<String, String> stringValueMap;
   private Map<String, Integer> integerValueMap;
+  private Map<String, Address> structValueMap;
 
   public String getUserName() {
     return userName;
@@ -115,5 +116,13 @@ public class User {
 
   public void setIntegerValueMap(Map<String, Integer> integerValueMap) {
     this.integerValueMap = integerValueMap;
+  }
+
+  public Map<String, Address> getStructValueMap() {
+    return structValueMap;
+  }
+
+  public void setStructValueMap(Map<String, Address> structValueMap) {
+    this.structValueMap = structValueMap;
   }
 }

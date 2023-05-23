@@ -57,6 +57,11 @@ public class ProtoConverterTest {
     integerValueMap.put("key2", 2);
     user.setIntegerValueMap(integerValueMap);
 
+    Map<String, Address> structValueMap = new HashMap<>();
+    structValueMap.put("key1", address1);
+    structValueMap.put("key2", address2);
+    user.setStructValueMap(structValueMap);
+
     // Encode
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream output = CodedOutputStream.newInstance(baos);
@@ -83,6 +88,7 @@ public class ProtoConverterTest {
     assertEquals(user.getCharField(), decoded.getCharField());
     assertEquals(user.getStringValueMap(), decoded.getStringValueMap());
     assertEquals(user.getIntegerValueMap(), decoded.getIntegerValueMap());
+    assertEquals(user.getStructValueMap(), decoded.getStructValueMap());
 
     // Assert total size is equal to computed size
     assertEquals(encoded.length, UserProtoConverter.computeSize(user));

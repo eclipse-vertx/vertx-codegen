@@ -17,11 +17,11 @@ public class UserProtoConverter {
       switch (tag) {
         case 10: {
           int length = input.readUInt32();
-          int oldLimit = input.pushLimit(length);
+          int limit = input.pushLimit(length);
           Address nested = new Address();
           AddressProtoConverter.fromProto(input, nested);
           obj.setAddress(nested);
-          input.popLimit(oldLimit);
+          input.popLimit(limit);
           break;
         }
         case 16: {
@@ -93,17 +93,37 @@ public class UserProtoConverter {
         }
         case 90: {
           int length = input.readUInt32();
-          int oldLimit = input.pushLimit(length);
+          int limit = input.pushLimit(length);
           Address nested = new Address();
           AddressProtoConverter.fromProto(input, nested);
           if (obj.getStructListField() == null) {
             obj.setStructListField(new ArrayList<>());
           }
           obj.getStructListField().add(nested);
-          input.popLimit(oldLimit);
+          input.popLimit(limit);
           break;
         }
         case 98: {
+          int length = input.readUInt32();
+          int limit = input.pushLimit(length);
+          Map<String, Address> map = obj.getStructValueMap();
+          if (map == null) {
+            map = new HashMap<>();
+          }
+          input.readTag();
+          String key = input.readString();
+          input.readTag();
+          int vlength = input.readUInt32();
+          int vlimit = input.pushLimit(vlength);
+          Address value = new Address();
+          AddressProtoConverter.fromProto(input, value);
+          map.put(key, value);
+          obj.setStructValueMap(map);
+          input.popLimit(vlimit);
+          input.popLimit(limit);
+          break;
+        }
+        case 106: {
           obj.setUserName(input.readString());
           break;
         }
@@ -179,8 +199,24 @@ public class UserProtoConverter {
         }
       }
     }
+    if (obj.getStructValueMap() != null) {
+      for (Map.Entry<String, Address> entry : obj.getStructValueMap().entrySet()) {
+        output.writeUInt32NoTag(98);
+        int dataSize = 0;
+        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
+        int elementSize = AddressProtoConverter.computeSize(entry.getValue());
+        dataSize += CodedOutputStream.computeInt32SizeNoTag(18);
+        dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);
+        dataSize += elementSize;
+        output.writeUInt32NoTag(dataSize);
+        output.writeString(1, entry.getKey());
+        output.writeUInt32NoTag(18);
+        output.writeUInt32NoTag(AddressProtoConverter.computeSize(entry.getValue()));
+        AddressProtoConverter.toProto(entry.getValue(), output);
+      }
+    }
     if (obj.getUserName() != null) {
-      output.writeString(12, obj.getUserName());
+      output.writeString(13, obj.getUserName());
     }
   }
 
@@ -251,8 +287,21 @@ public class UserProtoConverter {
         }
       }
     }
+    if (obj.getStructValueMap() != null) {
+      for (Map.Entry<String, Address> entry : obj.getStructValueMap().entrySet()) {
+        size += CodedOutputStream.computeUInt32SizeNoTag(98);
+        int dataSize = 0;
+        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
+        int elementSize = AddressProtoConverter.computeSize(entry.getValue());
+        dataSize += CodedOutputStream.computeInt32SizeNoTag(18);
+        dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);
+        dataSize += elementSize;
+        size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
+        size += dataSize;
+      }
+    }
     if (obj.getUserName() != null) {
-      size += CodedOutputStream.computeStringSize(12, obj.getUserName());
+      size += CodedOutputStream.computeStringSize(13, obj.getUserName());
     }
     return size;
   }
@@ -330,8 +379,10 @@ public class UserProtoConverter {
         index = AddressProtoConverter.toProto2(element, output, cache, index);
       }
     }
+    if (obj.getStructValueMap() != null) {
+    }
     if (obj.getUserName() != null) {
-      output.writeString(12, obj.getUserName());
+      output.writeString(13, obj.getUserName());
     }
     return index;
   }
@@ -414,8 +465,10 @@ public class UserProtoConverter {
         }
       }
     }
+    if (obj.getStructValueMap() != null) {
+    }
     if (obj.getUserName() != null) {
-      size += CodedOutputStream.computeStringSize(12, obj.getUserName());
+      size += CodedOutputStream.computeStringSize(13, obj.getUserName());
     }
     cache[baseIndex] = size;
     return index;
