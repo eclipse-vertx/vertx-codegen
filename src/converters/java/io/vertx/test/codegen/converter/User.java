@@ -11,6 +11,7 @@ public class User {
   private String userName;
   private Integer age;
   private List<Integer> integerListField;
+  private List<Address> structListField;
   private Address address;
   private Double doubleField;
   private Long longField;
@@ -42,6 +43,14 @@ public class User {
 
   public void setIntegerListField(List<Integer> integerListField) {
     this.integerListField = integerListField;
+  }
+
+  public List<Address> getStructListField() {
+    return structListField;
+  }
+
+  public void setStructListField(List<Address> structListField) {
+    this.structListField = structListField;
   }
 
   public Address getAddress() {

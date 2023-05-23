@@ -92,6 +92,8 @@ public class UserProtoConverter {
           break;
         }
         case 90: {
+        }
+        case 98: {
           obj.setUserName(input.readString());
           break;
         }
@@ -158,8 +160,10 @@ public class UserProtoConverter {
         output.writeString(2, entry.getValue());
       }
     }
+    if (obj.getStructListField() != null) {
+    }
     if (obj.getUserName() != null) {
-      output.writeString(11, obj.getUserName());
+      output.writeString(12, obj.getUserName());
     }
   }
 
@@ -220,8 +224,10 @@ public class UserProtoConverter {
         size += dataSize;
       }
     }
+    if (obj.getStructListField() != null) {
+    }
     if (obj.getUserName() != null) {
-      size += CodedOutputStream.computeStringSize(11, obj.getUserName());
+      size += CodedOutputStream.computeStringSize(12, obj.getUserName());
     }
     return size;
   }
@@ -292,8 +298,10 @@ public class UserProtoConverter {
         output.writeString(2, entry.getValue());
       }
     }
+    if (obj.getStructListField() != null) {
+    }
     if (obj.getUserName() != null) {
-      output.writeString(11, obj.getUserName());
+      output.writeString(12, obj.getUserName());
     }
     return index;
   }
@@ -305,7 +313,6 @@ public class UserProtoConverter {
   }
 
   public static int computeSize2(User obj, int[] cache, final int baseIndex) {
-    System.out.println("computing size 2 for " + obj);
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getAddress() != null) {
@@ -365,8 +372,10 @@ public class UserProtoConverter {
         size += dataSize;
       }
     }
+    if (obj.getStructListField() != null) {
+    }
     if (obj.getUserName() != null) {
-      size += CodedOutputStream.computeStringSize(11, obj.getUserName());
+      size += CodedOutputStream.computeStringSize(12, obj.getUserName());
     }
     cache[baseIndex] = size;
     return index;

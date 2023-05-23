@@ -71,7 +71,6 @@ public class AddressProtoConverter {
   }
 
   public static int computeSize2(Address obj, int[] cache, final int baseIndex) {
-    System.out.println("computing size 2 for " + obj);
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getLatitude() != null) {
