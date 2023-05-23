@@ -132,7 +132,6 @@ public class ProtoConverterTest {
     c.setChildB(c_b);
     c.setChildC(c_c);
 
-
     // Encode
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream output = CodedOutputStream.newInstance(baos);

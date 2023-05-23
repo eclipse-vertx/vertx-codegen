@@ -323,7 +323,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             writer.print("        }\n");
             writer.print("      }\n");
           } else {
-            // TODO
+            writer.print("      for (" + protoProperty.getMessage() + " element: obj.getStructListField()) {\n");
+            writer.print("        output.writeUInt32NoTag(90);\n");
+            writer.print("        output.writeUInt32NoTag(cache[index]);\n");
+            writer.print("        index = " + protoProperty.getMessage() + "ProtoConverter.toProto2(element, output, cache, index);\n");
+            writer.print("      }\n");
           }
         } else if (prop.getKind().isMap()) {
           if (propKind.basic) {
@@ -384,7 +388,16 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             writer.print("        size += dataSize;\n");
             writer.print("      }\n");
           } else {
-            // TODO
+            writer.print("      if (obj." + prop.getGetterMethod() + "().size() > 0) {\n");
+            writer.print("        for (" + protoProperty.getMessage() + " element: obj." + prop.getGetterMethod() + "()) {\n");
+            writer.print("          size += CodedOutputStream.computeUInt32SizeNoTag(90);\n");
+            writer.print("          int savedIndex = index;\n");
+            writer.print("          index = " + protoProperty.getMessage() + "ProtoConverter.computeSize2(element, cache, index);\n");
+            writer.print("          int dataSize = cache[savedIndex];\n");
+            writer.print("          size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
+            writer.print("          size += dataSize;\n");
+            writer.print("        }\n");
+            writer.print("      }\n");
           }
         } else if (prop.getKind().isMap()) {
           if (propKind.basic) {
