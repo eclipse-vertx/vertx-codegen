@@ -22,13 +22,26 @@ import static org.junit.Assert.assertEquals;
 public class ProtoConverterTest {
   @Test
   public void testPrimitiveFields() throws IOException {
-    Address address = new Address();
-    address.setLatitude(3.333F);
-    address.setLongitude(4.444F);
+    Address address1 = new Address();
+    address1.setName("Addr-1");
+    address1.setLatitude(3.301f);
+    address1.setLongitude(4.401f);
+
+    Address address2 = new Address();
+    address2.setName("Addr-2");
+    address2.setLatitude(3.302F);
+    address2.setLongitude(4.402F);
+
+    Address address3 = new Address();
+    address3.setName("Addr-3");
+    address3.setLatitude(3.303F);
+    address3.setLongitude(4.403F);
+
     User user = new User();
     user.setUserName("jviet");
     user.setAge(21);
-    user.setAddress(address);
+    user.setAddress(address1);
+    user.setStructListField(Collections.unmodifiableList(Arrays.asList(address2, address3)));
     user.setIntegerListField(Collections.unmodifiableList(Arrays.asList(100, 101)));
     user.setDoubleField(5.5);
     user.setLongField(1000L);
@@ -47,7 +60,7 @@ public class ProtoConverterTest {
     // Encode
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream output = CodedOutputStream.newInstance(baos);
-    UserProtoConverter.toProto2(user, output);
+    UserProtoConverter.toProto(user, output);
     output.flush();
     byte[] encoded = baos.toByteArray();
     // Decode
@@ -58,9 +71,10 @@ public class ProtoConverterTest {
     // Assert decoded is same with original
     assertEquals(user.getUserName(), decoded.getUserName());
     assertEquals(user.getAge(), decoded.getAge());
-    //Assert.assertEquals(user.getAddress(), decoded.getAddress()); // need equal and hash
+    Assert.assertEquals(user.getAddress(), decoded.getAddress());
     assertEquals(user.getAddress().getLatitude(), decoded.getAddress().getLatitude());
     assertEquals(user.getAddress().getLongitude(), decoded.getAddress().getLongitude());
+    Assert.assertArrayEquals(user.getStructListField().toArray(), decoded.getStructListField().toArray());
     Assert.assertArrayEquals(user.getIntegerListField().toArray(), decoded.getIntegerListField().toArray());
     assertEquals(user.getDoubleField(), decoded.getDoubleField());
     assertEquals(user.getLongField(), decoded.getLongField());
@@ -71,7 +85,7 @@ public class ProtoConverterTest {
     assertEquals(user.getIntegerValueMap(), decoded.getIntegerValueMap());
 
     // Assert total size is equal to computed size
-    assertEquals(encoded.length, UserProtoConverter.computeSize2(user));
+    assertEquals(encoded.length, UserProtoConverter.computeSize(user));
   }
 
   @Test

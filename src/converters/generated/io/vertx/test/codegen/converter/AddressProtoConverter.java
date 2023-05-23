@@ -23,6 +23,10 @@ public class AddressProtoConverter {
           obj.setLongitude(input.readFloat());
           break;
         }
+        case 26: {
+          obj.setName(input.readString());
+          break;
+        }
       }
     }
   }
@@ -34,6 +38,9 @@ public class AddressProtoConverter {
     if (obj.getLongitude() != null) {
       output.writeFloat(2, obj.getLongitude());
     }
+    if (obj.getName() != null) {
+      output.writeString(3, obj.getName());
+    }
   }
 
   public static int computeSize(Address obj) {
@@ -43,6 +50,9 @@ public class AddressProtoConverter {
     }
     if (obj.getLongitude() != null) {
       size += CodedOutputStream.computeFloatSize(2, obj.getLongitude());
+    }
+    if (obj.getName() != null) {
+      size += CodedOutputStream.computeStringSize(3, obj.getName());
     }
     return size;
   }
@@ -61,6 +71,9 @@ public class AddressProtoConverter {
     if (obj.getLongitude() != null) {
       output.writeFloat(2, obj.getLongitude());
     }
+    if (obj.getName() != null) {
+      output.writeString(3, obj.getName());
+    }
     return index;
   }
 
@@ -78,6 +91,9 @@ public class AddressProtoConverter {
     }
     if (obj.getLongitude() != null) {
       size += CodedOutputStream.computeFloatSize(2, obj.getLongitude());
+    }
+    if (obj.getName() != null) {
+      size += CodedOutputStream.computeStringSize(3, obj.getName());
     }
     cache[baseIndex] = size;
     return index;

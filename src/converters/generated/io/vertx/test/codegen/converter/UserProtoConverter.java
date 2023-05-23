@@ -92,6 +92,16 @@ public class UserProtoConverter {
           break;
         }
         case 90: {
+          int length = input.readUInt32();
+          int oldLimit = input.pushLimit(length);
+          Address nested = new Address();
+          AddressProtoConverter.fromProto(input, nested);
+          if (obj.getStructListField() == null) {
+            obj.setStructListField(new ArrayList<>());
+          }
+          obj.getStructListField().add(nested);
+          input.popLimit(oldLimit);
+          break;
         }
         case 98: {
           obj.setUserName(input.readString());
@@ -161,6 +171,13 @@ public class UserProtoConverter {
       }
     }
     if (obj.getStructListField() != null) {
+      if (obj.getStructListField().size() > 0) {
+        for (Address element: obj.getStructListField()) {
+          output.writeUInt32NoTag(90);
+          output.writeUInt32NoTag(AddressProtoConverter.computeSize(element));
+          AddressProtoConverter.toProto(element, output);
+        }
+      }
     }
     if (obj.getUserName() != null) {
       output.writeString(12, obj.getUserName());
@@ -225,6 +242,14 @@ public class UserProtoConverter {
       }
     }
     if (obj.getStructListField() != null) {
+      if (obj.getStructListField().size() > 0) {
+        for (Address element: obj.getStructListField()) {
+          size += CodedOutputStream.computeUInt32SizeNoTag(90);
+          int dataSize = AddressProtoConverter.computeSize(element);
+          size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
+          size += dataSize;
+        }
+      }
     }
     if (obj.getUserName() != null) {
       size += CodedOutputStream.computeStringSize(12, obj.getUserName());
