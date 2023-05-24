@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
 
 public class AddressProtoConverter {
 
@@ -22,6 +23,10 @@ public class AddressProtoConverter {
           obj.setLongitude(input.readFloat());
           break;
         }
+        case 26: {
+          obj.setName(input.readString());
+          break;
+        }
       }
     }
   }
@@ -33,6 +38,9 @@ public class AddressProtoConverter {
     if (obj.getLongitude() != null) {
       output.writeFloat(2, obj.getLongitude());
     }
+    if (obj.getName() != null) {
+      output.writeString(3, obj.getName());
+    }
   }
 
   public static int computeSize(Address obj) {
@@ -43,7 +51,52 @@ public class AddressProtoConverter {
     if (obj.getLongitude() != null) {
       size += CodedOutputStream.computeFloatSize(2, obj.getLongitude());
     }
+    if (obj.getName() != null) {
+      size += CodedOutputStream.computeStringSize(3, obj.getName());
+    }
     return size;
+  }
+
+  public static void toProto2(Address obj, CodedOutputStream output) throws IOException {
+    int[] cache = new int[100];
+    AddressProtoConverter.computeSize2(obj, cache, 0);
+    AddressProtoConverter.toProto2(obj, output, cache, 0);
+  }
+
+  public static int toProto2(Address obj, CodedOutputStream output, int[] cache, int index) throws IOException {
+    index = index + 1;
+    if (obj.getLatitude() != null) {
+      output.writeFloat(1, obj.getLatitude());
+    }
+    if (obj.getLongitude() != null) {
+      output.writeFloat(2, obj.getLongitude());
+    }
+    if (obj.getName() != null) {
+      output.writeString(3, obj.getName());
+    }
+    return index;
+  }
+
+  public static int computeSize2(Address obj) {
+    int[] cache = new int[100];
+    AddressProtoConverter.computeSize2(obj, cache, 0);
+    return cache[0];
+  }
+
+  public static int computeSize2(Address obj, int[] cache, final int baseIndex) {
+    int size = 0;
+    int index = baseIndex + 1;
+    if (obj.getLatitude() != null) {
+      size += CodedOutputStream.computeFloatSize(1, obj.getLatitude());
+    }
+    if (obj.getLongitude() != null) {
+      size += CodedOutputStream.computeFloatSize(2, obj.getLongitude());
+    }
+    if (obj.getName() != null) {
+      size += CodedOutputStream.computeStringSize(3, obj.getName());
+    }
+    cache[baseIndex] = size;
+    return index;
   }
 
 }

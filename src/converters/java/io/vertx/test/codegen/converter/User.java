@@ -11,6 +11,7 @@ public class User {
   private String userName;
   private Integer age;
   private List<Integer> integerListField;
+  private List<Address> structListField;
   private Address address;
   private Double doubleField;
   private Long longField;
@@ -19,6 +20,7 @@ public class User {
   private Character charField;
   private Map<String, String> stringValueMap;
   private Map<String, Integer> integerValueMap;
+  private Map<String, Address> structValueMap;
 
   public String getUserName() {
     return userName;
@@ -42,6 +44,14 @@ public class User {
 
   public void setIntegerListField(List<Integer> integerListField) {
     this.integerListField = integerListField;
+  }
+
+  public List<Address> getStructListField() {
+    return structListField;
+  }
+
+  public void setStructListField(List<Address> structListField) {
+    this.structListField = structListField;
   }
 
   public Address getAddress() {
@@ -106,5 +116,13 @@ public class User {
 
   public void setIntegerValueMap(Map<String, Integer> integerValueMap) {
     this.integerValueMap = integerValueMap;
+  }
+
+  public Map<String, Address> getStructValueMap() {
+    return structValueMap;
+  }
+
+  public void setStructValueMap(Map<String, Address> structValueMap) {
+    this.structValueMap = structValueMap;
   }
 }
