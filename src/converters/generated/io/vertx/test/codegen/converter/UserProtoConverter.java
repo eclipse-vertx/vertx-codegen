@@ -332,6 +332,7 @@ public class UserProtoConverter {
       output.writeDouble(5, obj.getDoubleField());
     }
     if (obj.getIntegerListField() != null) {
+      // list | tag | data size | value[0] | value[1] | value[2] |
       if (obj.getIntegerListField().size() > 0) {
         output.writeUInt32NoTag(50);
         int dataSize = 0;
@@ -345,12 +346,17 @@ public class UserProtoConverter {
       }
     }
     if (obj.getIntegerValueMap() != null) {
+      // map[0] | tag | data size | key | value |
+      // map[1] | tag | data size | key | value |
       for (Map.Entry<String, Integer> entry : obj.getIntegerValueMap().entrySet()) {
         output.writeUInt32NoTag(58);
+        // calculate data size
         int dataSize = 0;
         dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
         dataSize += CodedOutputStream.computeInt32Size(2, entry.getValue());
+        // key
         output.writeUInt32NoTag(dataSize);
+        // value
         output.writeString(1, entry.getKey());
         output.writeInt32(2, entry.getValue());
       }
@@ -362,17 +368,24 @@ public class UserProtoConverter {
       output.writeInt32(9, obj.getShortField());
     }
     if (obj.getStringValueMap() != null) {
+      // map[0] | tag | data size | key | value |
+      // map[1] | tag | data size | key | value |
       for (Map.Entry<String, String> entry : obj.getStringValueMap().entrySet()) {
         output.writeUInt32NoTag(82);
+        // calculate data size
         int dataSize = 0;
         dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
         dataSize += CodedOutputStream.computeStringSize(2, entry.getValue());
+        // key
         output.writeUInt32NoTag(dataSize);
+        // value
         output.writeString(1, entry.getKey());
         output.writeString(2, entry.getValue());
       }
     }
     if (obj.getStructListField() != null) {
+      // list[0] | tag | data size | value |
+      // list[1] | tag | data size | value |
       for (Address element: obj.getStructListField()) {
         output.writeUInt32NoTag(90);
         output.writeUInt32NoTag(cache[index]);
@@ -380,6 +393,25 @@ public class UserProtoConverter {
       }
     }
     if (obj.getStructValueMap() != null) {
+      // map[0] | tag | data size | key | value |
+      // map[1] | tag | data size | key | value |
+      for (Map.Entry<String, Address> entry : obj.getStructValueMap().entrySet()) {
+        output.writeUInt32NoTag(98);
+        // calculate data size
+        int elementSize = cache[index];
+        int dataSize = 0;
+        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
+        dataSize += CodedOutputStream.computeInt32SizeNoTag(18);
+        dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);
+        dataSize += elementSize;
+        // key
+        output.writeUInt32NoTag(dataSize);
+        // value
+        output.writeString(1, entry.getKey());
+        output.writeUInt32NoTag(18);
+        output.writeUInt32NoTag(elementSize);
+        index = AddressProtoConverter.toProto2(entry.getValue(), output, cache, index);
+      }
     }
     if (obj.getUserName() != null) {
       output.writeString(13, obj.getUserName());
@@ -417,6 +449,7 @@ public class UserProtoConverter {
       size += CodedOutputStream.computeDoubleSize(5, obj.getDoubleField());
     }
     if (obj.getIntegerListField() != null) {
+      // list | tag | data size | value[0] | value[1] | value[2] |
       if (obj.getIntegerListField().size() > 0) {
         size += CodedOutputStream.computeUInt32SizeNoTag(50);
         int dataSize = 0;
@@ -428,6 +461,8 @@ public class UserProtoConverter {
       }
     }
     if (obj.getIntegerValueMap() != null) {
+      // map[0] | tag | data size | key | value |
+      // map[1] | tag | data size | key | value |
       for (Map.Entry<String, Integer> entry : obj.getIntegerValueMap().entrySet()) {
         size += CodedOutputStream.computeUInt32SizeNoTag(58);
         int dataSize = 0;
@@ -444,6 +479,8 @@ public class UserProtoConverter {
       size += CodedOutputStream.computeInt32Size(9, obj.getShortField());
     }
     if (obj.getStringValueMap() != null) {
+      // map[0] | tag | data size | key | value |
+      // map[1] | tag | data size | key | value |
       for (Map.Entry<String, String> entry : obj.getStringValueMap().entrySet()) {
         size += CodedOutputStream.computeUInt32SizeNoTag(82);
         int dataSize = 0;
@@ -454,6 +491,8 @@ public class UserProtoConverter {
       }
     }
     if (obj.getStructListField() != null) {
+      // list[0] | tag | data size | value |
+      // list[1] | tag | data size | value |
       if (obj.getStructListField().size() > 0) {
         for (Address element: obj.getStructListField()) {
           size += CodedOutputStream.computeUInt32SizeNoTag(90);
@@ -466,6 +505,25 @@ public class UserProtoConverter {
       }
     }
     if (obj.getStructValueMap() != null) {
+        // map[0] | tag | data size | key | value |
+        // map[1] | tag | data size | key | value |
+      for (Map.Entry<String, Address> entry : obj.getStructValueMap().entrySet()) {
+        size += CodedOutputStream.computeUInt32SizeNoTag(98);
+        // calculate data size
+        int dataSize = 0;
+        // key
+        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
+        // value
+        int savedIndex = index;
+        index = AddressProtoConverter.computeSize2(entry.getValue(), cache, index);
+        int elementSize = cache[savedIndex];
+        dataSize += CodedOutputStream.computeInt32SizeNoTag(18);
+        dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);
+        dataSize += elementSize;
+        // data size
+        size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
+        size += dataSize;
+      }
     }
     if (obj.getUserName() != null) {
       size += CodedOutputStream.computeStringSize(13, obj.getUserName());
