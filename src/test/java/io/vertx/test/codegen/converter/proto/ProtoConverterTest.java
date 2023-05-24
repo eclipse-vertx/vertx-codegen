@@ -146,15 +146,50 @@ public class ProtoConverterTest {
     output.flush();
 
     byte[] encoded = baos.toByteArray();
-    System.out.println("encoded 2 " + HexUtil.hexDump(encoded));
+    System.out.println("encoded 2 \n" + prettyHexDump(encoded));
 
     ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
     CodedOutputStream output2 = CodedOutputStream.newInstance(baos2);
     RecursiveItemProtoConverter.toProto(root, output2);
     output2.flush();
     byte[] encoded2 = baos2.toByteArray();
-    System.out.println("encoded 1 " + HexUtil.hexDump(encoded2));
+    System.out.println("encoded 1 \n" + prettyHexDump(encoded2));
 
     Assert.assertArrayEquals(encoded2, encoded);
+  }
+
+  public static String prettyHexDump(byte[] bytes) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < bytes.length; i++) {
+      if (i % 16 == 0) {
+        sb.append(String.format("%05x: ", i));
+      }
+      sb.append(String.format("%02x ", bytes[i]));
+      if (i % 4 == 3) {
+        sb.append(" ");
+      }
+      if (i % 16 == 15 || i == bytes.length - 1) {
+        for (int j = i + 1; j % 16 != 0; j++) {
+          sb.append("   ");
+          if (j % 4 == 3) {
+            sb.append(" ");
+          }
+        }
+        int start = (i / 16) * 16;
+        sb.append("  ");
+        for (int j = start; j <= i; j++) {
+          if (bytes[j] >= 32 && bytes[j] < 127) {
+            sb.append((char) bytes[j]);
+          } else {
+            sb.append(".");
+          }
+          if ((j - start) % 4 == 3 && j < i) {
+            sb.append(" ");
+          }
+        }
+        sb.append("\n");
+      }
+    }
+    return sb.toString();
   }
 }
