@@ -89,6 +89,27 @@ public class ProtoConverterTest {
   }
 
   @Test
+  public void testIntegerListField() throws IOException {
+    User user = new User();
+    user.setIntegerListField(Collections.unmodifiableList(Arrays.asList(1, 2)));
+
+    // Encode to byte array
+    byte[] encoded = encode(user);
+
+    // Decode using Google's protoc plugin
+    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    assertEquals(protocObj.getIntegerListFieldList(), user.getIntegerListField());
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(protocObj);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Decode
+    User decoded = decode(protocEncoded);
+    assertEquals(user, decoded);
+  }
+
+  @Test
   public void testPrimitiveFields() throws IOException {
     Address address1 = new Address();
     address1.setName("Addr-1");
@@ -104,6 +125,7 @@ public class ProtoConverterTest {
     address3.setName("Addr-3");
     address3.setLatitude(3.303F);
     address3.setLongitude(4.403F);
+
 
     User user = new User();
     user.setUserName("jviet");
@@ -159,7 +181,7 @@ public class ProtoConverterTest {
     assertEquals(user.getStructValueMap(), decoded.getStructValueMap());
 
     // Assert total size is equal to computed size
-    assertEquals(encoded.length, UserProtoConverter.computeSize2(user));
+    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize(user));
   }
 
   @Test
