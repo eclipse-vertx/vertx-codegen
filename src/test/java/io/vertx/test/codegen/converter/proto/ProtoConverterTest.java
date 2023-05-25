@@ -17,100 +17,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class ProtoConverterTest {
   @Test
-  public void testIntegerField() throws IOException {
-    User user = new User();
-    user.setAge(18);
-
-    // Encode to byte array
-    byte[] encoded = encode(user);
-
-    // Decode using Google's protoc plugin
-    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
-    assertEquals(protocObj.getAge(), (int) user.getAge());
-
-    // Encode using Google's protoc plugin
-    byte[] protocEncoded = protocEncode(protocObj);
-    assertArrayEquals(protocEncoded, encoded);
-
-    // Decode
-    User decoded = decode(protocEncoded);
-    assertEquals(user, decoded);
-  }
-
-  @Test
-  public void testBoolField() throws IOException {
-    User user = new User();
-    user.setBoolField(true);
-
-    // Encode to byte array
-    byte[] encoded = encode(user);
-
-    // Decode using Google's protoc plugin
-    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
-    assertEquals(protocObj.getBoolField(), user.getBoolField());
-
-    // Encode using Google's protoc plugin
-    byte[] protocEncoded = protocEncode(protocObj);
-    assertArrayEquals(protocEncoded, encoded);
-
-    // Decode
-    User decoded = decode(protocEncoded);
-    assertEquals(user, decoded);
-  }
-
-  @Test
-  public void testNestedField() throws IOException {
-    Address address = new Address();
-    address.setName("Address-01");
-
-    User user = new User();
-    user.setAddress(address);
-
-    // Encode to byte array
-    byte[] encoded = encode(user);
-
-    // Decode using Google's protoc plugin
-    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
-    assertEquals(protocObj.getAddress().getName(), user.getAddress().getName());
-
-    // Encode using Google's protoc plugin
-    byte[] protocEncoded = protocEncode(protocObj);
-    assertArrayEquals(protocEncoded, encoded);
-
-    // Decode
-    User decoded = decode(protocEncoded);
-    assertEquals(user, decoded);
-  }
-
-  @Test
-  public void testIntegerListField() throws IOException {
-    User user = new User();
-    user.setIntegerListField(Collections.unmodifiableList(Arrays.asList(1, 2)));
-
-    // Encode to byte array
-    byte[] encoded = encode(user);
-
-    // Decode using Google's protoc plugin
-    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
-    assertEquals(protocObj.getIntegerListFieldList(), user.getIntegerListField());
-
-    // Encode using Google's protoc plugin
-    byte[] protocEncoded = protocEncode(protocObj);
-    assertArrayEquals(protocEncoded, encoded);
-
-    // Decode
-    User decoded = decode(protocEncoded);
-    assertEquals(user, decoded);
-  }
-
-  @Test
-  public void testPrimitiveFields() throws IOException {
+  public void testAllFields() throws IOException {
     Address address1 = new Address();
     address1.setName("Addr-1");
     address1.setLatitude(3.301f);
@@ -125,7 +39,6 @@ public class ProtoConverterTest {
     address3.setName("Addr-3");
     address3.setLatitude(3.303F);
     address3.setLongitude(4.403F);
-
 
     User user = new User();
     user.setUserName("jviet");
@@ -234,7 +147,6 @@ public class ProtoConverterTest {
 
     RecursiveItemProtoConverter.toProto2(root, output);
     output.flush();
-
     byte[] encoded = baos.toByteArray();
     System.out.println("encoded 2 \n" + prettyHexDump(encoded));
 
@@ -246,6 +158,182 @@ public class ProtoConverterTest {
     System.out.println("encoded 1 \n" + prettyHexDump(encoded2));
 
     Assert.assertArrayEquals(encoded2, encoded);
+  }
+
+  @Test
+  public void testNestedField() throws IOException {
+    Address address = new Address();
+    address.setName("Address-01");
+
+    User user = new User();
+    user.setAddress(address);
+
+    // Vertx Encode
+    byte[] encoded = encode(user);
+
+    // Decode using Google's protoc plugin
+    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    assertEquals(protocObj.getAddress().getName(), user.getAddress().getName());
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(protocObj);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Vertx Decode
+    User decoded = decode(protocEncoded);
+    assertEquals(user, decoded);
+  }
+
+  @Test
+  public void testIntegerField() throws IOException {
+    User user = new User();
+    user.setAge(18);
+    testEncodeDecode(user, User::getAge, io.vertx.test.protoc.gen.User::getAge);
+  }
+
+  @Test
+  public void testBoolField() throws IOException {
+    User user = new User();
+    user.setBoolField(true);
+    testEncodeDecode(user, User::getBoolField, io.vertx.test.protoc.gen.User::getBoolField);
+  }
+
+  @Test
+  public void testCharField() throws IOException {
+    User user = new User();
+    user.setCharField('Z');
+    testEncodeDecode(user, User::getCharField, protocObject -> (char) protocObject.getCharField());
+  }
+
+  @Test
+  public void testDoubleField() throws IOException {
+    User user = new User();
+    user.setDoubleField(3.142);
+    testEncodeDecode(user, User::getDoubleField, io.vertx.test.protoc.gen.User::getDoubleField);
+  }
+
+  @Test
+  public void testIntegerListField() throws IOException {
+    User user = new User();
+    user.setIntegerListField(Collections.unmodifiableList(Arrays.asList(1, 2)));
+    testEncodeDecode(user, User::getIntegerListField, io.vertx.test.protoc.gen.User::getIntegerListFieldList);
+  }
+
+  @Test
+  public void testIntegerMapField() throws IOException {
+    User user = new User();
+    Map<String, Integer> integerValueMap = new HashMap<>();
+    integerValueMap.put("key1", 1);
+    integerValueMap.put("key2", 2);
+    user.setIntegerValueMap(integerValueMap);
+    testEncodeDecode(user, User::getIntegerValueMap, io.vertx.test.protoc.gen.User::getIntegerValueMapMap);
+  }
+
+  @Test
+  public void testLongField() throws IOException {
+    User user = new User();
+    user.setLongField(100001L);
+    testEncodeDecode(user, User::getLongField, io.vertx.test.protoc.gen.User::getLongField);
+  }
+
+  @Test
+  public void testShortField() throws IOException {
+    User user = new User();
+    user.setShortField((short)20);
+    testEncodeDecode(user, User::getShortField, protocObj -> (short) protocObj.getShortField());
+  }
+
+  @Test
+  public void testStringMapField() throws IOException {
+    User user = new User();
+    Map<String, String> stringValueMap = new HashMap<>();
+    stringValueMap.put("key1", "value1");
+    stringValueMap.put("key2", "value2");
+    user.setStringValueMap(stringValueMap);
+    testEncodeDecode(user, User::getStringValueMap, io.vertx.test.protoc.gen.User::getStringValueMapMap);
+  }
+
+  @Test
+  public void testNestedListField() throws IOException {
+    Address address1 = new Address();
+    address1.setName("Address-1");
+    Address address2 = new Address();
+    address2.setName("Address-2");
+    User user = new User();
+    user.setStructListField(Collections.unmodifiableList(Arrays.asList(address1, address2)));
+
+    // Vertx Encode
+    byte[] encoded = encode(user);
+
+    // Decode using Google's protoc plugin
+    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    assertEquals(protocObj.getStructListFieldList().size(), user.getStructListField().size());
+    assertEquals(protocObj.getStructListField(0).getName(), user.getStructListField().get(0).getName());
+    assertEquals(protocObj.getStructListField(1).getName(), user.getStructListField().get(1).getName());
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(protocObj);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Vertx Decode
+    User decoded = decode(protocEncoded);
+    assertEquals(user, decoded);
+  }
+
+  @Test
+  public void testNestedMapField() throws IOException {
+    Address address1 = new Address();
+    address1.setName("Address-1");
+    Address address2 = new Address();
+    address2.setName("Address-2");
+    User user = new User();
+    Map<String, Address> structValueMap = new HashMap<>();
+    structValueMap.put("key1", address1);
+    structValueMap.put("key2", address2);
+    user.setStructValueMap(structValueMap);
+
+    // Vertx Encode
+    byte[] encoded = encode(user);
+
+    // Decode using Google's protoc plugin
+    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    assertEquals(user.getStructValueMap().get("key1").getName(), protocObj.getStructValueMapMap().get("key1").getName());
+    assertEquals(user.getStructValueMap().get("key2").getName(), protocObj.getStructValueMapMap().get("key2").getName());
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(protocObj);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Vertx Decode
+    User decoded = decode(protocEncoded);
+    assertEquals(user, decoded);
+  }
+
+  @Test
+  public void testStringField() throws IOException {
+    User user = new User();
+    user.setUserName("user-01");
+    testEncodeDecode(user, User::getUserName, io.vertx.test.protoc.gen.User::getUsername);
+  }
+
+  private <T> void testEncodeDecode(
+    User obj,
+    Function<User, T> pojoGetter,
+    Function<io.vertx.test.protoc.gen.User, T> protocGetter) throws IOException {
+    // Vertx Encode
+    byte[] encoded = encode(obj);
+
+    // Decode using Google's protoc plugin
+    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    assertEquals(pojoGetter.apply(obj), protocGetter.apply(protocObj));
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(protocObj);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Vertx Decode
+    User decoded = decode(protocEncoded);
+    assertEquals(obj, decoded);
   }
 
   private byte[] encode(User obj) throws IOException {
@@ -279,6 +367,7 @@ public class ProtoConverterTest {
     return obj;
   }
 
+  // TODO move to util
   public static String prettyHexDump(byte[] bytes) {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < bytes.length; i++) {

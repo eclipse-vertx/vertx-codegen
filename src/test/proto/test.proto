@@ -9,7 +9,16 @@ message User {
   Address address = 1;
   int32 age = 2;
   bool boolField = 3;
+  int32 charField = 4;
+  double doubleField = 5;
   repeated int32 integerListField = 6;
+  map<string, int32> integerValueMap = 7;
+  int64 longField = 8;
+  int32 shortField = 9;
+  map<string, string> stringValueMap = 10;
+  repeated Address structListField = 11;
+  map<string, Address> structValueMap = 12;
+  string username = 13;
 }
 
 message Address {
