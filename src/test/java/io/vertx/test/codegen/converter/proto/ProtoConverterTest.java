@@ -2,6 +2,7 @@ package io.vertx.test.codegen.converter.proto;
 
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
+import com.google.protobuf.InvalidProtocolBufferException;
 import io.vertx.test.codegen.converter.Address;
 import io.vertx.test.codegen.converter.RecursiveItem;
 import io.vertx.test.codegen.converter.RecursiveItemProtoConverter;
@@ -17,9 +18,76 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class ProtoConverterTest {
+  @Test
+  public void testIntegerField() throws IOException {
+    User user = new User();
+    user.setAge(18);
+
+    // Encode to byte array
+    byte[] encoded = encode(user);
+
+    // Decode using Google's protoc plugin
+    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    assertEquals(protocObj.getAge(), (int) user.getAge());
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(protocObj);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Decode
+    User decoded = decode(protocEncoded);
+    assertEquals(user, decoded);
+  }
+
+  @Test
+  public void testBoolField() throws IOException {
+    User user = new User();
+    user.setBoolField(true);
+
+    // Encode to byte array
+    byte[] encoded = encode(user);
+
+    // Decode using Google's protoc plugin
+    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    assertEquals(protocObj.getBoolField(), user.getBoolField());
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(protocObj);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Decode
+    User decoded = decode(protocEncoded);
+    assertEquals(user, decoded);
+  }
+
+  @Test
+  public void testNestedField() throws IOException {
+    Address address = new Address();
+    address.setName("Address-01");
+
+    User user = new User();
+    user.setAddress(address);
+
+    // Encode to byte array
+    byte[] encoded = encode(user);
+
+    // Decode using Google's protoc plugin
+    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    assertEquals(protocObj.getAddress().getName(), user.getAddress().getName());
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(protocObj);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Decode
+    User decoded = decode(protocEncoded);
+    assertEquals(user, decoded);
+  }
+
   @Test
   public void testPrimitiveFields() throws IOException {
     Address address1 = new Address();
@@ -156,6 +224,37 @@ public class ProtoConverterTest {
     System.out.println("encoded 1 \n" + prettyHexDump(encoded2));
 
     Assert.assertArrayEquals(encoded2, encoded);
+  }
+
+  private byte[] encode(User obj) throws IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    CodedOutputStream output = CodedOutputStream.newInstance(baos);
+    UserProtoConverter.toProto2(obj, output);
+    output.flush();
+    byte[] encoded = baos.toByteArray();
+    System.out.println("vertx encoded:\n" + prettyHexDump(encoded));
+    return encoded;
+  }
+
+  private byte[] protocEncode(io.vertx.test.protoc.gen.User obj) throws IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    CodedOutputStream output = CodedOutputStream.newInstance(baos);
+    obj.writeTo(output);
+    output.flush();
+    byte[] encoded = baos.toByteArray();
+    System.out.println("protoc encoded:\n" + prettyHexDump(encoded));
+    return encoded;
+  }
+
+  private io.vertx.test.protoc.gen.User protocDecode(byte[] arr) throws InvalidProtocolBufferException {
+    return io.vertx.test.protoc.gen.User.parseFrom(arr);
+  }
+
+  private User decode(byte[] arr) throws IOException {
+    CodedInputStream input = CodedInputStream.newInstance(arr);
+    User obj = new User();
+    UserProtoConverter.fromProto(input, obj);
+    return obj;
   }
 
   public static String prettyHexDump(byte[] bytes) {
