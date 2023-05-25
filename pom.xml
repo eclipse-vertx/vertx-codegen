@@ -16,6 +16,8 @@
     <asciidoc.dir>${project.basedir}/src/main/asciidoc</asciidoc.dir>
     <stack.version>5.0.0-SNAPSHOT</stack.version>
     <jar.manifest>${project.basedir}/src/main/resources/META-INF/MANIFEST.MF</jar.manifest>
+    <grpc.version>1.50.2</grpc.version>
+    <protoc.version>3.21.12</protoc.version>
   </properties>
 
   <dependencyManagement>
@@ -40,11 +42,24 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
     </dependency>
+    <!-- Question: Should gRPC libraries become transient dependency? -->
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>3.21.12</version>
-      <scope>provided</scope>
+      <version>${protoc.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-stub</artifactId>
+      <version>${grpc.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-protobuf</artifactId>
+      <version>${grpc.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -55,6 +70,13 @@
   </dependencies>
 
   <build>
+    <extensions>
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>1.4.1.Final</version>
+      </extension>
+    </extensions>
     <pluginManagement>
       <plugins>
         <plugin>
@@ -257,6 +279,27 @@
               <sourceDirectory>${project.basedir}/src/tck/java</sourceDirectory>
               <outputDirectory>${project.basedir}/src/tck/generated</outputDirectory>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Protoc Plugin to test against dataModel Protocol Buffer converter -->
+      <plugin>
+        <groupId>org.xolstice.maven.plugins</groupId>
+        <artifactId>protobuf-maven-plugin</artifactId>
+        <version>0.6.1</version>
+        <configuration>
+          <protocArtifact>com.google.protobuf:protoc:${protoc.version}:exe:${os.detected.classifier}</protocArtifact>
+          <pluginId>grpc-java</pluginId>
+          <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
+        </configuration>
+        <executions>
+          <execution>
+            <id>test-compile</id>
+            <goals>
+              <goal>test-compile</goal>
+              <goal>test-compile-custom</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
