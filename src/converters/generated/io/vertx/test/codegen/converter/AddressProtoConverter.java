@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
+import io.vertx.core.proto.*;
 
 public class AddressProtoConverter {
 
@@ -29,32 +30,6 @@ public class AddressProtoConverter {
         }
       }
     }
-  }
-
-  public static void toProto(Address obj, CodedOutputStream output) throws IOException {
-    if (obj.getLatitude() != null) {
-      output.writeFloat(1, obj.getLatitude());
-    }
-    if (obj.getLongitude() != null) {
-      output.writeFloat(2, obj.getLongitude());
-    }
-    if (obj.getName() != null) {
-      output.writeString(3, obj.getName());
-    }
-  }
-
-  public static int computeSize(Address obj) {
-    int size = 0;
-    if (obj.getLatitude() != null) {
-      size += CodedOutputStream.computeFloatSize(1, obj.getLatitude());
-    }
-    if (obj.getLongitude() != null) {
-      size += CodedOutputStream.computeFloatSize(2, obj.getLongitude());
-    }
-    if (obj.getName() != null) {
-      size += CodedOutputStream.computeStringSize(3, obj.getName());
-    }
-    return size;
   }
 
   public static void toProto2(Address obj, CodedOutputStream output) throws IOException {

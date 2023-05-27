@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -94,7 +95,7 @@ public class ProtoConverterTest {
     assertEquals(user.getStructValueMap(), decoded.getStructValueMap());
 
     // Assert total size is equal to computed size
-    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize(user));
+    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize2(user));
   }
 
   @Test
@@ -152,7 +153,7 @@ public class ProtoConverterTest {
 
     ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
     CodedOutputStream output2 = CodedOutputStream.newInstance(baos2);
-    RecursiveItemProtoConverter.toProto(root, output2);
+    RecursiveItemProtoConverter.toProto2(root, output2);
     output2.flush();
     byte[] encoded2 = baos2.toByteArray();
     System.out.println("encoded 1 \n" + prettyHexDump(encoded2));
@@ -314,6 +315,16 @@ public class ProtoConverterTest {
     User user = new User();
     user.setUserName("user-01");
     testEncodeDecode(user, User::getUserName, io.vertx.test.protoc.gen.User::getUsername);
+  }
+
+  @Test
+  public void testZonedDateTimeField() throws IOException {
+    User user = new User();
+    user.setZonedDateTimeField(ZonedDateTime.now());
+    byte[] encoded = encode(user);
+    System.out.println("vertx encoded:\n" + prettyHexDump(encoded));
+
+    // TODO test against protoc codec
   }
 
   private <T> void testEncodeDecode(

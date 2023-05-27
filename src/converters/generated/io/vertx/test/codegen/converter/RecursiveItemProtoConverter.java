@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
+import io.vertx.core.proto.*;
 
 public class RecursiveItemProtoConverter {
 
@@ -48,53 +49,6 @@ public class RecursiveItemProtoConverter {
         }
       }
     }
-  }
-
-  public static void toProto(RecursiveItem obj, CodedOutputStream output) throws IOException {
-    if (obj.getChildA() != null) {
-      output.writeUInt32NoTag(10);
-      output.writeUInt32NoTag(RecursiveItemProtoConverter.computeSize(obj.getChildA()));
-      RecursiveItemProtoConverter.toProto(obj.getChildA(), output);
-    }
-    if (obj.getChildB() != null) {
-      output.writeUInt32NoTag(18);
-      output.writeUInt32NoTag(RecursiveItemProtoConverter.computeSize(obj.getChildB()));
-      RecursiveItemProtoConverter.toProto(obj.getChildB(), output);
-    }
-    if (obj.getChildC() != null) {
-      output.writeUInt32NoTag(26);
-      output.writeUInt32NoTag(RecursiveItemProtoConverter.computeSize(obj.getChildC()));
-      RecursiveItemProtoConverter.toProto(obj.getChildC(), output);
-    }
-    if (obj.getId() != null) {
-      output.writeString(4, obj.getId());
-    }
-  }
-
-  public static int computeSize(RecursiveItem obj) {
-    int size = 0;
-    if (obj.getChildA() != null) {
-      size += CodedOutputStream.computeUInt32SizeNoTag(10);
-      int dataSize = RecursiveItemProtoConverter.computeSize(obj.getChildA());
-      size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
-      size += dataSize;
-    }
-    if (obj.getChildB() != null) {
-      size += CodedOutputStream.computeUInt32SizeNoTag(18);
-      int dataSize = RecursiveItemProtoConverter.computeSize(obj.getChildB());
-      size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
-      size += dataSize;
-    }
-    if (obj.getChildC() != null) {
-      size += CodedOutputStream.computeUInt32SizeNoTag(26);
-      int dataSize = RecursiveItemProtoConverter.computeSize(obj.getChildC());
-      size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
-      size += dataSize;
-    }
-    if (obj.getId() != null) {
-      size += CodedOutputStream.computeStringSize(4, obj.getId());
-    }
-    return size;
   }
 
   public static void toProto2(RecursiveItem obj, CodedOutputStream output) throws IOException {

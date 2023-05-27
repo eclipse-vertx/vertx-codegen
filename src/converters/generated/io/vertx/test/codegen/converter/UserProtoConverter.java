@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
+import io.vertx.core.proto.*;
 
 public class UserProtoConverter {
 
@@ -127,183 +128,15 @@ public class UserProtoConverter {
           obj.setUserName(input.readString());
           break;
         }
-      }
-    }
-  }
-
-  public static void toProto(User obj, CodedOutputStream output) throws IOException {
-    if (obj.getAddress() != null) {
-      output.writeUInt32NoTag(10);
-      output.writeUInt32NoTag(AddressProtoConverter.computeSize(obj.getAddress()));
-      AddressProtoConverter.toProto(obj.getAddress(), output);
-    }
-    if (obj.getAge() != null) {
-      output.writeInt32(2, obj.getAge());
-    }
-    if (obj.getBoolField() != null) {
-      output.writeBool(3, obj.getBoolField());
-    }
-    if (obj.getCharField() != null) {
-      output.writeInt32(4, obj.getCharField());
-    }
-    if (obj.getDoubleField() != null) {
-      output.writeDouble(5, obj.getDoubleField());
-    }
-    if (obj.getIntegerListField() != null) {
-      if (obj.getIntegerListField().size() > 0) {
-        output.writeUInt32NoTag(50);
-        int dataSize = 0;
-        for (Integer element: obj.getIntegerListField()) {
-          dataSize += CodedOutputStream.computeInt32SizeNoTag(element);
-        }
-        output.writeUInt32NoTag(dataSize);
-        for (Integer element: obj.getIntegerListField()) {
-          output.writeInt32NoTag(element);
+        case 114: {
+          int length = input.readUInt32();
+          int limit = input.pushLimit(length);
+          obj.setZonedDateTimeField(ZonedDateTimeProtoConverter.fromProto(input));
+          input.popLimit(limit);
+          break;
         }
       }
     }
-    if (obj.getIntegerValueMap() != null) {
-      for (Map.Entry<String, Integer> entry : obj.getIntegerValueMap().entrySet()) {
-        output.writeUInt32NoTag(58);
-        int dataSize = 0;
-        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
-        dataSize += CodedOutputStream.computeInt32Size(2, entry.getValue());
-        output.writeUInt32NoTag(dataSize);
-        output.writeString(1, entry.getKey());
-        output.writeInt32(2, entry.getValue());
-      }
-    }
-    if (obj.getLongField() != null) {
-      output.writeInt64(8, obj.getLongField());
-    }
-    if (obj.getShortField() != null) {
-      output.writeInt32(9, obj.getShortField());
-    }
-    if (obj.getStringValueMap() != null) {
-      for (Map.Entry<String, String> entry : obj.getStringValueMap().entrySet()) {
-        output.writeUInt32NoTag(82);
-        int dataSize = 0;
-        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
-        dataSize += CodedOutputStream.computeStringSize(2, entry.getValue());
-        output.writeUInt32NoTag(dataSize);
-        output.writeString(1, entry.getKey());
-        output.writeString(2, entry.getValue());
-      }
-    }
-    if (obj.getStructListField() != null) {
-      if (obj.getStructListField().size() > 0) {
-        for (Address element: obj.getStructListField()) {
-          output.writeUInt32NoTag(90);
-          output.writeUInt32NoTag(AddressProtoConverter.computeSize(element));
-          AddressProtoConverter.toProto(element, output);
-        }
-      }
-    }
-    if (obj.getStructValueMap() != null) {
-      for (Map.Entry<String, Address> entry : obj.getStructValueMap().entrySet()) {
-        output.writeUInt32NoTag(98);
-        int dataSize = 0;
-        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
-        int elementSize = AddressProtoConverter.computeSize(entry.getValue());
-        dataSize += CodedOutputStream.computeInt32SizeNoTag(18);
-        dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);
-        dataSize += elementSize;
-        output.writeUInt32NoTag(dataSize);
-        output.writeString(1, entry.getKey());
-        output.writeUInt32NoTag(18);
-        output.writeUInt32NoTag(AddressProtoConverter.computeSize(entry.getValue()));
-        AddressProtoConverter.toProto(entry.getValue(), output);
-      }
-    }
-    if (obj.getUserName() != null) {
-      output.writeString(13, obj.getUserName());
-    }
-  }
-
-  public static int computeSize(User obj) {
-    int size = 0;
-    if (obj.getAddress() != null) {
-      size += CodedOutputStream.computeUInt32SizeNoTag(10);
-      int dataSize = AddressProtoConverter.computeSize(obj.getAddress());
-      size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
-      size += dataSize;
-    }
-    if (obj.getAge() != null) {
-      size += CodedOutputStream.computeInt32Size(2, obj.getAge());
-    }
-    if (obj.getBoolField() != null) {
-      size += CodedOutputStream.computeBoolSize(3, obj.getBoolField());
-    }
-    if (obj.getCharField() != null) {
-      size += CodedOutputStream.computeInt32Size(4, obj.getCharField());
-    }
-    if (obj.getDoubleField() != null) {
-      size += CodedOutputStream.computeDoubleSize(5, obj.getDoubleField());
-    }
-    if (obj.getIntegerListField() != null) {
-      if (obj.getIntegerListField().size() > 0) {
-        size += CodedOutputStream.computeUInt32SizeNoTag(50);
-        int dataSize = 0;
-        for (Integer element: obj.getIntegerListField()) {
-          dataSize += CodedOutputStream.computeInt32SizeNoTag(element);
-        }
-        size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
-        size += dataSize;
-      }
-    }
-    if (obj.getIntegerValueMap() != null) {
-      for (Map.Entry<String, Integer> entry : obj.getIntegerValueMap().entrySet()) {
-        size += CodedOutputStream.computeUInt32SizeNoTag(58);
-        int dataSize = 0;
-        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
-        dataSize += CodedOutputStream.computeInt32Size(2, entry.getValue());
-        size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
-        size += dataSize;
-      }
-    }
-    if (obj.getLongField() != null) {
-      size += CodedOutputStream.computeInt64Size(8, obj.getLongField());
-    }
-    if (obj.getShortField() != null) {
-      size += CodedOutputStream.computeInt32Size(9, obj.getShortField());
-    }
-    if (obj.getStringValueMap() != null) {
-      for (Map.Entry<String, String> entry : obj.getStringValueMap().entrySet()) {
-        size += CodedOutputStream.computeUInt32SizeNoTag(82);
-        int dataSize = 0;
-        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
-        dataSize += CodedOutputStream.computeStringSize(2, entry.getValue());
-        size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
-        size += dataSize;
-      }
-    }
-    if (obj.getStructListField() != null) {
-      if (obj.getStructListField().size() > 0) {
-        for (Address element: obj.getStructListField()) {
-          size += CodedOutputStream.computeUInt32SizeNoTag(90);
-          int dataSize = AddressProtoConverter.computeSize(element);
-          size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
-          size += dataSize;
-        }
-      }
-    }
-    if (obj.getStructValueMap() != null) {
-      for (Map.Entry<String, Address> entry : obj.getStructValueMap().entrySet()) {
-        size += CodedOutputStream.computeUInt32SizeNoTag(98);
-        int dataSize = 0;
-        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
-        int elementSize = AddressProtoConverter.computeSize(entry.getValue());
-        dataSize += CodedOutputStream.computeInt32SizeNoTag(18);
-        dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);
-        dataSize += elementSize;
-        size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
-        size += dataSize;
-      }
-    }
-    if (obj.getUserName() != null) {
-      size += CodedOutputStream.computeStringSize(13, obj.getUserName());
-    }
-    return size;
   }
 
   public static void toProto2(User obj, CodedOutputStream output) throws IOException {
@@ -416,6 +249,11 @@ public class UserProtoConverter {
     if (obj.getUserName() != null) {
       output.writeString(13, obj.getUserName());
     }
+    if (obj.getZonedDateTimeField() != null) {
+      output.writeUInt32NoTag(114);
+      output.writeUInt32NoTag(ZonedDateTimeProtoConverter.computeSize(obj.getZonedDateTimeField()));
+      ZonedDateTimeProtoConverter.toProto(obj.getZonedDateTimeField(), output);
+    }
     return index;
   }
 
@@ -527,6 +365,12 @@ public class UserProtoConverter {
     }
     if (obj.getUserName() != null) {
       size += CodedOutputStream.computeStringSize(13, obj.getUserName());
+    }
+    if (obj.getZonedDateTimeField() != null) {
+      size += CodedOutputStream.computeUInt32SizeNoTag(114);
+      int dataSize = ZonedDateTimeProtoConverter.computeSize(obj.getZonedDateTimeField());
+      size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
+      size += dataSize;
     }
     cache[baseIndex] = size;
     return index;
