@@ -13,6 +13,9 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -320,11 +323,24 @@ public class ProtoConverterTest {
   @Test
   public void testZonedDateTimeField() throws IOException {
     User user = new User();
-    user.setZonedDateTimeField(ZonedDateTime.now());
-    byte[] encoded = encode(user);
-    System.out.println("vertx encoded:\n" + prettyHexDump(encoded));
+    user.setZonedDateTimeField(ZonedDateTime.of(2023, 5, 27, 21, 23, 58, 15, ZoneId.of("UTC")));
 
-    // TODO test against protoc codec
+    // Vertx Encode
+    byte[] encoded = encode(user);
+
+    // Decode using Google's protoc plugin
+    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    assertEquals(user.getZonedDateTimeField().toInstant().getEpochSecond(), protocObj.getZonedDateTimeField().getSeconds());
+    assertEquals(user.getZonedDateTimeField().toInstant().getNano(), protocObj.getZonedDateTimeField().getNanos());
+    assertEquals(user.getZonedDateTimeField().getZone().toString(), protocObj.getZonedDateTimeField().getZoneId());
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(protocObj);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Vertx Decode
+    User decoded = decode(protocEncoded);
+    assertEquals(user, decoded);
   }
 
   private <T> void testEncodeDecode(

@@ -19,10 +19,17 @@ message User {
   repeated Address structListField = 11;
   map<string, Address> structValueMap = 12;
   string username = 13;
+  ZonedDateTime zonedDateTimeField = 14;
 }
 
 message Address {
   float latitude = 1;
   float longitude = 2;
   string name = 3;
+}
+
+message ZonedDateTime {
+  int32 nanos = 1;
+  int64 seconds = 2;
+  string zoneId = 3;
 }

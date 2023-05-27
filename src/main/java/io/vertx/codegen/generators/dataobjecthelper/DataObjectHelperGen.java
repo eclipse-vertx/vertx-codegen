@@ -175,7 +175,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             }
             writer.print("          obj." + prop.getSetterMethod() + "(" + casting + "input." + protoProperty.getProtoType().read() + "());\n");
           } else {
-            if (protoProperty.getMessage().equals("ZonedDateTime")) {
+            if (prop.getType().getName().equals("java.time.ZonedDateTime")) {
               writer.print("          int length = input.readUInt32();\n");
               writer.print("          int limit = input.pushLimit(length);\n");
               writer.print("          obj." + prop.getSetterMethod() + "(ZonedDateTimeProtoConverter.fromProto(input));\n");
@@ -423,7 +423,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
           if (propKind.basic) {
             writer.print("      output." + protoProperty.getProtoType().write() + "(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");
           } else {
-            if (protoProperty.getMessage().equals("ZonedDateTime")) {
+            if (prop.getType().getName().equals("java.time.ZonedDateTime")) {
               writer.print("      output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
               writer.print("      output.writeUInt32NoTag(ZonedDateTimeProtoConverter.computeSize(obj.getZonedDateTimeField()));\n");
               writer.print("      ZonedDateTimeProtoConverter.toProto(obj.getZonedDateTimeField(), output);\n");
@@ -521,7 +521,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
           if (propKind.basic) {
             writer.print("      size += CodedOutputStream." + protoProperty.getProtoType().computeSize() + "(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");
           } else {
-            if (protoProperty.getMessage().equals("ZonedDateTime")) {
+            if (prop.getType().getName().equals("java.time.ZonedDateTime")) {
               writer.print("      size += CodedOutputStream.computeUInt32SizeNoTag(" + protoProperty.getTag() + ");\n");
               writer.print("      int dataSize = ZonedDateTimeProtoConverter.computeSize(obj.getZonedDateTimeField());\n");
               writer.print("      size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
