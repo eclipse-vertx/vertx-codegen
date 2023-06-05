@@ -17,9 +17,11 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -285,6 +287,38 @@ public class ProtoConverterTest {
   }
 
   @Test
+  public void testZonedDateTimeListField() throws IOException {
+    User user = new User();
+    List<ZonedDateTime> list = new ArrayList<>();
+    list.add(ZonedDateTime.of(2023, 5, 27, 21, 23, 58, 15, ZoneId.of("UTC")));
+    list.add(ZonedDateTime.of(2023, 6, 5, 20, 56, 15, 11, ZoneId.of("UTC")));
+    user.setZonedDateTimeListField(list);
+
+    // Vertx Encode
+    byte[] encoded = encode(user);
+
+    // Decode using Google's protoc plugin
+    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    assertEquals(user.getZonedDateTimeListField().get(0).toInstant().getEpochSecond(), protocObj.getZonedDateTimeListField(0).getSeconds());
+    assertEquals(user.getZonedDateTimeListField().get(0).toInstant().getNano(), protocObj.getZonedDateTimeListField(0).getNanos());
+    assertEquals(user.getZonedDateTimeListField().get(0).getZone().toString(), protocObj.getZonedDateTimeListField(0).getZoneId());
+    assertEquals(user.getZonedDateTimeListField().get(1).toInstant().getEpochSecond(), protocObj.getZonedDateTimeListField(1).getSeconds());
+    assertEquals(user.getZonedDateTimeListField().get(1).toInstant().getNano(), protocObj.getZonedDateTimeListField(1).getNanos());
+    assertEquals(user.getZonedDateTimeListField().get(1).getZone().toString(), protocObj.getZonedDateTimeListField(1).getZoneId());
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(protocObj);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Vertx Decode
+    User decoded = decode(protocEncoded);
+    assertEquals(user, decoded);
+
+    // Test computeSize
+    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize2(user));
+  }
+
+  @Test
   public void testNestedMapField() throws IOException {
     Address address1 = new Address();
     address1.setName("Address-1");
@@ -341,6 +375,9 @@ public class ProtoConverterTest {
     // Vertx Decode
     User decoded = decode(protocEncoded);
     assertEquals(user, decoded);
+
+    // Test computeSize
+    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize2(user));
   }
 
   private <T> void testEncodeDecode(

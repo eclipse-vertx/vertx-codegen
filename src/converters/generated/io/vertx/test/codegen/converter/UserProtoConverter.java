@@ -3,6 +3,7 @@ package io.vertx.test.codegen.converter;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.CodedInputStream;
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
@@ -135,6 +136,16 @@ public class UserProtoConverter {
           input.popLimit(limit);
           break;
         }
+        case 122: {
+          int length = input.readUInt32();
+          int limit = input.pushLimit(length);
+          if (obj.getZonedDateTimeListField() == null) {
+            obj.setZonedDateTimeListField(new ArrayList<>());
+          }
+          obj.getZonedDateTimeListField().add(ZonedDateTimeProtoConverter.fromProto(input));
+          input.popLimit(limit);
+          break;
+        }
       }
     }
   }
@@ -254,6 +265,15 @@ public class UserProtoConverter {
       output.writeUInt32NoTag(ZonedDateTimeProtoConverter.computeSize(obj.getZonedDateTimeField()));
       ZonedDateTimeProtoConverter.toProto(obj.getZonedDateTimeField(), output);
     }
+    if (obj.getZonedDateTimeListField() != null) {
+      // list[0] | tag | data size | value |
+      // list[1] | tag | data size | value |
+      for (ZonedDateTime element: obj.getZonedDateTimeListField()) {
+        output.writeUInt32NoTag(122);
+        output.writeUInt32NoTag(ZonedDateTimeProtoConverter.computeSize(element));
+        ZonedDateTimeProtoConverter.toProto(element, output);
+      }
+    }
     return index;
   }
 
@@ -371,6 +391,18 @@ public class UserProtoConverter {
       int dataSize = ZonedDateTimeProtoConverter.computeSize(obj.getZonedDateTimeField());
       size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
       size += dataSize;
+    }
+    if (obj.getZonedDateTimeListField() != null) {
+      // list[0] | tag | data size | value |
+      // list[1] | tag | data size | value |
+      if (obj.getZonedDateTimeListField().size() > 0) {
+        for (ZonedDateTime element: obj.getZonedDateTimeListField()) {
+          size += CodedOutputStream.computeUInt32SizeNoTag(122);
+          int dataSize = ZonedDateTimeProtoConverter.computeSize(element);
+          size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
+          size += dataSize;
+        }
+      }
     }
     cache[baseIndex] = size;
     return index;

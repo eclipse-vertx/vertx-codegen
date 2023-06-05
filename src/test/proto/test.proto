@@ -20,6 +20,7 @@ message User {
   map<string, Address> structValueMap = 12;
   string username = 13;
   ZonedDateTime zonedDateTimeField = 14;
+  repeated ZonedDateTime zonedDateTimeListField = 15;
 }
 
 message Address {

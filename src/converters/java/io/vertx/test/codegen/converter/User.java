@@ -14,6 +14,7 @@ public class User {
   private Integer age;
   private List<Integer> integerListField;
   private List<Address> structListField;
+  private List<ZonedDateTime> zonedDateTimeListField;
   private Address address;
   private Double doubleField;
   private Long longField;
@@ -55,6 +56,14 @@ public class User {
 
   public void setStructListField(List<Address> structListField) {
     this.structListField = structListField;
+  }
+
+  public List<ZonedDateTime> getZonedDateTimeListField() {
+    return zonedDateTimeListField;
+  }
+
+  public void setZonedDateTimeListField(List<ZonedDateTime> zonedDateTimeListField) {
+    this.zonedDateTimeListField = zonedDateTimeListField;
   }
 
   public Address getAddress() {
@@ -142,11 +151,11 @@ public class User {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     User user = (User) o;
-    return Objects.equals(userName, user.userName) && Objects.equals(age, user.age) && Objects.equals(integerListField, user.integerListField) && Objects.equals(structListField, user.structListField) && Objects.equals(address, user.address) && Objects.equals(doubleField, user.doubleField) && Objects.equals(longField, user.longField) && Objects.equals(boolField, user.boolField) && Objects.equals(shortField, user.shortField) && Objects.equals(charField, user.charField) && Objects.equals(stringValueMap, user.stringValueMap) && Objects.equals(integerValueMap, user.integerValueMap) && Objects.equals(structValueMap, user.structValueMap) && Objects.equals(zonedDateTimeField, user.zonedDateTimeField);
+    return Objects.equals(userName, user.userName) && Objects.equals(age, user.age) && Objects.equals(integerListField, user.integerListField) && Objects.equals(structListField, user.structListField) && Objects.equals(zonedDateTimeListField, user.zonedDateTimeListField) && Objects.equals(address, user.address) && Objects.equals(doubleField, user.doubleField) && Objects.equals(longField, user.longField) && Objects.equals(boolField, user.boolField) && Objects.equals(shortField, user.shortField) && Objects.equals(charField, user.charField) && Objects.equals(stringValueMap, user.stringValueMap) && Objects.equals(integerValueMap, user.integerValueMap) && Objects.equals(structValueMap, user.structValueMap) && Objects.equals(zonedDateTimeField, user.zonedDateTimeField);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(userName, age, integerListField, structListField, address, doubleField, longField, boolField, shortField, charField, stringValueMap, integerValueMap, structValueMap, zonedDateTimeField);
+    return Objects.hash(userName, age, integerListField, structListField, zonedDateTimeListField, address, doubleField, longField, boolField, shortField, charField, stringValueMap, integerValueMap, structValueMap, zonedDateTimeField);
   }
 }
