@@ -146,6 +146,24 @@ public class UserProtoConverter {
           input.popLimit(limit);
           break;
         }
+        case 130: {
+          int length = input.readUInt32();
+          int limit = input.pushLimit(length);
+          Map<String, ZonedDateTime> map = obj.getZonedDateTimeValueMap();
+          if (map == null) {
+            map = new HashMap<>();
+          }
+          input.readTag();
+          String key = input.readString();
+          input.readTag();
+          int vlength = input.readUInt32();
+          int vlimit = input.pushLimit(vlength);
+          map.put(key, ZonedDateTimeProtoConverter.fromProto(input));
+          obj.setZonedDateTimeValueMap(map);
+          input.popLimit(vlimit);
+          input.popLimit(limit);
+          break;
+        }
       }
     }
   }
@@ -272,6 +290,27 @@ public class UserProtoConverter {
         output.writeUInt32NoTag(122);
         output.writeUInt32NoTag(ZonedDateTimeProtoConverter.computeSize(element));
         ZonedDateTimeProtoConverter.toProto(element, output);
+      }
+    }
+    if (obj.getZonedDateTimeValueMap() != null) {
+      // map[0] | tag | data size | key | value |
+      // map[1] | tag | data size | key | value |
+      for (Map.Entry<String, ZonedDateTime> entry : obj.getZonedDateTimeValueMap().entrySet()) {
+        output.writeUInt32NoTag(130);
+        // calculate data size
+        int elementSize = ZonedDateTimeProtoConverter.computeSize(entry.getValue());
+        int dataSize = 0;
+        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
+        dataSize += CodedOutputStream.computeInt32SizeNoTag(18);
+        dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);
+        dataSize += elementSize;
+        // key
+        output.writeUInt32NoTag(dataSize);
+        // value
+        output.writeString(1, entry.getKey());
+        output.writeUInt32NoTag(18);
+        output.writeUInt32NoTag(elementSize);
+        ZonedDateTimeProtoConverter.toProto(entry.getValue(), output);
       }
     }
     return index;
@@ -402,6 +441,25 @@ public class UserProtoConverter {
           size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
           size += dataSize;
         }
+      }
+    }
+    if (obj.getZonedDateTimeValueMap() != null) {
+        // map[0] | tag | data size | key | value |
+        // map[1] | tag | data size | key | value |
+      for (Map.Entry<String, ZonedDateTime> entry : obj.getZonedDateTimeValueMap().entrySet()) {
+        size += CodedOutputStream.computeUInt32SizeNoTag(130);
+        // calculate data size
+        int dataSize = 0;
+        // key
+        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
+        // value
+        int elementSize = ZonedDateTimeProtoConverter.computeSize(entry.getValue());
+        dataSize += CodedOutputStream.computeInt32SizeNoTag(18);
+        dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);
+        dataSize += elementSize;
+        // data size
+        size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
+        size += dataSize;
       }
     }
     cache[baseIndex] = size;

@@ -21,6 +21,7 @@ message User {
   string username = 13;
   ZonedDateTime zonedDateTimeField = 14;
   repeated ZonedDateTime zonedDateTimeListField = 15;
+  map<string, ZonedDateTime> zonedDateTimeValueMap = 16;
 }
 
 message Address {

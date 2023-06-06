@@ -1,6 +1,5 @@
 package io.vertx.codegen.generators.dataobjecthelper;
 
-import com.google.protobuf.CodedOutputStream;
 import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.PropertyInfo;
@@ -157,7 +156,22 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             writer.print("          break;\n");
           } else {
             if (prop.getType().getName().equals("java.time.ZonedDateTime")) {
-              // TODO Map zonedDataTime
+              writer.print("          int length = input.readUInt32();\n");
+              writer.print("          int limit = input.pushLimit(length);\n");
+              writer.print("          Map<String, ZonedDateTime> map = obj." + prop.getGetterMethod() + "();\n");
+              writer.print("          if (map == null) {\n");
+              writer.print("            map = new HashMap<>();\n");
+              writer.print("          }\n");
+              writer.print("          input.readTag();\n");
+              writer.print("          String key = input.readString();\n");
+              writer.print("          input.readTag();\n");
+              writer.print("          int vlength = input.readUInt32();\n");
+              writer.print("          int vlimit = input.pushLimit(vlength);\n");
+              writer.print("          map.put(key, ZonedDateTimeProtoConverter.fromProto(input));\n");
+              writer.print("          obj." + prop.getSetterMethod() + "(map);\n");
+              writer.print("          input.popLimit(vlimit);\n");
+              writer.print("          input.popLimit(limit);\n");
+              writer.print("          break;\n");
             } else {
               writer.print("          int length = input.readUInt32();\n");
               writer.print("          int limit = input.pushLimit(length);\n");
@@ -278,13 +292,29 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             writer.print("        output." + protoProperty.getProtoType().write() + "(2, entry.getValue());\n");
             writer.print("      }\n");
           } else {
+            writer.print("      // map[0] | tag | data size | key | value |\n");
+            writer.print("      // map[1] | tag | data size | key | value |\n");
             if (prop.getType().getName().equals("java.time.ZonedDateTime")) {
-              // TODO Map zonedDataTime
+              writer.print("      for (Map.Entry<String, ZonedDateTime> entry : obj." + prop.getGetterMethod() + "().entrySet()) {\n");
+              writer.print("        output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
+              writer.print("        // calculate data size\n");
+              writer.print("        int elementSize = ZonedDateTimeProtoConverter.computeSize(entry.getValue());\n");
+              writer.print("        int dataSize = 0;\n");
+              writer.print("        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());\n");
+              writer.print("        dataSize += CodedOutputStream.computeInt32SizeNoTag(18);\n");
+              writer.print("        dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);\n");
+              writer.print("        dataSize += elementSize;\n");
+              writer.print("        // key\n");
+              writer.print("        output.writeUInt32NoTag(dataSize);\n");
+              writer.print("        // value\n");
+              writer.print("        output.writeString(1, entry.getKey());\n");
+              writer.print("        output.writeUInt32NoTag(18);\n");
+              writer.print("        output.writeUInt32NoTag(elementSize);\n");
+              writer.print("        ZonedDateTimeProtoConverter.toProto(entry.getValue(), output);\n");
+              writer.print("      }\n");
             } else {
-              writer.print("      // map[0] | tag | data size | key | value |\n");
-              writer.print("      // map[1] | tag | data size | key | value |\n");
               writer.print("      for (Map.Entry<String, " + protoProperty.getMessage() + "> entry : obj." + prop.getGetterMethod() + "().entrySet()) {\n");
-              writer.print("        output.writeUInt32NoTag(98);\n");
+              writer.print("        output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
               writer.print("        // calculate data size\n");
               writer.print("        int elementSize = cache[index];\n");
               writer.print("        int dataSize = 0;\n");
@@ -391,13 +421,27 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             writer.print("        size += dataSize;\n");
             writer.print("      }\n");
           } else {
+            writer.print("        // map[0] | tag | data size | key | value |\n");
+            writer.print("        // map[1] | tag | data size | key | value |\n");
             if (prop.getType().getName().equals("java.time.ZonedDateTime")) {
-              // TODO Map zonedDataTime
+              writer.print("      for (Map.Entry<String, ZonedDateTime> entry : obj." + prop.getGetterMethod() + "().entrySet()) {\n");
+              writer.print("        size += CodedOutputStream.computeUInt32SizeNoTag(" + protoProperty.getTag() + ");\n");
+              writer.print("        // calculate data size\n");
+              writer.print("        int dataSize = 0;\n");
+              writer.print("        // key\n");
+              writer.print("        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());\n");
+              writer.print("        // value\n");
+              writer.print("        int elementSize = " + protoProperty.getMessage() + "ProtoConverter.computeSize(entry.getValue());\n");
+              writer.print("        dataSize += CodedOutputStream.computeInt32SizeNoTag(18);\n");
+              writer.print("        dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);\n");
+              writer.print("        dataSize += elementSize;\n");
+              writer.print("        // data size\n");
+              writer.print("        size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
+              writer.print("        size += dataSize;\n");
+              writer.print("      }\n");
             } else {
-              writer.print("        // map[0] | tag | data size | key | value |\n");
-              writer.print("        // map[1] | tag | data size | key | value |\n");
               writer.print("      for (Map.Entry<String, " + protoProperty.getMessage() + "> entry : obj." + prop.getGetterMethod() + "().entrySet()) {\n");
-              writer.print("        size += CodedOutputStream.computeUInt32SizeNoTag(98);\n");
+              writer.print("        size += CodedOutputStream.computeUInt32SizeNoTag(" + protoProperty.getTag() + ");\n");
               writer.print("        // calculate data size\n");
               writer.print("        int dataSize = 0;\n");
               writer.print("        // key\n");

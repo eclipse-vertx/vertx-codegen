@@ -380,6 +380,38 @@ public class ProtoConverterTest {
     Assert.assertEquals(encoded.length, UserProtoConverter.computeSize2(user));
   }
 
+  @Test
+  public void testZonedDateTimeMapField() throws IOException {
+    User user = new User();
+    Map<String, ZonedDateTime> mapField = new HashMap<>();
+    mapField.put("Key1", ZonedDateTime.of(2023, 5, 27, 21, 23, 58, 15, ZoneId.of("UTC")));
+    mapField.put("Key2", ZonedDateTime.of(2023, 6, 6, 10, 50, 6, 6, ZoneId.of("UTC")));
+    user.setZonedDateTimeValueMap(mapField);
+
+    // Vertx Encode
+    byte[] encoded = encode(user);
+
+    // Decode using Google's protoc plugin
+    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    assertEquals(user.getZonedDateTimeValueMap().get("Key1").toInstant().getEpochSecond(), protocObj.getZonedDateTimeValueMapMap().get("Key1").getSeconds());
+    assertEquals(user.getZonedDateTimeValueMap().get("Key1").toInstant().getNano(), protocObj.getZonedDateTimeValueMapMap().get("Key1").getNanos());
+    assertEquals(user.getZonedDateTimeValueMap().get("Key1").getZone().toString(), protocObj.getZonedDateTimeValueMapMap().get("Key1").getZoneId());
+    assertEquals(user.getZonedDateTimeValueMap().get("Key2").toInstant().getEpochSecond(), protocObj.getZonedDateTimeValueMapMap().get("Key2").getSeconds());
+    assertEquals(user.getZonedDateTimeValueMap().get("Key2").toInstant().getNano(), protocObj.getZonedDateTimeValueMapMap().get("Key2").getNanos());
+    assertEquals(user.getZonedDateTimeValueMap().get("Key2").getZone().toString(), protocObj.getZonedDateTimeValueMapMap().get("Key2").getZoneId());
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(protocObj);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Vertx Decode
+    User decoded = decode(protocEncoded);
+    assertEquals(user, decoded);
+
+    // Test computeSize
+    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize2(user));
+  }
+
   private <T> void testEncodeDecode(
     User obj,
     Function<User, T> pojoGetter,
