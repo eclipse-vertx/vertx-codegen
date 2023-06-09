@@ -97,4 +97,16 @@ public @interface DataObject {
    * @return if generated converters are enabled, buffers should default to the configured type.
    */
   String base64Type() default "";
+
+  /**
+   * Methods marked with this annotation allow to specify their json field name individually.
+   */
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target(ElementType.METHOD)
+  @interface Property {
+    /**
+     * @return the field name to use for the property.
+     */
+    String name();
+  }
 }
