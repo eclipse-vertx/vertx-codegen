@@ -281,22 +281,11 @@ public class ClassModel implements Model {
       traverseType(modelElt);
       determineApiTypes();
       processTypeAnnotations();
-      logNonFutures();
       processed = true;
       return true;
     } else {
       return false;
     }
-  }
-
-  private void logNonFutures() {
-    methods.values()
-      .stream()
-      .filter(m -> m.getOwnerTypes().size() == 1)
-      .filter(m -> m.getKind() == MethodKind.CALLBACK && !futureMethods.contains(m))
-      .forEach(meth -> {
-        messager.printMessage(Diagnostic.Kind.NOTE, "Non future method " + type.getRaw().getName() + ": " + meth);
-    });
   }
 
   private void processTypeAnnotations() {
@@ -475,49 +464,6 @@ public class ClassModel implements Model {
             }
           });
 
-      // Erase futures
-      for (Map<ExecutableElement, MethodInfo> blah : Arrays.asList(methods, anyJavaTypeMethods)) {
-        Iterator<Map.Entry<ExecutableElement, MethodInfo>> it = blah.entrySet().iterator();
-        while (it.hasNext()) {
-          Map.Entry<ExecutableElement, MethodInfo> entry = it.next();
-          MethodInfo methodInfo = entry.getValue();
-          List<ParamInfo> params = methodInfo.getParams();
-          int paramSize = params.size();
-          if (getModule().useFutures && paramSize > 0) {
-            TypeInfo callbackType = methodInfo.getCallbackType();
-            if (callbackType != null && callbackType.getKind() == ClassKind.ASYNC_RESULT) {
-              TypeInfo arg = ((ParameterizedTypeInfo) callbackType).getArg(0);
-              throw new GenException(entry.getKey(), "Cannot use Handler<AsyncResult<" + arg.getSimpleName() + ">>, instead use a Future<" + arg.getSimpleName() + "> return");
-            }
-          } else {
-            // Erase futures
-            TypeInfo returnType = methodInfo.getReturnType();
-            if (returnType.isParameterized() && returnType.getRaw().getName().equals("io.vertx.core.Future")) {
-              TypeInfo asyncType = ((ParameterizedTypeInfo)returnType).getArg(0);
-              List<ParamInfo> p = new ArrayList<>(params);
-              p.add(new ParamInfo(
-                p.size(),
-                "handler",
-                null,
-                new ParameterizedTypeInfo(
-                  HANDLER_TYPE,
-                  false,
-                  Collections.singletonList(new ParameterizedTypeInfo(ASYNC_RESULT_TYPE, false, Collections.singletonList(asyncType))))));
-              Signature t = new Signature(methodInfo.getName(), p);
-              Optional<MethodInfo> opt = blah
-                .values()
-                .stream()
-                .filter(m -> m.getName().equals(methodInfo.getName()))
-                .filter(m -> m.getSignature().equals(t)).findFirst();
-              if (opt.isPresent())  {
-                futureMethods.add(opt.get());
-                it.remove();
-              }
-            }
-          }
-        }
-      }
-
       // Validate return types
       Stream.concat(methods.entrySet().stream(), anyJavaTypeMethods.entrySet().stream()).forEach(entry -> {
         MethodInfo method = entry.getValue();
@@ -658,7 +604,6 @@ public class ClassModel implements Model {
 
     // Owner types
     Set<ClassTypeInfo> ownerTypes = new HashSet<>();
-    ownerTypes.add(type);
 
     ArrayList<DeclaredType> ancestors = new ArrayList<>(Helper.resolveAncestorTypes(modelElt, true, true));
 
@@ -688,6 +633,22 @@ public class ClassModel implements Model {
             });
       }
     }
+
+    // Determine use futures
+    boolean useFutures;
+    if (ownerTypes.isEmpty()) {
+      Element enclosingElt = modelMethod.getEnclosingElement();
+      if (typeUtils.isSameType(modelElt.asType(), enclosingElt.asType())) {
+        useFutures = getModule().useFutures;
+      } else {
+        useFutures = typeFactory.create((DeclaredType) enclosingElt.asType()).getRaw().getModule().useFutures;
+      }
+    } else {
+      useFutures = ownerTypes.iterator().next().getModule().useFutures;
+    }
+
+    // Add this type too
+    ownerTypes.add(type);
 
     //
     Map<String, String> paramDescs = new HashMap<>();
@@ -803,7 +764,7 @@ public class ClassModel implements Model {
       declaringElt,
       methodDeprecated,
       methodDeprecatedDesc,
-      getModule().useFutures,
+      useFutures,
       methodOverride);
 
     // Check we don't hide another method, we don't check overrides but we are more

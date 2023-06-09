@@ -1,6 +1,7 @@
 # Vert.x API Generation
 
-[![Build Status](https://github.com/eclipse-vertx/vertx-codegen/workflows/CI/badge.svg?branch=master)](https://github.com/eclipse-vertx/vertx-codegen/actions?query=workflow%3ACI)
+[![Build Status (5.x)](https://github.com/eclipse-vertx/vertx-codegen/actions/workflows/ci-5.x.yml/badge.svg)](https://github.com/eclipse-vertx/vertx-codegen/actions/workflows/ci-5.x.yml)
+[![Build Status (4.x)](https://github.com/eclipse-vertx/vertx-codegen/actions/workflows/ci-4.x.yml/badge.svg)](https://github.com/eclipse-vertx/vertx-codegen/actions/workflows/ci-4.x.yml)
 
 ## Render documentation
 
@@ -222,7 +223,6 @@ In order for code generation to work effectively, certain constraints are put on
 The constraints are
 
 * The API must be described as a set of Java interfaces, classes are not permitted
-* Default methods are not permitted
 * Nested interfaces are not permitted
 * All interfaces to have generation performed on them must be annotated with the `io.vertx.codegen.annotations.VertxGen` annotation
 * Fluent methods (methods which return a reference to this) must be annotated with the `io.vertx.codegen.annotations.Fluent` annotation
@@ -491,7 +491,7 @@ public enum MyEnumWithCustomFactory {
   public String getShortName() {
     return names[0];
   }
-  
+
   public static MyEnumWithCustomFactory of(String pName) {
     for (MyEnumWithCustomFactory item : MyEnumWithCustomFactory.values()) {
       if (item.names[0].equalsIgnoreCase(pName) || item.names[1].equalsIgnoreCase(pName)
@@ -501,7 +501,7 @@ public enum MyEnumWithCustomFactory {
     }
     return DEV;
   }
-  
+
 }
 ```
 You can declare them as public static methods:

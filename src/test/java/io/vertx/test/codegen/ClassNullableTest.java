@@ -29,7 +29,7 @@ import io.vertx.test.codegen.testapi.nullable.MethodWithInvalidNullableTypeArgum
 import io.vertx.test.codegen.testapi.nullable.MethodWithListNullableParam;
 import io.vertx.test.codegen.testapi.nullable.MethodWithListNullableParamOverride;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableNonAnnotatedObjectParam;
-import io.vertx.test.codegen.testapi.nullable.MethodWithNullableNonAnnotatedTypeVariableHandlerAsyncResult;
+import io.vertx.test.codegen.testapi.nullable.MethodWithNullableNonAnnotatedTypeVariableFuture;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableNonAnnotatedTypeVariableHandler;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableNonAnnotatedTypeVariableParam;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableNonAnnotatedTypeVariableReturn;
@@ -37,7 +37,7 @@ import io.vertx.test.codegen.testapi.nullable.MethodWithNullableParamOverride;
 import io.vertx.test.codegen.testapi.nullable.InterfaceWithNullableReturnOverride;
 import io.vertx.test.codegen.testapi.nullable.MethodWithHandlerNullable;
 import io.vertx.test.codegen.testapi.nullable.MethodWithHandlerNullableVoid;
-import io.vertx.test.codegen.testapi.nullable.MethodWithHandlerAsyncResultNullableVoid;
+import io.vertx.test.codegen.testapi.nullable.MethodWithFutureNullableVoid;
 import io.vertx.test.codegen.testapi.nullable.MethodWithInvalidHandlerNullableAsyncResult;
 import io.vertx.test.codegen.testapi.nullable.MethodWithInvalidNullableBooleanReturn;
 import io.vertx.test.codegen.testapi.nullable.MethodWithInvalidNullableByteReturn;
@@ -49,12 +49,11 @@ import io.vertx.test.codegen.testapi.nullable.MethodWithInvalidNullableIntReturn
 import io.vertx.test.codegen.testapi.nullable.MethodWithInvalidNullableLongReturn;
 import io.vertx.test.codegen.testapi.nullable.MethodWithInvalidNullableShortReturn;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableHandler;
-import io.vertx.test.codegen.testapi.nullable.MethodWithNullableHandlerAsyncResult;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableParam;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableReturns;
-import io.vertx.test.codegen.testapi.nullable.MethodWithNullableStringHandlerAsyncResult;
+import io.vertx.test.codegen.testapi.nullable.MethodWithNullableStringFuture;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableTypeArgReturn;
-import io.vertx.test.codegen.testapi.nullable.MethodWithNullableTypeVariableHandlerAsyncResult;
+import io.vertx.test.codegen.testapi.nullable.MethodWithNullableTypeVariableFuture;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableTypeVariableHandler;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableTypeVariableParam;
 import io.vertx.test.codegen.testapi.nullable.MethodWithNullableTypeVariableReturn;
@@ -193,17 +192,6 @@ public class ClassNullableTest extends ClassTestBase {
   }
 
   @Test
-  public void testMethodWithNullableHandlerAsyncResult() throws Exception {
-    generateClass(model -> {
-      List<MethodInfo> methods = model.getMethods();
-      assertEquals(1, methods.size());
-      MethodInfo mi1 = methods.get(0);
-      checkMethod(mi1, "method", 1, "void", MethodKind.CALLBACK);
-      assertTrue(mi1.getParams().get(0).isNullable());
-    }, MethodWithNullableHandlerAsyncResult.class);
-  }
-
-  @Test
   public void testInterfaceWithNullableParamOverride() throws Exception {
     Consumer<ClassModel> test = model -> {
       List<MethodInfo> methods = model.getMethods();
@@ -313,15 +301,14 @@ public class ClassNullableTest extends ClassTestBase {
   @Test
   public void testMethodWithHandlerAsyncResultNullable() throws Exception {
     for (Class<?> clazz : Arrays.asList(
-      MethodWithNullableTypeVariableHandlerAsyncResult.class,
-      MethodWithNullableStringHandlerAsyncResult.class,
-      MethodWithHandlerAsyncResultNullableVoid.class)) {
+      MethodWithNullableTypeVariableFuture.class,
+      MethodWithNullableStringFuture.class,
+      MethodWithFutureNullableVoid.class)) {
       generateClass(model -> {
         List<MethodInfo> methods = model.getMethods();
         assertEquals(1, methods.size());
         MethodInfo mi1 = methods.get(0);
-        checkMethod(mi1, "method", 1, "void", MethodKind.CALLBACK);
-        assertTrue(mi1.getParams().get(0).isNullableCallback());
+        assertTrue(mi1.isNullableFutureReturn());
       }, clazz);
     }
   }
@@ -332,20 +319,19 @@ public class ClassNullableTest extends ClassTestBase {
       List<MethodInfo> methods = model.getMethods();
       assertEquals(1, methods.size());
       MethodInfo mi1 = methods.get(0);
-      checkMethod(mi1, "method", 1, "void", MethodKind.CALLBACK);
-      assertTrue(mi1.getParams().get(0).isNullableCallback());
-    }, MethodWithNullableStringHandlerAsyncResult.class);
+      assertTrue(mi1.isNullableFutureReturn());
+    }, MethodWithNullableStringFuture.class);
   }
 
   @Test
-  public void testMethodWithNullableNonAnnotatedTypeVariableHandlerAsyncResult() throws Exception {
+  public void testMethodWithNullableNonAnnotatedTypeVariableFuture() throws Exception {
     generateClass(model -> {
       List<MethodInfo> methods = model.getMethods();
       assertEquals(1, methods.size());
       MethodInfo mi1 = methods.get(0);
-      checkMethod(mi1, "method", 1, "void", MethodKind.CALLBACK);
-      assertFalse(mi1.getParams().get(0).isNullableCallback());
-    }, MethodWithNullableNonAnnotatedTypeVariableHandlerAsyncResult.class);
+      checkMethod(mi1, "method", 0, "io.vertx.core.Future<T>", MethodKind.FUTURE);
+      assertFalse(mi1.isNullableFutureReturn());
+    }, MethodWithNullableNonAnnotatedTypeVariableFuture.class);
   }
 
   @Test
@@ -525,7 +511,7 @@ public class ClassNullableTest extends ClassTestBase {
       List<MethodInfo> methods = model.getMethods();
       assertEquals(3, methods.size());
       MethodInfo mi1 = methods.get(0);
-      checkMethod(mi1, "m1", 0, "io.vertx.core.Future<java.lang.String>", MethodKind.OTHER);
+      checkMethod(mi1, "m1", 0, "io.vertx.core.Future<java.lang.String>", MethodKind.FUTURE);
       assertTrue(((ParameterizedTypeInfo)mi1.getReturnType()).getArg(0).isNullable());
       MethodInfo mi2 = methods.get(1);
       checkMethod(mi2, "m2", 1, "void", MethodKind.OTHER);

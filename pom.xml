@@ -10,11 +10,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>vertx-codegen</artifactId>
-  <version>4.3.5-SNAPSHOT</version>
+  <version>5.0.0-SNAPSHOT</version>
 
   <properties>
     <asciidoc.dir>${project.basedir}/src/main/asciidoc</asciidoc.dir>
-    <stack.version>4.3.5-SNAPSHOT</stack.version>
+    <stack.version>5.0.0-SNAPSHOT</stack.version>
     <jar.manifest>${project.basedir}/src/main/resources/META-INF/MANIFEST.MF</jar.manifest>
   </properties>
 
@@ -81,9 +81,6 @@
                   <arg>-Adocgen.source=${asciidoc.dir}</arg>
                   <arg>-Adocgen.output=${project.build.directory}/asciidoc/java</arg>
                 </compilerArgs>
-                <excludes>
-                  <exclude>**/TreeTypeInternal.java</exclude>
-                </excludes>
               </configuration>
             </execution>
           </executions>
@@ -304,46 +301,6 @@
   </build>
 
   <profiles>
-
-    <profile>
-      <id>java-8</id>
-      <properties>
-        <tools.jar>${java.home}/../lib/tools.jar</tools.jar>
-      </properties>
-      <activation>
-        <jdk>1.8</jdk>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <executions>
-                <execution>
-                  <id>default-compile</id>
-                  <configuration>
-                    <excludes>
-                      <exclude>/whatever</exclude>
-                    </excludes>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-      <dependencies>
-        <dependency>
-          <groupId>com.sun</groupId>
-          <artifactId>tools</artifactId>
-          <version>1.8</version>
-          <scope>system</scope>
-          <systemPath>${tools.jar}</systemPath>
-          <optional>true</optional>
-        </dependency>
-      </dependencies>
-    </profile>
 
     <!-- Documentation generation : activate with -Pdocs -->
     <profile>
