@@ -6,6 +6,7 @@ import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.proto.JsonObjectConverter;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -65,6 +66,7 @@ public class JsonObjectConverterTest {
     assertEquals(jsonObject.getMap(), decoded.getMap());
 
     // Verify ComputeSize
+    Assert.assertEquals(encoded.length, JsonObjectConverter.computeSize(jsonObject));
   }
 
   private byte[] protocEncode(Struct obj) throws IOException {
