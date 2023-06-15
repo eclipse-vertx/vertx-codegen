@@ -27,12 +27,16 @@ public class JsonObjectConverter {
           int fieldType = input.readTag();
           switch (fieldType) {
             case 0x8:
-              int intValue = input.readEnum();
-              obj.put(key, intValue);
+              obj.put(key, input.readEnum());
+              break;
+            case 0x11:
+              obj.put(key, input.readDouble());
               break;
             case 0x1a:
-              String strValue = input.readString();
-              obj.put(key, strValue);
+              obj.put(key, input.readString());
+              break;
+            case 0x20:
+              obj.put(key, input.readBool());
               break;
             default:
               throw new UnsupportedOperationException("Unsupported field type " + fieldType);
@@ -58,25 +62,21 @@ public class JsonObjectConverter {
       // calculate dataSize
       int dataSize = 0;
       dataSize += CodedOutputStream.computeStringSize(1, key);
+      int valueLength = 0;
       if (value instanceof String) {
-        String strValue = (String) value;
-        int valueLength = CodedOutputStream.computeStringSize(1, strValue);
-
-        dataSize += CodedOutputStream.computeTagSize(2);        // value tag
-        dataSize += CodedOutputStream.computeUInt32SizeNoTag(valueLength); // value length
-        dataSize += valueLength;
-
+        valueLength = CodedOutputStream.computeStringSize(3, (String) value);
       } else if (value instanceof Integer){
-        int intValue = (Integer) value;
-        int valueLength = CodedOutputStream.computeEnumSize(1, intValue);
-
-        dataSize += CodedOutputStream.computeTagSize(2);        // value tag
-        dataSize += CodedOutputStream.computeUInt32SizeNoTag(valueLength); // value length
-        dataSize += valueLength;
-
+        valueLength = CodedOutputStream.computeEnumSize(1, (Integer) value);
+      } else if (value instanceof Boolean) {
+        valueLength = CodedOutputStream.computeBoolSize(4, (Boolean) value);
+      } else if (value instanceof Double) {
+        valueLength = CodedOutputStream.computeDoubleSize(2, (Double) value);
       } else {
         // TODO implement
       }
+      dataSize += CodedOutputStream.computeTagSize(2);         // value tag
+      dataSize += CodedOutputStream.computeUInt32SizeNoTag(valueLength);  // value length
+      dataSize += valueLength;                                            // value
 
       // struct header
       output.writeTag(1, 2);        // struct tag, always 0xa
@@ -86,16 +86,20 @@ public class JsonObjectConverter {
       output.writeString(1, key);
 
       // value
+      output.writeTag(2, 2); // value tag, always 0x12
       if (value instanceof String) {
-        String strValue = (String) value;
-        output.writeTag(2, 2); // value tag, always 0x12
-        output.writeUInt32NoTag(CodedOutputStream.computeStringSize(3, strValue));  // value length
-        output.writeString(3, strValue); // value
+        output.writeUInt32NoTag(valueLength);     // value length
+        output.writeString(3, (String) value); // value
       } else if (value instanceof Integer){
-        int intValue = (Integer) value;
-        output.writeTag(2, 2);    // value tag, always 0x12
-        output.writeUInt32NoTag(CodedOutputStream.computeEnumSize(1, intValue));  // value length
-        output.writeEnum(1, intValue); // value
+        output.writeUInt32NoTag(valueLength);             // value length
+        output.writeEnum(1, (Integer) value); // value
+      } else if (value instanceof Boolean){
+        boolean v = (Boolean) value;
+        output.writeUInt32NoTag(valueLength);     // value length
+        output.writeBool(4, (Boolean) value);   // value
+      } else if (value instanceof Double) {
+        output.writeUInt32NoTag(valueLength);     // value length
+        output.writeDouble(2, (Double) value);   // value
       } else {
         // TODO implement
       }
@@ -103,6 +107,7 @@ public class JsonObjectConverter {
   }
 
   public static int computeSize(ZonedDateTime obj) {
+    // TODO implement
     return 0;
   }
 

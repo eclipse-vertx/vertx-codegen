@@ -14,6 +14,7 @@ import java.io.IOException;
 import static io.vertx.test.codegen.converter.proto.ProtoConverterTest.prettyHexDump;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class JsonObjectConverterTest {
 
@@ -22,6 +23,8 @@ public class JsonObjectConverterTest {
     JsonObject jsonObject = new JsonObject();
     jsonObject.put("IntegerField1", 15);
     jsonObject.put("StringField2", "StringValue");
+    jsonObject.put("BooleanField3", true);
+    jsonObject.put("DoubleField4", 3.142);
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream output = CodedOutputStream.newInstance(baos);
@@ -42,6 +45,14 @@ public class JsonObjectConverterTest {
     Value stringValue = struct.getFieldsMap().get("StringField2");
     assertEquals("StringValue", stringValue.getStringValue());
     assertEquals(Value.KindCase.STRING_VALUE, stringValue.getKindCase());
+
+    Value boolValue = struct.getFieldsMap().get("BooleanField3");
+    assertTrue(boolValue.getBoolValue());
+    assertEquals(Value.KindCase.BOOL_VALUE, boolValue.getKindCase());
+
+    Value doubleValue = struct.getFieldsMap().get("DoubleField4");
+    assertEquals(3.142, doubleValue.getNumberValue(), 0.0);
+    assertEquals(Value.KindCase.NUMBER_VALUE, doubleValue.getKindCase());
 
     // Encode using Google's protoc plugin
     byte[] protocEncoded = protocEncode(struct);
