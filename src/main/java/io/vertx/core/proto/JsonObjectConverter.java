@@ -37,6 +37,13 @@ public class JsonObjectConverter {
             case 0x20:
               obj.put(key, input.readBool());
               break;
+            case 0x2a:
+              int structLength = input.readUInt32();
+              int structLimit = input.pushLimit(structLength);
+              JsonObject subObj = JsonObjectConverter.fromProto(input);
+              obj.put(key, subObj);
+              input.popLimit(structLimit);
+              break;
             default:
               throw new UnsupportedOperationException("Unsupported field type " + fieldType);
           }
@@ -59,6 +66,7 @@ public class JsonObjectConverter {
       Object value = entry.getValue();
 
       // calculate dataSize
+      int structSize = 0;
       int dataSize = 0;
       dataSize += CodedOutputStream.computeStringSize(1, key);
       int valueLength = 0;
@@ -70,34 +78,44 @@ public class JsonObjectConverter {
         valueLength = CodedOutputStream.computeBoolSize(4, (Boolean) value);
       } else if (value instanceof Double) {
         valueLength = CodedOutputStream.computeDoubleSize(2, (Double) value);
+      } else if (value instanceof JsonObject) {
+        structSize = JsonObjectConverter.computeSize((JsonObject) value);
+        valueLength += CodedOutputStream.computeTagSize(5);
+        valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
+        valueLength += structSize;
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }
-      dataSize += CodedOutputStream.computeTagSize(2);         // value tag
+      dataSize += CodedOutputStream.computeTagSize(2);                    // value tag
       dataSize += CodedOutputStream.computeUInt32SizeNoTag(valueLength);  // value length
       dataSize += valueLength;                                            // value
 
       // struct header
-      output.writeTag(1, 2);        // struct tag, always 0xa
-      output.writeUInt32NoTag(dataSize);  // struct length
+      output.writeTag(1, 2);                               // struct tag, always 0xa
+      output.writeUInt32NoTag(dataSize);                   // struct length
 
       // key
       output.writeString(1, key);
 
       // value
-      output.writeTag(2, 2); // value tag, always 0x12
+      output.writeTag(2, 2);                                // value tag, always 0x12
       if (value instanceof String) {
-        output.writeUInt32NoTag(valueLength);           // value length
-        output.writeString(3, (String) value);        // value
+        output.writeUInt32NoTag(valueLength);               // value length
+        output.writeString(3, (String) value);              // value
       } else if (value instanceof Integer){
-        output.writeUInt32NoTag(valueLength);            // value length
-        output.writeEnum(1, (Integer) value); // value
+        output.writeUInt32NoTag(valueLength);               // value length
+        output.writeEnum(1, (Integer) value);               // value
       } else if (value instanceof Boolean){
-        output.writeUInt32NoTag(valueLength);             // value length
-        output.writeBool(4, (Boolean) value);           // value
+        output.writeUInt32NoTag(valueLength);               // value length
+        output.writeBool(4, (Boolean) value);               // value
       } else if (value instanceof Double) {
         output.writeUInt32NoTag(valueLength);               // value length
-        output.writeDouble(2, (Double) value);   // value
+        output.writeDouble(2, (Double) value);              // value
+      } else if (value instanceof JsonObject) {
+        output.writeUInt32NoTag(valueLength);               // value length
+        output.writeTag(5, 2);                              // 0x2a
+        output.writeUInt32NoTag(structSize);                // value length
+        JsonObjectConverter.toProto((JsonObject) value, output);   // value
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }
@@ -122,16 +140,21 @@ public class JsonObjectConverter {
         valueLength = CodedOutputStream.computeBoolSize(4, (Boolean) value);
       } else if (value instanceof Double) {
         valueLength = CodedOutputStream.computeDoubleSize(2, (Double) value);
+      } else if (value instanceof JsonObject) {
+        int structSize = JsonObjectConverter.computeSize((JsonObject) value);
+        valueLength += CodedOutputStream.computeTagSize(5);
+        valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
+        valueLength += structSize;
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }
-      dataSize += CodedOutputStream.computeTagSize(2);         // value tag
+      dataSize += CodedOutputStream.computeTagSize(2);                    // value tag
       dataSize += CodedOutputStream.computeUInt32SizeNoTag(valueLength);  // value length
       dataSize += valueLength;                                            // value
 
-      totalSize += CodedOutputStream.computeTagSize(1);       // struct tag
-      totalSize += CodedOutputStream.computeUInt32SizeNoTag(dataSize);   // struct length
-      totalSize += dataSize;                                             // struct
+      totalSize += CodedOutputStream.computeTagSize(1);                   // struct tag
+      totalSize += CodedOutputStream.computeUInt32SizeNoTag(dataSize);    // struct length
+      totalSize += dataSize;                                              // struct
     }
     return totalSize;
   }
