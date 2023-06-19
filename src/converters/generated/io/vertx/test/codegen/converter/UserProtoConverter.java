@@ -168,18 +168,18 @@ public class UserProtoConverter {
     }
   }
 
-  public static void toProto2(User obj, CodedOutputStream output) throws IOException {
+  public static void toProto(User obj, CodedOutputStream output) throws IOException {
     int[] cache = new int[100];
-    UserProtoConverter.computeSize2(obj, cache, 0);
-    UserProtoConverter.toProto2(obj, output, cache, 0);
+    UserProtoConverter.computeSize(obj, cache, 0);
+    UserProtoConverter.toProto(obj, output, cache, 0);
   }
 
-  public static int toProto2(User obj, CodedOutputStream output, int[] cache, int index) throws IOException {
+  public static int toProto(User obj, CodedOutputStream output, int[] cache, int index) throws IOException {
     index = index + 1;
     if (obj.getAddress() != null) {
       output.writeUInt32NoTag(10);
       output.writeUInt32NoTag(cache[index]);
-      index = AddressProtoConverter.toProto2(obj.getAddress(), output, cache, index);
+      index = AddressProtoConverter.toProto(obj.getAddress(), output, cache, index);
     }
     if (obj.getAge() != null) {
       output.writeInt32(2, obj.getAge());
@@ -251,7 +251,7 @@ public class UserProtoConverter {
       for (Address element: obj.getStructListField()) {
         output.writeUInt32NoTag(90);
         output.writeUInt32NoTag(cache[index]);
-        index = AddressProtoConverter.toProto2(element, output, cache, index);
+        index = AddressProtoConverter.toProto(element, output, cache, index);
       }
     }
     if (obj.getStructValueMap() != null) {
@@ -272,7 +272,7 @@ public class UserProtoConverter {
         output.writeString(1, entry.getKey());
         output.writeUInt32NoTag(18);
         output.writeUInt32NoTag(elementSize);
-        index = AddressProtoConverter.toProto2(entry.getValue(), output, cache, index);
+        index = AddressProtoConverter.toProto(entry.getValue(), output, cache, index);
       }
     }
     if (obj.getUserName() != null) {
@@ -316,19 +316,19 @@ public class UserProtoConverter {
     return index;
   }
 
-  public static int computeSize2(User obj) {
+  public static int computeSize(User obj) {
     int[] cache = new int[100];
-    UserProtoConverter.computeSize2(obj, cache, 0);
+    UserProtoConverter.computeSize(obj, cache, 0);
     return cache[0];
   }
 
-  public static int computeSize2(User obj, int[] cache, final int baseIndex) {
+  public static int computeSize(User obj, int[] cache, final int baseIndex) {
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getAddress() != null) {
       size += CodedOutputStream.computeUInt32SizeNoTag(10);
       int savedIndex = index;
-      index = AddressProtoConverter.computeSize2(obj.getAddress(), cache, index);
+      index = AddressProtoConverter.computeSize(obj.getAddress(), cache, index);
       int dataSize = cache[savedIndex];
       size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
       size += dataSize;
@@ -394,7 +394,7 @@ public class UserProtoConverter {
         for (Address element: obj.getStructListField()) {
           size += CodedOutputStream.computeUInt32SizeNoTag(90);
           int savedIndex = index;
-          index = AddressProtoConverter.computeSize2(element, cache, index);
+          index = AddressProtoConverter.computeSize(element, cache, index);
           int dataSize = cache[savedIndex];
           size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
           size += dataSize;
@@ -412,7 +412,7 @@ public class UserProtoConverter {
         dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
         // value
         int savedIndex = index;
-        index = AddressProtoConverter.computeSize2(entry.getValue(), cache, index);
+        index = AddressProtoConverter.computeSize(entry.getValue(), cache, index);
         int elementSize = cache[savedIndex];
         dataSize += CodedOutputStream.computeInt32SizeNoTag(18);
         dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);

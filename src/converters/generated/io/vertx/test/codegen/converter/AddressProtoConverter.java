@@ -33,13 +33,13 @@ public class AddressProtoConverter {
     }
   }
 
-  public static void toProto2(Address obj, CodedOutputStream output) throws IOException {
+  public static void toProto(Address obj, CodedOutputStream output) throws IOException {
     int[] cache = new int[100];
-    AddressProtoConverter.computeSize2(obj, cache, 0);
-    AddressProtoConverter.toProto2(obj, output, cache, 0);
+    AddressProtoConverter.computeSize(obj, cache, 0);
+    AddressProtoConverter.toProto(obj, output, cache, 0);
   }
 
-  public static int toProto2(Address obj, CodedOutputStream output, int[] cache, int index) throws IOException {
+  public static int toProto(Address obj, CodedOutputStream output, int[] cache, int index) throws IOException {
     index = index + 1;
     if (obj.getLatitude() != null) {
       output.writeFloat(1, obj.getLatitude());
@@ -53,13 +53,13 @@ public class AddressProtoConverter {
     return index;
   }
 
-  public static int computeSize2(Address obj) {
+  public static int computeSize(Address obj) {
     int[] cache = new int[100];
-    AddressProtoConverter.computeSize2(obj, cache, 0);
+    AddressProtoConverter.computeSize(obj, cache, 0);
     return cache[0];
   }
 
-  public static int computeSize2(Address obj, int[] cache, final int baseIndex) {
+  public static int computeSize(Address obj, int[] cache, final int baseIndex) {
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getLatitude() != null) {

@@ -229,15 +229,15 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       writer.print("\n");
     }
 
-    // toProto2()
+    // toProto()
     {
-      writer.print("  public static void toProto2(" + simpleName + " obj, CodedOutputStream output) throws IOException {\n");
+      writer.print("  public static void toProto(" + simpleName + " obj, CodedOutputStream output) throws IOException {\n");
       writer.print("    int[] cache = new int[100];\n");
-      writer.print("    " + simpleName + "ProtoConverter.computeSize2(obj, cache, 0);\n");
-      writer.print("    " + simpleName + "ProtoConverter.toProto2(obj, output, cache, 0);\n");
+      writer.print("    " + simpleName + "ProtoConverter.computeSize(obj, cache, 0);\n");
+      writer.print("    " + simpleName + "ProtoConverter.toProto(obj, output, cache, 0);\n");
       writer.print("  }\n");
       writer.print("\n");
-      writer.print("  " + visibility + " static int toProto2(" + simpleName + " obj, CodedOutputStream output, int[] cache, int index) throws IOException {\n");
+      writer.print("  " + visibility + " static int toProto(" + simpleName + " obj, CodedOutputStream output, int[] cache, int index) throws IOException {\n");
       writer.print("    index = index + 1;\n");
       int fieldNumber = 1;
       for (PropertyInfo prop : model.getPropertyMap().values()) {
@@ -271,7 +271,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               writer.print("      for (" + protoProperty.getMessage() + " element: obj." + prop.getGetterMethod() +"()) {\n");
               writer.print("        output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
               writer.print("        output.writeUInt32NoTag(cache[index]);\n");
-              writer.print("        index = " + protoProperty.getMessage() + "ProtoConverter.toProto2(element, output, cache, index);\n");
+              writer.print("        index = " + protoProperty.getMessage() + "ProtoConverter.toProto(element, output, cache, index);\n");
               writer.print("      }\n");
             }
           }
@@ -328,7 +328,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               writer.print("        output.writeString(1, entry.getKey());\n");
               writer.print("        output.writeUInt32NoTag(18);\n");
               writer.print("        output.writeUInt32NoTag(elementSize);\n");
-              writer.print("        index = " + protoProperty.getMessage() + "ProtoConverter.toProto2(entry.getValue(), output, cache, index);\n");
+              writer.print("        index = " + protoProperty.getMessage() + "ProtoConverter.toProto(entry.getValue(), output, cache, index);\n");
               writer.print("      }\n");
             }
           }
@@ -343,7 +343,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             } else {
               writer.print("      output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
               writer.print("      output.writeUInt32NoTag(cache[index]);\n");
-              writer.print("      index = " + protoProperty.getMessage() + "ProtoConverter.toProto2(obj." + prop.getGetterMethod() + "(), output, cache, index);\n");
+              writer.print("      index = " + protoProperty.getMessage() + "ProtoConverter.toProto(obj." + prop.getGetterMethod() + "(), output, cache, index);\n");
             }
           }
         }
@@ -357,13 +357,13 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
 
     // Compute Size 2
     {
-      writer.print("  " + visibility + " static int computeSize2(" + simpleName + " obj) {\n");
+      writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj) {\n");
       writer.print("    int[] cache = new int[100];\n");
-      writer.print("    " + simpleName + "ProtoConverter.computeSize2(obj, cache, 0);\n");
+      writer.print("    " + simpleName + "ProtoConverter.computeSize(obj, cache, 0);\n");
       writer.print("    return cache[0];\n");
       writer.print("  }\n");
       writer.print("\n");
-      writer.print("  " + visibility + " static int computeSize2(" + simpleName + " obj, int[] cache, final int baseIndex) {\n");
+      writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj, int[] cache, final int baseIndex) {\n");
       writer.print("    int size = 0;\n");
       writer.print("    int index = baseIndex + 1;\n");
       int fieldNumber = 1;
@@ -400,7 +400,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               writer.print("        for (" + protoProperty.getMessage() + " element: obj." + prop.getGetterMethod() + "()) {\n");
               writer.print("          size += CodedOutputStream.computeUInt32SizeNoTag(" + protoProperty.getTag() + ");\n");
               writer.print("          int savedIndex = index;\n");
-              writer.print("          index = " + protoProperty.getMessage() + "ProtoConverter.computeSize2(element, cache, index);\n");
+              writer.print("          index = " + protoProperty.getMessage() + "ProtoConverter.computeSize(element, cache, index);\n");
               writer.print("          int dataSize = cache[savedIndex];\n");
               writer.print("          size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
               writer.print("          size += dataSize;\n");
@@ -448,7 +448,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
               writer.print("        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());\n");
               writer.print("        // value\n");
               writer.print("        int savedIndex = index;\n");
-              writer.print("        index = " + protoProperty.getMessage() + "ProtoConverter.computeSize2(entry.getValue(), cache, index);\n");
+              writer.print("        index = " + protoProperty.getMessage() + "ProtoConverter.computeSize(entry.getValue(), cache, index);\n");
               writer.print("        int elementSize = cache[savedIndex];\n");
               writer.print("        dataSize += CodedOutputStream.computeInt32SizeNoTag(18);\n");
               writer.print("        dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);\n");
@@ -471,7 +471,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
             } else {
               writer.print("      size += CodedOutputStream.computeUInt32SizeNoTag(" + protoProperty.getTag() + ");\n");
               writer.print("      int savedIndex = index;\n");
-              writer.print("      index = " + protoProperty.getMessage() + "ProtoConverter.computeSize2(obj." + prop.getGetterMethod() + "(), cache, index);\n");
+              writer.print("      index = " + protoProperty.getMessage() + "ProtoConverter.computeSize(obj." + prop.getGetterMethod() + "(), cache, index);\n");
               writer.print("      int dataSize = cache[savedIndex];\n");
               writer.print("      size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
               writer.print("      size += dataSize;\n");

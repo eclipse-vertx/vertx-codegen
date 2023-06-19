@@ -6,6 +6,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import io.vertx.test.codegen.converter.Address;
 import io.vertx.test.codegen.converter.RecursiveItem;
 import io.vertx.test.codegen.converter.RecursiveItemProtoConverter;
+import io.vertx.test.codegen.converter.TestUtils;
 import io.vertx.test.codegen.converter.User;
 import io.vertx.test.codegen.converter.UserProtoConverter;
 import org.junit.Assert;
@@ -13,8 +14,6 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -74,7 +73,7 @@ public class ProtoConverterTest {
     // Encode
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream output = CodedOutputStream.newInstance(baos);
-    UserProtoConverter.toProto2(user, output);
+    UserProtoConverter.toProto(user, output);
     output.flush();
     byte[] encoded = baos.toByteArray();
     // Decode
@@ -100,7 +99,7 @@ public class ProtoConverterTest {
     assertEquals(user.getStructValueMap(), decoded.getStructValueMap());
 
     // Assert total size is equal to computed size
-    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize2(user));
+    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize(user));
   }
 
   @Test
@@ -151,17 +150,15 @@ public class ProtoConverterTest {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream output = CodedOutputStream.newInstance(baos);
 
-    RecursiveItemProtoConverter.toProto2(root, output);
+    RecursiveItemProtoConverter.toProto(root, output);
     output.flush();
     byte[] encoded = baos.toByteArray();
-    System.out.println("encoded 2 \n" + prettyHexDump(encoded));
 
     ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
     CodedOutputStream output2 = CodedOutputStream.newInstance(baos2);
-    RecursiveItemProtoConverter.toProto2(root, output2);
+    RecursiveItemProtoConverter.toProto(root, output2);
     output2.flush();
     byte[] encoded2 = baos2.toByteArray();
-    System.out.println("encoded 1 \n" + prettyHexDump(encoded2));
 
     Assert.assertArrayEquals(encoded2, encoded);
   }
@@ -175,7 +172,7 @@ public class ProtoConverterTest {
     user.setAddress(address);
 
     // Vertx Encode
-    byte[] encoded = encode(user);
+    byte[] encoded = vertxEncode(user);
 
     // Decode using Google's protoc plugin
     io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
@@ -186,7 +183,7 @@ public class ProtoConverterTest {
     assertArrayEquals(protocEncoded, encoded);
 
     // Vertx Decode
-    User decoded = decode(protocEncoded);
+    User decoded = vertxDecode(protocEncoded);
     assertEquals(user, decoded);
   }
 
@@ -269,7 +266,7 @@ public class ProtoConverterTest {
     user.setStructListField(Collections.unmodifiableList(Arrays.asList(address1, address2)));
 
     // Vertx Encode
-    byte[] encoded = encode(user);
+    byte[] encoded = vertxEncode(user);
 
     // Decode using Google's protoc plugin
     io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
@@ -282,7 +279,7 @@ public class ProtoConverterTest {
     assertArrayEquals(protocEncoded, encoded);
 
     // Vertx Decode
-    User decoded = decode(protocEncoded);
+    User decoded = vertxDecode(protocEncoded);
     assertEquals(user, decoded);
   }
 
@@ -295,7 +292,7 @@ public class ProtoConverterTest {
     user.setZonedDateTimeListField(list);
 
     // Vertx Encode
-    byte[] encoded = encode(user);
+    byte[] encoded = vertxEncode(user);
 
     // Decode using Google's protoc plugin
     io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
@@ -311,11 +308,11 @@ public class ProtoConverterTest {
     assertArrayEquals(protocEncoded, encoded);
 
     // Vertx Decode
-    User decoded = decode(protocEncoded);
+    User decoded = vertxDecode(protocEncoded);
     assertEquals(user, decoded);
 
     // Test computeSize
-    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize2(user));
+    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize(user));
   }
 
   @Test
@@ -331,7 +328,7 @@ public class ProtoConverterTest {
     user.setStructValueMap(structValueMap);
 
     // Vertx Encode
-    byte[] encoded = encode(user);
+    byte[] encoded = vertxEncode(user);
 
     // Decode using Google's protoc plugin
     io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
@@ -343,7 +340,7 @@ public class ProtoConverterTest {
     assertArrayEquals(protocEncoded, encoded);
 
     // Vertx Decode
-    User decoded = decode(protocEncoded);
+    User decoded = vertxDecode(protocEncoded);
     assertEquals(user, decoded);
   }
 
@@ -360,7 +357,7 @@ public class ProtoConverterTest {
     user.setZonedDateTimeField(ZonedDateTime.of(2023, 5, 27, 21, 23, 58, 15, ZoneId.of("UTC")));
 
     // Vertx Encode
-    byte[] encoded = encode(user);
+    byte[] encoded = vertxEncode(user);
 
     // Decode using Google's protoc plugin
     io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
@@ -373,11 +370,11 @@ public class ProtoConverterTest {
     assertArrayEquals(protocEncoded, encoded);
 
     // Vertx Decode
-    User decoded = decode(protocEncoded);
+    User decoded = vertxDecode(protocEncoded);
     assertEquals(user, decoded);
 
     // Test computeSize
-    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize2(user));
+    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize(user));
   }
 
   @Test
@@ -389,7 +386,7 @@ public class ProtoConverterTest {
     user.setZonedDateTimeValueMap(mapField);
 
     // Vertx Encode
-    byte[] encoded = encode(user);
+    byte[] encoded = vertxEncode(user);
 
     // Decode using Google's protoc plugin
     io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
@@ -405,11 +402,11 @@ public class ProtoConverterTest {
     assertArrayEquals(protocEncoded, encoded);
 
     // Vertx Decode
-    User decoded = decode(protocEncoded);
+    User decoded = vertxDecode(protocEncoded);
     assertEquals(user, decoded);
 
     // Test computeSize
-    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize2(user));
+    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize(user));
   }
 
   private <T> void testEncodeDecode(
@@ -417,7 +414,7 @@ public class ProtoConverterTest {
     Function<User, T> pojoGetter,
     Function<io.vertx.test.protoc.gen.User, T> protocGetter) throws IOException {
     // Vertx Encode
-    byte[] encoded = encode(obj);
+    byte[] encoded = vertxEncode(obj);
 
     // Decode using Google's protoc plugin
     io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
@@ -428,17 +425,17 @@ public class ProtoConverterTest {
     assertArrayEquals(protocEncoded, encoded);
 
     // Vertx Decode
-    User decoded = decode(protocEncoded);
+    User decoded = vertxDecode(protocEncoded);
     assertEquals(obj, decoded);
   }
 
-  private byte[] encode(User obj) throws IOException {
+  private byte[] vertxEncode(User obj) throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream output = CodedOutputStream.newInstance(baos);
-    UserProtoConverter.toProto2(obj, output);
+    UserProtoConverter.toProto(obj, output);
     output.flush();
     byte[] encoded = baos.toByteArray();
-    System.out.println("vertx encoded:\n" + prettyHexDump(encoded));
+    System.out.println("vertx encoded:\n" + TestUtils.prettyHexDump(encoded));
     return encoded;
   }
 
@@ -448,7 +445,7 @@ public class ProtoConverterTest {
     obj.writeTo(output);
     output.flush();
     byte[] encoded = baos.toByteArray();
-    System.out.println("protoc encoded:\n" + prettyHexDump(encoded));
+    System.out.println("protoc encoded:\n" + TestUtils.prettyHexDump(encoded));
     return encoded;
   }
 
@@ -456,46 +453,10 @@ public class ProtoConverterTest {
     return io.vertx.test.protoc.gen.User.parseFrom(arr);
   }
 
-  private User decode(byte[] arr) throws IOException {
+  private User vertxDecode(byte[] arr) throws IOException {
     CodedInputStream input = CodedInputStream.newInstance(arr);
     User obj = new User();
     UserProtoConverter.fromProto(input, obj);
     return obj;
-  }
-
-  // TODO move to util
-  public static String prettyHexDump(byte[] bytes) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < bytes.length; i++) {
-      if (i % 16 == 0) {
-        sb.append(String.format("%05x: ", i));
-      }
-      sb.append(String.format("%02x ", bytes[i]));
-      if (i % 4 == 3) {
-        sb.append(" ");
-      }
-      if (i % 16 == 15 || i == bytes.length - 1) {
-        for (int j = i + 1; j % 16 != 0; j++) {
-          sb.append("   ");
-          if (j % 4 == 3) {
-            sb.append(" ");
-          }
-        }
-        int start = (i / 16) * 16;
-        sb.append("  ");
-        for (int j = start; j <= i; j++) {
-          if (bytes[j] >= 32 && bytes[j] < 127) {
-            sb.append((char) bytes[j]);
-          } else {
-            sb.append(".");
-          }
-          if ((j - start) % 4 == 3 && j < i) {
-            sb.append(" ");
-          }
-        }
-        sb.append("\n");
-      }
-    }
-    return sb.toString();
   }
 }

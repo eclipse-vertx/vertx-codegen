@@ -52,28 +52,28 @@ public class RecursiveItemProtoConverter {
     }
   }
 
-  public static void toProto2(RecursiveItem obj, CodedOutputStream output) throws IOException {
+  public static void toProto(RecursiveItem obj, CodedOutputStream output) throws IOException {
     int[] cache = new int[100];
-    RecursiveItemProtoConverter.computeSize2(obj, cache, 0);
-    RecursiveItemProtoConverter.toProto2(obj, output, cache, 0);
+    RecursiveItemProtoConverter.computeSize(obj, cache, 0);
+    RecursiveItemProtoConverter.toProto(obj, output, cache, 0);
   }
 
-  public static int toProto2(RecursiveItem obj, CodedOutputStream output, int[] cache, int index) throws IOException {
+  public static int toProto(RecursiveItem obj, CodedOutputStream output, int[] cache, int index) throws IOException {
     index = index + 1;
     if (obj.getChildA() != null) {
       output.writeUInt32NoTag(10);
       output.writeUInt32NoTag(cache[index]);
-      index = RecursiveItemProtoConverter.toProto2(obj.getChildA(), output, cache, index);
+      index = RecursiveItemProtoConverter.toProto(obj.getChildA(), output, cache, index);
     }
     if (obj.getChildB() != null) {
       output.writeUInt32NoTag(18);
       output.writeUInt32NoTag(cache[index]);
-      index = RecursiveItemProtoConverter.toProto2(obj.getChildB(), output, cache, index);
+      index = RecursiveItemProtoConverter.toProto(obj.getChildB(), output, cache, index);
     }
     if (obj.getChildC() != null) {
       output.writeUInt32NoTag(26);
       output.writeUInt32NoTag(cache[index]);
-      index = RecursiveItemProtoConverter.toProto2(obj.getChildC(), output, cache, index);
+      index = RecursiveItemProtoConverter.toProto(obj.getChildC(), output, cache, index);
     }
     if (obj.getId() != null) {
       output.writeString(4, obj.getId());
@@ -81,19 +81,19 @@ public class RecursiveItemProtoConverter {
     return index;
   }
 
-  public static int computeSize2(RecursiveItem obj) {
+  public static int computeSize(RecursiveItem obj) {
     int[] cache = new int[100];
-    RecursiveItemProtoConverter.computeSize2(obj, cache, 0);
+    RecursiveItemProtoConverter.computeSize(obj, cache, 0);
     return cache[0];
   }
 
-  public static int computeSize2(RecursiveItem obj, int[] cache, final int baseIndex) {
+  public static int computeSize(RecursiveItem obj, int[] cache, final int baseIndex) {
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getChildA() != null) {
       size += CodedOutputStream.computeUInt32SizeNoTag(10);
       int savedIndex = index;
-      index = RecursiveItemProtoConverter.computeSize2(obj.getChildA(), cache, index);
+      index = RecursiveItemProtoConverter.computeSize(obj.getChildA(), cache, index);
       int dataSize = cache[savedIndex];
       size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
       size += dataSize;
@@ -101,7 +101,7 @@ public class RecursiveItemProtoConverter {
     if (obj.getChildB() != null) {
       size += CodedOutputStream.computeUInt32SizeNoTag(18);
       int savedIndex = index;
-      index = RecursiveItemProtoConverter.computeSize2(obj.getChildB(), cache, index);
+      index = RecursiveItemProtoConverter.computeSize(obj.getChildB(), cache, index);
       int dataSize = cache[savedIndex];
       size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
       size += dataSize;
@@ -109,7 +109,7 @@ public class RecursiveItemProtoConverter {
     if (obj.getChildC() != null) {
       size += CodedOutputStream.computeUInt32SizeNoTag(26);
       int savedIndex = index;
-      index = RecursiveItemProtoConverter.computeSize2(obj.getChildC(), cache, index);
+      index = RecursiveItemProtoConverter.computeSize(obj.getChildC(), cache, index);
       int dataSize = cache[savedIndex];
       size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
       size += dataSize;
