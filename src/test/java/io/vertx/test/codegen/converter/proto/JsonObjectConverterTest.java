@@ -28,6 +28,7 @@ public class JsonObjectConverterTest {
     jsonObject.put("DoubleField4", 3.142);
     jsonObject.put("LongField8", 20000L);
     jsonObject.put("FloatField9", 8.8888f);
+    jsonObject.put("NullField10", null);
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream output = CodedOutputStream.newInstance(baos);

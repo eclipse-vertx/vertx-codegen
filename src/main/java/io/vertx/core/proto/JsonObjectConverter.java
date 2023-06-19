@@ -80,6 +80,10 @@ public class JsonObjectConverter {
               obj.put(key, subObj);
               input.popLimit(structLimit);
               break;
+            case NULL_TAG:
+              input.readEnum();
+              obj.put(key, null);
+              break;
             default:
               throw new UnsupportedOperationException("Unsupported field type " + fieldType);
           }
@@ -122,6 +126,8 @@ public class JsonObjectConverter {
         valueLength += CodedOutputStream.computeTagSize(STRUCT_FIELD_NUMBER);
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
+      } else if (value == null) {
+        valueLength = CodedOutputStream.computeEnumSize(NULL_FIELD_NUMBER, 0);
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }
@@ -139,7 +145,10 @@ public class JsonObjectConverter {
 
       // value
       output.writeTag(MAP_VALUE_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);         // value tag, always 0x12
-      if (value instanceof String) {
+      if (value == null) {
+        output.writeUInt32NoTag(valueLength);                                     // value length
+        output.writeEnum(NULL_FIELD_NUMBER, 0);                             // value
+      } else if (value instanceof String) {
         output.writeUInt32NoTag(valueLength);                                     // value length
         output.writeString(STRING_FIELD_NUMBER, (String) value);                  // value
       } else if (value instanceof Integer){
@@ -177,7 +186,9 @@ public class JsonObjectConverter {
 
       int dataSize = 0;
       int valueLength = 0;
-      if (value instanceof String) {
+      if (value == null) {
+        valueLength = CodedOutputStream.computeEnumSize(NULL_FIELD_NUMBER, 0);
+      } else if (value instanceof String) {
         valueLength = CodedOutputStream.computeStringSize(STRUCT_FIELD_NUMBER, (String) value);
       } else if (value instanceof Integer) {
         valueLength = CodedOutputStream.computeInt32Size(INTEGER_FIELD_NUMBER, (Integer) value);
