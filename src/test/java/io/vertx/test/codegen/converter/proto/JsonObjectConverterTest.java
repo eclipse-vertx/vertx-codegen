@@ -27,6 +27,7 @@ public class JsonObjectConverterTest {
     jsonObject.put("BooleanField3", true);
     jsonObject.put("DoubleField4", 3.142);
     jsonObject.put("LongField8", 20000L);
+    jsonObject.put("FloatField9", 8.8888f);
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream output = CodedOutputStream.newInstance(baos);
@@ -41,8 +42,8 @@ public class JsonObjectConverterTest {
     Struct struct = Struct.parseFrom(encoded);
 
     Value intValue = struct.getFieldsMap().get("IntegerField1");
-    assertEquals(15, intValue.getNullValueValue());
-    assertEquals(Value.KindCase.NULL_VALUE, intValue.getKindCase());
+    assertEquals(15, intValue.getIntegerValue());
+    assertEquals(Value.KindCase.INTEGER_VALUE, intValue.getKindCase());
 
     Value longValue = struct.getFieldsMap().get("LongField8");
     assertEquals(20000L, longValue.getLongValue());
@@ -59,6 +60,10 @@ public class JsonObjectConverterTest {
     Value doubleValue = struct.getFieldsMap().get("DoubleField4");
     assertEquals(3.142, doubleValue.getNumberValue(), 0.0);
     assertEquals(Value.KindCase.NUMBER_VALUE, doubleValue.getKindCase());
+
+    Value floatValue = struct.getFieldsMap().get("FloatField9");
+    assertEquals(8.8888f, floatValue.getFloatValue(), 0.0);
+    assertEquals(Value.KindCase.FLOAT_VALUE, floatValue.getKindCase());
 
     // Encode using Google's protoc plugin
     byte[] protocEncoded = protocEncode(struct);
@@ -100,8 +105,8 @@ public class JsonObjectConverterTest {
     Struct subStruct = structValue.getStructValue();
 
     Value intValue = subStruct.getFieldsMap().get("IntegerField1");
-    assertEquals(100, intValue.getNullValueValue());
-    assertEquals(Value.KindCase.NULL_VALUE, intValue.getKindCase());
+    assertEquals(100, intValue.getIntegerValue());
+    assertEquals(Value.KindCase.INTEGER_VALUE, intValue.getKindCase());
 
     Value stringValue = subStruct.getFieldsMap().get("StringField2");
     assertEquals("sub-string", stringValue.getStringValue());
