@@ -352,6 +352,32 @@ public class ProtoConverterTest {
   }
 
   @Test
+  public void testInstantField() throws IOException {
+    ZonedDateTime date = ZonedDateTime.of(2023, 6, 19, 12, 33, 12, 10, ZoneId.of("UTC"));
+    User user = new User();
+    user.setInstantField(date.toInstant());
+
+    // Vertx Encode
+    byte[] encoded = vertxEncode(user);
+
+    // Decode using Google's protoc plugin
+    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    assertEquals(user.getInstantField().getEpochSecond(), protocObj.getInstantField().getSeconds());
+    assertEquals(user.getInstantField().getNano(), protocObj.getInstantField().getNanos());
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(protocObj);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Vertx Decode
+    User decoded = vertxDecode(protocEncoded);
+    assertEquals(user, decoded);
+
+    // Test computeSize
+    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize(user));
+  }
+
+  @Test
   public void testZonedDateTimeField() throws IOException {
     User user = new User();
     user.setZonedDateTimeField(ZonedDateTime.of(2023, 5, 27, 21, 23, 58, 15, ZoneId.of("UTC")));

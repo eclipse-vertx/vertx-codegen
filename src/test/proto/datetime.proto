@@ -10,3 +10,8 @@ message ZonedDateTime {
   int64 seconds = 2;
   string zoneId = 3;
 }
+
+message Instant {
+  int32 nanos = 1;
+  int64 seconds = 2;
+}

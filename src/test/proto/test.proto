@@ -14,17 +14,18 @@ message User {
   bool boolField = 3;
   int32 charField = 4;
   double doubleField = 5;
-  repeated int32 integerListField = 6;
-  map<string, int32> integerValueMap = 7;
-  int64 longField = 8;
-  int32 shortField = 9;
-  map<string, string> stringValueMap = 10;
-  repeated Address structListField = 11;
-  map<string, Address> structValueMap = 12;
-  string username = 13;
-  ZonedDateTime zonedDateTimeField = 14;
-  repeated ZonedDateTime zonedDateTimeListField = 15;
-  map<string, ZonedDateTime> zonedDateTimeValueMap = 16;
+  Instant instantField = 6;
+  repeated int32 integerListField = 7;
+  map<string, int32> integerValueMap = 8;
+  int64 longField = 9;
+  int32 shortField = 10;
+  map<string, string> stringValueMap = 11;
+  repeated Address structListField = 12;
+  map<string, Address> structValueMap = 13;
+  string username = 14;
+  ZonedDateTime zonedDateTimeField = 15;
+  repeated ZonedDateTime zonedDateTimeListField = 16;
+  map<string, ZonedDateTime> zonedDateTimeValueMap = 17;
 }
 
 message Address {

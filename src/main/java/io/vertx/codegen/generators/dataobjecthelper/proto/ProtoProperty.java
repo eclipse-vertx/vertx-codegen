@@ -82,6 +82,17 @@ public class ProtoProperty {
     }
   }
 
+  public static String getBuiltInType(PropertyInfo prop) {
+    String javaDataType = prop.getType().getName();
+    if ("java.time.ZonedDateTime".equals(javaDataType)) {
+      return "ZonedDateTime";
+    } else if ("java.time.Instant".equals(javaDataType)) {
+      return "Instant";
+    } else {
+      return null;
+    }
+  }
+
   public int getFieldNumber() {
     return fieldNumber;
   }
