@@ -16,26 +16,26 @@ public class JsonObjectConverter {
   public static final int MAP_VALUE_FIELD_NUMBER = 2;
 
   public static final int NULL_FIELD_NUMBER = 1;
-  public static final int DOUBLE_FIELD_NUMBER = 2;
-  public static final int STRING_FIELD_NUMBER = 3;
+  public static final int STRUCT_FIELD_NUMBER = 2;
+  public static final int LIST_FIELD_NUMBER = 3;
   public static final int BOOLEAN_FIELD_NUMBER = 4;
-  public static final int STRUCT_FIELD_NUMBER = 5;
-  public static final int LIST_FIELD_NUMBER = 6;
-  public static final int INTEGER_FIELD_NUMBER = 7;
-  public static final int LONG_FIELD_NUMBER = 8;
+  public static final int STRING_FIELD_NUMBER = 5;
+  public static final int INTEGER_FIELD_NUMBER = 6;
+  public static final int LONG_FIELD_NUMBER = 7;
+  public static final int DOUBLE_FIELD_NUMBER = 8;
   public static final int FLOAT_FIELD_NUMBER = 9;
 
   // int tag = (fieldNumber << 3) | wireType;
   public static final int STRUCT_FIELDS_TAG = 0xa;  //    1|010
 
   public static final int NULL_TAG = 0x8;           //    1|000
-  public static final int DOUBLE_TAG = 0x11;        //   10|001
-  public static final int STRING_TAG = 0x1a;        //   11|010
-  public static final int BOOLEAN_TAG = 0x20;       //  100|000
-  public static final int STRUCT_TAG = 0x2a;        //  101|010
+  public static final int STRUCT_TAG = 0x12;        //   10|010
   //public static final int LIST_TAG = ?
-  public static final int INTEGER_TAG = 0x38;       //  111|000
-  public static final int LONG_TAG = 0x40;          // 1000|000
+  public static final int BOOLEAN_TAG = 0x20;       //  100|000
+  public static final int STRING_TAG = 0x2a;        //  101|010
+  public static final int INTEGER_TAG = 0x30;       //  110|000
+  public static final int LONG_TAG = 0x38;          //  111|000
+  public static final int DOUBLE_TAG = 0x41;        // 1000|001
   public static final int FLOAT_TAG = 0x4d;         // 1001|101
 
   public static JsonObject fromProto(CodedInputStream input) throws IOException {
@@ -55,6 +55,9 @@ public class JsonObjectConverter {
 
           int fieldType = input.readTag();
           switch (fieldType) {
+            case STRING_TAG:
+              obj.put(key, input.readString());
+              break;
             case INTEGER_TAG:
               obj.put(key, input.readInt32());
               break;
@@ -66,9 +69,6 @@ public class JsonObjectConverter {
               break;
             case FLOAT_TAG:
               obj.put(key, input.readFloat());
-              break;
-            case STRING_TAG:
-              obj.put(key, input.readString());
               break;
             case BOOLEAN_TAG:
               obj.put(key, input.readBool());

@@ -58,8 +58,8 @@ public class JsonObjectConverterTest {
     assertEquals(Value.KindCase.BOOL_VALUE, boolValue.getKindCase());
 
     Value doubleValue = struct.getFieldsMap().get("DoubleField4");
-    assertEquals(3.142, doubleValue.getNumberValue(), 0.0);
-    assertEquals(Value.KindCase.NUMBER_VALUE, doubleValue.getKindCase());
+    assertEquals(3.142, doubleValue.getDoubleValue(), 0.0);
+    assertEquals(Value.KindCase.DOUBLE_VALUE, doubleValue.getKindCase());
 
     Value floatValue = struct.getFieldsMap().get("FloatField9");
     assertEquals(8.8888f, floatValue.getFloatValue(), 0.0);
