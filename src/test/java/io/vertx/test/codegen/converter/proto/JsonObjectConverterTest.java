@@ -26,6 +26,7 @@ public class JsonObjectConverterTest {
     jsonObject.put("StringField2", "StringValue");
     jsonObject.put("BooleanField3", true);
     jsonObject.put("DoubleField4", 3.142);
+    jsonObject.put("LongField8", 20000L);
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream output = CodedOutputStream.newInstance(baos);
@@ -42,6 +43,10 @@ public class JsonObjectConverterTest {
     Value intValue = struct.getFieldsMap().get("IntegerField1");
     assertEquals(15, intValue.getNullValueValue());
     assertEquals(Value.KindCase.NULL_VALUE, intValue.getKindCase());
+
+    Value longValue = struct.getFieldsMap().get("LongField8");
+    assertEquals(20000L, longValue.getLongValue());
+    assertEquals(Value.KindCase.LONG_VALUE, longValue.getKindCase());
 
     Value stringValue = struct.getFieldsMap().get("StringField2");
     assertEquals("StringValue", stringValue.getStringValue());

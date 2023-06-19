@@ -74,6 +74,12 @@ message Value {
     Struct struct_value = 5;
     // Represents a repeated `Value`.
     ListValue list_value = 6;
+
+    int32 integer_value = 7;
+
+    int64 long_value = 8;
+
+    float float_value = 9;
   }
 }
 
