@@ -2,6 +2,7 @@ package io.vertx.test.codegen.converter.proto;
 
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
+import io.vertx.core.json.JsonArray;
 import io.vertx.protobuf.Value;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.proto.JsonObjectConverter;
@@ -12,6 +13,9 @@ import org.junit.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -120,6 +124,18 @@ public class JsonObjectConverterTest {
 
     // Verify ComputeSize
     Assert.assertEquals(encoded.length, JsonObjectConverter.computeSize(jsonObject));
+  }
+
+  @Test
+  public void TestRepeatedJsonObject() throws IOException {
+    JsonObject jsonObject = new JsonObject();
+    JsonArray jsonArray = new JsonArray();
+    jsonArray.add(1);
+    jsonArray.add(2);
+    jsonArray.add(3);
+    jsonObject.put("integerList", jsonArray);
+
+    //byte[] encoded = vertxEncode(jsonObject);
   }
 
   private byte[] protocEncode(io.vertx.protobuf.JsonObject obj) throws IOException {

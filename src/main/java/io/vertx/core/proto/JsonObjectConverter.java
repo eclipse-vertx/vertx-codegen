@@ -2,6 +2,7 @@ package io.vertx.core.proto;
 
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class JsonObjectConverter {
 
   public static final int NULL_FIELD_NUMBER = 1;
   public static final int JSON_OBJECT_FIELD_NUMBER = 2;
-  public static final int LIST_FIELD_NUMBER = 3;
+  public static final int JSON_ARRAY_FIELD_NUMBER = 3;
   public static final int BOOLEAN_FIELD_NUMBER = 4;
   public static final int STRING_FIELD_NUMBER = 5;
   public static final int INTEGER_FIELD_NUMBER = 6;
@@ -26,13 +27,14 @@ public class JsonObjectConverter {
   public static final int DOUBLE_FIELD_NUMBER = 8;
   public static final int FLOAT_FIELD_NUMBER = 9;
   public static final int INSTANT_FIELD_NUMBER = 10;
+  public static final int BYTES_FIELD_NUMBER = 11;
 
   // int tag = (fieldNumber << 3) | wireType;
   public static final int TOP_LEVEL_TAG = 0xa;  //    1|010
 
   public static final int NULL_TAG = 0x8;           //    1|000
   public static final int JSON_OBJECT_TAG = 0x12;   //   10|010
-  //public static final int LIST_TAG = ?
+  public static final int JSON_ARRAY_TAG = 0x1a;    //   11|010
   public static final int BOOLEAN_TAG = 0x20;       //  100|000
   public static final int STRING_TAG = 0x2a;        //  101|010
   public static final int INTEGER_TAG = 0x30;       //  110|000
@@ -40,6 +42,7 @@ public class JsonObjectConverter {
   public static final int DOUBLE_TAG = 0x41;        // 1000|001
   public static final int FLOAT_TAG = 0x4d;         // 1001|101
   public static final int INSTANT_TAG = 0x52;       // 1010|010
+  public static final int BYTES_TAG = 0x5a;         // 1011|010
 
   public static JsonObject fromProto(CodedInputStream input) throws IOException {
     JsonObject obj = new JsonObject();
@@ -140,6 +143,8 @@ public class JsonObjectConverter {
         valueLength += CodedOutputStream.computeTagSize(JSON_OBJECT_FIELD_NUMBER);
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
+      } else if (value instanceof JsonArray) {
+        // TODO
       } else if (value instanceof Instant) {
         structSize = InstantProtoConverter.computeSize((Instant) value);
         valueLength += CodedOutputStream.computeTagSize(INSTANT_FIELD_NUMBER);
@@ -188,6 +193,8 @@ public class JsonObjectConverter {
         output.writeTag(JSON_OBJECT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);          // value
         output.writeUInt32NoTag(structSize);                                      //
         JsonObjectConverter.toProto((JsonObject) value, output);                  //
+      } else if (value instanceof JsonArray) {
+        // TODO
       } else if (value instanceof Instant) {
         output.writeUInt32NoTag(valueLength);                                     // value length
         output.writeTag(INSTANT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);         // value
@@ -227,6 +234,8 @@ public class JsonObjectConverter {
         valueLength += CodedOutputStream.computeTagSize(JSON_OBJECT_FIELD_NUMBER);
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
+      } else if (value instanceof JsonArray) {
+        // TODO
       } else if (value instanceof Instant) {
         int structSize = InstantProtoConverter.computeSize((Instant) value);
         valueLength += CodedOutputStream.computeTagSize(INSTANT_FIELD_NUMBER);
