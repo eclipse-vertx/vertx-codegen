@@ -11,13 +11,13 @@ import java.util.Map;
 import static com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED;
 
 public class JsonObjectConverter {
-  public static final int STRUCT_FIELDS_FIELD_NUMBER = 1;
+  public static final int TOP_LEVEL_FIELD_NUMBER = 1;
 
   public static final int MAP_KEY_FIELD_NUMBER = 1;
   public static final int MAP_VALUE_FIELD_NUMBER = 2;
 
   public static final int NULL_FIELD_NUMBER = 1;
-  public static final int STRUCT_FIELD_NUMBER = 2;
+  public static final int JSON_OBJECT_FIELD_NUMBER = 2;
   public static final int LIST_FIELD_NUMBER = 3;
   public static final int BOOLEAN_FIELD_NUMBER = 4;
   public static final int STRING_FIELD_NUMBER = 5;
@@ -28,10 +28,10 @@ public class JsonObjectConverter {
   public static final int INSTANT_FIELD_NUMBER = 10;
 
   // int tag = (fieldNumber << 3) | wireType;
-  public static final int STRUCT_FIELDS_TAG = 0xa;  //    1|010
+  public static final int TOP_LEVEL_TAG = 0xa;  //    1|010
 
   public static final int NULL_TAG = 0x8;           //    1|000
-  public static final int STRUCT_TAG = 0x12;        //   10|010
+  public static final int JSON_OBJECT_TAG = 0x12;   //   10|010
   //public static final int LIST_TAG = ?
   public static final int BOOLEAN_TAG = 0x20;       //  100|000
   public static final int STRING_TAG = 0x2a;        //  101|010
@@ -46,7 +46,7 @@ public class JsonObjectConverter {
     int tag;
     while ((tag = input.readTag()) != 0) {
       switch (tag) {
-        case STRUCT_FIELDS_TAG: {
+        case TOP_LEVEL_TAG: {
           int length = input.readUInt32();
           int limit = input.pushLimit(length);
 
@@ -76,7 +76,7 @@ public class JsonObjectConverter {
             case BOOLEAN_TAG:
               obj.put(key, input.readBool());
               break;
-            case STRUCT_TAG: {
+            case JSON_OBJECT_TAG: {
               int structLength = input.readUInt32();
               int structLimit = input.pushLimit(structLength);
               JsonObject subObj = JsonObjectConverter.fromProto(input);
@@ -137,7 +137,7 @@ public class JsonObjectConverter {
         valueLength = CodedOutputStream.computeFloatSize(FLOAT_FIELD_NUMBER, (Float) value);
       } else if (value instanceof JsonObject) {
         structSize = JsonObjectConverter.computeSize((JsonObject) value);
-        valueLength += CodedOutputStream.computeTagSize(STRUCT_FIELD_NUMBER);
+        valueLength += CodedOutputStream.computeTagSize(JSON_OBJECT_FIELD_NUMBER);
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
       } else if (value instanceof Instant) {
@@ -153,9 +153,9 @@ public class JsonObjectConverter {
       dataSize += CodedOutputStream.computeUInt32SizeNoTag(valueLength);          // value length
       dataSize += valueLength;                                                    // value
 
-      // struct header
-      output.writeTag(STRUCT_FIELDS_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);     // struct tag, always 0xa
-      output.writeUInt32NoTag(dataSize);                                          // struct length
+      // top level
+      output.writeTag(TOP_LEVEL_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);         // top-level tag, always 0xa
+      output.writeUInt32NoTag(dataSize);                                          // top-level length
 
       // key
       output.writeString(MAP_KEY_FIELD_NUMBER, key);
@@ -185,7 +185,7 @@ public class JsonObjectConverter {
         output.writeFloat(FLOAT_FIELD_NUMBER, (Float) value);                     // value
       } else if (value instanceof JsonObject) {
         output.writeUInt32NoTag(valueLength);                                     // value length
-        output.writeTag(STRUCT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);          // value
+        output.writeTag(JSON_OBJECT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);          // value
         output.writeUInt32NoTag(structSize);                                      //
         JsonObjectConverter.toProto((JsonObject) value, output);                  //
       } else if (value instanceof Instant) {
@@ -211,7 +211,7 @@ public class JsonObjectConverter {
       if (value == null) {
         valueLength = CodedOutputStream.computeEnumSize(NULL_FIELD_NUMBER, 0);
       } else if (value instanceof String) {
-        valueLength = CodedOutputStream.computeStringSize(STRUCT_FIELD_NUMBER, (String) value);
+        valueLength = CodedOutputStream.computeStringSize(JSON_OBJECT_FIELD_NUMBER, (String) value);
       } else if (value instanceof Integer) {
         valueLength = CodedOutputStream.computeInt32Size(INTEGER_FIELD_NUMBER, (Integer) value);
       } else if (value instanceof Long) {
@@ -224,7 +224,7 @@ public class JsonObjectConverter {
         valueLength = CodedOutputStream.computeFloatSize(FLOAT_FIELD_NUMBER, (Float) value);
       } else if (value instanceof JsonObject) {
         int structSize = JsonObjectConverter.computeSize((JsonObject) value);
-        valueLength += CodedOutputStream.computeTagSize(STRUCT_FIELD_NUMBER);
+        valueLength += CodedOutputStream.computeTagSize(JSON_OBJECT_FIELD_NUMBER);
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
       } else if (value instanceof Instant) {
@@ -240,9 +240,9 @@ public class JsonObjectConverter {
       dataSize += CodedOutputStream.computeUInt32SizeNoTag(valueLength);            // value length
       dataSize += valueLength;                                                      // value
 
-      totalSize += CodedOutputStream.computeTagSize(STRUCT_FIELDS_FIELD_NUMBER);    // struct tag
-      totalSize += CodedOutputStream.computeUInt32SizeNoTag(dataSize);              // struct length
-      totalSize += dataSize;                                                        // struct
+      totalSize += CodedOutputStream.computeTagSize(TOP_LEVEL_FIELD_NUMBER);        // top-level tag
+      totalSize += CodedOutputStream.computeUInt32SizeNoTag(dataSize);              // top-level length
+      totalSize += dataSize;                                                        // key and value
     }
     return totalSize;
   }

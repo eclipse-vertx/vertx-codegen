@@ -3,10 +3,10 @@ syntax = "proto3";
 option java_multiple_files = true;
 option java_package = "io.vertx.test.protoc.gen";
 
-import "struct.proto";
-import "datetime.proto";
-
 package testing;
+
+import "json-object.proto";
+import "datetime.proto";
 
 message User {
   Address address = 1;
@@ -14,7 +14,7 @@ message User {
   bool boolField = 3;
   int32 charField = 4;
   double doubleField = 5;
-  Instant instantField = 6;
+  io.vertx.protobuf.Instant instantField = 6;
   repeated int32 integerListField = 7;
   map<string, int32> integerValueMap = 8;
   int64 longField = 9;
@@ -23,9 +23,9 @@ message User {
   repeated Address structListField = 12;
   map<string, Address> structValueMap = 13;
   string username = 14;
-  ZonedDateTime zonedDateTimeField = 15;
-  repeated ZonedDateTime zonedDateTimeListField = 16;
-  map<string, ZonedDateTime> zonedDateTimeValueMap = 17;
+  io.vertx.protobuf.ZonedDateTime zonedDateTimeField = 15;
+  repeated io.vertx.protobuf.ZonedDateTime zonedDateTimeListField = 16;
+  map<string, io.vertx.protobuf.ZonedDateTime> zonedDateTimeValueMap = 17;
 }
 
 message Address {
