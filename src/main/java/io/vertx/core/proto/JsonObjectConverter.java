@@ -5,6 +5,7 @@ import com.google.protobuf.CodedOutputStream;
 import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Map;
 
 import static com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED;
@@ -24,6 +25,7 @@ public class JsonObjectConverter {
   public static final int LONG_FIELD_NUMBER = 7;
   public static final int DOUBLE_FIELD_NUMBER = 8;
   public static final int FLOAT_FIELD_NUMBER = 9;
+  public static final int INSTANT_FIELD_NUMBER = 10;
 
   // int tag = (fieldNumber << 3) | wireType;
   public static final int STRUCT_FIELDS_TAG = 0xa;  //    1|010
@@ -37,6 +39,7 @@ public class JsonObjectConverter {
   public static final int LONG_TAG = 0x38;          //  111|000
   public static final int DOUBLE_TAG = 0x41;        // 1000|001
   public static final int FLOAT_TAG = 0x4d;         // 1001|101
+  public static final int INSTANT_TAG = 0x52;       // 1010|010
 
   public static JsonObject fromProto(CodedInputStream input) throws IOException {
     JsonObject obj = new JsonObject();
@@ -73,13 +76,22 @@ public class JsonObjectConverter {
             case BOOLEAN_TAG:
               obj.put(key, input.readBool());
               break;
-            case STRUCT_TAG:
+            case STRUCT_TAG: {
               int structLength = input.readUInt32();
               int structLimit = input.pushLimit(structLength);
               JsonObject subObj = JsonObjectConverter.fromProto(input);
               obj.put(key, subObj);
               input.popLimit(structLimit);
               break;
+            }
+            case INSTANT_TAG: {
+              int structLength = input.readUInt32();
+              int structLimit = input.pushLimit(structLength);
+              Instant subObj = InstantProtoConverter.fromProto(input);
+              obj.put(key, subObj);
+              input.popLimit(structLimit);
+              break;
+            }
             case NULL_TAG:
               input.readEnum();
               obj.put(key, null);
@@ -109,7 +121,9 @@ public class JsonObjectConverter {
       int structSize = 0;
       int dataSize = 0;
       int valueLength = 0;
-      if (value instanceof String) {
+      if (value == null) {
+        valueLength = CodedOutputStream.computeEnumSize(NULL_FIELD_NUMBER, 0);
+      } else if (value instanceof String) {
         valueLength = CodedOutputStream.computeStringSize(STRING_FIELD_NUMBER, (String) value);
       } else if (value instanceof Integer){
         valueLength = CodedOutputStream.computeInt32Size(INTEGER_FIELD_NUMBER, (Integer) value);
@@ -126,8 +140,11 @@ public class JsonObjectConverter {
         valueLength += CodedOutputStream.computeTagSize(STRUCT_FIELD_NUMBER);
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
-      } else if (value == null) {
-        valueLength = CodedOutputStream.computeEnumSize(NULL_FIELD_NUMBER, 0);
+      } else if (value instanceof Instant) {
+        structSize = InstantProtoConverter.computeSize((Instant) value);
+        valueLength += CodedOutputStream.computeTagSize(INSTANT_FIELD_NUMBER);
+        valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
+        valueLength += structSize;
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }
@@ -168,9 +185,14 @@ public class JsonObjectConverter {
         output.writeFloat(FLOAT_FIELD_NUMBER, (Float) value);                     // value
       } else if (value instanceof JsonObject) {
         output.writeUInt32NoTag(valueLength);                                     // value length
-        output.writeTag(STRUCT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);          // 0x2a
-        output.writeUInt32NoTag(structSize);                                      // value length
-        JsonObjectConverter.toProto((JsonObject) value, output);                  // value
+        output.writeTag(STRUCT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);          // value
+        output.writeUInt32NoTag(structSize);                                      //
+        JsonObjectConverter.toProto((JsonObject) value, output);                  //
+      } else if (value instanceof Instant) {
+        output.writeUInt32NoTag(valueLength);                                     // value length
+        output.writeTag(INSTANT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);         // value
+        output.writeUInt32NoTag(structSize);                                      //
+        InstantProtoConverter.toProto((Instant) value, output);                   //
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }
@@ -203,6 +225,11 @@ public class JsonObjectConverter {
       } else if (value instanceof JsonObject) {
         int structSize = JsonObjectConverter.computeSize((JsonObject) value);
         valueLength += CodedOutputStream.computeTagSize(STRUCT_FIELD_NUMBER);
+        valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
+        valueLength += structSize;
+      } else if (value instanceof Instant) {
+        int structSize = InstantProtoConverter.computeSize((Instant) value);
+        valueLength += CodedOutputStream.computeTagSize(INSTANT_FIELD_NUMBER);
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
       } else {

@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Instant;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -29,6 +30,8 @@ public class JsonObjectConverterTest {
     jsonObject.put("LongField", 20000L);
     jsonObject.put("FloatField", 8.8888f);
     jsonObject.put("NullField", null);
+    Instant now = Instant.now();
+    jsonObject.put("InstantField", now);
 
     // Vertx Encode
     byte[] encoded = vertxEncode(jsonObject);
@@ -59,6 +62,11 @@ public class JsonObjectConverterTest {
     Value floatValue = struct.getFieldsMap().get("FloatField");
     assertEquals(8.8888f, floatValue.getFloatValue(), 0.0);
     assertEquals(Value.KindCase.FLOAT_VALUE, floatValue.getKindCase());
+
+    Value instantValue = struct.getFieldsMap().get("InstantField");
+    assertEquals(now.getNano(), instantValue.getInstantValue().getNanos());
+    assertEquals(now.getEpochSecond(), instantValue.getInstantValue().getSeconds());
+    assertEquals(Value.KindCase.INSTANT_VALUE, instantValue.getKindCase());
 
     // Encode using Google's protoc plugin
     byte[] protocEncoded = protocEncode(struct);
