@@ -3,9 +3,9 @@ package io.vertx.test.codegen.converter.proto;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import io.vertx.core.json.JsonArray;
-import io.vertx.protobuf.Value;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.proto.JsonObjectConverter;
+import io.vertx.protobuf.Value;
 import io.vertx.test.codegen.converter.TestUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,8 +13,6 @@ import org.junit.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -127,7 +125,7 @@ public class JsonObjectConverterTest {
   }
 
   @Test
-  public void TestRepeatedJsonObject() throws IOException {
+  public void TestIntegerJsonArray() throws IOException {
     JsonObject jsonObject = new JsonObject();
     JsonArray jsonArray = new JsonArray();
     jsonArray.add(1);
@@ -171,20 +169,50 @@ public class JsonObjectConverterTest {
     // Verify ComputeSize
     Assert.assertEquals(encoded.length, JsonObjectConverter.computeSize(jsonObject));
   }
-
   @Test
-  public void TestTest() throws IOException {
-    io.vertx.protobuf.JsonObject proto = io.vertx.protobuf.JsonObject.newBuilder()
-      .putFields("intList", Value.newBuilder().setJsonArrayValue(
-          io.vertx.protobuf.JsonArray.newBuilder()
-            .addValues(Value.newBuilder().setIntegerValue(1).build())
-            .addValues(Value.newBuilder().setIntegerValue(2).build())
-            .addValues(Value.newBuilder().setIntegerValue(3).build())
-            .build())
-        .build())
-      .build();
+  public void TestStringJsonArray() throws IOException {
+    JsonObject jsonObject = new JsonObject();
+    JsonArray jsonArray = new JsonArray();
+    jsonArray.add("One");
+    jsonArray.add("Two");
+    jsonArray.add("Three");
+    jsonObject.put("strList", jsonArray);
 
-    protocEncode(proto);
+    byte[] encoded = vertxEncode(jsonObject);
+
+    // Decode using Google's protoc plugin
+    io.vertx.protobuf.JsonObject protoJsonObject = io.vertx.protobuf.JsonObject.parseFrom(encoded);
+
+    Value jsonObjectValue = protoJsonObject.getFieldsMap().get("strList");
+    assertEquals(Value.KindCase.JSON_ARRAY_VALUE, jsonObjectValue.getKindCase());
+    io.vertx.protobuf.JsonArray subJsonArray = jsonObjectValue.getJsonArrayValue();
+    List<Value> valueList = subJsonArray.getValuesList();
+    assertEquals(3, valueList.size());
+
+    Value strValue1 = valueList.get(0);
+    assertEquals("One", strValue1.getStringValue());
+    assertEquals(Value.KindCase.STRING_VALUE, strValue1.getKindCase());
+
+    Value strValue2 = valueList.get(1);
+    assertEquals("Two", strValue2.getStringValue());
+    assertEquals(Value.KindCase.STRING_VALUE, strValue2.getKindCase());
+
+    Value strValue3 = valueList.get(2);
+    assertEquals("Three", strValue3.getStringValue());
+    assertEquals(Value.KindCase.STRING_VALUE, strValue3.getKindCase());
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(protoJsonObject);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Vertx Decode
+    CodedInputStream input = CodedInputStream.newInstance(protocEncoded);
+    JsonObject decoded = JsonObjectConverter.fromProto(input);
+
+    assertEquals(jsonObject.getMap(), decoded.getMap());
+
+    // Verify ComputeSize
+    Assert.assertEquals(encoded.length, JsonObjectConverter.computeSize(jsonObject));
   }
 
   private byte[] protocEncode(io.vertx.protobuf.JsonObject obj) throws IOException {

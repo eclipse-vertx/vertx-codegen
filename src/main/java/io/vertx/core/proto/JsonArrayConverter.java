@@ -9,6 +9,8 @@ import java.io.IOException;
 import static com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED;
 import static io.vertx.core.proto.JsonObjectConverter.INTEGER_FIELD_NUMBER;
 import static io.vertx.core.proto.JsonObjectConverter.INTEGER_TAG;
+import static io.vertx.core.proto.JsonObjectConverter.STRING_FIELD_NUMBER;
+import static io.vertx.core.proto.JsonObjectConverter.STRING_TAG;
 import static io.vertx.core.proto.JsonObjectConverter.TOP_LEVEL_FIELD_NUMBER;
 import static io.vertx.core.proto.JsonObjectConverter.TOP_LEVEL_TAG;
 
@@ -24,6 +26,9 @@ public class JsonArrayConverter {
 
           int fieldType = input.readTag();
           switch (fieldType) {
+            case STRING_TAG:
+              array.add(input.readString());
+              break;
             case INTEGER_TAG:
               array.add(input.readInt32());
               break;
@@ -48,7 +53,7 @@ public class JsonArrayConverter {
       if (value == null) {
         throw new UnsupportedOperationException("Unsupported null type");
       } else if (value instanceof String) {
-        throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
+        valueLength = CodedOutputStream.computeStringSize(STRING_FIELD_NUMBER, (String) value);
       } else if (value instanceof Integer){
         valueLength = CodedOutputStream.computeInt32Size(INTEGER_FIELD_NUMBER, (Integer) value);
       } else {
@@ -57,7 +62,16 @@ public class JsonArrayConverter {
 
       output.writeTag(TOP_LEVEL_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);   // top-level tag, always 0xa
       output.writeUInt32NoTag(valueLength);                                 // value length
-      output.writeInt32(INTEGER_FIELD_NUMBER, (Integer) value);             // value
+
+      if (value == null) {
+        throw new UnsupportedOperationException("Unsupported null type");
+      } else if (value instanceof String) {
+        output.writeString(STRING_FIELD_NUMBER, (String) value);             // value
+      } else if (value instanceof Integer){
+        output.writeInt32(INTEGER_FIELD_NUMBER, (Integer) value);             // value
+      } else {
+        throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
+      }
     }
   }
 
@@ -69,7 +83,7 @@ public class JsonArrayConverter {
       if (value == null) {
         throw new UnsupportedOperationException("Unsupported null type");
       } else if (value instanceof String) {
-        throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
+        valueLength = CodedOutputStream.computeStringSize(STRING_FIELD_NUMBER, (String) value);
       } else if (value instanceof Integer){
         valueLength = CodedOutputStream.computeInt32Size(INTEGER_FIELD_NUMBER, (Integer) value);
       } else {
