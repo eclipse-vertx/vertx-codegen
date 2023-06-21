@@ -125,81 +125,79 @@ public class JsonObjectConverterTest {
   }
 
   @Test
-  public void TestIntegerJsonArray() throws IOException {
+  public void TestJsonArray() throws IOException {
     JsonObject jsonObject = new JsonObject();
-    JsonArray jsonArray = new JsonArray();
-    jsonArray.add(1);
-    jsonArray.add(2);
-    jsonArray.add(3);
-    jsonObject.put("intList", jsonArray);
+
+    JsonArray intJsonARray = new JsonArray();
+    intJsonARray.add(1);
+    intJsonARray.add(2);
+    intJsonARray.add(3);
+    jsonObject.put("intList", intJsonARray);
+
+    JsonArray strJsonArray = new JsonArray();
+    strJsonArray.add("One");
+    strJsonArray.add("Two");
+    strJsonArray.add("Three");
+    jsonObject.put("strList", strJsonArray);
+
+    JsonArray longJsonARray = new JsonArray();
+    longJsonARray.add(1000L);
+    longJsonARray.add(2000L);
+    longJsonARray.add(3000L);
+    jsonObject.put("longList", longJsonARray);
 
     byte[] encoded = vertxEncode(jsonObject);
 
     // Decode using Google's protoc plugin
     io.vertx.protobuf.JsonObject protoJsonObject = io.vertx.protobuf.JsonObject.parseFrom(encoded);
 
-    Value jsonObjectValue = protoJsonObject.getFieldsMap().get("intList");
-    assertEquals(Value.KindCase.JSON_ARRAY_VALUE, jsonObjectValue.getKindCase());
-    io.vertx.protobuf.JsonArray subJsonArray = jsonObjectValue.getJsonArrayValue();
-    List<Value> valueList = subJsonArray.getValuesList();
-    assertEquals(3, valueList.size());
+    // Integer
+    Value intJsonArrayValue = protoJsonObject.getFieldsMap().get("intList");
+    assertEquals(Value.KindCase.JSON_ARRAY_VALUE, intJsonArrayValue.getKindCase());
+    List<Value> intValueList = intJsonArrayValue.getJsonArrayValue().getValuesList();
+    assertEquals(3, intValueList.size());
 
-    Value intValue1 = valueList.get(0);
+    Value intValue1 = intValueList.get(0);
     assertEquals(1, intValue1.getIntegerValue());
     assertEquals(Value.KindCase.INTEGER_VALUE, intValue1.getKindCase());
-
-    Value intValue2 = valueList.get(1);
+    Value intValue2 = intValueList.get(1);
     assertEquals(2, intValue2.getIntegerValue());
     assertEquals(Value.KindCase.INTEGER_VALUE, intValue2.getKindCase());
-
-    Value intValue3 = valueList.get(2);
+    Value intValue3 = intValueList.get(2);
     assertEquals(3, intValue3.getIntegerValue());
     assertEquals(Value.KindCase.INTEGER_VALUE, intValue3.getKindCase());
 
-    // Encode using Google's protoc plugin
-    byte[] protocEncoded = protocEncode(protoJsonObject);
-    assertArrayEquals(protocEncoded, encoded);
+    // String
+    Value strJsonArrayValue = protoJsonObject.getFieldsMap().get("strList");
+    assertEquals(Value.KindCase.JSON_ARRAY_VALUE, strJsonArrayValue.getKindCase());
+    List<Value> strValueList = strJsonArrayValue.getJsonArrayValue().getValuesList();
+    assertEquals(3, strValueList.size());
 
-    // Vertx Decode
-    CodedInputStream input = CodedInputStream.newInstance(protocEncoded);
-    JsonObject decoded = JsonObjectConverter.fromProto(input);
-
-    assertEquals(jsonObject.getMap(), decoded.getMap());
-
-    // Verify ComputeSize
-    Assert.assertEquals(encoded.length, JsonObjectConverter.computeSize(jsonObject));
-  }
-  @Test
-  public void TestStringJsonArray() throws IOException {
-    JsonObject jsonObject = new JsonObject();
-    JsonArray jsonArray = new JsonArray();
-    jsonArray.add("One");
-    jsonArray.add("Two");
-    jsonArray.add("Three");
-    jsonObject.put("strList", jsonArray);
-
-    byte[] encoded = vertxEncode(jsonObject);
-
-    // Decode using Google's protoc plugin
-    io.vertx.protobuf.JsonObject protoJsonObject = io.vertx.protobuf.JsonObject.parseFrom(encoded);
-
-    Value jsonObjectValue = protoJsonObject.getFieldsMap().get("strList");
-    assertEquals(Value.KindCase.JSON_ARRAY_VALUE, jsonObjectValue.getKindCase());
-    io.vertx.protobuf.JsonArray subJsonArray = jsonObjectValue.getJsonArrayValue();
-    List<Value> valueList = subJsonArray.getValuesList();
-    assertEquals(3, valueList.size());
-
-    Value strValue1 = valueList.get(0);
+    Value strValue1 = strValueList.get(0);
     assertEquals("One", strValue1.getStringValue());
     assertEquals(Value.KindCase.STRING_VALUE, strValue1.getKindCase());
-
-    Value strValue2 = valueList.get(1);
+    Value strValue2 = strValueList.get(1);
     assertEquals("Two", strValue2.getStringValue());
     assertEquals(Value.KindCase.STRING_VALUE, strValue2.getKindCase());
-
-    Value strValue3 = valueList.get(2);
+    Value strValue3 = strValueList.get(2);
     assertEquals("Three", strValue3.getStringValue());
     assertEquals(Value.KindCase.STRING_VALUE, strValue3.getKindCase());
+
+    // Long
+    Value longJsonArrayValue = protoJsonObject.getFieldsMap().get("longList");
+    assertEquals(Value.KindCase.JSON_ARRAY_VALUE, longJsonArrayValue.getKindCase());
+    List<Value> longValueList = longJsonArrayValue.getJsonArrayValue().getValuesList();
+    assertEquals(3, longValueList.size());
+
+    Value longValue1 = longValueList.get(0);
+    assertEquals(1000L, longValue1.getLongValue());
+    assertEquals(Value.KindCase.LONG_VALUE, longValue1.getKindCase());
+    Value longValue2 = longValueList.get(1);
+    assertEquals(2000L, longValue2.getLongValue());
+    assertEquals(Value.KindCase.LONG_VALUE, longValue2.getKindCase());
+    Value longValue3 = longValueList.get(2);
+    assertEquals(3000L, longValue3.getLongValue());
+    assertEquals(Value.KindCase.LONG_VALUE, longValue3.getKindCase());
 
     // Encode using Google's protoc plugin
     byte[] protocEncoded = protocEncode(protoJsonObject);

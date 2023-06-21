@@ -9,6 +9,8 @@ import java.io.IOException;
 import static com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED;
 import static io.vertx.core.proto.JsonObjectConverter.INTEGER_FIELD_NUMBER;
 import static io.vertx.core.proto.JsonObjectConverter.INTEGER_TAG;
+import static io.vertx.core.proto.JsonObjectConverter.LONG_FIELD_NUMBER;
+import static io.vertx.core.proto.JsonObjectConverter.LONG_TAG;
 import static io.vertx.core.proto.JsonObjectConverter.STRING_FIELD_NUMBER;
 import static io.vertx.core.proto.JsonObjectConverter.STRING_TAG;
 import static io.vertx.core.proto.JsonObjectConverter.TOP_LEVEL_FIELD_NUMBER;
@@ -31,6 +33,9 @@ public class JsonArrayConverter {
               break;
             case INTEGER_TAG:
               array.add(input.readInt32());
+              break;
+            case LONG_TAG:
+              array.add(input.readInt64());
               break;
             default:
               throw new UnsupportedOperationException("Unsupported field type " + fieldType);
@@ -56,6 +61,8 @@ public class JsonArrayConverter {
         valueLength = CodedOutputStream.computeStringSize(STRING_FIELD_NUMBER, (String) value);
       } else if (value instanceof Integer){
         valueLength = CodedOutputStream.computeInt32Size(INTEGER_FIELD_NUMBER, (Integer) value);
+      } else if (value instanceof Long) {
+        valueLength = CodedOutputStream.computeInt64Size(LONG_FIELD_NUMBER, (Long) value);
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }
@@ -66,9 +73,11 @@ public class JsonArrayConverter {
       if (value == null) {
         throw new UnsupportedOperationException("Unsupported null type");
       } else if (value instanceof String) {
-        output.writeString(STRING_FIELD_NUMBER, (String) value);             // value
+        output.writeString(STRING_FIELD_NUMBER, (String) value);
       } else if (value instanceof Integer){
-        output.writeInt32(INTEGER_FIELD_NUMBER, (Integer) value);             // value
+        output.writeInt32(INTEGER_FIELD_NUMBER, (Integer) value);
+      } else if (value instanceof Long) {
+        output.writeInt64(LONG_FIELD_NUMBER, (Long) value);
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }
@@ -86,6 +95,8 @@ public class JsonArrayConverter {
         valueLength = CodedOutputStream.computeStringSize(STRING_FIELD_NUMBER, (String) value);
       } else if (value instanceof Integer){
         valueLength = CodedOutputStream.computeInt32Size(INTEGER_FIELD_NUMBER, (Integer) value);
+      } else if (value instanceof Long) {
+        valueLength = CodedOutputStream.computeInt64Size(LONG_FIELD_NUMBER, (Long) value);
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }
