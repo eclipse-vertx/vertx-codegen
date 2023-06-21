@@ -30,7 +30,7 @@ public class JsonObjectConverter {
   public static final int BYTES_FIELD_NUMBER = 11;
 
   // int tag = (fieldNumber << 3) | wireType;
-  public static final int TOP_LEVEL_TAG = 0xa;  //    1|010
+  public static final int TOP_LEVEL_TAG = 0xa;      //    1|010
 
   public static final int NULL_TAG = 0x8;           //    1|000
   public static final int JSON_OBJECT_TAG = 0x12;   //   10|010
@@ -84,6 +84,14 @@ public class JsonObjectConverter {
               int structLimit = input.pushLimit(structLength);
               JsonObject subObj = JsonObjectConverter.fromProto(input);
               obj.put(key, subObj);
+              input.popLimit(structLimit);
+              break;
+            }
+            case JSON_ARRAY_TAG: {
+              int structLength = input.readUInt32();
+              int structLimit = input.pushLimit(structLength);
+              JsonArray array = JsonArrayConverter.fromProto(input);
+              obj.put(key, array);
               input.popLimit(structLimit);
               break;
             }
@@ -144,7 +152,10 @@ public class JsonObjectConverter {
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
       } else if (value instanceof JsonArray) {
-        // TODO
+        structSize = JsonArrayConverter.computeSize((JsonArray) value);
+        valueLength += CodedOutputStream.computeTagSize(JSON_ARRAY_FIELD_NUMBER);
+        valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
+        valueLength += structSize;
       } else if (value instanceof Instant) {
         structSize = InstantProtoConverter.computeSize((Instant) value);
         valueLength += CodedOutputStream.computeTagSize(INSTANT_FIELD_NUMBER);
@@ -190,11 +201,14 @@ public class JsonObjectConverter {
         output.writeFloat(FLOAT_FIELD_NUMBER, (Float) value);                     // value
       } else if (value instanceof JsonObject) {
         output.writeUInt32NoTag(valueLength);                                     // value length
-        output.writeTag(JSON_OBJECT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);          // value
+        output.writeTag(JSON_OBJECT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);     // value
         output.writeUInt32NoTag(structSize);                                      //
         JsonObjectConverter.toProto((JsonObject) value, output);                  //
       } else if (value instanceof JsonArray) {
-        // TODO
+        output.writeUInt32NoTag(valueLength);                                     // value length
+        output.writeTag(JSON_ARRAY_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);      // value
+        output.writeUInt32NoTag(structSize);                                      //
+        JsonArrayConverter.toProto((JsonArray) value, output);
       } else if (value instanceof Instant) {
         output.writeUInt32NoTag(valueLength);                                     // value length
         output.writeTag(INSTANT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);         // value
@@ -235,7 +249,10 @@ public class JsonObjectConverter {
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
       } else if (value instanceof JsonArray) {
-        // TODO
+        int structSize = JsonArrayConverter.computeSize((JsonArray) value);
+        valueLength += CodedOutputStream.computeTagSize(JSON_ARRAY_FIELD_NUMBER);
+        valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
+        valueLength += structSize;
       } else if (value instanceof Instant) {
         int structSize = InstantProtoConverter.computeSize((Instant) value);
         valueLength += CodedOutputStream.computeTagSize(INSTANT_FIELD_NUMBER);

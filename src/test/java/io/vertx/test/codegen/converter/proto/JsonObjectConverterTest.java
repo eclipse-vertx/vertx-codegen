@@ -133,9 +133,58 @@ public class JsonObjectConverterTest {
     jsonArray.add(1);
     jsonArray.add(2);
     jsonArray.add(3);
-    jsonObject.put("integerList", jsonArray);
+    jsonObject.put("intList", jsonArray);
 
-    //byte[] encoded = vertxEncode(jsonObject);
+    byte[] encoded = vertxEncode(jsonObject);
+
+    // Decode using Google's protoc plugin
+    io.vertx.protobuf.JsonObject protoJsonObject = io.vertx.protobuf.JsonObject.parseFrom(encoded);
+
+    Value jsonObjectValue = protoJsonObject.getFieldsMap().get("intList");
+    assertEquals(Value.KindCase.JSON_ARRAY_VALUE, jsonObjectValue.getKindCase());
+    io.vertx.protobuf.JsonArray subJsonArray = jsonObjectValue.getJsonArrayValue();
+    List<Value> valueList = subJsonArray.getValuesList();
+    assertEquals(3, valueList.size());
+
+    Value intValue1 = valueList.get(0);
+    assertEquals(1, intValue1.getIntegerValue());
+    assertEquals(Value.KindCase.INTEGER_VALUE, intValue1.getKindCase());
+
+    Value intValue2 = valueList.get(1);
+    assertEquals(2, intValue2.getIntegerValue());
+    assertEquals(Value.KindCase.INTEGER_VALUE, intValue2.getKindCase());
+
+    Value intValue3 = valueList.get(2);
+    assertEquals(3, intValue3.getIntegerValue());
+    assertEquals(Value.KindCase.INTEGER_VALUE, intValue3.getKindCase());
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(protoJsonObject);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Vertx Decode
+    CodedInputStream input = CodedInputStream.newInstance(protocEncoded);
+    JsonObject decoded = JsonObjectConverter.fromProto(input);
+
+    assertEquals(jsonObject.getMap(), decoded.getMap());
+
+    // Verify ComputeSize
+    Assert.assertEquals(encoded.length, JsonObjectConverter.computeSize(jsonObject));
+  }
+
+  @Test
+  public void TestTest() throws IOException {
+    io.vertx.protobuf.JsonObject proto = io.vertx.protobuf.JsonObject.newBuilder()
+      .putFields("intList", Value.newBuilder().setJsonArrayValue(
+          io.vertx.protobuf.JsonArray.newBuilder()
+            .addValues(Value.newBuilder().setIntegerValue(1).build())
+            .addValues(Value.newBuilder().setIntegerValue(2).build())
+            .addValues(Value.newBuilder().setIntegerValue(3).build())
+            .build())
+        .build())
+      .build();
+
+    protocEncode(proto);
   }
 
   private byte[] protocEncode(io.vertx.protobuf.JsonObject obj) throws IOException {
