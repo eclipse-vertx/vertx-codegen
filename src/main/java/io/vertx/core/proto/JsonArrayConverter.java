@@ -21,32 +21,29 @@ public class JsonArrayConverter {
     JsonArray array = new JsonArray();
     int tag;
     while ((tag = input.readTag()) != 0) {
-      switch (tag) {
-        case TOP_LEVEL_TAG: {
-          int length = input.readUInt32();
-          int limit = input.pushLimit(length);
-
-          int fieldType = input.readTag();
-          switch (fieldType) {
-            case STRING_TAG:
-              array.add(input.readString());
-              break;
-            case INTEGER_TAG:
-              array.add(input.readInt32());
-              break;
-            case LONG_TAG:
-              array.add(input.readInt64());
-              break;
-            default:
-              throw new UnsupportedOperationException("Unsupported field type " + fieldType);
-          }
-
-          input.popLimit(limit);
-          break;
-        }
-        default:
-          throw new UnsupportedOperationException("Unsupported tag " + tag);
+      if (tag != TOP_LEVEL_TAG) {
+        throw new UnsupportedOperationException("Unsupported tag " + tag);
       }
+
+      int length = input.readUInt32();
+      int limit = input.pushLimit(length);
+
+      int fieldType = input.readTag();
+      switch (fieldType) {
+        case STRING_TAG:
+          array.add(input.readString());
+          break;
+        case INTEGER_TAG:
+          array.add(input.readInt32());
+          break;
+        case LONG_TAG:
+          array.add(input.readInt64());
+          break;
+        default:
+          throw new UnsupportedOperationException("Unsupported field type " + fieldType);
+      }
+
+      input.popLimit(limit);
     }
     return array;
   }

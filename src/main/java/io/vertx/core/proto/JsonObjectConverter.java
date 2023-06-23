@@ -1,5 +1,6 @@
 package io.vertx.core.proto;
 
+import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import io.vertx.core.json.JsonArray;
@@ -48,76 +49,77 @@ public class JsonObjectConverter {
     JsonObject obj = new JsonObject();
     int tag;
     while ((tag = input.readTag()) != 0) {
-      switch (tag) {
-        case TOP_LEVEL_TAG: {
-          int length = input.readUInt32();
-          int limit = input.pushLimit(length);
+      if (tag != TOP_LEVEL_TAG) {
+        throw new UnsupportedOperationException("Unsupported tag " + tag);
+      }
 
-          input.readTag();
-          String key = input.readString();
-          input.readTag();
-          int vlength = input.readUInt32();
-          int vlimit = input.pushLimit(vlength);
+      int length = input.readUInt32();
+      int limit = input.pushLimit(length);
 
-          int fieldType = input.readTag();
-          switch (fieldType) {
-            case STRING_TAG:
-              obj.put(key, input.readString());
-              break;
-            case INTEGER_TAG:
-              obj.put(key, input.readInt32());
-              break;
-            case LONG_TAG:
-              obj.put(key, input.readInt64());
-              break;
-            case DOUBLE_TAG:
-              obj.put(key, input.readDouble());
-              break;
-            case FLOAT_TAG:
-              obj.put(key, input.readFloat());
-              break;
-            case BOOLEAN_TAG:
-              obj.put(key, input.readBool());
-              break;
-            case JSON_OBJECT_TAG: {
-              int structLength = input.readUInt32();
-              int structLimit = input.pushLimit(structLength);
-              JsonObject subObj = JsonObjectConverter.fromProto(input);
-              obj.put(key, subObj);
-              input.popLimit(structLimit);
-              break;
-            }
-            case JSON_ARRAY_TAG: {
-              int structLength = input.readUInt32();
-              int structLimit = input.pushLimit(structLength);
-              JsonArray array = JsonArrayConverter.fromProto(input);
-              obj.put(key, array);
-              input.popLimit(structLimit);
-              break;
-            }
-            case INSTANT_TAG: {
-              int structLength = input.readUInt32();
-              int structLimit = input.pushLimit(structLength);
-              Instant subObj = InstantProtoConverter.fromProto(input);
-              obj.put(key, subObj);
-              input.popLimit(structLimit);
-              break;
-            }
-            case NULL_TAG:
-              input.readEnum();
-              obj.put(key, null);
-              break;
-            default:
-              throw new UnsupportedOperationException("Unsupported field type " + fieldType);
-          }
+      input.readTag();
+      String key = input.readString();
+      input.readTag();
+      int vlength = input.readUInt32();
+      int vlimit = input.pushLimit(vlength);
 
-          input.popLimit(vlimit);
-          input.popLimit(limit);
+      int fieldType = input.readTag();
+      switch (fieldType) {
+        case STRING_TAG:
+          obj.put(key, input.readString());
+          break;
+        case INTEGER_TAG:
+          obj.put(key, input.readInt32());
+          break;
+        case LONG_TAG:
+          obj.put(key, input.readInt64());
+          break;
+        case DOUBLE_TAG:
+          obj.put(key, input.readDouble());
+          break;
+        case FLOAT_TAG:
+          obj.put(key, input.readFloat());
+          break;
+        case BOOLEAN_TAG:
+          obj.put(key, input.readBool());
+          break;
+        case JSON_OBJECT_TAG: {
+          int structLength = input.readUInt32();
+          int structLimit = input.pushLimit(structLength);
+          JsonObject subObj = JsonObjectConverter.fromProto(input);
+          obj.put(key, subObj);
+          input.popLimit(structLimit);
           break;
         }
+        case JSON_ARRAY_TAG: {
+          int structLength = input.readUInt32();
+          int structLimit = input.pushLimit(structLength);
+          JsonArray array = JsonArrayConverter.fromProto(input);
+          obj.put(key, array);
+          input.popLimit(structLimit);
+          break;
+        }
+        case INSTANT_TAG: {
+          int structLength = input.readUInt32();
+          int structLimit = input.pushLimit(structLength);
+          Instant subObj = InstantProtoConverter.fromProto(input);
+          obj.put(key, subObj);
+          input.popLimit(structLimit);
+          break;
+        }
+        case BYTES_TAG: {
+          obj.put(key, input.readByteArray());
+          break;
+        }
+        case NULL_TAG:
+          input.readEnum();
+          obj.put(key, null);
+          break;
         default:
-          throw new UnsupportedOperationException("Unsupported tag " + tag);
+          throw new UnsupportedOperationException("Unsupported field type " + fieldType);
       }
+
+      input.popLimit(vlimit);
+      input.popLimit(limit);
     }
     return obj;
   }
@@ -161,59 +163,64 @@ public class JsonObjectConverter {
         valueLength += CodedOutputStream.computeTagSize(INSTANT_FIELD_NUMBER);
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
+      } else if (value instanceof byte[]) {
+        valueLength = CodedOutputStream.computeBytesSize(BYTES_FIELD_NUMBER, ByteString.copyFrom((byte[]) value));
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }
       dataSize += CodedOutputStream.computeStringSize(MAP_KEY_FIELD_NUMBER, key);
-      dataSize += CodedOutputStream.computeTagSize(MAP_VALUE_FIELD_NUMBER);       // value tag
-      dataSize += CodedOutputStream.computeUInt32SizeNoTag(valueLength);          // value length
-      dataSize += valueLength;                                                    // value
+      dataSize += CodedOutputStream.computeTagSize(MAP_VALUE_FIELD_NUMBER);           // value tag
+      dataSize += CodedOutputStream.computeUInt32SizeNoTag(valueLength);              // value length
+      dataSize += valueLength;                                                        // value
 
       // top level
-      output.writeTag(TOP_LEVEL_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);         // top-level tag, always 0xa
-      output.writeUInt32NoTag(dataSize);                                          // top-level length
+      output.writeTag(TOP_LEVEL_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);             // top-level tag, always 0xa
+      output.writeUInt32NoTag(dataSize);                                              // top-level length
 
       // key
       output.writeString(MAP_KEY_FIELD_NUMBER, key);
 
       // value
-      output.writeTag(MAP_VALUE_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);         // value tag, always 0x12
+      output.writeTag(MAP_VALUE_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);             // value tag, always 0x12
       if (value == null) {
-        output.writeUInt32NoTag(valueLength);                                     // value length
-        output.writeEnum(NULL_FIELD_NUMBER, 0);                             // value
+        output.writeUInt32NoTag(valueLength);                                         // value length
+        output.writeEnum(NULL_FIELD_NUMBER, 0);                                 // value
       } else if (value instanceof String) {
-        output.writeUInt32NoTag(valueLength);                                     // value length
-        output.writeString(STRING_FIELD_NUMBER, (String) value);                  // value
+        output.writeUInt32NoTag(valueLength);                                         // value length
+        output.writeString(STRING_FIELD_NUMBER, (String) value);                      // value
       } else if (value instanceof Integer){
-        output.writeUInt32NoTag(valueLength);                                     // value length
-        output.writeInt32(INTEGER_FIELD_NUMBER, (Integer) value);                 // value
+        output.writeUInt32NoTag(valueLength);                                         // value length
+        output.writeInt32(INTEGER_FIELD_NUMBER, (Integer) value);                     // value
       } else if (value instanceof Long){
-        output.writeUInt32NoTag(valueLength);                                     // value length
-        output.writeInt64(LONG_FIELD_NUMBER, (Long) value);                       // value
+        output.writeUInt32NoTag(valueLength);                                         // value length
+        output.writeInt64(LONG_FIELD_NUMBER, (Long) value);                           // value
       } else if (value instanceof Boolean){
-        output.writeUInt32NoTag(valueLength);                                     // value length
-        output.writeBool(BOOLEAN_FIELD_NUMBER, (Boolean) value);                  // value
+        output.writeUInt32NoTag(valueLength);                                         // value length
+        output.writeBool(BOOLEAN_FIELD_NUMBER, (Boolean) value);                      // value
       } else if (value instanceof Double) {
-        output.writeUInt32NoTag(valueLength);                                     // value length
-        output.writeDouble(DOUBLE_FIELD_NUMBER, (Double) value);                  // value
+        output.writeUInt32NoTag(valueLength);                                         // value length
+        output.writeDouble(DOUBLE_FIELD_NUMBER, (Double) value);                      // value
       } else if (value instanceof Float) {
-        output.writeUInt32NoTag(valueLength);                                     // value length
-        output.writeFloat(FLOAT_FIELD_NUMBER, (Float) value);                     // value
+        output.writeUInt32NoTag(valueLength);                                         // value length
+        output.writeFloat(FLOAT_FIELD_NUMBER, (Float) value);                         // value
       } else if (value instanceof JsonObject) {
-        output.writeUInt32NoTag(valueLength);                                     // value length
-        output.writeTag(JSON_OBJECT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);     // value
-        output.writeUInt32NoTag(structSize);                                      //
-        JsonObjectConverter.toProto((JsonObject) value, output);                  //
+        output.writeUInt32NoTag(valueLength);                                         // value length
+        output.writeTag(JSON_OBJECT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);         // value
+        output.writeUInt32NoTag(structSize);                                          //
+        JsonObjectConverter.toProto((JsonObject) value, output);                      //
       } else if (value instanceof JsonArray) {
-        output.writeUInt32NoTag(valueLength);                                     // value length
-        output.writeTag(JSON_ARRAY_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);      // value
-        output.writeUInt32NoTag(structSize);                                      //
+        output.writeUInt32NoTag(valueLength);                                         // value length
+        output.writeTag(JSON_ARRAY_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);          // value
+        output.writeUInt32NoTag(structSize);                                          //
         JsonArrayConverter.toProto((JsonArray) value, output);
       } else if (value instanceof Instant) {
-        output.writeUInt32NoTag(valueLength);                                     // value length
-        output.writeTag(INSTANT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);         // value
-        output.writeUInt32NoTag(structSize);                                      //
-        InstantProtoConverter.toProto((Instant) value, output);                   //
+        output.writeUInt32NoTag(valueLength);                                         // value length
+        output.writeTag(INSTANT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);             // value
+        output.writeUInt32NoTag(structSize);                                          //
+        InstantProtoConverter.toProto((Instant) value, output);                       //
+      } else if (value instanceof byte[]) {
+        output.writeUInt32NoTag(valueLength);                                         // value length
+        output.writeBytes(BYTES_FIELD_NUMBER, ByteString.copyFrom((byte[]) value));   // value
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }
@@ -258,6 +265,8 @@ public class JsonObjectConverter {
         valueLength += CodedOutputStream.computeTagSize(INSTANT_FIELD_NUMBER);
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
+      } else if (value instanceof byte[]) {
+        valueLength = CodedOutputStream.computeBytesSize(BYTES_FIELD_NUMBER, ByteString.copyFrom((byte[]) value));
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }

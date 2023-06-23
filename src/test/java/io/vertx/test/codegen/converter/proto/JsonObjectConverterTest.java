@@ -1,5 +1,6 @@
 package io.vertx.test.codegen.converter.proto;
 
+import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import io.vertx.core.json.JsonArray;
@@ -208,6 +209,44 @@ public class JsonObjectConverterTest {
     JsonObject decoded = JsonObjectConverter.fromProto(input);
 
     assertEquals(jsonObject.getMap(), decoded.getMap());
+
+    // Verify ComputeSize
+    Assert.assertEquals(encoded.length, JsonObjectConverter.computeSize(jsonObject));
+  }
+
+  @Test
+  public void TestBinaryField() throws IOException {
+    byte[] binary = {0x1, 0x2, 0x3, 0x4, 0x5, 0x6};
+    ByteString byteString = ByteString.copyFrom(binary);
+    io.vertx.protobuf.JsonObject proto = io.vertx.protobuf.JsonObject.newBuilder()
+      .putFields("BinaryField", Value.newBuilder().setBinaryValue(byteString)
+        .build())
+      .build();
+
+    protocEncode(proto);
+
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.put("BinaryField", binary);
+
+    // Vertx Encode
+    byte[] encoded = vertxEncode(jsonObject);
+
+    // Decode using Google's protoc plugin
+    io.vertx.protobuf.JsonObject protoJsonObject = io.vertx.protobuf.JsonObject.parseFrom(encoded);
+
+    Value intValue = protoJsonObject.getFieldsMap().get("BinaryField");
+    assertEquals(byteString, intValue.getBinaryValue());
+    assertEquals(Value.KindCase.BINARY_VALUE, intValue.getKindCase());
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(protoJsonObject);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Vertx Decode
+    CodedInputStream input = CodedInputStream.newInstance(protocEncoded);
+    JsonObject decoded = JsonObjectConverter.fromProto(input);
+
+    assertArrayEquals((byte[]) jsonObject.getMap().get("BinaryField"), (byte[]) decoded.getMap().get("BinaryField"));
 
     // Verify ComputeSize
     Assert.assertEquals(encoded.length, JsonObjectConverter.computeSize(jsonObject));
