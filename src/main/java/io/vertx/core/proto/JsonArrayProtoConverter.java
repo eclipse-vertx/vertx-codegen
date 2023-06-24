@@ -7,16 +7,16 @@ import io.vertx.core.json.JsonArray;
 import java.io.IOException;
 
 import static com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED;
-import static io.vertx.core.proto.JsonObjectConverter.INTEGER_FIELD_NUMBER;
-import static io.vertx.core.proto.JsonObjectConverter.INTEGER_TAG;
-import static io.vertx.core.proto.JsonObjectConverter.LONG_FIELD_NUMBER;
-import static io.vertx.core.proto.JsonObjectConverter.LONG_TAG;
-import static io.vertx.core.proto.JsonObjectConverter.STRING_FIELD_NUMBER;
-import static io.vertx.core.proto.JsonObjectConverter.STRING_TAG;
-import static io.vertx.core.proto.JsonObjectConverter.TOP_LEVEL_FIELD_NUMBER;
-import static io.vertx.core.proto.JsonObjectConverter.TOP_LEVEL_TAG;
+import static io.vertx.core.proto.JsonObjectProtoConverter.INTEGER_FIELD_NUMBER;
+import static io.vertx.core.proto.JsonObjectProtoConverter.INTEGER_TAG;
+import static io.vertx.core.proto.JsonObjectProtoConverter.LONG_FIELD_NUMBER;
+import static io.vertx.core.proto.JsonObjectProtoConverter.LONG_TAG;
+import static io.vertx.core.proto.JsonObjectProtoConverter.STRING_FIELD_NUMBER;
+import static io.vertx.core.proto.JsonObjectProtoConverter.STRING_TAG;
+import static io.vertx.core.proto.JsonObjectProtoConverter.TOP_LEVEL_FIELD_NUMBER;
+import static io.vertx.core.proto.JsonObjectProtoConverter.TOP_LEVEL_TAG;
 
-public class JsonArrayConverter {
+public class JsonArrayProtoConverter {
   public static JsonArray fromProto(CodedInputStream input) throws IOException {
     JsonArray array = new JsonArray();
     int tag;

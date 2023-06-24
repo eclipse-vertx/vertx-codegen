@@ -86,6 +86,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
     writer.print("import java.util.HashMap;\n");
     writer.print("import java.util.Map;\n");
     writer.print("import java.util.Arrays;\n");
+    writer.print("import io.vertx.core.json.JsonObject;\n");
     writer.print("import io.vertx.core.proto.*;\n");
     writer.print("\n");
     code

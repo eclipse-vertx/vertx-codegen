@@ -3,6 +3,7 @@ package io.vertx.test.codegen.converter.proto;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.InvalidProtocolBufferException;
+import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.converter.Address;
 import io.vertx.test.codegen.converter.RecursiveItem;
 import io.vertx.test.codegen.converter.RecursiveItemProtoConverter;
@@ -70,6 +71,11 @@ public class ProtoConverterTest {
     structValueMap.put("key2", address2);
     user.setStructValueMap(structValueMap);
 
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.put("IntField", 100);
+    jsonObject.put("StringField", "StringValue");
+    user.setJsonObjectField(jsonObject);
+
     // Encode
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream output = CodedOutputStream.newInstance(baos);
@@ -97,6 +103,7 @@ public class ProtoConverterTest {
     assertEquals(user.getStringValueMap(), decoded.getStringValueMap());
     assertEquals(user.getIntegerValueMap(), decoded.getIntegerValueMap());
     assertEquals(user.getStructValueMap(), decoded.getStructValueMap());
+    assertEquals(user.getJsonObjectField(), decoded.getJsonObjectField());
 
     // Assert total size is equal to computed size
     Assert.assertEquals(encoded.length, UserProtoConverter.computeSize(user));

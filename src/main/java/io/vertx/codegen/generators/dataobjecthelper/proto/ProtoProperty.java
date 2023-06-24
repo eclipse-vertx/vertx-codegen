@@ -88,6 +88,8 @@ public class ProtoProperty {
       return "ZonedDateTime";
     } else if ("java.time.Instant".equals(javaDataType)) {
       return "Instant";
+    } else if ("io.vertx.core.json.JsonObject".equals(javaDataType)) {
+      return "JsonObject";
     } else {
       return null;
     }

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.proto.*;
 
 public class RecursiveItemProtoConverter {

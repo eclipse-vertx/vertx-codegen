@@ -5,7 +5,7 @@ import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.proto.JsonObjectConverter;
+import io.vertx.core.proto.JsonObjectProtoConverter;
 import io.vertx.protobuf.Value;
 import io.vertx.test.codegen.converter.TestUtils;
 import org.junit.Assert;
@@ -20,7 +20,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class JsonObjectConverterTest {
+public class JsonObjectProtoTest {
 
   @Test
   public void TestJsonObject() throws IOException {
@@ -76,12 +76,12 @@ public class JsonObjectConverterTest {
 
     // Vertx Decode
     CodedInputStream input = CodedInputStream.newInstance(protocEncoded);
-    JsonObject decoded = JsonObjectConverter.fromProto(input);
+    JsonObject decoded = JsonObjectProtoConverter.fromProto(input);
 
     assertEquals(jsonObject.getMap(), decoded.getMap());
 
     // Verify ComputeSize
-    Assert.assertEquals(encoded.length, JsonObjectConverter.computeSize(jsonObject));
+    Assert.assertEquals(encoded.length, JsonObjectProtoConverter.computeSize(jsonObject));
   }
 
   @Test
@@ -117,12 +117,12 @@ public class JsonObjectConverterTest {
 
     // Vertx Decode
     CodedInputStream input = CodedInputStream.newInstance(protocEncoded);
-    JsonObject decoded = JsonObjectConverter.fromProto(input);
+    JsonObject decoded = JsonObjectProtoConverter.fromProto(input);
 
     assertEquals(jsonObject.getMap(), decoded.getMap());
 
     // Verify ComputeSize
-    Assert.assertEquals(encoded.length, JsonObjectConverter.computeSize(jsonObject));
+    Assert.assertEquals(encoded.length, JsonObjectProtoConverter.computeSize(jsonObject));
   }
 
   @Test
@@ -206,12 +206,12 @@ public class JsonObjectConverterTest {
 
     // Vertx Decode
     CodedInputStream input = CodedInputStream.newInstance(protocEncoded);
-    JsonObject decoded = JsonObjectConverter.fromProto(input);
+    JsonObject decoded = JsonObjectProtoConverter.fromProto(input);
 
     assertEquals(jsonObject.getMap(), decoded.getMap());
 
     // Verify ComputeSize
-    Assert.assertEquals(encoded.length, JsonObjectConverter.computeSize(jsonObject));
+    Assert.assertEquals(encoded.length, JsonObjectProtoConverter.computeSize(jsonObject));
   }
 
   @Test
@@ -244,12 +244,12 @@ public class JsonObjectConverterTest {
 
     // Vertx Decode
     CodedInputStream input = CodedInputStream.newInstance(protocEncoded);
-    JsonObject decoded = JsonObjectConverter.fromProto(input);
+    JsonObject decoded = JsonObjectProtoConverter.fromProto(input);
 
     assertArrayEquals((byte[]) jsonObject.getMap().get("BinaryField"), (byte[]) decoded.getMap().get("BinaryField"));
 
     // Verify ComputeSize
-    Assert.assertEquals(encoded.length, JsonObjectConverter.computeSize(jsonObject));
+    Assert.assertEquals(encoded.length, JsonObjectProtoConverter.computeSize(jsonObject));
   }
 
   private byte[] protocEncode(io.vertx.protobuf.JsonObject obj) throws IOException {
@@ -265,7 +265,7 @@ public class JsonObjectConverterTest {
   private byte[] vertxEncode(JsonObject obj) throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream output = CodedOutputStream.newInstance(baos);
-    JsonObjectConverter.toProto(obj, output);
+    JsonObjectProtoConverter.toProto(obj, output);
     output.flush();
     byte[] encoded = baos.toByteArray();
     System.out.println("vertx encoded:\n" + TestUtils.prettyHexDump(encoded));

@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED;
 
-public class JsonObjectConverter {
+public class JsonObjectProtoConverter {
   public static final int TOP_LEVEL_FIELD_NUMBER = 1;
 
   public static final int MAP_KEY_FIELD_NUMBER = 1;
@@ -85,7 +85,7 @@ public class JsonObjectConverter {
         case JSON_OBJECT_TAG: {
           int structLength = input.readUInt32();
           int structLimit = input.pushLimit(structLength);
-          JsonObject subObj = JsonObjectConverter.fromProto(input);
+          JsonObject subObj = JsonObjectProtoConverter.fromProto(input);
           obj.put(key, subObj);
           input.popLimit(structLimit);
           break;
@@ -93,7 +93,7 @@ public class JsonObjectConverter {
         case JSON_ARRAY_TAG: {
           int structLength = input.readUInt32();
           int structLimit = input.pushLimit(structLength);
-          JsonArray array = JsonArrayConverter.fromProto(input);
+          JsonArray array = JsonArrayProtoConverter.fromProto(input);
           obj.put(key, array);
           input.popLimit(structLimit);
           break;
@@ -149,12 +149,12 @@ public class JsonObjectConverter {
       } else if (value instanceof Float) {
         valueLength = CodedOutputStream.computeFloatSize(FLOAT_FIELD_NUMBER, (Float) value);
       } else if (value instanceof JsonObject) {
-        structSize = JsonObjectConverter.computeSize((JsonObject) value);
+        structSize = JsonObjectProtoConverter.computeSize((JsonObject) value);
         valueLength += CodedOutputStream.computeTagSize(JSON_OBJECT_FIELD_NUMBER);
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
       } else if (value instanceof JsonArray) {
-        structSize = JsonArrayConverter.computeSize((JsonArray) value);
+        structSize = JsonArrayProtoConverter.computeSize((JsonArray) value);
         valueLength += CodedOutputStream.computeTagSize(JSON_ARRAY_FIELD_NUMBER);
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
@@ -207,12 +207,12 @@ public class JsonObjectConverter {
         output.writeUInt32NoTag(valueLength);                                         // value length
         output.writeTag(JSON_OBJECT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);         // value
         output.writeUInt32NoTag(structSize);                                          //
-        JsonObjectConverter.toProto((JsonObject) value, output);                      //
+        JsonObjectProtoConverter.toProto((JsonObject) value, output);                      //
       } else if (value instanceof JsonArray) {
         output.writeUInt32NoTag(valueLength);                                         // value length
         output.writeTag(JSON_ARRAY_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);          // value
         output.writeUInt32NoTag(structSize);                                          //
-        JsonArrayConverter.toProto((JsonArray) value, output);
+        JsonArrayProtoConverter.toProto((JsonArray) value, output);
       } else if (value instanceof Instant) {
         output.writeUInt32NoTag(valueLength);                                         // value length
         output.writeTag(INSTANT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);             // value
@@ -251,12 +251,12 @@ public class JsonObjectConverter {
       } else if (value instanceof Float) {
         valueLength = CodedOutputStream.computeFloatSize(FLOAT_FIELD_NUMBER, (Float) value);
       } else if (value instanceof JsonObject) {
-        int structSize = JsonObjectConverter.computeSize((JsonObject) value);
+        int structSize = JsonObjectProtoConverter.computeSize((JsonObject) value);
         valueLength += CodedOutputStream.computeTagSize(JSON_OBJECT_FIELD_NUMBER);
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
       } else if (value instanceof JsonArray) {
-        int structSize = JsonArrayConverter.computeSize((JsonArray) value);
+        int structSize = JsonArrayProtoConverter.computeSize((JsonArray) value);
         valueLength += CodedOutputStream.computeTagSize(JSON_ARRAY_FIELD_NUMBER);
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;

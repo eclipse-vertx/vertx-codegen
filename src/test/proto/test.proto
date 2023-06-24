@@ -17,15 +17,16 @@ message User {
   io.vertx.protobuf.Instant instantField = 6;
   repeated int32 integerListField = 7;
   map<string, int32> integerValueMap = 8;
-  int64 longField = 9;
-  int32 shortField = 10;
-  map<string, string> stringValueMap = 11;
-  repeated Address structListField = 12;
-  map<string, Address> structValueMap = 13;
-  string username = 14;
-  io.vertx.protobuf.ZonedDateTime zonedDateTimeField = 15;
-  repeated io.vertx.protobuf.ZonedDateTime zonedDateTimeListField = 16;
-  map<string, io.vertx.protobuf.ZonedDateTime> zonedDateTimeValueMap = 17;
+  io.vertx.protobuf.JsonObject jsonObjectField = 9;
+  int64 longField = 10;
+  int32 shortField = 11;
+  map<string, string> stringValueMap = 12;
+  repeated Address structListField = 13;
+  map<string, Address> structValueMap = 14;
+  string username = 15;
+  io.vertx.protobuf.ZonedDateTime zonedDateTimeField = 16;
+  repeated io.vertx.protobuf.ZonedDateTime zonedDateTimeListField = 17;
+  map<string, io.vertx.protobuf.ZonedDateTime> zonedDateTimeValueMap = 18;
 }
 
 message Address {

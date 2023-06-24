@@ -1,6 +1,7 @@
 package io.vertx.test.codegen.converter;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -28,6 +29,7 @@ public class User {
   private Map<String, ZonedDateTime> zonedDateTimeValueMap;
   private ZonedDateTime zonedDateTimeField;
   private Instant instantField;
+  private JsonObject jsonObjectField;
 
   public String getUserName() {
     return userName;
@@ -165,16 +167,24 @@ public class User {
     this.instantField = instantField;
   }
 
+  public JsonObject getJsonObjectField() {
+    return jsonObjectField;
+  }
+
+  public void setJsonObjectField(JsonObject jsonObjectField) {
+    this.jsonObjectField = jsonObjectField;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     User user = (User) o;
-    return Objects.equals(userName, user.userName) && Objects.equals(age, user.age) && Objects.equals(integerListField, user.integerListField) && Objects.equals(structListField, user.structListField) && Objects.equals(zonedDateTimeListField, user.zonedDateTimeListField) && Objects.equals(address, user.address) && Objects.equals(doubleField, user.doubleField) && Objects.equals(longField, user.longField) && Objects.equals(boolField, user.boolField) && Objects.equals(shortField, user.shortField) && Objects.equals(charField, user.charField) && Objects.equals(stringValueMap, user.stringValueMap) && Objects.equals(integerValueMap, user.integerValueMap) && Objects.equals(structValueMap, user.structValueMap) && Objects.equals(zonedDateTimeValueMap, user.zonedDateTimeValueMap) && Objects.equals(zonedDateTimeField, user.zonedDateTimeField) && Objects.equals(instantField, user.instantField);
+    return Objects.equals(userName, user.userName) && Objects.equals(age, user.age) && Objects.equals(integerListField, user.integerListField) && Objects.equals(structListField, user.structListField) && Objects.equals(zonedDateTimeListField, user.zonedDateTimeListField) && Objects.equals(address, user.address) && Objects.equals(doubleField, user.doubleField) && Objects.equals(longField, user.longField) && Objects.equals(boolField, user.boolField) && Objects.equals(shortField, user.shortField) && Objects.equals(charField, user.charField) && Objects.equals(stringValueMap, user.stringValueMap) && Objects.equals(integerValueMap, user.integerValueMap) && Objects.equals(structValueMap, user.structValueMap) && Objects.equals(zonedDateTimeValueMap, user.zonedDateTimeValueMap) && Objects.equals(zonedDateTimeField, user.zonedDateTimeField) && Objects.equals(instantField, user.instantField) && Objects.equals(jsonObjectField, user.jsonObjectField);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(userName, age, integerListField, structListField, zonedDateTimeListField, address, doubleField, longField, boolField, shortField, charField, stringValueMap, integerValueMap, structValueMap, zonedDateTimeValueMap, zonedDateTimeField, instantField);
+    return Objects.hash(userName, age, integerListField, structListField, zonedDateTimeListField, address, doubleField, longField, boolField, shortField, charField, stringValueMap, integerValueMap, structValueMap, zonedDateTimeValueMap, zonedDateTimeField, instantField, jsonObjectField);
   }
 }
