@@ -4,18 +4,21 @@ import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.PropertyKind;
 import io.vertx.codegen.type.ClassKind;
 
+// This class store the protobuf properties of a given field
 public class ProtoProperty {
   private int fieldNumber;
   private int wireType;
   private int tag;
   private ProtoType protoType;
-  private String message;
+  private boolean isNullable;
+  private String message;       // Indicate the name of the message of the nested field
 
   public static ProtoProperty getProtoProperty(PropertyInfo prop, int fieldNumber) {
     ProtoProperty protoProperty = new ProtoProperty();
     ClassKind propKind = prop.getType().getKind();
-    String message = null;
     ProtoType protoType;
+    boolean isNullable = determineIsNullable(prop.getType().getName());
+    String message = null;
     int wireType;
     if (propKind.basic) {
       protoType = determineProtoType(prop.getType().getName());
@@ -52,33 +55,54 @@ public class ProtoProperty {
 
     int tag = (fieldNumber << 3) | wireType;
 
-    protoProperty.setFieldNumber(fieldNumber);
-    protoProperty.setWireType(wireType);
-    protoProperty.setTag(tag);
-    protoProperty.setProtoType(protoType);
-    protoProperty.setMessage(message);
+    protoProperty.fieldNumber = fieldNumber;
+    protoProperty.wireType = wireType;
+    protoProperty.tag = tag;
+    protoProperty.protoType = protoType;
+    protoProperty.isNullable = isNullable;
+    protoProperty.message = message;
     return protoProperty;
   }
 
-  public static ProtoType determineProtoType(String javaDataType) {
-    if ("java.lang.Integer".equals(javaDataType)) {
+  private static ProtoType determineProtoType(String javaDataType) {
+    if ("java.lang.Integer".equals(javaDataType) || "int".equals(javaDataType)) {
       return ProtoType.INT32;
-    } else if ("java.lang.Long".equals(javaDataType)) {
+    } else if ("java.lang.Long".equals(javaDataType) || "long".equals(javaDataType)) {
       return ProtoType.INT64;
-    } else if ("java.lang.Short".equals(javaDataType)) {
+    } else if ("java.lang.Short".equals(javaDataType) || "short".equals(javaDataType)) {
       return ProtoType.INT32;
     } else if ("java.lang.String".equals(javaDataType)) {
       return ProtoType.STRING;
-    } else if ("java.lang.Float".equals(javaDataType)) {
+    } else if ("java.lang.Float".equals(javaDataType) || "float".equals(javaDataType)) {
       return ProtoType.FLOAT;
-    } else if ("java.lang.Double".equals(javaDataType)) {
+    } else if ("java.lang.Double".equals(javaDataType) || "double".equals(javaDataType)) {
       return ProtoType.DOUBLE;
-    } else if ("java.lang.Boolean".equals(javaDataType)) {
+    } else if ("java.lang.Boolean".equals(javaDataType) || "boolean".equals(javaDataType)) {
       return ProtoType.BOOL;
-    } else if ("java.lang.Character".equals(javaDataType)) {
+    } else if ("java.lang.Character".equals(javaDataType) || "char".equals(javaDataType)) {
       return ProtoType.INT32;
     } else {
       throw new UnsupportedOperationException("Unsupported data-type " + javaDataType);
+    }
+  }
+
+  private static boolean determineIsNullable(String javaDataType) {
+    if ("int".equals(javaDataType)) {
+      return false;
+    } else if ("long".equals(javaDataType)) {
+      return false;
+    } else if ("short".equals(javaDataType)) {
+      return false;
+    } else if ("float".equals(javaDataType)) {
+      return false;
+    } else if ("double".equals(javaDataType)) {
+      return false;
+    } else if ("boolean".equals(javaDataType)) {
+      return false;
+    } else if ("char".equals(javaDataType)) {
+      return false;
+    } else {
+      return true;
     }
   }
 
@@ -99,39 +123,23 @@ public class ProtoProperty {
     return fieldNumber;
   }
 
-  public void setFieldNumber(int fieldNumber) {
-    this.fieldNumber = fieldNumber;
-  }
-
   public int getWireType() {
     return wireType;
-  }
-
-  public void setWireType(int wireType) {
-    this.wireType = wireType;
   }
 
   public int getTag() {
     return tag;
   }
 
-  public void setTag(int tag) {
-    this.tag = tag;
-  }
-
   public ProtoType getProtoType() {
     return protoType;
   }
 
-  public void setProtoType(ProtoType protoType) {
-    this.protoType = protoType;
+  public boolean isNullable() {
+    return isNullable;
   }
 
   public String getMessage() {
     return message;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
   }
 }

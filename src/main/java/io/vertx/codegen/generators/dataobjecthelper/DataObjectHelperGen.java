@@ -248,7 +248,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       for (PropertyInfo prop : model.getPropertyMap().values()) {
         ClassKind propKind = prop.getType().getKind();
         ProtoProperty protoProperty = ProtoProperty.getProtoProperty(prop, fieldNumber);
-        writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
+        if (protoProperty.isNullable()) {
+          writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
+        } else {
+          writer.print("    if (obj." + prop.getGetterMethod() + "() != 0){\n");
+        }
         if (prop.getKind().isList()) {
           if (propKind.basic) {
             writer.print("      // list | tag | data size | value[0] | value[1] | value[2] |\n");
@@ -363,7 +367,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       writer.print("\n");
     }
 
-    // Compute Size 2
+    // computeSize()
     {
       writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj) {\n");
       writer.print("    int[] cache = new int[100];\n");
@@ -378,7 +382,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
       for (PropertyInfo prop : model.getPropertyMap().values()) {
         ClassKind propKind = prop.getType().getKind();
         ProtoProperty protoProperty = ProtoProperty.getProtoProperty(prop, fieldNumber);
-        writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
+        if (protoProperty.isNullable()) {
+          writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
+        } else {
+          writer.print("    if (obj." + prop.getGetterMethod() + "() != 0){\n");
+        }
         if (prop.getKind().isList()) {
           if (propKind.basic) {
             writer.print("      // list | tag | data size | value[0] | value[1] | value[2] |\n");

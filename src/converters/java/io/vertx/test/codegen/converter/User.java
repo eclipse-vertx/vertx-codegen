@@ -30,6 +30,7 @@ public class User {
   private ZonedDateTime zonedDateTimeField;
   private Instant instantField;
   private JsonObject jsonObjectField;
+  private int primitiveInt = 0;
 
   public String getUserName() {
     return userName;
@@ -173,6 +174,14 @@ public class User {
 
   public void setJsonObjectField(JsonObject jsonObjectField) {
     this.jsonObjectField = jsonObjectField;
+  }
+
+  public int getPrimitiveInt() {
+    return primitiveInt;
+  }
+
+  public void setPrimitiveInt(int primitiveInt) {
+    this.primitiveInt = primitiveInt;
   }
 
   @Override
