@@ -79,6 +79,8 @@ public class ProtoProperty {
       return ProtoType.DOUBLE;
     } else if ("java.lang.Boolean".equals(javaDataType) || "boolean".equals(javaDataType)) {
       return ProtoType.BOOL;
+    } else if ("java.lang.Byte".equals(javaDataType) || "byte".equals(javaDataType)) {
+      return ProtoType.INT32;
     } else if ("java.lang.Character".equals(javaDataType) || "char".equals(javaDataType)) {
       return ProtoType.INT32;
     } else {
@@ -98,6 +100,8 @@ public class ProtoProperty {
     } else if ("double".equals(javaDataType)) {
       return false;
     } else if ("boolean".equals(javaDataType)) {
+      return false;
+    } else if ("byte".equals(javaDataType)) {
       return false;
     } else if ("char".equals(javaDataType)) {
       return false;

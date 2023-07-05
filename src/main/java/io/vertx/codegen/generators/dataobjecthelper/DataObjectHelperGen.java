@@ -200,11 +200,14 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         } else {
           if (propKind.basic) {
             // need casting
+            String javaDataType = prop.getType().getName();
             String casting = "";
-            if ("java.lang.Short".equals(prop.getType().getName())) {
+            if ("java.lang.Short".equals(javaDataType) || "short".equals(javaDataType)) {
               casting = "(short) ";
-            } else if ("java.lang.Character".equals(prop.getType().getName())) {
+            } else if ("java.lang.Character".equals(javaDataType) || "char".equals(javaDataType)) {
               casting = "(char) ";
+            } else if ("java.lang.Byte".equals(javaDataType) || "byte".equals(javaDataType)) {
+              casting = "(byte) ";
             }
             writer.print("          obj." + prop.getSetterMethod() + "(" + casting + "input." + protoProperty.getProtoType().read() + "());\n");
           } else {
@@ -251,7 +254,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         if (protoProperty.isNullable()) {
           writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
         } else {
-          writer.print("    if (obj." + prop.getGetterMethod() + "() != 0){\n");
+          if ("boolean".equals(prop.getType().getName())) {
+            writer.print("    if (obj." + prop.getGetterMethod() + "()) {\n");
+          } else {
+            writer.print("    if (obj." + prop.getGetterMethod() + "() != 0) {\n");
+          }
         }
         if (prop.getKind().isList()) {
           if (propKind.basic) {
@@ -385,7 +392,11 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
         if (protoProperty.isNullable()) {
           writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
         } else {
-          writer.print("    if (obj." + prop.getGetterMethod() + "() != 0){\n");
+          if ("boolean".equals(prop.getType().getName())) {
+            writer.print("    if (obj." + prop.getGetterMethod() + "()) {\n");
+          } else {
+            writer.print("    if (obj." + prop.getGetterMethod() + "() != 0) {\n");
+          }
         }
         if (prop.getKind().isList()) {
           if (propKind.basic) {

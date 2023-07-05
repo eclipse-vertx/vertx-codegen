@@ -30,7 +30,14 @@ public class User {
   private ZonedDateTime zonedDateTimeField;
   private Instant instantField;
   private JsonObject jsonObjectField;
-  private int primitiveInt = 0;
+  private boolean primitiveBoolean;
+  private byte primitiveByte;
+  private short primitiveShort;
+  private int primitiveInt;
+  private long primitiveLong;
+  private float primitiveFloat;
+  private double primitiveDouble;
+  private char primitiveChar;
 
   public String getUserName() {
     return userName;
@@ -176,6 +183,30 @@ public class User {
     this.jsonObjectField = jsonObjectField;
   }
 
+  public boolean isPrimitiveBoolean() {
+    return primitiveBoolean;
+  }
+
+  public void setPrimitiveBoolean(boolean primitiveBoolean) {
+    this.primitiveBoolean = primitiveBoolean;
+  }
+
+  public byte getPrimitiveByte() {
+    return primitiveByte;
+  }
+
+  public void setPrimitiveByte(byte primitiveByte) {
+    this.primitiveByte = primitiveByte;
+  }
+
+  public short getPrimitiveShort() {
+    return primitiveShort;
+  }
+
+  public void setPrimitiveShort(short primitiveShort) {
+    this.primitiveShort = primitiveShort;
+  }
+
   public int getPrimitiveInt() {
     return primitiveInt;
   }
@@ -184,16 +215,48 @@ public class User {
     this.primitiveInt = primitiveInt;
   }
 
+  public long getPrimitiveLong() {
+    return primitiveLong;
+  }
+
+  public void setPrimitiveLong(long primitiveLong) {
+    this.primitiveLong = primitiveLong;
+  }
+
+  public float getPrimitiveFloat() {
+    return primitiveFloat;
+  }
+
+  public void setPrimitiveFloat(float primitiveFloat) {
+    this.primitiveFloat = primitiveFloat;
+  }
+
+  public double getPrimitiveDouble() {
+    return primitiveDouble;
+  }
+
+  public void setPrimitiveDouble(double primitiveDouble) {
+    this.primitiveDouble = primitiveDouble;
+  }
+
+  public char getPrimitiveChar() {
+    return primitiveChar;
+  }
+
+  public void setPrimitiveChar(char primitiveChar) {
+    this.primitiveChar = primitiveChar;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     User user = (User) o;
-    return Objects.equals(userName, user.userName) && Objects.equals(age, user.age) && Objects.equals(integerListField, user.integerListField) && Objects.equals(structListField, user.structListField) && Objects.equals(zonedDateTimeListField, user.zonedDateTimeListField) && Objects.equals(address, user.address) && Objects.equals(doubleField, user.doubleField) && Objects.equals(longField, user.longField) && Objects.equals(boolField, user.boolField) && Objects.equals(shortField, user.shortField) && Objects.equals(charField, user.charField) && Objects.equals(stringValueMap, user.stringValueMap) && Objects.equals(integerValueMap, user.integerValueMap) && Objects.equals(structValueMap, user.structValueMap) && Objects.equals(zonedDateTimeValueMap, user.zonedDateTimeValueMap) && Objects.equals(zonedDateTimeField, user.zonedDateTimeField) && Objects.equals(instantField, user.instantField) && Objects.equals(jsonObjectField, user.jsonObjectField);
+    return primitiveBoolean == user.primitiveBoolean && primitiveByte == user.primitiveByte && primitiveShort == user.primitiveShort && primitiveInt == user.primitiveInt && primitiveLong == user.primitiveLong && Float.compare(user.primitiveFloat, primitiveFloat) == 0 && Double.compare(user.primitiveDouble, primitiveDouble) == 0 && primitiveChar == user.primitiveChar && Objects.equals(userName, user.userName) && Objects.equals(age, user.age) && Objects.equals(integerListField, user.integerListField) && Objects.equals(structListField, user.structListField) && Objects.equals(zonedDateTimeListField, user.zonedDateTimeListField) && Objects.equals(address, user.address) && Objects.equals(doubleField, user.doubleField) && Objects.equals(longField, user.longField) && Objects.equals(boolField, user.boolField) && Objects.equals(shortField, user.shortField) && Objects.equals(charField, user.charField) && Objects.equals(stringValueMap, user.stringValueMap) && Objects.equals(integerValueMap, user.integerValueMap) && Objects.equals(structValueMap, user.structValueMap) && Objects.equals(zonedDateTimeValueMap, user.zonedDateTimeValueMap) && Objects.equals(zonedDateTimeField, user.zonedDateTimeField) && Objects.equals(instantField, user.instantField) && Objects.equals(jsonObjectField, user.jsonObjectField);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(userName, age, integerListField, structListField, zonedDateTimeListField, address, doubleField, longField, boolField, shortField, charField, stringValueMap, integerValueMap, structValueMap, zonedDateTimeValueMap, zonedDateTimeField, instantField, jsonObjectField);
+    return Objects.hash(userName, age, integerListField, structListField, zonedDateTimeListField, address, doubleField, longField, boolField, shortField, charField, stringValueMap, integerValueMap, structValueMap, zonedDateTimeValueMap, zonedDateTimeField, instantField, jsonObjectField, primitiveBoolean, primitiveByte, primitiveShort, primitiveInt, primitiveLong, primitiveFloat, primitiveDouble, primitiveChar);
   }
 }
