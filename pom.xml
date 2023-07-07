@@ -52,5 +52,6 @@
 
   <modules>
     <module>vertx-codegen</module>
+    <module>vertx-codegen-protobuf</module>
   </modules>
 </project>

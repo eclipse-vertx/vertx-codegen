@@ -9,12 +9,14 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>vertx-codegen</artifactId>
+  <artifactId>vertx-codegen-protobuf</artifactId>
   <version>5.0.0-SNAPSHOT</version>
 
   <properties>
     <doc.skip>false</doc.skip>
     <asciidoc.dir>${project.basedir}/src/main/asciidoc</asciidoc.dir>
+    <grpc.version>1.50.2</grpc.version>
+    <protoc.version>3.21.12</protoc.version>
   </properties>
 
   <dependencyManagement>
@@ -32,12 +34,34 @@
   <dependencies>
     <dependency>
       <groupId>io.vertx</groupId>
+      <artifactId>vertx-codegen</artifactId>
+      <version>5.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
       <artifactId>vertx-docgen</artifactId>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>${protoc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-stub</artifactId>
+      <version>${grpc.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-protobuf</artifactId>
+      <version>${grpc.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -66,7 +90,6 @@
                 <filesets>
                   <fileset>
                     <directory>${project.basedir}/src/converters/generated</directory>
-                    <directory>${project.basedir}/src/tck/generated</directory>
                   </fileset>
                 </filesets>
               </configuration>
@@ -87,9 +110,6 @@
                   <arg>-Adocgen.source=${asciidoc.dir}</arg>
                   <arg>-Adocgen.output=${project.build.directory}/asciidoc/java</arg>
                 </compilerArgs>
-                <excludes>
-                  <exclude>**/TreeTypeInternal.java</exclude>
-                </excludes>
               </configuration>
             </execution>
           </executions>
@@ -102,29 +122,11 @@
               <configuration>
                 <excludes>
                   <exclude>io/vertx/core/**</exclude>
-                  <exclude>io/vertx/codegen/testmodel/**</exclude>
-                  <exclude>com/acme/**</exclude>
                   <exclude>examples/**</exclude>
                 </excludes>
               </configuration>
             </execution>
           </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <configuration>
-            <additionalClasspathElements>
-              <additionalClasspathElement>${project.build.testSourceDirectory}</additionalClasspathElement>
-              <additionalClasspathElement>${project.basedir}/src/test/testgen1</additionalClasspathElement>
-              <additionalClasspathElement>${project.basedir}/src/test/testgen2</additionalClasspathElement>
-              <additionalClasspathElement>${project.basedir}/src/test/testgen3</additionalClasspathElement>
-              <additionalClasspathElement>${project.basedir}/src/test/testgen4</additionalClasspathElement>
-              <additionalClasspathElement>${project.basedir}/src/test/testgen5</additionalClasspathElement>
-              <additionalClasspathElement>${project.basedir}/src/test/testgen6</additionalClasspathElement>
-              <additionalClasspathElement>${project.basedir}/src/test/testgen7</additionalClasspathElement>
-            </additionalClasspathElements>
-          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -152,13 +154,18 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
+                  <groupId>io.vertx</groupId>
+                  <artifactId>vertx-codegen</artifactId>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
                   <groupId>com.fasterxml.jackson.core</groupId>
                   <artifactId>jackson-core</artifactId>
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>junit</groupId>
-                  <artifactId>junit</artifactId>
+                  <groupId>com.google.protobuf</groupId>
+                  <artifactId>protobuf-java</artifactId>
                   <type>jar</type>
                 </artifactItem>
               </artifactItems>
@@ -172,17 +179,6 @@
         <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>add-source</id>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>${basedir}/src/examples/java</source>
-              </sources>
-            </configuration>
-          </execution>
-          <execution>
             <id>add-test-source</id>
             <goals>
               <goal>add-test-source</goal>
@@ -191,7 +187,6 @@
               <sources>
                 <source>${basedir}/src/converters/java</source>
                 <source>${basedir}/src/converters/generated</source>
-                <source>${basedir}/src/tck/java</source>
               </sources>
             </configuration>
           </execution>
@@ -230,28 +225,26 @@
               <outputDirectory>${project.basedir}/src/converters/generated</outputDirectory>
             </configuration>
           </execution>
-          <!-- TCK -->
+        </executions>
+      </plugin>
+
+      <!-- Protoc Plugin to test against dataModel Protocol Buffer converter -->
+      <plugin>
+        <groupId>org.xolstice.maven.plugins</groupId>
+        <artifactId>protobuf-maven-plugin</artifactId>
+        <version>0.6.1</version>
+        <configuration>
+          <protocArtifact>com.google.protobuf:protoc:${protoc.version}:exe:${os.detected.classifier}</protocArtifact>
+          <pluginId>grpc-java</pluginId>
+          <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
+        </configuration>
+        <executions>
           <execution>
-            <id>generate-tck-sources</id>
+            <id>test-compile</id>
             <goals>
-              <goal>process-test</goal>
+              <goal>test-compile</goal>
+              <goal>test-compile-custom</goal>
             </goals>
-            <phase>generate-test-sources</phase>
-            <configuration>
-              <!-- We use this workaround to have a specific json-mappers.properties file for this gen -->
-              <classpathElements>
-                <classpathElement>${project.build.outputDirectory}</classpathElement>
-                <classpathElement>${project.build.directory}/test-classpath</classpathElement>
-                <classpathElement>${project.basedir}/src/tck/resources</classpathElement>
-              </classpathElements>
-              <processors>
-                <processor>io.vertx.codegen.CodeGenProcessor</processor>
-              </processors>
-              <optionMap>
-              </optionMap>
-              <sourceDirectory>${project.basedir}/src/tck/java</sourceDirectory>
-              <outputDirectory>${project.basedir}/src/tck/generated</outputDirectory>
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -277,21 +270,6 @@
             </configuration>
           </execution>
           <execution>
-            <id>package-others</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <attach>true</attach>
-              <descriptors>
-                <descriptor>src/main/assembly/processor.xml</descriptor>
-                <descriptor>src/main/assembly/tck.xml</descriptor>
-                <descriptor>src/main/assembly/tck-sources.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </execution>
-          <execution>
             <id>package-docs</id>
             <phase>package</phase>
             <goals>
@@ -310,46 +288,6 @@
   </build>
 
   <profiles>
-
-    <profile>
-      <id>java-8</id>
-      <properties>
-        <tools.jar>${java.home}/../lib/tools.jar</tools.jar>
-      </properties>
-      <activation>
-        <jdk>1.8</jdk>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <executions>
-                <execution>
-                  <id>default-compile</id>
-                  <configuration>
-                    <excludes>
-                      <exclude>/whatever</exclude>
-                    </excludes>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-      <dependencies>
-        <dependency>
-          <groupId>com.sun</groupId>
-          <artifactId>tools</artifactId>
-          <version>1.8</version>
-          <scope>system</scope>
-          <systemPath>${tools.jar}</systemPath>
-          <optional>true</optional>
-        </dependency>
-      </dependencies>
-    </profile>
 
     <!-- Documentation generation : activate with -Pdocs -->
     <profile>

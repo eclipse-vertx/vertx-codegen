@@ -7,7 +7,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.proto.JsonObjectProtoConverter;
 import io.vertx.protobuf.Value;
-import io.vertx.test.codegen.converter.TestUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
