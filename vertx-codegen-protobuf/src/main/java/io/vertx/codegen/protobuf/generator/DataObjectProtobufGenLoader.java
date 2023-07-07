@@ -10,6 +10,6 @@ public class DataObjectProtobufGenLoader implements GeneratorLoader {
 
   @Override
   public Stream<Generator<?>> loadGenerators(ProcessingEnvironment processingEnv) {
-    return Stream.of(new DataObjectProtobufGen());
+    return Stream.of(new DataObjectProtobufGen(), new ProtoFileGen());
   }
 }
