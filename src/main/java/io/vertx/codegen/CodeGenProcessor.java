@@ -3,6 +3,7 @@ package io.vertx.codegen;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.generators.dataobjecthelper.DataObjectHelperGenLoader;
+import io.vertx.codegen.generators.dataobjecthelper.proto.DataObjectProtobufGenLoader;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -103,7 +104,7 @@ public class CodeGenProcessor extends AbstractProcessor {
       }
       // load GeneratorLoader by ServiceLoader
       Stream<GeneratorLoader> serviceLoader = StreamSupport.stream(ServiceLoader.load(GeneratorLoader.class, CodeGenProcessor.class.getClassLoader()).spliterator(), false);
-      Stream<GeneratorLoader> loaders = Stream.of(new DataObjectHelperGenLoader());
+      Stream<GeneratorLoader> loaders = Stream.of(new DataObjectHelperGenLoader(), new DataObjectProtobufGenLoader());
       Stream<Generator<?>> generators = Stream.concat(serviceLoader, loaders).flatMap(l -> l.loadGenerators(processingEnv));
       Predicate<Generator> filter = filterGenerators();
       if (filter != null) {

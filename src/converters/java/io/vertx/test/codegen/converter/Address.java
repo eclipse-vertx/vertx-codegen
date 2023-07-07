@@ -1,11 +1,13 @@
 package io.vertx.test.codegen.converter;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.ProtobufGen;
 
 import java.util.Objects;
 
 // Temporary Test Object, maybe will switch to test with TestDataObject
-@DataObject(generateConverter = true, protoConverter = true)
+@DataObject
+@ProtobufGen
 public class Address {
   private String name;
   private Float longitude;
