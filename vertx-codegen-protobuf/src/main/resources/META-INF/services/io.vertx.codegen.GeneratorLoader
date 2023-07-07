@@ -1,1 +1,1 @@
-io.vertx.codegen.generators.dataobjecthelper.proto.DataObjectProtobufGenLoader
+io.vertx.codegen.protobuf.generator.DataObjectProtobufGenLoader

@@ -1,10 +1,10 @@
-package io.vertx.codegen.generators.dataobjecthelper.proto;
+package io.vertx.codegen.protobuf.generator;
 
 import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.annotations.ProtobufGen;
+import io.vertx.codegen.protobuf.annotations.ProtobufGen;
 import io.vertx.codegen.format.*;
 import io.vertx.codegen.type.*;
 import io.vertx.codegen.writer.CodeWriter;

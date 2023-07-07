@@ -1,4 +1,4 @@
-package io.vertx.codegen.generators.dataobjecthelper.proto;
+package io.vertx.codegen.protobuf.generator;
 
 import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.PropertyKind;

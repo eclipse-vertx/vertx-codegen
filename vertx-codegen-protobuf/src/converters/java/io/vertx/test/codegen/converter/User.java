@@ -1,7 +1,7 @@
 package io.vertx.test.codegen.converter;
 
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.annotations.ProtobufGen;
+import io.vertx.codegen.protobuf.annotations.ProtobufGen;
 import io.vertx.core.json.JsonObject;
 
 import java.time.Instant;

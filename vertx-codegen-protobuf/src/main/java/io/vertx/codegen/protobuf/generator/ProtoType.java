@@ -1,4 +1,4 @@
-package io.vertx.codegen.generators.dataobjecthelper.proto;
+package io.vertx.codegen.protobuf.generator;
 
 public enum ProtoType {
   STRING  ("string",  "String"),
