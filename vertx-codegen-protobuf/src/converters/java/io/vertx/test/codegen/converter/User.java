@@ -20,6 +20,7 @@ public class User {
   private List<Address> structListField;
   private List<ZonedDateTime> zonedDateTimeListField;
   private Address address;
+  private Byte byteField;
   private Double doubleField;
   private Long longField;
   private Boolean boolField;
@@ -87,6 +88,14 @@ public class User {
 
   public void setAddress(Address address) {
     this.address = address;
+  }
+
+  public Byte getByteField() {
+    return byteField;
+  }
+
+  public void setByteField(Byte byteField) {
+    this.byteField = byteField;
   }
 
   public Double getDoubleField() {

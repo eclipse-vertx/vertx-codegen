@@ -49,6 +49,7 @@ public class ProtoConverterTest {
     user.setUserName("jviet");
     user.setAge(21);
     user.setAddress(address1);
+    user.setByteField((byte)8);
     user.setStructListField(Collections.unmodifiableList(Arrays.asList(address2, address3)));
     user.setIntegerListField(Collections.unmodifiableList(Arrays.asList(100, 101)));
     user.setDoubleField(5.5);
@@ -94,6 +95,7 @@ public class ProtoConverterTest {
     assertEquals(user.getAddress().getLongitude(), decoded.getAddress().getLongitude());
     Assert.assertArrayEquals(user.getStructListField().toArray(), decoded.getStructListField().toArray());
     Assert.assertArrayEquals(user.getIntegerListField().toArray(), decoded.getIntegerListField().toArray());
+    assertEquals(user.getByteField(), decoded.getByteField());
     assertEquals(user.getDoubleField(), decoded.getDoubleField());
     assertEquals(user.getLongField(), decoded.getLongField());
     assertEquals(user.getBoolField(), decoded.getBoolField());
