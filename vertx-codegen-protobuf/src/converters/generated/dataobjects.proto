@@ -1,3 +1,48 @@
-Generated io.vertx.test.codegen.converter.Address
-Generated io.vertx.test.codegen.converter.RecursiveItem
-Generated io.vertx.test.codegen.converter.User
+syntax = "proto3";option java_multiple_files = true;
+option java_package = "io.vertx.protobuf.generated";
+
+package io.vertx.protobuf.generated;
+
+message Address{
+  float latitude = 1;
+  float longitude = 2;
+  string name = 3;
+}
+
+message RecursiveItem{
+  RecursiveItem childA = 1;
+  RecursiveItem childB = 2;
+  RecursiveItem childC = 3;
+  string id = 4;
+}
+
+message User{
+  Address address = 1;
+  int32 age = 2;
+  bool boolField = 3;
+  int32 byteField = 4;
+  int32 charField = 5;
+  double doubleField = 6;
+  Instant instantField = 7;
+  int32 integerListField = 8;
+  int32 integerValueMap = 9;
+  JsonObject jsonObjectField = 10;
+  int64 longField = 11;
+  bool primitiveBoolean = 12;
+  int32 primitiveByte = 13;
+  int32 primitiveChar = 14;
+  double primitiveDouble = 15;
+  float primitiveFloat = 16;
+  int32 primitiveInt = 17;
+  int64 primitiveLong = 18;
+  int32 primitiveShort = 19;
+  int32 shortField = 20;
+  string stringValueMap = 21;
+  Address structListField = 22;
+  Address structValueMap = 23;
+  string userName = 24;
+  ZonedDateTime zonedDateTimeField = 25;
+  ZonedDateTime zonedDateTimeListField = 26;
+  ZonedDateTime zonedDateTimeValueMap = 27;
+}
+
