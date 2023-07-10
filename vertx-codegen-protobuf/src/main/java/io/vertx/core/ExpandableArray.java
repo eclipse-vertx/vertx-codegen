@@ -18,6 +18,17 @@ public class ExpandableArray {
     return data[index];
   }
 
+  public void set(int index, int v) {
+    if (index < 0) {
+      throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+    }
+    ensureCapacity(index + 1);
+    if (index >= size) {
+      size = index + 1;
+    }
+    data[index] = v;
+  }
+
   public void add(int v) {
     ensureCapacity(size + 1);
     data[size++] = v;
@@ -34,11 +45,6 @@ public class ExpandableArray {
     int newCapacity = oldCapacity + (oldCapacity >> 1); // grow by 1.5 times
     if (newCapacity - minCapacity < 0) {
       newCapacity = minCapacity;
-    }
-
-    // handle overflow
-    if (newCapacity < 0) {
-      throw new OutOfMemoryError();
     }
     data = Arrays.copyOf(data, newCapacity);
   }

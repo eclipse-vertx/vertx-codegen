@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
+import io.vertx.core.ExpandableArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.proto.*;
 
@@ -221,16 +222,16 @@ public class UserProtoConverter {
   }
 
   public static void toProto(User obj, CodedOutputStream output) throws IOException {
-    int[] cache = new int[100];
+    ExpandableArray cache = new ExpandableArray(16);
     UserProtoConverter.computeSize(obj, cache, 0);
     UserProtoConverter.toProto(obj, output, cache, 0);
   }
 
-  public static int toProto(User obj, CodedOutputStream output, int[] cache, int index) throws IOException {
+  public static int toProto(User obj, CodedOutputStream output, ExpandableArray cache, int index) throws IOException {
     index = index + 1;
     if (obj.getAddress() != null) {
       output.writeUInt32NoTag(10);
-      output.writeUInt32NoTag(cache[index]);
+      output.writeUInt32NoTag(cache.get(index));
       index = AddressProtoConverter.toProto(obj.getAddress(), output, cache, index);
     }
     if (obj.getAge() != null) {
@@ -339,7 +340,7 @@ public class UserProtoConverter {
       // list[1] | tag | data size | value |
       for (Address element: obj.getStructListField()) {
         output.writeUInt32NoTag(178);
-        output.writeUInt32NoTag(cache[index]);
+        output.writeUInt32NoTag(cache.get(index));
         index = AddressProtoConverter.toProto(element, output, cache, index);
       }
     }
@@ -349,7 +350,7 @@ public class UserProtoConverter {
       for (Map.Entry<String, Address> entry : obj.getStructValueMap().entrySet()) {
         output.writeUInt32NoTag(186);
         // calculate data size
-        int elementSize = cache[index];
+        int elementSize = cache.get(index);
         int dataSize = 0;
         dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
         dataSize += CodedOutputStream.computeInt32SizeNoTag(18);
@@ -406,19 +407,19 @@ public class UserProtoConverter {
   }
 
   public static int computeSize(User obj) {
-    int[] cache = new int[100];
+    ExpandableArray cache = new ExpandableArray(16);
     UserProtoConverter.computeSize(obj, cache, 0);
-    return cache[0];
+    return cache.get(0);
   }
 
-  public static int computeSize(User obj, int[] cache, final int baseIndex) {
+  public static int computeSize(User obj, ExpandableArray cache, final int baseIndex) {
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getAddress() != null) {
       size += CodedOutputStream.computeUInt32SizeNoTag(10);
       int savedIndex = index;
       index = AddressProtoConverter.computeSize(obj.getAddress(), cache, index);
-      int dataSize = cache[savedIndex];
+      int dataSize = cache.get(savedIndex);
       size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
       size += dataSize;
     }
@@ -523,7 +524,7 @@ public class UserProtoConverter {
           size += CodedOutputStream.computeUInt32SizeNoTag(178);
           int savedIndex = index;
           index = AddressProtoConverter.computeSize(element, cache, index);
-          int dataSize = cache[savedIndex];
+          int dataSize = cache.get(savedIndex);
           size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
           size += dataSize;
         }
@@ -541,7 +542,7 @@ public class UserProtoConverter {
         // value
         int savedIndex = index;
         index = AddressProtoConverter.computeSize(entry.getValue(), cache, index);
-        int elementSize = cache[savedIndex];
+        int elementSize = cache.get(savedIndex);
         dataSize += CodedOutputStream.computeInt32SizeNoTag(18);
         dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);
         dataSize += elementSize;
@@ -590,7 +591,7 @@ public class UserProtoConverter {
         size += dataSize;
       }
     }
-    cache[baseIndex] = size;
+    cache.set(baseIndex, size);
     return index;
   }
 

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
+import io.vertx.core.ExpandableArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.proto.*;
 
@@ -36,12 +37,12 @@ public class AddressProtoConverter {
   }
 
   public static void toProto(Address obj, CodedOutputStream output) throws IOException {
-    int[] cache = new int[100];
+    ExpandableArray cache = new ExpandableArray(16);
     AddressProtoConverter.computeSize(obj, cache, 0);
     AddressProtoConverter.toProto(obj, output, cache, 0);
   }
 
-  public static int toProto(Address obj, CodedOutputStream output, int[] cache, int index) throws IOException {
+  public static int toProto(Address obj, CodedOutputStream output, ExpandableArray cache, int index) throws IOException {
     index = index + 1;
     if (obj.getLatitude() != null) {
       output.writeFloat(1, obj.getLatitude());
@@ -56,12 +57,12 @@ public class AddressProtoConverter {
   }
 
   public static int computeSize(Address obj) {
-    int[] cache = new int[100];
+    ExpandableArray cache = new ExpandableArray(16);
     AddressProtoConverter.computeSize(obj, cache, 0);
-    return cache[0];
+    return cache.get(0);
   }
 
-  public static int computeSize(Address obj, int[] cache, final int baseIndex) {
+  public static int computeSize(Address obj, ExpandableArray cache, final int baseIndex) {
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getLatitude() != null) {
@@ -73,7 +74,7 @@ public class AddressProtoConverter {
     if (obj.getName() != null) {
       size += CodedOutputStream.computeStringSize(3, obj.getName());
     }
-    cache[baseIndex] = size;
+    cache.set(baseIndex, size);
     return index;
   }
 

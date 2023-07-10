@@ -21,6 +21,8 @@ import java.util.Map;
  */
 public class DataObjectProtobufGen extends Generator<DataObjectModel> {
 
+  public static int CACHE_INITIAL_CAPACITY = 16;
+
   public DataObjectProtobufGen() {
     kinds = Collections.singleton("dataObject");
     name = "data_object_converters";
@@ -63,6 +65,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     writer.print("import java.util.HashMap;\n");
     writer.print("import java.util.Map;\n");
     writer.print("import java.util.Arrays;\n");
+    writer.print("import io.vertx.core.ExpandableArray;\n");
     writer.print("import io.vertx.core.json.JsonObject;\n");
     writer.print("import io.vertx.core.proto.*;\n");
     writer.print("\n");
@@ -217,12 +220,12 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     // toProto()
     {
       writer.print("  public static void toProto(" + simpleName + " obj, CodedOutputStream output) throws IOException {\n");
-      writer.print("    int[] cache = new int[100];\n");
+      writer.print("    ExpandableArray cache = new ExpandableArray(" + CACHE_INITIAL_CAPACITY + ");\n");
       writer.print("    " + simpleName + "ProtoConverter.computeSize(obj, cache, 0);\n");
       writer.print("    " + simpleName + "ProtoConverter.toProto(obj, output, cache, 0);\n");
       writer.print("  }\n");
       writer.print("\n");
-      writer.print("  " + visibility + " static int toProto(" + simpleName + " obj, CodedOutputStream output, int[] cache, int index) throws IOException {\n");
+      writer.print("  " + visibility + " static int toProto(" + simpleName + " obj, CodedOutputStream output, ExpandableArray cache, int index) throws IOException {\n");
       writer.print("    index = index + 1;\n");
       int fieldNumber = 1;
       for (PropertyInfo prop : model.getPropertyMap().values()) {
@@ -264,7 +267,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
             } else {
               writer.print("      for (" + protoProperty.getMessage() + " element: obj." + prop.getGetterMethod() +"()) {\n");
               writer.print("        output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
-              writer.print("        output.writeUInt32NoTag(cache[index]);\n");
+              writer.print("        output.writeUInt32NoTag(cache.get(index));\n");
               writer.print("        index = " + protoProperty.getMessage() + "ProtoConverter.toProto(element, output, cache, index);\n");
               writer.print("      }\n");
             }
@@ -311,7 +314,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
               writer.print("      for (Map.Entry<String, " + protoProperty.getMessage() + "> entry : obj." + prop.getGetterMethod() + "().entrySet()) {\n");
               writer.print("        output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
               writer.print("        // calculate data size\n");
-              writer.print("        int elementSize = cache[index];\n");
+              writer.print("        int elementSize = cache.get(index);\n");
               writer.print("        int dataSize = 0;\n");
               writer.print("        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());\n");
               writer.print("        dataSize += CodedOutputStream.computeInt32SizeNoTag(18);\n");
@@ -338,7 +341,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
               writer.print("      " + builtInType + "ProtoConverter.toProto(obj." + prop.getGetterMethod() +"(), output);\n");
             } else {
               writer.print("      output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
-              writer.print("      output.writeUInt32NoTag(cache[index]);\n");
+              writer.print("      output.writeUInt32NoTag(cache.get(index));\n");
               writer.print("      index = " + protoProperty.getMessage() + "ProtoConverter.toProto(obj." + prop.getGetterMethod() + "(), output, cache, index);\n");
             }
           }
@@ -354,12 +357,12 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     // computeSize()
     {
       writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj) {\n");
-      writer.print("    int[] cache = new int[100];\n");
+      writer.print("    ExpandableArray cache = new ExpandableArray(" + CACHE_INITIAL_CAPACITY + ");\n");
       writer.print("    " + simpleName + "ProtoConverter.computeSize(obj, cache, 0);\n");
-      writer.print("    return cache[0];\n");
+      writer.print("    return cache.get(0);\n");
       writer.print("  }\n");
       writer.print("\n");
-      writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj, int[] cache, final int baseIndex) {\n");
+      writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj, ExpandableArray cache, final int baseIndex) {\n");
       writer.print("    int size = 0;\n");
       writer.print("    int index = baseIndex + 1;\n");
       int fieldNumber = 1;
@@ -406,7 +409,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
               writer.print("          size += CodedOutputStream.computeUInt32SizeNoTag(" + protoProperty.getTag() + ");\n");
               writer.print("          int savedIndex = index;\n");
               writer.print("          index = " + protoProperty.getMessage() + "ProtoConverter.computeSize(element, cache, index);\n");
-              writer.print("          int dataSize = cache[savedIndex];\n");
+              writer.print("          int dataSize = cache.get(savedIndex);\n");
               writer.print("          size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
               writer.print("          size += dataSize;\n");
               writer.print("        }\n");
@@ -455,7 +458,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
               writer.print("        // value\n");
               writer.print("        int savedIndex = index;\n");
               writer.print("        index = " + protoProperty.getMessage() + "ProtoConverter.computeSize(entry.getValue(), cache, index);\n");
-              writer.print("        int elementSize = cache[savedIndex];\n");
+              writer.print("        int elementSize = cache.get(savedIndex);\n");
               writer.print("        dataSize += CodedOutputStream.computeInt32SizeNoTag(18);\n");
               writer.print("        dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);\n");
               writer.print("        dataSize += elementSize;\n");
@@ -479,7 +482,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
               writer.print("      size += CodedOutputStream.computeUInt32SizeNoTag(" + protoProperty.getTag() + ");\n");
               writer.print("      int savedIndex = index;\n");
               writer.print("      index = " + protoProperty.getMessage() + "ProtoConverter.computeSize(obj." + prop.getGetterMethod() + "(), cache, index);\n");
-              writer.print("      int dataSize = cache[savedIndex];\n");
+              writer.print("      int dataSize = cache.get(savedIndex);\n");
               writer.print("      size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
               writer.print("      size += dataSize;\n");
             }
@@ -488,7 +491,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
         writer.print("    }\n");
         fieldNumber++;
       }
-      writer.print("    cache[baseIndex] = size;\n");
+      writer.print("    cache.set(baseIndex, size);\n");
       writer.print("    return index;\n");
       writer.print("  }\n");
       writer.print("\n");
