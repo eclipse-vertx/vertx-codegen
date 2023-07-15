@@ -356,7 +356,7 @@ public class ProtoConverterTest {
   public void testStringField() throws IOException {
     User user = new User();
     user.setUserName("user-01");
-    testEncodeDecode(user, User::getUserName, io.vertx.test.protoc.gen.User::getUsername);
+    testEncodeDecode(user, User::getUserName, io.vertx.test.protoc.gen.User::getUserName);
   }
 
   @Test

@@ -23,10 +23,10 @@ message User{
   int32 byteField = 4;
   int32 charField = 5;
   double doubleField = 6;
-  Instant instantField = 7;
-  int32 integerListField = 8;
-  int32 integerValueMap = 9;
-  JsonObject jsonObjectField = 10;
+  io.vertx.protobuf.Instant instantField = 7;
+  repeated int32 integerListField = 8;
+  map<string, int32> integerValueMap = 9;
+  io.vertx.protobuf.JsonObject jsonObjectField = 10;
   int64 longField = 11;
   bool primitiveBoolean = 12;
   int32 primitiveByte = 13;
@@ -37,12 +37,12 @@ message User{
   int64 primitiveLong = 18;
   int32 primitiveShort = 19;
   int32 shortField = 20;
-  string stringValueMap = 21;
-  Address structListField = 22;
-  Address structValueMap = 23;
+  map<string, string> stringValueMap = 21;
+  repeated Address structListField = 22;
+  map<string, Address> structValueMap = 23;
   string userName = 24;
-  ZonedDateTime zonedDateTimeField = 25;
-  ZonedDateTime zonedDateTimeListField = 26;
-  ZonedDateTime zonedDateTimeValueMap = 27;
+  io.vertx.protobuf.ZonedDateTime zonedDateTimeField = 25;
+  repeated io.vertx.protobuf.ZonedDateTime zonedDateTimeListField = 26;
+  map<string, io.vertx.protobuf.ZonedDateTime> zonedDateTimeValueMap = 27;
 }
 

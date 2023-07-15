@@ -54,11 +54,25 @@ public class ProtoFileGen extends Generator<DataObjectModel> {
     for (PropertyInfo prop : model.getPropertyMap().values()) {
       ClassKind propKind = prop.getType().getKind();
       ProtoProperty protoProperty = ProtoProperty.getProtoProperty(prop, fieldNumber);
-      // TODO Map and List and builtin type
+
+      String protoType;
       if (propKind.basic) {
-        writer.print("  " + protoProperty.getProtoType().value + " " + prop.getName() + " = " + fieldNumber + ";\n");
+        protoType = protoProperty.getProtoType().value;
       } else {
-        writer.print("  " + protoProperty.getMessage() + " " + prop.getName() + " = " + fieldNumber + ";\n");
+        String builtInType = ProtoProperty.getBuiltInType(prop);
+        if (builtInType != null) {
+          protoType = "io.vertx.protobuf." + builtInType;
+        } else {
+          protoType = protoProperty.getMessage();
+        }
+      }
+
+      if (prop.getKind().isList()) {
+        writer.print("  repeated " + protoType + " " + prop.getName() + " = " + fieldNumber + ";\n");
+      } else if (prop.getKind().isMap()) {
+        writer.print("  map<string, " + protoType + "> " + prop.getName() + " = " + fieldNumber + ";\n");
+      } else {
+        writer.print("  " + protoType + " " + prop.getName() + " = " + fieldNumber + ";\n");
       }
       fieldNumber++;
     }
