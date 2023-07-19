@@ -228,6 +228,51 @@
         </executions>
       </plugin>
 
+      <!-- Copy proto files for Protoc Plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>copy-standard-proto</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/proto</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/main/resources/proto/</directory>
+                  <includes>
+                    <include>*.proto</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-generated-proto</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/proto</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/converters/generated/</directory>
+                  <includes>
+                    <include>*.proto</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- Protoc Plugin to test against dataModel Protocol Buffer converter -->
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
@@ -237,10 +282,12 @@
           <protocArtifact>com.google.protobuf:protoc:${protoc.version}:exe:${os.detected.classifier}</protocArtifact>
           <pluginId>grpc-java</pluginId>
           <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
+          <protoTestSourceRoot>${project.build.directory}/proto</protoTestSourceRoot>
         </configuration>
         <executions>
           <execution>
             <id>test-compile</id>
+            <phase>process-test-sources</phase>
             <goals>
               <goal>test-compile</goal>
               <goal>test-compile-custom</goal>
