@@ -183,7 +183,7 @@ public class ProtoConverterTest {
     byte[] encoded = vertxEncode(user);
 
     // Decode using Google's protoc plugin
-    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    io.vertx.protobuf.generated.User protocObj = protocDecode(encoded);
     assertEquals(protocObj.getAddress().getName(), user.getAddress().getName());
 
     // Encode using Google's protoc plugin
@@ -199,14 +199,14 @@ public class ProtoConverterTest {
   public void testIntegerField() throws IOException {
     User user = new User();
     user.setAge(18);
-    testEncodeDecode(user, User::getAge, io.vertx.test.protoc.gen.User::getAge);
+    testEncodeDecode(user, User::getAge, io.vertx.protobuf.generated.User::getAge);
   }
 
   @Test
   public void testBoolField() throws IOException {
     User user = new User();
     user.setBoolField(true);
-    testEncodeDecode(user, User::getBoolField, io.vertx.test.protoc.gen.User::getBoolField);
+    testEncodeDecode(user, User::getBoolField, io.vertx.protobuf.generated.User::getBoolField);
   }
 
   @Test
@@ -220,14 +220,14 @@ public class ProtoConverterTest {
   public void testDoubleField() throws IOException {
     User user = new User();
     user.setDoubleField(3.142);
-    testEncodeDecode(user, User::getDoubleField, io.vertx.test.protoc.gen.User::getDoubleField);
+    testEncodeDecode(user, User::getDoubleField, io.vertx.protobuf.generated.User::getDoubleField);
   }
 
   @Test
   public void testIntegerListField() throws IOException {
     User user = new User();
     user.setIntegerListField(Collections.unmodifiableList(Arrays.asList(1, 2)));
-    testEncodeDecode(user, User::getIntegerListField, io.vertx.test.protoc.gen.User::getIntegerListFieldList);
+    testEncodeDecode(user, User::getIntegerListField, io.vertx.protobuf.generated.User::getIntegerListFieldList);
   }
 
   @Test
@@ -237,14 +237,14 @@ public class ProtoConverterTest {
     integerValueMap.put("key1", 1);
     integerValueMap.put("key2", 2);
     user.setIntegerValueMap(integerValueMap);
-    testEncodeDecode(user, User::getIntegerValueMap, io.vertx.test.protoc.gen.User::getIntegerValueMapMap);
+    testEncodeDecode(user, User::getIntegerValueMap, io.vertx.protobuf.generated.User::getIntegerValueMapMap);
   }
 
   @Test
   public void testLongField() throws IOException {
     User user = new User();
     user.setLongField(100001L);
-    testEncodeDecode(user, User::getLongField, io.vertx.test.protoc.gen.User::getLongField);
+    testEncodeDecode(user, User::getLongField, io.vertx.protobuf.generated.User::getLongField);
   }
 
   @Test
@@ -261,7 +261,7 @@ public class ProtoConverterTest {
     stringValueMap.put("key1", "value1");
     stringValueMap.put("key2", "value2");
     user.setStringValueMap(stringValueMap);
-    testEncodeDecode(user, User::getStringValueMap, io.vertx.test.protoc.gen.User::getStringValueMapMap);
+    testEncodeDecode(user, User::getStringValueMap, io.vertx.protobuf.generated.User::getStringValueMapMap);
   }
 
   @Test
@@ -277,7 +277,7 @@ public class ProtoConverterTest {
     byte[] encoded = vertxEncode(user);
 
     // Decode using Google's protoc plugin
-    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    io.vertx.protobuf.generated.User protocObj = protocDecode(encoded);
     assertEquals(protocObj.getStructListFieldList().size(), user.getStructListField().size());
     assertEquals(protocObj.getStructListField(0).getName(), user.getStructListField().get(0).getName());
     assertEquals(protocObj.getStructListField(1).getName(), user.getStructListField().get(1).getName());
@@ -303,7 +303,7 @@ public class ProtoConverterTest {
     byte[] encoded = vertxEncode(user);
 
     // Decode using Google's protoc plugin
-    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    io.vertx.protobuf.generated.User protocObj = protocDecode(encoded);
     assertEquals(user.getZonedDateTimeListField().get(0).toInstant().getEpochSecond(), protocObj.getZonedDateTimeListField(0).getSeconds());
     assertEquals(user.getZonedDateTimeListField().get(0).toInstant().getNano(), protocObj.getZonedDateTimeListField(0).getNanos());
     assertEquals(user.getZonedDateTimeListField().get(0).getZone().toString(), protocObj.getZonedDateTimeListField(0).getZoneId());
@@ -339,7 +339,7 @@ public class ProtoConverterTest {
     byte[] encoded = vertxEncode(user);
 
     // Decode using Google's protoc plugin
-    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    io.vertx.protobuf.generated.User protocObj = protocDecode(encoded);
     assertEquals(user.getStructValueMap().get("key1").getName(), protocObj.getStructValueMapMap().get("key1").getName());
     assertEquals(user.getStructValueMap().get("key2").getName(), protocObj.getStructValueMapMap().get("key2").getName());
 
@@ -356,7 +356,7 @@ public class ProtoConverterTest {
   public void testStringField() throws IOException {
     User user = new User();
     user.setUserName("user-01");
-    testEncodeDecode(user, User::getUserName, io.vertx.test.protoc.gen.User::getUserName);
+    testEncodeDecode(user, User::getUserName, io.vertx.protobuf.generated.User::getUserName);
   }
 
   @Test
@@ -369,7 +369,7 @@ public class ProtoConverterTest {
     byte[] encoded = vertxEncode(user);
 
     // Decode using Google's protoc plugin
-    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    io.vertx.protobuf.generated.User protocObj = protocDecode(encoded);
     assertEquals(user.getInstantField().getEpochSecond(), protocObj.getInstantField().getSeconds());
     assertEquals(user.getInstantField().getNano(), protocObj.getInstantField().getNanos());
 
@@ -394,7 +394,7 @@ public class ProtoConverterTest {
     byte[] encoded = vertxEncode(user);
 
     // Decode using Google's protoc plugin
-    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    io.vertx.protobuf.generated.User protocObj = protocDecode(encoded);
     assertEquals(user.getZonedDateTimeField().toInstant().getEpochSecond(), protocObj.getZonedDateTimeField().getSeconds());
     assertEquals(user.getZonedDateTimeField().toInstant().getNano(), protocObj.getZonedDateTimeField().getNanos());
     assertEquals(user.getZonedDateTimeField().getZone().toString(), protocObj.getZonedDateTimeField().getZoneId());
@@ -423,7 +423,7 @@ public class ProtoConverterTest {
     byte[] encoded = vertxEncode(user);
 
     // Decode using Google's protoc plugin
-    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    io.vertx.protobuf.generated.User protocObj = protocDecode(encoded);
     assertEquals(user.getZonedDateTimeValueMap().get("Key1").toInstant().getEpochSecond(), protocObj.getZonedDateTimeValueMapMap().get("Key1").getSeconds());
     assertEquals(user.getZonedDateTimeValueMap().get("Key1").toInstant().getNano(), protocObj.getZonedDateTimeValueMapMap().get("Key1").getNanos());
     assertEquals(user.getZonedDateTimeValueMap().get("Key1").getZone().toString(), protocObj.getZonedDateTimeValueMapMap().get("Key1").getZoneId());
@@ -446,12 +446,12 @@ public class ProtoConverterTest {
   private <T> void testEncodeDecode(
     User obj,
     Function<User, T> pojoGetter,
-    Function<io.vertx.test.protoc.gen.User, T> protocGetter) throws IOException {
+    Function<io.vertx.protobuf.generated.User, T> protocGetter) throws IOException {
     // Vertx Encode
     byte[] encoded = vertxEncode(obj);
 
     // Decode using Google's protoc plugin
-    io.vertx.test.protoc.gen.User protocObj = protocDecode(encoded);
+    io.vertx.protobuf.generated.User protocObj = protocDecode(encoded);
     assertEquals(pojoGetter.apply(obj), protocGetter.apply(protocObj));
 
     // Encode using Google's protoc plugin
@@ -473,7 +473,7 @@ public class ProtoConverterTest {
     return encoded;
   }
 
-  private byte[] protocEncode(io.vertx.test.protoc.gen.User obj) throws IOException {
+  private byte[] protocEncode(io.vertx.protobuf.generated.User obj) throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream output = CodedOutputStream.newInstance(baos);
     obj.writeTo(output);
@@ -483,8 +483,8 @@ public class ProtoConverterTest {
     return encoded;
   }
 
-  private io.vertx.test.protoc.gen.User protocDecode(byte[] arr) throws InvalidProtocolBufferException {
-    return io.vertx.test.protoc.gen.User.parseFrom(arr);
+  private io.vertx.protobuf.generated.User protocDecode(byte[] arr) throws InvalidProtocolBufferException {
+    return io.vertx.protobuf.generated.User.parseFrom(arr);
   }
 
   private User vertxDecode(byte[] arr) throws IOException {

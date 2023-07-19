@@ -1,9 +1,9 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "io.vertx.test.protoc.gen";
+option java_package = "io.vertx.protobuf.generated";
 
-package testing;
+package io.vertx.protobuf.generated;
 
 import "json-object.proto";
 import "datetime.proto";
