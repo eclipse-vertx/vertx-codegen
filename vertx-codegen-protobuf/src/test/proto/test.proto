@@ -18,24 +18,26 @@ message User{
   io.vertx.protobuf.Instant instantField = 7;
   repeated int32 integerListField = 8;
   map<string, int32> integerValueMap = 9;
-  io.vertx.protobuf.JsonObject jsonObjectField = 10;
-  int64 longField = 11;
-  bool primitiveBoolean = 12;
-  int32 primitiveByte = 13;
-  int32 primitiveChar = 14;
-  double primitiveDouble = 15;
-  float primitiveFloat = 16;
-  int32 primitiveInt = 17;
-  int64 primitiveLong = 18;
-  int32 primitiveShort = 19;
-  int32 shortField = 20;
-  map<string, string> stringValueMap = 21;
-  repeated Address structListField = 22;
-  map<string, Address> structValueMap = 23;
-  string userName = 24;
-  io.vertx.protobuf.ZonedDateTime zonedDateTimeField = 25;
-  repeated io.vertx.protobuf.ZonedDateTime zonedDateTimeListField = 26;
-  map<string, io.vertx.protobuf.ZonedDateTime> zonedDateTimeValueMap = 27;
+  repeated io.vertx.protobuf.JsonObject jsonListField = 10;
+  io.vertx.protobuf.JsonObject jsonObjectField = 11;
+  map<string, io.vertx.protobuf.JsonObject> jsonValueMap = 12;
+  int64 longField = 13;
+  bool primitiveBoolean = 14;
+  int32 primitiveByte = 15;
+  int32 primitiveChar = 16;
+  double primitiveDouble = 17;
+  float primitiveFloat = 18;
+  int32 primitiveInt = 19;
+  int64 primitiveLong = 20;
+  int32 primitiveShort = 21;
+  int32 shortField = 22;
+  map<string, string> stringValueMap = 23;
+  repeated Address structListField = 24;
+  map<string, Address> structValueMap = 25;
+  string userName = 26;
+  io.vertx.protobuf.ZonedDateTime zonedDateTimeField = 27;
+  repeated io.vertx.protobuf.ZonedDateTime zonedDateTimeListField = 28;
+  map<string, io.vertx.protobuf.ZonedDateTime> zonedDateTimeValueMap = 29;
 }
 
 message Address {

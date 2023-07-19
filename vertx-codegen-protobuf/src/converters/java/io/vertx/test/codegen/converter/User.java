@@ -19,6 +19,7 @@ public class User {
   private List<Integer> integerListField;
   private List<Address> structListField;
   private List<ZonedDateTime> zonedDateTimeListField;
+  private List<JsonObject> jsonListField;
   private Address address;
   private Byte byteField;
   private Double doubleField;
@@ -29,6 +30,7 @@ public class User {
   private Map<String, String> stringValueMap;
   private Map<String, Integer> integerValueMap;
   private Map<String, Address> structValueMap;
+  private Map<String, JsonObject> jsonValueMap;
   private Map<String, ZonedDateTime> zonedDateTimeValueMap;
   private ZonedDateTime zonedDateTimeField;
   private Instant instantField;
@@ -80,6 +82,14 @@ public class User {
 
   public void setZonedDateTimeListField(List<ZonedDateTime> zonedDateTimeListField) {
     this.zonedDateTimeListField = zonedDateTimeListField;
+  }
+
+  public List<JsonObject> getJsonListField() {
+    return jsonListField;
+  }
+
+  public void setJsonListField(List<JsonObject> jsonListField) {
+    this.jsonListField = jsonListField;
   }
 
   public Address getAddress() {
@@ -160,6 +170,14 @@ public class User {
 
   public void setStructValueMap(Map<String, Address> structValueMap) {
     this.structValueMap = structValueMap;
+  }
+
+  public Map<String, JsonObject> getJsonValueMap() {
+    return jsonValueMap;
+  }
+
+  public void setJsonValueMap(Map<String, JsonObject> jsonValueMap) {
+    this.jsonValueMap = jsonValueMap;
   }
 
   public Map<String, ZonedDateTime> getZonedDateTimeValueMap() {
@@ -263,11 +281,11 @@ public class User {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     User user = (User) o;
-    return primitiveBoolean == user.primitiveBoolean && primitiveByte == user.primitiveByte && primitiveShort == user.primitiveShort && primitiveInt == user.primitiveInt && primitiveLong == user.primitiveLong && Float.compare(user.primitiveFloat, primitiveFloat) == 0 && Double.compare(user.primitiveDouble, primitiveDouble) == 0 && primitiveChar == user.primitiveChar && Objects.equals(userName, user.userName) && Objects.equals(age, user.age) && Objects.equals(integerListField, user.integerListField) && Objects.equals(structListField, user.structListField) && Objects.equals(zonedDateTimeListField, user.zonedDateTimeListField) && Objects.equals(address, user.address) && Objects.equals(doubleField, user.doubleField) && Objects.equals(longField, user.longField) && Objects.equals(boolField, user.boolField) && Objects.equals(shortField, user.shortField) && Objects.equals(charField, user.charField) && Objects.equals(stringValueMap, user.stringValueMap) && Objects.equals(integerValueMap, user.integerValueMap) && Objects.equals(structValueMap, user.structValueMap) && Objects.equals(zonedDateTimeValueMap, user.zonedDateTimeValueMap) && Objects.equals(zonedDateTimeField, user.zonedDateTimeField) && Objects.equals(instantField, user.instantField) && Objects.equals(jsonObjectField, user.jsonObjectField);
+    return primitiveBoolean == user.primitiveBoolean && primitiveByte == user.primitiveByte && primitiveShort == user.primitiveShort && primitiveInt == user.primitiveInt && primitiveLong == user.primitiveLong && Float.compare(user.primitiveFloat, primitiveFloat) == 0 && Double.compare(user.primitiveDouble, primitiveDouble) == 0 && primitiveChar == user.primitiveChar && Objects.equals(userName, user.userName) && Objects.equals(age, user.age) && Objects.equals(integerListField, user.integerListField) && Objects.equals(structListField, user.structListField) && Objects.equals(zonedDateTimeListField, user.zonedDateTimeListField) && Objects.equals(jsonListField, user.jsonListField) && Objects.equals(address, user.address) && Objects.equals(byteField, user.byteField) && Objects.equals(doubleField, user.doubleField) && Objects.equals(longField, user.longField) && Objects.equals(boolField, user.boolField) && Objects.equals(shortField, user.shortField) && Objects.equals(charField, user.charField) && Objects.equals(stringValueMap, user.stringValueMap) && Objects.equals(integerValueMap, user.integerValueMap) && Objects.equals(structValueMap, user.structValueMap) && Objects.equals(jsonValueMap, user.jsonValueMap) && Objects.equals(zonedDateTimeValueMap, user.zonedDateTimeValueMap) && Objects.equals(zonedDateTimeField, user.zonedDateTimeField) && Objects.equals(instantField, user.instantField) && Objects.equals(jsonObjectField, user.jsonObjectField);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(userName, age, integerListField, structListField, zonedDateTimeListField, address, doubleField, longField, boolField, shortField, charField, stringValueMap, integerValueMap, structValueMap, zonedDateTimeValueMap, zonedDateTimeField, instantField, jsonObjectField, primitiveBoolean, primitiveByte, primitiveShort, primitiveInt, primitiveLong, primitiveFloat, primitiveDouble, primitiveChar);
+    return Objects.hash(userName, age, integerListField, structListField, zonedDateTimeListField, jsonListField, address, byteField, doubleField, longField, boolField, shortField, charField, stringValueMap, integerValueMap, structValueMap, jsonValueMap, zonedDateTimeValueMap, zonedDateTimeField, instantField, jsonObjectField, primitiveBoolean, primitiveByte, primitiveShort, primitiveInt, primitiveLong, primitiveFloat, primitiveDouble, primitiveChar);
   }
 }

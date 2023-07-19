@@ -48,15 +48,35 @@ public class ProtoConverterTest {
     User user = new User();
     user.setUserName("jviet");
     user.setAge(21);
-    user.setAddress(address1);
     user.setByteField((byte)8);
-    user.setStructListField(Collections.unmodifiableList(Arrays.asList(address2, address3)));
-    user.setIntegerListField(Collections.unmodifiableList(Arrays.asList(100, 101)));
     user.setDoubleField(5.5);
     user.setLongField(1000L);
     user.setBoolField(true);
     user.setShortField((short) 10);
     user.setCharField((char) 1);
+
+    // Nested Object fields
+    user.setAddress(address1);
+
+    // Built-in Object fields
+    JsonObject jsonObject5 = new JsonObject();
+    jsonObject5.put("IntField", 105);
+    jsonObject5.put("StringField", "StringValue-5");
+    user.setJsonObjectField(jsonObject5);
+
+    // List fields
+    user.setStructListField(Collections.unmodifiableList(Arrays.asList(address2, address3)));
+    user.setIntegerListField(Collections.unmodifiableList(Arrays.asList(100, 101)));
+
+    JsonObject jsonObject1 = new JsonObject();
+    jsonObject1.put("IntField", 101);
+    jsonObject1.put("StringField", "StringValue-1");
+    JsonObject jsonObject2 = new JsonObject();
+    jsonObject2.put("IntField", 102);
+    jsonObject2.put("StringField", "StringValue-2");
+    user.setJsonListField(Collections.unmodifiableList(Arrays.asList(jsonObject1, jsonObject2)));
+
+    // Map fields
     Map<String, String> stringValueMap = new HashMap<>();
     stringValueMap.put("key1", "value1");
     stringValueMap.put("key2", "value2");
@@ -71,10 +91,16 @@ public class ProtoConverterTest {
     structValueMap.put("key2", address2);
     user.setStructValueMap(structValueMap);
 
-    JsonObject jsonObject = new JsonObject();
-    jsonObject.put("IntField", 100);
-    jsonObject.put("StringField", "StringValue");
-    user.setJsonObjectField(jsonObject);
+    JsonObject jsonObject3 = new JsonObject();
+    jsonObject3.put("IntField", 103);
+    jsonObject3.put("StringField", "StringValue-3");
+    JsonObject jsonObject4 = new JsonObject();
+    jsonObject4.put("IntField", 104);
+    jsonObject4.put("StringField", "StringValue-4");
+    Map<String, JsonObject> jsonValueMap = new HashMap<>();
+    jsonValueMap.put("key1", jsonObject3);
+    jsonValueMap.put("key2", jsonObject4);
+    user.setJsonValueMap(jsonValueMap);
 
     // Encode
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -95,6 +121,7 @@ public class ProtoConverterTest {
     assertEquals(user.getAddress().getLongitude(), decoded.getAddress().getLongitude());
     Assert.assertArrayEquals(user.getStructListField().toArray(), decoded.getStructListField().toArray());
     Assert.assertArrayEquals(user.getIntegerListField().toArray(), decoded.getIntegerListField().toArray());
+    Assert.assertArrayEquals(user.getJsonListField().toArray(), decoded.getJsonListField().toArray());
     assertEquals(user.getByteField(), decoded.getByteField());
     assertEquals(user.getDoubleField(), decoded.getDoubleField());
     assertEquals(user.getLongField(), decoded.getLongField());
@@ -104,6 +131,7 @@ public class ProtoConverterTest {
     assertEquals(user.getStringValueMap(), decoded.getStringValueMap());
     assertEquals(user.getIntegerValueMap(), decoded.getIntegerValueMap());
     assertEquals(user.getStructValueMap(), decoded.getStructValueMap());
+    assertEquals(user.getJsonValueMap(), decoded.getJsonValueMap());
     assertEquals(user.getJsonObjectField(), decoded.getJsonObjectField());
 
     // Assert total size is equal to computed size
