@@ -11,7 +11,7 @@
       <outputDirectory>/</outputDirectory>
       <useProjectArtifact>true</useProjectArtifact>
       <includes>
-        <include>io.vertx:vertx-codegen</include>
+        <include>io.vertx:vertx-codegen-protobuf</include>
       </includes>
       <unpack>true</unpack>
     </dependencySet>
