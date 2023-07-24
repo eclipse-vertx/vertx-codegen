@@ -3,6 +3,8 @@ package io.vertx.test.codegen.converter;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.protobuf.annotations.ProtobufGen;
 
+import java.util.Objects;
+
 // Temporary Test Object, maybe will switch to test with TestDataObject
 @DataObject
 @ProtobufGen
@@ -55,5 +57,18 @@ public class RecursiveItem {
   @Override
   public String toString() {
     return id;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    RecursiveItem that = (RecursiveItem) o;
+    return Objects.equals(id, that.id) && Objects.equals(childA, that.childA) && Objects.equals(childB, that.childB) && Objects.equals(childC, that.childC);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, childA, childB, childC);
   }
 }

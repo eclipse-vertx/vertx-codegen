@@ -257,7 +257,7 @@ public class JsonObjectProtoTest {
     obj.writeTo(output);
     output.flush();
     byte[] encoded = baos.toByteArray();
-    System.out.println("protoc encoded:\n" + TestUtils.prettyHexDump(encoded));
+    TestUtils.debug("Protoc encoded", encoded);
     return encoded;
   }
 
@@ -267,7 +267,7 @@ public class JsonObjectProtoTest {
     JsonObjectProtoConverter.toProto(obj, output);
     output.flush();
     byte[] encoded = baos.toByteArray();
-    System.out.println("vertx encoded:\n" + TestUtils.prettyHexDump(encoded));
+    TestUtils.debug("Vertx encoded", encoded);
     return encoded;
   }
 }

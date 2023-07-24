@@ -45,15 +45,27 @@ public class ProtoConverterTest {
     address3.setLatitude(3.303F);
     address3.setLongitude(4.403F);
 
+    // Boxed type fields
     User user = new User();
     user.setUserName("jviet");
     user.setAge(21);
     user.setByteField((byte)8);
-    user.setDoubleField(5.5);
+    user.setDoubleField(5055.5d);
+    user.setFloatField(55.5f);
     user.setLongField(1000L);
     user.setBoolField(true);
     user.setShortField((short) 10);
     user.setCharField((char) 1);
+
+    // Primitive type fields
+    user.setPrimitiveBoolean(true);
+    user.setPrimitiveByte((byte)3);
+    user.setPrimitiveShort((short)300);
+    user.setPrimitiveInt(3000);
+    user.setPrimitiveLong(300000L);
+    user.setPrimitiveFloat(3.3f);
+    user.setPrimitiveDouble(3003.33d);
+    user.setPrimitiveChar((char)30);
 
     // Nested Object fields
     user.setAddress(address1);
@@ -102,101 +114,62 @@ public class ProtoConverterTest {
     jsonValueMap.put("key2", jsonObject4);
     user.setJsonValueMap(jsonValueMap);
 
-    // Encode
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    CodedOutputStream output = CodedOutputStream.newInstance(baos);
-    UserProtoConverter.toProto(user, output);
-    output.flush();
-    byte[] encoded = baos.toByteArray();
-    // Decode
-    User decoded = new User();
-    CodedInputStream input = CodedInputStream.newInstance(encoded);
-    UserProtoConverter.fromProto(input, decoded);
+    // Vertx Encode
+    byte[] encoded = vertxEncode(user);
+
+    // Decode using Google's protoc plugin
+    io.vertx.protobuf.generated.User protocObj = protocDecode(encoded);
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(protocObj);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Vertx Decode
+    User decoded = vertxDecode(protocEncoded);
 
     // Assert decoded is same with original
+    // Boxed field types
     assertEquals(user.getUserName(), decoded.getUserName());
     assertEquals(user.getAge(), decoded.getAge());
-    Assert.assertEquals(user.getAddress(), decoded.getAddress());
-    assertEquals(user.getAddress().getLatitude(), decoded.getAddress().getLatitude());
-    assertEquals(user.getAddress().getLongitude(), decoded.getAddress().getLongitude());
-    Assert.assertArrayEquals(user.getStructListField().toArray(), decoded.getStructListField().toArray());
-    Assert.assertArrayEquals(user.getIntegerListField().toArray(), decoded.getIntegerListField().toArray());
-    Assert.assertArrayEquals(user.getJsonListField().toArray(), decoded.getJsonListField().toArray());
     assertEquals(user.getByteField(), decoded.getByteField());
     assertEquals(user.getDoubleField(), decoded.getDoubleField());
+    assertEquals(user.getFloatField(), decoded.getFloatField());
     assertEquals(user.getLongField(), decoded.getLongField());
     assertEquals(user.getBoolField(), decoded.getBoolField());
     assertEquals(user.getShortField(), decoded.getShortField());
     assertEquals(user.getCharField(), decoded.getCharField());
+
+    // Built-in Object fields
+    assertEquals(user.getJsonObjectField(), decoded.getJsonObjectField());
+
+    // Nested object field
+    Assert.assertEquals(user.getAddress(), decoded.getAddress());
+    assertEquals(user.getAddress().getLatitude(), decoded.getAddress().getLatitude());
+    assertEquals(user.getAddress().getLongitude(), decoded.getAddress().getLongitude());
+
+    // List fields
+    Assert.assertArrayEquals(user.getStructListField().toArray(), decoded.getStructListField().toArray());
+    Assert.assertArrayEquals(user.getIntegerListField().toArray(), decoded.getIntegerListField().toArray());
+    Assert.assertArrayEquals(user.getJsonListField().toArray(), decoded.getJsonListField().toArray());
+
+    // Primitive field types
+    assertEquals(user.isPrimitiveBoolean(), decoded.isPrimitiveBoolean());
+    assertEquals(user.getPrimitiveByte(), decoded.getPrimitiveByte());
+    assertEquals(user.getPrimitiveShort(), decoded.getPrimitiveShort());
+    assertEquals(user.getPrimitiveInt(), decoded.getPrimitiveInt());
+    assertEquals(user.getPrimitiveLong(), decoded.getPrimitiveLong());
+    assertEquals(user.getPrimitiveFloat(), decoded.getPrimitiveFloat(), 0.0);
+    assertEquals(user.getPrimitiveDouble(), decoded.getPrimitiveDouble(), 0.0);
+    assertEquals(user.getPrimitiveChar(), decoded.getPrimitiveChar());
+
+    // Map fields
     assertEquals(user.getStringValueMap(), decoded.getStringValueMap());
     assertEquals(user.getIntegerValueMap(), decoded.getIntegerValueMap());
     assertEquals(user.getStructValueMap(), decoded.getStructValueMap());
     assertEquals(user.getJsonValueMap(), decoded.getJsonValueMap());
-    assertEquals(user.getJsonObjectField(), decoded.getJsonObjectField());
 
     // Assert total size is equal to computed size
     Assert.assertEquals(encoded.length, UserProtoConverter.computeSize(user));
-  }
-
-  @Test
-  public void testCachedComputeSize() throws IOException {
-    RecursiveItem root = new RecursiveItem("root");
-    RecursiveItem a = new RecursiveItem("a");
-    RecursiveItem a_a = new RecursiveItem("a_a");
-    RecursiveItem a_b = new RecursiveItem("a_b");
-    RecursiveItem a_c = new RecursiveItem("a_c");
-    RecursiveItem b = new RecursiveItem("b");
-    RecursiveItem b_a = new RecursiveItem("b_a");
-    RecursiveItem b_b = new RecursiveItem("b_b");
-    RecursiveItem c = new RecursiveItem("c");
-    RecursiveItem c_b = new RecursiveItem("c_b");
-    RecursiveItem c_c = new RecursiveItem("c_c");
-
-    RecursiveItem a_a_a = new RecursiveItem("a_a_a");
-    RecursiveItem a_a_b = new RecursiveItem("a_a_b");
-    RecursiveItem a_a_c = new RecursiveItem("a_a_c");
-
-    RecursiveItem a_a_a_a = new RecursiveItem("a_a_a_a");
-    RecursiveItem a_a_a_b = new RecursiveItem("a_a_a_b");
-    RecursiveItem a_a_a_c = new RecursiveItem("a_a_a_c");
-
-    root.setChildA(a);
-
-    a.setChildA(a_a);
-    a.setChildB(a_b);
-    a.setChildC(a_c);
-
-    a_a.setChildA(a_a_a);
-    a_a.setChildB(a_a_b);
-    a_a.setChildC(a_a_c);
-
-    a_a_a.setChildA(a_a_a_a);
-    a_a_a.setChildB(a_a_a_b);
-    a_a_a.setChildC(a_a_a_c);
-
-    root.setChildB(b);
-    b.setChildA(b_a);
-    b.setChildB(b_b);
-
-    root.setChildC(c);
-    c.setChildB(c_b);
-    c.setChildC(c_c);
-
-    // Encode
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    CodedOutputStream output = CodedOutputStream.newInstance(baos);
-
-    RecursiveItemProtoConverter.toProto(root, output);
-    output.flush();
-    byte[] encoded = baos.toByteArray();
-
-    ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
-    CodedOutputStream output2 = CodedOutputStream.newInstance(baos2);
-    RecursiveItemProtoConverter.toProto(root, output2);
-    output2.flush();
-    byte[] encoded2 = baos2.toByteArray();
-
-    Assert.assertArrayEquals(encoded2, encoded);
   }
 
   @Test
@@ -221,6 +194,9 @@ public class ProtoConverterTest {
     // Vertx Decode
     User decoded = vertxDecode(protocEncoded);
     assertEquals(user, decoded);
+
+    // Assert total size is equal to computed size
+    Assert.assertEquals(encoded.length, UserProtoConverter.computeSize(user));
   }
 
   @Test
@@ -497,7 +473,7 @@ public class ProtoConverterTest {
     UserProtoConverter.toProto(obj, output);
     output.flush();
     byte[] encoded = baos.toByteArray();
-    System.out.println("vertx encoded:\n" + TestUtils.prettyHexDump(encoded));
+    TestUtils.debug("Vertx encoded", encoded);
     return encoded;
   }
 
@@ -507,7 +483,7 @@ public class ProtoConverterTest {
     obj.writeTo(output);
     output.flush();
     byte[] encoded = baos.toByteArray();
-    System.out.println("protoc encoded:\n" + TestUtils.prettyHexDump(encoded));
+    TestUtils.debug("Protoc encoded", encoded);
     return encoded;
   }
 

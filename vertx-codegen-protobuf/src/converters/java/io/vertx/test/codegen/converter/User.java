@@ -23,6 +23,7 @@ public class User {
   private Address address;
   private Byte byteField;
   private Double doubleField;
+  private Float floatField;
   private Long longField;
   private Boolean boolField;
   private Short shortField;
@@ -114,6 +115,14 @@ public class User {
 
   public void setDoubleField(Double doubleField) {
     this.doubleField = doubleField;
+  }
+
+  public Float getFloatField() {
+    return floatField;
+  }
+
+  public void setFloatField(Float floatField) {
+    this.floatField = floatField;
   }
 
   public Long getLongField() {

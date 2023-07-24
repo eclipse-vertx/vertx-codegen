@@ -16,6 +16,8 @@ package io.vertx.test.codegen.converter.proto;
  */
 public class TestUtils {
 
+  private static final boolean DEBUG = false;
+
   /**
    * Hexdump prettily
    */
@@ -52,5 +54,12 @@ public class TestUtils {
       }
     }
     return sb.toString();
+  }
+
+  public static void debug(String prefix, byte[] bytes) {
+    if (DEBUG) {
+      System.out.print(prefix);
+      System.out.println(":\n" + TestUtils.prettyHexDump(bytes));
+    }
   }
 }
