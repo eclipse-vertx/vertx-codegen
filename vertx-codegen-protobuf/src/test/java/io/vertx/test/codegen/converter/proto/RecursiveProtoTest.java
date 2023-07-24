@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 
 public class RecursiveProtoTest {
   @Test
-  public void testCachedComputeSize() throws IOException {
+  public void testRecursiveItem() throws IOException {
     RecursiveItem root = new RecursiveItem("root");
     RecursiveItem a = new RecursiveItem("a");
     RecursiveItem a_a = new RecursiveItem("a_a");

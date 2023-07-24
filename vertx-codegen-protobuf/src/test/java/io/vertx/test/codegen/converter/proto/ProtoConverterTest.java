@@ -5,8 +5,6 @@ import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.converter.Address;
-import io.vertx.test.codegen.converter.RecursiveItem;
-import io.vertx.test.codegen.converter.RecursiveItemProtoConverter;
 import io.vertx.test.codegen.converter.User;
 import io.vertx.test.codegen.converter.UserProtoConverter;
 import org.junit.Assert;

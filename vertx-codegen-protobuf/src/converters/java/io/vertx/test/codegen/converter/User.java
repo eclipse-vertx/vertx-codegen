@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-// Temporary Test Object, maybe will switch to test with TestDataObject
 @DataObject
 @ProtobufGen
 public class User {
