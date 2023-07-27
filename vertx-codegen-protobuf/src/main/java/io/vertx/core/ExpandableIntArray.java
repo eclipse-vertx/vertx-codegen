@@ -2,11 +2,11 @@ package io.vertx.core;
 
 import java.util.Arrays;
 
-public class ExpandableArray {
+public class ExpandableIntArray {
   private int[] data;
   private int size;
 
-  public ExpandableArray(int initialCapacity) {
+  public ExpandableIntArray(int initialCapacity) {
     data = new int[initialCapacity];
     size = 0;
   }

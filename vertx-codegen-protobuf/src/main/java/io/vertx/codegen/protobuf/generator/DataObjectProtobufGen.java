@@ -65,7 +65,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     writer.print("import java.util.HashMap;\n");
     writer.print("import java.util.Map;\n");
     writer.print("import java.util.Arrays;\n");
-    writer.print("import io.vertx.core.ExpandableArray;\n");
+    writer.print("import io.vertx.core.ExpandableIntArray;\n");
     writer.print("import io.vertx.core.json.JsonObject;\n");
     writer.print("import io.vertx.core.proto.*;\n");
     writer.print("\n");
@@ -220,12 +220,12 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     // toProto()
     {
       writer.print("  public static void toProto(" + simpleName + " obj, CodedOutputStream output) throws IOException {\n");
-      writer.print("    ExpandableArray cache = new ExpandableArray(" + CACHE_INITIAL_CAPACITY + ");\n");
+      writer.print("    ExpandableIntArray cache = new ExpandableIntArray(" + CACHE_INITIAL_CAPACITY + ");\n");
       writer.print("    " + simpleName + "ProtoConverter.computeSize(obj, cache, 0);\n");
       writer.print("    " + simpleName + "ProtoConverter.toProto(obj, output, cache, 0);\n");
       writer.print("  }\n");
       writer.print("\n");
-      writer.print("  " + visibility + " static int toProto(" + simpleName + " obj, CodedOutputStream output, ExpandableArray cache, int index) throws IOException {\n");
+      writer.print("  " + visibility + " static int toProto(" + simpleName + " obj, CodedOutputStream output, ExpandableIntArray cache, int index) throws IOException {\n");
       writer.print("    index = index + 1;\n");
       int fieldNumber = 1;
       for (PropertyInfo prop : model.getPropertyMap().values()) {
@@ -357,12 +357,12 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     // computeSize()
     {
       writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj) {\n");
-      writer.print("    ExpandableArray cache = new ExpandableArray(" + CACHE_INITIAL_CAPACITY + ");\n");
+      writer.print("    ExpandableIntArray cache = new ExpandableIntArray(" + CACHE_INITIAL_CAPACITY + ");\n");
       writer.print("    " + simpleName + "ProtoConverter.computeSize(obj, cache, 0);\n");
       writer.print("    return cache.get(0);\n");
       writer.print("  }\n");
       writer.print("\n");
-      writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj, ExpandableArray cache, final int baseIndex) {\n");
+      writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj, ExpandableIntArray cache, final int baseIndex) {\n");
       writer.print("    int size = 0;\n");
       writer.print("    int index = baseIndex + 1;\n");
       int fieldNumber = 1;

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
-import io.vertx.core.ExpandableArray;
+import io.vertx.core.ExpandableIntArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.proto.*;
 
@@ -254,12 +254,12 @@ public class UserProtoConverter {
   }
 
   public static void toProto(User obj, CodedOutputStream output) throws IOException {
-    ExpandableArray cache = new ExpandableArray(16);
+    ExpandableIntArray cache = new ExpandableIntArray(16);
     UserProtoConverter.computeSize(obj, cache, 0);
     UserProtoConverter.toProto(obj, output, cache, 0);
   }
 
-  public static int toProto(User obj, CodedOutputStream output, ExpandableArray cache, int index) throws IOException {
+  public static int toProto(User obj, CodedOutputStream output, ExpandableIntArray cache, int index) throws IOException {
     index = index + 1;
     if (obj.getAddress() != null) {
       output.writeUInt32NoTag(10);
@@ -472,12 +472,12 @@ public class UserProtoConverter {
   }
 
   public static int computeSize(User obj) {
-    ExpandableArray cache = new ExpandableArray(16);
+    ExpandableIntArray cache = new ExpandableIntArray(16);
     UserProtoConverter.computeSize(obj, cache, 0);
     return cache.get(0);
   }
 
-  public static int computeSize(User obj, ExpandableArray cache, final int baseIndex) {
+  public static int computeSize(User obj, ExpandableIntArray cache, final int baseIndex) {
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getAddress() != null) {

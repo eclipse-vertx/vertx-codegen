@@ -7,7 +7,7 @@ public class ExpandableArrayTest {
 
   @Test
   public void testAddAndGet() {
-    ExpandableArray arr = new ExpandableArray(2);
+    ExpandableIntArray arr = new ExpandableIntArray(2);
     arr.add(1);
     arr.add(2);
     arr.add(3);
@@ -25,7 +25,7 @@ public class ExpandableArrayTest {
 
   @Test
   public void testSet() {
-    ExpandableArray arr = new ExpandableArray(2);
+    ExpandableIntArray arr = new ExpandableIntArray(2);
     arr.add(1);
     arr.add(2);
     arr.set(1, 20);
@@ -35,7 +35,7 @@ public class ExpandableArrayTest {
 
   @Test
   public void testSetAutoExpand() {
-    ExpandableArray arr = new ExpandableArray(2);
+    ExpandableIntArray arr = new ExpandableIntArray(2);
     arr.add(1);
     arr.set(5, 50);
     Assert.assertEquals(50, arr.get(5));
@@ -47,7 +47,7 @@ public class ExpandableArrayTest {
 
   @Test
   public void testGetOutOfBounds() {
-    ExpandableArray arr = new ExpandableArray(2);
+    ExpandableIntArray arr = new ExpandableIntArray(2);
     arr.add(1);
     Assert.assertThrows(IndexOutOfBoundsException.class, () -> {
       arr.get(5);
@@ -56,7 +56,7 @@ public class ExpandableArrayTest {
 
   @Test
   public void testSetNegativeIndex() {
-    ExpandableArray arr = new ExpandableArray(2);
+    ExpandableIntArray arr = new ExpandableIntArray(2);
     arr.add(1);
     Assert.assertThrows(IndexOutOfBoundsException.class, () -> {
       arr.set(-1, 10);
@@ -65,6 +65,6 @@ public class ExpandableArrayTest {
 
   @Test(expected = OutOfMemoryError.class)
   public void testOutOfMemory() {
-    new ExpandableArray(Integer.MAX_VALUE);
+    new ExpandableIntArray(Integer.MAX_VALUE);
   }
 }

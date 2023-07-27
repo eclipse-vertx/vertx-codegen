@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
-import io.vertx.core.ExpandableArray;
+import io.vertx.core.ExpandableIntArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.proto.*;
 
@@ -56,12 +56,12 @@ public class RecursiveItemProtoConverter {
   }
 
   public static void toProto(RecursiveItem obj, CodedOutputStream output) throws IOException {
-    ExpandableArray cache = new ExpandableArray(16);
+    ExpandableIntArray cache = new ExpandableIntArray(16);
     RecursiveItemProtoConverter.computeSize(obj, cache, 0);
     RecursiveItemProtoConverter.toProto(obj, output, cache, 0);
   }
 
-  public static int toProto(RecursiveItem obj, CodedOutputStream output, ExpandableArray cache, int index) throws IOException {
+  public static int toProto(RecursiveItem obj, CodedOutputStream output, ExpandableIntArray cache, int index) throws IOException {
     index = index + 1;
     if (obj.getChildA() != null) {
       output.writeUInt32NoTag(10);
@@ -85,12 +85,12 @@ public class RecursiveItemProtoConverter {
   }
 
   public static int computeSize(RecursiveItem obj) {
-    ExpandableArray cache = new ExpandableArray(16);
+    ExpandableIntArray cache = new ExpandableIntArray(16);
     RecursiveItemProtoConverter.computeSize(obj, cache, 0);
     return cache.get(0);
   }
 
-  public static int computeSize(RecursiveItem obj, ExpandableArray cache, final int baseIndex) {
+  public static int computeSize(RecursiveItem obj, ExpandableIntArray cache, final int baseIndex) {
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getChildA() != null) {
