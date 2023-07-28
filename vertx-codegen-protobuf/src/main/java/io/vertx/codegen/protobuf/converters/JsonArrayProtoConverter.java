@@ -1,4 +1,4 @@
-package io.vertx.core.proto;
+package io.vertx.codegen.protobuf.converters;
 
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
@@ -7,7 +7,7 @@ import io.vertx.core.json.JsonArray;
 import java.io.IOException;
 
 import static com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED;
-import static io.vertx.core.proto.JsonObjectProtoConverter.*;
+import static io.vertx.codegen.protobuf.converters.JsonObjectProtoConverter.*;
 
 public class JsonArrayProtoConverter {
   public static JsonArray fromProto(CodedInputStream input) throws IOException {

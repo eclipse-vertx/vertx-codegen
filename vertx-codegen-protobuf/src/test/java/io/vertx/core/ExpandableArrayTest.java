@@ -1,5 +1,6 @@
 package io.vertx.core;
 
+import io.vertx.codegen.protobuf.utils.ExpandableIntArray;
 import org.junit.Assert;
 import org.junit.Test;
 

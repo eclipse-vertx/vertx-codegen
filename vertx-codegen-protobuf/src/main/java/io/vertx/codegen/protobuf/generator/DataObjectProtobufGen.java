@@ -65,9 +65,9 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     writer.print("import java.util.HashMap;\n");
     writer.print("import java.util.Map;\n");
     writer.print("import java.util.Arrays;\n");
-    writer.print("import io.vertx.core.ExpandableIntArray;\n");
+    writer.print("import io.vertx.codegen.protobuf.utils.ExpandableIntArray;\n");
     writer.print("import io.vertx.core.json.JsonObject;\n");
-    writer.print("import io.vertx.core.proto.*;\n");
+    writer.print("import io.vertx.codegen.protobuf.converters.*;\n");
     writer.print("\n");
     code
       .codeln("public class " + model.getType().getSimpleName() + "ProtoConverter {"

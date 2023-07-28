@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
-import io.vertx.core.ExpandableIntArray;
+import io.vertx.codegen.protobuf.utils.ExpandableIntArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.proto.*;
+import io.vertx.codegen.protobuf.converters.*;
 
 public class RecursiveItemProtoConverter {
 

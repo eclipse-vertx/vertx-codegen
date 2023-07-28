@@ -1,4 +1,4 @@
-package io.vertx.core;
+package io.vertx.codegen.protobuf.utils;
 
 import java.util.Arrays;
 

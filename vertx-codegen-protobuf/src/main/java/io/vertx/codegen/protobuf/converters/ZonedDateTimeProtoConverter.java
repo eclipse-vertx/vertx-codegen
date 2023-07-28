@@ -1,4 +1,4 @@
-package io.vertx.core.proto;
+package io.vertx.codegen.protobuf.converters;
 
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;

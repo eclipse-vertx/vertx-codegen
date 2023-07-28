@@ -1,6 +1,8 @@
 = Vert.x Codegen Protobuf
 
-0. document API : @ProtobugGen annotation
+0. document API
+0.1 public API @ProtobugGen annotation
+0.2 internal classes
 1. what does it do
 2. how to use the processor
 2.1 generating converter, how to use the converter
