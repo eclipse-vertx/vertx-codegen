@@ -1,3 +1,19 @@
 = Vert.x Codegen Protobuf
 
-Todo.
+0. document API : @ProtobugGen annotation
+1. what does it do
+2. how to use the processor
+2.1 generating converter, how to use the converter
+2.2 generating a proto file definition
+
+== Interop with generated protoc messages
+
+Unlike protoc Vert.x protobuf representation allows null values.
+
+When a protoc generated message decodes a Vert.x data object protobuf representation, null values will
+be treated in a specific way:
+
+- a boxed type is set its default value, e.g. `false` is set to _bool_
+- a null _string_ is set to the empty string
+- a null _repeated_ field is set empty
+- a null _map_ field is set empty
