@@ -120,7 +120,7 @@
               <id>default-jar</id>
               <configuration>
                 <excludes>
-                  <exclude>io/vertx/core/json/**</exclude>
+                  <exclude>io/vertx/core/**</exclude>
                   <exclude>examples/**</exclude>
                 </excludes>
               </configuration>
@@ -132,7 +132,7 @@
           <artifactId>maven-source-plugin</artifactId>
           <configuration>
             <excludes>
-              <exclude>io/vertx/core/json/**</exclude>
+              <exclude>io/vertx/core/**</exclude>
               <exclude>examples/**</exclude>
             </excludes>
           </configuration>

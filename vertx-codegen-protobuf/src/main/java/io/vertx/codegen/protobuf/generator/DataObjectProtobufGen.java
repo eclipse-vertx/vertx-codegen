@@ -3,10 +3,8 @@ package io.vertx.codegen.protobuf.generator;
 import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.PropertyInfo;
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.protobuf.annotations.ProtobufGen;
-import io.vertx.codegen.format.*;
-import io.vertx.codegen.type.*;
+import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.writer.CodeWriter;
 
 import java.io.PrintWriter;
@@ -51,7 +49,6 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     PrintWriter writer = new PrintWriter(buffer);
     CodeWriter code = new CodeWriter(writer);
     String visibility = model.isPublicConverter() ? "public" : "";
-    boolean inheritConverter = model.getInheritConverter();
 
     writer.print("package " + model.getType().getPackageName() + ";\n");
     writer.print("\n");
@@ -65,8 +62,8 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     writer.print("import java.util.HashMap;\n");
     writer.print("import java.util.Map;\n");
     writer.print("import java.util.Arrays;\n");
-    writer.print("import io.vertx.codegen.protobuf.utils.ExpandableIntArray;\n");
     writer.print("import io.vertx.core.json.JsonObject;\n");
+    writer.print("import io.vertx.codegen.protobuf.utils.ExpandableIntArray;\n");
     writer.print("import io.vertx.codegen.protobuf.converters.*;\n");
     writer.print("\n");
     code
@@ -179,7 +176,6 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
           }
         } else {
           if (propKind.basic) {
-            // need casting
             String javaDataType = prop.getType().getName();
             String casting = "";
             if ("java.lang.Short".equals(javaDataType) || "short".equals(javaDataType)) {
@@ -499,27 +495,5 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     }
 
     return buffer.toString();
-  }
-
-  private Case getCase(DataObjectModel model) {
-    AnnotationValueInfo abc = model
-      .getAnnotations()
-      .stream().filter(ann -> ann.getName().equals(DataObject.class.getName()))
-      .findFirst().get();
-    ClassTypeInfo cti = (ClassTypeInfo) abc.getMember("jsonPropertyNameFormatter");
-    switch (cti.getName()) {
-      case "io.vertx.codegen.format.CamelCase":
-        return CamelCase.INSTANCE;
-      case "io.vertx.codegen.format.SnakeCase":
-        return SnakeCase.INSTANCE;
-      case "io.vertx.codegen.format.LowerCamelCase":
-        return LowerCamelCase.INSTANCE;
-      case "io.vertx.codegen.format.KebabCase":
-        return KebabCase.INSTANCE;
-      case "io.vertx.codegen.format.QualifiedCase":
-        return QualifiedCase.INSTANCE;
-      default:
-        throw new UnsupportedOperationException("Todo");
-    }
   }
 }

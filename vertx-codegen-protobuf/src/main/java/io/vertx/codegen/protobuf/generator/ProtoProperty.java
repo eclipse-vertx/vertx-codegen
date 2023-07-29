@@ -88,6 +88,7 @@ public class ProtoProperty {
     }
   }
 
+  // Anything other than java primitive type should be nullable
   private static boolean determineIsNullable(String javaDataType) {
     if ("int".equals(javaDataType)) {
       return false;
@@ -110,6 +111,7 @@ public class ProtoProperty {
     }
   }
 
+  // Find out if the data type are io.vertx.protobuf builtin type
   public static String getBuiltInType(PropertyInfo prop) {
     String javaDataType = prop.getType().getName();
     if ("java.time.ZonedDateTime".equals(javaDataType)) {
