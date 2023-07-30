@@ -50,6 +50,7 @@ public class DataObjectModel implements Model {
   private boolean isClass;
   // ----------------
   private boolean generateConverter;
+  private boolean protoConverter;
   private boolean inheritConverter;
   private boolean publicConverter;
   private String base64Type;
@@ -142,6 +143,10 @@ public class DataObjectModel implements Model {
     return generateConverter;
   }
 
+  public boolean getProtoConverter() {
+    return protoConverter;
+  }
+
   public boolean getInheritConverter() {
     return inheritConverter;
   }
@@ -230,6 +235,7 @@ public class DataObjectModel implements Model {
   private void traverse() {
     DataObject ann = modelElt.getAnnotation(DataObject.class);
     this.generateConverter = ann.generateConverter();
+    this.protoConverter = ann.protoConverter();
     this.publicConverter = ann.publicConverter();
     this.inheritConverter = ann.inheritConverter();
     this.base64Type = ann.base64Type();
