@@ -222,7 +222,7 @@
                 <classpathElement>${project.basedir}/src/converters/resources</classpathElement>
               </classpathElements>
               <processors>
-                <processor>io.vertx.codegen.CodeGenProcessor</processor>
+                <processor>io.vertx.codegen.Processor</processor>
               </processors>
               <optionMap>
               </optionMap>

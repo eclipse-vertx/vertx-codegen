@@ -913,7 +913,7 @@ todo
 
 == Code generation
 
-The {@link io.vertx.codegen.CodeGenProcessor} is a Java Annotation Processor that validates and applies
+The {@link io.vertx.codegen.Processor} is a Java Annotation Processor that validates and applies
 _code generators_ on codegen models.
 
 The processor is declared in the compiler configuration, here is a typical Maven configuration:
@@ -929,7 +929,7 @@ The processor is declared in the compiler configuration, here is a typical Maven
           <id>default-testCompile</id>
           <configuration>
             <annotationProcessors>
-              <annotationProcessor>io.vertx.codegen.CodeGenProcessor</annotationProcessor>
+              <annotationProcessor>io.vertx.codegen.Processor</annotationProcessor>
             </annotationProcessors>
             <compilerArgs>
               <arg>-Acodegen.output=${project.basedir}/src/test</arg> <1>

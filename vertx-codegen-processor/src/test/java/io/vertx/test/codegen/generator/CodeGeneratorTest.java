@@ -1,6 +1,6 @@
 package io.vertx.test.codegen.generator;
 
-import io.vertx.codegen.CodeGenProcessor;
+import io.vertx.codegen.Processor;
 import io.vertx.codegen.Compiler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -59,7 +59,7 @@ public class CodeGeneratorTest {
   }
 
   private Properties assertCompile(String gen, Class... classes) throws Exception {
-    Compiler compiler = new Compiler(new CodeGenProcessor());
+    Compiler compiler = new Compiler(new Processor());
     compiler.addOption("-Acodegen.generators=" + gen);
     compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
     assertTrue(compiler.compile(classes));
@@ -132,8 +132,8 @@ public class CodeGeneratorTest {
 
   @Test
   public void testModuleGen() throws Exception {
-    URL url = CodeGenProcessor.class.getClassLoader().getResource("io/vertx/test/codegen/testmodule/customgroup/package-info.java");
-    Compiler compiler = new Compiler(new CodeGenProcessor());
+    URL url = Processor.class.getClassLoader().getResource("io/vertx/test/codegen/testmodule/customgroup/package-info.java");
+    Compiler compiler = new Compiler(new Processor());
     compiler.addOption("-Acodegen.generators=testgen1");
     compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
     assertTrue(compiler.compile(new File(url.toURI())));
@@ -146,7 +146,7 @@ public class CodeGeneratorTest {
 
   @Test
   public void testIncrementalClass() throws Exception {
-    Compiler compiler = new Compiler(new CodeGenProcessor());
+    Compiler compiler = new Compiler(new Processor());
     compiler.addOption("-Acodegen.generators=testgen2");
     compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
     assertTrue(compiler.compile(ModuleScopedApi.class, ModuleScopedSubApi.class));
@@ -165,7 +165,7 @@ public class CodeGeneratorTest {
   public void testAbsoluteFilename() throws Exception {
     // Does not pass on windows because of drive letter
     Assume.assumeFalse(System.getProperty("os.name").toLowerCase().contains("win"));
-    Compiler compiler = new Compiler(new CodeGenProcessor());
+    Compiler compiler = new Compiler(new Processor());
     compiler.addOption("-Acodegen.generators=testgen3");
 
     assertTrue(compiler.compile(VertxGenClass1.class));
@@ -176,7 +176,7 @@ public class CodeGeneratorTest {
 
   @Test
   public void testFileTypes() throws Exception {
-    Compiler compiler = new Compiler(new CodeGenProcessor());
+    Compiler compiler = new Compiler(new Processor());
     compiler.setClassOutput(assertMkDirs(new File(testDir, "classes")));
     compiler.setSourceOutput(assertMkDirs(new File(testDir, "sources")));
     compiler.addOption("-Acodegen.generators=testgen4");
@@ -188,7 +188,7 @@ public class CodeGeneratorTest {
 
   @Test
   public void testFileTypesSourceOutputIsClassOutput() throws Exception {
-    Compiler compiler = new Compiler(new CodeGenProcessor());
+    Compiler compiler = new Compiler(new Processor());
     compiler.setClassOutput(assertMkDirs(new File(testDir, "classes")));
     compiler.setSourceOutput(new File(testDir, "classes"));
     compiler.addOption("-Acodegen.generators=testgen4");
@@ -199,7 +199,7 @@ public class CodeGeneratorTest {
 
   @Test
   public void testFileTypesOverwrite() throws Exception {
-    Compiler compiler = new Compiler(new CodeGenProcessor());
+    Compiler compiler = new Compiler(new Processor());
     compiler.setClassOutput(assertMkDirs(new File(testDir, "classes")));
     compiler.setSourceOutput(assertMkDirs(new File(testDir, "sources")));
     compiler.addOption("-Acodegen.generators=testgen4");
@@ -211,7 +211,7 @@ public class CodeGeneratorTest {
 
   @Test
   public void testRelocation() throws Exception {
-    Compiler compiler = new Compiler(new CodeGenProcessor());
+    Compiler compiler = new Compiler(new Processor());
     compiler.addOption("-Acodegen.generators=testgen5");
     compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
     compiler.addOption("-Acodegen.output.testgen5=foo/bar");
@@ -223,7 +223,7 @@ public class CodeGeneratorTest {
 
   @Test
   public void testMultipleTypes() throws Exception {
-    Compiler compiler = new Compiler(new CodeGenProcessor());
+    Compiler compiler = new Compiler(new Processor());
     compiler.addOption("-Acodegen.generators=testgen6");
     compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
     compiler.addOption("-Acodegen.output.testgen6=foo/bar");

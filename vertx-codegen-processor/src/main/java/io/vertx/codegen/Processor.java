@@ -37,11 +37,11 @@ import java.util.stream.StreamSupport;
  */
 @javax.annotation.processing.SupportedOptions({"codegen.output","codegen.generators"})
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)
-public class CodeGenProcessor extends AbstractProcessor {
+public class Processor extends AbstractProcessor {
 
   private static final int JAVA= 0, RESOURCE = 1, OTHER = 2;
   private static final String JSON_MAPPERS_PROPERTIES_PATH = "META-INF/vertx/json-mappers.properties";
-  public static final Logger log = Logger.getLogger(CodeGenProcessor.class.getName());
+  public static final Logger log = Logger.getLogger(Processor.class.getName());
   private File outputDirectory;
   private List<? extends Generator<?>> codeGenerators;
   private Map<String, GeneratedFile> generatedFiles = new HashMap<>();
@@ -101,7 +101,7 @@ public class CodeGenProcessor extends AbstractProcessor {
         }
       }
       // load GeneratorLoader by ServiceLoader
-      Stream<GeneratorLoader> serviceLoader = StreamSupport.stream(ServiceLoader.load(GeneratorLoader.class, CodeGenProcessor.class.getClassLoader()).spliterator(), false);
+      Stream<GeneratorLoader> serviceLoader = StreamSupport.stream(ServiceLoader.load(GeneratorLoader.class, Processor.class.getClassLoader()).spliterator(), false);
       Stream<Generator<?>> generators = serviceLoader.flatMap(l -> l.loadGenerators(processingEnv));
       Predicate<Generator> filter = filterGenerators();
       if (filter != null) {
