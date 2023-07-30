@@ -19,24 +19,8 @@
     <protoc.version>3.21.12</protoc.version>
   </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>io.vertx</groupId>
-        <artifactId>vertx-dependencies</artifactId>
-        <version>${stack.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <dependencies>
-    <dependency>
-      <groupId>org.bsc.maven</groupId>
-      <artifactId>maven-processor-plugin</artifactId>
-      <version>3.1.0</version>
-    </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-codegen-processor</artifactId>
