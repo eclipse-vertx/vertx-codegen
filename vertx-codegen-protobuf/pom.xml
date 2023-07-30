@@ -305,23 +305,6 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
           <execution>
-            <id>package</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <attach>true</attach>
-              <appendAssemblyId>false</appendAssemblyId>
-              <archive>
-                <manifestFile>${jar.manifest}</manifestFile>
-              </archive>
-              <descriptors>
-                <descriptor>src/main/assembly/jar.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </execution>
-          <execution>
             <id>package-docs</id>
             <phase>package</phase>
             <goals>

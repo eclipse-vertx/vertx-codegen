@@ -1,4 +1,4 @@
-package io.vertx.core;
+package io.vertx.test.codegen.protobuf.utils;
 
 import io.vertx.codegen.protobuf.utils.ExpandableIntArray;
 import org.junit.Assert;

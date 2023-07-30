@@ -1,4 +1,4 @@
-package io.vertx.test.codegen.converter.proto;
+package io.vertx.test.codegen.protobuf;
 
 public class TestUtils {
   private static final boolean DEBUG = false;
