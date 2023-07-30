@@ -86,9 +86,6 @@
                   <arg>-Adocgen.source=${asciidoc.dir}</arg>
                   <arg>-Adocgen.output=${project.build.directory}/asciidoc/java</arg>
                 </compilerArgs>
-                <excludes>
-                  <exclude>**/TreeTypeInternal.java</exclude>
-                </excludes>
               </configuration>
             </execution>
           </executions>
@@ -234,23 +231,6 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
           <execution>
-            <id>package</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <attach>true</attach>
-              <appendAssemblyId>false</appendAssemblyId>
-              <archive>
-                <manifestFile>${jar.manifest}</manifestFile>
-              </archive>
-              <descriptors>
-                <descriptor>src/main/assembly/jar.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </execution>
-          <execution>
             <id>package-others</id>
             <phase>package</phase>
             <goals>
@@ -284,46 +264,6 @@
   </build>
 
   <profiles>
-
-    <profile>
-      <id>java-8</id>
-      <properties>
-        <tools.jar>${java.home}/../lib/tools.jar</tools.jar>
-      </properties>
-      <activation>
-        <jdk>1.8</jdk>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <executions>
-                <execution>
-                  <id>default-compile</id>
-                  <configuration>
-                    <excludes>
-                      <exclude>/whatever</exclude>
-                    </excludes>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-      <dependencies>
-        <dependency>
-          <groupId>com.sun</groupId>
-          <artifactId>tools</artifactId>
-          <version>1.8</version>
-          <scope>system</scope>
-          <systemPath>${tools.jar}</systemPath>
-          <optional>true</optional>
-        </dependency>
-      </dependencies>
-    </profile>
 
     <!-- Documentation generation : activate with -Pdocs -->
     <profile>
