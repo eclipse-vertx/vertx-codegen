@@ -53,13 +53,6 @@
   </dependencies>
 
   <build>
-    <extensions>
-      <extension>
-        <groupId>kr.motd.maven</groupId>
-        <artifactId>os-maven-plugin</artifactId>
-        <version>1.4.1.Final</version>
-      </extension>
-    </extensions>
     <pluginManagement>
       <plugins>
         <plugin>
@@ -93,6 +86,14 @@
                 </compilerArgs>
               </configuration>
             </execution>
+            <execution>
+              <id>default-testCompile</id>
+              <configuration>
+                <annotationProcessors>
+                  <annotationProcessor>io.vertx.codegen.Processor</annotationProcessor>
+                </annotationProcessors>
+              </configuration>
+            </execution>
           </executions>
         </plugin>
         <plugin>
@@ -122,98 +123,6 @@
       </plugins>
     </pluginManagement>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack</id>
-            <phase>generate-test-sources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>io.vertx</groupId>
-                  <artifactId>vertx-codegen-processor</artifactId>
-                  <type>jar</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>io.vertx</groupId>
-                  <artifactId>vertx-codegen-annotations</artifactId>
-                  <type>jar</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>com.fasterxml.jackson.core</groupId>
-                  <artifactId>jackson-core</artifactId>
-                  <type>jar</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>junit</groupId>
-                  <artifactId>junit</artifactId>
-                  <type>jar</type>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${project.build.directory}/test-classpath</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-test-source</id>
-            <goals>
-              <goal>add-test-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>${basedir}/src/converters/java</source>
-                <source>${basedir}/src/converters/generated</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.bsc.maven</groupId>
-        <artifactId>maven-processor-plugin</artifactId>
-        <version>3.1.0</version>
-        <configuration>
-          <systemProperties>
-            <java.util.logging.SimpleFormatter.format>%4$s: %3$s - %5$s %6$s%n</java.util.logging.SimpleFormatter.format>
-          </systemProperties>
-        </configuration>
-        <executions>
-          <!-- Converters -->
-          <execution>
-            <id>generate-converters-sources</id>
-            <goals>
-              <goal>process-test</goal>
-            </goals>
-            <phase>generate-test-sources</phase>
-            <configuration>
-              <!-- We use this workaround to have a specific json-mappers.properties file for this gen -->
-              <classpathElements>
-                <classpathElement>${project.build.outputDirectory}</classpathElement>
-                <classpathElement>${project.build.directory}/test-classpath</classpathElement>
-                <classpathElement>${project.basedir}/src/converters/resources</classpathElement>
-              </classpathElements>
-              <processors>
-                <processor>io.vertx.codegen.Processor</processor>
-              </processors>
-              <optionMap>
-              </optionMap>
-              <sourceDirectory>${project.basedir}/src/converters/java</sourceDirectory>
-              <outputDirectory>${project.basedir}/src/converters/generated</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
