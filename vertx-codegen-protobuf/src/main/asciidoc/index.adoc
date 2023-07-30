@@ -1,14 +1,120 @@
 = Vert.x Codegen Protobuf
 
-0. document API
-0.1 public API @ProtobugGen annotation
-0.2 internal classes
-1. what does it do
-2. how to use the processor
-2.1 generating converter, how to use the converter
-2.2 generating a proto file definition
+== What does it do
+`vertx-codegen-protobuf` is a tool designed to streamline the integration of protobuf serialization within Vert.x applications. By annotating data classes with `@DataObject` and `@ProtobufGen`, the tool automatically generates converter classes to handle the conversion between Java objects and protobuf messages. Alongside the converter classes, it also produces a corresponding .proto file that defines the structure of the serialized data. This approach not only simplifies the serialization process but also ensures full compatibility with Google's gRPC.
+
+== How to use the processor
+
+=== Maven Dependency
+To use `vertx-codegen-protobuf`, you need to include the following dependency:
+
+[source,xml]
+----
+<dependency>
+  <groupId>io.vertx</groupId>
+  <artifactId>vertx-codegen-protobuf</artifactId>
+</dependency>
+----
+
+=== Annotation
+Next, you need to annotate your data classes with the `@DataObject` and `@ProtobufGen` annotations. Once the annotations are in place, the converter classes and a corresponding .proto file will be automatically generated during the build process.
+
+[source,java]
+----
+@DataObject
+@ProtobufGen
+public class User {
+  private String userName;
+  private Integer age;
+  // getter and setter
+}
+----
+
+=== Generated Converter
+The converters are automatically generated for each data class.
+
+[source,java]
+----
+public class UserProtoConverter {
+  public static void fromProto(...);
+  public static void toProto(...);
+}
+----
+
+
+==== Encode
+To encode a User object into a byte array, you can use the following method:
+
+
+[source,java]
+----
+byte[] encode(User user) throws IOException {
+  ByteArrayOutputStream baos = new ByteArrayOutputStream();
+  CodedOutputStream output = CodedOutputStream.newInstance(baos);
+  UserProtoConverter.toProto(user, output);
+  output.flush();
+  return baos.toByteArray();
+}
+----
+
+==== Decode
+To decode a byte array back into a User object, you can use the following method:
+
+[source,java]
+----
+User decode(byte[] payload) throws IOException {
+  CodedInputStream input = CodedInputStream.newInstance(payload);
+  User user = new User();
+  UserProtoConverter.fromProto(input, user);
+  return user;
+}
+----
+
+=== Generated proto file definition
+All data objects annotated with `@ProtobufGen` will be included in a single .proto definition file called `dataobjects.proto` located at `target/generated-sources/annotations/dataobjects.proto`.
+
+[source,proto]
+----
+message User {
+  int32 age = 1;
+  stirng userName = 2;
+}
+----
+
+== Working with Lombok
+Lombok uses internal compiler API to update Abstract Syntax Tree of the compiler, therefore special care is required:
+[source,xml]
+----
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <version>3.6.2</version>
+  <configuration>
+    <annotationProcessorPaths>
+      <path>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
+      </path>
+      <path>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-codegen</artifactId>
+        <classifier>processor</classifier>
+        <version>${vertx.version}</version>
+      </path>
+      <path>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-codegen-protobuf</artifactId>
+        <version>${vertx.version}</version>
+      </path>
+    </annotationProcessorPaths>
+  </configuration>
+</plugin>
+----
 
 == Interop with generated protoc messages
+You can use Vert.x Codegen Protobuf with your existing protoc-generated messages. When a protoc-generated message decodes a Vert.x data object protobuf representation, null values are treated in specific ways as follows:
+
 
 Unlike protoc Vert.x protobuf representation allows null values.
 

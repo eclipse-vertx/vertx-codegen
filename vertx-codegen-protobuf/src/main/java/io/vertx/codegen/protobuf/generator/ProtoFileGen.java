@@ -56,7 +56,7 @@ public class ProtoFileGen extends Generator<DataObjectModel> {
     String messageName = model.getType().getSimpleName();
     int fieldNumber = 1;
 
-    writer.print("message " + messageName + "{\n");
+    writer.print("message " + messageName + " {\n");
     for (PropertyInfo prop : model.getPropertyMap().values()) {
       ClassKind propKind = prop.getType().getKind();
       ProtoProperty protoProperty = ProtoProperty.getProtoProperty(prop, fieldNumber);
