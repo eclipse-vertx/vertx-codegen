@@ -10,20 +10,20 @@ package io.vertx.protobuf.generated;
 import "json-object.proto";
 import "datetime.proto";
 
-message Address{
+message Address {
   float latitude = 1;
   float longitude = 2;
   string name = 3;
 }
 
-message RecursiveItem{
+message RecursiveItem {
   RecursiveItem childA = 1;
   RecursiveItem childB = 2;
   RecursiveItem childC = 3;
   string id = 4;
 }
 
-message User{
+message User {
   Address address = 1;
   int32 age = 2;
   bool boolField = 3;

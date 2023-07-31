@@ -51,6 +51,8 @@
   </dependencies>
 
   <modules>
+    <module>vertx-codegen-processor</module>
+    <module>vertx-codegen-json</module>
     <module>vertx-codegen</module>
     <module>vertx-codegen-protobuf</module>
   </modules>
