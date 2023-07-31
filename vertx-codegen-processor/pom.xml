@@ -92,6 +92,14 @@
                 </excludes>
               </configuration>
             </execution>
+            <execution>
+              <id>attach-test-jar</id>
+              <configuration>
+                <excludes>
+                  <exclude>io/vertx/core/**</exclude>
+                </excludes>
+              </configuration>
+            </execution>
           </executions>
         </plugin>
         <plugin>
@@ -232,6 +240,7 @@
               <attach>true</attach>
               <descriptors>
                 <descriptor>src/main/assembly/processor.xml</descriptor>
+                <descriptor>src/main/assembly/stubs.xml</descriptor>
                 <descriptor>src/main/assembly/tck.xml</descriptor>
                 <descriptor>src/main/assembly/tck-sources.xml</descriptor>
               </descriptors>
