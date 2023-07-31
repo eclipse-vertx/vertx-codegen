@@ -174,6 +174,7 @@
             <configuration>
               <sources>
                 <source>${basedir}/src/tck/java</source>
+                <source>${basedir}/src/stubs/java</source>
               </sources>
             </configuration>
           </execution>
@@ -209,6 +210,9 @@
               <optionMap>
               </optionMap>
               <sourceDirectory>${project.basedir}/src/tck/java</sourceDirectory>
+              <additionalSourceDirectories>
+                <additionalSourceDirectory>${project.basedir}/src/stubs/java</additionalSourceDirectory>
+              </additionalSourceDirectories>
               <outputDirectory>${project.basedir}/src/tck/generated</outputDirectory>
             </configuration>
           </execution>

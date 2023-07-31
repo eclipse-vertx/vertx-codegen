@@ -1,5 +1,6 @@
 package io.vertx.core.buffer;
 
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 
 import java.util.Arrays;
@@ -10,6 +11,7 @@ import java.util.Arrays;
 @VertxGen
 public interface Buffer {
 
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   static Buffer buffer(byte[] bytes) {
     return new Buffer() {
       @Override
@@ -27,5 +29,6 @@ public interface Buffer {
     };
   }
 
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   byte[] getBytes();
 }

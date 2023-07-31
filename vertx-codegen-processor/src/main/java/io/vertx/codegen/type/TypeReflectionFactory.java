@@ -7,8 +7,6 @@ import io.vertx.codegen.TypeParamInfo;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.Handler;
-import io.vertx.core.json.JsonObject;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;
@@ -72,7 +70,13 @@ public class TypeReflectionFactory {
             typeParams.add(new TypeParamInfo.Class(classType.getName(), index++, var.getName()));
           }
           if (kind == ClassKind.API) {
-            java.lang.reflect.TypeVariable<Class<Handler>> classTypeVariable = Handler.class.getTypeParameters()[0];
+            Class<?> handlerClass;
+            try {
+              handlerClass = classType.getClassLoader().loadClass("io.vertx.core.Handler");
+            } catch (ClassNotFoundException e) {
+              throw new RuntimeException(e);
+            }
+            TypeVariable<? extends Class<?>> classTypeVariable = handlerClass.getTypeParameters()[0];
             Type handlerArg = Helper.resolveTypeParameter(type, classTypeVariable);
             return new ApiTypeInfo(fqcn, true, typeParams, handlerArg != null ? create(handlerArg) : null, module, false, false, null);
           } else {
@@ -108,7 +112,7 @@ public class TypeReflectionFactory {
   private static MapperInfo getDataObjectSerializer(Class<?> type) {
     try {
       Method m = type.getMethod("toJson");
-      if (Modifier.isPublic(m.getModifiers()) && m.getReturnType().equals(JsonObject.class)) {
+      if (Modifier.isPublic(m.getModifiers()) && m.getReturnType().getName().equals("io.vertx.core.json.JsonObject")) {
         MapperInfo serializer = new MapperInfo();
         serializer.setQualifiedName(type.getName());
         serializer.setKind(MapperKind.SELF);
@@ -120,18 +124,19 @@ public class TypeReflectionFactory {
   }
 
   private static MapperInfo getDataObjectDeserializer(Class<?> type) {
-    try {
-      if (
-        !Modifier.isAbstract(type.getModifiers()) &&
-        !type.isInterface() &&
-        Modifier.isPublic(type.getConstructor(JsonObject.class).getModifiers())
-      ) {
-        MapperInfo deserializer = new MapperInfo();
-        deserializer.setQualifiedName(type.getName());
-        deserializer.setKind(MapperKind.SELF);
-        return deserializer;
+    if (
+      !Modifier.isAbstract(type.getModifiers()) &&
+        !type.isInterface()) {
+      for (Constructor<?> ct : type.getConstructors()) {
+        if (ct.getParameterTypes().length == 1 &&
+          ct.getParameterTypes()[0].getName().equals("io.vertx.core.json.JsonObject") &&
+          Modifier.isPublic(ct.getModifiers())) {
+          MapperInfo deserializer = new MapperInfo();
+          deserializer.setQualifiedName(type.getName());
+          deserializer.setKind(MapperKind.SELF);
+          return deserializer;
+        }
       }
-    } catch (NoSuchMethodException ignore) {
     }
     return null;
   }

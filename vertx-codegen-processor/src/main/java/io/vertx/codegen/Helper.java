@@ -295,7 +295,7 @@ public class Helper {
    * @param typeParam the type parameter to resolve
    * @return the type parameterizing the type parameter
    */
-  public static <T> Type resolveTypeParameter(Type type, java.lang.reflect.TypeVariable<java.lang.Class<T>> typeParam) {
+  public static Type resolveTypeParameter(Type type, java.lang.reflect.TypeVariable<? extends java.lang.Class<?>> typeParam) {
     if (type instanceof Class<?>) {
       Class<?> classType = (Class<?>) type;
       if (Stream.of(classType.getTypeParameters()).filter(tp -> tp.equals(typeParam)).findFirst().isPresent()) {
