@@ -42,7 +42,7 @@ public class JsonArrayProtoConverter {
   }
 
   public static void toProto(JsonArray array, CodedOutputStream output) throws IOException {
-    for (Object value : array) {
+    for (Object value : array.getList()) {
       // Calculate value length
       int valueLength = 0;
       if (value == null) {
@@ -60,9 +60,7 @@ public class JsonArrayProtoConverter {
       output.writeTag(TOP_LEVEL_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);   // top-level tag, always 0xa
       output.writeUInt32NoTag(valueLength);                                 // value length
 
-      if (value == null) {
-        throw new UnsupportedOperationException("Unsupported null type");
-      } else if (value instanceof String) {
+      if (value instanceof String) {
         output.writeString(STRING_FIELD_NUMBER, (String) value);
       } else if (value instanceof Integer){
         output.writeInt32(INTEGER_FIELD_NUMBER, (Integer) value);
