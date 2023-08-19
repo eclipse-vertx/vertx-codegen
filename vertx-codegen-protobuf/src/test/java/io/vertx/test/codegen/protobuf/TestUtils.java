@@ -1,7 +1,7 @@
 package io.vertx.test.codegen.protobuf;
 
 public class TestUtils {
-  private static final boolean DEBUG = false;
+  private static final boolean DEBUG = true;
 
   public static String prettyHexDump(byte[] bytes) {
     StringBuilder sb = new StringBuilder();

@@ -239,7 +239,7 @@ public class JsonObjectProtoConverter {
       if (value == null) {
         valueLength = CodedOutputStream.computeEnumSize(NULL_FIELD_NUMBER, 0);
       } else if (value instanceof String) {
-        valueLength = CodedOutputStream.computeStringSize(JSON_OBJECT_FIELD_NUMBER, (String) value);
+        valueLength = CodedOutputStream.computeStringSize(STRING_FIELD_NUMBER, (String) value);
       } else if (value instanceof Integer) {
         valueLength = CodedOutputStream.computeInt32Size(INTEGER_FIELD_NUMBER, (Integer) value);
       } else if (value instanceof Long) {
