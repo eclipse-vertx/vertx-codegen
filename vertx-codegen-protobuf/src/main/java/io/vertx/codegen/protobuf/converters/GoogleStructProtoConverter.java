@@ -6,6 +6,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Map;
 
 import static com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED;
@@ -27,7 +28,7 @@ public class GoogleStructProtoConverter {
   public static final int TOP_LEVEL_TAG = 0xa;      //    1|010
 
   public static final int NULL_TAG = 0x8;           //    1|000
-  public static final int NUMBER_TAG = 0x12;        //   10|010
+  public static final int NUMBER_TAG = 0x11;        //   10|001
   public static final int STRING_TAG = 0x1a;        //   11|010
   public static final int BOOLEAN_TAG = 0x20;       //  100|000
   public static final int STRUCT_TAG = 0x2a;        //  101|010
@@ -35,6 +36,54 @@ public class GoogleStructProtoConverter {
 
   public static JsonObject fromProto(CodedInputStream input) throws IOException {
     JsonObject obj = new JsonObject();
+    int tag;
+    while ((tag = input.readTag()) != 0) {
+      if (tag != TOP_LEVEL_TAG) {
+        throw new UnsupportedOperationException("Unsupported tag " + tag);
+      }
+
+      int length = input.readUInt32();
+      int limit = input.pushLimit(length);
+
+      input.readTag();
+      String key = input.readString();
+      input.readTag();
+      int vlength = input.readUInt32();
+      int vlimit = input.pushLimit(vlength);
+
+      int fieldType = input.readTag();
+      switch (fieldType) {
+        case NULL_TAG:
+          input.readEnum();
+          obj.put(key, null);
+          break;
+        case STRING_TAG:
+          obj.put(key, input.readString());
+          break;
+        case NUMBER_TAG:
+          obj.put(key, input.readDouble());
+          break;
+        case BOOLEAN_TAG:
+          obj.put(key, input.readBool());
+          break;
+        case STRUCT_TAG: {
+          int structLength = input.readUInt32();
+          int structLimit = input.pushLimit(structLength);
+          JsonObject subObj = GoogleStructProtoConverter.fromProto(input);
+          obj.put(key, subObj);
+          input.popLimit(structLimit);
+          break;
+        }
+        case LIST_TAG: {
+          // TODO
+        }
+        default:
+          throw new UnsupportedOperationException("Unsupported field type " + fieldType);
+      }
+
+      input.popLimit(vlimit);
+      input.popLimit(limit);
+    }
     return obj;
   }
 
@@ -53,6 +102,14 @@ public class GoogleStructProtoConverter {
         valueLength = CodedOutputStream.computeEnumSize(NULL_FIELD_NUMBER, 0);
       } else if (value instanceof Integer){
         valueLength = CodedOutputStream.computeDoubleSize(NUMBER_FIELD_NUMBER, (Integer) value);
+      } else if (value instanceof Long){
+        valueLength = CodedOutputStream.computeDoubleSize(NUMBER_FIELD_NUMBER, (Long) value);
+      } else if (value instanceof Short){
+        valueLength = CodedOutputStream.computeDoubleSize(NUMBER_FIELD_NUMBER, (Short) value);
+      } else if (value instanceof Double){
+        valueLength = CodedOutputStream.computeDoubleSize(NUMBER_FIELD_NUMBER, (Double) value);
+      } else if (value instanceof Float){
+        valueLength = CodedOutputStream.computeDoubleSize(NUMBER_FIELD_NUMBER, (Float) value);
       } else if (value instanceof String) {
         valueLength = CodedOutputStream.computeStringSize(STRING_FIELD_NUMBER, (String) value);
       } else if (value instanceof Boolean) {
@@ -87,6 +144,18 @@ public class GoogleStructProtoConverter {
       } else if (value instanceof Integer) {
         output.writeUInt32NoTag(valueLength);                                         // value length
         output.writeDouble(NUMBER_FIELD_NUMBER, (Integer) value);                     // value
+      } else if (value instanceof Long){
+        output.writeUInt32NoTag(valueLength);                                         // value length
+        output.writeDouble(NUMBER_FIELD_NUMBER, (Long) value);                        // value
+      } else if (value instanceof Short) {
+        output.writeUInt32NoTag(valueLength);                                         // value length
+        output.writeDouble(NUMBER_FIELD_NUMBER, (Short) value);                       // value
+      } else if (value instanceof Double) {
+        output.writeUInt32NoTag(valueLength);                                         // value length
+        output.writeDouble(NUMBER_FIELD_NUMBER, (Double) value);                      // value
+      } else if (value instanceof Float) {
+        output.writeUInt32NoTag(valueLength);                                         // value length
+        output.writeDouble(NUMBER_FIELD_NUMBER, (Float) value);                       // value
       } else if (value instanceof String) {
         output.writeUInt32NoTag(valueLength);                                         // value length
         output.writeString(STRING_FIELD_NUMBER, (String) value);                      // value
@@ -121,6 +190,14 @@ public class GoogleStructProtoConverter {
         valueLength = CodedOutputStream.computeEnumSize(NULL_FIELD_NUMBER, 0);
       } else if (value instanceof Integer) {
         valueLength = CodedOutputStream.computeDoubleSize(NUMBER_FIELD_NUMBER, (Integer) value);
+      } else if (value instanceof Long){
+        valueLength = CodedOutputStream.computeDoubleSize(NUMBER_FIELD_NUMBER, (Long) value);
+      } else if (value instanceof Short) {
+        valueLength = CodedOutputStream.computeDoubleSize(NUMBER_FIELD_NUMBER, (Short) value);
+      } else if (value instanceof Double) {
+        valueLength = CodedOutputStream.computeDoubleSize(NUMBER_FIELD_NUMBER, (Double) value);
+      } else if (value instanceof Float) {
+        valueLength = CodedOutputStream.computeDoubleSize(NUMBER_FIELD_NUMBER, (Float) value);
       } else if (value instanceof String) {
         valueLength = CodedOutputStream.computeStringSize(STRING_FIELD_NUMBER, (String) value);
       } else if (value instanceof Boolean) {
