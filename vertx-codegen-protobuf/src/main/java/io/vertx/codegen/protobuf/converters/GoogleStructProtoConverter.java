@@ -6,7 +6,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.Map;
 
 import static com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED;
@@ -32,7 +31,7 @@ public class GoogleStructProtoConverter {
   public static final int STRING_TAG = 0x1a;        //   11|010
   public static final int BOOLEAN_TAG = 0x20;       //  100|000
   public static final int STRUCT_TAG = 0x2a;        //  101|010
-  public static final int LIST_TAG = 0x30;          //  110|000
+  public static final int LIST_TAG = 0x32;          //  110|010
 
   public static JsonObject fromProto(CodedInputStream input) throws IOException {
     JsonObject obj = new JsonObject();
@@ -75,7 +74,12 @@ public class GoogleStructProtoConverter {
           break;
         }
         case LIST_TAG: {
-          // TODO
+          int structLength = input.readUInt32();
+          int structLimit = input.pushLimit(structLength);
+          JsonArray array = GoogleStructListProtoConverter.fromProto(input);
+          obj.put(key, array);
+          input.popLimit(structLimit);
+          break;
         }
         default:
           throw new UnsupportedOperationException("Unsupported field type " + fieldType);
@@ -120,7 +124,10 @@ public class GoogleStructProtoConverter {
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
       } else if (value instanceof JsonArray) {
-        // TODO
+        structSize = GoogleStructListProtoConverter.computeSize((JsonArray) value);
+        valueLength += CodedOutputStream.computeTagSize(LIST_FIELD_NUMBER);
+        valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
+        valueLength += structSize;
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }
@@ -168,7 +175,10 @@ public class GoogleStructProtoConverter {
         output.writeUInt32NoTag(structSize);                                          //
         GoogleStructProtoConverter.toProto((JsonObject) value, output);               //
       } else if (value instanceof JsonArray) {
-        // TODO
+        output.writeUInt32NoTag(valueLength);                                         // value length
+        output.writeTag(LIST_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);          // value
+        output.writeUInt32NoTag(structSize);                                          //
+        GoogleStructListProtoConverter.toProto((JsonArray) value, output);
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }
@@ -208,7 +218,10 @@ public class GoogleStructProtoConverter {
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
       } else if (value instanceof JsonArray) {
-        // TODO
+        int structSize = GoogleStructListProtoConverter.computeSize((JsonArray) value);
+        valueLength += CodedOutputStream.computeTagSize(LIST_FIELD_NUMBER);
+        valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
+        valueLength += structSize;
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }

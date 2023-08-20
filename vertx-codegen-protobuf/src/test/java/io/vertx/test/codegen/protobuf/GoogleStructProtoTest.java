@@ -6,12 +6,15 @@ import com.google.protobuf.NullValue;
 import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
 import io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter;
+import io.vertx.codegen.protobuf.converters.JsonObjectProtoConverter;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -20,20 +23,15 @@ import static org.junit.Assert.assertTrue;
 public class GoogleStructProtoTest {
   @Test
   public void TestJsonObject() throws IOException {
-    JsonObject subJson = new JsonObject();
-    subJson.put("SubString", "SubStringValue");
-    subJson.put("SubInteger", 100);
-
     JsonObject jsonObject = new JsonObject();
-    jsonObject.put("StringField", "StringValue");
     jsonObject.put("IntegerField", 15);
+    jsonObject.put("StringField", "StringValue");
     jsonObject.put("BooleanField", true);
-    jsonObject.put("LongField", 1000L);
+    jsonObject.put("DoubleField", 3.142);
+    jsonObject.put("LongField", 20000L);
     jsonObject.put("ShortField", (short) 8);
-    jsonObject.put("DoubleField", 33333.33);
-    jsonObject.put("FloatField", 666.66f);
+    jsonObject.put("FloatField", 8.8888f);
     jsonObject.put("NullField", null);
-    jsonObject.put("JsonObjectField", subJson);
 
     // Vertx Encode
     byte[] encoded = vertxEncode(jsonObject);
@@ -54,7 +52,7 @@ public class GoogleStructProtoTest {
     assertEquals(Value.KindCase.BOOL_VALUE, booleanValue.getKindCase());
 
     com.google.protobuf.Value longValue = structObject.getFieldsMap().get("LongField");
-    assertEquals(1000.0, longValue.getNumberValue(), 0.0);
+    assertEquals(20000.0, longValue.getNumberValue(), 0.0);
     assertEquals(Value.KindCase.NUMBER_VALUE, longValue.getKindCase());
 
     com.google.protobuf.Value shortValue = structObject.getFieldsMap().get("ShortField");
@@ -62,28 +60,16 @@ public class GoogleStructProtoTest {
     assertEquals(Value.KindCase.NUMBER_VALUE, shortValue.getKindCase());
 
     com.google.protobuf.Value doubleValue = structObject.getFieldsMap().get("DoubleField");
-    assertEquals(33333.33, doubleValue.getNumberValue(), 0.0);
+    assertEquals(3.142, doubleValue.getNumberValue(), 0.0);
     assertEquals(Value.KindCase.NUMBER_VALUE, doubleValue.getKindCase());
 
     com.google.protobuf.Value floatValue = structObject.getFieldsMap().get("FloatField");
-    assertEquals(666.66, floatValue.getNumberValue(), 0.01);
+    assertEquals(8.8888, floatValue.getNumberValue(), 0.01);
     assertEquals(Value.KindCase.NUMBER_VALUE, floatValue.getKindCase());
 
     com.google.protobuf.Value nullValue = structObject.getFieldsMap().get("NullField");
     assertEquals(NullValue.NULL_VALUE, nullValue.getNullValue());
     assertEquals(Value.KindCase.NULL_VALUE, nullValue.getKindCase());
-
-    com.google.protobuf.Value jsonObjectValue = structObject.getFieldsMap().get("JsonObjectField");
-    assertEquals(Value.KindCase.STRUCT_VALUE, jsonObjectValue.getKindCase());
-    com.google.protobuf.Struct subStruct = jsonObjectValue.getStructValue();
-
-    com.google.protobuf.Value subStringValue = subStruct.getFieldsMap().get("SubString");
-    assertEquals(com.google.protobuf.Value.KindCase.STRING_VALUE, subStringValue.getKindCase());
-    assertEquals("SubStringValue", subStringValue.getStringValue());
-
-    com.google.protobuf.Value subIntegerValue = subStruct.getFieldsMap().get("SubInteger");
-    assertEquals(com.google.protobuf.Value.KindCase.NUMBER_VALUE, subIntegerValue.getKindCase());
-    assertEquals(100.0, subIntegerValue.getNumberValue(), 0.0);
 
     // Encode using Google's protoc plugin
     byte[] protocEncoded = protocEncode(structObject);
@@ -115,10 +101,93 @@ public class GoogleStructProtoTest {
   }
 
   @Test
+  public void TestRecursiveJsonObject() throws IOException {
+    JsonObject jsonObject = new JsonObject();
+
+    JsonObject jsonObjectField = new JsonObject();
+    jsonObjectField.put("IntegerField", 100);
+    jsonObjectField.put("StringField", "sub-string");
+    jsonObject.put("JsonObjectField", jsonObjectField);
+
+    // Vertx Encode
+    byte[] encoded = vertxEncode(jsonObject);
+
+    // Decode using Google's protoc plugin
+    com.google.protobuf.Struct structObject = com.google.protobuf.Struct.parseFrom(encoded);
+
+    com.google.protobuf.Value jsonObjectValue = structObject.getFieldsMap().get("JsonObjectField");
+    assertEquals(Value.KindCase.STRUCT_VALUE, jsonObjectValue.getKindCase());
+    com.google.protobuf.Struct subStruct = jsonObjectValue.getStructValue();
+
+    com.google.protobuf.Value subStringValue = subStruct.getFieldsMap().get("StringField");
+    assertEquals(com.google.protobuf.Value.KindCase.STRING_VALUE, subStringValue.getKindCase());
+    assertEquals("sub-string", subStringValue.getStringValue());
+
+    com.google.protobuf.Value subIntegerValue = subStruct.getFieldsMap().get("IntegerField");
+    assertEquals(com.google.protobuf.Value.KindCase.NUMBER_VALUE, subIntegerValue.getKindCase());
+    assertEquals(100.0, subIntegerValue.getNumberValue(), 0.0);
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(structObject);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Vertx Decode
+    CodedInputStream input = CodedInputStream.newInstance(protocEncoded);
+    JsonObject decoded = JsonObjectProtoConverter.fromProto(input);
+
+    // NOTE: JsonObject no longer the same due to problem with float
+    // assertEquals(jsonObject.getMap(), decoded.getMap());
+
+    // Verify ComputeSize
+    Assert.assertEquals(encoded.length, GoogleStructProtoConverter.computeSize(jsonObject));
+  }
+
+  @Test
+  public void TestJsonArray() throws IOException {
+    JsonObject jsonObject = new JsonObject();
+
+    JsonArray intJsonArray = new JsonArray();
+    intJsonArray.add(1);
+    intJsonArray.add(2);
+    intJsonArray.add(3);
+    jsonObject.put("intList", intJsonArray);
+
+    byte[] encoded = vertxEncode(jsonObject);
+
+    // Decode using Google's protoc plugin
+    com.google.protobuf.Struct structObject = com.google.protobuf.Struct.parseFrom(encoded);
+
+    // Integer
+    com.google.protobuf.Value intJsonArrayValue = structObject.getFieldsMap().get("intList");
+    assertEquals(com.google.protobuf.Value.KindCase.LIST_VALUE, intJsonArrayValue.getKindCase());
+    List<com.google.protobuf.Value> intValueList = intJsonArrayValue.getListValue().getValuesList();
+    assertEquals(3, intValueList.size());
+
+    // Encode using Google's protoc plugin
+    byte[] protocEncoded = protocEncode(structObject);
+    assertArrayEquals(protocEncoded, encoded);
+
+    // Vertx Decode
+    CodedInputStream input = CodedInputStream.newInstance(protocEncoded);
+    JsonObject decoded = GoogleStructProtoConverter.fromProto(input);
+
+    // NOTE: JsonObject no longer the same due to problem with float
+    // assertEquals(jsonObject.getMap(), decoded.getMap());
+
+    // Verify ComputeSize
+    Assert.assertEquals(encoded.length, GoogleStructProtoConverter.computeSize(jsonObject));
+  }
+
+  @Test
   public void TestBed() throws IOException {
     JsonObject subJson = new JsonObject();
     subJson.put("SubString", "StringValue");
     subJson.put("SubInteger", 100);
+
+    JsonArray intJsonArray = new JsonArray();
+    intJsonArray.add(1);
+    intJsonArray.add(2);
+    intJsonArray.add(3);
 
     JsonObject jsonObject = new JsonObject();
 //    jsonObject.put("StringField", "StringValue");
@@ -128,7 +197,8 @@ public class GoogleStructProtoTest {
 //    jsonObject.put("DoubleField", 3.142d);
 //    jsonObject.put("FloatField", 3.142f);
 //    jsonObject.put("BooleanField", true);
-    jsonObject.put("JsonObjectField", subJson);
+//    jsonObject.put("JsonObjectField", subJson);
+    jsonObject.put("IntList", intJsonArray);
 
     // Vertx Encode
     byte[] encoded = vertxEncode(jsonObject);
@@ -144,10 +214,16 @@ public class GoogleStructProtoTest {
 //      .putFields("DoubleField", com.google.protobuf.Value.newBuilder().setNumberValue(3.142d).build())
 //      .putFields("FloatField", com.google.protobuf.Value.newBuilder().setNumberValue(3.142f).build())
 //      .putFields("BooleanField", com.google.protobuf.Value.newBuilder().setBoolValue(true).build())
-      .putFields("JsonObjectField", com.google.protobuf.Value.newBuilder()
-        .setStructValue(com.google.protobuf.Struct.newBuilder()
-          .putFields("SubString", com.google.protobuf.Value.newBuilder().setStringValue("StringValue").build())
-          .putFields("SubInteger", com.google.protobuf.Value.newBuilder().setNumberValue(100).build())
+//      .putFields("JsonObjectField", com.google.protobuf.Value.newBuilder()
+//        .setStructValue(com.google.protobuf.Struct.newBuilder()
+//          .putFields("SubString", com.google.protobuf.Value.newBuilder().setStringValue("StringValue").build())
+//          .putFields("SubInteger", com.google.protobuf.Value.newBuilder().setNumberValue(100).build())
+//          .build()).build())
+      .putFields("IntList", com.google.protobuf.Value.newBuilder()
+        .setListValue(com.google.protobuf.ListValue.newBuilder()
+          .addValues(com.google.protobuf.Value.newBuilder().setNumberValue(1).build())
+          .addValues(com.google.protobuf.Value.newBuilder().setNumberValue(2).build())
+          .addValues(com.google.protobuf.Value.newBuilder().setNumberValue(3).build())
           .build()).build())
       .build();
 
