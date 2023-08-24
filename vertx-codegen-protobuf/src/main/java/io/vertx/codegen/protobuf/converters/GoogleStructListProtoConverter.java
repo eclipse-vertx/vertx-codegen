@@ -3,6 +3,7 @@ package io.vertx.codegen.protobuf.converters;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
 
@@ -11,6 +12,8 @@ import static io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter.NU
 import static io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter.NUMBER_TAG;
 import static io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter.STRING_FIELD_NUMBER;
 import static io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter.STRING_TAG;
+import static io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter.STRUCT_FIELD_NUMBER;
+import static io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter.STRUCT_TAG;
 import static io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter.TOP_LEVEL_FIELD_NUMBER;
 import static io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter.TOP_LEVEL_TAG;
 
@@ -34,6 +37,13 @@ public class GoogleStructListProtoConverter {
         case NUMBER_TAG:
           array.add(input.readDouble());
           break;
+        case STRUCT_TAG:
+          int structLength = input.readUInt32();
+          int structLimit = input.pushLimit(structLength);
+          JsonObject subObj = GoogleStructProtoConverter.fromProto(input);
+          array.add(subObj);
+          input.popLimit(structLimit);
+          break;
         default:
           throw new UnsupportedOperationException("Unsupported field type " + fieldType);
       }
@@ -47,6 +57,8 @@ public class GoogleStructListProtoConverter {
     for (Object value : array.getList()) {
       // Calculate value length
       int valueLength = 0;
+      int structSize = 0;
+
       if (value == null) {
         throw new UnsupportedOperationException("Unsupported null type");
       } else if (value instanceof String) {
@@ -55,6 +67,11 @@ public class GoogleStructListProtoConverter {
         valueLength = CodedOutputStream.computeDoubleSize(NUMBER_FIELD_NUMBER, (Integer) value);
       } else if (value instanceof Long) {
         valueLength = CodedOutputStream.computeDoubleSize(NUMBER_FIELD_NUMBER, (Long) value);
+      } else if (value instanceof JsonObject) {
+        structSize = JsonObjectProtoConverter.computeSize((JsonObject) value);
+        valueLength += CodedOutputStream.computeTagSize(STRING_FIELD_NUMBER);
+        valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
+        valueLength += structSize;
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }
@@ -68,6 +85,10 @@ public class GoogleStructListProtoConverter {
         output.writeDouble(NUMBER_FIELD_NUMBER, (Integer) value);
       } else if (value instanceof Long) {
         output.writeDouble(NUMBER_FIELD_NUMBER, (Long) value);
+      } else if (value instanceof JsonObject) {
+        output.writeTag(STRUCT_FIELD_NUMBER, WIRETYPE_LENGTH_DELIMITED);      // value
+        output.writeUInt32NoTag(structSize);                                  //
+        GoogleStructProtoConverter.toProto((JsonObject) value, output);       //
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }
@@ -87,6 +108,11 @@ public class GoogleStructListProtoConverter {
         valueLength = CodedOutputStream.computeDoubleSize(NUMBER_FIELD_NUMBER, (Integer) value);
       } else if (value instanceof Long) {
         valueLength = CodedOutputStream.computeDoubleSize(NUMBER_FIELD_NUMBER, (Long) value);
+      } else if (value instanceof JsonObject) {
+        int structSize = GoogleStructProtoConverter.computeSize((JsonObject) value);
+        valueLength += CodedOutputStream.computeTagSize(STRUCT_FIELD_NUMBER);
+        valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
+        valueLength += structSize;
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value.getClass().getTypeName());
       }
