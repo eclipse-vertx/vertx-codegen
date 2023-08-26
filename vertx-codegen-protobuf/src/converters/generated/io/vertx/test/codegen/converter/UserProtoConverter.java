@@ -93,14 +93,14 @@ public class UserProtoConverter {
           if (obj.getJsonListField() == null) {
             obj.setJsonListField(new ArrayList<>());
           }
-          obj.getJsonListField().add(JsonObjectProtoConverter.fromProto(input));
+          obj.getJsonListField().add(VertxStructProtoConverter.fromProto(input));
           input.popLimit(limit);
           break;
         }
         case 98: {
           int length = input.readUInt32();
           int limit = input.pushLimit(length);
-          obj.setJsonObjectField(JsonObjectProtoConverter.fromProto(input));
+          obj.setJsonObjectField(VertxStructProtoConverter.fromProto(input));
           input.popLimit(limit);
           break;
         }
@@ -116,7 +116,7 @@ public class UserProtoConverter {
           input.readTag();
           int vlength = input.readUInt32();
           int vlimit = input.pushLimit(vlength);
-          map.put(key, JsonObjectProtoConverter.fromProto(input));
+          map.put(key, VertxStructProtoConverter.fromProto(input));
           obj.setJsonValueMap(map);
           input.popLimit(vlimit);
           input.popLimit(limit);
@@ -324,14 +324,14 @@ public class UserProtoConverter {
       // list[1] | tag | data size | value |
       for (JsonObject element: obj.getJsonListField()) {
         output.writeUInt32NoTag(90);
-        output.writeUInt32NoTag(JsonObjectProtoConverter.computeSize(element));
-        JsonObjectProtoConverter.toProto(element, output);
+        output.writeUInt32NoTag(VertxStructProtoConverter.computeSize(element));
+        VertxStructProtoConverter.toProto(element, output);
       }
     }
     if (obj.getJsonObjectField() != null) {
       output.writeUInt32NoTag(98);
-      output.writeUInt32NoTag(JsonObjectProtoConverter.computeSize(obj.getJsonObjectField()));
-      JsonObjectProtoConverter.toProto(obj.getJsonObjectField(), output);
+      output.writeUInt32NoTag(VertxStructProtoConverter.computeSize(obj.getJsonObjectField()));
+      VertxStructProtoConverter.toProto(obj.getJsonObjectField(), output);
     }
     if (obj.getJsonValueMap() != null) {
       // map[0] | tag | data size | key | value |
@@ -339,7 +339,7 @@ public class UserProtoConverter {
       for (Map.Entry<String, JsonObject> entry : obj.getJsonValueMap().entrySet()) {
         output.writeUInt32NoTag(106);
         // calculate data size
-        int elementSize = JsonObjectProtoConverter.computeSize(entry.getValue());
+        int elementSize = VertxStructProtoConverter.computeSize(entry.getValue());
         int dataSize = 0;
         dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
         dataSize += CodedOutputStream.computeInt32SizeNoTag(18);
@@ -351,7 +351,7 @@ public class UserProtoConverter {
         output.writeString(1, entry.getKey());
         output.writeUInt32NoTag(18);
         output.writeUInt32NoTag(elementSize);
-        JsonObjectProtoConverter.toProto(entry.getValue(), output);
+        VertxStructProtoConverter.toProto(entry.getValue(), output);
       }
     }
     if (obj.getLongField() != null) {
@@ -542,7 +542,7 @@ public class UserProtoConverter {
       if (obj.getJsonListField().size() > 0) {
         for (JsonObject element: obj.getJsonListField()) {
           size += CodedOutputStream.computeUInt32SizeNoTag(90);
-          int dataSize = JsonObjectProtoConverter.computeSize(element);
+          int dataSize = VertxStructProtoConverter.computeSize(element);
           size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
           size += dataSize;
         }
@@ -550,7 +550,7 @@ public class UserProtoConverter {
     }
     if (obj.getJsonObjectField() != null) {
       size += CodedOutputStream.computeUInt32SizeNoTag(98);
-      int dataSize = JsonObjectProtoConverter.computeSize(obj.getJsonObjectField());
+      int dataSize = VertxStructProtoConverter.computeSize(obj.getJsonObjectField());
       size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
       size += dataSize;
     }
@@ -564,7 +564,7 @@ public class UserProtoConverter {
         // key
         dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
         // value
-        int elementSize = JsonObjectProtoConverter.computeSize(entry.getValue());
+        int elementSize = VertxStructProtoConverter.computeSize(entry.getValue());
         dataSize += CodedOutputStream.computeInt32SizeNoTag(18);
         dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);
         dataSize += elementSize;
