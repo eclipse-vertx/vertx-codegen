@@ -2,6 +2,7 @@ package io.vertx.codegen.protobuf.generator;
 
 import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.PropertyKind;
+import io.vertx.codegen.protobuf.annotations.JsonProtoEncoding;
 import io.vertx.codegen.type.ClassKind;
 
 // This class store the protobuf properties of a given field
@@ -125,16 +126,19 @@ public class ProtoProperty {
     }
   }
 
-  public static String getProtoConverter(String builtInType) {
+  public static String getProtoConverter(String builtInType, JsonProtoEncoding jsonProtoEncoding) {
     if ("ZonedDateTime".equals(builtInType)) {
       return "ZonedDateTimeProtoConverter";
     } else if ("Instant".equals(builtInType)) {
       return "InstantProtoConverter";
     } else if ("JsonObject".equals(builtInType)) {
-      return "VertxStructProtoConverter";
-    } else {
-      return null;
+      if (jsonProtoEncoding == JsonProtoEncoding.VERTX_STRUCT) {
+        return "VertxStructProtoConverter";
+      } else if (jsonProtoEncoding == JsonProtoEncoding.GOOGLE_STRUCT) {
+        return "GoogleStructProtoConverter";
+      }
     }
+    return null;
   }
 
   public int getFieldNumber() {
