@@ -68,8 +68,8 @@ public class GoogleStructListProtoConverter {
       } else if (value instanceof Long) {
         valueLength = CodedOutputStream.computeDoubleSize(NUMBER_FIELD_NUMBER, (Long) value);
       } else if (value instanceof JsonObject) {
-        structSize = JsonObjectProtoConverter.computeSize((JsonObject) value);
-        valueLength += CodedOutputStream.computeTagSize(STRING_FIELD_NUMBER);
+        structSize = GoogleStructProtoConverter.computeSize((JsonObject) value);
+        valueLength += CodedOutputStream.computeTagSize(STRUCT_FIELD_NUMBER);
         valueLength += CodedOutputStream.computeUInt32SizeNoTag(structSize);
         valueLength += structSize;
       } else {
