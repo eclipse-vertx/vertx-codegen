@@ -5,7 +5,7 @@ import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.NullValue;
 import com.google.protobuf.Value;
 import io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter;
-import io.vertx.codegen.protobuf.converters.JsonObjectProtoConverter;
+import io.vertx.codegen.protobuf.converters.VertxStructProtoConverter;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.junit.Assert;
@@ -132,7 +132,7 @@ public class GoogleStructProtoTest {
 
     // Vertx Decode
     CodedInputStream input = CodedInputStream.newInstance(protocEncoded);
-    JsonObject decoded = JsonObjectProtoConverter.fromProto(input);
+    JsonObject decoded = VertxStructProtoConverter.fromProto(input);
 
     // NOTE: JsonObject no longer the same due to problem with float
     // assertEquals(jsonObject.getMap(), decoded.getMap());

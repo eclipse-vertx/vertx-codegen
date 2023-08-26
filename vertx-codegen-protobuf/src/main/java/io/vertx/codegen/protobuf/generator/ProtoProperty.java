@@ -125,6 +125,18 @@ public class ProtoProperty {
     }
   }
 
+  public static String getProtoConverter(String builtInType) {
+    if ("ZonedDateTime".equals(builtInType)) {
+      return "ZonedDateTimeProtoConverter";
+    } else if ("Instant".equals(builtInType)) {
+      return "InstantProtoConverter";
+    } else if ("JsonObject".equals(builtInType)) {
+      return "VertxStructProtoConverter";
+    } else {
+      return null;
+    }
+  }
+
   public int getFieldNumber() {
     return fieldNumber;
   }
