@@ -112,7 +112,21 @@ public class ProtoProperty {
     }
   }
 
-  // Find out if the data type are io.vertx.protobuf builtin type
+  // Find out if the data type are io.vertx.protobuf builtin type, return Proto type
+  public static String getBuiltInProtoType(PropertyInfo prop) {
+    String javaDataType = prop.getType().getName();
+    if ("java.time.ZonedDateTime".equals(javaDataType)) {
+      return "ZonedDateTime";
+    } else if ("java.time.Instant".equals(javaDataType)) {
+      return "Instant";
+    } else if ("io.vertx.core.json.JsonObject".equals(javaDataType)) {
+      return "Struct";
+    } else {
+      return null;
+    }
+  }
+
+  // Find out if the data type are io.vertx.protobuf builtin type, return Java type
   public static String getBuiltInType(PropertyInfo prop) {
     String javaDataType = prop.getType().getName();
     if ("java.time.ZonedDateTime".equals(javaDataType)) {

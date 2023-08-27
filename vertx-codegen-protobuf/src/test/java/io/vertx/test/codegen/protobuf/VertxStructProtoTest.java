@@ -38,7 +38,7 @@ public class VertxStructProtoTest {
     byte[] encoded = vertxEncode(jsonObject);
 
     // Decode using Google's protoc plugin
-    io.vertx.protobuf.JsonObject protoJsonObject = io.vertx.protobuf.JsonObject.parseFrom(encoded);
+    io.vertx.protobuf.Struct protoJsonObject = io.vertx.protobuf.Struct.parseFrom(encoded);
 
     Value intValue = protoJsonObject.getFieldsMap().get("IntegerField");
     assertEquals(15, intValue.getIntegerValue());
@@ -96,11 +96,11 @@ public class VertxStructProtoTest {
     byte[] encoded = vertxEncode(jsonObject);
 
     // Decode using Google's protoc plugin
-    io.vertx.protobuf.JsonObject protoJsonObject = io.vertx.protobuf.JsonObject.parseFrom(encoded);
+    io.vertx.protobuf.Struct protoJsonObject = io.vertx.protobuf.Struct.parseFrom(encoded);
 
     Value jsonObjectValue = protoJsonObject.getFieldsMap().get("jsonObjectField");
     assertEquals(Value.KindCase.JSON_OBJECT_VALUE, jsonObjectValue.getKindCase());
-    io.vertx.protobuf.JsonObject subJsonObject = jsonObjectValue.getJsonObjectValue();
+    io.vertx.protobuf.Struct subJsonObject = jsonObjectValue.getJsonObjectValue();
 
     Value intValue = subJsonObject.getFieldsMap().get("IntegerField");
     assertEquals(100, intValue.getIntegerValue());
@@ -149,7 +149,7 @@ public class VertxStructProtoTest {
     byte[] encoded = vertxEncode(jsonObject);
 
     // Decode using Google's protoc plugin
-    io.vertx.protobuf.JsonObject protoJsonObject = io.vertx.protobuf.JsonObject.parseFrom(encoded);
+    io.vertx.protobuf.Struct protoJsonObject = io.vertx.protobuf.Struct.parseFrom(encoded);
 
     // Integer
     Value intJsonArrayValue = protoJsonObject.getFieldsMap().get("intList");
@@ -217,7 +217,7 @@ public class VertxStructProtoTest {
   public void TestBinaryField() throws IOException {
     byte[] binary = {0x1, 0x2, 0x3, 0x4, 0x5, 0x6};
     ByteString byteString = ByteString.copyFrom(binary);
-    io.vertx.protobuf.JsonObject proto = io.vertx.protobuf.JsonObject.newBuilder()
+    io.vertx.protobuf.Struct proto = io.vertx.protobuf.Struct.newBuilder()
       .putFields("BinaryField", Value.newBuilder().setBinaryValue(byteString)
         .build())
       .build();
@@ -231,7 +231,7 @@ public class VertxStructProtoTest {
     byte[] encoded = vertxEncode(jsonObject);
 
     // Decode using Google's protoc plugin
-    io.vertx.protobuf.JsonObject protoJsonObject = io.vertx.protobuf.JsonObject.parseFrom(encoded);
+    io.vertx.protobuf.Struct protoJsonObject = io.vertx.protobuf.Struct.parseFrom(encoded);
 
     Value intValue = protoJsonObject.getFieldsMap().get("BinaryField");
     assertEquals(byteString, intValue.getBinaryValue());
@@ -251,7 +251,7 @@ public class VertxStructProtoTest {
     Assert.assertEquals(encoded.length, VertxStructProtoConverter.computeSize(jsonObject));
   }
 
-  private byte[] protocEncode(io.vertx.protobuf.JsonObject obj) throws IOException {
+  private byte[] protocEncode(io.vertx.protobuf.Struct obj) throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream output = CodedOutputStream.newInstance(baos);
     obj.writeTo(output);

@@ -7,14 +7,14 @@ package io.vertx.protobuf;
 
 import "datetime.proto";
 
-message JsonObject {
+message Struct {
   map<string, Value> fields = 1;
 }
 
 message Value {
   oneof kind {
     NullValue null_value = 1;
-    JsonObject json_object_value = 2;
+    Struct json_object_value = 2;
     JsonArray json_array_value = 3;
     bool bool_value = 4;
     string string_value = 5;
