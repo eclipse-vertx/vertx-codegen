@@ -52,16 +52,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     CodeWriter code = new CodeWriter(writer);
     String visibility = model.isPublicConverter() ? "public" : "";
 
-    // Extract JsonProtoEncoding from Annotation attribute ProtobufGen.jsonProtoEncoding()
-    Optional<Object> opMember = model.getAnnotations()
-      .stream()
-      .filter(ann -> ann.getName().equals(ProtobufGen.class.getName()))
-      .findFirst()
-      .map(ann -> ann.getMember("jsonProtoEncoding"));
-
-    JsonProtoEncoding jsonProtoEncoding = opMember
-      .map(v -> JsonProtoEncoding.valueOf((String) v))
-      .orElse(JsonProtoEncoding.VERTX_STRUCT);
+    JsonProtoEncoding jsonProtoEncoding = JsonProtoEncodingSelector.select(model);
 
     writer.print("package " + model.getType().getPackageName() + ";\n");
     writer.print("\n");
