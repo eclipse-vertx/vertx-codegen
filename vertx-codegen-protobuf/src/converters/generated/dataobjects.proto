@@ -7,7 +7,7 @@ option java_package = "io.vertx.protobuf.generated";
 
 package io.vertx.protobuf.generated;
 
-import "json-object.proto";
+import "vertx-struct.proto";
 import "datetime.proto";
 
 message Address {

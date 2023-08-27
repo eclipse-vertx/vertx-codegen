@@ -48,7 +48,7 @@ public class ProtoFileGen extends Generator<DataObjectModel> {
       writer.print("\n");
       writer.print("package io.vertx.protobuf.generated;\n");
       writer.print("\n");
-      writer.print("import \"json-object.proto\";\n");
+      writer.print("import \"vertx-struct.proto\";\n");
       writer.print("import \"datetime.proto\";\n");
       writer.print("\n");
     }
