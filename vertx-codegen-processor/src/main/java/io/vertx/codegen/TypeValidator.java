@@ -35,6 +35,9 @@ class TypeValidator {
     if (isValidFunctionType(elem, typeInfo, allowAnyJavaType)) {
       return;
     }
+    if (isValidSupplierType(elem, typeInfo, allowAnyJavaType)) {
+      return;
+    }
     throw new GenException(elem, "type " + typeInfo + " is not legal for use for a parameter in code generation");
   }
 
@@ -211,6 +214,14 @@ class TypeValidator {
         TypeInfo returnType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(1);
         return isValidNonCallableType(elem, returnType, true, false, true, allowAnyJavaType);
       }
+    }
+    return false;
+  }
+
+  private static boolean isValidSupplierType(Element elem, TypeInfo typeInfo, boolean allowAnyJavaType) {
+    if (typeInfo.getErased().getKind() == ClassKind.SUPPLIER) {
+      TypeInfo returnType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(0);
+      return isValidNonCallableType(elem, returnType, true, false, true, allowAnyJavaType);
     }
     return false;
   }

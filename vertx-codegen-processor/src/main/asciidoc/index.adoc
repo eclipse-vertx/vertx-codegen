@@ -291,6 +291,7 @@ the API:
 
 - `io.vertx.core.Handler`
 - `java.util.function.Function`
+- `java.util.function.Supplier`
 - `io.vertx.core.AsyncResult`
 - `io.vertx.core.json.JsonObject`
 - `io.vertx.core.json.JsonArray`
@@ -394,10 +395,14 @@ Callback parameters are allowed, i.e types declaring `io.vertx.core.Handler<E>` 
 . a `java.util.List<V>`, `java.util.Set<V>` or `java.util.Map<String, V>` where `<V>` can be a _basic_ type,
 a _json_ type. For list and set `V` can also be an _API_ type, an _enum_ type or a _data object_ type
 
-Future parameters are allowed, i.e types declaring `io.vertx.core.Future<T>` where `<T>` is valid if and only if `Handler<AsyncResult<T>>` is valid
+Future parameters are allowed, i.e. types declaring `io.vertx.core.Future<T>` where `<T>` is valid if and only if `Handler<AsyncResult<T>>` is valid
 
-Function parameters are allowed, i.e types declaring `java.util.function.Function<E, R>` where `<E>` is defined to
-be same than for handlers and `<R>` can be:
+Function and supplier parameters are allowed, types declaring
+
+- `java.util.function.Function<E, R>`
+- `java.util.function.Supplier<R>`
+
+where `<E>` is defined to be same than for handlers and `<R>` can be:
 
 . any _basic_ type
 . any _api_ type
@@ -743,8 +748,7 @@ server.listen(80, "localhost", function(result, err) {
 
 === Argument function
 
-Function arguments are `java.util.function.Function` instances, they are usually mapped to the function
-type in the target language or an equivalent.
+Function arguments are `java.util.function.Function` instances, they are usually mapped to the function type in the target language or an equivalent.
 
 === Exceptions
 
@@ -796,6 +800,8 @@ A type info has a {@link io.vertx.codegen.type.ClassKind} usually used to determ
 | `io.vertx.core.Handler<E>`
 | {@link io.vertx.codegen.type.ClassKind#FUNCTION}
 | `java.util.function.Function<E, R>`
+| {@link io.vertx.codegen.type.ClassKind#SUPPLIER}
+| `java.util.function.Supplier<R>`
 | {@link io.vertx.codegen.type.ClassKind#ASYNC_RESULT}
 | `io.vertx.core.AsyncResult<E>`
 | {@link io.vertx.codegen.type.ClassKind#OTHER}
