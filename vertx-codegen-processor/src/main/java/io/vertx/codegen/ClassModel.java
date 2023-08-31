@@ -55,6 +55,7 @@ public class ClassModel implements Model {
   public static final String ITERABLE = "java.lang.Iterable";
   public static final String ITERATOR = "java.util.Iterator";
   public static final String FUNCTION = "java.util.function.Function";
+  public static final String SUPPLIER = "java.util.function.Supplier";
   private static final Logger logger = Logger.getLogger(ClassModel.class.getName());
 
   private static final ClassTypeInfo ASYNC_RESULT_TYPE = new ClassTypeInfo(ClassKind.ASYNC_RESULT, "io.vertx.core.AsyncResult", null, false, Arrays.asList(new TypeParamInfo.Class("io.vertx.core.AsyncResult", 0, "T")), null);
@@ -95,6 +96,7 @@ public class ClassModel implements Model {
   protected TypeInfo iterableArg;
   protected TypeInfo iteratorArg;
   protected TypeInfo[] functionArgs;
+  protected TypeInfo supplierArg;
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap;
   protected Map<String, List<AnnotationValueInfo>> methodAnnotationsMap = new LinkedHashMap<>();
@@ -394,6 +396,7 @@ public class ClassModel implements Model {
     iterableArg = extractArg(ITERABLE, declaredType);
     iteratorArg = extractArg(ITERATOR, declaredType);
     functionArgs = extractArgs(FUNCTION, declaredType);
+    supplierArg = extractArg(SUPPLIER, declaredType);
 
     // Traverse nested elements that are not methods (like nested interfaces)
     for (Element enclosedElt : elem.getEnclosedElements()) {
@@ -901,5 +904,13 @@ public class ClassModel implements Model {
 
   public TypeInfo[] getFunctionArgs() {
     return functionArgs;
+  }
+
+  public boolean isSupplier() {
+    return supplierArg != null;
+  }
+
+  public TypeInfo getSupplierArg() {
+    return supplierArg;
   }
 }

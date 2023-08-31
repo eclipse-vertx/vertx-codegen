@@ -289,7 +289,8 @@ The following set _`Param`_ of types are permitted as parameters to any API meth
 
 In addition,
 
-* `java.util.Function<T, R>` where  `T` contains _`Return`_ and `R` contains _`Param`_
+* `java.util.function.Function<T, R>` where  `T` contains _`Return`_ and `R` contains _`Param`_
+* `java.util.function.Supplier<R>` where `R` contains _`Param`_
 
 when the module uses the callback style
 
