@@ -5,7 +5,7 @@ option java_package = "io.vertx.test.protoc.gen";
 
 package testing;
 
-import "json-object.proto";
+import "vertx-struct.proto";
 import "datetime.proto";
 
 message User {

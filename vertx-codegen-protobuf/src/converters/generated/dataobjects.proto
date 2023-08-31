@@ -7,7 +7,7 @@ option java_package = "io.vertx.protobuf.generated";
 
 package io.vertx.protobuf.generated;
 
-import "json-object.proto";
+import "vertx-struct.proto";
 import "datetime.proto";
 
 message Address {
@@ -34,9 +34,9 @@ message User {
   io.vertx.protobuf.Instant instantField = 8;
   repeated int32 integerListField = 9;
   map<string, int32> integerValueMap = 10;
-  repeated io.vertx.protobuf.JsonObject jsonListField = 11;
-  io.vertx.protobuf.JsonObject jsonObjectField = 12;
-  map<string, io.vertx.protobuf.JsonObject> jsonValueMap = 13;
+  repeated io.vertx.protobuf.Struct jsonListField = 11;
+  io.vertx.protobuf.Struct jsonObjectField = 12;
+  map<string, io.vertx.protobuf.Struct> jsonValueMap = 13;
   int64 longField = 14;
   bool primitiveBoolean = 15;
   int32 primitiveByte = 16;

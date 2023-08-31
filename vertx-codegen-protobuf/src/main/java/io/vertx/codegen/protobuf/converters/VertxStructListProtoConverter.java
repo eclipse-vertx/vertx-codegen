@@ -7,9 +7,16 @@ import io.vertx.core.json.JsonArray;
 import java.io.IOException;
 
 import static com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED;
-import static io.vertx.codegen.protobuf.converters.JsonObjectProtoConverter.*;
+import static io.vertx.codegen.protobuf.converters.VertxStructProtoConverter.INTEGER_FIELD_NUMBER;
+import static io.vertx.codegen.protobuf.converters.VertxStructProtoConverter.INTEGER_TAG;
+import static io.vertx.codegen.protobuf.converters.VertxStructProtoConverter.LONG_FIELD_NUMBER;
+import static io.vertx.codegen.protobuf.converters.VertxStructProtoConverter.LONG_TAG;
+import static io.vertx.codegen.protobuf.converters.VertxStructProtoConverter.STRING_FIELD_NUMBER;
+import static io.vertx.codegen.protobuf.converters.VertxStructProtoConverter.STRING_TAG;
+import static io.vertx.codegen.protobuf.converters.VertxStructProtoConverter.TOP_LEVEL_FIELD_NUMBER;
+import static io.vertx.codegen.protobuf.converters.VertxStructProtoConverter.TOP_LEVEL_TAG;
 
-public class JsonArrayProtoConverter {
+public class VertxStructListProtoConverter {
   public static JsonArray fromProto(CodedInputStream input) throws IOException {
     JsonArray array = new JsonArray();
     int tag;
