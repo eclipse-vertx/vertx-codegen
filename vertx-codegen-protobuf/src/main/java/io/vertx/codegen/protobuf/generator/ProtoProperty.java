@@ -91,68 +91,69 @@ public class ProtoProperty {
 
   // Anything other than java primitive type should be nullable
   private static boolean determineIsNullable(String javaDataType) {
-    if ("int".equals(javaDataType)) {
-      return false;
-    } else if ("long".equals(javaDataType)) {
-      return false;
-    } else if ("short".equals(javaDataType)) {
-      return false;
-    } else if ("float".equals(javaDataType)) {
-      return false;
-    } else if ("double".equals(javaDataType)) {
-      return false;
-    } else if ("boolean".equals(javaDataType)) {
-      return false;
-    } else if ("byte".equals(javaDataType)) {
-      return false;
-    } else if ("char".equals(javaDataType)) {
-      return false;
-    } else {
-      return true;
+    switch (javaDataType) {
+      case "int":
+      case "long":
+      case "short":
+      case "float":
+      case "double":
+      case "boolean":
+      case "byte":
+      case "char":
+        return false;
+      default:
+        return true;
     }
   }
 
   // Find out if the data type are io.vertx.protobuf builtin type, return Proto type
   public static String getBuiltInProtoType(PropertyInfo prop) {
     String javaDataType = prop.getType().getName();
-    if ("java.time.ZonedDateTime".equals(javaDataType)) {
-      return "ZonedDateTime";
-    } else if ("java.time.Instant".equals(javaDataType)) {
-      return "Instant";
-    } else if ("io.vertx.core.json.JsonObject".equals(javaDataType)) {
-      return "Struct";
-    } else {
-      return null;
+    switch (javaDataType) {
+      case "java.time.ZonedDateTime":
+        return "ZonedDateTime";
+      case "java.time.Instant":
+        return "Instant";
+      case "io.vertx.core.json.JsonObject":
+        return "Struct";
+      default:
+        return null;
     }
   }
 
   // Find out if the data type are io.vertx.protobuf builtin type, return Java type
   public static String getBuiltInType(PropertyInfo prop) {
     String javaDataType = prop.getType().getName();
-    if ("java.time.ZonedDateTime".equals(javaDataType)) {
-      return "ZonedDateTime";
-    } else if ("java.time.Instant".equals(javaDataType)) {
-      return "Instant";
-    } else if ("io.vertx.core.json.JsonObject".equals(javaDataType)) {
-      return "JsonObject";
-    } else {
-      return null;
+    switch (javaDataType) {
+      case "java.time.ZonedDateTime":
+        return "ZonedDateTime";
+      case "java.time.Instant":
+        return "Instant";
+      case "io.vertx.core.json.JsonObject":
+        return "JsonObject";
+      default:
+        return null;
     }
   }
 
   public static String getProtoConverter(String builtInType, JsonProtoEncoding jsonProtoEncoding) {
-    if ("ZonedDateTime".equals(builtInType)) {
-      return "ZonedDateTimeProtoConverter";
-    } else if ("Instant".equals(builtInType)) {
-      return "InstantProtoConverter";
-    } else if ("JsonObject".equals(builtInType)) {
-      if (jsonProtoEncoding == JsonProtoEncoding.VERTX_STRUCT) {
-        return "VertxStructProtoConverter";
-      } else if (jsonProtoEncoding == JsonProtoEncoding.GOOGLE_STRUCT) {
-        return "GoogleStructProtoConverter";
-      }
+    switch (builtInType) {
+      case "ZonedDateTime":
+        return "ZonedDateTimeProtoConverter";
+      case "Instant":
+        return "InstantProtoConverter";
+      case "JsonObject":
+        switch (jsonProtoEncoding) {
+          case VERTX_STRUCT:
+            return "VertxStructProtoConverter";
+          case GOOGLE_STRUCT:
+            return "GoogleStructProtoConverter";
+          default:
+            return null;
+        }
+      default:
+        return null;
     }
-    return null;
   }
 
   public int getFieldNumber() {
