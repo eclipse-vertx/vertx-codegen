@@ -26,7 +26,7 @@ package io.vertx.codegen.protobuf.annotations;
  *   public static void toProto(...);
  * }
  * </pre>
- * Note: This annotation only works with the {@literal @}DataObject annotation.
+ * Note: This annotation only works with the {@literal @DataObject} annotation.
  *
  * @author <a href="https://github.com/lwlee2608">Jason Lee</a>
  */

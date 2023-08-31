@@ -113,12 +113,12 @@ Lombok uses internal compiler API to update Abstract Syntax Tree of the compiler
 ----
 
 == Json Protobuf Encoding Type
-The `@ProtobufGen` annotation includes an optional attribute `jsonProtoEncoding` which specifies the protobuf encoding type for `JsonObject`.
+The `@ProtobufGen` annotation includes an optional attribute `jsonProtoEncoding` which specifies the protobuf encoding type for `JsonObject` and `JsonArray`.
 
 Available options are:
 
-- VERTX_STRUCT: Utilizes vertx-struct to encode `JsonObject` into Protobuf.
-- GOOGLE_STRUCT: Utilizes Google's link:https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/struct.proto[struct.proto] to encode `JsonObject` into Protobuf.
+- VERTX_STRUCT: Utilizes vertx-struct to encode JSON elements into Protobuf.
+- GOOGLE_STRUCT: Utilizes Google's link:https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/struct.proto[struct.proto] to encode JSON elements into Protobuf.
 
 
 Note that the Google Struct stores all numeric types as doubles, which will be less efficient and will result in the loss of the original numeric type (e.g., integer, short, double).
