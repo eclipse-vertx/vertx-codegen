@@ -97,21 +97,6 @@ public class ProtoProperty {
     }
   }
 
-  // Find out if the data type are io.vertx.protobuf builtin type, return Proto type
-  private static String determineBuiltInType(PropertyInfo prop) {
-    String javaDataType = prop.getType().getName();
-    switch (javaDataType) {
-      case "java.time.ZonedDateTime":
-        return "ZonedDateTime";
-      case "java.time.Instant":
-        return "Instant";
-      case "io.vertx.core.json.JsonObject":
-        return "Struct";
-      default:
-        return null;
-    }
-  }
-
   // Anything other than java primitive type should be nullable
   private static boolean determineIsNullable(String javaDataType) {
     switch (javaDataType) {
@@ -126,6 +111,21 @@ public class ProtoProperty {
         return false;
       default:
         return true;
+    }
+  }
+
+  // Find out if the data type are io.vertx.protobuf builtin type, return Proto type
+  private static String determineBuiltInType(PropertyInfo prop) {
+    String javaDataType = prop.getType().getName();
+    switch (javaDataType) {
+      case "java.time.ZonedDateTime":
+        return "ZonedDateTime";
+      case "java.time.Instant":
+        return "Instant";
+      case "io.vertx.core.json.JsonObject":
+        return "Struct";
+      default:
+        return null;
     }
   }
 
