@@ -11,8 +11,13 @@ public class ProtoProperty {
   private int wireType;
   private int tag;
   private ProtoType protoType;
+  // Indicate if field is nullable.
   private boolean isNullable;
-  private String message;       // Indicate the name of the message of the nested field
+  // Indicate the name of the message of the nested field
+  private String message;
+  // Built-in types are predefined complex proto types
+  // Examples: datetime.proto, struct.proto, vertx-struct.proto
+  private String builtInType;
 
   public static ProtoProperty getProtoProperty(PropertyInfo prop, int fieldNumber) {
     ProtoProperty protoProperty = new ProtoProperty();
@@ -20,9 +25,10 @@ public class ProtoProperty {
     ProtoType protoType;
     boolean isNullable = determineIsNullable(prop.getType().getName());
     String message = null;
+    String builtInProtoType = null;
     int wireType;
     if (propKind.basic) {
-      protoType = determineProtoType(prop.getType().getName());
+      protoType = determinePrimitiveProtoType(prop.getType().getName());
       switch (protoType) {
         case BOOL:
         case INT64:
@@ -45,6 +51,7 @@ public class ProtoProperty {
       protoType = null;
       message = prop.getType().getSimpleName();
       wireType = 2;
+      builtInProtoType = determineBuiltInType(prop);
     }
 
     // Override wire type if property is a list, map or set
@@ -62,10 +69,11 @@ public class ProtoProperty {
     protoProperty.protoType = protoType;
     protoProperty.isNullable = isNullable;
     protoProperty.message = message;
+    protoProperty.builtInType = builtInProtoType;
     return protoProperty;
   }
 
-  private static ProtoType determineProtoType(String javaDataType) {
+  private static ProtoType determinePrimitiveProtoType(String javaDataType) {
     if ("java.lang.Integer".equals(javaDataType) || "int".equals(javaDataType)) {
       return ProtoType.INT32;
     } else if ("java.lang.Long".equals(javaDataType) || "long".equals(javaDataType)) {
@@ -85,7 +93,7 @@ public class ProtoProperty {
     } else if ("java.lang.Character".equals(javaDataType) || "char".equals(javaDataType)) {
       return ProtoType.INT32;
     } else {
-      throw new UnsupportedOperationException("Unsupported data-type " + javaDataType);
+      throw new UnsupportedOperationException("Unsupported primitive data-type " + javaDataType);
     }
   }
 
@@ -107,7 +115,7 @@ public class ProtoProperty {
   }
 
   // Find out if the data type are io.vertx.protobuf builtin type, return Proto type
-  public static String getBuiltInProtoType(PropertyInfo prop) {
+  private static String determineBuiltInType(PropertyInfo prop) {
     String javaDataType = prop.getType().getName();
     switch (javaDataType) {
       case "java.time.ZonedDateTime":
@@ -121,22 +129,7 @@ public class ProtoProperty {
     }
   }
 
-  // Find out if the data type are io.vertx.protobuf builtin type, return Java type
-  public static String getBuiltInType(PropertyInfo prop) {
-    String javaDataType = prop.getType().getName();
-    switch (javaDataType) {
-      case "java.time.ZonedDateTime":
-        return "ZonedDateTime";
-      case "java.time.Instant":
-        return "Instant";
-      case "io.vertx.core.json.JsonObject":
-        return "JsonObject";
-      default:
-        return null;
-    }
-  }
-
-  public static String getProtoConverter(String builtInType, JsonProtoEncoding jsonProtoEncoding) {
+  static String getBuiltInProtoConverter(String builtInType, JsonProtoEncoding jsonProtoEncoding) {
     switch (builtInType) {
       case "ZonedDateTime":
         return "ZonedDateTimeProtoConverter";
@@ -149,10 +142,10 @@ public class ProtoProperty {
           case GOOGLE_STRUCT:
             return "GoogleStructProtoConverter";
           default:
-            return null;
+            throw new InternalError("Unknown built-it type " + builtInType);
         }
       default:
-        return null;
+        throw new InternalError("Unknown built-it type " + builtInType);
     }
   }
 
@@ -178,5 +171,13 @@ public class ProtoProperty {
 
   public String getMessage() {
     return message;
+  }
+
+  public boolean isBuiltinType() {
+    return builtInType != null;
+  }
+
+  public String getBuiltInType() {
+    return builtInType;
   }
 }

@@ -14,7 +14,6 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -99,14 +98,14 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
             writer.print("          input.popLimit(limit);\n");
             writer.print("          break;\n");
           } else {
-            String builtInType = ProtoProperty.getBuiltInType(prop);
-            if (builtInType != null) {
+            if (protoProperty.isBuiltinType()) {
+              String builtInType = prop.getType().getSimpleName();
               writer.print("          int length = input.readUInt32();\n");
               writer.print("          int limit = input.pushLimit(length);\n");
               writer.print("          if (obj." + prop.getGetterMethod() + "() == null) {\n");
               writer.print("            obj." + prop.getSetterMethod() + "(new ArrayList<>());\n");
               writer.print("          }\n");
-              writer.print("          obj." + prop.getGetterMethod() + "().add(" + ProtoProperty.getProtoConverter(builtInType, jsonProtoEncoding) + ".fromProto(input));\n");
+              writer.print("          obj." + prop.getGetterMethod() + "().add(" + ProtoProperty.getBuiltInProtoConverter(builtInType, jsonProtoEncoding) + ".fromProto(input));\n");
               writer.print("          input.popLimit(limit);\n");
               writer.print("          break;\n");
             } else {
@@ -139,8 +138,8 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
             writer.print("          input.popLimit(limit);\n");
             writer.print("          break;\n");
           } else {
-            String builtInType = ProtoProperty.getBuiltInType(prop);
-            if (builtInType != null) {
+            if (protoProperty.isBuiltinType()) {
+              String builtInType = prop.getType().getSimpleName();
               writer.print("          int length = input.readUInt32();\n");
               writer.print("          int limit = input.pushLimit(length);\n");
               writer.print("          Map<String, " + builtInType + "> map = obj." + prop.getGetterMethod() + "();\n");
@@ -152,7 +151,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
               writer.print("          input.readTag();\n");
               writer.print("          int vlength = input.readUInt32();\n");
               writer.print("          int vlimit = input.pushLimit(vlength);\n");
-              writer.print("          map.put(key, " + ProtoProperty.getProtoConverter(builtInType, jsonProtoEncoding) + ".fromProto(input));\n");
+              writer.print("          map.put(key, " + ProtoProperty.getBuiltInProtoConverter(builtInType, jsonProtoEncoding) + ".fromProto(input));\n");
               writer.print("          obj." + prop.getSetterMethod() + "(map);\n");
               writer.print("          input.popLimit(vlimit);\n");
               writer.print("          input.popLimit(limit);\n");
@@ -191,11 +190,11 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
             }
             writer.print("          obj." + prop.getSetterMethod() + "(" + casting + "input." + protoProperty.getProtoType().read() + "());\n");
           } else {
-            String builtInType = ProtoProperty.getBuiltInType(prop);
-            if (builtInType != null) {
+            if (protoProperty.isBuiltinType()) {
+              String builtInType = prop.getType().getSimpleName();
               writer.print("          int length = input.readUInt32();\n");
               writer.print("          int limit = input.pushLimit(length);\n");
-              writer.print("          obj." + prop.getSetterMethod() + "(" + ProtoProperty.getProtoConverter(builtInType, jsonProtoEncoding) + ".fromProto(input));\n");
+              writer.print("          obj." + prop.getSetterMethod() + "(" + ProtoProperty.getBuiltInProtoConverter(builtInType, jsonProtoEncoding) + ".fromProto(input));\n");
               writer.print("          input.popLimit(limit);\n");
             } else {
               writer.print("          int length = input.readUInt32();\n");
@@ -257,12 +256,12 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
           } else {
             writer.print("      // list[0] | tag | data size | value |\n");
             writer.print("      // list[1] | tag | data size | value |\n");
-            String builtInType = ProtoProperty.getBuiltInType(prop);
-            if (builtInType != null) {
+            if (protoProperty.isBuiltinType()) {
+              String builtInType = prop.getType().getSimpleName();
               writer.print("      for (" + protoProperty.getMessage() + " element: obj." + prop.getGetterMethod() +"()) {\n");
               writer.print("        output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
-              writer.print("        output.writeUInt32NoTag(" + ProtoProperty.getProtoConverter(builtInType, jsonProtoEncoding) + ".computeSize(element));\n");
-              writer.print("        " + ProtoProperty.getProtoConverter(builtInType, jsonProtoEncoding) + ".toProto(element, output);\n");
+              writer.print("        output.writeUInt32NoTag(" + ProtoProperty.getBuiltInProtoConverter(builtInType, jsonProtoEncoding) + ".computeSize(element));\n");
+              writer.print("        " + ProtoProperty.getBuiltInProtoConverter(builtInType, jsonProtoEncoding) + ".toProto(element, output);\n");
               writer.print("      }\n");
             } else {
               writer.print("      for (" + protoProperty.getMessage() + " element: obj." + prop.getGetterMethod() +"()) {\n");
@@ -291,12 +290,12 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
           } else {
             writer.print("      // map[0] | tag | data size | key | value |\n");
             writer.print("      // map[1] | tag | data size | key | value |\n");
-            String builtInType = ProtoProperty.getBuiltInType(prop);
-            if (builtInType != null) {
+            if (protoProperty.isBuiltinType()) {
+              String builtInType = prop.getType().getSimpleName();
               writer.print("      for (Map.Entry<String, " + builtInType + "> entry : obj." + prop.getGetterMethod() + "().entrySet()) {\n");
               writer.print("        output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
               writer.print("        // calculate data size\n");
-              writer.print("        int elementSize = " + ProtoProperty.getProtoConverter(builtInType, jsonProtoEncoding) + ".computeSize(entry.getValue());\n");
+              writer.print("        int elementSize = " + ProtoProperty.getBuiltInProtoConverter(builtInType, jsonProtoEncoding) + ".computeSize(entry.getValue());\n");
               writer.print("        int dataSize = 0;\n");
               writer.print("        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());\n");
               writer.print("        dataSize += CodedOutputStream.computeInt32SizeNoTag(18);\n");
@@ -308,7 +307,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
               writer.print("        output.writeString(1, entry.getKey());\n");
               writer.print("        output.writeUInt32NoTag(18);\n");
               writer.print("        output.writeUInt32NoTag(elementSize);\n");
-              writer.print("        " + ProtoProperty.getProtoConverter(builtInType, jsonProtoEncoding) + ".toProto(entry.getValue(), output);\n");
+              writer.print("        " + ProtoProperty.getBuiltInProtoConverter(builtInType, jsonProtoEncoding) + ".toProto(entry.getValue(), output);\n");
               writer.print("      }\n");
             } else {
               writer.print("      for (Map.Entry<String, " + protoProperty.getMessage() + "> entry : obj." + prop.getGetterMethod() + "().entrySet()) {\n");
@@ -334,11 +333,11 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
           if (propKind.basic) {
             writer.print("      output." + protoProperty.getProtoType().write() + "(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");
           } else {
-            String builtInType = ProtoProperty.getBuiltInType(prop);
-            if (builtInType != null) {
+            if (protoProperty.isBuiltinType()) {
+              String builtInType = prop.getType().getSimpleName();
               writer.print("      output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
-              writer.print("      output.writeUInt32NoTag(" + ProtoProperty.getProtoConverter(builtInType, jsonProtoEncoding) + ".computeSize(obj." + prop.getGetterMethod() + "()));\n");
-              writer.print("      " + ProtoProperty.getProtoConverter(builtInType, jsonProtoEncoding) + ".toProto(obj." + prop.getGetterMethod() +"(), output);\n");
+              writer.print("      output.writeUInt32NoTag(" + ProtoProperty.getBuiltInProtoConverter(builtInType, jsonProtoEncoding) + ".computeSize(obj." + prop.getGetterMethod() + "()));\n");
+              writer.print("      " + ProtoProperty.getBuiltInProtoConverter(builtInType, jsonProtoEncoding) + ".toProto(obj." + prop.getGetterMethod() +"(), output);\n");
             } else {
               writer.print("      output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
               writer.print("      output.writeUInt32NoTag(cache.get(index));\n");
@@ -393,12 +392,12 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
           } else {
             writer.print("      // list[0] | tag | data size | value |\n");
             writer.print("      // list[1] | tag | data size | value |\n");
-            String builtInType = ProtoProperty.getBuiltInType(prop);
-            if (builtInType != null) {
+            if (protoProperty.isBuiltinType()) {
+              String builtInType = prop.getType().getSimpleName();
               writer.print("      if (obj." + prop.getGetterMethod() + "().size() > 0) {\n");
               writer.print("        for (" + builtInType + " element: obj." + prop.getGetterMethod() + "()) {\n");
               writer.print("          size += CodedOutputStream.computeUInt32SizeNoTag(" + protoProperty.getTag() + ");\n");
-              writer.print("          int dataSize = " + ProtoProperty.getProtoConverter(builtInType, jsonProtoEncoding) + ".computeSize(element);\n");
+              writer.print("          int dataSize = " + ProtoProperty.getBuiltInProtoConverter(builtInType, jsonProtoEncoding) + ".computeSize(element);\n");
               writer.print("          size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
               writer.print("          size += dataSize;\n");
               writer.print("        }\n");
@@ -431,8 +430,8 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
           } else {
             writer.print("        // map[0] | tag | data size | key | value |\n");
             writer.print("        // map[1] | tag | data size | key | value |\n");
-            String builtInType = ProtoProperty.getBuiltInType(prop);
-            if (builtInType != null) {
+            if (protoProperty.isBuiltinType()) {
+              String builtInType = prop.getType().getSimpleName();
               writer.print("      for (Map.Entry<String, " + builtInType + "> entry : obj." + prop.getGetterMethod() + "().entrySet()) {\n");
               writer.print("        size += CodedOutputStream.computeUInt32SizeNoTag(" + protoProperty.getTag() + ");\n");
               writer.print("        // calculate data size\n");
@@ -440,7 +439,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
               writer.print("        // key\n");
               writer.print("        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());\n");
               writer.print("        // value\n");
-              writer.print("        int elementSize = " + ProtoProperty.getProtoConverter(builtInType, jsonProtoEncoding) + ".computeSize(entry.getValue());\n");
+              writer.print("        int elementSize = " + ProtoProperty.getBuiltInProtoConverter(builtInType, jsonProtoEncoding) + ".computeSize(entry.getValue());\n");
               writer.print("        dataSize += CodedOutputStream.computeInt32SizeNoTag(18);\n");
               writer.print("        dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);\n");
               writer.print("        dataSize += elementSize;\n");
@@ -472,10 +471,10 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
           if (propKind.basic) {
             writer.print("      size += CodedOutputStream." + protoProperty.getProtoType().computeSize() + "(" + fieldNumber + ", obj." + prop.getGetterMethod() + "());\n");
           } else {
-            String builtInType = ProtoProperty.getBuiltInType(prop);
-            if (builtInType != null) {
+            if (protoProperty.isBuiltinType()) {
+              String builtInType = prop.getType().getSimpleName();
               writer.print("      size += CodedOutputStream.computeUInt32SizeNoTag(" + protoProperty.getTag() + ");\n");
-              writer.print("      int dataSize = " + ProtoProperty.getProtoConverter(builtInType, jsonProtoEncoding) + ".computeSize(obj." + prop.getGetterMethod() + "());\n");
+              writer.print("      int dataSize = " + ProtoProperty.getBuiltInProtoConverter(builtInType, jsonProtoEncoding) + ".computeSize(obj." + prop.getGetterMethod() + "());\n");
               writer.print("      size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
               writer.print("      size += dataSize;\n");
             } else {

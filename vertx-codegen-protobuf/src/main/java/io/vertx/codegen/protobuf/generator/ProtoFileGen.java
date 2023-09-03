@@ -72,9 +72,8 @@ public class ProtoFileGen extends Generator<DataObjectModel> {
       if (propKind.basic) {
         protoType = protoProperty.getProtoType().value;
       } else {
-        String builtInType = ProtoProperty.getBuiltInProtoType(prop);
-        if (builtInType != null) {
-          protoType = "io.vertx.protobuf." + builtInType;
+        if (protoProperty.isBuiltinType()) {
+          protoType = "io.vertx.protobuf." + protoProperty.getBuiltInType();
         } else {
           protoType = protoProperty.getMessage();
         }
