@@ -3,11 +3,7 @@ package io.vertx.codegen.format;
 import java.util.List;
 import java.util.regex.Pattern;
 
-/**
- * Snake case, for instance {@literal foo_bar}.
- *
- * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
- */
+/** Screaming Snake case, for instance {@literal FOO_BAR}. */
 public class ScreamingSnakeCase extends Case {
 
   /** A {@code SnakeCase} instance. */
