@@ -5,6 +5,7 @@ import io.vertx.codegen.format.Case;
 import io.vertx.codegen.format.KebabCase;
 import io.vertx.codegen.format.LowerCamelCase;
 import io.vertx.codegen.format.QualifiedCase;
+import io.vertx.codegen.format.ScreamingSnakeCase;
 import io.vertx.codegen.format.SnakeCase;
 import org.junit.Test;
 
@@ -131,6 +132,21 @@ public class CaseTest {
   }
 
   @Test
+  public void testParseScreamingSnakeCase() {
+    parseScreamingSnakeCase("");
+    parseScreamingSnakeCase("FOO", "FOO");
+    parseScreamingSnakeCase("FOO_BAR", "FOO", "BAR");
+    parseScreamingSnakeCase("FOO_BAR_JUU", "FOO", "BAR", "JUU");
+    for (String test : Arrays.asList("_", "_FOO", "FOO_", "FOO__BAR")) {
+      try {
+        SnakeCase.INSTANCE.parse(test);
+        fail("Was expecting " + test + " to be rejected");
+      } catch (Exception ignore) {
+      }
+    }
+  }
+
+  @Test
   public void testConversion() {
     assertEquals("foo-bar-juu", CamelCase.INSTANCE.to(KebabCase.INSTANCE, "FooBarJuu"));
     assertEquals("foo_bar_juu", CamelCase.INSTANCE.to(SnakeCase.INSTANCE, "FooBarJuu"));
@@ -160,6 +176,10 @@ public class CaseTest {
 
   private void parseSnakeCase(String s, String... expected) {
     parseCase(SnakeCase.INSTANCE, s, expected);
+  }
+
+  private void parseScreamingSnakeCase(String s, String... expected) {
+    parseCase(ScreamingSnakeCase.INSTANCE, s, expected);
   }
 
   private void parseCamelCase(String s, String... expected) {

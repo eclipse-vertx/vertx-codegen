@@ -9,6 +9,7 @@ import io.vertx.codegen.format.Case;
 import io.vertx.codegen.format.KebabCase;
 import io.vertx.codegen.format.LowerCamelCase;
 import io.vertx.codegen.format.QualifiedCase;
+import io.vertx.codegen.format.ScreamingSnakeCase;
 import io.vertx.codegen.format.SnakeCase;
 import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.ClassKind;
@@ -382,6 +383,8 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
         return CamelCase.INSTANCE;
       case "io.vertx.codegen.format.SnakeCase":
         return SnakeCase.INSTANCE;
+      case "io.vertx.codegen.format.ScreamingSnakeCase":
+        return ScreamingSnakeCase.INSTANCE;
       case "io.vertx.codegen.format.LowerCamelCase":
         return LowerCamelCase.INSTANCE;
       case "io.vertx.codegen.format.KebabCase":

@@ -30,12 +30,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class DataObjectTest {
 
-  private static JsonObject toJson(Map<String, Object> map) {
-    JsonObject json = new JsonObject();
-    map.forEach(json::put);
-    return json;
-  }
-
   @Test
   public void testJsonToDataObject() throws Exception {
 
@@ -329,6 +323,16 @@ public class DataObjectTest {
 //    assertEquals(aggregatedDataObject, obj.getAggregatedDataObject());
 //    assertEquals(Collections.singletonList(aggregatedDataObject), obj.getAggregatedDataObjects());
 //    assertEquals(Collections.singletonList(aggregatedDataObject), obj.getAddedAggregatedDataObjects());
+  }
+
+  private String toBase64(Buffer buffer) {
+    return JsonUtil.BASE64_ENCODER.encodeToString(buffer.getBytes());
+  }
+
+  private static JsonObject toJson(Map<String, Object> map) {
+    JsonObject json = new JsonObject();
+    map.forEach(json::put);
+    return json;
   }
 
   @Test
@@ -819,10 +823,6 @@ public class DataObjectTest {
     assertEquals(expectedJson, json);
   }
 
-  private String toBase64(Buffer buffer) {
-    return JsonUtil.BASE64_ENCODER.encodeToString(buffer.getBytes());
-  }
-
   @Test
   public void testPreferSetterToAdder() {
     SetterAdderDataObject obj = new SetterAdderDataObject();
@@ -846,6 +846,23 @@ public class DataObjectTest {
     Assert.assertEquals("val3", obj.getFooBarJuu());
     JsonObject test = new JsonObject();
     SnakeFormattedDataObjectConverter.toJson(obj, test);
+    Assert.assertEquals(expected, test);
+  }
+
+  @Test
+  public void testScreamingSnakeFormatted() {
+    ScreamingSnakeFormattedDataObject obj = new ScreamingSnakeFormattedDataObject();
+    JsonObject expected = new JsonObject()
+        .put("FOO", "val1")
+        .put("FOO_BAR", "val2")
+        .put("FOO_BAR_JUU", "val3");
+    ScreamingSnakeFormattedDataObjectConverter.fromJson(expected
+        , obj);
+    Assert.assertEquals("val1", obj.getFoo());
+    Assert.assertEquals("val2", obj.getFooBar());
+    Assert.assertEquals("val3", obj.getFooBarJuu());
+    JsonObject test = new JsonObject();
+    ScreamingSnakeFormattedDataObjectConverter.toJson(obj, test);
     Assert.assertEquals(expected, test);
   }
 
