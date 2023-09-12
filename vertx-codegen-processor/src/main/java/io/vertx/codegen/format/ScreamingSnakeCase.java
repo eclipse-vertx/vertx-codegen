@@ -38,7 +38,7 @@ public class ScreamingSnakeCase extends Case {
   @Override
   public List<String> parse(String name) {
     if (!validator.matcher(name).matches()) {
-      throw new IllegalArgumentException("Invalid snake case:" + name);
+      throw new IllegalArgumentException("Invalid screaming snake case:" + name);
     }
     return split(name, "_");
   }
