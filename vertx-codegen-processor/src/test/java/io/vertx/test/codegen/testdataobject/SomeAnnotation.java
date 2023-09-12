@@ -8,4 +8,5 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.TYPE})
 public @interface SomeAnnotation {
+  int value();
 }
