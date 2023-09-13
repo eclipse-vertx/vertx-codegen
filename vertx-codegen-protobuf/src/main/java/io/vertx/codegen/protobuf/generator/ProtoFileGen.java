@@ -97,23 +97,27 @@ public class ProtoFileGen extends Generator<Model> {
       ClassKind propKind = prop.getType().getKind();
       ProtoProperty protoProperty = ProtoProperty.getProtoProperty(prop, fieldNumber);
 
-      String protoType;
+      String protoFieldType;
       if (propKind.basic) {
-        protoType = protoProperty.getProtoType().value;
+        protoFieldType = protoProperty.getProtoType().value;
       } else {
-        if (protoProperty.isBuiltinType()) {
-          protoType = "io.vertx.protobuf." + protoProperty.getBuiltInType();
-        } else {
-          protoType = protoProperty.getMessage();
+        if (prop.getType().getKind() == ClassKind.ENUM) {
+            protoFieldType = protoProperty.getEnumType();
+        } else { // Not Enum
+          if (protoProperty.isBuiltinType()) {
+            protoFieldType = "io.vertx.protobuf." + protoProperty.getBuiltInType();
+          } else {
+            protoFieldType = protoProperty.getMessage();
+          }
         }
       }
 
       if (prop.getKind().isList()) {
-        writer.print("  repeated " + protoType + " " + prop.getName() + " = " + fieldNumber + ";\n");
+        writer.print("  repeated " + protoFieldType + " " + prop.getName() + " = " + fieldNumber + ";\n");
       } else if (prop.getKind().isMap()) {
-        writer.print("  map<string, " + protoType + "> " + prop.getName() + " = " + fieldNumber + ";\n");
+        writer.print("  map<string, " + protoFieldType + "> " + prop.getName() + " = " + fieldNumber + ";\n");
       } else {
-        writer.print("  " + protoType + " " + prop.getName() + " = " + fieldNumber + ";\n");
+        writer.print("  " + protoFieldType + " " + prop.getName() + " = " + fieldNumber + ";\n");
       }
       fieldNumber++;
     }

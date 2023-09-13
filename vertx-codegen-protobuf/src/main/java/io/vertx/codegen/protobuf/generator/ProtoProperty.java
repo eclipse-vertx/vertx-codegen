@@ -15,6 +15,8 @@ public class ProtoProperty {
   private boolean isNullable;
   // Indicate the name of the message of the nested field
   private String message;
+  // Indicate the name of the enumeration type
+  private String enumType;
   // Built-in types are predefined complex proto types
   // Examples: datetime.proto, struct.proto, vertx-struct.proto
   private String builtInType;
@@ -22,14 +24,14 @@ public class ProtoProperty {
   public static ProtoProperty getProtoProperty(PropertyInfo prop, int fieldNumber) {
     ProtoProperty protoProperty = new ProtoProperty();
     ClassKind propKind = prop.getType().getKind();
-    ProtoType protoType;
+    ProtoType protoType = null;
     boolean isNullable = determineIsNullable(prop.getType().getName());
     String message = null;
+    String enumType = null;
     String builtInProtoType = null;
     int wireType;
     if (prop.getType().getKind() == ClassKind.ENUM) {
-      protoType = null;
-      message = prop.getType().getSimpleName(); // TODO Should not call 'message'
+      enumType = prop.getType().getSimpleName();
       wireType = 0;
     } else { // Not Enum
       if (propKind.basic) {
@@ -53,7 +55,6 @@ public class ProtoProperty {
             throw new UnsupportedOperationException("Unsupported proto-type " + protoType);
         }
       } else {
-        protoType = null;
         message = prop.getType().getSimpleName();
         wireType = 2;
         builtInProtoType = determineBuiltInType(prop);
@@ -74,6 +75,7 @@ public class ProtoProperty {
     protoProperty.tag = tag;
     protoProperty.protoType = protoType;
     protoProperty.isNullable = isNullable;
+    protoProperty.enumType = enumType;
     protoProperty.message = message;
     protoProperty.builtInType = builtInProtoType;
     return protoProperty;
@@ -173,6 +175,10 @@ public class ProtoProperty {
 
   public boolean isNullable() {
     return isNullable;
+  }
+
+  public String getEnumType() {
+    return enumType;
   }
 
   public String getMessage() {
