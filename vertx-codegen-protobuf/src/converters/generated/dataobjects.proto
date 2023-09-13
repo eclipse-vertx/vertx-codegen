@@ -16,6 +16,12 @@ message Address {
   string name = 3;
 }
 
+enum EnumType {
+  A = 0;
+  B = 1;
+  C = 2;
+}
+
 message RecursiveItem {
   RecursiveItem childA = 1;
   RecursiveItem childB = 2;
@@ -30,29 +36,30 @@ message User {
   int32 byteField = 4;
   int32 charField = 5;
   double doubleField = 6;
-  float floatField = 7;
-  io.vertx.protobuf.Instant instantField = 8;
-  repeated int32 integerListField = 9;
-  map<string, int32> integerValueMap = 10;
-  repeated io.vertx.protobuf.Struct jsonListField = 11;
-  io.vertx.protobuf.Struct jsonObjectField = 12;
-  map<string, io.vertx.protobuf.Struct> jsonValueMap = 13;
-  int64 longField = 14;
-  bool primitiveBoolean = 15;
-  int32 primitiveByte = 16;
-  int32 primitiveChar = 17;
-  double primitiveDouble = 18;
-  float primitiveFloat = 19;
-  int32 primitiveInt = 20;
-  int64 primitiveLong = 21;
-  int32 primitiveShort = 22;
-  int32 shortField = 23;
-  map<string, string> stringValueMap = 24;
-  repeated Address structListField = 25;
-  map<string, Address> structValueMap = 26;
-  string userName = 27;
-  io.vertx.protobuf.ZonedDateTime zonedDateTimeField = 28;
-  repeated io.vertx.protobuf.ZonedDateTime zonedDateTimeListField = 29;
-  map<string, io.vertx.protobuf.ZonedDateTime> zonedDateTimeValueMap = 30;
+  EnumType enumType = 7;
+  float floatField = 8;
+  io.vertx.protobuf.Instant instantField = 9;
+  repeated int32 integerListField = 10;
+  map<string, int32> integerValueMap = 11;
+  repeated io.vertx.protobuf.Struct jsonListField = 12;
+  io.vertx.protobuf.Struct jsonObjectField = 13;
+  map<string, io.vertx.protobuf.Struct> jsonValueMap = 14;
+  int64 longField = 15;
+  bool primitiveBoolean = 16;
+  int32 primitiveByte = 17;
+  int32 primitiveChar = 18;
+  double primitiveDouble = 19;
+  float primitiveFloat = 20;
+  int32 primitiveInt = 21;
+  int64 primitiveLong = 22;
+  int32 primitiveShort = 23;
+  int32 shortField = 24;
+  map<string, string> stringValueMap = 25;
+  repeated Address structListField = 26;
+  map<string, Address> structValueMap = 27;
+  string userName = 28;
+  io.vertx.protobuf.ZonedDateTime zonedDateTimeField = 29;
+  repeated io.vertx.protobuf.ZonedDateTime zonedDateTimeListField = 30;
+  map<string, io.vertx.protobuf.ZonedDateTime> zonedDateTimeValueMap = 31;
 }
 

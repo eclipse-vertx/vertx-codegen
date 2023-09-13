@@ -1,7 +1,10 @@
 package io.vertx.codegen.protobuf.generator;
 
 import io.vertx.codegen.DataObjectModel;
+import io.vertx.codegen.EnumModel;
+import io.vertx.codegen.EnumValueInfo;
 import io.vertx.codegen.Generator;
+import io.vertx.codegen.Model;
 import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
@@ -13,14 +16,16 @@ import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 
-public class ProtoFileGen extends Generator<DataObjectModel> {
+public class ProtoFileGen extends Generator<Model> {
 
   public ProtoFileGen() {
     name = "protobuf";
-    kinds = Collections.singleton("dataObject");
+    kinds = new HashSet<>();
+    kinds.add("dataObject");
+    kinds.add("enum");
     incremental = true;
   }
 
@@ -30,12 +35,36 @@ public class ProtoFileGen extends Generator<DataObjectModel> {
   }
 
   @Override
-  public String filename(DataObjectModel model) {
+  public String filename(Model model) {
     return "resources/dataobjects.proto";
   }
 
   @Override
-  public String render(DataObjectModel model, int index, int size, Map<String, Object> session) {
+  public String render(Model model, int index, int size, Map<String, Object> session) {
+    if (model instanceof EnumModel) {
+      return renderEnumModel((EnumModel) model, index);
+    } else if (model instanceof DataObjectModel) {
+      return renderDataObjectModel((DataObjectModel) model, index);
+    } else {
+      throw new RuntimeException("Unsupported model type " + model.getClass().getName());
+    }
+  }
+
+  private String renderEnumModel(EnumModel model, int index) {
+    StringWriter buffer = new StringWriter();
+    PrintWriter writer = new PrintWriter(buffer);
+    int enumIntValue = 0; // auto-increment for now
+    writer.print("enum " + model.getElement().getSimpleName() + " {\n");
+    for (EnumValueInfo enumValueInfo: model.getValues()) {
+      writer.print("  " + enumValueInfo.getIdentifier() + " = " + enumIntValue + ";\n");
+      enumIntValue++;
+    }
+    writer.print("}\n");
+    writer.print("\n");
+    return buffer.toString();
+  }
+
+  private String renderDataObjectModel(DataObjectModel model, int index) {
     StringWriter buffer = new StringWriter();
     PrintWriter writer = new PrintWriter(buffer);
 
