@@ -49,7 +49,7 @@ public class UserProtoConverter {
           obj.setDoubleField(input.readDouble());
           break;
         }
-        case 58: {
+        case 56: {
           switch (input.readEnum()) {
             case 0:
               obj.setEnumType(EnumType.A);
@@ -61,6 +61,7 @@ public class UserProtoConverter {
               obj.setEnumType(EnumType.C);
               break;
           }
+          break;
         }
         case 69: {
           obj.setFloatField(input.readFloat());

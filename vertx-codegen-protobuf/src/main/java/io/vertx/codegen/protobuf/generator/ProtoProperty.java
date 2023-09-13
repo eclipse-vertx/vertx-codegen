@@ -27,32 +27,38 @@ public class ProtoProperty {
     String message = null;
     String builtInProtoType = null;
     int wireType;
-    if (propKind.basic) {
-      protoType = determinePrimitiveProtoType(prop.getType().getName());
-      switch (protoType) {
-        case BOOL:
-        case INT64:
-        case INT32:
-          wireType = 0;
-          break;
-        case DOUBLE:
-          wireType = 1;
-          break;
-        case STRING:
-          wireType = 2;
-          break;
-        case FLOAT:
-          wireType = 5;
-          break;
-        default:
-          throw new UnsupportedOperationException("Unsupported proto-type " + protoType);
-      }
-    } else {
+    if (prop.getType().getKind() == ClassKind.ENUM) {
       protoType = null;
-      message = prop.getType().getSimpleName();
-      wireType = 2;
-      builtInProtoType = determineBuiltInType(prop);
-    }
+      message = prop.getType().getSimpleName(); // TODO Should not call 'message'
+      wireType = 0;
+    } else { // Not Enum
+      if (propKind.basic) {
+        protoType = determinePrimitiveProtoType(prop.getType().getName());
+        switch (protoType) {
+          case BOOL:
+          case INT64:
+          case INT32:
+            wireType = 0;
+            break;
+          case DOUBLE:
+            wireType = 1;
+            break;
+          case STRING:
+            wireType = 2;
+            break;
+          case FLOAT:
+            wireType = 5;
+            break;
+          default:
+            throw new UnsupportedOperationException("Unsupported proto-type " + protoType);
+        }
+      } else {
+        protoType = null;
+        message = prop.getType().getSimpleName();
+        wireType = 2;
+        builtInProtoType = determineBuiltInType(prop);
+      }
+    } // Not Enum
 
     // Override wire type if property is a list, map or set
     if (prop.getKind() == PropertyKind.LIST ||

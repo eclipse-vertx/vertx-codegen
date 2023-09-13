@@ -98,6 +98,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
             enumIntValue++;
           }
           writer.print("          }\n");
+          writer.print("          break;\n");
         } else { // Not Enum
           if (prop.getKind().isList()) {
             if (propKind.basic) {

@@ -5,6 +5,7 @@ import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.converter.Address;
+import io.vertx.test.codegen.converter.EnumType;
 import io.vertx.test.codegen.converter.User;
 import io.vertx.test.codegen.converter.UserProtoConverter;
 import org.junit.Assert;
@@ -74,6 +75,9 @@ public class ProtoConverterTest {
     jsonObject5.put("StringField", "StringValue-5");
     user.setJsonObjectField(jsonObject5);
 
+    // Enum fields
+    user.setEnumType(EnumType.C);
+
     // List fields
     user.setStructListField(Collections.unmodifiableList(Arrays.asList(address2, address3)));
     user.setIntegerListField(Collections.unmodifiableList(Arrays.asList(100, 101)));
@@ -139,6 +143,9 @@ public class ProtoConverterTest {
 
     // Built-in Object fields
     assertEquals(user.getJsonObjectField(), decoded.getJsonObjectField());
+
+    // Enum fields
+    assertEquals(protocObj.getEnumType().getNumber(), 2); // EnumType.C
 
     // Nested object field
     Assert.assertEquals(user.getAddress(), decoded.getAddress());
