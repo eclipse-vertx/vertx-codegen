@@ -51,6 +51,7 @@ import java.net.URI;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -142,6 +143,16 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testGenerateMethodWithFunctionInHandlerAsyncResult() throws Exception {
     assertGenInvalid(MethodWithFunctionInHandlerAsyncResult.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithSupplierInHandler() throws Exception {
+    assertGenInvalid(MethodWithSupplierInHandler.class);
+  }
+
+  @Test
+  public void testGenerateMethodWithSupplierInHandlerAsyncResult() throws Exception {
+    assertGenInvalid(MethodWithSupplierInHandlerAsyncResult.class);
   }
 
   // TODO Handler and Handler<AsyncResult> of List/String with non basic types
@@ -641,6 +652,92 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
+  public <T> void testValidSupplierParams() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(MethodWithValidSupplierParams.class);
+
+    MethodInfo method = model.getMethods().get(0);
+    checkMethod(method, "methodWithSupplierParams", 18, "void", MethodKind.OTHER);
+    List<ParamInfo> params = method.getParams();
+    checkParam(params.get(0), "byteSupplier", new TypeLiteral<Supplier<Byte>>() {});
+    checkParam(params.get(1), "shortSupplier", new TypeLiteral<Supplier<Short>>() {});
+    checkParam(params.get(2), "intSupplier", new TypeLiteral<Supplier<Integer>>() {});
+    checkParam(params.get(3), "longSupplier", new TypeLiteral<Supplier<Long>>(){});
+    checkParam(params.get(4), "floatSupplier", new TypeLiteral<Supplier<Float>>(){});
+    checkParam(params.get(5), "doubleSupplier", new TypeLiteral<Supplier<Double>>(){});
+    checkParam(params.get(6), "booleanSupplier", new TypeLiteral<Supplier<Boolean>>(){});
+    checkParam(params.get(7), "charSupplier", new TypeLiteral<Supplier<Character>>(){});
+    checkParam(params.get(8), "strSupplier", new TypeLiteral<Supplier<String>>(){});
+    checkParam(params.get(9), "gen1Supplier", new TypeLiteral<Supplier<VertxGenClass1>>(){});
+    checkParam(params.get(10), "gen2Supplier", new TypeLiteral<Supplier<VertxGenClass2>>(){});
+    checkParam(params.get(11), "voidSupplier",  new TypeLiteral<Supplier<Void>>(){});
+    checkParam(params.get(12), "throwableSupplier",  new TypeLiteral<Supplier<Throwable>>(){});
+    checkParam(params.get(13), "dataObjectSupplier", new TypeLiteral<Supplier<TestDataObject>>(){});
+    checkParam(params.get(14), "enumSupplier", new TypeLiteral<Supplier<TestEnum>>(){});
+    checkParam(params.get(15), "objectSupplier", new TypeLiteral<Supplier<Object>>(){});
+    checkParam(params.get(16), "genericSupplier", new TypeLiteral<Supplier<T>>(){});
+    checkParam(params.get(17), "genericUserTypeSupplier", new TypeLiteral<Supplier<GenericInterface<T>>>(){});
+
+    method = model.getMethods().get(1);
+    checkMethod(method, "methodWithListSupplierParams", 14, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "listByteSupplier", new TypeLiteral<Supplier<List<Byte>>>(){});
+    checkParam(params.get(1), "listShortSupplier", new TypeLiteral<Supplier<List<Short>>>() {});
+    checkParam(params.get(2), "listIntSupplier", new TypeLiteral<Supplier<List<Integer>>>(){});
+    checkParam(params.get(3), "listLongSupplier", new TypeLiteral<Supplier<List<Long>>>(){});
+    checkParam(params.get(4), "listFloatSupplier",  new TypeLiteral<Supplier<List<Float>>>(){});
+    checkParam(params.get(5), "listDoubleSupplier", new TypeLiteral<Supplier<List<Double>>>(){});
+    checkParam(params.get(6), "listBooleanSupplier", new TypeLiteral<Supplier<List<Boolean>>>(){});
+    checkParam(params.get(7), "listCharSupplier", new TypeLiteral<Supplier<List<Character>>>(){});
+    checkParam(params.get(8), "listStrSupplier", new TypeLiteral<Supplier<List<String>>>(){});
+    checkParam(params.get(9), "listVertxGenSupplier", new TypeLiteral<Supplier<List<VertxGenClass1>>>(){});
+    checkParam(params.get(10), "listJsonObjectSupplier", new TypeLiteral<Supplier<List<JsonObject>>>(){});
+    checkParam(params.get(11), "listJsonArraySupplier", new TypeLiteral<Supplier<List<JsonArray>>>(){});
+    checkParam(params.get(12), "listDataObjectSupplier", new TypeLiteral<Supplier<List<TestDataObject>>>(){});
+    checkParam(params.get(13), "listEnumSupplier", new TypeLiteral<Supplier<List<TestEnum>>>(){});
+
+    method = model.getMethods().get(2);
+    checkMethod(method, "methodWithSetSupplierParams", 14, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "setByteSupplier", new TypeLiteral<Supplier<Set<Byte>>>(){});
+    checkParam(params.get(1), "setShortSupplier", new TypeLiteral<Supplier<Set<Short>>>(){});
+    checkParam(params.get(2), "setIntSupplier", new TypeLiteral<Supplier<Set<Integer>>>(){});
+    checkParam(params.get(3), "setLongSupplier", new TypeLiteral<Supplier<Set<Long>>>(){});
+    checkParam(params.get(4), "setFloatSupplier", new TypeLiteral<Supplier<Set<Float>>>(){});
+    checkParam(params.get(5), "setDoubleSupplier", new TypeLiteral<Supplier<Set<Double>>>(){});
+    checkParam(params.get(6), "setBooleanSupplier", new TypeLiteral<Supplier<Set<Boolean>>>(){});
+    checkParam(params.get(7), "setCharSupplier", new TypeLiteral<Supplier<Set<Character>>>(){});
+    checkParam(params.get(8), "setStrSupplier", new TypeLiteral<Supplier<Set<String>>>(){});
+    checkParam(params.get(9), "setVertxGenSupplier", new TypeLiteral<Supplier<Set<VertxGenClass1>>>(){});
+    checkParam(params.get(10), "setJsonObjectSupplier", new TypeLiteral<Supplier<Set<JsonObject>>>(){});
+    checkParam(params.get(11), "setJsonArraySupplier",  new TypeLiteral<Supplier<Set<JsonArray>>>(){});
+    checkParam(params.get(12), "setDataObjectSupplier",  new TypeLiteral<Supplier<Set<TestDataObject>>>(){});
+    checkParam(params.get(13), "setEnumSupplier",  new TypeLiteral<Supplier<Set<TestEnum>>>(){});
+
+    method = model.getMethods().get(3);
+    checkMethod(method, "methodWithMapSupplierParams", 11, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "mapByteSupplier", new TypeLiteral<Supplier<Map<String, Byte>>>(){});
+    checkParam(params.get(1), "mapShortSupplier", new TypeLiteral<Supplier<Map<String, Short>>>(){});
+    checkParam(params.get(2), "mapIntSupplier", new TypeLiteral<Supplier<Map<String, Integer>>>(){});
+    checkParam(params.get(3), "mapLongSupplier", new TypeLiteral<Supplier<Map<String, Long>>>(){});
+    checkParam(params.get(4), "mapFloatSupplier", new TypeLiteral<Supplier<Map<String, Float>>>(){});
+    checkParam(params.get(5), "mapDoubleSupplier", new TypeLiteral<Supplier<Map<String, Double>>>(){});
+    checkParam(params.get(6), "mapBooleanSupplier", new TypeLiteral<Supplier<Map<String, Boolean>>>(){});
+    checkParam(params.get(7), "mapCharSupplier", new TypeLiteral<Supplier<Map<String, Character>>>(){});
+    checkParam(params.get(8), "mapStrSupplier", new TypeLiteral<Supplier<Map<String, String>>>(){});
+    checkParam(params.get(9), "mapJsonObjectSupplier", new TypeLiteral<Supplier<Map<String, JsonObject>>>(){});
+    checkParam(params.get(10), "mapJsonArraySupplier",  new TypeLiteral<Supplier<Map<String, JsonArray>>>(){});
+  }
+
+  @Test
+  public void testMethodWithInvalidSupplierParams() throws Exception {
+    assertGenInvalid(MethodWithInvalidSupplierParam1.class);
+    assertGenInvalid(MethodWithInvalidSupplierParam2.class);
+    assertGenInvalid(MethodWithInvalidSupplierParam3.class);
+    assertGenInvalid(MethodWithInvalidSupplierParam4.class);
+  }
+
+  @Test
   public void testValidHandlerFutureResults() throws Exception {
 
     ClassModel model = new GeneratorHelper().generateClass(MethodWithValidFutureReturns.class);
@@ -693,7 +790,7 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testValidJavaTypeParams() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(MethodWithValidJavaTypeParams.class);
-    assertEquals(5, model.getAnyJavaTypeMethods().size());
+    assertEquals(6, model.getAnyJavaTypeMethods().size());
 
     MethodInfo method = model.getAnyJavaTypeMethods().get(0);
     checkMethod(method, "methodWithParams", 4, "void", MethodKind.OTHER);
@@ -723,13 +820,22 @@ public class ClassTest extends ClassTestBase {
     assertTrue(method.isContainingAnyJavaType());
 
     method = model.getAnyJavaTypeMethods().get(3);
+    checkMethod(method, "methodWithSupplierParams", 4, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "socketSupplier", new TypeLiteral<Supplier<Socket>>(){});
+    checkParam(params.get(1), "listSocketSupplier", new TypeLiteral<Supplier<List<Socket>>>(){});
+    checkParam(params.get(2), "setSocketSupplier", new TypeLiteral<Supplier<Set<Socket>>>(){});
+    checkParam(params.get(3), "mapSocketSupplier", new TypeLiteral<Supplier<Map<String, Socket>>>(){});
+    assertTrue(method.isContainingAnyJavaType());
+
+    method = model.getAnyJavaTypeMethods().get(4);
     checkMethod(method, "methodWithArrayParams", 2, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "byteArray", new TypeLiteral<byte[]>(){});
     checkParam(params.get(1), "booleanArray", new TypeLiteral<boolean[]>(){});
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getAnyJavaTypeMethods().get(4);
+    method = model.getAnyJavaTypeMethods().get(5);
     checkMethod(method, "methodWithParameterizedParams", 1, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "iterableString", new TypeLiteral<Iterable<String>>(){});
@@ -1365,6 +1471,47 @@ public class ClassTest extends ClassTestBase {
     assertEquals(0, model.getSuperTypes().size());
     assertEquals(0, model.getMethods().size());
     assertFalse(model.isFunction());
+  }
+
+  @Test
+  public void testSupplierValidSuperType() throws Exception {
+    Map<Class<?>, Class<?>> valid = new HashMap<>();
+    valid.put(InterfaceWithSupplierStringSuperType.class, String.class);
+    valid.put(InterfaceWithSupplierApiSuperType.class, VertxGenClass1.class);
+
+    for (Map.Entry<Class<?>, Class<?>> entry : valid.entrySet()) {
+      Class<?> interfaceClass = entry.getKey();
+      Class<?> valueClass = entry.getValue();
+      ClassModel model = new GeneratorHelper().generateClass(interfaceClass);
+      assertEquals(interfaceClass.getName(), model.getIfaceFQCN());
+      assertEquals(interfaceClass.getSimpleName(), model.getIfaceSimpleName());
+      assertEquals(0, model.getSuperTypes().size());
+      assertEquals(0, model.getMethods().size());
+      assertTrue(model.isSupplier());
+      assertEquals(valueClass.getName(), model.getSupplierArg().getName());
+    }
+  }
+
+  @Test
+  public void testParameterizedSupplierSuperType() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithParameterizedSupplierSuperType.class);
+    assertEquals(InterfaceWithParameterizedSupplierSuperType.class.getName() + "<R>", model.getIfaceFQCN());
+    assertEquals(InterfaceWithParameterizedSupplierSuperType.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(0, model.getSuperTypes().size());
+    assertEquals(0, model.getMethods().size());
+    assertTrue(model.isSupplier());
+    TypeInfo supplierArg = model.getSupplierArg();
+    assertThat(supplierArg, is(instanceOf(TypeVariableInfo.class)));
+  }
+
+  @Test
+  public void testSupplierInvalidSuperType() throws Exception {
+    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithIllegalArgumentSupplierSuperType.class);
+    assertEquals(InterfaceWithIllegalArgumentSupplierSuperType.class.getName(), model.getIfaceFQCN());
+    assertEquals(InterfaceWithIllegalArgumentSupplierSuperType.class.getSimpleName(), model.getIfaceSimpleName());
+    assertEquals(0, model.getSuperTypes().size());
+    assertEquals(0, model.getMethods().size());
+    assertFalse(model.isSupplier());
   }
 
   @Test

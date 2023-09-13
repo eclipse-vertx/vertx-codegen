@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -51,6 +52,12 @@ public interface MethodWithValidJavaTypeParams {
                                 Function<List<Socket>, List<Socket>> listSocketFunction,
                                 Function<Set<Socket>, Set<Socket>> setSocketFunction,
                                 Function<Map<String, Socket>, Map<String, Socket>> mapSocketFunction);
+
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
+  void methodWithSupplierParams(Supplier<Socket> socketSupplier,
+                                Supplier<List<Socket>> listSocketSupplier,
+                                Supplier<Set<Socket>> setSocketSupplier,
+                                Supplier<Map<String, Socket>> mapSocketSupplier);
 
   @GenIgnore(GenIgnore.PERMITTED_TYPE)
   void methodWithArrayParams(byte[] byteArray,
