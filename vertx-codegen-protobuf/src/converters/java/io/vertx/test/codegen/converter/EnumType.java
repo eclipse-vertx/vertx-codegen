@@ -6,5 +6,5 @@ import io.vertx.codegen.annotations.VertxGen;
 public enum EnumType {
   A,
   B,
-  C,
+  C
 }

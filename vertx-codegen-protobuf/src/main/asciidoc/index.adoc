@@ -30,6 +30,19 @@ public class User {
 }
 ----
 
+For enum you should annotate the enum class with `@VertxGen`.
+
+[source,java]
+----
+@VertxGen
+public enum EnumType {
+  A,
+  B,
+  C
+}
+----
+
+
 === Generated Converter
 The converters are automatically generated for each data class.
 
