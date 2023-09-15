@@ -20,16 +20,16 @@ public class AddressProtoConverter {
     int tag;
     while ((tag = input.readTag()) != 0) {
       switch (tag) {
-        case 13: {
-          obj.setLatitude(input.readFloat());
+        case 10: {
+          obj.setName(input.readString());
           break;
         }
         case 21: {
           obj.setLongitude(input.readFloat());
           break;
         }
-        case 26: {
-          obj.setName(input.readString());
+        case 29: {
+          obj.setLatitude(input.readFloat());
           break;
         }
       }
@@ -44,14 +44,14 @@ public class AddressProtoConverter {
 
   public static int toProto(Address obj, CodedOutputStream output, ExpandableIntArray cache, int index) throws IOException {
     index = index + 1;
-    if (obj.getLatitude() != null) {
-      output.writeFloat(1, obj.getLatitude());
+    if (obj.getName() != null) {
+      output.writeString(1, obj.getName());
     }
     if (obj.getLongitude() != null) {
       output.writeFloat(2, obj.getLongitude());
     }
-    if (obj.getName() != null) {
-      output.writeString(3, obj.getName());
+    if (obj.getLatitude() != null) {
+      output.writeFloat(3, obj.getLatitude());
     }
     return index;
   }
@@ -65,14 +65,14 @@ public class AddressProtoConverter {
   public static int computeSize(Address obj, ExpandableIntArray cache, final int baseIndex) {
     int size = 0;
     int index = baseIndex + 1;
-    if (obj.getLatitude() != null) {
-      size += CodedOutputStream.computeFloatSize(1, obj.getLatitude());
+    if (obj.getName() != null) {
+      size += CodedOutputStream.computeStringSize(1, obj.getName());
     }
     if (obj.getLongitude() != null) {
       size += CodedOutputStream.computeFloatSize(2, obj.getLongitude());
     }
-    if (obj.getName() != null) {
-      size += CodedOutputStream.computeStringSize(3, obj.getName());
+    if (obj.getLatitude() != null) {
+      size += CodedOutputStream.computeFloatSize(3, obj.getLatitude());
     }
     cache.set(baseIndex, size);
     return index;
