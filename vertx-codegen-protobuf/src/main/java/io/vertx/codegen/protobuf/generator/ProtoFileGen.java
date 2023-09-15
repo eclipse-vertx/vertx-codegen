@@ -1,14 +1,11 @@
 package io.vertx.codegen.protobuf.generator;
 
-import io.vertx.codegen.DataObjectModel;
-import io.vertx.codegen.EnumModel;
-import io.vertx.codegen.EnumValueInfo;
-import io.vertx.codegen.Generator;
-import io.vertx.codegen.Model;
-import io.vertx.codegen.PropertyInfo;
+import io.vertx.codegen.*;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
+import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.protobuf.annotations.JsonProtoEncoding;
+import io.vertx.codegen.protobuf.annotations.ProtobufGen;
 import io.vertx.codegen.type.ClassKind;
 
 import java.io.PrintWriter;
@@ -31,12 +28,17 @@ public class ProtoFileGen extends Generator<Model> {
 
   @Override
   public Collection<Class<? extends Annotation>> annotations() {
-    return Arrays.asList(DataObject.class, ModuleGen.class);
+    return Arrays.asList(ProtobufGen.class);
   }
 
   @Override
   public String filename(Model model) {
-    return "resources/dataobjects.proto";
+    System.out.println("INSPECTING " + model.getAnnotations());
+    if ((model instanceof DataObjectModel || model instanceof EnumModel) && model.getAnnotations().stream().anyMatch(ann -> ann.getName().equals(ProtobufGen.class.getName()))) {
+      System.out.println("TRIGGERED");
+      return "resources/dataobjects.proto";
+    }
+    return null;
   }
 
   @Override
