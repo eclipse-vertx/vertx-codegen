@@ -43,6 +43,7 @@ public class User {
   private float primitiveFloat;
   private double primitiveDouble;
   private char primitiveChar;
+  private EnumType enumType;
 
   public String getUserName() {
     return userName;
@@ -284,16 +285,24 @@ public class User {
     this.primitiveChar = primitiveChar;
   }
 
+  public EnumType getEnumType() {
+    return enumType;
+  }
+
+  public void setEnumType(EnumType enumType) {
+    this.enumType = enumType;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     User user = (User) o;
-    return primitiveBoolean == user.primitiveBoolean && primitiveByte == user.primitiveByte && primitiveShort == user.primitiveShort && primitiveInt == user.primitiveInt && primitiveLong == user.primitiveLong && Float.compare(user.primitiveFloat, primitiveFloat) == 0 && Double.compare(user.primitiveDouble, primitiveDouble) == 0 && primitiveChar == user.primitiveChar && Objects.equals(userName, user.userName) && Objects.equals(age, user.age) && Objects.equals(integerListField, user.integerListField) && Objects.equals(structListField, user.structListField) && Objects.equals(zonedDateTimeListField, user.zonedDateTimeListField) && Objects.equals(jsonListField, user.jsonListField) && Objects.equals(address, user.address) && Objects.equals(byteField, user.byteField) && Objects.equals(doubleField, user.doubleField) && Objects.equals(longField, user.longField) && Objects.equals(boolField, user.boolField) && Objects.equals(shortField, user.shortField) && Objects.equals(charField, user.charField) && Objects.equals(stringValueMap, user.stringValueMap) && Objects.equals(integerValueMap, user.integerValueMap) && Objects.equals(structValueMap, user.structValueMap) && Objects.equals(jsonValueMap, user.jsonValueMap) && Objects.equals(zonedDateTimeValueMap, user.zonedDateTimeValueMap) && Objects.equals(zonedDateTimeField, user.zonedDateTimeField) && Objects.equals(instantField, user.instantField) && Objects.equals(jsonObjectField, user.jsonObjectField);
+    return primitiveBoolean == user.primitiveBoolean && primitiveByte == user.primitiveByte && primitiveShort == user.primitiveShort && primitiveInt == user.primitiveInt && primitiveLong == user.primitiveLong && Float.compare(primitiveFloat, user.primitiveFloat) == 0 && Double.compare(primitiveDouble, user.primitiveDouble) == 0 && primitiveChar == user.primitiveChar && Objects.equals(userName, user.userName) && Objects.equals(age, user.age) && Objects.equals(integerListField, user.integerListField) && Objects.equals(structListField, user.structListField) && Objects.equals(zonedDateTimeListField, user.zonedDateTimeListField) && Objects.equals(jsonListField, user.jsonListField) && Objects.equals(address, user.address) && Objects.equals(byteField, user.byteField) && Objects.equals(doubleField, user.doubleField) && Objects.equals(floatField, user.floatField) && Objects.equals(longField, user.longField) && Objects.equals(boolField, user.boolField) && Objects.equals(shortField, user.shortField) && Objects.equals(charField, user.charField) && Objects.equals(stringValueMap, user.stringValueMap) && Objects.equals(integerValueMap, user.integerValueMap) && Objects.equals(structValueMap, user.structValueMap) && Objects.equals(jsonValueMap, user.jsonValueMap) && Objects.equals(zonedDateTimeValueMap, user.zonedDateTimeValueMap) && Objects.equals(zonedDateTimeField, user.zonedDateTimeField) && Objects.equals(instantField, user.instantField) && Objects.equals(jsonObjectField, user.jsonObjectField) && enumType == user.enumType;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(userName, age, integerListField, structListField, zonedDateTimeListField, jsonListField, address, byteField, doubleField, longField, boolField, shortField, charField, stringValueMap, integerValueMap, structValueMap, jsonValueMap, zonedDateTimeValueMap, zonedDateTimeField, instantField, jsonObjectField, primitiveBoolean, primitiveByte, primitiveShort, primitiveInt, primitiveLong, primitiveFloat, primitiveDouble, primitiveChar);
+    return Objects.hash(userName, age, integerListField, structListField, zonedDateTimeListField, jsonListField, address, byteField, doubleField, floatField, longField, boolField, shortField, charField, stringValueMap, integerValueMap, structValueMap, jsonValueMap, zonedDateTimeValueMap, zonedDateTimeField, instantField, jsonObjectField, primitiveBoolean, primitiveByte, primitiveShort, primitiveInt, primitiveLong, primitiveFloat, primitiveDouble, primitiveChar, enumType);
   }
 }

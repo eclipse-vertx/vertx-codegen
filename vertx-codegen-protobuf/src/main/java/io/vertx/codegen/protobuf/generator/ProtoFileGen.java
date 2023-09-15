@@ -1,11 +1,11 @@
 package io.vertx.codegen.protobuf.generator;
 
-import io.vertx.codegen.DataObjectModel;
-import io.vertx.codegen.Generator;
-import io.vertx.codegen.PropertyInfo;
+import io.vertx.codegen.*;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
+import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.protobuf.annotations.JsonProtoEncoding;
+import io.vertx.codegen.protobuf.annotations.ProtobufGen;
 import io.vertx.codegen.type.ClassKind;
 
 import java.io.PrintWriter;
@@ -13,29 +13,60 @@ import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 
-public class ProtoFileGen extends Generator<DataObjectModel> {
+public class ProtoFileGen extends Generator<Model> {
 
   public ProtoFileGen() {
     name = "protobuf";
-    kinds = Collections.singleton("dataObject");
+    kinds = new HashSet<>();
+    kinds.add("dataObject");
+    kinds.add("enum");
     incremental = true;
   }
 
   @Override
   public Collection<Class<? extends Annotation>> annotations() {
-    return Arrays.asList(DataObject.class, ModuleGen.class);
+    return Arrays.asList(ProtobufGen.class);
   }
 
   @Override
-  public String filename(DataObjectModel model) {
-    return "resources/dataobjects.proto";
+  public String filename(Model model) {
+    System.out.println("INSPECTING " + model.getAnnotations());
+    if ((model instanceof DataObjectModel || model instanceof EnumModel) && model.getAnnotations().stream().anyMatch(ann -> ann.getName().equals(ProtobufGen.class.getName()))) {
+      System.out.println("TRIGGERED");
+      return "resources/dataobjects.proto";
+    }
+    return null;
   }
 
   @Override
-  public String render(DataObjectModel model, int index, int size, Map<String, Object> session) {
+  public String render(Model model, int index, int size, Map<String, Object> session) {
+    if (model instanceof EnumModel) {
+      return renderEnumModel((EnumModel) model, index);
+    } else if (model instanceof DataObjectModel) {
+      return renderDataObjectModel((DataObjectModel) model, index);
+    } else {
+      throw new RuntimeException("Unsupported model type " + model.getClass().getName());
+    }
+  }
+
+  private String renderEnumModel(EnumModel model, int index) {
+    StringWriter buffer = new StringWriter();
+    PrintWriter writer = new PrintWriter(buffer);
+    int enumIntValue = 0; // auto-increment for now
+    writer.print("enum " + model.getElement().getSimpleName() + " {\n");
+    for (EnumValueInfo enumValueInfo: model.getValues()) {
+      writer.print("  " + enumValueInfo.getIdentifier() + " = " + enumIntValue + ";\n");
+      enumIntValue++;
+    }
+    writer.print("}\n");
+    writer.print("\n");
+    return buffer.toString();
+  }
+
+  private String renderDataObjectModel(DataObjectModel model, int index) {
     StringWriter buffer = new StringWriter();
     PrintWriter writer = new PrintWriter(buffer);
 
@@ -68,23 +99,27 @@ public class ProtoFileGen extends Generator<DataObjectModel> {
       ClassKind propKind = prop.getType().getKind();
       ProtoProperty protoProperty = ProtoProperty.getProtoProperty(prop, fieldNumber);
 
-      String protoType;
+      String protoFieldType;
       if (propKind.basic) {
-        protoType = protoProperty.getProtoType().value;
+        protoFieldType = protoProperty.getProtoType().value;
       } else {
-        if (protoProperty.isBuiltinType()) {
-          protoType = "io.vertx.protobuf." + protoProperty.getBuiltInType();
-        } else {
-          protoType = protoProperty.getMessage();
+        if (prop.getType().getKind() == ClassKind.ENUM) {
+            protoFieldType = protoProperty.getEnumType();
+        } else { // Not Enum
+          if (protoProperty.isBuiltinType()) {
+            protoFieldType = "io.vertx.protobuf." + protoProperty.getBuiltInType();
+          } else {
+            protoFieldType = protoProperty.getMessage();
+          }
         }
       }
 
       if (prop.getKind().isList()) {
-        writer.print("  repeated " + protoType + " " + prop.getName() + " = " + fieldNumber + ";\n");
+        writer.print("  repeated " + protoFieldType + " " + prop.getName() + " = " + fieldNumber + ";\n");
       } else if (prop.getKind().isMap()) {
-        writer.print("  map<string, " + protoType + "> " + prop.getName() + " = " + fieldNumber + ";\n");
+        writer.print("  map<string, " + protoFieldType + "> " + prop.getName() + " = " + fieldNumber + ";\n");
       } else {
-        writer.print("  " + protoType + " " + prop.getName() + " = " + fieldNumber + ";\n");
+        writer.print("  " + protoFieldType + " " + prop.getName() + " = " + fieldNumber + ";\n");
       }
       fieldNumber++;
     }

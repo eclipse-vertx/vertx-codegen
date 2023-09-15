@@ -58,11 +58,12 @@ public class EnumModel implements Model {
       if (modelElt.getKind() != ElementKind.ENUM) {
         throw new GenException(modelElt, "@VertxGen can only be used with interfaces or enums" + modelElt.asType().toString());
       }
+      processTypeAnnotations();
       doc = docFactory.createDoc(modelElt);
       if (doc != null) {
         doc.getBlockTags().stream().filter(tag -> tag.getName().equals("deprecated")).findFirst().ifPresent(tag ->
           deprecatedDesc = new Text(Helper.normalizeWhitespaces(tag.getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt))
-        ); 
+        );
       }
       type = (EnumTypeInfo) typeMirrorFactory.create(modelElt.asType());
       Helper.checkUnderModule(this, "@VertxGen");
@@ -99,6 +100,11 @@ public class EnumModel implements Model {
 
   private void processTypeAnnotations() {
     this.annotations = elementUtils.getAllAnnotationMirrors(modelElt).stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList());
+  }
+
+  @Override
+  public List<AnnotationValueInfo> getAnnotations() {
+    return annotations;
   }
 
   /**

@@ -11,48 +11,55 @@ import "vertx-struct.proto";
 import "datetime.proto";
 
 message Address {
-  float latitude = 1;
+  string name = 1;
   float longitude = 2;
-  string name = 3;
+  float latitude = 3;
+}
+
+enum EnumType {
+  A = 0;
+  B = 1;
+  C = 2;
 }
 
 message RecursiveItem {
-  RecursiveItem childA = 1;
-  RecursiveItem childB = 2;
-  RecursiveItem childC = 3;
-  string id = 4;
+  string id = 1;
+  RecursiveItem childA = 2;
+  RecursiveItem childB = 3;
+  RecursiveItem childC = 4;
 }
 
 message User {
-  Address address = 1;
+  string userName = 1;
   int32 age = 2;
-  bool boolField = 3;
-  int32 byteField = 4;
-  int32 charField = 5;
-  double doubleField = 6;
-  float floatField = 7;
-  io.vertx.protobuf.Instant instantField = 8;
-  repeated int32 integerListField = 9;
-  map<string, int32> integerValueMap = 10;
-  repeated io.vertx.protobuf.Struct jsonListField = 11;
-  io.vertx.protobuf.Struct jsonObjectField = 12;
-  map<string, io.vertx.protobuf.Struct> jsonValueMap = 13;
-  int64 longField = 14;
-  bool primitiveBoolean = 15;
-  int32 primitiveByte = 16;
-  int32 primitiveChar = 17;
-  double primitiveDouble = 18;
-  float primitiveFloat = 19;
-  int32 primitiveInt = 20;
-  int64 primitiveLong = 21;
-  int32 primitiveShort = 22;
-  int32 shortField = 23;
-  map<string, string> stringValueMap = 24;
-  repeated Address structListField = 25;
-  map<string, Address> structValueMap = 26;
-  string userName = 27;
-  io.vertx.protobuf.ZonedDateTime zonedDateTimeField = 28;
-  repeated io.vertx.protobuf.ZonedDateTime zonedDateTimeListField = 29;
-  map<string, io.vertx.protobuf.ZonedDateTime> zonedDateTimeValueMap = 30;
+  repeated int32 integerListField = 3;
+  repeated Address structListField = 4;
+  repeated io.vertx.protobuf.ZonedDateTime zonedDateTimeListField = 5;
+  repeated io.vertx.protobuf.Struct jsonListField = 6;
+  Address address = 7;
+  int32 byteField = 8;
+  double doubleField = 9;
+  float floatField = 10;
+  int64 longField = 11;
+  bool boolField = 12;
+  int32 shortField = 13;
+  int32 charField = 14;
+  map<string, string> stringValueMap = 15;
+  map<string, int32> integerValueMap = 16;
+  map<string, Address> structValueMap = 17;
+  map<string, io.vertx.protobuf.Struct> jsonValueMap = 18;
+  map<string, io.vertx.protobuf.ZonedDateTime> zonedDateTimeValueMap = 19;
+  io.vertx.protobuf.ZonedDateTime zonedDateTimeField = 20;
+  io.vertx.protobuf.Instant instantField = 21;
+  io.vertx.protobuf.Struct jsonObjectField = 22;
+  bool primitiveBoolean = 23;
+  int32 primitiveByte = 24;
+  int32 primitiveShort = 25;
+  int32 primitiveInt = 26;
+  int64 primitiveLong = 27;
+  float primitiveFloat = 28;
+  double primitiveDouble = 29;
+  int32 primitiveChar = 30;
+  EnumType enumType = 31;
 }
 
