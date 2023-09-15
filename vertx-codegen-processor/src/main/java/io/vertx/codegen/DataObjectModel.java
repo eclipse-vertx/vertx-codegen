@@ -306,12 +306,6 @@ public class DataObjectModel implements Model {
     }
 
     processMethods(methodsElt);
-
-    // Sort the properties so we do have a consistent order
-    ArrayList<PropertyInfo> props = new ArrayList<>(propertyMap.values());
-    Collections.sort(props, (p1, p2) -> p1.name.compareTo(p2.name));
-    propertyMap.clear();
-    props.forEach(prop -> propertyMap.put(prop.name, prop));
   }
 
   private void processTypeAnnotations() {
@@ -377,6 +371,8 @@ public class DataObjectModel implements Model {
       return a;
     };
 
+    Set<String> names = new LinkedHashSet<>();
+
     while (methodsElt.size() > 0) {
       ExecutableElement methodElt = methodsElt.remove(0);
       if (((TypeElement) methodElt.getEnclosingElement()).getQualifiedName().toString().equals("java.lang.Object") ||
@@ -385,17 +381,18 @@ public class DataObjectModel implements Model {
         continue;
       }
       String methodName = methodElt.getSimpleName().toString();
+      String name;
       if (methodName.startsWith("get") && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) && methodElt.getParameters().isEmpty() && methodElt.getReturnType().getKind() != TypeKind.VOID) {
-        String name = Helper.normalizePropertyName(methodName.substring(3));
+        name = Helper.normalizePropertyName(methodName.substring(3));
         getters.put(name, methodElt);
         annotations.merge(name, (List<AnnotationMirror>) elementUtils.getAllAnnotationMirrors(methodElt), merger);
       } else if (methodName.startsWith("is") && methodName.length() > 2 && Character.isUpperCase(methodName.charAt(2)) && methodElt.getParameters().isEmpty() && methodElt.getReturnType().getKind() != TypeKind.VOID) {
-        String name = Helper.normalizePropertyName(methodName.substring(2));
+        name = Helper.normalizePropertyName(methodName.substring(2));
         getters.put(name, methodElt);
         annotations.merge(name, (List<AnnotationMirror>) elementUtils.getAllAnnotationMirrors(methodElt), merger);
       } else if ((methodName.startsWith("set") || methodName.startsWith("add")) && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3))) {
         String prefix = methodName.substring(0, 3);
-        String name = Helper.normalizePropertyName(methodName.substring(3));
+        name = Helper.normalizePropertyName(methodName.substring(3));
         int numParams = methodElt.getParameters().size();
         if ("add".equals(prefix)) {
           if (name.endsWith("s")) {
@@ -408,20 +405,24 @@ public class DataObjectModel implements Model {
             ((TypeElement) ((DeclaredType) t).asElement()).getQualifiedName().toString().equals("java.lang.String"))) {
             adders.put(name, methodElt);
             annotations.merge(name, (List<AnnotationMirror>) elementUtils.getAllAnnotationMirrors(methodElt), merger);
+          } else {
+            continue;
           }
         } else {
           if (numParams == 1) {
             setters.put(name, methodElt);
             annotations.merge(name, (List<AnnotationMirror>) elementUtils.getAllAnnotationMirrors(methodElt), merger);
+          } else {
+            continue;
           }
         }
+      } else {
+        continue;
+      }
+      if (!names.contains(name)) {
+        names.add(name);
       }
     }
-
-    Set<String> names = new HashSet<>();
-    names.addAll(getters.keySet());
-    names.addAll(setters.keySet());
-    names.addAll(adders.keySet());
 
     for (String name : names) {
       //Check annotations on field

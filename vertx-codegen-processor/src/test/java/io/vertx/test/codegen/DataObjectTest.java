@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -103,6 +104,26 @@ public class DataObjectTest {
       .generateDataObject(PropertySetters.class, ApiObjectWithMapper.class);
     assertNotNull(model);
     assertEquals(15, model.getPropertyMap().size());
+
+    // Check order
+    Iterator<String> i = model.getPropertyMap().keySet().iterator();
+    assertEquals("string", i.next());
+    assertEquals("boxedInteger", i.next());
+    assertEquals("primitiveInteger", i.next());
+    assertEquals("boxedBoolean", i.next());
+    assertEquals("primitiveBoolean", i.next());
+    assertEquals("boxedLong", i.next());
+    assertEquals("primitiveLong", i.next());
+    assertEquals("instant", i.next());
+    assertEquals("apiObject", i.next());
+    assertEquals("apiObjectWithMapper", i.next());
+    assertEquals("dataObject", i.next());
+    assertEquals("toJsonDataObject", i.next());
+    assertEquals("jsonObject", i.next());
+    assertEquals("jsonArray", i.next());
+    assertEquals("enumerated", i.next());
+    assertFalse(i.hasNext());
+
     assertProperty(model.getPropertyMap().get("string"), "string", "setString", null, null, TypeReflectionFactory.create(String.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("boxedInteger"), "boxedInteger", "setBoxedInteger", null, null, TypeReflectionFactory.create(Integer.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("primitiveInteger"), "primitiveInteger", "setPrimitiveInteger", null, null, TypeReflectionFactory.create(int.class), true, PropertyKind.VALUE, true);
