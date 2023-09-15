@@ -35,6 +35,7 @@ For enum you should annotate the enum class with `@VertxGen`.
 [source,java]
 ----
 @VertxGen
+@ProtobufGen
 public enum Colour {
   RED,
   GREEN,
