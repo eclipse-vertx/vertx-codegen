@@ -377,19 +377,6 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
       .stream().filter(ann -> ann.getName().equals(DataObject.class.getName()))
       .findFirst().get();
     ClassTypeInfo cti = (ClassTypeInfo) abc.getMember("jsonPropertyNameFormatter");
-    switch (cti.getName()) {
-      case "io.vertx.codegen.format.CamelCase":
-        return CamelCase.INSTANCE;
-      case "io.vertx.codegen.format.SnakeCase":
-        return SnakeCase.INSTANCE;
-      case "io.vertx.codegen.format.LowerCamelCase":
-        return LowerCamelCase.INSTANCE;
-      case "io.vertx.codegen.format.KebabCase":
-        return KebabCase.INSTANCE;
-      case "io.vertx.codegen.format.QualifiedCase":
-        return QualifiedCase.INSTANCE;
-      default:
-        throw new UnsupportedOperationException("Todo");
-    }
+    return Case.loadCase(cti.getName());
   }
 }

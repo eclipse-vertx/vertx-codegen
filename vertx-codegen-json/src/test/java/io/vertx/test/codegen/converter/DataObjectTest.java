@@ -850,6 +850,22 @@ public class DataObjectTest {
   }
 
   @Test
+  public void testExternallyFormatted() {
+    ExternalCaseFormattedDataObject obj = new ExternalCaseFormattedDataObject();
+    JsonObject expected = new JsonObject()
+      .put("foo", "val1")
+      .put("foofooBar", "val2")
+      .put("foofooBarfooJuu", "val3");
+    ExternalCaseFormattedDataObjectConverter.fromJson(expected, obj);
+    Assert.assertEquals("val1", obj.getFoo());
+    Assert.assertEquals("val2", obj.getFooBar());
+    Assert.assertEquals("val3", obj.getFooBarJuu());
+    JsonObject test = new JsonObject();
+    ExternalCaseFormattedDataObjectConverter.toJson(obj, test);
+    Assert.assertEquals(expected, test);
+  }
+
+  @Test
   public void testBase64Basic() {
     TestDataObjectBase64Basic obj = new TestDataObjectBase64Basic();
     JsonObject expected = new JsonObject()
