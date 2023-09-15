@@ -35,10 +35,10 @@ For enum you should annotate the enum class with `@VertxGen`.
 [source,java]
 ----
 @VertxGen
-public enum EnumType {
-  A,
-  B,
-  C
+public enum Colour {
+  RED,
+  GREEN,
+  BLUE
 }
 ----
 
