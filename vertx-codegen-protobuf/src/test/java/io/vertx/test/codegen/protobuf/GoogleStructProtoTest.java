@@ -157,11 +157,11 @@ public class GoogleStructProtoTest {
     strJsonArray.add("Three");
     jsonObject.put("strList", strJsonArray);
 
-    JsonArray longJsonARray = new JsonArray();
-    longJsonARray.add(1000L);
-    longJsonARray.add(2000L);
-    longJsonARray.add(3000L);
-    jsonObject.put("longList", longJsonARray);
+    JsonArray longJsonArray = new JsonArray();
+    longJsonArray.add(1000L);
+    longJsonArray.add(2000L);
+    longJsonArray.add(3000L);
+    jsonObject.put("longList", longJsonArray);
 
     JsonArray jsonArray = new JsonArray();
     jsonArray.add(new JsonObject().put("Key1", "Value1"));

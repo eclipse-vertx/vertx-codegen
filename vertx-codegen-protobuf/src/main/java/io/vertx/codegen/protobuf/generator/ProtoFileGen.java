@@ -33,9 +33,8 @@ public class ProtoFileGen extends Generator<Model> {
 
   @Override
   public String filename(Model model) {
-    System.out.println("INSPECTING " + model.getAnnotations());
-    if ((model instanceof DataObjectModel || model instanceof EnumModel) && model.getAnnotations().stream().anyMatch(ann -> ann.getName().equals(ProtobufGen.class.getName()))) {
-      System.out.println("TRIGGERED");
+    if ((model instanceof DataObjectModel || model instanceof EnumModel)
+      && model.getAnnotations().stream().anyMatch(ann -> ann.getName().equals(ProtobufGen.class.getName()))) {
       return "resources/dataobjects.proto";
     }
     return null;

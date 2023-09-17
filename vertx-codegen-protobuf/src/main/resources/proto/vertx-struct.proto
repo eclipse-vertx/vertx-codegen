@@ -15,7 +15,7 @@ message Value {
   oneof kind {
     NullValue null_value = 1;
     Struct json_object_value = 2;
-    ListStruct json_array_value = 3;
+    ListValue json_array_value = 3;
     bool bool_value = 4;
     string string_value = 5;
     int32 integer_value = 6;
@@ -31,6 +31,6 @@ enum NullValue {
   NULL_VALUE = 0;
 }
 
-message ListStruct {
+message ListValue {
   repeated Value values = 1;
 }

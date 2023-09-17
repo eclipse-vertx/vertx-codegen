@@ -132,6 +132,8 @@ public class ProtoProperty {
         return "Instant";
       case "io.vertx.core.json.JsonObject":
         return "Struct";
+      case "io.vertx.core.json.JsonArray":
+        return "ListValue";
       default:
         return null;
     }
@@ -149,6 +151,15 @@ public class ProtoProperty {
             return "VertxStructProtoConverter";
           case GOOGLE_STRUCT:
             return "GoogleStructProtoConverter";
+          default:
+            throw new InternalError("Unknown built-it type " + builtInType);
+        }
+      case "JsonArray":
+        switch (jsonProtoEncoding) {
+          case VERTX_STRUCT:
+            return "VertxStructListProtoConverter";
+          case GOOGLE_STRUCT:
+            return "GoogleStructListProtoConverter";
           default:
             throw new InternalError("Unknown built-it type " + builtInType);
         }

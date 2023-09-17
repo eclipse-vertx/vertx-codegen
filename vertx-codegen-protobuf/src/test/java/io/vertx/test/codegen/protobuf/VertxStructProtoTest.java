@@ -128,11 +128,11 @@ public class VertxStructProtoTest {
   public void TestJsonArray() throws IOException {
     JsonObject jsonObject = new JsonObject();
 
-    JsonArray intJsonARray = new JsonArray();
-    intJsonARray.add(1);
-    intJsonARray.add(2);
-    intJsonARray.add(3);
-    jsonObject.put("intList", intJsonARray);
+    JsonArray intJsonArray = new JsonArray();
+    intJsonArray.add(1);
+    intJsonArray.add(2);
+    intJsonArray.add(3);
+    jsonObject.put("intList", intJsonArray);
 
     JsonArray strJsonArray = new JsonArray();
     strJsonArray.add("One");
@@ -140,11 +140,11 @@ public class VertxStructProtoTest {
     strJsonArray.add("Three");
     jsonObject.put("strList", strJsonArray);
 
-    JsonArray longJsonARray = new JsonArray();
-    longJsonARray.add(1000L);
-    longJsonARray.add(2000L);
-    longJsonARray.add(3000L);
-    jsonObject.put("longList", longJsonARray);
+    JsonArray longJsonArray = new JsonArray();
+    longJsonArray.add(1000L);
+    longJsonArray.add(2000L);
+    longJsonArray.add(3000L);
+    jsonObject.put("longList", longJsonArray);
 
     byte[] encoded = vertxEncode(jsonObject);
 
