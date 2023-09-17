@@ -217,39 +217,46 @@ public class UserProtoConverter {
           input.popLimit(limit);
           break;
         }
-        case 184: {
-          obj.setPrimitiveBoolean(input.readBool());
+        case 186: {
+          int length = input.readUInt32();
+          int limit = input.pushLimit(length);
+          obj.setJsonArrayField(VertxStructListProtoConverter.fromProto(input));
+          input.popLimit(limit);
           break;
         }
         case 192: {
-          obj.setPrimitiveByte((byte) input.readInt32());
+          obj.setPrimitiveBoolean(input.readBool());
           break;
         }
         case 200: {
-          obj.setPrimitiveShort((short) input.readInt32());
+          obj.setPrimitiveByte((byte) input.readInt32());
           break;
         }
         case 208: {
-          obj.setPrimitiveInt(input.readInt32());
+          obj.setPrimitiveShort((short) input.readInt32());
           break;
         }
         case 216: {
+          obj.setPrimitiveInt(input.readInt32());
+          break;
+        }
+        case 224: {
           obj.setPrimitiveLong(input.readInt64());
           break;
         }
-        case 229: {
+        case 237: {
           obj.setPrimitiveFloat(input.readFloat());
           break;
         }
-        case 233: {
+        case 241: {
           obj.setPrimitiveDouble(input.readDouble());
           break;
         }
-        case 240: {
+        case 248: {
           obj.setPrimitiveChar((char) input.readInt32());
           break;
         }
-        case 248: {
+        case 256: {
           switch (input.readEnum()) {
             case 0:
               obj.setEnumType(EnumType.A);
@@ -458,40 +465,45 @@ public class UserProtoConverter {
       output.writeUInt32NoTag(VertxStructProtoConverter.computeSize(obj.getJsonObjectField()));
       VertxStructProtoConverter.toProto(obj.getJsonObjectField(), output);
     }
+    if (obj.getJsonArrayField() != null) {
+      output.writeUInt32NoTag(186);
+      output.writeUInt32NoTag(VertxStructListProtoConverter.computeSize(obj.getJsonArrayField()));
+      VertxStructListProtoConverter.toProto(obj.getJsonArrayField(), output);
+    }
     if (obj.isPrimitiveBoolean()) {
-      output.writeBool(23, obj.isPrimitiveBoolean());
+      output.writeBool(24, obj.isPrimitiveBoolean());
     }
     if (obj.getPrimitiveByte() != 0) {
-      output.writeInt32(24, obj.getPrimitiveByte());
+      output.writeInt32(25, obj.getPrimitiveByte());
     }
     if (obj.getPrimitiveShort() != 0) {
-      output.writeInt32(25, obj.getPrimitiveShort());
+      output.writeInt32(26, obj.getPrimitiveShort());
     }
     if (obj.getPrimitiveInt() != 0) {
-      output.writeInt32(26, obj.getPrimitiveInt());
+      output.writeInt32(27, obj.getPrimitiveInt());
     }
     if (obj.getPrimitiveLong() != 0) {
-      output.writeInt64(27, obj.getPrimitiveLong());
+      output.writeInt64(28, obj.getPrimitiveLong());
     }
     if (obj.getPrimitiveFloat() != 0) {
-      output.writeFloat(28, obj.getPrimitiveFloat());
+      output.writeFloat(29, obj.getPrimitiveFloat());
     }
     if (obj.getPrimitiveDouble() != 0) {
-      output.writeDouble(29, obj.getPrimitiveDouble());
+      output.writeDouble(30, obj.getPrimitiveDouble());
     }
     if (obj.getPrimitiveChar() != 0) {
-      output.writeInt32(30, obj.getPrimitiveChar());
+      output.writeInt32(31, obj.getPrimitiveChar());
     }
     if (obj.getEnumType() != null) {
       switch (obj.getEnumType()) {
         case A:
-          output.writeEnum(31, 0);
+          output.writeEnum(32, 0);
           break;
         case B:
-          output.writeEnum(31, 1);
+          output.writeEnum(32, 1);
           break;
         case C:
-          output.writeEnum(31, 2);
+          output.writeEnum(32, 2);
           break;
       }
     }
@@ -693,40 +705,46 @@ public class UserProtoConverter {
       size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
       size += dataSize;
     }
+    if (obj.getJsonArrayField() != null) {
+      size += CodedOutputStream.computeUInt32SizeNoTag(186);
+      int dataSize = VertxStructListProtoConverter.computeSize(obj.getJsonArrayField());
+      size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
+      size += dataSize;
+    }
     if (obj.isPrimitiveBoolean()) {
-      size += CodedOutputStream.computeBoolSize(23, obj.isPrimitiveBoolean());
+      size += CodedOutputStream.computeBoolSize(24, obj.isPrimitiveBoolean());
     }
     if (obj.getPrimitiveByte() != 0) {
-      size += CodedOutputStream.computeInt32Size(24, obj.getPrimitiveByte());
+      size += CodedOutputStream.computeInt32Size(25, obj.getPrimitiveByte());
     }
     if (obj.getPrimitiveShort() != 0) {
-      size += CodedOutputStream.computeInt32Size(25, obj.getPrimitiveShort());
+      size += CodedOutputStream.computeInt32Size(26, obj.getPrimitiveShort());
     }
     if (obj.getPrimitiveInt() != 0) {
-      size += CodedOutputStream.computeInt32Size(26, obj.getPrimitiveInt());
+      size += CodedOutputStream.computeInt32Size(27, obj.getPrimitiveInt());
     }
     if (obj.getPrimitiveLong() != 0) {
-      size += CodedOutputStream.computeInt64Size(27, obj.getPrimitiveLong());
+      size += CodedOutputStream.computeInt64Size(28, obj.getPrimitiveLong());
     }
     if (obj.getPrimitiveFloat() != 0) {
-      size += CodedOutputStream.computeFloatSize(28, obj.getPrimitiveFloat());
+      size += CodedOutputStream.computeFloatSize(29, obj.getPrimitiveFloat());
     }
     if (obj.getPrimitiveDouble() != 0) {
-      size += CodedOutputStream.computeDoubleSize(29, obj.getPrimitiveDouble());
+      size += CodedOutputStream.computeDoubleSize(30, obj.getPrimitiveDouble());
     }
     if (obj.getPrimitiveChar() != 0) {
-      size += CodedOutputStream.computeInt32Size(30, obj.getPrimitiveChar());
+      size += CodedOutputStream.computeInt32Size(31, obj.getPrimitiveChar());
     }
     if (obj.getEnumType() != null) {
       switch (obj.getEnumType()) {
         case A:
-          size += CodedOutputStream.computeEnumSize(31, 0);
+          size += CodedOutputStream.computeEnumSize(32, 0);
           break;
         case B:
-          size += CodedOutputStream.computeEnumSize(31, 1);
+          size += CodedOutputStream.computeEnumSize(32, 1);
           break;
         case C:
-          size += CodedOutputStream.computeEnumSize(31, 2);
+          size += CodedOutputStream.computeEnumSize(32, 2);
           break;
       }
     }

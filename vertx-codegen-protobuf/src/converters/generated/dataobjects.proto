@@ -52,14 +52,15 @@ message User {
   io.vertx.protobuf.ZonedDateTime zonedDateTimeField = 20;
   io.vertx.protobuf.Instant instantField = 21;
   io.vertx.protobuf.Struct jsonObjectField = 22;
-  bool primitiveBoolean = 23;
-  int32 primitiveByte = 24;
-  int32 primitiveShort = 25;
-  int32 primitiveInt = 26;
-  int64 primitiveLong = 27;
-  float primitiveFloat = 28;
-  double primitiveDouble = 29;
-  int32 primitiveChar = 30;
-  EnumType enumType = 31;
+  io.vertx.protobuf.ListValue jsonArrayField = 23;
+  bool primitiveBoolean = 24;
+  int32 primitiveByte = 25;
+  int32 primitiveShort = 26;
+  int32 primitiveInt = 27;
+  int64 primitiveLong = 28;
+  float primitiveFloat = 29;
+  double primitiveDouble = 30;
+  int32 primitiveChar = 31;
+  EnumType enumType = 32;
 }
 

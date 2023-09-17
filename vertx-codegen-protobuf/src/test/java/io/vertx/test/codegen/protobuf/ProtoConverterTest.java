@@ -3,6 +3,7 @@ package io.vertx.test.codegen.protobuf;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.InvalidProtocolBufferException;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.converter.Address;
 import io.vertx.test.codegen.converter.EnumType;
@@ -70,10 +71,16 @@ public class ProtoConverterTest {
     user.setAddress(address1);
 
     // Built-in Object fields
-    JsonObject jsonObject5 = new JsonObject();
-    jsonObject5.put("IntField", 105);
-    jsonObject5.put("StringField", "StringValue-5");
-    user.setJsonObjectField(jsonObject5);
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.put("IntField", 105);
+    jsonObject.put("StringField", "StringValue-5");
+    user.setJsonObjectField(jsonObject);
+
+    JsonArray intJsonArray = new JsonArray();
+    intJsonArray.add("One");
+    intJsonArray.add("Two");
+    intJsonArray.add("Three");
+    user.setJsonArrayField(intJsonArray);
 
     // Enum fields
     user.setEnumType(EnumType.C);
@@ -143,6 +150,7 @@ public class ProtoConverterTest {
 
     // Built-in Object fields
     assertEquals(user.getJsonObjectField(), decoded.getJsonObjectField());
+    assertArrayEquals(user.getJsonArrayField().getList().toArray(), decoded.getJsonArrayField().getList().toArray());
 
     // Enum fields
     assertEquals(protocObj.getEnumType().getNumber(), 2); // EnumType.C
