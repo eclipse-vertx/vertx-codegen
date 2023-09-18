@@ -3,6 +3,7 @@ package io.vertx.codegen.protobuf.generator;
 import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.PropertyInfo;
+import io.vertx.codegen.protobuf.annotations.FieldNumberStrategy;
 import io.vertx.codegen.protobuf.annotations.JsonProtoEncoding;
 import io.vertx.codegen.protobuf.annotations.ProtobufGen;
 import io.vertx.codegen.type.ClassKind;
@@ -14,7 +15,9 @@ import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -52,7 +55,10 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     CodeWriter code = new CodeWriter(writer);
     String visibility = model.isPublicConverter() ? "public" : "";
 
-    JsonProtoEncoding jsonProtoEncoding = JsonProtoEncodingSelector.select(model);
+    JsonProtoEncoding jsonProtoEncoding = ProtobufGenAnnotation.jsonProtoEncoding(model);
+    FieldNumberStrategy fieldNumberStrategy = ProtobufGenAnnotation.fieldNumberStrategy(model);
+    Set<Integer> reservedFieldNumbers = ProtobufGenAnnotation.reservedFieldNumbers(model);
+    Set<String> reservedFieldNames = ProtobufGenAnnotation.reservedFieldNames(model);
 
     writer.print("package " + model.getType().getPackageName() + ";\n");
     writer.print("\n");
@@ -76,15 +82,20 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
 
     String simpleName = model.getType().getSimpleName();
 
+    Collection<PropertyInfo> properties = model.getPropertyMap().values();
+    ProtobufFields.verifyFieldNames(properties, reservedFieldNames);
+    Map<String, Integer> fieldNumbers = ProtobufFields.fieldNumbers(properties, fieldNumberStrategy, reservedFieldNumbers);
+    List<PropertyInfo> orderedProperties = ProtobufFields.inFieldNumberOrder(properties, fieldNumbers);
+
     // fromProto()
     {
       writer.print("  " + visibility + " static void fromProto(CodedInputStream input, " + simpleName + " obj) throws IOException {\n");
       writer.print("    int tag;\n");
       writer.print("    while ((tag = input.readTag()) != 0) {\n");
       writer.print("      switch (tag) {\n");
-      int fieldNumber = 1;
-      for (PropertyInfo prop : model.getPropertyMap().values()) {
+      for (PropertyInfo prop : orderedProperties) {
         ClassKind propKind = prop.getType().getKind();
+        int fieldNumber = fieldNumbers.get(prop.getName());
         ProtoProperty protoProperty = ProtoProperty.getProtoProperty(prop, fieldNumber);
         writer.print("        case " + protoProperty.getTag() + ": {\n");
         if (prop.getType().getKind() == ClassKind.ENUM) {
@@ -223,7 +234,6 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
           }
         } // Not Enum
         writer.print("        }\n");
-        fieldNumber++;
       }
       writer.print("      }\n");
       writer.print("    }\n");
@@ -241,9 +251,9 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
       writer.print("\n");
       writer.print("  " + visibility + " static int toProto(" + simpleName + " obj, CodedOutputStream output, ExpandableIntArray cache, int index) throws IOException {\n");
       writer.print("    index = index + 1;\n");
-      int fieldNumber = 1;
-      for (PropertyInfo prop : model.getPropertyMap().values()) {
+      for (PropertyInfo prop : orderedProperties) {
         ClassKind propKind = prop.getType().getKind();
+        int fieldNumber = fieldNumbers.get(prop.getName());
         ProtoProperty protoProperty = ProtoProperty.getProtoProperty(prop, fieldNumber);
         if (protoProperty.isNullable()) {
           writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
@@ -375,7 +385,6 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
           }
         } // Not Enum
         writer.print("    }\n");
-        fieldNumber++;
       }
       writer.print("    return index;\n");
       writer.print("  }\n");
@@ -393,9 +402,9 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
       writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj, ExpandableIntArray cache, final int baseIndex) {\n");
       writer.print("    int size = 0;\n");
       writer.print("    int index = baseIndex + 1;\n");
-      int fieldNumber = 1;
-      for (PropertyInfo prop : model.getPropertyMap().values()) {
+      for (PropertyInfo prop : orderedProperties) {
         ClassKind propKind = prop.getType().getKind();
+        int fieldNumber = fieldNumbers.get(prop.getName());
         ProtoProperty protoProperty = ProtoProperty.getProtoProperty(prop, fieldNumber);
         if (protoProperty.isNullable()) {
           writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
@@ -530,7 +539,6 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
           }
         } // Not Enum
         writer.print("    }\n");
-        fieldNumber++;
       }
       writer.print("    cache.set(baseIndex, size);\n");
       writer.print("    return index;\n");

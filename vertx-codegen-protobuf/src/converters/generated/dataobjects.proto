@@ -16,10 +16,24 @@ message Address {
   float latitude = 3;
 }
 
+message Book {
+  reserved 2;
+  reserved "title";
+  string name = 1;
+  string author = 3;
+  string isbn = 10;
+  string genre = 20;
+}
+
 enum EnumType {
   A = 0;
   B = 1;
   C = 2;
+}
+
+message Person {
+  string name = 2;
+  int32 age = 4;
 }
 
 message RecursiveItem {
