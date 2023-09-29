@@ -9,6 +9,7 @@ import io.vertx.test.codegen.testapi.jsonmapper.MyEnumWithCustomFactory;
 import io.vertx.test.codegen.testapi.jsonmapper.WithMyCustomEnumWithMapper;
 import io.vertx.test.codegen.testenum.EnumAsParam;
 import io.vertx.test.codegen.testenum.InvalidEmptyEnum;
+import io.vertx.test.codegen.testenum.SomeAnnotation;
 import io.vertx.test.codegen.testenum.ValidEnum;
 import org.junit.Test;
 
@@ -31,6 +32,9 @@ public class EnumTest extends ClassTestBase {
     assertEquals(Arrays.asList("RED doc", "GREEN doc", "BLUE doc"), model.getValues().stream().
         map(e -> e.getDoc().toString()).
         collect(Collectors.toList()));
+    assertEquals(Arrays.asList("red", "green", "blue"), model.getValues().stream()
+      .map(e -> e.getAnnotation(SomeAnnotation.class.getName()).getMember("value"))
+      .collect(Collectors.toList()));
     assertEquals("enum", model.getKind());
     assertEquals("ValidEnum doc", model.getDoc().toString());
     assertEquals(ValidEnum.class.getName(), model.getFqn());

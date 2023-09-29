@@ -10,6 +10,7 @@ import io.vertx.codegen.type.EnumTypeInfo;
 import io.vertx.codegen.type.TypeMirrorFactory;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
@@ -17,6 +18,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -85,7 +87,12 @@ public class EnumModel implements Model {
               enumItemDeprecatedDesc = new Text(Helper.normalizeWhitespaces(methodDeprecatedTag.get().getValue())).map(Token.tagMapper(elementUtils, typeUtils, modelElt));
             }
           }
-          return new EnumValueInfo(elt.getSimpleName().toString(), doc, elt.getAnnotation(Deprecated.class) != null, enumItemDeprecatedDesc);
+          List<? extends AnnotationMirror> annotationMirrors = elt.getAnnotationMirrors();
+          List<AnnotationValueInfo> annotationValueInfos = new ArrayList<>();
+          if (annotationMirrors != null) {
+            annotationMirrors.stream().map(annotationValueInfoFactory::processAnnotation).forEach(annotationValueInfos::add);
+          }
+          return new EnumValueInfo(elt.getSimpleName().toString(), doc, elt.getAnnotation(Deprecated.class) != null, enumItemDeprecatedDesc, annotationValueInfos);
         }).
         collect(Collectors.toList());
       if (values.isEmpty()) {
