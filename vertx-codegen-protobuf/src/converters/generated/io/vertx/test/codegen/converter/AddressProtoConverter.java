@@ -17,6 +17,10 @@ import io.vertx.codegen.protobuf.converters.*;
 public class AddressProtoConverter {
 
   public static void fromProto(CodedInputStream input, Address obj) throws IOException {
+    fromProto(input, obj, false);
+  }
+
+  public static void fromProto(CodedInputStream input, Address obj, boolean compatibleMode) throws IOException {
     int tag;
     while ((tag = input.readTag()) != 0) {
       switch (tag) {
@@ -34,15 +38,30 @@ public class AddressProtoConverter {
         }
       }
     }
+  if (compatibleMode) {
+      if (obj.getName() == null) {
+        obj.setName("");
+      }
+      if (obj.getLongitude() == null) {
+        obj.setLongitude(0f);
+      }
+      if (obj.getLatitude() == null) {
+        obj.setLatitude(0f);
+      }
+    }
   }
 
   public static void toProto(Address obj, CodedOutputStream output) throws IOException {
-    ExpandableIntArray cache = new ExpandableIntArray(16);
-    AddressProtoConverter.computeSize(obj, cache, 0);
-    AddressProtoConverter.toProto(obj, output, cache, 0);
+    toProto(obj, output, false);
   }
 
-  public static int toProto(Address obj, CodedOutputStream output, ExpandableIntArray cache, int index) throws IOException {
+  public static void toProto(Address obj, CodedOutputStream output, boolean compatibleMode) throws IOException {
+    ExpandableIntArray cache = new ExpandableIntArray(16);
+    AddressProtoConverter.computeSize(obj, cache, 0, compatibleMode);
+    AddressProtoConverter.toProto(obj, output, cache, 0, compatibleMode);
+  }
+
+  static int toProto(Address obj, CodedOutputStream output, ExpandableIntArray cache, int index, boolean compatibleMode) throws IOException {
     index = index + 1;
     if (obj.getName() != null) {
       output.writeString(1, obj.getName());
@@ -57,12 +76,16 @@ public class AddressProtoConverter {
   }
 
   public static int computeSize(Address obj) {
+    return computeSize(obj, false);
+  }
+
+  public static int computeSize(Address obj, boolean compatibleMode) {
     ExpandableIntArray cache = new ExpandableIntArray(16);
-    AddressProtoConverter.computeSize(obj, cache, 0);
+    AddressProtoConverter.computeSize(obj, cache, 0, compatibleMode);
     return cache.get(0);
   }
 
-  public static int computeSize(Address obj, ExpandableIntArray cache, final int baseIndex) {
+  static int computeSize(Address obj, ExpandableIntArray cache, final int baseIndex, boolean compatibleMode) {
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getName() != null) {

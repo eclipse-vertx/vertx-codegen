@@ -30,7 +30,7 @@ public class CompatibilityTest {
     byte[] encoded = vertxEncode(pojo);
 
     // Vertx Decode
-    SimplePojo decoded = vertxDecode(encoded);
+    SimplePojo decoded = vertxDecode(encoded, false);
 
     // Decoded is exactly the same with original pojo
     Assert.assertEquals(pojo, decoded);
@@ -95,14 +95,14 @@ public class CompatibilityTest {
     byte[] encoded = protocEncode(pojo);
 
     // Vertx Decode
-    SimplePojo decoded = vertxDecode(encoded);
+    SimplePojo decoded = vertxDecode(encoded, true);
 
-    Assert.assertEquals(null, decoded.getNullInteger());
-    Assert.assertEquals(null, decoded.getNullBoolean());
-    Assert.assertEquals(null, decoded.getNullString());
-    Assert.assertEquals(null, decoded.getZeroInteger());
-    Assert.assertEquals(null, decoded.getZeroBoolean());
-    Assert.assertEquals(null, decoded.getZeroString());
+    Assert.assertEquals((Integer)0, decoded.getNullInteger());
+    Assert.assertEquals(false, decoded.getNullBoolean());
+    Assert.assertEquals("", decoded.getNullString());
+    Assert.assertEquals((Integer)0, decoded.getZeroInteger());
+    Assert.assertEquals(false, decoded.getZeroBoolean());
+    Assert.assertEquals("", decoded.getZeroString());
     Assert.assertEquals(0, decoded.getPrimitiveInteger());
     Assert.assertEquals(false, decoded.isPrimitiveBoolean());
   }
@@ -131,10 +131,10 @@ public class CompatibilityTest {
     return io.vertx.protobuf.generated.SimplePojo.parseFrom(arr);
   }
 
-  private SimplePojo vertxDecode(byte[] arr) throws IOException {
+  private SimplePojo vertxDecode(byte[] arr, boolean compatibleMode) throws IOException {
     CodedInputStream input = CodedInputStream.newInstance(arr);
     SimplePojo obj = new SimplePojo();
-    SimplePojoProtoConverter.fromProto(input, obj);
+    SimplePojoProtoConverter.fromProto(input, obj, compatibleMode);
     return obj;
   }
 }

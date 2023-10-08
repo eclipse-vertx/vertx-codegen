@@ -17,6 +17,10 @@ import io.vertx.codegen.protobuf.converters.*;
 public class UserProtoConverter {
 
   public static void fromProto(CodedInputStream input, User obj) throws IOException {
+    fromProto(input, obj, false);
+  }
+
+  public static void fromProto(CodedInputStream input, User obj, boolean compatibleMode) throws IOException {
     int tag;
     while ((tag = input.readTag()) != 0) {
       switch (tag) {
@@ -272,15 +276,42 @@ public class UserProtoConverter {
         }
       }
     }
+  if (compatibleMode) {
+      if (obj.getUserName() == null) {
+        obj.setUserName("");
+      }
+      if (obj.getAge() == null) {
+        obj.setAge(0);
+      }
+      if (obj.getDoubleField() == null) {
+        obj.setDoubleField(0d);
+      }
+      if (obj.getFloatField() == null) {
+        obj.setFloatField(0f);
+      }
+      if (obj.getLongField() == null) {
+        obj.setLongField(0L);
+      }
+      if (obj.getBoolField() == null) {
+        obj.setBoolField(false);
+      }
+      if (obj.getShortField() == null) {
+        obj.setShortField((short)0);
+      }
+    }
   }
 
   public static void toProto(User obj, CodedOutputStream output) throws IOException {
-    ExpandableIntArray cache = new ExpandableIntArray(16);
-    UserProtoConverter.computeSize(obj, cache, 0);
-    UserProtoConverter.toProto(obj, output, cache, 0);
+    toProto(obj, output, false);
   }
 
-  public static int toProto(User obj, CodedOutputStream output, ExpandableIntArray cache, int index) throws IOException {
+  public static void toProto(User obj, CodedOutputStream output, boolean compatibleMode) throws IOException {
+    ExpandableIntArray cache = new ExpandableIntArray(16);
+    UserProtoConverter.computeSize(obj, cache, 0, compatibleMode);
+    UserProtoConverter.toProto(obj, output, cache, 0, compatibleMode);
+  }
+
+  static int toProto(User obj, CodedOutputStream output, ExpandableIntArray cache, int index, boolean compatibleMode) throws IOException {
     index = index + 1;
     if (obj.getUserName() != null) {
       output.writeString(1, obj.getUserName());
@@ -308,7 +339,7 @@ public class UserProtoConverter {
       for (Address element: obj.getStructListField()) {
         output.writeUInt32NoTag(34);
         output.writeUInt32NoTag(cache.get(index));
-        index = AddressProtoConverter.toProto(element, output, cache, index);
+        index = AddressProtoConverter.toProto(element, output, cache, index, compatibleMode);
       }
     }
     if (obj.getZonedDateTimeListField() != null) {
@@ -332,7 +363,7 @@ public class UserProtoConverter {
     if (obj.getAddress() != null) {
       output.writeUInt32NoTag(58);
       output.writeUInt32NoTag(cache.get(index));
-      index = AddressProtoConverter.toProto(obj.getAddress(), output, cache, index);
+      index = AddressProtoConverter.toProto(obj.getAddress(), output, cache, index, compatibleMode);
     }
     if (obj.getByteField() != null) {
       output.writeInt32(8, obj.getByteField());
@@ -405,7 +436,7 @@ public class UserProtoConverter {
         output.writeString(1, entry.getKey());
         output.writeUInt32NoTag(18);
         output.writeUInt32NoTag(elementSize);
-        index = AddressProtoConverter.toProto(entry.getValue(), output, cache, index);
+        index = AddressProtoConverter.toProto(entry.getValue(), output, cache, index, compatibleMode);
       }
     }
     if (obj.getJsonValueMap() != null) {
@@ -511,12 +542,16 @@ public class UserProtoConverter {
   }
 
   public static int computeSize(User obj) {
+    return computeSize(obj, false);
+  }
+
+  public static int computeSize(User obj, boolean compatibleMode) {
     ExpandableIntArray cache = new ExpandableIntArray(16);
-    UserProtoConverter.computeSize(obj, cache, 0);
+    UserProtoConverter.computeSize(obj, cache, 0, compatibleMode);
     return cache.get(0);
   }
 
-  public static int computeSize(User obj, ExpandableIntArray cache, final int baseIndex) {
+  static int computeSize(User obj, ExpandableIntArray cache, final int baseIndex, boolean compatibleMode) {
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getUserName() != null) {
@@ -544,7 +579,7 @@ public class UserProtoConverter {
         for (Address element: obj.getStructListField()) {
           size += CodedOutputStream.computeUInt32SizeNoTag(34);
           int savedIndex = index;
-          index = AddressProtoConverter.computeSize(element, cache, index);
+          index = AddressProtoConverter.computeSize(element, cache, index, compatibleMode);
           int dataSize = cache.get(savedIndex);
           size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
           size += dataSize;
@@ -578,7 +613,7 @@ public class UserProtoConverter {
     if (obj.getAddress() != null) {
       size += CodedOutputStream.computeUInt32SizeNoTag(58);
       int savedIndex = index;
-      index = AddressProtoConverter.computeSize(obj.getAddress(), cache, index);
+      index = AddressProtoConverter.computeSize(obj.getAddress(), cache, index, compatibleMode);
       int dataSize = cache.get(savedIndex);
       size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
       size += dataSize;
@@ -639,7 +674,7 @@ public class UserProtoConverter {
         dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
         // value
         int savedIndex = index;
-        index = AddressProtoConverter.computeSize(entry.getValue(), cache, index);
+        index = AddressProtoConverter.computeSize(entry.getValue(), cache, index, compatibleMode);
         int elementSize = cache.get(savedIndex);
         dataSize += CodedOutputStream.computeInt32SizeNoTag(18);
         dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);

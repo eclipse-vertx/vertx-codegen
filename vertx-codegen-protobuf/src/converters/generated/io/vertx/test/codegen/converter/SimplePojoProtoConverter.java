@@ -17,6 +17,10 @@ import io.vertx.codegen.protobuf.converters.*;
 public class SimplePojoProtoConverter {
 
   public static void fromProto(CodedInputStream input, SimplePojo obj) throws IOException {
+    fromProto(input, obj, false);
+  }
+
+  public static void fromProto(CodedInputStream input, SimplePojo obj, boolean compatibleMode) throws IOException {
     int tag;
     while ((tag = input.readTag()) != 0) {
       switch (tag) {
@@ -54,15 +58,39 @@ public class SimplePojoProtoConverter {
         }
       }
     }
+  if (compatibleMode) {
+      if (obj.getNullInteger() == null) {
+        obj.setNullInteger(0);
+      }
+      if (obj.getZeroInteger() == null) {
+        obj.setZeroInteger(0);
+      }
+      if (obj.getNullBoolean() == null) {
+        obj.setNullBoolean(false);
+      }
+      if (obj.getZeroBoolean() == null) {
+        obj.setZeroBoolean(false);
+      }
+      if (obj.getNullString() == null) {
+        obj.setNullString("");
+      }
+      if (obj.getZeroString() == null) {
+        obj.setZeroString("");
+      }
+    }
   }
 
   public static void toProto(SimplePojo obj, CodedOutputStream output) throws IOException {
-    ExpandableIntArray cache = new ExpandableIntArray(16);
-    SimplePojoProtoConverter.computeSize(obj, cache, 0);
-    SimplePojoProtoConverter.toProto(obj, output, cache, 0);
+    toProto(obj, output, false);
   }
 
-  public static int toProto(SimplePojo obj, CodedOutputStream output, ExpandableIntArray cache, int index) throws IOException {
+  public static void toProto(SimplePojo obj, CodedOutputStream output, boolean compatibleMode) throws IOException {
+    ExpandableIntArray cache = new ExpandableIntArray(16);
+    SimplePojoProtoConverter.computeSize(obj, cache, 0, compatibleMode);
+    SimplePojoProtoConverter.toProto(obj, output, cache, 0, compatibleMode);
+  }
+
+  static int toProto(SimplePojo obj, CodedOutputStream output, ExpandableIntArray cache, int index, boolean compatibleMode) throws IOException {
     index = index + 1;
     if (obj.getNullInteger() != null) {
       output.writeInt32(1, obj.getNullInteger());
@@ -92,12 +120,16 @@ public class SimplePojoProtoConverter {
   }
 
   public static int computeSize(SimplePojo obj) {
+    return computeSize(obj, false);
+  }
+
+  public static int computeSize(SimplePojo obj, boolean compatibleMode) {
     ExpandableIntArray cache = new ExpandableIntArray(16);
-    SimplePojoProtoConverter.computeSize(obj, cache, 0);
+    SimplePojoProtoConverter.computeSize(obj, cache, 0, compatibleMode);
     return cache.get(0);
   }
 
-  public static int computeSize(SimplePojo obj, ExpandableIntArray cache, final int baseIndex) {
+  static int computeSize(SimplePojo obj, ExpandableIntArray cache, final int baseIndex, boolean compatibleMode) {
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getNullInteger() != null) {
