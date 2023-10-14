@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
+import io.vertx.codegen.protobuf.ProtobufEncodingMode;
 import io.vertx.core.json.JsonObject;
 import io.vertx.codegen.protobuf.utils.ExpandableIntArray;
 import io.vertx.codegen.protobuf.converters.*;
@@ -17,10 +18,11 @@ import io.vertx.codegen.protobuf.converters.*;
 public class RecursiveItemProtoConverter {
 
   public static void fromProto(CodedInputStream input, RecursiveItem obj) throws IOException {
-    fromProto(input, obj, false);
+    fromProto(input, obj, ProtobufEncodingMode.VERTX_NULLABLE);
   }
 
-  public static void fromProto(CodedInputStream input, RecursiveItem obj, boolean compatibleMode) throws IOException {
+  public static void fromProto(CodedInputStream input, RecursiveItem obj, ProtobufEncodingMode encodingMode) throws IOException {
+    boolean compatibleMode = encodingMode == ProtobufEncodingMode.GOOGLE_COMPATIBLE;
     if (compatibleMode) {
       obj.setId("");
     }
@@ -63,16 +65,17 @@ public class RecursiveItemProtoConverter {
   }
 
   public static void toProto(RecursiveItem obj, CodedOutputStream output) throws IOException {
-    toProto(obj, output, false);
+    toProto(obj, output, ProtobufEncodingMode.VERTX_NULLABLE);
   }
 
-  public static void toProto(RecursiveItem obj, CodedOutputStream output, boolean compatibleMode) throws IOException {
+  public static void toProto(RecursiveItem obj, CodedOutputStream output, ProtobufEncodingMode encodingMode) throws IOException {
     ExpandableIntArray cache = new ExpandableIntArray(16);
-    RecursiveItemProtoConverter.computeSize(obj, cache, 0, compatibleMode);
-    RecursiveItemProtoConverter.toProto(obj, output, cache, 0, compatibleMode);
+    RecursiveItemProtoConverter.computeSize(obj, cache, 0, encodingMode);
+    RecursiveItemProtoConverter.toProto(obj, output, cache, 0, encodingMode);
   }
 
-  static int toProto(RecursiveItem obj, CodedOutputStream output, ExpandableIntArray cache, int index, boolean compatibleMode) throws IOException {
+  static int toProto(RecursiveItem obj, CodedOutputStream output, ExpandableIntArray cache, int index, ProtobufEncodingMode encodingMode) throws IOException {
+    boolean compatibleMode = encodingMode == ProtobufEncodingMode.GOOGLE_COMPATIBLE;
     index = index + 1;
     // id
     if (compatibleMode && obj.getId() == null) {
@@ -85,34 +88,34 @@ public class RecursiveItemProtoConverter {
     if (obj.getChildA() != null) {
       output.writeUInt32NoTag(18);
       output.writeUInt32NoTag(cache.get(index));
-      index = RecursiveItemProtoConverter.toProto(obj.getChildA(), output, cache, index, compatibleMode);
+      index = RecursiveItemProtoConverter.toProto(obj.getChildA(), output, cache, index, encodingMode);
     }
     // childB
     if (obj.getChildB() != null) {
       output.writeUInt32NoTag(26);
       output.writeUInt32NoTag(cache.get(index));
-      index = RecursiveItemProtoConverter.toProto(obj.getChildB(), output, cache, index, compatibleMode);
+      index = RecursiveItemProtoConverter.toProto(obj.getChildB(), output, cache, index, encodingMode);
     }
     // childC
     if (obj.getChildC() != null) {
       output.writeUInt32NoTag(34);
       output.writeUInt32NoTag(cache.get(index));
-      index = RecursiveItemProtoConverter.toProto(obj.getChildC(), output, cache, index, compatibleMode);
+      index = RecursiveItemProtoConverter.toProto(obj.getChildC(), output, cache, index, encodingMode);
     }
     return index;
   }
 
   public static int computeSize(RecursiveItem obj) {
-    return computeSize(obj, false);
+    return computeSize(obj, ProtobufEncodingMode.VERTX_NULLABLE);
   }
 
-  public static int computeSize(RecursiveItem obj, boolean compatibleMode) {
+  public static int computeSize(RecursiveItem obj, ProtobufEncodingMode encodingMode) {
     ExpandableIntArray cache = new ExpandableIntArray(16);
-    RecursiveItemProtoConverter.computeSize(obj, cache, 0, compatibleMode);
+    RecursiveItemProtoConverter.computeSize(obj, cache, 0, encodingMode);
     return cache.get(0);
   }
 
-  static int computeSize(RecursiveItem obj, ExpandableIntArray cache, final int baseIndex, boolean compatibleMode) {
+  static int computeSize(RecursiveItem obj, ExpandableIntArray cache, final int baseIndex, ProtobufEncodingMode encodingMode) {
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getId() != null) {
@@ -121,7 +124,7 @@ public class RecursiveItemProtoConverter {
     if (obj.getChildA() != null) {
       size += CodedOutputStream.computeUInt32SizeNoTag(18);
       int savedIndex = index;
-      index = RecursiveItemProtoConverter.computeSize(obj.getChildA(), cache, index, compatibleMode);
+      index = RecursiveItemProtoConverter.computeSize(obj.getChildA(), cache, index, encodingMode);
       int dataSize = cache.get(savedIndex);
       size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
       size += dataSize;
@@ -129,7 +132,7 @@ public class RecursiveItemProtoConverter {
     if (obj.getChildB() != null) {
       size += CodedOutputStream.computeUInt32SizeNoTag(26);
       int savedIndex = index;
-      index = RecursiveItemProtoConverter.computeSize(obj.getChildB(), cache, index, compatibleMode);
+      index = RecursiveItemProtoConverter.computeSize(obj.getChildB(), cache, index, encodingMode);
       int dataSize = cache.get(savedIndex);
       size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
       size += dataSize;
@@ -137,7 +140,7 @@ public class RecursiveItemProtoConverter {
     if (obj.getChildC() != null) {
       size += CodedOutputStream.computeUInt32SizeNoTag(34);
       int savedIndex = index;
-      index = RecursiveItemProtoConverter.computeSize(obj.getChildC(), cache, index, compatibleMode);
+      index = RecursiveItemProtoConverter.computeSize(obj.getChildC(), cache, index, encodingMode);
       int dataSize = cache.get(savedIndex);
       size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
       size += dataSize;

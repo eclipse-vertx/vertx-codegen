@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
+import io.vertx.codegen.protobuf.ProtobufEncodingMode;
 import io.vertx.core.json.JsonObject;
 import io.vertx.codegen.protobuf.utils.ExpandableIntArray;
 import io.vertx.codegen.protobuf.converters.*;
@@ -17,10 +18,11 @@ import io.vertx.codegen.protobuf.converters.*;
 public class AddressProtoConverter {
 
   public static void fromProto(CodedInputStream input, Address obj) throws IOException {
-    fromProto(input, obj, false);
+    fromProto(input, obj, ProtobufEncodingMode.VERTX_NULLABLE);
   }
 
-  public static void fromProto(CodedInputStream input, Address obj, boolean compatibleMode) throws IOException {
+  public static void fromProto(CodedInputStream input, Address obj, ProtobufEncodingMode encodingMode) throws IOException {
+    boolean compatibleMode = encodingMode == ProtobufEncodingMode.GOOGLE_COMPATIBLE;
     if (compatibleMode) {
       obj.setName("");
       obj.setLongitude(0f);
@@ -46,16 +48,17 @@ public class AddressProtoConverter {
   }
 
   public static void toProto(Address obj, CodedOutputStream output) throws IOException {
-    toProto(obj, output, false);
+    toProto(obj, output, ProtobufEncodingMode.VERTX_NULLABLE);
   }
 
-  public static void toProto(Address obj, CodedOutputStream output, boolean compatibleMode) throws IOException {
+  public static void toProto(Address obj, CodedOutputStream output, ProtobufEncodingMode encodingMode) throws IOException {
     ExpandableIntArray cache = new ExpandableIntArray(16);
-    AddressProtoConverter.computeSize(obj, cache, 0, compatibleMode);
-    AddressProtoConverter.toProto(obj, output, cache, 0, compatibleMode);
+    AddressProtoConverter.computeSize(obj, cache, 0, encodingMode);
+    AddressProtoConverter.toProto(obj, output, cache, 0, encodingMode);
   }
 
-  static int toProto(Address obj, CodedOutputStream output, ExpandableIntArray cache, int index, boolean compatibleMode) throws IOException {
+  static int toProto(Address obj, CodedOutputStream output, ExpandableIntArray cache, int index, ProtobufEncodingMode encodingMode) throws IOException {
+    boolean compatibleMode = encodingMode == ProtobufEncodingMode.GOOGLE_COMPATIBLE;
     index = index + 1;
     // name
     if (compatibleMode && obj.getName() == null) {
@@ -82,16 +85,16 @@ public class AddressProtoConverter {
   }
 
   public static int computeSize(Address obj) {
-    return computeSize(obj, false);
+    return computeSize(obj, ProtobufEncodingMode.VERTX_NULLABLE);
   }
 
-  public static int computeSize(Address obj, boolean compatibleMode) {
+  public static int computeSize(Address obj, ProtobufEncodingMode encodingMode) {
     ExpandableIntArray cache = new ExpandableIntArray(16);
-    AddressProtoConverter.computeSize(obj, cache, 0, compatibleMode);
+    AddressProtoConverter.computeSize(obj, cache, 0, encodingMode);
     return cache.get(0);
   }
 
-  static int computeSize(Address obj, ExpandableIntArray cache, final int baseIndex, boolean compatibleMode) {
+  static int computeSize(Address obj, ExpandableIntArray cache, final int baseIndex, ProtobufEncodingMode encodingMode) {
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getName() != null) {

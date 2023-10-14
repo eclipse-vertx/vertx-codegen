@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
+import io.vertx.codegen.protobuf.ProtobufEncodingMode;
 import io.vertx.core.json.JsonObject;
 import io.vertx.codegen.protobuf.utils.ExpandableIntArray;
 import io.vertx.codegen.protobuf.converters.*;
@@ -17,10 +18,11 @@ import io.vertx.codegen.protobuf.converters.*;
 public class SimplePojoProtoConverter {
 
   public static void fromProto(CodedInputStream input, SimplePojo obj) throws IOException {
-    fromProto(input, obj, false);
+    fromProto(input, obj, ProtobufEncodingMode.VERTX_NULLABLE);
   }
 
-  public static void fromProto(CodedInputStream input, SimplePojo obj, boolean compatibleMode) throws IOException {
+  public static void fromProto(CodedInputStream input, SimplePojo obj, ProtobufEncodingMode encodingMode) throws IOException {
+    boolean compatibleMode = encodingMode == ProtobufEncodingMode.GOOGLE_COMPATIBLE;
     if (compatibleMode) {
       obj.setIntegerField(0);
       obj.setLongField(0L);
@@ -51,16 +53,17 @@ public class SimplePojoProtoConverter {
   }
 
   public static void toProto(SimplePojo obj, CodedOutputStream output) throws IOException {
-    toProto(obj, output, false);
+    toProto(obj, output, ProtobufEncodingMode.VERTX_NULLABLE);
   }
 
-  public static void toProto(SimplePojo obj, CodedOutputStream output, boolean compatibleMode) throws IOException {
+  public static void toProto(SimplePojo obj, CodedOutputStream output, ProtobufEncodingMode encodingMode) throws IOException {
     ExpandableIntArray cache = new ExpandableIntArray(16);
-    SimplePojoProtoConverter.computeSize(obj, cache, 0, compatibleMode);
-    SimplePojoProtoConverter.toProto(obj, output, cache, 0, compatibleMode);
+    SimplePojoProtoConverter.computeSize(obj, cache, 0, encodingMode);
+    SimplePojoProtoConverter.toProto(obj, output, cache, 0, encodingMode);
   }
 
-  static int toProto(SimplePojo obj, CodedOutputStream output, ExpandableIntArray cache, int index, boolean compatibleMode) throws IOException {
+  static int toProto(SimplePojo obj, CodedOutputStream output, ExpandableIntArray cache, int index, ProtobufEncodingMode encodingMode) throws IOException {
+    boolean compatibleMode = encodingMode == ProtobufEncodingMode.GOOGLE_COMPATIBLE;
     index = index + 1;
     // integerField
     if (compatibleMode && obj.getIntegerField() == null) {
@@ -94,16 +97,16 @@ public class SimplePojoProtoConverter {
   }
 
   public static int computeSize(SimplePojo obj) {
-    return computeSize(obj, false);
+    return computeSize(obj, ProtobufEncodingMode.VERTX_NULLABLE);
   }
 
-  public static int computeSize(SimplePojo obj, boolean compatibleMode) {
+  public static int computeSize(SimplePojo obj, ProtobufEncodingMode encodingMode) {
     ExpandableIntArray cache = new ExpandableIntArray(16);
-    SimplePojoProtoConverter.computeSize(obj, cache, 0, compatibleMode);
+    SimplePojoProtoConverter.computeSize(obj, cache, 0, encodingMode);
     return cache.get(0);
   }
 
-  static int computeSize(SimplePojo obj, ExpandableIntArray cache, final int baseIndex, boolean compatibleMode) {
+  static int computeSize(SimplePojo obj, ExpandableIntArray cache, final int baseIndex, ProtobufEncodingMode encodingMode) {
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getIntegerField() != null) {
