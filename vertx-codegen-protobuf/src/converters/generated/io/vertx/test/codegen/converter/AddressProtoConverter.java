@@ -21,6 +21,11 @@ public class AddressProtoConverter {
   }
 
   public static void fromProto(CodedInputStream input, Address obj, boolean compatibleMode) throws IOException {
+    if (compatibleMode) {
+      obj.setName("");
+      obj.setLongitude(0f);
+      obj.setLatitude(0f);
+    }
     int tag;
     while ((tag = input.readTag()) != 0) {
       switch (tag) {
@@ -37,18 +42,7 @@ public class AddressProtoConverter {
           break;
         }
       }
-    }
-  if (compatibleMode) {
-      if (obj.getName() == null) {
-        obj.setName("");
-      }
-      if (obj.getLongitude() == null) {
-        obj.setLongitude(0f);
-      }
-      if (obj.getLatitude() == null) {
-        obj.setLatitude(0f);
-      }
-    }
+    } // while loop
   }
 
   public static void toProto(Address obj, CodedOutputStream output) throws IOException {
@@ -63,13 +57,25 @@ public class AddressProtoConverter {
 
   static int toProto(Address obj, CodedOutputStream output, ExpandableIntArray cache, int index, boolean compatibleMode) throws IOException {
     index = index + 1;
-    if (obj.getName() != null) {
+    // name
+    if (compatibleMode && obj.getName() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getName() != null) || (compatibleMode && !obj.getName().isEmpty())) {
       output.writeString(1, obj.getName());
     }
-    if (obj.getLongitude() != null) {
+    // longitude
+    if (compatibleMode && obj.getLongitude() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getLongitude() != null) || (compatibleMode && obj.getLongitude() != 0f)) {
       output.writeFloat(2, obj.getLongitude());
     }
-    if (obj.getLatitude() != null) {
+    // latitude
+    if (compatibleMode && obj.getLatitude() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getLatitude() != null) || (compatibleMode && obj.getLatitude() != 0f)) {
       output.writeFloat(3, obj.getLatitude());
     }
     return index;

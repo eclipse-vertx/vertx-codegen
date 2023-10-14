@@ -21,6 +21,15 @@ public class UserProtoConverter {
   }
 
   public static void fromProto(CodedInputStream input, User obj, boolean compatibleMode) throws IOException {
+    if (compatibleMode) {
+      obj.setUserName("");
+      obj.setAge(0);
+      obj.setDoubleField(0d);
+      obj.setFloatField(0f);
+      obj.setLongField(0L);
+      obj.setBoolField(false);
+      obj.setShortField((short)0);
+    }
     int tag;
     while ((tag = input.readTag()) != 0) {
       switch (tag) {
@@ -275,30 +284,7 @@ public class UserProtoConverter {
           break;
         }
       }
-    }
-  if (compatibleMode) {
-      if (obj.getUserName() == null) {
-        obj.setUserName("");
-      }
-      if (obj.getAge() == null) {
-        obj.setAge(0);
-      }
-      if (obj.getDoubleField() == null) {
-        obj.setDoubleField(0d);
-      }
-      if (obj.getFloatField() == null) {
-        obj.setFloatField(0f);
-      }
-      if (obj.getLongField() == null) {
-        obj.setLongField(0L);
-      }
-      if (obj.getBoolField() == null) {
-        obj.setBoolField(false);
-      }
-      if (obj.getShortField() == null) {
-        obj.setShortField((short)0);
-      }
-    }
+    } // while loop
   }
 
   public static void toProto(User obj, CodedOutputStream output) throws IOException {
@@ -313,12 +299,21 @@ public class UserProtoConverter {
 
   static int toProto(User obj, CodedOutputStream output, ExpandableIntArray cache, int index, boolean compatibleMode) throws IOException {
     index = index + 1;
-    if (obj.getUserName() != null) {
+    // userName
+    if (compatibleMode && obj.getUserName() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getUserName() != null) || (compatibleMode && !obj.getUserName().isEmpty())) {
       output.writeString(1, obj.getUserName());
     }
-    if (obj.getAge() != null) {
+    // age
+    if (compatibleMode && obj.getAge() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getAge() != null) || (compatibleMode && obj.getAge() != 0)) {
       output.writeInt32(2, obj.getAge());
     }
+    // integerListField
     if (obj.getIntegerListField() != null) {
       // list | tag | data size | value[0] | value[1] | value[2] |
       if (obj.getIntegerListField().size() > 0) {
@@ -333,6 +328,7 @@ public class UserProtoConverter {
         }
       }
     }
+    // structListField
     if (obj.getStructListField() != null) {
       // list[0] | tag | data size | value |
       // list[1] | tag | data size | value |
@@ -342,6 +338,7 @@ public class UserProtoConverter {
         index = AddressProtoConverter.toProto(element, output, cache, index, compatibleMode);
       }
     }
+    // zonedDateTimeListField
     if (obj.getZonedDateTimeListField() != null) {
       // list[0] | tag | data size | value |
       // list[1] | tag | data size | value |
@@ -351,6 +348,7 @@ public class UserProtoConverter {
         ZonedDateTimeProtoConverter.toProto(element, output);
       }
     }
+    // jsonListField
     if (obj.getJsonListField() != null) {
       // list[0] | tag | data size | value |
       // list[1] | tag | data size | value |
@@ -360,32 +358,56 @@ public class UserProtoConverter {
         VertxStructProtoConverter.toProto(element, output);
       }
     }
+    // address
     if (obj.getAddress() != null) {
       output.writeUInt32NoTag(58);
       output.writeUInt32NoTag(cache.get(index));
       index = AddressProtoConverter.toProto(obj.getAddress(), output, cache, index, compatibleMode);
     }
+    // byteField
     if (obj.getByteField() != null) {
       output.writeInt32(8, obj.getByteField());
     }
-    if (obj.getDoubleField() != null) {
+    // doubleField
+    if (compatibleMode && obj.getDoubleField() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getDoubleField() != null) || (compatibleMode && obj.getDoubleField() != 0d)) {
       output.writeDouble(9, obj.getDoubleField());
     }
-    if (obj.getFloatField() != null) {
+    // floatField
+    if (compatibleMode && obj.getFloatField() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getFloatField() != null) || (compatibleMode && obj.getFloatField() != 0f)) {
       output.writeFloat(10, obj.getFloatField());
     }
-    if (obj.getLongField() != null) {
+    // longField
+    if (compatibleMode && obj.getLongField() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getLongField() != null) || (compatibleMode && obj.getLongField() != 0L)) {
       output.writeInt64(11, obj.getLongField());
     }
-    if (obj.getBoolField() != null) {
+    // boolField
+    if (compatibleMode && obj.getBoolField() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getBoolField() != null) || (compatibleMode && !obj.getBoolField())) {
       output.writeBool(12, obj.getBoolField());
     }
-    if (obj.getShortField() != null) {
+    // shortField
+    if (compatibleMode && obj.getShortField() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getShortField() != null) || (compatibleMode && obj.getShortField() != (short)0)) {
       output.writeInt32(13, obj.getShortField());
     }
+    // charField
     if (obj.getCharField() != null) {
       output.writeInt32(14, obj.getCharField());
     }
+    // stringValueMap
     if (obj.getStringValueMap() != null) {
       // map[0] | tag | data size | key | value |
       // map[1] | tag | data size | key | value |
@@ -402,6 +424,7 @@ public class UserProtoConverter {
         output.writeString(2, entry.getValue());
       }
     }
+    // integerValueMap
     if (obj.getIntegerValueMap() != null) {
       // map[0] | tag | data size | key | value |
       // map[1] | tag | data size | key | value |
@@ -418,6 +441,7 @@ public class UserProtoConverter {
         output.writeInt32(2, entry.getValue());
       }
     }
+    // structValueMap
     if (obj.getStructValueMap() != null) {
       // map[0] | tag | data size | key | value |
       // map[1] | tag | data size | key | value |
@@ -439,6 +463,7 @@ public class UserProtoConverter {
         index = AddressProtoConverter.toProto(entry.getValue(), output, cache, index, compatibleMode);
       }
     }
+    // jsonValueMap
     if (obj.getJsonValueMap() != null) {
       // map[0] | tag | data size | key | value |
       // map[1] | tag | data size | key | value |
@@ -460,6 +485,7 @@ public class UserProtoConverter {
         VertxStructProtoConverter.toProto(entry.getValue(), output);
       }
     }
+    // zonedDateTimeValueMap
     if (obj.getZonedDateTimeValueMap() != null) {
       // map[0] | tag | data size | key | value |
       // map[1] | tag | data size | key | value |
@@ -481,50 +507,63 @@ public class UserProtoConverter {
         ZonedDateTimeProtoConverter.toProto(entry.getValue(), output);
       }
     }
+    // zonedDateTimeField
     if (obj.getZonedDateTimeField() != null) {
       output.writeUInt32NoTag(162);
       output.writeUInt32NoTag(ZonedDateTimeProtoConverter.computeSize(obj.getZonedDateTimeField()));
       ZonedDateTimeProtoConverter.toProto(obj.getZonedDateTimeField(), output);
     }
+    // instantField
     if (obj.getInstantField() != null) {
       output.writeUInt32NoTag(170);
       output.writeUInt32NoTag(InstantProtoConverter.computeSize(obj.getInstantField()));
       InstantProtoConverter.toProto(obj.getInstantField(), output);
     }
+    // jsonObjectField
     if (obj.getJsonObjectField() != null) {
       output.writeUInt32NoTag(178);
       output.writeUInt32NoTag(VertxStructProtoConverter.computeSize(obj.getJsonObjectField()));
       VertxStructProtoConverter.toProto(obj.getJsonObjectField(), output);
     }
+    // jsonArrayField
     if (obj.getJsonArrayField() != null) {
       output.writeUInt32NoTag(186);
       output.writeUInt32NoTag(VertxStructListProtoConverter.computeSize(obj.getJsonArrayField()));
       VertxStructListProtoConverter.toProto(obj.getJsonArrayField(), output);
     }
+    // primitiveBoolean
     if (obj.isPrimitiveBoolean()) {
       output.writeBool(24, obj.isPrimitiveBoolean());
     }
+    // primitiveByte
     if (obj.getPrimitiveByte() != 0) {
       output.writeInt32(25, obj.getPrimitiveByte());
     }
+    // primitiveShort
     if (obj.getPrimitiveShort() != 0) {
       output.writeInt32(26, obj.getPrimitiveShort());
     }
+    // primitiveInt
     if (obj.getPrimitiveInt() != 0) {
       output.writeInt32(27, obj.getPrimitiveInt());
     }
+    // primitiveLong
     if (obj.getPrimitiveLong() != 0) {
       output.writeInt64(28, obj.getPrimitiveLong());
     }
+    // primitiveFloat
     if (obj.getPrimitiveFloat() != 0) {
       output.writeFloat(29, obj.getPrimitiveFloat());
     }
+    // primitiveDouble
     if (obj.getPrimitiveDouble() != 0) {
       output.writeDouble(30, obj.getPrimitiveDouble());
     }
+    // primitiveChar
     if (obj.getPrimitiveChar() != 0) {
       output.writeInt32(31, obj.getPrimitiveChar());
     }
+    // enumType
     if (obj.getEnumType() != null) {
       switch (obj.getEnumType()) {
         case A:

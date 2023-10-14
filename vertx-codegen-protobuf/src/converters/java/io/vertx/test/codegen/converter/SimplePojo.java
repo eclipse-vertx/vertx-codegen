@@ -8,77 +8,41 @@ import java.util.Objects;
 @DataObject
 @ProtobufGen
 public class SimplePojo {
-  private Integer nullInteger;
-  private Integer zeroInteger;
-  private Boolean nullBoolean;
-  private Boolean zeroBoolean;
-  private String nullString;
-  private String ZeroString;
-  private int primitiveInteger;
-  private boolean primitiveBoolean;
+  private Integer integerField;
+  private Long LongField;
+  private Boolean booleanField;
+  private String stringField;
 
-  public Integer getNullInteger() {
-    return nullInteger;
+  public Integer getIntegerField() {
+    return integerField;
   }
 
-  public void setNullInteger(Integer nullInteger) {
-    this.nullInteger = nullInteger;
+  public void setIntegerField(Integer integerField) {
+    this.integerField = integerField;
   }
 
-  public Integer getZeroInteger() {
-    return zeroInteger;
+  public Long getLongField() {
+    return LongField;
   }
 
-  public void setZeroInteger(Integer zeroInteger) {
-    this.zeroInteger = zeroInteger;
+  public void setLongField(Long longField) {
+    LongField = longField;
   }
 
-  public Boolean getNullBoolean() {
-    return nullBoolean;
+  public Boolean getBooleanField() {
+    return booleanField;
   }
 
-  public void setNullBoolean(Boolean nullBoolean) {
-    this.nullBoolean = nullBoolean;
+  public void setBooleanField(Boolean booleanField) {
+    this.booleanField = booleanField;
   }
 
-  public Boolean getZeroBoolean() {
-    return zeroBoolean;
+  public String getStringField() {
+    return stringField;
   }
 
-  public void setZeroBoolean(Boolean zeroBoolean) {
-    this.zeroBoolean = zeroBoolean;
-  }
-
-  public String getNullString() {
-    return nullString;
-  }
-
-  public void setNullString(String nullString) {
-    this.nullString = nullString;
-  }
-
-  public String getZeroString() {
-    return ZeroString;
-  }
-
-  public void setZeroString(String zeroString) {
-    this.ZeroString = zeroString;
-  }
-
-  public int getPrimitiveInteger() {
-    return primitiveInteger;
-  }
-
-  public void setPrimitiveInteger(int primitiveInteger) {
-    this.primitiveInteger = primitiveInteger;
-  }
-
-  public boolean isPrimitiveBoolean() {
-    return primitiveBoolean;
-  }
-
-  public void setPrimitiveBoolean(boolean primitiveBoolean) {
-    this.primitiveBoolean = primitiveBoolean;
+  public void setStringField(String stringField) {
+    this.stringField = stringField;
   }
 
   @Override
@@ -86,11 +50,11 @@ public class SimplePojo {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     SimplePojo that = (SimplePojo) o;
-    return primitiveInteger == that.primitiveInteger && primitiveBoolean == that.primitiveBoolean && Objects.equals(nullInteger, that.nullInteger) && Objects.equals(zeroInteger, that.zeroInteger) && Objects.equals(nullBoolean, that.nullBoolean) && Objects.equals(zeroBoolean, that.zeroBoolean) && Objects.equals(nullString, that.nullString) && Objects.equals(ZeroString, that.ZeroString);
+    return Objects.equals(integerField, that.integerField) && Objects.equals(LongField, that.LongField) && Objects.equals(booleanField, that.booleanField) && Objects.equals(stringField, that.stringField);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(nullInteger, zeroInteger, nullBoolean, zeroBoolean, nullString, ZeroString, primitiveInteger, primitiveBoolean);
+    return Objects.hash(integerField, LongField, booleanField, stringField);
   }
 }
