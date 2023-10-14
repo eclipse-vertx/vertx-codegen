@@ -21,63 +21,33 @@ public class SimplePojoProtoConverter {
   }
 
   public static void fromProto(CodedInputStream input, SimplePojo obj, boolean compatibleMode) throws IOException {
+    if (compatibleMode) {
+      obj.setIntegerField(0);
+      obj.setLongField(0L);
+      obj.setBooleanField(false);
+      obj.setStringField("");
+    }
     int tag;
     while ((tag = input.readTag()) != 0) {
       switch (tag) {
         case 8: {
-          obj.setNullInteger(input.readInt32());
+          obj.setIntegerField(input.readInt32());
           break;
         }
         case 16: {
-          obj.setZeroInteger(input.readInt32());
+          obj.setLongField(input.readInt64());
           break;
         }
         case 24: {
-          obj.setNullBoolean(input.readBool());
+          obj.setBooleanField(input.readBool());
           break;
         }
-        case 32: {
-          obj.setZeroBoolean(input.readBool());
-          break;
-        }
-        case 42: {
-          obj.setNullString(input.readString());
-          break;
-        }
-        case 50: {
-          obj.setZeroString(input.readString());
-          break;
-        }
-        case 56: {
-          obj.setPrimitiveInteger(input.readInt32());
-          break;
-        }
-        case 64: {
-          obj.setPrimitiveBoolean(input.readBool());
+        case 34: {
+          obj.setStringField(input.readString());
           break;
         }
       }
-    }
-  if (compatibleMode) {
-      if (obj.getNullInteger() == null) {
-        obj.setNullInteger(0);
-      }
-      if (obj.getZeroInteger() == null) {
-        obj.setZeroInteger(0);
-      }
-      if (obj.getNullBoolean() == null) {
-        obj.setNullBoolean(false);
-      }
-      if (obj.getZeroBoolean() == null) {
-        obj.setZeroBoolean(false);
-      }
-      if (obj.getNullString() == null) {
-        obj.setNullString("");
-      }
-      if (obj.getZeroString() == null) {
-        obj.setZeroString("");
-      }
-    }
+    } // while loop
   }
 
   public static void toProto(SimplePojo obj, CodedOutputStream output) throws IOException {
@@ -92,29 +62,33 @@ public class SimplePojoProtoConverter {
 
   static int toProto(SimplePojo obj, CodedOutputStream output, ExpandableIntArray cache, int index, boolean compatibleMode) throws IOException {
     index = index + 1;
-    if (obj.getNullInteger() != null) {
-      output.writeInt32(1, obj.getNullInteger());
+    // integerField
+    if (compatibleMode && obj.getIntegerField() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
     }
-    if (obj.getZeroInteger() != null) {
-      output.writeInt32(2, obj.getZeroInteger());
+    if ((!compatibleMode && obj.getIntegerField() != null) || (compatibleMode && obj.getIntegerField() != 0)) {
+      output.writeInt32(1, obj.getIntegerField());
     }
-    if (obj.getNullBoolean() != null) {
-      output.writeBool(3, obj.getNullBoolean());
+    // longField
+    if (compatibleMode && obj.getLongField() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
     }
-    if (obj.getZeroBoolean() != null) {
-      output.writeBool(4, obj.getZeroBoolean());
+    if ((!compatibleMode && obj.getLongField() != null) || (compatibleMode && obj.getLongField() != 0L)) {
+      output.writeInt64(2, obj.getLongField());
     }
-    if (obj.getNullString() != null) {
-      output.writeString(5, obj.getNullString());
+    // booleanField
+    if (compatibleMode && obj.getBooleanField() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
     }
-    if (obj.getZeroString() != null) {
-      output.writeString(6, obj.getZeroString());
+    if ((!compatibleMode && obj.getBooleanField() != null) || (compatibleMode && !obj.getBooleanField())) {
+      output.writeBool(3, obj.getBooleanField());
     }
-    if (obj.getPrimitiveInteger() != 0) {
-      output.writeInt32(7, obj.getPrimitiveInteger());
+    // stringField
+    if (compatibleMode && obj.getStringField() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
     }
-    if (obj.isPrimitiveBoolean()) {
-      output.writeBool(8, obj.isPrimitiveBoolean());
+    if ((!compatibleMode && obj.getStringField() != null) || (compatibleMode && !obj.getStringField().isEmpty())) {
+      output.writeString(4, obj.getStringField());
     }
     return index;
   }
@@ -132,29 +106,17 @@ public class SimplePojoProtoConverter {
   static int computeSize(SimplePojo obj, ExpandableIntArray cache, final int baseIndex, boolean compatibleMode) {
     int size = 0;
     int index = baseIndex + 1;
-    if (obj.getNullInteger() != null) {
-      size += CodedOutputStream.computeInt32Size(1, obj.getNullInteger());
+    if (obj.getIntegerField() != null) {
+      size += CodedOutputStream.computeInt32Size(1, obj.getIntegerField());
     }
-    if (obj.getZeroInteger() != null) {
-      size += CodedOutputStream.computeInt32Size(2, obj.getZeroInteger());
+    if (obj.getLongField() != null) {
+      size += CodedOutputStream.computeInt64Size(2, obj.getLongField());
     }
-    if (obj.getNullBoolean() != null) {
-      size += CodedOutputStream.computeBoolSize(3, obj.getNullBoolean());
+    if (obj.getBooleanField() != null) {
+      size += CodedOutputStream.computeBoolSize(3, obj.getBooleanField());
     }
-    if (obj.getZeroBoolean() != null) {
-      size += CodedOutputStream.computeBoolSize(4, obj.getZeroBoolean());
-    }
-    if (obj.getNullString() != null) {
-      size += CodedOutputStream.computeStringSize(5, obj.getNullString());
-    }
-    if (obj.getZeroString() != null) {
-      size += CodedOutputStream.computeStringSize(6, obj.getZeroString());
-    }
-    if (obj.getPrimitiveInteger() != 0) {
-      size += CodedOutputStream.computeInt32Size(7, obj.getPrimitiveInteger());
-    }
-    if (obj.isPrimitiveBoolean()) {
-      size += CodedOutputStream.computeBoolSize(8, obj.isPrimitiveBoolean());
+    if (obj.getStringField() != null) {
+      size += CodedOutputStream.computeStringSize(4, obj.getStringField());
     }
     cache.set(baseIndex, size);
     return index;

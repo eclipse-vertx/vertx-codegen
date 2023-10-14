@@ -21,6 +21,9 @@ public class RecursiveItemProtoConverter {
   }
 
   public static void fromProto(CodedInputStream input, RecursiveItem obj, boolean compatibleMode) throws IOException {
+    if (compatibleMode) {
+      obj.setId("");
+    }
     int tag;
     while ((tag = input.readTag()) != 0) {
       switch (tag) {
@@ -56,12 +59,7 @@ public class RecursiveItemProtoConverter {
           break;
         }
       }
-    }
-  if (compatibleMode) {
-      if (obj.getId() == null) {
-        obj.setId("");
-      }
-    }
+    } // while loop
   }
 
   public static void toProto(RecursiveItem obj, CodedOutputStream output) throws IOException {
@@ -76,19 +74,26 @@ public class RecursiveItemProtoConverter {
 
   static int toProto(RecursiveItem obj, CodedOutputStream output, ExpandableIntArray cache, int index, boolean compatibleMode) throws IOException {
     index = index + 1;
-    if (obj.getId() != null) {
+    // id
+    if (compatibleMode && obj.getId() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getId() != null) || (compatibleMode && !obj.getId().isEmpty())) {
       output.writeString(1, obj.getId());
     }
+    // childA
     if (obj.getChildA() != null) {
       output.writeUInt32NoTag(18);
       output.writeUInt32NoTag(cache.get(index));
       index = RecursiveItemProtoConverter.toProto(obj.getChildA(), output, cache, index, compatibleMode);
     }
+    // childB
     if (obj.getChildB() != null) {
       output.writeUInt32NoTag(26);
       output.writeUInt32NoTag(cache.get(index));
       index = RecursiveItemProtoConverter.toProto(obj.getChildB(), output, cache, index, compatibleMode);
     }
+    // childC
     if (obj.getChildC() != null) {
       output.writeUInt32NoTag(34);
       output.writeUInt32NoTag(cache.get(index));

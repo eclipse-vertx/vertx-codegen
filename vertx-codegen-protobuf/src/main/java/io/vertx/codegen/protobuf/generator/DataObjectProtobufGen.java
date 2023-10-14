@@ -94,6 +94,24 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
       writer.print("  }\n");
       writer.print("\n");
       writer.print("  " + visibility + " static void fromProto(CodedInputStream input, " + simpleName + " obj, boolean compatibleMode) throws IOException {\n");
+      // Compatible Mode
+      {
+        int fieldNumber = 1;
+        writer.print("    if (compatibleMode) {\n");
+        for (PropertyInfo prop : model.getPropertyMap().values()) {
+          ProtoProperty protoProperty = ProtoProperty.getProtoProperty(prop, fieldNumber);
+          ClassKind propKind = prop.getType().getKind();
+          // Only applicable to Boxed type
+          if (!prop.getKind().isList() && !prop.getKind().isMap() && propKind.basic) {
+            String defaultValue = protoProperty.getDefaultValue();
+            if (protoProperty.isBoxedType() && defaultValue != null) {
+              writer.print("      obj." + prop.getSetterMethod() + "(" + defaultValue + ");\n");
+            }
+          }
+          fieldNumber++;
+        }
+        writer.print("    }\n");
+      }
       writer.print("    int tag;\n");
       writer.print("    while ((tag = input.readTag()) != 0) {\n");
       writer.print("      switch (tag) {\n");
@@ -240,38 +258,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
         writer.print("        }\n");
       }
       writer.print("      }\n");
-      writer.print("    }\n");
-
-      writer.print("  if (compatibleMode) {\n");
-      for (PropertyInfo prop : model.getPropertyMap().values()) {
-        ClassKind propKind = prop.getType().getKind();
-        // Only applicable to Boxed type
-        if (!prop.getKind().isList() && !prop.getKind().isMap() && propKind.basic) {
-          String javaDataType = prop.getType().getName();
-          String defaultValue = null;
-          if ("java.lang.Integer".equals(javaDataType) || "Integer".equals(javaDataType)) {
-            defaultValue = "0";
-          } else if ("java.lang.Short".equals(javaDataType) || "Short".equals(javaDataType)) {
-            defaultValue = "(short)0";
-          } else if ("java.lang.Long".equals(javaDataType) || "Long".equals(javaDataType)) {
-            defaultValue = "0L";
-          } else if ("java.lang.Float".equals(javaDataType) || "Float".equals(javaDataType)) {
-            defaultValue = "0f";
-          } else if ("java.lang.Double".equals(javaDataType) || "Double".equals(javaDataType)) {
-            defaultValue = "0d";
-          } else if ("java.lang.Boolean".equals(javaDataType) || "Boolean".equals(javaDataType)) {
-            defaultValue = "false";
-          } else if ("java.lang.String".equals(javaDataType) || "String".equals(javaDataType)) {
-            defaultValue = "\"\"";
-          }
-          if (defaultValue != null) {
-            writer.print("      if (obj." + prop.getGetterMethod() + "() == null) {\n");
-            writer.print("        obj." + prop.getSetterMethod() + "(" + defaultValue + ");\n");
-            writer.print("      }\n");
-          }
-        }
-      }
-      writer.print("    }\n");
+      writer.print("    } // while loop\n");
       writer.print("  }\n");
       writer.print("\n");
     }
@@ -294,16 +281,35 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
         ClassKind propKind = prop.getType().getKind();
         int fieldNumber = fieldNumbers.get(prop.getName());
         ProtoProperty protoProperty = ProtoProperty.getProtoProperty(prop, fieldNumber);
-        if (protoProperty.isNullable()) {
-          writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
-        } else {
-          if ("boolean".equals(prop.getType().getName())) {
-            writer.print("    if (obj." + prop.getGetterMethod() + "()) {\n");
+          writer.print("    // " + prop.getName() + "\n");
+          if (!prop.getKind().isList() && !prop.getKind().isMap() && propKind.basic && protoProperty.isBoxedType()) {
+            writer.print("    if (compatibleMode && obj." + prop.getGetterMethod() + "() == null) {\n");
+            writer.print("      throw new IllegalArgumentException(\"Null values are not allowed for boxed types in compatibility mode\");\n");
+            writer.print("    }\n");
+            String javaDataType = prop.getType().getName();
+            String defaultValue = protoProperty.getDefaultValue();
+            if ("java.lang.Boolean".equals(javaDataType) || "Boolean".equals(javaDataType)) {
+              writer.print("    if ((!compatibleMode && obj." + prop.getGetterMethod() + "() != null) || (compatibleMode && !obj." + prop.getGetterMethod() + "())) {\n");
+            } else if ("java.lang.String".equals(javaDataType) || "String".equals(javaDataType)) {
+              writer.print("    if ((!compatibleMode && obj." + prop.getGetterMethod() + "() != null) || (compatibleMode && !obj." + prop.getGetterMethod() + "().isEmpty())) {\n");
+            } else {
+              if (defaultValue != null) {
+                writer.print("    if ((!compatibleMode && obj." + prop.getGetterMethod() + "() != null) || (compatibleMode && obj." + prop.getGetterMethod() + "() != " + defaultValue + ")) {\n");
+              } else {
+                throw new RuntimeException();
+              }
+            }
           } else {
-            writer.print("    if (obj." + prop.getGetterMethod() + "() != 0) {\n");
+            if (protoProperty.isNullable()) {
+              writer.print("    if (obj." + prop.getGetterMethod() + "() != null) {\n");
+            } else {
+              if ("boolean".equals(prop.getType().getName())) {
+                writer.print("    if (obj." + prop.getGetterMethod() + "()) {\n");
+              } else {
+                writer.print("    if (obj." + prop.getGetterMethod() + "() != 0) {\n");
+              }
+            }
           }
-        }
-
         if (prop.getType().getKind() == ClassKind.ENUM) {
           writer.print("      switch (obj." + prop.getGetterMethod() + "()) {\n");
           EnumTypeInfo enumTypeInfo = (EnumTypeInfo) prop.getType();
