@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
+import io.vertx.codegen.protobuf.ProtobufEncodingMode;
 import io.vertx.core.json.JsonObject;
 import io.vertx.codegen.protobuf.utils.ExpandableIntArray;
 import io.vertx.codegen.protobuf.converters.*;
@@ -17,10 +18,11 @@ import io.vertx.codegen.protobuf.converters.*;
 public class UserProtoConverter {
 
   public static void fromProto(CodedInputStream input, User obj) throws IOException {
-    fromProto(input, obj, false);
+    fromProto(input, obj, ProtobufEncodingMode.VERTX_NULLABLE);
   }
 
-  public static void fromProto(CodedInputStream input, User obj, boolean compatibleMode) throws IOException {
+  public static void fromProto(CodedInputStream input, User obj, ProtobufEncodingMode encodingMode) throws IOException {
+    boolean compatibleMode = encodingMode == ProtobufEncodingMode.GOOGLE_COMPATIBLE;
     if (compatibleMode) {
       obj.setUserName("");
       obj.setAge(0);
@@ -288,16 +290,17 @@ public class UserProtoConverter {
   }
 
   public static void toProto(User obj, CodedOutputStream output) throws IOException {
-    toProto(obj, output, false);
+    toProto(obj, output, ProtobufEncodingMode.VERTX_NULLABLE);
   }
 
-  public static void toProto(User obj, CodedOutputStream output, boolean compatibleMode) throws IOException {
+  public static void toProto(User obj, CodedOutputStream output, ProtobufEncodingMode encodingMode) throws IOException {
     ExpandableIntArray cache = new ExpandableIntArray(16);
-    UserProtoConverter.computeSize(obj, cache, 0, compatibleMode);
-    UserProtoConverter.toProto(obj, output, cache, 0, compatibleMode);
+    UserProtoConverter.computeSize(obj, cache, 0, encodingMode);
+    UserProtoConverter.toProto(obj, output, cache, 0, encodingMode);
   }
 
-  static int toProto(User obj, CodedOutputStream output, ExpandableIntArray cache, int index, boolean compatibleMode) throws IOException {
+  static int toProto(User obj, CodedOutputStream output, ExpandableIntArray cache, int index, ProtobufEncodingMode encodingMode) throws IOException {
+    boolean compatibleMode = encodingMode == ProtobufEncodingMode.GOOGLE_COMPATIBLE;
     index = index + 1;
     // userName
     if (compatibleMode && obj.getUserName() == null) {
@@ -335,7 +338,7 @@ public class UserProtoConverter {
       for (Address element: obj.getStructListField()) {
         output.writeUInt32NoTag(34);
         output.writeUInt32NoTag(cache.get(index));
-        index = AddressProtoConverter.toProto(element, output, cache, index, compatibleMode);
+        index = AddressProtoConverter.toProto(element, output, cache, index, encodingMode);
       }
     }
     // zonedDateTimeListField
@@ -362,7 +365,7 @@ public class UserProtoConverter {
     if (obj.getAddress() != null) {
       output.writeUInt32NoTag(58);
       output.writeUInt32NoTag(cache.get(index));
-      index = AddressProtoConverter.toProto(obj.getAddress(), output, cache, index, compatibleMode);
+      index = AddressProtoConverter.toProto(obj.getAddress(), output, cache, index, encodingMode);
     }
     // byteField
     if (obj.getByteField() != null) {
@@ -460,7 +463,7 @@ public class UserProtoConverter {
         output.writeString(1, entry.getKey());
         output.writeUInt32NoTag(18);
         output.writeUInt32NoTag(elementSize);
-        index = AddressProtoConverter.toProto(entry.getValue(), output, cache, index, compatibleMode);
+        index = AddressProtoConverter.toProto(entry.getValue(), output, cache, index, encodingMode);
       }
     }
     // jsonValueMap
@@ -581,16 +584,16 @@ public class UserProtoConverter {
   }
 
   public static int computeSize(User obj) {
-    return computeSize(obj, false);
+    return computeSize(obj, ProtobufEncodingMode.VERTX_NULLABLE);
   }
 
-  public static int computeSize(User obj, boolean compatibleMode) {
+  public static int computeSize(User obj, ProtobufEncodingMode encodingMode) {
     ExpandableIntArray cache = new ExpandableIntArray(16);
-    UserProtoConverter.computeSize(obj, cache, 0, compatibleMode);
+    UserProtoConverter.computeSize(obj, cache, 0, encodingMode);
     return cache.get(0);
   }
 
-  static int computeSize(User obj, ExpandableIntArray cache, final int baseIndex, boolean compatibleMode) {
+  static int computeSize(User obj, ExpandableIntArray cache, final int baseIndex, ProtobufEncodingMode encodingMode) {
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getUserName() != null) {
@@ -618,7 +621,7 @@ public class UserProtoConverter {
         for (Address element: obj.getStructListField()) {
           size += CodedOutputStream.computeUInt32SizeNoTag(34);
           int savedIndex = index;
-          index = AddressProtoConverter.computeSize(element, cache, index, compatibleMode);
+          index = AddressProtoConverter.computeSize(element, cache, index, encodingMode);
           int dataSize = cache.get(savedIndex);
           size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
           size += dataSize;
@@ -652,7 +655,7 @@ public class UserProtoConverter {
     if (obj.getAddress() != null) {
       size += CodedOutputStream.computeUInt32SizeNoTag(58);
       int savedIndex = index;
-      index = AddressProtoConverter.computeSize(obj.getAddress(), cache, index, compatibleMode);
+      index = AddressProtoConverter.computeSize(obj.getAddress(), cache, index, encodingMode);
       int dataSize = cache.get(savedIndex);
       size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
       size += dataSize;
@@ -713,7 +716,7 @@ public class UserProtoConverter {
         dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
         // value
         int savedIndex = index;
-        index = AddressProtoConverter.computeSize(entry.getValue(), cache, index, compatibleMode);
+        index = AddressProtoConverter.computeSize(entry.getValue(), cache, index, encodingMode);
         int elementSize = cache.get(savedIndex);
         dataSize += CodedOutputStream.computeInt32SizeNoTag(18);
         dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);

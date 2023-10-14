@@ -66,6 +66,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     writer.print("import java.util.HashMap;\n");
     writer.print("import java.util.Map;\n");
     writer.print("import java.util.Arrays;\n");
+    writer.print("import io.vertx.codegen.protobuf.ProtobufEncodingMode;\n");
     writer.print("import io.vertx.core.json.JsonObject;\n");
     writer.print("import io.vertx.codegen.protobuf.utils.ExpandableIntArray;\n");
     writer.print("import io.vertx.codegen.protobuf.converters.*;\n");
@@ -79,10 +80,11 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     // fromProto()
     {
       writer.print("  " + visibility + " static void fromProto(CodedInputStream input, " + simpleName + " obj) throws IOException {\n");
-      writer.print("    fromProto(input, obj, false);\n");
+      writer.print("    fromProto(input, obj, ProtobufEncodingMode.VERTX_NULLABLE);\n");
       writer.print("  }\n");
       writer.print("\n");
-      writer.print("  " + visibility + " static void fromProto(CodedInputStream input, " + simpleName + " obj, boolean compatibleMode) throws IOException {\n");
+      writer.print("  " + visibility + " static void fromProto(CodedInputStream input, " + simpleName + " obj, ProtobufEncodingMode encodingMode) throws IOException {\n");
+      writer.print("    boolean compatibleMode = encodingMode == ProtobufEncodingMode.GOOGLE_COMPATIBLE;\n");
       // Compatible Mode
       {
         int fieldNumber = 1;
@@ -256,16 +258,17 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     // toProto()
     {
       writer.print("  " + visibility + " static void toProto(" + simpleName + " obj, CodedOutputStream output) throws IOException {\n");
-      writer.print("    toProto(obj, output, false);\n");
+      writer.print("    toProto(obj, output, ProtobufEncodingMode.VERTX_NULLABLE);\n");
       writer.print("  }\n");
       writer.print("\n");
-      writer.print("  " + visibility + " static void toProto(" + simpleName + " obj, CodedOutputStream output, boolean compatibleMode) throws IOException {\n");
+      writer.print("  " + visibility + " static void toProto(" + simpleName + " obj, CodedOutputStream output, ProtobufEncodingMode encodingMode) throws IOException {\n");
       writer.print("    ExpandableIntArray cache = new ExpandableIntArray(" + CACHE_INITIAL_CAPACITY + ");\n");
-      writer.print("    " + simpleName + "ProtoConverter.computeSize(obj, cache, 0, compatibleMode);\n");
-      writer.print("    " + simpleName + "ProtoConverter.toProto(obj, output, cache, 0, compatibleMode);\n");
+      writer.print("    " + simpleName + "ProtoConverter.computeSize(obj, cache, 0, encodingMode);\n");
+      writer.print("    " + simpleName + "ProtoConverter.toProto(obj, output, cache, 0, encodingMode);\n");
       writer.print("  }\n");
       writer.print("\n");
-      writer.print("  static int toProto(" + simpleName + " obj, CodedOutputStream output, ExpandableIntArray cache, int index, boolean compatibleMode) throws IOException {\n");
+      writer.print("  static int toProto(" + simpleName + " obj, CodedOutputStream output, ExpandableIntArray cache, int index, ProtobufEncodingMode encodingMode) throws IOException {\n");
+      writer.print("    boolean compatibleMode = encodingMode == ProtobufEncodingMode.GOOGLE_COMPATIBLE;\n");
       writer.print("    index = index + 1;\n");
       int fieldNumber = 1;
       for (PropertyInfo prop : model.getPropertyMap().values()) {
@@ -340,7 +343,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
                 writer.print("      for (" + protoProperty.getMessage() + " element: obj." + prop.getGetterMethod() + "()) {\n");
                 writer.print("        output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
                 writer.print("        output.writeUInt32NoTag(cache.get(index));\n");
-                writer.print("        index = " + protoProperty.getMessage() + "ProtoConverter.toProto(element, output, cache, index, compatibleMode);\n");
+                writer.print("        index = " + protoProperty.getMessage() + "ProtoConverter.toProto(element, output, cache, index, encodingMode);\n");
                 writer.print("      }\n");
               }
             }
@@ -398,7 +401,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
                 writer.print("        output.writeString(1, entry.getKey());\n");
                 writer.print("        output.writeUInt32NoTag(18);\n");
                 writer.print("        output.writeUInt32NoTag(elementSize);\n");
-                writer.print("        index = " + protoProperty.getMessage() + "ProtoConverter.toProto(entry.getValue(), output, cache, index, compatibleMode);\n");
+                writer.print("        index = " + protoProperty.getMessage() + "ProtoConverter.toProto(entry.getValue(), output, cache, index, encodingMode);\n");
                 writer.print("      }\n");
               }
             }
@@ -414,7 +417,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
               } else {
                 writer.print("      output.writeUInt32NoTag(" + protoProperty.getTag() + ");\n");
                 writer.print("      output.writeUInt32NoTag(cache.get(index));\n");
-                writer.print("      index = " + protoProperty.getMessage() + "ProtoConverter.toProto(obj." + prop.getGetterMethod() + "(), output, cache, index, compatibleMode);\n");
+                writer.print("      index = " + protoProperty.getMessage() + "ProtoConverter.toProto(obj." + prop.getGetterMethod() + "(), output, cache, index, encodingMode);\n");
               }
             }
           }
@@ -430,16 +433,16 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     // computeSize()
     {
       writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj) {\n");
-      writer.print("    return computeSize(obj, false);\n");
+      writer.print("    return computeSize(obj, ProtobufEncodingMode.VERTX_NULLABLE);\n");
       writer.print("  }\n");
       writer.print("\n");
-      writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj, boolean compatibleMode) {\n");
+      writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj, ProtobufEncodingMode encodingMode) {\n");
       writer.print("    ExpandableIntArray cache = new ExpandableIntArray(" + CACHE_INITIAL_CAPACITY + ");\n");
-      writer.print("    " + simpleName + "ProtoConverter.computeSize(obj, cache, 0, compatibleMode);\n");
+      writer.print("    " + simpleName + "ProtoConverter.computeSize(obj, cache, 0, encodingMode);\n");
       writer.print("    return cache.get(0);\n");
       writer.print("  }\n");
       writer.print("\n");
-      writer.print("  static int computeSize(" + simpleName + " obj, ExpandableIntArray cache, final int baseIndex, boolean compatibleMode) {\n");
+      writer.print("  static int computeSize(" + simpleName + " obj, ExpandableIntArray cache, final int baseIndex, ProtobufEncodingMode encodingMode) {\n");
       writer.print("    int size = 0;\n");
       writer.print("    int index = baseIndex + 1;\n");
       int fieldNumber = 1;
@@ -497,7 +500,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
                 writer.print("        for (" + protoProperty.getMessage() + " element: obj." + prop.getGetterMethod() + "()) {\n");
                 writer.print("          size += CodedOutputStream.computeUInt32SizeNoTag(" + protoProperty.getTag() + ");\n");
                 writer.print("          int savedIndex = index;\n");
-                writer.print("          index = " + protoProperty.getMessage() + "ProtoConverter.computeSize(element, cache, index, compatibleMode);\n");
+                writer.print("          index = " + protoProperty.getMessage() + "ProtoConverter.computeSize(element, cache, index, encodingMode);\n");
                 writer.print("          int dataSize = cache.get(savedIndex);\n");
                 writer.print("          size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
                 writer.print("          size += dataSize;\n");
@@ -546,7 +549,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
                 writer.print("        dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());\n");
                 writer.print("        // value\n");
                 writer.print("        int savedIndex = index;\n");
-                writer.print("        index = " + protoProperty.getMessage() + "ProtoConverter.computeSize(entry.getValue(), cache, index, compatibleMode);\n");
+                writer.print("        index = " + protoProperty.getMessage() + "ProtoConverter.computeSize(entry.getValue(), cache, index, encodingMode);\n");
                 writer.print("        int elementSize = cache.get(savedIndex);\n");
                 writer.print("        dataSize += CodedOutputStream.computeInt32SizeNoTag(18);\n");
                 writer.print("        dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);\n");
@@ -570,7 +573,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
               } else {
                 writer.print("      size += CodedOutputStream.computeUInt32SizeNoTag(" + protoProperty.getTag() + ");\n");
                 writer.print("      int savedIndex = index;\n");
-                writer.print("      index = " + protoProperty.getMessage() + "ProtoConverter.computeSize(obj." + prop.getGetterMethod() + "(), cache, index, compatibleMode);\n");
+                writer.print("      index = " + protoProperty.getMessage() + "ProtoConverter.computeSize(obj." + prop.getGetterMethod() + "(), cache, index, encodingMode);\n");
                 writer.print("      int dataSize = cache.get(savedIndex);\n");
                 writer.print("      size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);\n");
                 writer.print("      size += dataSize;\n");
