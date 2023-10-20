@@ -68,6 +68,8 @@ public class ProtoProperty {
       wireType = 2;
     }
 
+    checkFieldNumber(fieldNumber);
+
     int tag = (fieldNumber << 3) | wireType;
 
     protoProperty.fieldNumber = fieldNumber;
@@ -79,6 +81,16 @@ public class ProtoProperty {
     protoProperty.message = message;
     protoProperty.builtInType = builtInProtoType;
     return protoProperty;
+  }
+
+  private static void checkFieldNumber(int fieldNumber) {
+    // see https://protobuf.dev/programming-guides/proto3/#assigning
+    if (fieldNumber < 1 || fieldNumber > 536_870_911) {
+      throw new IllegalArgumentException("Field number " + fieldNumber + " is invalid");
+    }
+    if (fieldNumber >= 19_000 && fieldNumber <= 19_999) {
+      throw new IllegalArgumentException("Field number " + fieldNumber + " is reserved for Protobuf implementations");
+    }
   }
 
   private static ProtoType determinePrimitiveProtoType(String javaDataType) {

@@ -32,4 +32,31 @@ package io.vertx.codegen.protobuf.annotations;
  */
 public @interface ProtobufGen {
   JsonProtoEncoding jsonProtoEncoding() default JsonProtoEncoding.VERTX_STRUCT;
+
+  /**
+   * The strategy of field number assignment. Use {@link FieldNumberStrategy#MANUAL},
+   * {@link FieldNumberStrategy#COMPACT}, or {@link FieldNumberStrategy#SEGMENTED}.
+   * <p>
+   * See the <a href="https://protobuf.dev/programming-guides/proto3/">Protocol Buffers Language Guide</a>
+   * for more information about protobuf schema evolution.
+   * <p>
+   * Note that this setting is ignored for {@code enum}s, where protobuf enum constants are always
+   * assigned automatically. Coincidentally, the protobuf enum constants are identical to
+   * {@linkplain Enum#ordinal() enum ordinals}. Extra <strong>care must be taken when changing
+   * {@code enum}s</strong> annotated {@code @ProtobufGen}. In the future, this setting may become
+   * relevant even for enums, together with {@link ProtobufField @ProtobufField}.
+   */
+  FieldNumberStrategy fieldNumberStrategy();
+
+  /**
+   * The set of reserved field numbers. It is an error for a data object property to be explicitly assigned
+   * a field number from the reserved set. Automatically assigned field numbers will skip the reserved numbers.
+   */
+  int[] reservedFieldNumbers() default {};
+
+  /**
+   * The set of reserved field names. It is an error for a data object property to have a name that is
+   * present in the reserved set.
+   */
+  String[] reservedFieldNames() default {};
 }

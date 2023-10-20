@@ -1,6 +1,7 @@
 package io.vertx.test.codegen.converter;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.protobuf.annotations.FieldNumberStrategy;
 import io.vertx.codegen.protobuf.annotations.ProtobufGen;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -12,7 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @DataObject
-@ProtobufGen
+@ProtobufGen(fieldNumberStrategy = FieldNumberStrategy.COMPACT)
 public class User {
   private String userName;
   private Integer age;

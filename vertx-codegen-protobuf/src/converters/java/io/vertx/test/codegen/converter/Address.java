@@ -1,12 +1,13 @@
 package io.vertx.test.codegen.converter;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.protobuf.annotations.FieldNumberStrategy;
 import io.vertx.codegen.protobuf.annotations.ProtobufGen;
 
 import java.util.Objects;
 
 @DataObject
-@ProtobufGen
+@ProtobufGen(fieldNumberStrategy = FieldNumberStrategy.COMPACT)
 public class Address {
   private String name;
   private Float longitude;

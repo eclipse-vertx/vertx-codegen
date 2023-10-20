@@ -4,6 +4,8 @@ import io.vertx.codegen.DataObjectModel;
 import io.vertx.codegen.GenException;
 import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.PropertyKind;
+import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.type.*;
 import io.vertx.core.json.JsonArray;
@@ -672,7 +674,11 @@ public class DataObjectTest {
   public void testAnnotatedObject() throws Exception {
     DataObjectModel model = new GeneratorHelper().generateDataObject(AnnotatedDataObject.class);
     assertEquals(2, model.getAnnotations().size());
-    assertEquals(EmptyAnnotation.class.getSimpleName(),model.getAnnotations().get(1).getSimpleName());
+    assertEquals(DataObject.class.getSimpleName(), model.getAnnotations().get(0).getSimpleName());
+    assertEquals(EmptyAnnotation.class.getSimpleName(), model.getAnnotations().get(1).getSimpleName());
+    assertTrue(model.getAnnotation(DataObject.class).isPresent());
+    assertTrue(model.getAnnotation(EmptyAnnotation.class).isPresent());
+    assertFalse(model.getAnnotation(Deprecated.class).isPresent());
   }
 
   @Test
@@ -893,9 +899,12 @@ public class DataObjectTest {
     PropertyInfo idModel = model.getPropertyMap().get("id");
     assertEquals(1, idModel.getAnnotations().size());
     assertNotNull(idModel.getAnnotation(SomeAnnotation.class.getName()).getName());
+    assertEquals(SomeAnnotation.class.getName(), idModel.getAnnotation(SomeAnnotation.class.getName()).getName());
+    assertEquals(2, idModel.getAnnotation(SomeAnnotation.class.getName()).getMember("value"));
     PropertyInfo fieldWithMethodAnnotationModel = model.getPropertyMap().get("fieldWithMethodAnnotation");
     assertEquals(2, fieldWithMethodAnnotationModel.getAnnotations().size());
     assertNotNull(fieldWithMethodAnnotationModel.getAnnotation(SomeAnnotation.class.getName()).getName());
+    assertEquals(3, fieldWithMethodAnnotationModel.getAnnotation(SomeAnnotation.class.getName()).getMember("value"));
     assertNotNull(fieldWithMethodAnnotationModel.getAnnotation(SomeMethodAnnotation.class.getName()).getName());
   }
 

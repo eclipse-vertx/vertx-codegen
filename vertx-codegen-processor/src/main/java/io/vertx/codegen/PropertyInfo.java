@@ -108,6 +108,11 @@ public class PropertyInfo {
     return new ArrayList<>(annotations.values());
   }
 
+  /**
+   * @param annotationName fully qualified name of an annotation type
+   * @return {@link AnnotationValueInfo} for an annotation of given type present on this property,
+   * or {@code null} if an annotation of given type is not present on this property
+   */
   public AnnotationValueInfo getAnnotation(String annotationName) {
     return annotations.get(annotationName);
   }

@@ -3,18 +3,18 @@ package io.vertx.test.codegen.testdataobject;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
-@SomeAnnotation
+@SomeAnnotation(1)
 @DataObject(generateConverter = true)
 public class DataObjectWithAnnotatedField {
 
-  @SomeAnnotation
+  @SomeAnnotation(2)
   private Long id;
 
   private String name;
 
   private String author;
 
-  @SomeAnnotation
+  @SomeAnnotation(3)
   private String fieldWithMethodAnnotation;
 
   // Mandatory for JPA entities
