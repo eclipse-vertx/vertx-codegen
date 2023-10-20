@@ -13,6 +13,11 @@ public class ProtoProperty {
   private ProtoType protoType;
   // Indicate if field is nullable.
   private boolean isNullable;
+  // Indicate if field is Java boxed type
+  private boolean isBoxedType; // TODO maybe do not belong here
+
+  private String defaultValue;
+
   // Indicate the name of the message of the nested field
   private String message;
   // Indicate the name of the enumeration type
@@ -26,6 +31,8 @@ public class ProtoProperty {
     ClassKind propKind = prop.getType().getKind();
     ProtoType protoType = null;
     boolean isNullable = determineIsNullable(prop.getType().getName());
+    boolean isBoxedType = determineIsBoxedType(prop.getType().getName());
+    String defaultValue = determineDefaultValue(prop.getType().getName());
     String message = null;
     String enumType = null;
     String builtInProtoType = null;
@@ -77,6 +84,8 @@ public class ProtoProperty {
     protoProperty.tag = tag;
     protoProperty.protoType = protoType;
     protoProperty.isNullable = isNullable;
+    protoProperty.isBoxedType = isBoxedType;
+    protoProperty.defaultValue = defaultValue;
     protoProperty.enumType = enumType;
     protoProperty.message = message;
     protoProperty.builtInType = builtInProtoType;
@@ -131,6 +140,61 @@ public class ProtoProperty {
         return false;
       default:
         return true;
+    }
+  }
+
+  private static boolean determineIsBoxedType(String javaDataType) {
+    if ("java.lang.Integer".equals(javaDataType) || "Integer".equals(javaDataType) ||
+      "java.lang.Short".equals(javaDataType) || "Short".equals(javaDataType) ||
+      "java.lang.Long".equals(javaDataType) || "Long".equals(javaDataType) ||
+      "java.lang.Float".equals(javaDataType) || "Float".equals(javaDataType) ||
+      "java.lang.Double".equals(javaDataType) || "Double".equals(javaDataType) ||
+      "java.lang.Boolean".equals(javaDataType) || "Boolean".equals(javaDataType) ||
+      "java.lang.String".equals(javaDataType) || "String".equals(javaDataType)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private static String determineDefaultValue(String javaDataType) {
+    switch (javaDataType) {
+      case "java.lang.Integer":
+      case "Integer":
+      case "int":
+        return "0";
+
+      case "java.lang.Short":
+      case "Short":
+      case "short":
+        return "(short)0";
+
+      case "java.lang.Long":
+      case "Long":
+      case "long":
+        return "0L";
+
+      case "java.lang.Float":
+      case "Float":
+      case "float":
+        return "0f";
+
+      case "java.lang.Double":
+      case "Double":
+      case "double":
+        return "0d";
+
+      case "java.lang.Boolean":
+      case "Boolean":
+      case "boolean":
+        return "false";
+
+      case "java.lang.String":
+      case "String":
+        return "\"\"";
+
+      default:
+        return null;
     }
   }
 
@@ -198,6 +262,14 @@ public class ProtoProperty {
 
   public boolean isNullable() {
     return isNullable;
+  }
+
+  public boolean isBoxedType() {
+    return isBoxedType;
+  }
+
+  public String getDefaultValue() {
+    return defaultValue;
   }
 
   public String getEnumType() {

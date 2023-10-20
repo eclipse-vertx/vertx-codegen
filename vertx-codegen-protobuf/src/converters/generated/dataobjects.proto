@@ -43,6 +43,13 @@ message RecursiveItem {
   RecursiveItem childC = 4;
 }
 
+message SimplePojo {
+  int32 integerField = 1;
+  int64 longField = 2;
+  bool booleanField = 3;
+  string stringField = 4;
+}
+
 message User {
   string userName = 1;
   int32 age = 2;

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
+import io.vertx.codegen.protobuf.ProtobufEncodingMode;
 import io.vertx.core.json.JsonObject;
 import io.vertx.codegen.protobuf.utils.ExpandableIntArray;
 import io.vertx.codegen.protobuf.converters.*;
@@ -17,6 +18,20 @@ import io.vertx.codegen.protobuf.converters.*;
 public class UserProtoConverter {
 
   public static void fromProto(CodedInputStream input, User obj) throws IOException {
+    fromProto(input, obj, ProtobufEncodingMode.VERTX);
+  }
+
+  public static void fromProto(CodedInputStream input, User obj, ProtobufEncodingMode encodingMode) throws IOException {
+    boolean compatibleMode = encodingMode == ProtobufEncodingMode.GOOGLE_COMPATIBLE;
+    if (compatibleMode) {
+      obj.setUserName("");
+      obj.setAge(0);
+      obj.setDoubleField(0d);
+      obj.setFloatField(0f);
+      obj.setLongField(0L);
+      obj.setBoolField(false);
+      obj.setShortField((short)0);
+    }
     int tag;
     while ((tag = input.readTag()) != 0) {
       switch (tag) {
@@ -271,23 +286,37 @@ public class UserProtoConverter {
           break;
         }
       }
-    }
+    } // while loop
   }
 
   public static void toProto(User obj, CodedOutputStream output) throws IOException {
-    ExpandableIntArray cache = new ExpandableIntArray(16);
-    UserProtoConverter.computeSize(obj, cache, 0);
-    UserProtoConverter.toProto(obj, output, cache, 0);
+    toProto(obj, output, ProtobufEncodingMode.VERTX);
   }
 
-  public static int toProto(User obj, CodedOutputStream output, ExpandableIntArray cache, int index) throws IOException {
+  public static void toProto(User obj, CodedOutputStream output, ProtobufEncodingMode encodingMode) throws IOException {
+    ExpandableIntArray cache = new ExpandableIntArray(16);
+    UserProtoConverter.computeSize(obj, cache, 0, encodingMode);
+    UserProtoConverter.toProto(obj, output, cache, 0, encodingMode);
+  }
+
+  static int toProto(User obj, CodedOutputStream output, ExpandableIntArray cache, int index, ProtobufEncodingMode encodingMode) throws IOException {
+    boolean compatibleMode = encodingMode == ProtobufEncodingMode.GOOGLE_COMPATIBLE;
     index = index + 1;
-    if (obj.getUserName() != null) {
+    // userName
+    if (compatibleMode && obj.getUserName() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getUserName() != null) || (compatibleMode && !obj.getUserName().isEmpty())) {
       output.writeString(1, obj.getUserName());
     }
-    if (obj.getAge() != null) {
+    // age
+    if (compatibleMode && obj.getAge() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getAge() != null) || (compatibleMode && obj.getAge() != 0)) {
       output.writeInt32(2, obj.getAge());
     }
+    // integerListField
     if (obj.getIntegerListField() != null) {
       // list | tag | data size | value[0] | value[1] | value[2] |
       if (obj.getIntegerListField().size() > 0) {
@@ -302,15 +331,17 @@ public class UserProtoConverter {
         }
       }
     }
+    // structListField
     if (obj.getStructListField() != null) {
       // list[0] | tag | data size | value |
       // list[1] | tag | data size | value |
       for (Address element: obj.getStructListField()) {
         output.writeUInt32NoTag(34);
         output.writeUInt32NoTag(cache.get(index));
-        index = AddressProtoConverter.toProto(element, output, cache, index);
+        index = AddressProtoConverter.toProto(element, output, cache, index, encodingMode);
       }
     }
+    // zonedDateTimeListField
     if (obj.getZonedDateTimeListField() != null) {
       // list[0] | tag | data size | value |
       // list[1] | tag | data size | value |
@@ -320,6 +351,7 @@ public class UserProtoConverter {
         ZonedDateTimeProtoConverter.toProto(element, output);
       }
     }
+    // jsonListField
     if (obj.getJsonListField() != null) {
       // list[0] | tag | data size | value |
       // list[1] | tag | data size | value |
@@ -329,32 +361,56 @@ public class UserProtoConverter {
         VertxStructProtoConverter.toProto(element, output);
       }
     }
+    // address
     if (obj.getAddress() != null) {
       output.writeUInt32NoTag(58);
       output.writeUInt32NoTag(cache.get(index));
-      index = AddressProtoConverter.toProto(obj.getAddress(), output, cache, index);
+      index = AddressProtoConverter.toProto(obj.getAddress(), output, cache, index, encodingMode);
     }
+    // byteField
     if (obj.getByteField() != null) {
       output.writeInt32(8, obj.getByteField());
     }
-    if (obj.getDoubleField() != null) {
+    // doubleField
+    if (compatibleMode && obj.getDoubleField() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getDoubleField() != null) || (compatibleMode && obj.getDoubleField() != 0d)) {
       output.writeDouble(9, obj.getDoubleField());
     }
-    if (obj.getFloatField() != null) {
+    // floatField
+    if (compatibleMode && obj.getFloatField() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getFloatField() != null) || (compatibleMode && obj.getFloatField() != 0f)) {
       output.writeFloat(10, obj.getFloatField());
     }
-    if (obj.getLongField() != null) {
+    // longField
+    if (compatibleMode && obj.getLongField() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getLongField() != null) || (compatibleMode && obj.getLongField() != 0L)) {
       output.writeInt64(11, obj.getLongField());
     }
-    if (obj.getBoolField() != null) {
+    // boolField
+    if (compatibleMode && obj.getBoolField() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getBoolField() != null) || (compatibleMode && !obj.getBoolField())) {
       output.writeBool(12, obj.getBoolField());
     }
-    if (obj.getShortField() != null) {
+    // shortField
+    if (compatibleMode && obj.getShortField() == null) {
+      throw new IllegalArgumentException("Null values are not allowed for boxed types in compatibility mode");
+    }
+    if ((!compatibleMode && obj.getShortField() != null) || (compatibleMode && obj.getShortField() != (short)0)) {
       output.writeInt32(13, obj.getShortField());
     }
+    // charField
     if (obj.getCharField() != null) {
       output.writeInt32(14, obj.getCharField());
     }
+    // stringValueMap
     if (obj.getStringValueMap() != null) {
       // map[0] | tag | data size | key | value |
       // map[1] | tag | data size | key | value |
@@ -371,6 +427,7 @@ public class UserProtoConverter {
         output.writeString(2, entry.getValue());
       }
     }
+    // integerValueMap
     if (obj.getIntegerValueMap() != null) {
       // map[0] | tag | data size | key | value |
       // map[1] | tag | data size | key | value |
@@ -387,6 +444,7 @@ public class UserProtoConverter {
         output.writeInt32(2, entry.getValue());
       }
     }
+    // structValueMap
     if (obj.getStructValueMap() != null) {
       // map[0] | tag | data size | key | value |
       // map[1] | tag | data size | key | value |
@@ -405,9 +463,10 @@ public class UserProtoConverter {
         output.writeString(1, entry.getKey());
         output.writeUInt32NoTag(18);
         output.writeUInt32NoTag(elementSize);
-        index = AddressProtoConverter.toProto(entry.getValue(), output, cache, index);
+        index = AddressProtoConverter.toProto(entry.getValue(), output, cache, index, encodingMode);
       }
     }
+    // jsonValueMap
     if (obj.getJsonValueMap() != null) {
       // map[0] | tag | data size | key | value |
       // map[1] | tag | data size | key | value |
@@ -429,6 +488,7 @@ public class UserProtoConverter {
         VertxStructProtoConverter.toProto(entry.getValue(), output);
       }
     }
+    // zonedDateTimeValueMap
     if (obj.getZonedDateTimeValueMap() != null) {
       // map[0] | tag | data size | key | value |
       // map[1] | tag | data size | key | value |
@@ -450,50 +510,63 @@ public class UserProtoConverter {
         ZonedDateTimeProtoConverter.toProto(entry.getValue(), output);
       }
     }
+    // zonedDateTimeField
     if (obj.getZonedDateTimeField() != null) {
       output.writeUInt32NoTag(162);
       output.writeUInt32NoTag(ZonedDateTimeProtoConverter.computeSize(obj.getZonedDateTimeField()));
       ZonedDateTimeProtoConverter.toProto(obj.getZonedDateTimeField(), output);
     }
+    // instantField
     if (obj.getInstantField() != null) {
       output.writeUInt32NoTag(170);
       output.writeUInt32NoTag(InstantProtoConverter.computeSize(obj.getInstantField()));
       InstantProtoConverter.toProto(obj.getInstantField(), output);
     }
+    // jsonObjectField
     if (obj.getJsonObjectField() != null) {
       output.writeUInt32NoTag(178);
       output.writeUInt32NoTag(VertxStructProtoConverter.computeSize(obj.getJsonObjectField()));
       VertxStructProtoConverter.toProto(obj.getJsonObjectField(), output);
     }
+    // jsonArrayField
     if (obj.getJsonArrayField() != null) {
       output.writeUInt32NoTag(186);
       output.writeUInt32NoTag(VertxStructListProtoConverter.computeSize(obj.getJsonArrayField()));
       VertxStructListProtoConverter.toProto(obj.getJsonArrayField(), output);
     }
+    // primitiveBoolean
     if (obj.isPrimitiveBoolean()) {
       output.writeBool(24, obj.isPrimitiveBoolean());
     }
+    // primitiveByte
     if (obj.getPrimitiveByte() != 0) {
       output.writeInt32(25, obj.getPrimitiveByte());
     }
+    // primitiveShort
     if (obj.getPrimitiveShort() != 0) {
       output.writeInt32(26, obj.getPrimitiveShort());
     }
+    // primitiveInt
     if (obj.getPrimitiveInt() != 0) {
       output.writeInt32(27, obj.getPrimitiveInt());
     }
+    // primitiveLong
     if (obj.getPrimitiveLong() != 0) {
       output.writeInt64(28, obj.getPrimitiveLong());
     }
+    // primitiveFloat
     if (obj.getPrimitiveFloat() != 0) {
       output.writeFloat(29, obj.getPrimitiveFloat());
     }
+    // primitiveDouble
     if (obj.getPrimitiveDouble() != 0) {
       output.writeDouble(30, obj.getPrimitiveDouble());
     }
+    // primitiveChar
     if (obj.getPrimitiveChar() != 0) {
       output.writeInt32(31, obj.getPrimitiveChar());
     }
+    // enumType
     if (obj.getEnumType() != null) {
       switch (obj.getEnumType()) {
         case A:
@@ -511,12 +584,16 @@ public class UserProtoConverter {
   }
 
   public static int computeSize(User obj) {
+    return computeSize(obj, ProtobufEncodingMode.VERTX);
+  }
+
+  public static int computeSize(User obj, ProtobufEncodingMode encodingMode) {
     ExpandableIntArray cache = new ExpandableIntArray(16);
-    UserProtoConverter.computeSize(obj, cache, 0);
+    UserProtoConverter.computeSize(obj, cache, 0, encodingMode);
     return cache.get(0);
   }
 
-  public static int computeSize(User obj, ExpandableIntArray cache, final int baseIndex) {
+  static int computeSize(User obj, ExpandableIntArray cache, final int baseIndex, ProtobufEncodingMode encodingMode) {
     int size = 0;
     int index = baseIndex + 1;
     if (obj.getUserName() != null) {
@@ -544,7 +621,7 @@ public class UserProtoConverter {
         for (Address element: obj.getStructListField()) {
           size += CodedOutputStream.computeUInt32SizeNoTag(34);
           int savedIndex = index;
-          index = AddressProtoConverter.computeSize(element, cache, index);
+          index = AddressProtoConverter.computeSize(element, cache, index, encodingMode);
           int dataSize = cache.get(savedIndex);
           size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
           size += dataSize;
@@ -578,7 +655,7 @@ public class UserProtoConverter {
     if (obj.getAddress() != null) {
       size += CodedOutputStream.computeUInt32SizeNoTag(58);
       int savedIndex = index;
-      index = AddressProtoConverter.computeSize(obj.getAddress(), cache, index);
+      index = AddressProtoConverter.computeSize(obj.getAddress(), cache, index, encodingMode);
       int dataSize = cache.get(savedIndex);
       size += CodedOutputStream.computeUInt32SizeNoTag(dataSize);
       size += dataSize;
@@ -639,7 +716,7 @@ public class UserProtoConverter {
         dataSize += CodedOutputStream.computeStringSize(1, entry.getKey());
         // value
         int savedIndex = index;
-        index = AddressProtoConverter.computeSize(entry.getValue(), cache, index);
+        index = AddressProtoConverter.computeSize(entry.getValue(), cache, index, encodingMode);
         int elementSize = cache.get(savedIndex);
         dataSize += CodedOutputStream.computeInt32SizeNoTag(18);
         dataSize += CodedOutputStream.computeInt32SizeNoTag(elementSize);
