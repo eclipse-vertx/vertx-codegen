@@ -24,10 +24,10 @@ public class CompatibilityTest {
     pojo.setStringField(null);
 
     // Vertx Encode
-    byte[] encoded = vertxEncode(pojo, ProtobufEncodingMode.VERTX_NULLABLE);
+    byte[] encoded = vertxEncode(pojo, ProtobufEncodingMode.VERTX);
 
     // Vertx Decode
-    SimplePojo decoded = vertxDecode(encoded, ProtobufEncodingMode.VERTX_NULLABLE);
+    SimplePojo decoded = vertxDecode(encoded, ProtobufEncodingMode.VERTX);
 
     // Decoded is exactly the same with original pojo
     Assert.assertEquals(pojo, decoded);
@@ -116,7 +116,7 @@ public class CompatibilityTest {
     byte[] encoded = protocEncode(pojo);
 
     // Vertx Decode
-    SimplePojo decoded = vertxDecode(encoded, ProtobufEncodingMode.VERTX_NULLABLE);
+    SimplePojo decoded = vertxDecode(encoded, ProtobufEncodingMode.VERTX);
 
     Assert.assertNull(decoded.getIntegerField()); // Should be 0, but become null due to wrong mode being used
     Assert.assertNull(decoded.getLongField()); // Should be 0, but become null due to wrong mode being used

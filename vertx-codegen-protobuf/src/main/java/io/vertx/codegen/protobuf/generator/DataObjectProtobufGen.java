@@ -91,7 +91,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     // fromProto()
     {
       writer.print("  " + visibility + " static void fromProto(CodedInputStream input, " + simpleName + " obj) throws IOException {\n");
-      writer.print("    fromProto(input, obj, ProtobufEncodingMode.VERTX_NULLABLE);\n");
+      writer.print("    fromProto(input, obj, ProtobufEncodingMode.VERTX);\n");
       writer.print("  }\n");
       writer.print("\n");
       writer.print("  " + visibility + " static void fromProto(CodedInputStream input, " + simpleName + " obj, ProtobufEncodingMode encodingMode) throws IOException {\n");
@@ -268,7 +268,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     // toProto()
     {
       writer.print("  " + visibility + " static void toProto(" + simpleName + " obj, CodedOutputStream output) throws IOException {\n");
-      writer.print("    toProto(obj, output, ProtobufEncodingMode.VERTX_NULLABLE);\n");
+      writer.print("    toProto(obj, output, ProtobufEncodingMode.VERTX);\n");
       writer.print("  }\n");
       writer.print("\n");
       writer.print("  " + visibility + " static void toProto(" + simpleName + " obj, CodedOutputStream output, ProtobufEncodingMode encodingMode) throws IOException {\n");
@@ -442,7 +442,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     // computeSize()
     {
       writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj) {\n");
-      writer.print("    return computeSize(obj, ProtobufEncodingMode.VERTX_NULLABLE);\n");
+      writer.print("    return computeSize(obj, ProtobufEncodingMode.VERTX);\n");
       writer.print("  }\n");
       writer.print("\n");
       writer.print("  " + visibility + " static int computeSize(" + simpleName + " obj, ProtobufEncodingMode encodingMode) {\n");

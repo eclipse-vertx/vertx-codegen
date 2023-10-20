@@ -9,7 +9,7 @@ public enum ProtobufEncodingMode {
    * (e.g., Integer, Double) and String to be nullable. This encoding mode is intended for use when
    * communicating with another Vert.x converter that supports nullable values.
    */
-  VERTX_NULLABLE,
+  VERTX,
 
   /**
    * In this encoding mode, the converter uses the standard protobuf encoding, which is compatible with

@@ -18,7 +18,7 @@ import io.vertx.codegen.protobuf.converters.*;
 public class PersonProtoConverter {
 
   public static void fromProto(CodedInputStream input, Person obj) throws IOException {
-    fromProto(input, obj, ProtobufEncodingMode.VERTX_NULLABLE);
+    fromProto(input, obj, ProtobufEncodingMode.VERTX);
   }
 
   public static void fromProto(CodedInputStream input, Person obj, ProtobufEncodingMode encodingMode) throws IOException {
@@ -42,7 +42,7 @@ public class PersonProtoConverter {
   }
 
   public static void toProto(Person obj, CodedOutputStream output) throws IOException {
-    toProto(obj, output, ProtobufEncodingMode.VERTX_NULLABLE);
+    toProto(obj, output, ProtobufEncodingMode.VERTX);
   }
 
   public static void toProto(Person obj, CodedOutputStream output, ProtobufEncodingMode encodingMode) throws IOException {
@@ -69,7 +69,7 @@ public class PersonProtoConverter {
   }
 
   public static int computeSize(Person obj) {
-    return computeSize(obj, ProtobufEncodingMode.VERTX_NULLABLE);
+    return computeSize(obj, ProtobufEncodingMode.VERTX);
   }
 
   public static int computeSize(Person obj, ProtobufEncodingMode encodingMode) {
