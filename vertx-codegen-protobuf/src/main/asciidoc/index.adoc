@@ -95,6 +95,31 @@ message User {
 }
 ----
 
+=== Supported Types
+
+The table below outlines the Java types that are compatible with Vertx-Codegen, along with their corresponding Protobuf types and additional notes.
+
+[options="header"]
+|===
+| Java Type  | Protobuf Type  | Notes
+| String     | string         |
+| Integer    | int32          |
+| Float      | float          |
+| Short      | int32          |
+| Character  | int32          |
+| Byte       | int32          |
+| Long       | int64          |
+| Double     | double         |
+| Boolean    | bool           |
+| JsonObject | io.vertx.protobuf.Struct / google.protobuf.Struct       | see xref:json-protobuf-encoding-type[Json Protobuf Encoding Type]
+| JsonArray  | io.vertx.protobuf.ListValue / google.protobuf.ListValue | see xref:json-protobuf-encoding-type[Json Protobuf Encoding Type]
+| Instant       | io.vertx.protobuf.Instant       |
+| ZonedDateTime | io.vertx.protobuf.ZonedDateTime |
+
+|===
+
+In addition to the types listed above, Map, List, and Enum types are also supported.
+
 == Working with Lombok
 Lombok uses internal compiler API to update Abstract Syntax Tree of the compiler, therefore special care is required:
 [source,xml]
@@ -126,6 +151,7 @@ Lombok uses internal compiler API to update Abstract Syntax Tree of the compiler
 </plugin>
 ----
 
+[[json-protobuf-encoding-type]]
 == Json Protobuf Encoding Type
 The `@ProtobufGen` annotation includes an optional attribute `jsonProtoEncoding` which specifies the protobuf encoding type for `JsonObject` and `JsonArray`.
 
