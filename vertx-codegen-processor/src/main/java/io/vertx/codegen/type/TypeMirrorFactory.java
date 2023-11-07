@@ -22,9 +22,9 @@ import java.util.Map;
  */
 public class TypeMirrorFactory {
 
-  private static final ModuleInfo VERTX_CORE_MOD = new ModuleInfo("io.vertx.core", "vertx", "io.vertx", false, false);
-  private static final ClassTypeInfo JSON_OBJECT = new ClassTypeInfo(ClassKind.JSON_OBJECT, "io.vertx.core.json.JsonObject", VERTX_CORE_MOD, false, Collections.emptyList(), null);
-  private static final ClassTypeInfo STRING = new ClassTypeInfo(ClassKind.STRING, "java.lang.String", null, false, Collections.emptyList(), null);
+  public static final ModuleInfo VERTX_CORE_MOD = new ModuleInfo("io.vertx.core", "vertx", "io.vertx", false, false);
+  public static final ClassTypeInfo JSON_OBJECT = new ClassTypeInfo(ClassKind.JSON_OBJECT, "io.vertx.core.json.JsonObject", VERTX_CORE_MOD, false, Collections.emptyList(), null);
+  public static final ClassTypeInfo STRING = new ClassTypeInfo(ClassKind.STRING, "java.lang.String", null, false, Collections.emptyList(), null);
 
   final Elements elementUtils;
   final Types typeUtils;
@@ -138,35 +138,18 @@ public class TypeMirrorFactory {
         } else {
           MapperInfo serializer = serializers.get(fqcn);
           MapperInfo deserializer = deserializers.get(fqcn);
+          boolean annotated = elt.getAnnotation(DataObject.class) != null;
+          if (annotated) {
+            if (serializer == null) {
+              serializer = Helper.getAnnotatedDataObjectAnnotatedSerializationType(elementUtils, elt);
+            }
+            if (deserializer == null) {
+              deserializer = Helper.getAnnotatedDataObjectDeserialisationType(elementUtils, typeUtils, elt);
+            }
+          }
           DataObjectInfo dataObject = null;
-          if (elt.getAnnotation(DataObject.class) != null) {
-            ClassKind serializable = Helper.getAnnotatedDataObjectAnnotatedSerializationType(elementUtils, elt);
-            ClassKind deserializable = Helper.getAnnotatedDataObjectDeserialisationType(elementUtils, typeUtils, elt);
-            if (serializer == null && serializable != null) {
-              serializer = new MapperInfo();
-              serializer.setQualifiedName(fqcn);
-              serializer.setKind(MapperKind.SELF);
-              if (serializable == ClassKind.JSON_OBJECT) {
-                serializer.setTargetType(JSON_OBJECT);
-                serializer.setSelectors(Collections.singletonList("toJson"));
-              } else {
-                serializer.setTargetType(STRING);
-                serializer.setSelectors(Collections.singletonList("toJson"));
-              }
-            }
-            if (deserializer == null && deserializable != null) {
-              deserializer = new MapperInfo();
-              deserializer.setQualifiedName(fqcn);
-              deserializer.setKind(MapperKind.SELF);
-              if (deserializable == ClassKind.JSON_OBJECT) {
-                deserializer.setTargetType(JSON_OBJECT);
-              } else {
-                deserializer.setTargetType(STRING);
-              }
-            }
-            dataObject = new DataObjectInfo(true, serializer, deserializer);
-          } else if (serializer != null || deserializer != null) {
-            dataObject = new DataObjectInfo(false, serializer, deserializer);
+          if (annotated || serializer != null || deserializer != null) {
+            dataObject = new DataObjectInfo(annotated, serializer, deserializer);
           }
 
           List<TypeParamInfo.Class> typeParams = createTypeParams(type);

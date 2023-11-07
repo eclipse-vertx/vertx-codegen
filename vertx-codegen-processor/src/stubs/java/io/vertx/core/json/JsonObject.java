@@ -26,8 +26,16 @@ public class JsonObject implements Iterable<Map.Entry<String, Object>> {
     return map.entrySet().iterator();
   }
 
-  public Object getValue(String name) {
-    return map.get(name);
+  public <T> T getValue(String name) {
+    return (T) map.get(name);
+  }
+
+  private <T> T getValue(String name, T def) {
+    Object val = map.get(name);
+    if (val == null) {
+      return def;
+    }
+    return (T) val;
   }
 
   public void remove(String name) {
@@ -61,13 +69,13 @@ public class JsonObject implements Iterable<Map.Entry<String, Object>> {
   }
 
   public JsonObject getJsonObject(String name) { throw new UnsupportedOperationException(); }
-  public String getString(String name) { throw new UnsupportedOperationException(); }
+  public String getString(String name) { return getValue(name); }
   public String getString(String name, String def) { throw new UnsupportedOperationException(); }
   public Instant getInstant(String name) { throw new UnsupportedOperationException(); }
   public Instant getInstant(String name, Instant def) { throw new UnsupportedOperationException(); }
   public Integer getInteger(String fieldName) { throw new UnsupportedOperationException(); }
   public Boolean getBoolean(String fieldName, Boolean def) { throw new UnsupportedOperationException(); }
-  public Integer getInteger(String fieldName, Integer def) { throw new UnsupportedOperationException(); }
+  public Integer getInteger(String fieldName, Integer def) { return getValue(fieldName, def); }
   public Long getLong(String fieldName, Long def) { throw new UnsupportedOperationException(); }
   public Float getFloat(String fieldName, Float def) { throw new UnsupportedOperationException(); }
   public Double getDouble(String fieldName, Double def) { throw new UnsupportedOperationException(); }

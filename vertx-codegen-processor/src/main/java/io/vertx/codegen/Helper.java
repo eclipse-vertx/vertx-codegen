@@ -18,6 +18,8 @@ package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.type.ClassKind;
+import io.vertx.codegen.type.MapperInfo;
+import io.vertx.codegen.type.TypeMirrorFactory;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
@@ -37,6 +39,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static io.vertx.codegen.type.TypeMirrorFactory.JSON_OBJECT;
+import static io.vertx.codegen.type.TypeMirrorFactory.STRING;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -676,8 +681,8 @@ public class Helper {
     return method;
   }
 
-  public static ClassKind getAnnotatedDataObjectAnnotatedSerializationType(Elements elementUtils, TypeElement dataObjectElt) {
-    return elementUtils.getAllMembers(dataObjectElt)
+  public static MapperInfo getAnnotatedDataObjectAnnotatedSerializationType(Elements elementUtils, TypeElement dataObjectElt) {
+    Optional<ClassKind> opt = elementUtils.getAllMembers(dataObjectElt)
       .stream()
       .flatMap(Helper.FILTER_METHOD)
       .filter(exeElt -> exeElt.getParameters().isEmpty() && exeElt.getSimpleName().toString().equals("toJson"))
@@ -691,8 +696,22 @@ public class Helper {
         }
         return Stream.empty();
       })
-      .findFirst()
-      .orElse(null);
+      .findFirst();
+    if (opt.isPresent()) {
+      ClassKind classKind = opt.get();
+      MapperInfo serializer = new MapperInfo();
+      serializer.setQualifiedName(dataObjectElt.getQualifiedName().toString());
+      serializer.setKind(MapperKind.SELF);
+      if (classKind == ClassKind.JSON_OBJECT) {
+        serializer.setTargetType(JSON_OBJECT);
+        serializer.setSelectors(Collections.singletonList("toJson"));
+      } else {
+        serializer.setTargetType(STRING);
+        serializer.setSelectors(Collections.singletonList("toJson"));
+      }
+      return serializer;
+    }
+    return null;
   }
 
   public static boolean isConcreteClass(TypeElement element) {
@@ -706,7 +725,7 @@ public class Helper {
 
   private static final Set<String> dataObjectTypes = new HashSet<>(Arrays.asList("io.vertx.core.json.JsonObject", "java.lang.String"));
 
-  public static ClassKind getAnnotatedDataObjectDeserialisationType(Elements elementUtils, Types typeUtils, TypeElement dataObjectElt) {
+  public static MapperInfo getAnnotatedDataObjectDeserialisationType(Elements elementUtils, Types typeUtils, TypeElement dataObjectElt) {
     if (isConcreteClass(dataObjectElt)) {
       Set<String> types = elementUtils
         .getAllMembers(dataObjectElt)
@@ -721,10 +740,46 @@ public class Helper {
         .collect(Collectors.toSet());
       // Order matter
       if (types.contains("io.vertx.core.json.JsonObject")) {
-        return ClassKind.JSON_OBJECT;
+        MapperInfo mi = new MapperInfo();
+        mi.setQualifiedName(dataObjectElt.getQualifiedName().toString());
+        mi.setTargetType(JSON_OBJECT);
+        mi.setKind(MapperKind.SELF);
+        return mi;
       } else if (types.contains("java.lang.String")) {
-        return ClassKind.STRING;
+        MapperInfo mi = new MapperInfo();
+        mi.setQualifiedName(dataObjectElt.getQualifiedName().toString());
+        mi.setTargetType(STRING);
+        mi.setKind(MapperKind.SELF);
+        return mi;
       }
+    }
+    Optional<String> opt = elementUtils.getAllMembers(dataObjectElt).stream()
+      .map(e -> {
+        if (e.getKind() == ElementKind.METHOD) {
+          ExecutableElement execElt = (ExecutableElement) e;
+          if (e.getSimpleName().toString().equals("fromJson")) {
+            if (execElt.getParameters().size() == 1) {
+              String argType = execElt.getParameters().get(0).asType().toString();
+              if (argType.equals("java.lang.String") || argType.equals("io.vertx.core.json.JsonObject")) {
+                Set<Modifier> modifiers = execElt.getModifiers();
+                if (modifiers.contains(Modifier.PUBLIC) && modifiers.contains(Modifier.STATIC)) {
+                  if (typeUtils.isSameType(execElt.getReturnType(), dataObjectElt.asType())) {
+                    return argType;
+                  }
+                }
+              }
+            }
+          }
+        }
+        return "";
+      }).filter(s -> s.length() > 0).findFirst();
+    if (opt.isPresent()) {
+      MapperInfo mi = new MapperInfo();
+      mi.setQualifiedName(dataObjectElt.getQualifiedName().toString());
+      mi.setTargetType(opt.get().equals("java.lang.String") ? STRING : JSON_OBJECT);
+      mi.setKind(MapperKind.STATIC_METHOD);
+      mi.setSelectors(Collections.singletonList("fromJson"));
+      return mi;
     }
     return null;
   }
