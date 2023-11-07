@@ -16,10 +16,7 @@ import io.vertx.test.codegen.annotations.TestEnum;
 import io.vertx.test.codegen.testapi.InvalidInterfaceDataObject;
 import io.vertx.test.codegen.testdataobject.*;
 import io.vertx.test.codegen.testdataobject.imported.Imported;
-import io.vertx.test.codegen.testdataobject.jsonmapper.DataObjectWithPojoWithMapper;
-import io.vertx.test.codegen.testdataobject.jsonmapper.MyEnumWithCustomFactory;
-import io.vertx.test.codegen.testdataobject.jsonmapper.MyPojo;
-import io.vertx.test.codegen.testdataobject.jsonmapper.DataObjectWithMappedEnum;
+import io.vertx.test.codegen.testdataobject.jsonmapper.*;
 
 import org.junit.Test;
 
@@ -923,6 +920,27 @@ public class DataObjectTest {
     assertEquals(ClassKind.OTHER, myPojoProperty.getType().getKind());
     assertTrue(myPojoProperty.getType().getDataObject().isDeserializable());
     assertTrue(myPojoProperty.getType().getDataObject().isSerializable());
+  }
+
+  @Test
+  public void testDataObjectWithAutoMapped() throws Exception {
+    DataObjectModel model = new GeneratorHelper()
+      .generateDataObject(DataObjectWithAutoMapper.class);
+    assertNotNull(model);
+    assertTrue(model.isClass());
+    assertTrue(model.getGenerateConverter());
+    assertTrue(model.isPublicConverter());
+
+    PropertyInfo prop = model.getPropertyMap().get("value1");
+    assertEquals(ClassKind.OTHER, prop.getType().getKind());
+    assertNotNull(prop.getType().getDataObject());
+    assertTrue(prop.getType().getDataObject().isDeserializable());
+    assertTrue(prop.getType().getDataObject().isSerializable());
+    prop = model.getPropertyMap().get("value2");
+    assertEquals(ClassKind.API, prop.getType().getKind());
+    assertNotNull(prop.getType().getDataObject());
+    assertTrue(prop.getType().getDataObject().isDeserializable());
+    assertTrue(prop.getType().getDataObject().isSerializable());
   }
 
   @Test

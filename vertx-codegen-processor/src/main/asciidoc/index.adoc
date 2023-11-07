@@ -165,6 +165,40 @@ com.example.MyEnumWithCustomFactory.deserializer=com.example.MyEnumWithCustomFac
 
 A `@DataObject` annotated type is a Java class with the only purpose to be a container for data.
 
+A data object can be created from JSON with a constructor or a factory method:
+
+.with a constructor
+[source,java]
+----
+public class MyDataObject {
+  public MyDataObject(JsonObject json) {
+    // ...
+  }
+}
+----
+
+.with a factory
+[source,java]
+----
+public class MyDataObject {
+  public static MyDataObject fromJson(JsonObject json) {
+    // ...
+  }
+}
+----
+
+A data object can be converted to JSON with a `toJson()` method:
+
+.with a factory
+[source,java]
+----
+public class MyDataObject {
+  public JsonObject toJson() {
+    // ...
+  }
+}
+----
+
 A converter instance is automatically generated when the class is annotated with `@DataObject(generateConverter = true)`
 
 Data object annotated classes can also inherit from other data objects annotated types.
@@ -229,8 +263,7 @@ encouraged.
 ==== Json -> Data Object conversion
 
 When a data object has an associated deserializer, it can be instantiated from a json value and is said _deserializable_.
-For POJO to json object mapping, although there are no strict rules of mapping between the data object properties and
-the json structure, it is a good thing to follow a common mapping for users using json data objects (like in JavaScript shim).
+For POJO to json object mapping, although there are no strict rules of mapping between the data object properties and the json structure, it is a good thing to follow a common mapping for users using json data objects (like in JavaScript shim).
 
 In particular json object properties should be named after properties according to JavaBean conversion rules:
 
@@ -248,8 +281,7 @@ In all case, property names are _normalized_, i.e:
 ==== Data object -> json conversion
 
 When a data object has an associated serializer, it can be converted to the json format and is said _serializable_.
-Vert.x API types have restriction in the declared method return types, a jsonifiable data object can be used in
-Vert.x API method return types or handlers because it can be converted to a json format, otherwise it is not permitted.
+Vert.x API types have restriction in the declared method return types, a jsonifiable data object can be used in  Vert.x API method return types or handlers because it can be converted to a json format, otherwise it is not permitted.
 
 ===== Data object converter
 
