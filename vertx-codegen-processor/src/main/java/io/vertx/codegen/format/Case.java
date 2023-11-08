@@ -5,11 +5,50 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public abstract class Case {
+
+  private static Case ERROR = new io.vertx.codegen.format.Case() {};
+
+  private static final ConcurrentMap<String, Case> CACHED_CASES = new ConcurrentHashMap<>();
+
+  /**
+   * Resolve a case given its Java FQN.
+   *
+   * @param name the case FQN
+   * @return the loaded case, {@code null} on errors
+   */
+  public static Case loadCase(String name) {
+    Case found = CACHED_CASES.computeIfAbsent(name, n -> {
+      // Maybe use java util service loading mechanism
+      switch (name) {
+        case "io.vertx.codegen.format.CamelCase":
+          return CamelCase.INSTANCE;
+        case "io.vertx.codegen.format.SnakeCase":
+          return SnakeCase.INSTANCE;
+        case "io.vertx.codegen.format.LowerCamelCase":
+          return LowerCamelCase.INSTANCE;
+        case "io.vertx.codegen.format.KebabCase":
+          return KebabCase.INSTANCE;
+        case "io.vertx.codegen.format.QualifiedCase":
+          return QualifiedCase.INSTANCE;
+        default:
+          try {
+            Class<?> clazz = Case.class.getClassLoader().loadClass(name);
+            Case i = (Case) clazz.getConstructor().newInstance();
+            return i;
+          } catch (Exception e) {
+            return ERROR;
+          }
+      }
+    });
+    return found == ERROR ? null : found;
+  }
 
   public String name() {
     throw new UnsupportedOperationException();
