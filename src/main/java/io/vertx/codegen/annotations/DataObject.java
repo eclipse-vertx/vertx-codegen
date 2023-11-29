@@ -45,16 +45,6 @@ import java.lang.annotation.Target;
  * Sometimes data object can have a {@code toJson()} method that takes no arguments and returns a {@code JsonObject} representing
  * the data object as a {@code JsonObject}.<p/>
  *
- * Vert.x core will generate a json converters using annotation processing to ease conversion, for a given data object,
- * a converter is generated, the name of this converter is the name of the data object with the {@literal Converter} suffix.<p/>
- *
- * The converter has a {@code fromJson(JsonObject,T)} and a {@code toJson(T,JsonObject)} public static methods, such methods
- * can be used by the json constructor or the {@code toJson()} method to implement the conversion code. By default the
- * generated methods only handle the conversion of the property of the data object and do not handle the properties of the
- * ancestors of this data object, {@link #inheritConverter()} can be set to true to change this behavior and handle the
- * conversion of the inherited properties as well. The converter generation can be prevented with the
- * {@link #generateConverter()} annotation member.
- *
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -63,22 +53,30 @@ public @interface DataObject {
 
   /**
    * @return true if converter should be generated for the data object
+   * @deprecated instead declare a {@link JsonGen} annotation
    */
+  @Deprecated
   boolean generateConverter() default false;
 
   /**
    * @return true if the converter should handle the state of the ancestors.
+   * @deprecated instead declare a {@link JsonGen#inheritConverter()}
    */
+  @Deprecated
   boolean inheritConverter() default false;
 
   /**
    * @return whether the generated converter should be public or package private
+   * @deprecated instead declare a {@link JsonGen#publicConverter()}
    */
+  @Deprecated
   boolean publicConverter() default true;
 
   /**
-   * @return todo
+   * @return the case class specifying how the data object converter properties will be translated to JSON element names.
+   * @deprecated instead declare a {@link JsonGen#jsonPropertyNameFormatter()}
    */
+  @Deprecated
   Class<? extends Case> jsonPropertyNameFormatter() default LowerCamelCase.class;
 
   /**
@@ -95,6 +93,8 @@ public @interface DataObject {
    * </ul>
    *
    * @return if generated converters are enabled, buffers should default to the configured type.
+   * @deprecated instead declare a {@link JsonGen#base64Type()}
    */
+  @Deprecated
   String base64Type() default "";
 }

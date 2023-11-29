@@ -2,6 +2,7 @@ package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
+import io.vertx.codegen.annotations.JsonGen;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.doc.Text;
@@ -227,12 +228,21 @@ public class DataObjectModel implements Model {
     return false;
   }
 
+  @SuppressWarnings("deprecation")
   private void traverse() {
     DataObject ann = modelElt.getAnnotation(DataObject.class);
-    this.generateConverter = ann.generateConverter();
-    this.publicConverter = ann.publicConverter();
-    this.inheritConverter = ann.inheritConverter();
-    this.base64Type = ann.base64Type();
+    JsonGen jsonGen = modelElt.getAnnotation(JsonGen.class);
+    if (jsonGen != null) {
+      this.generateConverter = true;
+      this.publicConverter = jsonGen.publicConverter();
+      this.inheritConverter = jsonGen.inheritConverter();
+      this.base64Type = jsonGen.base64Type();
+    } else {
+      this.generateConverter = ann.generateConverter();
+      this.publicConverter = ann.publicConverter();
+      this.inheritConverter = ann.inheritConverter();
+      this.base64Type = ann.base64Type();
+    }
     if (base64Type == null) {
       throw new GenException(modelElt, "Data object base64 type cannot be null");
     } else {
