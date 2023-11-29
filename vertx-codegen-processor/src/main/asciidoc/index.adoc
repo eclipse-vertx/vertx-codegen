@@ -199,7 +199,7 @@ public class MyDataObject {
 }
 ----
 
-A converter instance is automatically generated when the class is annotated with `@DataObject(generateConverter = true)`
+A converter instance is automatically generated when the class is annotated with `@DataObject` and `@JsonGen`.
 
 Data object annotated classes can also inherit from other data objects annotated types.
 
@@ -290,9 +290,9 @@ The data object/json conversion can be tedious and error prone.
 Vertx-codegen can automate it, generating for you an auxiliary class that implements the conversion logic.
 The generated converter handles the type mapping as well as the json naming convention.
 
-Converters are generated when the data object is annotated with `@DataObject(generateConverter=true)`. The
+Converters are generated when the data object is annotated with `@DataObject` and `@JsonGen`. The
 generation happens for the data object properties, not for the ancestor properties, unless `inheritConverter`
-is set: `@DataObject(generateConverter=true,inheritConverter=true)`.
+is set: `@JsonGen(inheritConverter=true)`.
 
 The converter is named by appending the `Converter` suffix to the data object class name, e.g,
 `ContactDetails` -> `ContactDetailsConverter`. The generated converter has two static methods:

@@ -31,6 +31,12 @@ package io.vertx.codegen.protobuf.annotations;
  * @author <a href="https://github.com/lwlee2608">Jason Lee</a>
  */
 public @interface ProtobufGen {
+
+  /**
+   * @return whether the generated converter should be public or package private
+   */
+  boolean publicConverter() default true;
+
   JsonProtoEncoding jsonProtoEncoding() default JsonProtoEncoding.VERTX_STRUCT;
 
   /**

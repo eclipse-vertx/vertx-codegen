@@ -12,12 +12,14 @@
 package io.vertx.test.codegen.converter;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.json.annotations.JsonGen;
 import io.vertx.core.json.JsonObject;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@DataObject(inheritConverter = false, generateConverter = true)
+@DataObject
+@JsonGen
 public class ChildNotInheritingDataObject extends ParentDataObject {
 
   private String childProperty;

@@ -6,6 +6,7 @@ import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.protobuf.annotations.FieldNumberStrategy;
 import io.vertx.codegen.protobuf.annotations.JsonProtoEncoding;
 import io.vertx.codegen.protobuf.annotations.ProtobufGen;
+import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.EnumTypeInfo;
 import io.vertx.codegen.writer.CodeWriter;
@@ -13,11 +14,7 @@ import io.vertx.codegen.writer.CodeWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -46,14 +43,15 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
 
   @Override
   public String render(DataObjectModel model, int index, int size, Map<String, Object> session) {
-    return renderProto(model, index, size, session);
+    AnnotationValueInfo protobufGen = model.getAnnotation(ProtobufGen.class).get();
+    return renderProto(model, protobufGen.getMember("publicConverter") == Boolean.TRUE, index, size, session);
   }
 
-  public String renderProto(DataObjectModel model, int index, int size, Map<String, Object> session) {
+  public String renderProto(DataObjectModel model, boolean isPublic, int index, int size, Map<String, Object> session) {
     StringWriter buffer = new StringWriter();
     PrintWriter writer = new PrintWriter(buffer);
     CodeWriter code = new CodeWriter(writer);
-    String visibility = model.isPublicConverter() ? "public" : "";
+    String visibility = isPublic ? "public" : "";
 
     JsonProtoEncoding jsonProtoEncoding = ProtobufGenAnnotation.jsonProtoEncoding(model);
     FieldNumberStrategy fieldNumberStrategy = ProtobufGenAnnotation.fieldNumberStrategy(model);

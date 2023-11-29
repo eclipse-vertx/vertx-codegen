@@ -4,7 +4,7 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.json.JsonObject;
 
-@DataObject(generateConverter = true, publicConverter = true)
+@DataObject
 public class DataObjectWithPojoWithMapper {
 
   @GenIgnore
