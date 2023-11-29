@@ -17,7 +17,7 @@ import io.vertx.core.json.JsonObject;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@DataObject(generateConverter = false)
+@DataObject
 public class NoConverterDataObject {
 
   public NoConverterDataObject() {

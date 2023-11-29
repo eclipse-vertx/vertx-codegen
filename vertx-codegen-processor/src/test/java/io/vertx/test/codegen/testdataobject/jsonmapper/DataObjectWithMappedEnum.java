@@ -4,7 +4,7 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.json.JsonObject;
 
-@DataObject(generateConverter = true, publicConverter = true)
+@DataObject
 public class DataObjectWithMappedEnum {
 
   @GenIgnore
@@ -16,11 +16,11 @@ public class DataObjectWithMappedEnum {
   public static String serializeMyEnumWithCustomFactory(MyEnumWithCustomFactory value) {
     return (value != null) ? value.getLongName() : null;
   }
-  
+
   MyEnumWithCustomFactory customEnum;
 
   public DataObjectWithMappedEnum(JsonObject customEnum) {
-    
+
   }
 
   public DataObjectWithMappedEnum(MyEnumWithCustomFactory customEnum) {
@@ -40,5 +40,5 @@ public class DataObjectWithMappedEnum {
   public JsonObject toJson() {
     return null;
   }
-  
+
 }

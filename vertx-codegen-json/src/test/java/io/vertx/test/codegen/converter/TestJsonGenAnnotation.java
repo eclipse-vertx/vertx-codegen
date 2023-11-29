@@ -17,33 +17,31 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 @DataObject
-@JsonGen(base64Type = "basic")
-public class TestDataObjectBase64Basic {
+@JsonGen(publicConverter = false)
+public class TestJsonGenAnnotation {
 
   private Buffer data;
 
-  public TestDataObjectBase64Basic() {
+  public TestJsonGenAnnotation() {
   }
 
-  public TestDataObjectBase64Basic(TestDataObjectBase64Basic copy) {
+  public TestJsonGenAnnotation(TestJsonGenAnnotation copy) {
   }
 
-  public TestDataObjectBase64Basic(JsonObject json) {
-    TestDataObjectBase64BasicConverter.fromJson(json, this);
+  public TestJsonGenAnnotation(JsonObject json) {
   }
 
   public Buffer getData() {
     return data;
   }
 
-  public TestDataObjectBase64Basic setData(Buffer data) {
+  public TestJsonGenAnnotation setData(Buffer data) {
     this.data = data;
     return this;
   }
 
   public JsonObject toJson() {
     JsonObject json = new JsonObject();
-    TestDataObjectBase64BasicConverter.toJson(this, json);
     return json;
   }
 }

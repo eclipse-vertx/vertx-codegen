@@ -13,12 +13,14 @@ package io.vertx.test.codegen.converter;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.format.SnakeCase;
+import io.vertx.codegen.json.annotations.JsonGen;
 import io.vertx.core.json.JsonObject;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@DataObject(generateConverter = true, jsonPropertyNameFormatter = SnakeCase.class)
+@DataObject
+@JsonGen(jsonPropertyNameFormatter = SnakeCase.class)
 public class SnakeFormattedDataObject {
 
   private String foo;

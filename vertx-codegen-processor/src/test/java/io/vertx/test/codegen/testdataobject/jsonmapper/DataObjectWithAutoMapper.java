@@ -3,7 +3,7 @@ package io.vertx.test.codegen.testdataobject.jsonmapper;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
-@DataObject(generateConverter = true, publicConverter = true)
+@DataObject
 public class DataObjectWithAutoMapper {
 
   AutoMapped value1;

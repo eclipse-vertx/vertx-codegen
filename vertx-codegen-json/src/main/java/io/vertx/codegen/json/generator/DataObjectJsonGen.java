@@ -1,6 +1,7 @@
 package io.vertx.codegen.json.generator;
 
 import io.vertx.codegen.DataObjectModel;
+import io.vertx.codegen.GenException;
 import io.vertx.codegen.Generator;
 import io.vertx.codegen.PropertyInfo;
 import io.vertx.codegen.annotations.DataObject;
@@ -10,6 +11,7 @@ import io.vertx.codegen.format.KebabCase;
 import io.vertx.codegen.format.LowerCamelCase;
 import io.vertx.codegen.format.QualifiedCase;
 import io.vertx.codegen.format.SnakeCase;
+import io.vertx.codegen.json.annotations.JsonGen;
 import io.vertx.codegen.type.AnnotationValueInfo;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.type.ClassTypeInfo;
@@ -32,6 +34,10 @@ import java.util.Map;
 public class DataObjectJsonGen extends Generator<DataObjectModel> {
 
   private Case formatter;
+  private boolean isPublic;
+  private boolean inheritConverter;
+  private String base64Type;
+  private boolean generate;
 
   public DataObjectJsonGen() {
     kinds = Collections.singleton("dataObject");
@@ -45,25 +51,61 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
 
   @Override
   public String filename(DataObjectModel model) {
-    if (model.isClass() && model.getGenerateConverter()) {
+    if (model.isClass() && findJsonGenAnnotation(model) != null) {
       return model.getFqn() + "Converter.java";
+    }
+    return null;
+  }
+
+  private AnnotationValueInfo findJsonGenAnnotation(DataObjectModel model) {
+    for (AnnotationValueInfo ann : model.getAnnotations()) {
+      if (ann.getName().equals(JsonGen.class.getName())) {
+        return ann;
+      }
     }
     return null;
   }
 
   @Override
   public String render(DataObjectModel model, int index, int size, Map<String, Object> session) {
-    return renderJson(model, index, size, session);
+    AnnotationValueInfo jsonGenAnn = findJsonGenAnnotation(model);
+    ClassTypeInfo cti = getFormatter(model, JsonGen.class, "jsonPropertyNameFormatter");
+    String base64Type = (String) jsonGenAnn.getMember("base64Type");
+    if (base64Type == null) {
+      throw new GenException(model.getElement(), "Data object base64 type cannot be null");
+    } else {
+      switch (base64Type) {
+        case "":
+          // special type to use vertx-core default
+        case "basic":
+        case "base64url":
+          // ok
+          break;
+        default:
+          throw new GenException(model.getElement(), "Data object base64 unsupported type: " + base64Type);
+      }
+    }
+    formatter = getCase(cti);
+    isPublic = jsonGenAnn.getMember("publicConverter") == Boolean.TRUE;
+    inheritConverter = jsonGenAnn.getMember("inheritConverter") == Boolean.TRUE;
+    this.base64Type = base64Type;
+    generate = true;
+    return renderJson(model);
   }
 
-  public String renderJson(DataObjectModel model, int index, int size, Map<String, Object> session) {
-    formatter = getCase(model);
+  private ClassTypeInfo getFormatter(DataObjectModel model, Class<? extends Annotation> annType, String annotationName) {
+    AnnotationValueInfo abc = model
+      .getAnnotations()
+      .stream().filter(ann -> ann.getName().equals(annType.getName()))
+      .findFirst().get();
+    return (ClassTypeInfo) abc.getMember(annotationName);
+  }
 
+  public String renderJson(DataObjectModel model) {
     StringWriter buffer = new StringWriter();
     PrintWriter writer = new PrintWriter(buffer);
     CodeWriter code = new CodeWriter(writer);
-    String visibility = model.isPublicConverter() ? "public" : "";
-    boolean inheritConverter = model.getInheritConverter();
+    String visibility = isPublic ? "public" : "";
 
     writer.print("package " + model.getType().getPackageName() + ";\n");
     writer.print("\n");
@@ -81,9 +123,9 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
     code
       .codeln("public class " + model.getType().getSimpleName() + "Converter {"
       ).newLine();
-    if (model.getGenerateConverter()) {
+    if (generate) {
       writer.print("\n");
-      switch (model.getBase64Type()) {
+      switch (base64Type) {
         case "basic":
           writer.print(
             "  private static final Base64.Decoder BASE64_DECODER = Base64.getDecoder();\n" +
@@ -110,14 +152,14 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
     return buffer.toString();
   }
 
-  private void genToJson(String visibility, boolean inheritConverter, DataObjectModel model, PrintWriter writer) {
-    String simpleName = model.getType().getSimpleName();
+  private void genToJson(String visibility, boolean inheritConverter, DataObjectModel model_, PrintWriter writer) {
+    String simpleName = model_.getType().getSimpleName();
     writer.print("  " + visibility + " static void toJson(" + simpleName + " obj, JsonObject json) {\n");
     writer.print("    toJson(obj, json.getMap());\n");
     writer.print("  }\n");
     writer.print("\n");
     writer.print("  " + visibility + " static void toJson(" + simpleName + " obj, java.util.Map<String, Object> json) {\n");
-    model.getPropertyMap().values().forEach(prop -> {
+    model_.getPropertyMap().values().forEach(prop -> {
       if ((prop.isDeclared() || inheritConverter) && prop.getGetterMethod() != null && prop.isJsonifiable()) {
         ClassKind propKind = prop.getType().getKind();
         if (propKind.basic) {
@@ -213,11 +255,11 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
     }
   }
 
-  private void genFromJson(String visibility, boolean inheritConverter, DataObjectModel model, PrintWriter writer) {
-    writer.print("  " + visibility + " static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, " + model.getType().getSimpleName() + " obj) {\n");
+  private void genFromJson(String visibility, boolean inheritConverter, DataObjectModel model_, PrintWriter writer) {
+    writer.print("  " + visibility + " static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, " + model_.getType().getSimpleName() + " obj) {\n");
     writer.print("    for (java.util.Map.Entry<String, Object> member : json) {\n");
     writer.print("      switch (member.getKey()) {\n");
-    model.getPropertyMap().values().forEach(prop -> {
+    model_.getPropertyMap().values().forEach(prop -> {
       if (prop.isDeclared() || inheritConverter) {
         ClassKind propKind = prop.getType().getKind();
         if (propKind.basic) {
@@ -371,12 +413,7 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
     writer.print(indent + "  break;\n");
   }
 
-  private Case getCase(DataObjectModel model) {
-    AnnotationValueInfo abc = model
-      .getAnnotations()
-      .stream().filter(ann -> ann.getName().equals(DataObject.class.getName()))
-      .findFirst().get();
-    ClassTypeInfo cti = (ClassTypeInfo) abc.getMember("jsonPropertyNameFormatter");
+  private Case getCase(ClassTypeInfo cti) {
     switch (cti.getName()) {
       case "io.vertx.codegen.format.CamelCase":
         return CamelCase.INSTANCE;

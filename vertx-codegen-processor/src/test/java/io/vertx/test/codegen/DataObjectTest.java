@@ -60,9 +60,6 @@ public class DataObjectTest {
     DataObjectModel model = new GeneratorHelper().generateDataObject(EmptyDataObject.class);
     assertNotNull(model);
     assertTrue(model.isClass());
-    assertFalse(model.getGenerateConverter());
-    assertFalse(model.getInheritConverter());
-    assertTrue(model.isPublicConverter());
     try {
       EmptyDataObject.class.getConstructor();
       fail();
@@ -644,21 +641,16 @@ public class DataObjectTest {
   @Test
   public void testConverterDataObject() throws Exception {
     DataObjectModel model = new GeneratorHelper().generateDataObject(ConverterDataObject.class);
-    assertTrue(model.getGenerateConverter());
-    assertFalse(model.isPublicConverter());
   }
 
   @Test
   public void testNoConverterDataObject() throws Exception {
     DataObjectModel model = new GeneratorHelper().generateDataObject(NoConverterDataObject.class);
-    assertFalse(model.getGenerateConverter());
-    assertTrue(model.isPublicConverter());
   }
 
   @Test
   public void testInheritedConverterDataObject() throws Exception {
     DataObjectModel model = new GeneratorHelper().generateDataObject(InheritingConverterDataObject.class);
-    assertTrue(model.getInheritConverter());
   }
 
   @Test
@@ -891,8 +883,6 @@ public class DataObjectTest {
     DataObjectModel model = new GeneratorHelper().generateDataObject(DataObjectWithAnnotatedField.class);
     assertNotNull(model);
     assertTrue(model.isClass());
-    assertTrue(model.getGenerateConverter());
-    assertTrue(model.isPublicConverter());
     PropertyInfo idModel = model.getPropertyMap().get("id");
     assertEquals(1, idModel.getAnnotations().size());
     assertNotNull(idModel.getAnnotation(SomeAnnotation.class.getName()).getName());
@@ -913,8 +903,6 @@ public class DataObjectTest {
       .generateDataObject(DataObjectWithPojoWithMapper.class);
     assertNotNull(model);
     assertTrue(model.isClass());
-    assertTrue(model.getGenerateConverter());
-    assertTrue(model.isPublicConverter());
 
     PropertyInfo myPojoProperty = model.getPropertyMap().get("myPojo");
     assertEquals(ClassKind.OTHER, myPojoProperty.getType().getKind());
@@ -928,8 +916,6 @@ public class DataObjectTest {
       .generateDataObject(DataObjectWithAutoMapper.class);
     assertNotNull(model);
     assertTrue(model.isClass());
-    assertTrue(model.getGenerateConverter());
-    assertTrue(model.isPublicConverter());
 
     PropertyInfo prop = model.getPropertyMap().get("value1");
     assertEquals(ClassKind.OTHER, prop.getType().getKind());
@@ -951,8 +937,6 @@ public class DataObjectTest {
         .generateDataObject(DataObjectWithMappedEnum.class);
     assertNotNull(model);
     assertTrue(model.isClass());
-    assertTrue(model.getGenerateConverter());
-    assertTrue(model.isPublicConverter());
 
     PropertyInfo myPojoProperty = model.getPropertyMap().get("customEnum");
     assertEquals(ClassKind.ENUM, myPojoProperty.getType().getKind());

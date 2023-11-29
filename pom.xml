@@ -44,6 +44,11 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-codegen-annotations</artifactId>
+        <version>${stack.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -51,6 +56,7 @@
   </dependencies>
 
   <modules>
+    <module>vertx-codegen-annotations</module>
     <module>vertx-codegen-processor</module>
     <module>vertx-codegen-json</module>
     <module>vertx-codegen</module>

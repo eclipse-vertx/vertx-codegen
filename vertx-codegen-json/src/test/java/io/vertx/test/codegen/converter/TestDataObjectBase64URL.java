@@ -12,10 +12,12 @@
 package io.vertx.test.codegen.converter;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.json.annotations.JsonGen;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
-@DataObject(generateConverter = true, base64Type = "base64url")
+@DataObject
+@JsonGen(base64Type = "base64url")
 public class TestDataObjectBase64URL {
 
   private Buffer data;

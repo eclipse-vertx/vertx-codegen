@@ -4,7 +4,7 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 
 @SomeAnnotation(1)
-@DataObject(generateConverter = true)
+@DataObject
 public class DataObjectWithAnnotatedField {
 
   @SomeAnnotation(2)

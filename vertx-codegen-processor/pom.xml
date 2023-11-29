@@ -20,6 +20,10 @@
   <dependencies>
     <dependency>
       <groupId>io.vertx</groupId>
+      <artifactId>vertx-codegen-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
       <artifactId>vertx-docgen</artifactId>
       <optional>true</optional>
     </dependency>
@@ -143,6 +147,11 @@
             </goals>
             <configuration>
               <artifactItems>
+                <artifactItem>
+                  <groupId>io.vertx</groupId>
+                  <artifactId>vertx-codegen-annotations</artifactId>
+                  <type>jar</type>
+                </artifactItem>
                 <artifactItem>
                   <groupId>com.fasterxml.jackson.core</groupId>
                   <artifactId>jackson-core</artifactId>

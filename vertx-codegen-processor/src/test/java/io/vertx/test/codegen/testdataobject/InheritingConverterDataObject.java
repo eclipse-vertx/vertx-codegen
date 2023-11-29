@@ -6,7 +6,7 @@ import io.vertx.core.json.JsonObject;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@DataObject(inheritConverter = true)
+@DataObject
 public class InheritingConverterDataObject {
 
   public InheritingConverterDataObject() {

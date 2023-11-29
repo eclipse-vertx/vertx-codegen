@@ -158,6 +158,11 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>io.vertx</groupId>
+                  <artifactId>vertx-codegen-annotations</artifactId>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>io.vertx</groupId>
                   <artifactId>vertx-codegen-processor</artifactId>
                   <type>jar</type>
                 </artifactItem>
