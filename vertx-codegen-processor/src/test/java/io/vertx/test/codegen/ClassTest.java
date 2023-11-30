@@ -1030,8 +1030,8 @@ public class ClassTest extends ClassTestBase {
 
   @Test
   public void testMethodWithInvalidDataObjectParam() throws Exception {
-    assertGenInvalid(MethodWithInvalidAbstractDataObjectParam.class);
-    assertGenInvalid(MethodWithInvalidInterfaceDataObjectParam.class);
+    new GeneratorHelper().generateClass(MethodWithInvalidAbstractDataObjectParam.class);
+    new GeneratorHelper().generateClass(MethodWithInvalidInterfaceDataObjectParam.class);
   }
 
   // Valid returns
@@ -2356,12 +2356,12 @@ public class ClassTest extends ClassTestBase {
 
   @Test
   public void testMethodInvalidHandlerDataObjectParam() throws Exception {
-    assertGenFail(MethodWithInvalidHandlerDataObjectParam.class, "Option without toJson() in Handler param should fail");
+    new GeneratorHelper().generateClass(MethodWithInvalidHandlerDataObjectParam.class);
   }
 
   @Test
   public void testMethodInvalidHandlerAsyncResultDataObjectsParam() throws Exception {
-    assertGenFail(MethodWithInvalidHandlerAsyncResultDataObjectParam.class, "Option without toJson() in AsyncResult param should fail");
+    new GeneratorHelper().generateClass(MethodWithInvalidHandlerAsyncResultDataObjectParam.class);
   }
 
   @Test
