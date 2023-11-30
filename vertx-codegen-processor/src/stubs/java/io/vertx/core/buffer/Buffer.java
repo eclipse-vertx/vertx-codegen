@@ -1,5 +1,6 @@
 package io.vertx.core.buffer;
 
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 
@@ -8,7 +9,7 @@ import java.util.Arrays;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@VertxGen
+@DataObject
 public interface Buffer {
 
   @GenIgnore(GenIgnore.PERMITTED_TYPE)

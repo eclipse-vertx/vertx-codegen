@@ -195,16 +195,11 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
                   throw new UnsupportedOperationException();
               }
               genPropToJson(m, match, prop, writer);
-            } else {
-              return;
+            } else if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
+              genPropToJson("BASE64_ENCODER.encodeToString(", ".getBytes())", prop, writer);
             }
           } else {
             switch (propKind) {
-              case API:
-                if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
-                  genPropToJson("BASE64_ENCODER.encodeToString(", ".getBytes())", prop, writer);
-                }
-                break;
               case ENUM:
                 genPropToJson("", ".name()", prop, writer);
                 break;
@@ -330,14 +325,11 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
                 writer
               );
 
+            } else if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
+              genPropFromJson("String", "io.vertx.core.buffer.Buffer.buffer(BASE64_DECODER.decode((String)", "))", prop, writer);
             }
           } else {
             switch (propKind) {
-              case API:
-                if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
-                  genPropFromJson("String", "io.vertx.core.buffer.Buffer.buffer(BASE64_DECODER.decode((String)", "))", prop, writer);
-                }
-                break;
               case JSON_OBJECT:
                 genPropFromJson("JsonObject", "((JsonObject)", ").copy()", prop, writer);
                 break;
