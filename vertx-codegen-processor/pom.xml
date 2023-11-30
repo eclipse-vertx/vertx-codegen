@@ -20,7 +20,7 @@
   <dependencies>
     <dependency>
       <groupId>io.vertx</groupId>
-      <artifactId>vertx-codegen-annotations</artifactId>
+      <artifactId>vertx-codegen-api</artifactId>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
@@ -149,7 +149,7 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>io.vertx</groupId>
-                  <artifactId>vertx-codegen-annotations</artifactId>
+                  <artifactId>vertx-codegen-api</artifactId>
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>

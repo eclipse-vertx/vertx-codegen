@@ -46,7 +46,7 @@
       </dependency>
       <dependency>
         <groupId>io.vertx</groupId>
-        <artifactId>vertx-codegen-annotations</artifactId>
+        <artifactId>vertx-codegen-api</artifactId>
         <version>${stack.version}</version>
       </dependency>
     </dependencies>
@@ -56,7 +56,7 @@
   </dependencies>
 
   <modules>
-    <module>vertx-codegen-annotations</module>
+    <module>vertx-codegen-api</module>
     <module>vertx-codegen-processor</module>
     <module>vertx-codegen-json</module>
     <module>vertx-codegen</module>

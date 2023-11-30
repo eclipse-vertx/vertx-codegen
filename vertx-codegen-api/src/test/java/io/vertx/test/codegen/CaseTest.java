@@ -6,6 +6,7 @@ import io.vertx.codegen.format.KebabCase;
 import io.vertx.codegen.format.LowerCamelCase;
 import io.vertx.codegen.format.QualifiedCase;
 import io.vertx.codegen.format.SnakeCase;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -74,7 +75,7 @@ public class CaseTest {
     for (String test : Arrays.asList(".", ".foo", "foo.", "foo..bar")) {
       try {
         QualifiedCase.INSTANCE.parse(test);
-        fail("Was expecting " + test + " to be rejected");
+        Assert.fail("Was expecting " + test + " to be rejected");
       } catch (Exception ignore) {
       }
     }
@@ -99,7 +100,7 @@ public class CaseTest {
     for (String test : Arrays.asList("-", "-foo", "foo-", "foo--bar")) {
       try {
         KebabCase.INSTANCE.parse(test);
-        fail("Was expecting " + test + " to be rejected");
+        Assert.fail("Was expecting " + test + " to be rejected");
       } catch (Exception ignore) {
       }
     }
@@ -124,7 +125,7 @@ public class CaseTest {
     for (String test : Arrays.asList("_", "_foo", "foo_", "foo__bar")) {
       try {
         SnakeCase.INSTANCE.parse(test);
-        fail("Was expecting " + test + " to be rejected");
+        Assert.fail("Was expecting " + test + " to be rejected");
       } catch (Exception ignore) {
       }
     }
@@ -132,10 +133,10 @@ public class CaseTest {
 
   @Test
   public void testConversion() {
-    assertEquals("foo-bar-juu", CamelCase.INSTANCE.to(KebabCase.INSTANCE, "FooBarJuu"));
-    assertEquals("foo_bar_juu", CamelCase.INSTANCE.to(SnakeCase.INSTANCE, "FooBarJuu"));
-    assertEquals("FooBarJuu", SnakeCase.INSTANCE.to(CamelCase.INSTANCE, "foo_bar_juu"));
-    assertEquals("FooBarJuu", KebabCase.INSTANCE.to(CamelCase.INSTANCE, "foo-bar-juu"));
+    Assert.assertEquals("foo-bar-juu", CamelCase.INSTANCE.to(KebabCase.INSTANCE, "FooBarJuu"));
+    Assert.assertEquals("foo_bar_juu", CamelCase.INSTANCE.to(SnakeCase.INSTANCE, "FooBarJuu"));
+    Assert.assertEquals("FooBarJuu", SnakeCase.INSTANCE.to(CamelCase.INSTANCE, "foo_bar_juu"));
+    Assert.assertEquals("FooBarJuu", KebabCase.INSTANCE.to(CamelCase.INSTANCE, "foo-bar-juu"));
   }
 
   private void formatCamelCase(String expected, String... atoms) {
@@ -175,10 +176,10 @@ public class CaseTest {
   }
 
   private void assertCase(Case _case, String expected, String... atoms) {
-    assertEquals(expected, _case.format(Arrays.asList(atoms)));
+    Assert.assertEquals(expected, _case.format(Arrays.asList(atoms)));
   }
 
   private void parseCase(Case _case, String s, String... expected) {
-    assertEquals(Arrays.asList(expected), _case.parse(s));
+    Assert.assertEquals(Arrays.asList(expected), _case.parse(s));
   }
 }
