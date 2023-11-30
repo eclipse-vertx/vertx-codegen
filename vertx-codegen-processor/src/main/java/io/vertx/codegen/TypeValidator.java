@@ -1,7 +1,6 @@
 package io.vertx.codegen;
 
 import io.vertx.codegen.type.ClassKind;
-import io.vertx.codegen.type.DataObjectInfo;
 import io.vertx.codegen.type.ParameterizedTypeInfo;
 import io.vertx.codegen.type.TypeInfo;
 import io.vertx.codegen.type.TypeVariableInfo;
@@ -68,21 +67,6 @@ class TypeValidator {
 
   private static boolean isValidNonCallableType(Element elem, TypeInfo type, boolean isParam, boolean isReturn, boolean allowParameterized, boolean allowAnyJavaType) {
     if (type.isDataObjectHolder()) {
-      DataObjectInfo dataObject = type.getDataObject();
-      if (isParam && !dataObject.isDeserializable()) {
-        if (dataObject.isAnnotated()) {
-          throw new GenException(elem, "annotated @DataObject " + type + " requires a JSON constructor");
-        } else {
-          throw new GenException(elem, "type " + type + " requires a JSON deserializer method");
-        }
-      }
-      if (isReturn && !dataObject.isSerializable()) {
-        if (dataObject.isAnnotated()) {
-          throw new GenException(elem, "annotated @DataObject " + type + " requires a toJson() method");
-        } else {
-          throw new GenException(elem, "type " + type + " requires a JSON serializer method");
-        }
-      }
       return true;
     }
     if (type.getKind() == ClassKind.VOID) {

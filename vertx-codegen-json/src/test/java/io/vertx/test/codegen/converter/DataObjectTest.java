@@ -102,6 +102,8 @@ public class DataObjectTest {
     json.put("jsonArrayValue", jsonArray);
     json.put("enumValue", httpMethod.toString());
     json.put("methodMappedValue", methodMapped.toString());
+    json.put("noConverterDataObjectValue", new JsonObject());
+    json.put("noConverter2DataObjectValue", new JsonObject());
     json.put("customEnumValue", enumMapped.getShortName());
     json.put("autoMappedValue", autoMapped.toJson());
     json.put("autoMappedWithVertxGenValue", autoMappedWithVertxGen.toJson());
@@ -121,6 +123,8 @@ public class DataObjectTest {
     json.put("jsonArrayValueList", new JsonArray().add(jsonArray));
     json.put("enumValueList", new JsonArray().add(httpMethod.toString()));
     json.put("methodMappedValueList", new JsonArray().add(methodMapped.toString()));
+    json.put("noConverterDataObjectValueList", new JsonArray().add(new JsonObject()));
+    json.put("noConverter2DataObjectValueList", new JsonArray().add(new JsonObject()));
     json.put("objectValueList", new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)));
     json.put("customEnumValueList", new JsonArray().add(enumMapped.getShortName()));
     json.put("autoMappedValueList", new JsonArray().add(autoMapped.toJson()));
@@ -142,6 +146,8 @@ public class DataObjectTest {
     json.put("enumValueSet", new JsonArray().add(httpMethod.toString()));
     json.put("methodMappedValueSet", new JsonArray().add(methodMapped.toString()));
     json.put("objectValueSet", new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)));
+    json.put("noConverterDataObjectValueSet", new JsonArray().add(new JsonObject()));
+    json.put("noConverter2DataObjectValueSet", new JsonArray().add(new JsonObject()));
     json.put("customEnumValueSet", new JsonArray().add(enumMapped.getShortName()));
     json.put("autoMappedValueSet", new JsonArray().add(autoMapped.toJson()));
     json.put("autoMappedWithVertxGenValueSet", new JsonArray().add(autoMappedWithVertxGen.toJson()));
@@ -170,6 +176,8 @@ public class DataObjectTest {
     json.put("addedEnumValues", new JsonArray().add(httpMethod.toString()));
     json.put("addedMethodMappedValues", new JsonArray().add(methodMapped.toString()));
     json.put("addedObjectValues", new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)));
+    json.put("addedNoConverterDataObjectValues", new JsonArray().add(new JsonObject()));
+    json.put("addedNoConverter2DataObjectValues", new JsonArray().add(new JsonObject()));
     json.put("addedCustomEnumValues", new JsonArray().add(enumMapped.getShortName()));
     json.put("addedAutoMappedValues", new JsonArray().add(autoMapped.toJson()));
     json.put("addedAutoMappedWithVertxGenValues", new JsonArray().add(autoMappedWithVertxGen.toJson()));
@@ -190,6 +198,8 @@ public class DataObjectTest {
     json.put("enumValueMap", new JsonObject().put(key, httpMethod.toString()));
     json.put("methodMappedValueMap", new JsonObject().put(key, methodMapped.toString()));
     json.put("objectValueMap", toJson(map));
+    json.put("noConverterDataObjectValueMap", new JsonObject().put(key, new JsonObject()));
+    json.put("noConverter2DataObjectValueMap", new JsonObject().put(key, new JsonObject()));
     json.put("customEnumValueMap", new JsonObject().put(key, enumMapped.getShortName()));
     json.put("autoMappedValueMap", new JsonObject().put(key, autoMapped.toJson()));
     json.put("autoMappedWithVertxGenValueMap", new JsonObject().put(key, autoMapped.toJson()));
@@ -210,6 +220,8 @@ public class DataObjectTest {
     json.put("keyedEnumValues", new JsonObject().put(key, httpMethod.name()));
     json.put("keyedMethodMappedValues", new JsonObject().put(key, methodMapped.toString()));
     json.put("keyedObjectValues", toJson(map));
+    json.put("keyedNoConverterDataObjectValues", new JsonObject());
+    json.put("keyedNoConverter2DataObjectValues", new JsonObject());
     json.put("keyedCustomEnumValues", new JsonObject().put(key, enumMapped.getShortName()));
     json.put("keyedAutoMappedValues", new JsonObject().put(key, autoMapped.toJson()));
     json.put("keyedAutoMappedWithVertxGenValues", new JsonObject().put(key, autoMapped.toJson()));
@@ -241,6 +253,8 @@ public class DataObjectTest {
     Assert.assertEquals(jsonArray, obj.getJsonArrayValue());
     Assert.assertEquals(httpMethod, obj.getEnumValue());
     Assert.assertEquals(methodMapped, obj.getMethodMappedValue());
+    Assert.assertNotNull(obj.getNoConverterDataObjectValue());
+    Assert.assertNull(obj.getNoConverter2DataObjectValue());
     Assert.assertEquals(enumMapped, obj.getCustomEnumValue());
     Assert.assertEquals(autoMapped.toJson(), obj.getAutoMappedValue().toJson());
     Assert.assertEquals(autoMappedWithVertxGen.toJson(), obj.getAutoMappedWithVertxGenValue().toJson());
@@ -261,6 +275,8 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singletonList(httpMethod), obj.getEnumValueList());
     Assert.assertEquals(Collections.singletonList(methodMapped), obj.getMethodMappedValueList());
     Assert.assertEquals(list, obj.getObjectValueList());
+    Assert.assertEquals(1, obj.getNoConverterDataObjectValueList().size());
+    Assert.assertNull(obj.getNoConverter2DataObjectValueList());
     Assert.assertEquals(Collections.singletonList(enumMapped), obj.getCustomEnumValueList());
     Assert.assertEquals(Collections.singletonList(autoMapped), obj.getAutoMappedValueList());
     Assert.assertEquals(Collections.singletonList(autoMappedWithVertxGen), obj.getAutoMappedWithVertxGenValueList());
@@ -281,6 +297,8 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singleton(httpMethod), obj.getEnumValueSet());
     Assert.assertEquals(Collections.singleton(methodMapped), obj.getMethodMappedValueSet());
     Assert.assertEquals(new LinkedHashSet<>(list), obj.getObjectValueSet());
+    Assert.assertEquals(1, obj.getNoConverterDataObjectValueSet().size());
+    Assert.assertNull(obj.getNoConverter2DataObjectValueSet());
     Assert.assertEquals(Collections.singleton(enumMapped), obj.getCustomEnumValueSet());
     Assert.assertEquals(Collections.singleton(autoMapped), obj.getAutoMappedValueSet());
     Assert.assertEquals(Collections.singleton(autoMappedWithVertxGen), obj.getAutoMappedWithVertxGenValueSet());
@@ -301,6 +319,8 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singletonList(httpMethod), obj.getAddedEnumValues());
     Assert.assertEquals(Collections.singletonList(methodMapped), obj.getAddedMethodMappedValues());
     Assert.assertEquals(list, obj.getAddedObjectValues());
+    Assert.assertEquals(1, obj.getAddedNoConverterDataObjectValues().size());
+    Assert.assertEquals(0, obj.getAddedNoConverter2DataObjectValues().size());
     Assert.assertEquals(Collections.singletonList(enumMapped), obj.getAddedCustomEnumValues());
     Assert.assertEquals(Collections.singletonList(autoMapped), obj.getAddedAutoMappedValues());
     Assert.assertEquals(Collections.singletonList(autoMappedWithVertxGen), obj.getAddedAutoMappedWithVertxGenValues());
@@ -321,6 +341,8 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singletonMap(key, httpMethod), obj.getEnumValueMap());
     Assert.assertEquals(Collections.singletonMap(key, methodMapped), obj.getMethodMappedValueMap());
     Assert.assertEquals(map, obj.getObjectValueMap());
+    Assert.assertEquals(1, obj.getNoConverterDataObjectValueMap().size());
+    Assert.assertNull(obj.getNoConverter2DataObjectValueMap());
     Assert.assertEquals(Collections.singletonMap(key, enumMapped), obj.getCustomEnumValueMap());
     Assert.assertEquals(Collections.singletonMap(key, autoMapped), obj.getAutoMappedValueMap());
     Assert.assertEquals(Collections.singletonMap(key, autoMappedWithVertxGen), obj.getAutoMappedWithVertxGenValueMap());
@@ -341,6 +363,8 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singletonMap(key, httpMethod), obj.getKeyedEnumValues());
     Assert.assertEquals(Collections.singletonMap(key, methodMapped), obj.getKeyedMethodMappedValues());
     Assert.assertEquals(map, obj.getObjectValueMap());
+    Assert.assertEquals(1, obj.getNoConverterDataObjectValueMap().size());
+    Assert.assertNull(obj.getNoConverter2DataObjectValueMap());
     Assert.assertEquals(Collections.singletonMap(key, enumMapped), obj.getKeyedCustomEnumValues());
     Assert.assertEquals(Collections.singletonMap(key, autoMapped), obj.getKeyedAutoMappedValues());
     Assert.assertEquals(Collections.singletonMap(key, autoMappedWithVertxGen), obj.getKeyedAutoMappedWithVertxGenValues());
@@ -388,6 +412,8 @@ public class DataObjectTest {
     Assert.assertEquals(null, obj.getJsonObjectValue());
     Assert.assertEquals(null, obj.getJsonArrayValue());
     Assert.assertEquals(null, obj.getMethodMappedValue());
+    Assert.assertEquals(null, obj.getNoConverterDataObjectValue());
+    Assert.assertEquals(null, obj.getNoConverter2DataObjectValue());
     Assert.assertEquals(null, obj.getStringValueList());
     Assert.assertEquals(null, obj.getCustomEnumValue());
     Assert.assertEquals(null, obj.getBoxedBooleanValueList());
@@ -406,6 +432,8 @@ public class DataObjectTest {
     Assert.assertEquals(null, obj.getEnumValueList());
     Assert.assertEquals(null, obj.getMethodMappedValueList());
     Assert.assertEquals(null, obj.getObjectValueList());
+    Assert.assertEquals(null, obj.getNoConverterDataObjectValueList());
+    Assert.assertEquals(null, obj.getNoConverter2DataObjectValueList());
     Assert.assertEquals(null, obj.getCustomEnumValueList());
     Assert.assertEquals(null, obj.getStringValueSet());
     Assert.assertEquals(null, obj.getBoxedBooleanValueSet());
@@ -424,6 +452,8 @@ public class DataObjectTest {
     Assert.assertEquals(null, obj.getEnumValueSet());
     Assert.assertEquals(null, obj.getMethodMappedValueSet());
     Assert.assertEquals(null, obj.getObjectValueSet());
+    Assert.assertEquals(null, obj.getNoConverterDataObjectValueSet());
+    Assert.assertEquals(null, obj.getNoConverter2DataObjectValueSet());
     Assert.assertEquals(null, obj.getCustomEnumValueSet());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedStringValues());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedBoxedBooleanValues());
@@ -442,6 +472,8 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.emptyList(), obj.getAddedEnumValues());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedMethodMappedValues());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedObjectValues());
+    Assert.assertEquals(Collections.emptyList(), obj.getAddedNoConverterDataObjectValues());
+    Assert.assertEquals(Collections.emptyList(), obj.getAddedNoConverter2DataObjectValues());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedCustomEnumValues());
     Assert.assertEquals(null, obj.getStringValueMap());
     Assert.assertEquals(null, obj.getBoxedBooleanValueMap());
@@ -460,6 +492,8 @@ public class DataObjectTest {
     Assert.assertEquals(null, obj.getEnumValueMap());
     Assert.assertEquals(null, obj.getMethodMappedValueMap());
     Assert.assertEquals(null, obj.getObjectValueMap());
+    Assert.assertEquals(null, obj.getNoConverterDataObjectValueMap());
+    Assert.assertEquals(null, obj.getNoConverter2DataObjectValueMap());
     Assert.assertEquals(null, obj.getCustomEnumValueMap());
   }
 
@@ -529,6 +563,8 @@ public class DataObjectTest {
     obj.setJsonArrayValue(jsonArray);
     obj.setEnumValue(httpMethod);
     obj.setMethodMappedValue(dateTime);
+    obj.setNoConverterDataObjectValue(new NoConverterDataObject());
+    obj.setNoConverter2DataObjectValue(new NoConverter2DataObject());
     obj.setCustomEnumValue(testCustomEnum);
     obj.setAutoMappedValue(autoMapped);
     obj.setAutoMappedWithVertxGenValue(autoMappedWithVertxGen);
@@ -549,6 +585,8 @@ public class DataObjectTest {
     obj.setEnumValueList(Collections.singletonList(httpMethod));
     obj.setMethodMappedValueList(Collections.singletonList(dateTime));
     obj.setObjectValueList(list);
+    obj.setNoConverterDataObjectValueList(Collections.singletonList(new NoConverterDataObject()));
+    obj.setNoConverter2DataObjectValueList(Collections.singletonList(new NoConverter2DataObject()));
     obj.setCustomEnumValueList(Collections.singletonList(testCustomEnum));
     obj.setAutoMappedValueList(Collections.singletonList(autoMapped));
     obj.setAutoMappedWithVertxGenValueList(Collections.singletonList(autoMappedWithVertxGen));
@@ -570,6 +608,8 @@ public class DataObjectTest {
     obj.setEnumValueSet(Collections.singleton(httpMethod));
     obj.setMethodMappedValueSet(Collections.singleton(dateTime));
     obj.setObjectValueSet(new LinkedHashSet<>(list));
+    obj.setNoConverterDataObjectValueSet(Collections.singleton(new NoConverterDataObject()));
+    obj.setNoConverter2DataObjectValueSet(Collections.singleton(new NoConverter2DataObject()));
     obj.setCustomEnumValueSet(Collections.singleton(testCustomEnum));
     obj.setAutoMappedValueSet(Collections.singleton(autoMapped));
     obj.setAutoMappedWithVertxGenValueSet(Collections.singleton(autoMappedWithVertxGen));
@@ -589,6 +629,8 @@ public class DataObjectTest {
     obj.setEnumValueMap(Collections.singletonMap(key, httpMethod));
     obj.setMethodMappedValueMap(Collections.singletonMap(key, dateTime));
     obj.setObjectValueMap(map);
+    obj.setNoConverterDataObjectValueMap(Collections.singletonMap(key, new NoConverterDataObject()));
+    obj.setNoConverter2DataObjectValueMap(Collections.singletonMap(key, new NoConverter2DataObject()));
     obj.setCustomEnumValueMap(Collections.singletonMap(key, testCustomEnum));
     obj.setAutoMappedValueMap(Collections.singletonMap(key, autoMapped));
     obj.setAutoMappedWithVertxGenValueMap(Collections.singletonMap(key, autoMappedWithVertxGen));
@@ -609,6 +651,8 @@ public class DataObjectTest {
     obj.addKeyedEnumValue(key, httpMethod);
     obj.addKeyedMethodMappedValue(key, dateTime);
     map.forEach(obj::addKeyedObjectValue);
+    obj.addKeyedNoConverterDataObjectValue(key, new NoConverterDataObject());
+    obj.addKeyedNoConverter2DataObjectValue(key, new NoConverter2DataObject());
     obj.addKeyedCustomEnumValue(key, testCustomEnum);
     obj.addKeyedAutoMappedValue(key, autoMapped);
     obj.addKeyedAutoMappedWithVertxGenValue(key, autoMappedWithVertxGen);
@@ -640,6 +684,8 @@ public class DataObjectTest {
     assertEquals(jsonArray, json.get("jsonArrayValue"));
     assertEquals(httpMethod.name(), json.get("enumValue"));
     assertEquals(dateTime.toString(), json.get("methodMappedValue"));
+    assertNull(json.get("noConverterDataObjectValue"));
+    assertEquals(new JsonObject(), json.get("noConverter2DataObjectValue"));
     assertEquals(testCustomEnum.getShortName(), json.get("customEnumValue"));
     assertEquals(autoMapped.toJson(), json.get("autoMappedValue"));
     assertEquals(autoMappedWithVertxGen.toJson(), json.get("autoMappedWithVertxGenValue"));
@@ -662,6 +708,8 @@ public class DataObjectTest {
     assertEquals(new JsonArray().add(httpMethod.name()), json.get("enumValueList"));
     assertEquals(new JsonArray().add(dateTime.toString()), json.get("methodMappedValueList"));
     assertEquals(new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)), json.get("objectValueList"));
+    assertNull(json.get("noConverterDataObjectValueList"));
+    assertEquals(new JsonArray().add(new JsonObject()), json.get("noConverter2DataObjectValueList"));
     assertEquals(new JsonArray().add(testCustomEnum.getShortName()), json.get("customEnumValueList"));
     assertEquals(new JsonArray().add(autoMapped.toJson()), json.get("autoMappedValueList"));
     assertEquals(new JsonArray().add(autoMappedWithVertxGen.toJson()), json.get("autoMappedWithVertxGenValueList"));
@@ -684,6 +732,8 @@ public class DataObjectTest {
     assertEquals(new JsonArray().add(httpMethod.name()), json.get("enumValueSet"));
     assertEquals(new JsonArray().add(dateTime.toString()), json.get("methodMappedValueSet"));
     assertEquals(new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)), json.get("objectValueSet"));
+    assertNull(json.get("noConverterDataObjectValueSet"));
+    assertEquals(new JsonArray().add(new JsonObject()), json.get("noConverter2DataObjectValueSet"));
     assertEquals(new JsonArray().add(testCustomEnum.getShortName()), json.get("customEnumValueSet"));
     assertEquals(new JsonArray().add(autoMapped.toJson()), json.get("autoMappedValueSet"));
     assertEquals(new JsonArray().add(autoMappedWithVertxGen.toJson()), json.get("autoMappedWithVertxGenValueSet"));
@@ -706,6 +756,8 @@ public class DataObjectTest {
     assertEquals(new JsonObject().put(key, httpMethod.name()), json.get("enumValueMap"));
     assertEquals(new JsonObject().put(key, dateTime.toString()), json.get("methodMappedValueMap"));
     assertEquals(toJson(map), json.get("objectValueMap"));
+    assertNull(json.get("noConverterDataObjectValueMap"));
+    assertEquals(new JsonObject().put(key, new JsonObject()), json.get("noConverter2DataObjectValueMap"));
     assertEquals(new JsonObject().put(key, testCustomEnum.getShortName()), json.get("customEnumValueMap"));
     assertEquals(new JsonObject().put(key, autoMapped.toJson()), json.get("autoMappedValueMap"));
     assertEquals(new JsonObject().put(key, autoMappedWithVertxGen.toJson()), json.get("autoMappedWithVertxGenValueMap"));
@@ -728,6 +780,8 @@ public class DataObjectTest {
     assertEquals(new JsonObject().put(key, httpMethod.name()), json.get("keyedEnumValues"));
     assertEquals(new JsonObject().put(key, dateTime.toString()), json.get("keyedMethodMappedValues"));
     assertEquals(toJson(map), json.get("keyedObjectValues"));
+    assertNull(json.get("keyedNoConverterDataObjectValues"));
+    assertEquals(new JsonObject().put(key, new JsonObject()), json.get("keyedNoConverter2DataObjectValues"));
     assertEquals(new JsonObject().put(key, testCustomEnum.getShortName()), json.get("keyedCustomEnumValues"));
     assertEquals(new JsonObject().put(key, autoMapped.toJson()), json.get("keyedAutoMappedValues"));
     assertEquals(new JsonObject().put(key, autoMappedWithVertxGen.toJson()), json.get("keyedAutoMappedWithVertxGenValues"));
@@ -765,6 +819,8 @@ public class DataObjectTest {
     assertEquals(null, json.get("jsonArrayValue"));
     assertEquals(null, json.get("enumValue"));
     assertEquals(null, json.get("methodMappedValue"));
+    assertEquals(null, json.get("noConverterDataObjectValue"));
+    assertEquals(null, json.get("noConverter2DataObjectValue"));
     assertEquals(null, json.get("customEnumValue"));
     assertEquals(null, json.get("autoMappedValue"));
     assertEquals(null, json.get("autoMappedWithVertxGenValue"));
@@ -805,6 +861,8 @@ public class DataObjectTest {
     assertEquals(null, json.get("enumValueSet"));
     assertEquals(null, json.get("methodMappedValueSet"));
     assertEquals(null, json.get("objectValueSet"));
+    assertEquals(null, json.get("noConverterDataObjectValueSet"));
+    assertEquals(null, json.get("noConverter2DataObjectValueSet"));
     assertEquals(null, json.get("customEnumValueSet"));
     assertEquals(null, json.get("autoMappedValueSet"));
     assertEquals(null, json.get("autoMappedWithVertxGenValueSet"));
@@ -824,6 +882,8 @@ public class DataObjectTest {
     assertEquals(new JsonArray(), json.get("addedEnumValues"));
     assertEquals(new JsonArray(), json.get("addedMethodMappedValues"));
     assertEquals(new JsonArray(), json.get("addedObjectValues"));
+    assertEquals(null, json.get("addedNoConverterDataObjectValues"));
+    assertEquals(new JsonArray(), json.get("addedNoConverter2DataObjectValues"));
     assertEquals(new JsonArray(), json.get("addedCustomEnumValues"));
     assertEquals(new JsonArray(), json.get("addedAutoMappedValues"));
     assertEquals(new JsonArray(), json.get("addedAutoMappedWithVertxGenValues"));
@@ -843,6 +903,8 @@ public class DataObjectTest {
     assertEquals(null, json.get("enumValueMap"));
     assertEquals(null, json.get("methodMappedValueMap"));
     assertEquals(null, json.get("objectValueMap"));
+    assertEquals(null, json.get("noConverterDataObjectValueMap"));
+    assertEquals(null, json.get("noConverter2DataObjectValueMap"));
     assertEquals(null, json.get("customEnumValueMap"));
     assertEquals(null, json.get("autoMappedValueMap"));
     assertEquals(null, json.get("autoMappedWithVertxGenValueMap"));

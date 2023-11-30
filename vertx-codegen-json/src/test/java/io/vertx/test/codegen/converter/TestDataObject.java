@@ -73,6 +73,7 @@ public class TestDataObject {
   private ZonedDateTime methodMappedValue;
   private Object objectValue;
   private NoConverterDataObject noConverterDataObjectValue;
+  private NoConverter2DataObject noConverter2DataObjectValue;
   private TestCustomEnum customEnumValue;
   private AutoMapped autoMappedValue;
   private AutoMappedWithVertxGen autoMappedWithVertxGenValue;
@@ -95,6 +96,7 @@ public class TestDataObject {
   private List<ZonedDateTime> methodMappedValueList;
   private List<Object> objectValueList;
   private List<NoConverterDataObject> noConverterDataObjectValueList;
+  private List<NoConverter2DataObject> noConverter2DataObjectValueList;
   private List<TestCustomEnum> customEnumValueList;
   private List<AutoMapped> autoMappedValueList;
   private List<AutoMappedWithVertxGen> autoMappedWithVertxGenValueList;
@@ -117,6 +119,7 @@ public class TestDataObject {
   private Set<ZonedDateTime> methodMappedValueSet;
   private Set<Object> objectValueSet;
   private Set<NoConverterDataObject> noConverterDataObjectValueSet;
+  private Set<NoConverter2DataObject> noConverter2DataObjectValueSet;
   private Set<TestCustomEnum> customEnumValueSet;
   private Set<AutoMapped> autoMappedValueSet;
   private Set<AutoMappedWithVertxGen> autoMappedWithVertxGenValueSet;
@@ -138,7 +141,8 @@ public class TestDataObject {
   private List<TimeUnit> addedEnumValues = new ArrayList<>();
   private List<ZonedDateTime> addedMethodMappedValues = new ArrayList<>();
   private List<Object> addedObjectValues = new ArrayList<>();
-  private List<NoConverterDataObject> addedNoConverterDataObjectValue = new ArrayList<>();
+  private List<NoConverterDataObject> addedNoConverterDataObjectValues = new ArrayList<>();
+  private List<NoConverter2DataObject> addedNoConverter2DataObjectValues = new ArrayList<>();
   private List<TestCustomEnum> addedCustomEnumValues = new ArrayList<>();
   private List<AutoMapped> addedAutoMappedValues = new ArrayList<>();
   private List<AutoMappedWithVertxGen> addedAutoMappedWithVertxGenValues = new ArrayList<>();
@@ -161,6 +165,7 @@ public class TestDataObject {
   private Map<String, ZonedDateTime> methodMappedValueMap;
   private Map<String, Object> objectValueMap;
   private Map<String, NoConverterDataObject> noConverterDataObjectValueMap;
+  private Map<String, NoConverter2DataObject> noConverter2DataObjectValueMap;
   private Map<String, TestCustomEnum> customEnumValueMap;
   private Map<String, AutoMapped> autoMappedValueMap;
   private Map<String, AutoMappedWithVertxGen> autoMappedWithVertxGenValueMap;
@@ -182,6 +187,8 @@ public class TestDataObject {
   private Map<String, TimeUnit> keyedEnumValues = new HashMap<>();
   private Map<String, ZonedDateTime> keyedMethodMappedValues = new HashMap<>();
   private Map<String, Object> keyedObjectValues = new HashMap<>();
+  private Map<String, NoConverterDataObject> keyedNoConverterDataObjectValues = new HashMap<>();
+  private Map<String, NoConverter2DataObject> keyedNoConverter2DataObjectValues = new HashMap<>();
   private Map<String, TestCustomEnum> keyedCustomEnumValues = new HashMap<>();
   private Map<String, AutoMapped> keyedAutoMappedValues = new HashMap<>();
   private Map<String, AutoMappedWithVertxGen> keyedAutoMappedWithVertxGenValues = new HashMap<>();
@@ -429,6 +436,15 @@ public class TestDataObject {
     return this;
   }
 
+  public NoConverter2DataObject getNoConverter2DataObjectValue() {
+    return noConverter2DataObjectValue;
+  }
+
+  public TestDataObject setNoConverter2DataObjectValue(NoConverter2DataObject noConverter2DataObjectValue) {
+    this.noConverter2DataObjectValue = noConverter2DataObjectValue;
+    return this;
+  }
+
   public ByteBuffer getUnmapped() {
     return unmapped;
   }
@@ -618,6 +634,24 @@ public class TestDataObject {
     return this;
   }
 
+  public List<NoConverterDataObject> getNoConverterDataObjectValueList() {
+    return noConverterDataObjectValueList;
+  }
+
+  public TestDataObject setNoConverterDataObjectValueList(List<NoConverterDataObject> noConverterDataObjectValueList) {
+    this.noConverterDataObjectValueList = noConverterDataObjectValueList;
+    return this;
+  }
+
+  public List<NoConverter2DataObject> getNoConverter2DataObjectValueList() {
+    return noConverter2DataObjectValueList;
+  }
+
+  public TestDataObject setNoConverter2DataObjectValueList(List<NoConverter2DataObject> noConverter2DataObjectValueList) {
+    this.noConverter2DataObjectValueList = noConverter2DataObjectValueList;
+    return this;
+  }
+
   public List<TestCustomEnum> getCustomEnumValueList() {
     return customEnumValueList;
   }
@@ -795,6 +829,24 @@ public class TestDataObject {
 
   public TestDataObject setObjectValueSet(Set<Object> objectValueSet) {
     this.objectValueSet = objectValueSet;
+    return this;
+  }
+
+  public Set<NoConverterDataObject> getNoConverterDataObjectValueSet() {
+    return noConverterDataObjectValueSet;
+  }
+
+  public TestDataObject setNoConverterDataObjectValueSet(Set<NoConverterDataObject> noConverterDataObjectValueSet) {
+    this.noConverterDataObjectValueSet = noConverterDataObjectValueSet;
+    return this;
+  }
+
+  public Set<NoConverter2DataObject> getNoConverter2DataObjectValueSet() {
+    return noConverter2DataObjectValueSet;
+  }
+
+  public TestDataObject setNoConverter2DataObjectValueSet(Set<NoConverter2DataObject> noConverter2DataObjectValueSet) {
+    this.noConverter2DataObjectValueSet = noConverter2DataObjectValueSet;
     return this;
   }
 
@@ -978,6 +1030,24 @@ public class TestDataObject {
     return this;
   }
 
+  public List<NoConverterDataObject> getAddedNoConverterDataObjectValues() {
+    return addedNoConverterDataObjectValues;
+  }
+
+  public TestDataObject addAddedNoConverterDataObjectValue(NoConverterDataObject addedObject) {
+    this.addedNoConverterDataObjectValues.add(addedObject);
+    return this;
+  }
+
+  public List<NoConverter2DataObject> getAddedNoConverter2DataObjectValues() {
+    return addedNoConverter2DataObjectValues;
+  }
+
+  public TestDataObject addNoConverter2DataObjectValue(NoConverter2DataObject addedObject) {
+    this.addedNoConverter2DataObjectValues.add(addedObject);
+    return this;
+  }
+
   public List<TestCustomEnum> getAddedCustomEnumValues() {
     return addedCustomEnumValues;
   }
@@ -1155,6 +1225,24 @@ public class TestDataObject {
 
   public TestDataObject setObjectValueMap(Map<String, Object> objectValueMap) {
     this.objectValueMap = objectValueMap;
+    return this;
+  }
+
+  public Map<String, NoConverterDataObject> getNoConverterDataObjectValueMap() {
+    return noConverterDataObjectValueMap;
+  }
+
+  public TestDataObject setNoConverterDataObjectValueMap(Map<String, NoConverterDataObject> noConverterDataObjectValueMap) {
+    this.noConverterDataObjectValueMap = noConverterDataObjectValueMap;
+    return this;
+  }
+
+  public Map<String, NoConverter2DataObject> getNoConverter2DataObjectValueMap() {
+    return noConverter2DataObjectValueMap;
+  }
+
+  public TestDataObject setNoConverter2DataObjectValueMap(Map<String, NoConverter2DataObject> noConverter2DataObjectValueMap) {
+    this.noConverter2DataObjectValueMap = noConverter2DataObjectValueMap;
     return this;
   }
 
@@ -1338,6 +1426,24 @@ public class TestDataObject {
     return this;
   }
 
+  public Map<String, NoConverterDataObject> getKeyedNoConverterDataObjectValues() {
+    return keyedNoConverterDataObjectValues;
+  }
+
+  public TestDataObject addKeyedNoConverterDataObjectValue(String key, NoConverterDataObject value) {
+    keyedNoConverterDataObjectValues.put(key, value);
+    return this;
+  }
+
+  public Map<String, NoConverter2DataObject> getKeyedNoConverter2DataObjectValues() {
+    return keyedNoConverter2DataObjectValues;
+  }
+
+  public TestDataObject addKeyedNoConverter2DataObjectValue(String key, NoConverter2DataObject value) {
+    keyedNoConverter2DataObjectValues.put(key, value);
+    return this;
+  }
+
   public Map<String, TestCustomEnum> getKeyedCustomEnumValues() {
     return keyedCustomEnumValues;
   }
@@ -1362,33 +1468,6 @@ public class TestDataObject {
 
   public TestDataObject addKeyedAutoMappedWithVertxGenValue(String key, AutoMappedWithVertxGen value) {
     this.keyedAutoMappedWithVertxGenValues.put(key, value);
-    return this;
-  }
-
-  public List<NoConverterDataObject> getNoConverterDataObjectValueList() {
-    return noConverterDataObjectValueList;
-  }
-
-  public TestDataObject setNoConverterDataObjectValueList(List<NoConverterDataObject> noConverterDataObjectValueList) {
-    this.noConverterDataObjectValueList = noConverterDataObjectValueList;
-    return this;
-  }
-
-  public Set<NoConverterDataObject> getNoConverterDataObjectValueSet() {
-    return noConverterDataObjectValueSet;
-  }
-
-  public TestDataObject setNoConverterDataObjectValueSet(Set<NoConverterDataObject> noConverterDataObjectValueSet) {
-    this.noConverterDataObjectValueSet = noConverterDataObjectValueSet;
-    return this;
-  }
-
-  public Map<String, NoConverterDataObject> getNoConverterDataObjectValueMap() {
-    return noConverterDataObjectValueMap;
-  }
-
-  public TestDataObject setNoConverterDataObjectValueMap(Map<String, NoConverterDataObject> noConverterDataObjectValueMap) {
-    this.noConverterDataObjectValueMap = noConverterDataObjectValueMap;
     return this;
   }
 }
