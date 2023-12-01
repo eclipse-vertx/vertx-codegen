@@ -25,7 +25,13 @@ public class DataObjectInfo {
   }
 
   public TypeInfo getJsonType() {
-    return deserializer != null ? deserializer.getJsonType() : serializer.getJsonType();
+    if (deserializer != null) {
+      return deserializer.getJsonType();
+    } else if (serializer != null) {
+      return serializer.getJsonType();
+    } else {
+      return null;
+    }
   }
 
   public MapperInfo getSerializer() {

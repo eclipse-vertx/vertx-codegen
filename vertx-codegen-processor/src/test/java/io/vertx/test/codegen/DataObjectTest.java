@@ -8,6 +8,7 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.type.*;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.annotations.EmptyAnnotation;
@@ -950,5 +951,19 @@ public class DataObjectTest {
       fail("Was expecting " + dataObjectClass.getName() + " to fail");
     } catch (GenException ignore) {
     }
+  }
+
+  @Test
+  public void testBuffer() throws Exception {
+    DataObjectModel model = new GeneratorHelper()
+      .generateDataObject(BufferHolder.class);
+    assertNotNull(model);
+    assertTrue(model.isClass());
+
+    PropertyInfo prop = model.getPropertyMap().get("buffer");
+    assertNotNull(prop);
+    assertFalse(prop.getType().getDataObject().isDeserializable());
+    assertFalse(prop.getType().getDataObject().isSerializable());
+    assertNull(prop.getType().getDataObject().getJsonType());
   }
 }
