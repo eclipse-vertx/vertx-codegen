@@ -367,10 +367,7 @@ public class DataObjectHelperGen extends Generator<DataObjectModel> {
   }
 
   private Case getCase(DataObjectModel model) {
-    AnnotationValueInfo abc = model
-      .getAnnotations()
-      .stream().filter(ann -> ann.getName().equals(DataObject.class.getName()))
-      .findFirst().get();
+    AnnotationValueInfo abc = model.getAnnotationContainer();
     ClassTypeInfo cti = (ClassTypeInfo) abc.getMember("jsonPropertyNameFormatter");
     switch (cti.getName()) {
       case "io.vertx.codegen.format.CamelCase":

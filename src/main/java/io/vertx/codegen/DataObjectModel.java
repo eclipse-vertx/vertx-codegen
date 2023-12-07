@@ -16,6 +16,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.lang.annotation.Annotation;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.BiFunction;
@@ -53,6 +54,7 @@ public class DataObjectModel implements Model {
   private boolean generateConverter;
   private boolean inheritConverter;
   private boolean publicConverter;
+  private String jsonPropertyNameFormatter;
   private String base64Type;
   private int constructors;
   // ----------------
@@ -226,6 +228,13 @@ public class DataObjectModel implements Model {
       }
     }
     return false;
+  }
+
+  public AnnotationValueInfo getAnnotationContainer() {
+    Stream<AnnotationValueInfo> stream = Stream.concat(annotations
+        .stream().filter(ann -> ann.getName().equals(JsonGen.class.getName())),
+      annotations.stream().filter(ann -> ann.getName().equals(DataObject.class.getName())));
+    return stream.findFirst().orElse(null);
   }
 
   @SuppressWarnings("deprecation")

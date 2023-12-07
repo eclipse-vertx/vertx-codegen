@@ -850,6 +850,23 @@ public class DataObjectTest {
   }
 
   @Test
+  public void testSnakeFormatted2() {
+    SnakeFormattedDataObject2 obj = new SnakeFormattedDataObject2();
+    JsonObject expected = new JsonObject()
+      .put("foo", "val1")
+      .put("foo_bar", "val2")
+      .put("foo_bar_juu", "val3");
+    SnakeFormattedDataObject2Converter.fromJson(expected
+      , obj);
+    Assert.assertEquals("val1", obj.getFoo());
+    Assert.assertEquals("val2", obj.getFooBar());
+    Assert.assertEquals("val3", obj.getFooBarJuu());
+    JsonObject test = new JsonObject();
+    SnakeFormattedDataObject2Converter.toJson(obj, test);
+    Assert.assertEquals(expected, test);
+  }
+
+  @Test
   public void testBase64Basic() {
     TestDataObjectBase64Basic obj = new TestDataObjectBase64Basic();
     JsonObject expected = new JsonObject()
