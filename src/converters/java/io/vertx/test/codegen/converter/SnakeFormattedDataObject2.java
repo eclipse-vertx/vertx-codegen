@@ -12,7 +12,7 @@
 package io.vertx.test.codegen.converter;
 
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.annotations.JsonGen;
+import io.vertx.codegen.json.annotations.JsonGen;
 import io.vertx.codegen.format.SnakeCase;
 import io.vertx.core.json.JsonObject;
 

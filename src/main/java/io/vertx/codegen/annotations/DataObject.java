@@ -53,28 +53,28 @@ public @interface DataObject {
 
   /**
    * @return true if converter should be generated for the data object
-   * @deprecated instead declare a {@link JsonGen} annotation
+   * @deprecated instead declare a {@link io.vertx.codegen.json.annotations.JsonGen} annotation
    */
   @Deprecated
   boolean generateConverter() default false;
 
   /**
    * @return true if the converter should handle the state of the ancestors.
-   * @deprecated instead declare a {@link JsonGen#inheritConverter()}
+   * @deprecated instead declare a {@link io.vertx.codegen.json.annotations.JsonGen#inheritConverter()}
    */
   @Deprecated
   boolean inheritConverter() default false;
 
   /**
    * @return whether the generated converter should be public or package private
-   * @deprecated instead declare a {@link JsonGen#publicConverter()}
+   * @deprecated instead declare a {@link io.vertx.codegen.json.annotations.JsonGen#publicConverter()}
    */
   @Deprecated
   boolean publicConverter() default true;
 
   /**
    * @return the case class specifying how the data object converter properties will be translated to JSON element names.
-   * @deprecated instead declare a {@link JsonGen#jsonPropertyNameFormatter()}
+   * @deprecated instead declare a {@link io.vertx.codegen.json.annotations.JsonGen#jsonPropertyNameFormatter()}
    */
   @Deprecated
   Class<? extends Case> jsonPropertyNameFormatter() default LowerCamelCase.class;
@@ -93,7 +93,7 @@ public @interface DataObject {
    * </ul>
    *
    * @return if generated converters are enabled, buffers should default to the configured type.
-   * @deprecated instead declare a {@link JsonGen#base64Type()}
+   * @deprecated instead declare a {@link io.vertx.codegen.json.annotations.JsonGen#base64Type()}
    */
   @Deprecated
   String base64Type() default "";

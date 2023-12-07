@@ -1,4 +1,4 @@
-package io.vertx.codegen.annotations;
+package io.vertx.codegen.json.annotations;
 
 import io.vertx.codegen.format.Case;
 import io.vertx.codegen.format.LowerCamelCase;

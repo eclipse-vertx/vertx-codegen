@@ -2,7 +2,7 @@ package io.vertx.codegen;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
-import io.vertx.codegen.annotations.JsonGen;
+import io.vertx.codegen.json.annotations.JsonGen;
 import io.vertx.codegen.doc.Doc;
 import io.vertx.codegen.doc.Tag;
 import io.vertx.codegen.doc.Text;
