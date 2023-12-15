@@ -79,6 +79,8 @@ public class TypeMirrorFactory {
         return create(use, (TypeVariable) type);
       case ARRAY:
         return create(use, (ArrayType) type);
+      case WILDCARD:
+        return WildcardTypeInfo.INSTANCE;
       default:
         throw new IllegalArgumentException("Illegal type " + type + " of kind " + type.getKind());
     }

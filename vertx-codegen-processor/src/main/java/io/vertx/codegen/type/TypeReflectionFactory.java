@@ -104,6 +104,8 @@ public class TypeReflectionFactory {
       java.lang.reflect.TypeVariable typeVar = (java.lang.reflect.TypeVariable) type;
       TypeParamInfo param = TypeParamInfo.create(typeVar);
       return new TypeVariableInfo(param, false, ((java.lang.reflect.TypeVariable) type).getName());
+    } else if (type instanceof WildcardType) {
+      return WildcardTypeInfo.INSTANCE;
     } else {
       throw new IllegalArgumentException("Unsupported type " + type);
     }

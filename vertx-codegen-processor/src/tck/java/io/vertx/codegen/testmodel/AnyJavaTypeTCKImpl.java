@@ -4,12 +4,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -42,6 +37,13 @@ public class AnyJavaTypeTCKImpl implements AnyJavaTypeTCK {
   }
 
   @Override
+  public void methodWithGenericWithWildcard(Iterable<?> iterable) {
+    iterable.forEach(o -> {
+      assertNotNull(o);
+    });
+  }
+
+  @Override
   public Socket methodWithJavaTypeReturn() {
     return new Socket();
   }
@@ -71,65 +73,61 @@ public class AnyJavaTypeTCKImpl implements AnyJavaTypeTCK {
   }
 
   @Override
+  public Iterable<?> methodWithGenericWithWildcardReturn() {
+    return Arrays.asList("A", "B", "C");
+  }
+
+  @Override
   public void methodWithHandlerJavaTypeParam(Handler<Socket> socketHandler) {
     assertNotNull(socketHandler);
-    socketHandler.handle(new Socket());
+    socketHandler.handle(methodWithJavaTypeReturn());
   }
 
   @Override
   public void methodWithHandlerListOfJavaTypeParam(Handler<List<Socket>> socketListHandler) {
     assertNotNull(socketListHandler);
-    Socket socket = new Socket();
-    ArrayList<Socket> sockets = new ArrayList<>();
-    sockets.add(socket);
-    socketListHandler.handle(sockets);
+    socketListHandler.handle(methodWithListOfJavaTypeReturn());
   }
 
   @Override
   public void methodWithHandlerSetOfJavaTypeParam(Handler<Set<Socket>> socketSetHandler) {
     assertNotNull(socketSetHandler);
-    Socket socket = new Socket();
-    Set<Socket> sockets = new HashSet<>();
-    sockets.add(socket);
-    socketSetHandler.handle(sockets);
+    socketSetHandler.handle(methodWithSetOfJavaTypeReturn());
   }
 
   @Override
   public void methodWithHandlerMapOfJavaTypeParam(Handler<Map<String, Socket>> socketMapHandler) {
     assertNotNull(socketMapHandler);
-    Socket socket = new Socket();
-    Map<String, Socket> sockets = new HashMap<>();
-    sockets.put("1", socket);
-    socketMapHandler.handle(sockets);
+    socketMapHandler.handle(methodWithMapOfJavaTypeReturn());
+  }
+
+  @Override
+  public void methodWithHandlerGenericWithWildcardParam(Handler<Iterable<?>> iterableHandler) {
+    iterableHandler.handle(methodWithGenericWithWildcardReturn());
   }
 
   @Override
   public Future<Socket> methodWithHandlerAsyncResultJavaTypeParam() {
-    Socket socket = new Socket();
-    return Future.succeededFuture(socket);
+    return Future.succeededFuture(methodWithJavaTypeReturn());
   }
 
   @Override
   public Future<List<Socket>> methodWithHandlerAsyncResultListOfJavaTypeParam() {
-    Socket socket = new Socket();
-    ArrayList<Socket> sockets = new ArrayList<>();
-    sockets.add(socket);
-    return Future.succeededFuture(sockets);
+    return Future.succeededFuture(methodWithListOfJavaTypeReturn());
   }
 
   @Override
   public Future<Set<Socket>> methodWithHandlerAsyncResultSetOfJavaTypeParam() {
-    Socket socket = new Socket();
-    Set<Socket> sockets = new HashSet<>();
-    sockets.add(socket);
-    return Future.succeededFuture(sockets);
+    return Future.succeededFuture(methodWithSetOfJavaTypeReturn());
   }
 
   @Override
   public Future<Map<String, Socket>> methodWithHandlerAsyncResultMapOfJavaTypeParam() {
-    Socket socket = new Socket();
-    Map<String, Socket> sockets = new HashMap<>();
-    sockets.put("1", socket);
-    return Future.succeededFuture(sockets);
+    return Future.succeededFuture(methodWithMapOfJavaTypeReturn());
+  }
+
+  @Override
+  public Future<Iterable<?>> methodWithHandlerAsyncResultGenericWithWildcardParam() {
+    return Future.succeededFuture(methodWithGenericWithWildcardReturn());
   }
 }
