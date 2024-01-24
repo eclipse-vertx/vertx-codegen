@@ -32,15 +32,11 @@ public class ModuleInfo {
   private final String groupPackage;
 
   // Only used internally
-  final boolean useFutures;
-  final boolean checkCallbackDeprecation;
 
-  public ModuleInfo(String packageName, String name, String groupPackage, boolean useFutures, boolean checkCallbackDeprecation) {
+  public ModuleInfo(String packageName, String name, String groupPackage) {
     this.packageName = packageName;
     this.name = name;
     this.groupPackage = groupPackage;
-    this.useFutures = useFutures;
-    this.checkCallbackDeprecation = checkCallbackDeprecation;
   }
 
   private static final BiFunction<Elements, String, Set<PackageElement>> getPackageElementJava8 = (elts, fqn) -> {
@@ -78,7 +74,7 @@ public class ModuleInfo {
     PackageElement result = resolveFirstModuleGenAnnotatedPackageElement(elementUtils, pkgElt);
     if (result != null) {
       ModuleGen annotation = result.getAnnotation(ModuleGen.class);
-      return new ModuleInfo(result.getQualifiedName().toString(), annotation.name(), annotation.groupPackage(), annotation.useFutures(), annotation.checkCallbackDeprecation());
+      return new ModuleInfo(result.getQualifiedName().toString(), annotation.name(), annotation.groupPackage());
     } else return null;
   }
 
@@ -173,13 +169,6 @@ public class ModuleInfo {
    */
   public String getName(Case _case) {
     return _case.format(KebabCase.INSTANCE.parse(name));
-  }
-
-  /**
-   * @return whether the module declares asynchronous operations with future returning signatures
-   */
-  public boolean getUseFutures() {
-    return useFutures;
   }
 
 }

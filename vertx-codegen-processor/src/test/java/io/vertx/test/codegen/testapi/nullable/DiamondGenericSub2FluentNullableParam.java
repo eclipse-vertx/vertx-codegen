@@ -10,6 +10,6 @@ import io.vertx.codegen.annotations.VertxGen;
 public interface DiamondGenericSub2FluentNullableParam<T> extends DiamondTopFluentNullableParam {
 
   @Override
-  DiamondGenericSub2FluentNullableParam<T> method( String param);
+  DiamondGenericSub2FluentNullableParam<T> method(String param);
 
 }

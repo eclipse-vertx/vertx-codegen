@@ -637,19 +637,6 @@ public class ClassModel implements Model {
       }
     }
 
-    // Determine use futures
-    boolean useFutures;
-    if (ownerTypes.isEmpty()) {
-      Element enclosingElt = modelMethod.getEnclosingElement();
-      if (typeUtils.isSameType(modelElt.asType(), enclosingElt.asType())) {
-        useFutures = getModule().useFutures;
-      } else {
-        useFutures = typeFactory.create((DeclaredType) enclosingElt.asType()).getRaw().getModule().useFutures;
-      }
-    } else {
-      useFutures = ownerTypes.iterator().next().getModule().useFutures;
-    }
-
     // Add this type too
     ownerTypes.add(type);
 
@@ -767,7 +754,6 @@ public class ClassModel implements Model {
       declaringElt,
       methodDeprecated,
       methodDeprecatedDesc,
-      useFutures,
       methodOverride);
 
     // Check we don't hide another method, we don't check overrides but we are more
@@ -801,9 +787,9 @@ public class ClassModel implements Model {
                                         Text returnDescription,
                                         boolean isFluent, boolean isCacheReturn, List<ParamInfo> mParams,
                                         ExecutableElement methodElt, boolean isStatic, boolean isDefault, ArrayList<TypeParamInfo.Method> typeParams,
-                                        TypeElement declaringElt, boolean methodDeprecated, Text methodDeprecatedDesc, boolean useFutures, boolean methodOverride) {
+                                        TypeElement declaringElt, boolean methodDeprecated, Text methodDeprecatedDesc, boolean methodOverride) {
     return new MethodInfo(ownerTypes, methodName, returnType, returnDescription,
-      isFluent, isCacheReturn, mParams, comment, doc, isStatic, isDefault, typeParams, methodDeprecated, methodDeprecatedDesc, useFutures, methodOverride);
+      isFluent, isCacheReturn, mParams, comment, doc, isStatic, isDefault, typeParams, methodDeprecated, methodDeprecatedDesc, methodOverride);
   }
 
   // This is a hook to allow different model implementations to check methods in different ways

@@ -1,5 +1,6 @@
 package io.vertx.test.codegen.testapi.nullable;
 
+import io.vertx.codegen.annotations.Nullable;
 import io.vertx.codegen.annotations.VertxGen;
 
 import java.util.List;
@@ -11,6 +12,6 @@ import java.util.List;
 public interface MethodWithListNullableParamOverride extends MethodWithListNullableParam {
 
   @Override
-  void method(List<String> param);
+  void method(List<@Nullable String> param);
 
 }
