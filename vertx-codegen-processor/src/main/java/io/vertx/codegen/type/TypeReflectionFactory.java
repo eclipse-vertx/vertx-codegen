@@ -39,7 +39,7 @@ public class TypeReflectionFactory {
           while (pkg != null) {
             ModuleGen annotation = pkg.getAnnotation(ModuleGen.class);
             if (annotation != null) {
-              module = new ModuleInfo(pkg.getName(), annotation.name(), annotation.groupPackage(), annotation.useFutures(), annotation.checkCallbackDeprecation());
+              module = new ModuleInfo(pkg.getName(), annotation.name(), annotation.groupPackage());
               break;
             } else {
               int pos = pkg.getName().lastIndexOf('.');

@@ -10,6 +10,6 @@ import io.vertx.codegen.annotations.VertxGen;
 public interface MethodWithOverloadedNullableParam {
 
   void method(@Nullable String s, Integer i);
-  void method(Integer i, @Nullable String s);
+  void method(Integer i, String s);
 
 }

@@ -1,5 +1,6 @@
 package io.vertx.test.codegen;
 
+import io.vertx.codegen.ParamInfo;
 import io.vertx.codegen.type.ClassKind;
 import io.vertx.codegen.ClassModel;
 import io.vertx.codegen.MethodInfo;
@@ -351,7 +352,7 @@ public class ClassNullableTest extends ClassTestBase {
       checkParam(mi2.getParams().get(0), "i", Integer.class);
       assertFalse(mi2.getParams().get(0).isNullable());
       checkParam(mi2.getParams().get(1), "s", String.class);
-      assertTrue(mi2.getParams().get(1).isNullable());
+      assertFalse(mi2.getParams().get(1).isNullable());
     }, MethodWithOverloadedNullableParam.class);
   }
 
@@ -481,6 +482,9 @@ public class ClassNullableTest extends ClassTestBase {
   @Test
   public void testDiamondFluentNullableReturn() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(DiamondGenericBottomFluentNullableParam.class);
+    MethodInfo mi = model.getMethods().get(0);
+    ParamInfo param = mi.getParam(0);
+    assertTrue(param.isNullable());
   }
 
   @Test

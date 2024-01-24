@@ -402,7 +402,7 @@ The module declares also whether the module uses callback style or future style 
 is used, to declare a future style instead use
 
 ```
-@ModuleGen(name = "acme", groupPackage="com.acme", useFutures=true)
+@ModuleGen(name = "acme", groupPackage="com.acme")
 package com.acme.myservice;
 ```
 
