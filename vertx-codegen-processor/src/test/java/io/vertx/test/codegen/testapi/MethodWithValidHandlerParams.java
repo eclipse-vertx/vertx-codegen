@@ -1,15 +1,12 @@
 package io.vertx.test.codegen.testapi;
 
-import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.codegen.testmodel.TestEnum;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
-import java.net.Socket;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

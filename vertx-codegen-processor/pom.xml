@@ -198,7 +198,7 @@
                 <classpathElement>${project.basedir}/src/tck/resources</classpathElement>
               </classpathElements>
               <processors>
-                <processor>io.vertx.codegen.Processor</processor>
+                <processor>io.vertx.codegen.processor.Processor</processor>
               </processors>
               <optionMap>
               </optionMap>

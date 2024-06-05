@@ -1,10 +1,10 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.*;
-import io.vertx.codegen.type.ClassKind;
-import io.vertx.codegen.type.TypeReflectionFactory;
-import io.vertx.codegen.type.TypeInfo;
-import io.vertx.codegen.doc.Doc;
+import io.vertx.codegen.processor.*;
+import io.vertx.codegen.processor.type.ClassKind;
+import io.vertx.codegen.processor.type.TypeReflectionFactory;
+import io.vertx.codegen.processor.type.TypeInfo;
+import io.vertx.codegen.processor.doc.Doc;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;

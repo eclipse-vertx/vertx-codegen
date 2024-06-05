@@ -1,7 +1,7 @@
 package io.vertx.test.codegen.generator.gen7;
 
-import io.vertx.codegen.DataObjectModel;
-import io.vertx.codegen.Generator;
+import io.vertx.codegen.processor.DataObjectModel;
+import io.vertx.codegen.processor.Generator;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ModuleGen;
 

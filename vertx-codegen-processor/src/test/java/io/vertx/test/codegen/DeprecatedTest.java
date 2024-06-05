@@ -1,6 +1,6 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.*;
+import io.vertx.codegen.processor.*;
 import io.vertx.test.codegen.testapi.DeprecatedInterface;
 import io.vertx.test.codegen.testapi.GenericInterface;
 import io.vertx.test.codegen.testdataobject.DataObjectWithProperty;

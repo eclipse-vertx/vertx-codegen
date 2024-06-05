@@ -1,16 +1,15 @@
 package io.vertx.test.codegen.generator.gen6;
 
-import io.vertx.codegen.ClassModel;
-import io.vertx.codegen.DataObjectModel;
-import io.vertx.codegen.Generator;
-import io.vertx.codegen.Model;
+import io.vertx.codegen.processor.ClassModel;
+import io.vertx.codegen.processor.DataObjectModel;
+import io.vertx.codegen.processor.Generator;
+import io.vertx.codegen.processor.Model;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.VertxGen;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 

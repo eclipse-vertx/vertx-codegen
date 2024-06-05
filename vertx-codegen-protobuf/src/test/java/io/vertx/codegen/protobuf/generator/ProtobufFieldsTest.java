@@ -1,10 +1,10 @@
 package io.vertx.codegen.protobuf.generator;
 
-import io.vertx.codegen.PropertyInfo;
-import io.vertx.codegen.PropertyKind;
+import io.vertx.codegen.processor.PropertyInfo;
+import io.vertx.codegen.processor.PropertyKind;
 import io.vertx.codegen.protobuf.annotations.FieldNumberStrategy;
 import io.vertx.codegen.protobuf.annotations.ProtobufField;
-import io.vertx.codegen.type.AnnotationValueInfo;
+import io.vertx.codegen.processor.type.AnnotationValueInfo;
 import org.junit.Test;
 
 import java.util.ArrayList;

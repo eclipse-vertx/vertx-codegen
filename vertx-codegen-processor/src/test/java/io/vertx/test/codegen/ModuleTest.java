@@ -1,11 +1,11 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.ClassModel;
-import io.vertx.codegen.GenException;
-import io.vertx.codegen.ModuleModel;
-import io.vertx.codegen.DataObjectModel;
-import io.vertx.codegen.type.ApiTypeInfo;
-import io.vertx.codegen.type.TypeNameTranslator;
+import io.vertx.codegen.processor.ClassModel;
+import io.vertx.codegen.processor.GenException;
+import io.vertx.codegen.processor.ModuleModel;
+import io.vertx.codegen.processor.DataObjectModel;
+import io.vertx.codegen.processor.type.ApiTypeInfo;
+import io.vertx.codegen.processor.type.TypeNameTranslator;
 import io.vertx.test.codegen.testmodule.emptypkg.empty.sub.EmptyPkg;
 import io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedApi;
 import io.vertx.test.codegen.testmodule.modulescoped.ModuleScopedDataObject;

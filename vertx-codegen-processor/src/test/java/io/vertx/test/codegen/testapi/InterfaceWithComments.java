@@ -1,6 +1,7 @@
 package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.codegen.testmodel.TestInterface;
 
 /**
  * Interface comment line 1
@@ -9,7 +10,7 @@ import io.vertx.codegen.annotations.VertxGen;
  *
  * @author <a href="http://tfox.org">Tim Fox</a>
  * @version 12.2
- * @see io.vertx.codegen.testmodel.TestInterface
+ * @see TestInterface
  */
 @VertxGen
 public interface InterfaceWithComments {

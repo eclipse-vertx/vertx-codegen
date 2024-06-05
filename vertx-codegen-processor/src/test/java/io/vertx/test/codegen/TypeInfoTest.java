@@ -1,9 +1,9 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.Helper;
-import io.vertx.codegen.TypeParamInfo;
+import io.vertx.codegen.processor.Helper;
+import io.vertx.codegen.processor.TypeParamInfo;
 import io.vertx.codegen.testmodel.TestDataObject;
-import io.vertx.codegen.type.*;
+import io.vertx.codegen.processor.type.*;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;

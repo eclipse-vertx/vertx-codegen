@@ -4,7 +4,6 @@ import io.vertx.codegen.annotations.Nullable;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.codegen.testmodel.TestEnum;
-import io.vertx.codegen.testmodel.TestGenEnum;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.testapi.VertxGenClass1;

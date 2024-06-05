@@ -1,14 +1,12 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.DataObjectModel;
-import io.vertx.codegen.GenException;
-import io.vertx.codegen.PropertyInfo;
-import io.vertx.codegen.PropertyKind;
+import io.vertx.codegen.processor.DataObjectModel;
+import io.vertx.codegen.processor.GenException;
+import io.vertx.codegen.processor.PropertyInfo;
+import io.vertx.codegen.processor.PropertyKind;
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.codegen.doc.Doc;
-import io.vertx.codegen.type.*;
-import io.vertx.core.buffer.Buffer;
+import io.vertx.codegen.processor.doc.Doc;
+import io.vertx.codegen.processor.type.*;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.annotations.EmptyAnnotation;

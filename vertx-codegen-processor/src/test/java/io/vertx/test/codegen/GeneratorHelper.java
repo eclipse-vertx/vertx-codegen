@@ -16,8 +16,8 @@ package io.vertx.test.codegen;
  * You may elect to redistribute this code under either of these licenses.
  */
 
-import io.vertx.codegen.*;
-import io.vertx.codegen.Compiler;
+import io.vertx.codegen.processor.*;
+import io.vertx.codegen.processor.Compiler;
 import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.ProxyGen;

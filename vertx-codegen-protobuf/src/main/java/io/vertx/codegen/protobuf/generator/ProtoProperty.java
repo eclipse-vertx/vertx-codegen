@@ -1,9 +1,9 @@
 package io.vertx.codegen.protobuf.generator;
 
-import io.vertx.codegen.PropertyInfo;
-import io.vertx.codegen.PropertyKind;
+import io.vertx.codegen.processor.PropertyInfo;
+import io.vertx.codegen.processor.PropertyKind;
 import io.vertx.codegen.protobuf.annotations.JsonProtoEncoding;
-import io.vertx.codegen.type.ClassKind;
+import io.vertx.codegen.processor.type.ClassKind;
 
 // This class store the protobuf properties of a given field
 public class ProtoProperty {

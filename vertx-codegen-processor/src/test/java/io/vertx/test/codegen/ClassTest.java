@@ -1,13 +1,13 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.*;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.codegen.doc.Doc;
-import io.vertx.codegen.doc.Tag;
+import io.vertx.codegen.processor.*;
+import io.vertx.codegen.processor.type.*;
+import io.vertx.codegen.processor.doc.Doc;
+import io.vertx.codegen.processor.doc.Tag;
 import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.codegen.testmodel.TestGenEnum;
-import io.vertx.codegen.type.*;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;

@@ -1,11 +1,11 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.ClassModel;
-import io.vertx.codegen.EnumModel;
-import io.vertx.codegen.MethodInfo;
-import io.vertx.codegen.doc.Doc;
-import io.vertx.codegen.doc.Tag;
-import io.vertx.codegen.doc.Token;
+import io.vertx.codegen.processor.ClassModel;
+import io.vertx.codegen.processor.EnumModel;
+import io.vertx.codegen.processor.MethodInfo;
+import io.vertx.codegen.processor.doc.Doc;
+import io.vertx.codegen.processor.doc.Tag;
+import io.vertx.codegen.processor.doc.Token;
 import io.vertx.test.codegen.doc.*;
 import org.junit.Test;
 

@@ -1,13 +1,11 @@
 package io.vertx.codegen.protobuf.generator;
 
-import io.vertx.codegen.DataObjectModel;
-import io.vertx.codegen.Model;
+import io.vertx.codegen.processor.DataObjectModel;
+import io.vertx.codegen.processor.Model;
 import io.vertx.codegen.protobuf.annotations.FieldNumberStrategy;
 import io.vertx.codegen.protobuf.annotations.JsonProtoEncoding;
 import io.vertx.codegen.protobuf.annotations.ProtobufGen;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;

@@ -1,7 +1,7 @@
 package io.vertx.test.codegen.generator.gen3;
 
-import io.vertx.codegen.ClassModel;
-import io.vertx.codegen.Generator;
+import io.vertx.codegen.processor.ClassModel;
+import io.vertx.codegen.processor.Generator;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.test.codegen.generator.CodeGeneratorTest;
 
