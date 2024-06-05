@@ -1,10 +1,10 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.*;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.codegen.type.ClassKind;
-import io.vertx.codegen.type.EnumTypeInfo;
-import io.vertx.codegen.type.TypeInfo;
+import io.vertx.codegen.processor.*;
+import io.vertx.codegen.processor.type.ClassKind;
+import io.vertx.codegen.processor.type.EnumTypeInfo;
+import io.vertx.codegen.processor.type.TypeInfo;
 import io.vertx.test.codegen.testapi.jsonmapper.MyEnumWithCustomFactory;
 import io.vertx.test.codegen.testapi.jsonmapper.WithMyCustomEnumWithMapper;
 import io.vertx.test.codegen.testenum.EnumAsParam;

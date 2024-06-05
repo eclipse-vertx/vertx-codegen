@@ -1,9 +1,9 @@
 package io.vertx.codegen.json.generator;
 
-import io.vertx.codegen.DataObjectModel;
-import io.vertx.codegen.GenException;
-import io.vertx.codegen.Generator;
-import io.vertx.codegen.PropertyInfo;
+import io.vertx.codegen.processor.DataObjectModel;
+import io.vertx.codegen.processor.GenException;
+import io.vertx.codegen.processor.Generator;
+import io.vertx.codegen.processor.PropertyInfo;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.format.CamelCase;
 import io.vertx.codegen.format.Case;
@@ -12,13 +12,13 @@ import io.vertx.codegen.format.LowerCamelCase;
 import io.vertx.codegen.format.QualifiedCase;
 import io.vertx.codegen.format.SnakeCase;
 import io.vertx.codegen.json.annotations.JsonGen;
-import io.vertx.codegen.type.AnnotationValueInfo;
-import io.vertx.codegen.type.ClassKind;
-import io.vertx.codegen.type.ClassTypeInfo;
-import io.vertx.codegen.type.DataObjectInfo;
-import io.vertx.codegen.type.MapperInfo;
-import io.vertx.codegen.type.TypeInfo;
-import io.vertx.codegen.writer.CodeWriter;
+import io.vertx.codegen.processor.type.AnnotationValueInfo;
+import io.vertx.codegen.processor.type.ClassKind;
+import io.vertx.codegen.processor.type.ClassTypeInfo;
+import io.vertx.codegen.processor.type.DataObjectInfo;
+import io.vertx.codegen.processor.type.MapperInfo;
+import io.vertx.codegen.processor.type.TypeInfo;
+import io.vertx.codegen.processor.writer.CodeWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

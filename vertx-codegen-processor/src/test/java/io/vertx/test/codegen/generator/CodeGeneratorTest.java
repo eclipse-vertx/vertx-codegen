@@ -1,7 +1,7 @@
 package io.vertx.test.codegen.generator;
 
-import io.vertx.codegen.Processor;
-import io.vertx.codegen.Compiler;
+import io.vertx.codegen.processor.Processor;
+import io.vertx.codegen.processor.Compiler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.test.codegen.testapi.InvalidInterfaceDataObject;

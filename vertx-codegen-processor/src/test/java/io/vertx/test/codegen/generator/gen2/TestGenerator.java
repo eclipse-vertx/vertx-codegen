@@ -1,24 +1,14 @@
 package io.vertx.test.codegen.generator.gen2;
 
-import io.vertx.codegen.ClassModel;
-import io.vertx.codegen.EnumValueInfo;
-import io.vertx.codegen.Generator;
-import io.vertx.codegen.MethodInfo;
-import io.vertx.codegen.Model;
-import io.vertx.codegen.ParamInfo;
-import io.vertx.codegen.PropertyInfo;
-import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.annotations.ModuleGen;
+import io.vertx.codegen.processor.ClassModel;
+import io.vertx.codegen.processor.Generator;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.codegen.type.TypeInfo;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class TestGenerator extends Generator<ClassModel>{
   public TestGenerator(){

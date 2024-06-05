@@ -1,6 +1,6 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.PackageModel;
+import io.vertx.codegen.processor.PackageModel;
 import io.vertx.test.codegen.testpkg.testapi.TestApi;
 import io.vertx.test.codegen.testpkg.testdataobject.TestDataObject;
 import io.vertx.test.codegen.testpkg.testenum.TestEnum;

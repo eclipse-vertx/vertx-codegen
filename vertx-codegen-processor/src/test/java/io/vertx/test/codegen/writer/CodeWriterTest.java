@@ -1,6 +1,6 @@
 package io.vertx.test.codegen.writer;
 
-import io.vertx.codegen.writer.CodeWriter;
+import io.vertx.codegen.processor.writer.CodeWriter;
 import org.junit.Test;
 
 import java.io.StringWriter;

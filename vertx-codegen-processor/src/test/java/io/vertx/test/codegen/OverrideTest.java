@@ -1,14 +1,9 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.*;
-import io.vertx.test.codegen.testapi.DeprecatedInterface;
-import io.vertx.test.codegen.testapi.GenericInterface;
+import io.vertx.codegen.processor.ClassModel;
+import io.vertx.codegen.processor.MethodInfo;
 import io.vertx.test.codegen.testapi.OverrideA;
 import io.vertx.test.codegen.testapi.OverrideB;
-import io.vertx.test.codegen.testdataobject.DataObjectWithProperty;
-import io.vertx.test.codegen.testdataobject.DeprecatedDataObject;
-import io.vertx.test.codegen.testenum.DeprecatedEnum;
-import io.vertx.test.codegen.testenum.ValidEnum;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

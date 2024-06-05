@@ -1,12 +1,12 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.ParamInfo;
-import io.vertx.codegen.type.ClassKind;
-import io.vertx.codegen.ClassModel;
-import io.vertx.codegen.MethodInfo;
-import io.vertx.codegen.MethodKind;
-import io.vertx.codegen.type.ParameterizedTypeInfo;
-import io.vertx.codegen.type.TypeInfo;
+import io.vertx.codegen.processor.ParamInfo;
+import io.vertx.codegen.processor.type.ClassKind;
+import io.vertx.codegen.processor.ClassModel;
+import io.vertx.codegen.processor.MethodInfo;
+import io.vertx.codegen.processor.MethodKind;
+import io.vertx.codegen.processor.type.ParameterizedTypeInfo;
+import io.vertx.codegen.processor.type.TypeInfo;
 import io.vertx.codegen.testmodel.TestDataObject;
 import io.vertx.codegen.testmodel.TestEnum;
 import io.vertx.core.json.JsonArray;

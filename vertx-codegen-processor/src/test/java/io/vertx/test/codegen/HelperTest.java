@@ -1,6 +1,6 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.Helper;
+import io.vertx.codegen.processor.Helper;
 import org.junit.Test;
 
 import javax.annotation.processing.ProcessingEnvironment;

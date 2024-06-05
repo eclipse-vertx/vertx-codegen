@@ -1,5 +1,7 @@
 package io.vertx.codegen;
 
+import io.vertx.codegen.processor.Processor;
+
 /**
  * Backward compatible API
  *

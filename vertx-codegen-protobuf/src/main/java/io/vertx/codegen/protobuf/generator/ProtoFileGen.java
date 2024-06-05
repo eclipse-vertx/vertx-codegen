@@ -1,10 +1,10 @@
 package io.vertx.codegen.protobuf.generator;
 
-import io.vertx.codegen.*;
+import io.vertx.codegen.processor.*;
 import io.vertx.codegen.protobuf.annotations.FieldNumberStrategy;
 import io.vertx.codegen.protobuf.annotations.JsonProtoEncoding;
 import io.vertx.codegen.protobuf.annotations.ProtobufGen;
-import io.vertx.codegen.type.ClassKind;
+import io.vertx.codegen.processor.type.ClassKind;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

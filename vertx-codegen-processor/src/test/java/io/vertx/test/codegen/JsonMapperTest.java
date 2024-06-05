@@ -1,12 +1,11 @@
 package io.vertx.test.codegen;
 
-import io.vertx.codegen.*;
-import io.vertx.codegen.type.PrimitiveTypeInfo;
+import io.vertx.codegen.processor.*;
+import io.vertx.codegen.processor.type.PrimitiveTypeInfo;
 import io.vertx.test.codegen.testjsonmapper.methodmapper.APIInterfaceWithZonedDateTime;
 import org.junit.Test;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.junit.Assert.*;
