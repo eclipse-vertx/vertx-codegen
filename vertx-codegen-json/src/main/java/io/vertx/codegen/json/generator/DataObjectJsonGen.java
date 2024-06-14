@@ -111,7 +111,6 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
     writer.print("\n");
     writer.print("import io.vertx.core.json.JsonObject;\n");
     writer.print("import io.vertx.core.json.JsonArray;\n");
-    writer.print("import io.vertx.core.json.impl.JsonUtil;\n");
     writer.print("import java.time.Instant;\n");
     writer.print("import java.time.format.DateTimeFormatter;\n");
     writer.print("import java.util.Base64;\n");
@@ -124,22 +123,17 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
       .codeln("public class " + model.getType().getSimpleName() + "Converter {"
       ).newLine();
     if (generate) {
-      writer.print("\n");
       switch (base64Type) {
         case "basic":
           writer.print(
             "  private static final Base64.Decoder BASE64_DECODER = Base64.getDecoder();\n" +
             "  private static final Base64.Encoder BASE64_ENCODER = Base64.getEncoder();\n");
           break;
+        default:
         case "base64url":
           writer.print(
             "  private static final Base64.Decoder BASE64_DECODER = Base64.getUrlDecoder();\n" +
             "  private static final Base64.Encoder BASE64_ENCODER = Base64.getUrlEncoder().withoutPadding();\n");
-          break;
-        default:
-          writer.print(
-            "  private static final Base64.Decoder BASE64_DECODER = JsonUtil.BASE64_DECODER;\n" +
-            "  private static final Base64.Encoder BASE64_ENCODER = JsonUtil.BASE64_ENCODER;\n");
           break;
       }
       writer.print("\n");
