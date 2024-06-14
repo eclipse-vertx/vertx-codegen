@@ -66,4 +66,6 @@ public interface MethodWithValidJavaTypeParams {
   @GenIgnore(GenIgnore.PERMITTED_TYPE)
   void methodWithParameterizedParams(Iterable<String> iterableString);
 
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
+  void methodWithWildcardType(List<?> listOfUnknown);
 }

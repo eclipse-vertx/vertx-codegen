@@ -790,7 +790,7 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testValidJavaTypeParams() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(MethodWithValidJavaTypeParams.class);
-    assertEquals(6, model.getAnyJavaTypeMethods().size());
+    assertEquals(7, model.getAnyJavaTypeMethods().size());
 
     MethodInfo method = model.getAnyJavaTypeMethods().get(0);
     checkMethod(method, "methodWithParams", 4, "void", MethodKind.OTHER);
@@ -839,6 +839,12 @@ public class ClassTest extends ClassTestBase {
     checkMethod(method, "methodWithParameterizedParams", 1, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "iterableString", new TypeLiteral<Iterable<String>>(){});
+    assertTrue(method.isContainingAnyJavaType());
+
+    method = model.getAnyJavaTypeMethods().get(6);
+    checkMethod(method, "methodWithWildcardType", 1, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "listOfUnknown", new TypeLiteral<List<?>>(){});
     assertTrue(method.isContainingAnyJavaType());
   }
 
