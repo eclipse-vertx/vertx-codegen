@@ -101,16 +101,31 @@ public class Processor extends AbstractProcessor {
         }
       }
       // load GeneratorLoader by ServiceLoader
-      Stream<GeneratorLoader> serviceLoader = StreamSupport.stream(ServiceLoader.load(GeneratorLoader.class, Processor.class.getClassLoader()).spliterator(), false);
-      Stream<Generator<?>> generators = serviceLoader.flatMap(l -> l.loadGenerators(processingEnv));
+      ServiceLoader<GeneratorLoader> genLoaders = ServiceLoader.load(GeneratorLoader.class, Processor.class.getClassLoader());
+      Iterator<GeneratorLoader> it = genLoaders.iterator();
+      List<Generator<?>> generators = new ArrayList<>();
       Predicate<Generator> filter = filterGenerators();
-      if (filter != null) {
-        generators = generators.filter(filter);
+      while (true) {
+        try {
+          if (it.hasNext()) {
+            GeneratorLoader genLoader = it.next();
+            Stream<Generator<?>> generatorStream = genLoader.loadGenerators(processingEnv);
+            generatorStream.forEach(generator -> {
+              if (filter != null && !filter.test(generator)) {
+                return;
+              }
+              generator.load(processingEnv);
+              processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded " + generator.name + " code generator");
+              generators.add(generator);
+            });
+          } else {
+            break;
+          }
+        } catch (java.util.ServiceConfigurationError e) {
+          processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Could not load code generator: " + e.getMessage());
+        }
       }
-      generators = generators.peek(gen -> {
-        gen.load(processingEnv);
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded " + gen.name + " code generator");
-      });
+
       relocations = processingEnv.getOptions()
         .entrySet()
         .stream()
@@ -120,7 +135,7 @@ public class Processor extends AbstractProcessor {
           Map.Entry::getValue)
         );
 
-      codeGenerators = generators.collect(Collectors.toList());
+      codeGenerators = generators;
     }
     return codeGenerators;
   }
