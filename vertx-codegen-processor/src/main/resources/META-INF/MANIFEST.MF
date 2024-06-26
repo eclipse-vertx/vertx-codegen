@@ -1,2 +1,2 @@
-Automatic-Module-Name: io.vertx.codegen
+Automatic-Module-Name: io.vertx.codegen.processor
 
