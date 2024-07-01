@@ -30,6 +30,7 @@ public class TypeUse {
   private static final List<TypeInternalProvider> providers = new ArrayList<>();
 
   static {
+/*
     providers.add(new TypeInternalProvider() {
       private Method getMethod(ProcessingEnvironment env, ExecutableElement methodElt) {
         Method methodRef = Helper.getReflectMethod(Thread.currentThread().getContextClassLoader(), methodElt);
@@ -55,6 +56,7 @@ public class TypeUse {
         return new ReflectType(annotated);
       }
     });
+*/
     providers.add(new TypeInternalProvider() {
       @Override
       public TypeInternal forParam(ProcessingEnvironment env, ExecutableElement methodElt, int index) {
@@ -80,8 +82,10 @@ public class TypeUse {
 
 
   public static TypeUse createParamTypeUse(ProcessingEnvironment env, ExecutableElement[] methods, int index) {
-    TypeInternal[] internals = new TypeInternal[methods.length];
-    for (int i = 0;i < methods.length;i++) {
+    // Only look at the most recent type
+    int len = Math.min(1, methods.length);
+    TypeInternal[] internals = new TypeInternal[len];
+    for (int i = 0;i < len;i++) {
       for (TypeInternalProvider provider : providers) {
         internals[i] = provider.forParam(env, methods[i], index);
         if (internals[i] != null) {
@@ -93,8 +97,10 @@ public class TypeUse {
   }
 
   public static TypeUse createReturnTypeUse(ProcessingEnvironment env, ExecutableElement... methods) {
-    TypeInternal[] internals = new TypeInternal[methods.length];
-    for (int i = 0;i < methods.length;i++) {
+    // Only look at the most recent type
+    int len = Math.min(1, methods.length);
+    TypeInternal[] internals = new TypeInternal[len];
+    for (int i = 0;i < len;i++) {
       for (TypeInternalProvider provider : providers) {
         internals[i] = provider.forReturn(env, methods[i]);
         if (internals[i] != null) {
