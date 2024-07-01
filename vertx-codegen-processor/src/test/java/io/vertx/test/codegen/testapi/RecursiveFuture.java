@@ -11,7 +11,7 @@ import io.vertx.core.Future;
 @VertxGen
 public interface RecursiveFuture extends Future<RecursiveFuture> {
 
-  @GenIgnore
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   @Override
   void handle(AsyncResult<RecursiveFuture> recursiveFutureAsyncResult);
 

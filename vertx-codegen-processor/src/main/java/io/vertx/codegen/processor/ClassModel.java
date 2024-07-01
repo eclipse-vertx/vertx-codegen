@@ -47,19 +47,14 @@ public class ClassModel implements Model {
 
   public static final String VERTX_READ_STREAM = "io.vertx.core.streams.ReadStream";
   public static final String VERTX_WRITE_STREAM = "io.vertx.core.streams.WriteStream";
-  public static final String VERTX_ASYNC_RESULT = "io.vertx.core.AsyncResult";
   public static final String VERTX_HANDLER = "io.vertx.core.Handler";
   public static final String JSON_OBJECT = "io.vertx.core.json.JsonObject";
   public static final String JSON_ARRAY = "io.vertx.core.json.JsonArray";
-  public static final String VERTX = "io.vertx.core.Vertx";
   public static final String ITERABLE = "java.lang.Iterable";
   public static final String ITERATOR = "java.util.Iterator";
   public static final String FUNCTION = "java.util.function.Function";
   public static final String SUPPLIER = "java.util.function.Supplier";
   private static final Logger logger = Logger.getLogger(ClassModel.class.getName());
-
-  private static final ClassTypeInfo ASYNC_RESULT_TYPE = new ClassTypeInfo(ClassKind.ASYNC_RESULT, "io.vertx.core.AsyncResult", null, false, Arrays.asList(new TypeParamInfo.Class("io.vertx.core.AsyncResult", 0, "T")), null);
-  private static final ClassTypeInfo HANDLER_TYPE = new ClassTypeInfo(ClassKind.HANDLER, "io.vertx.core.Handler", null, false, Arrays.asList(new TypeParamInfo.Class("io.vertx.core.Handler", 0, "T")), null);
 
   protected final ProcessingEnvironment env;
   protected final AnnotationValueInfoFactory annotationValueInfoFactory;
@@ -533,13 +528,6 @@ public class ClassModel implements Model {
       TypeInfo[] typeInfos = new TypeInfo[typeParameters.size()];
       for (int i = 0; i < typeParameters.size(); i++) {
         TypeMirror resolved = Helper.resolveTypeParameter(typeUtils, declaredType, typeParameters.get(i));
-        if (resolved != null && resolved.getKind() == TypeKind.DECLARED) {
-          DeclaredType dt = (DeclaredType) resolved;
-          TypeElement a = (TypeElement) dt.asElement();
-          if (a.getQualifiedName().toString().equals(VERTX_ASYNC_RESULT)) {
-            return null;
-          }
-        }
         typeInfos[i] = typeFactory.create(resolved);
       }
       return typeInfos;

@@ -48,9 +48,6 @@ public enum ClassKind {
   // Supplier
   SUPPLIER(false, false, false),
 
-  // AsyncResult
-  ASYNC_RESULT(false, false, false),
-
   // Class type, e.g Class<T>
   CLASS_TYPE(false, false, false),
 
@@ -93,8 +90,6 @@ public enum ClassKind {
       return FUTURE;
     } else if (fqcn.equals(ClassModel.VERTX_HANDLER)) {
       return HANDLER;
-    } else if (fqcn.equals(ClassModel.VERTX_ASYNC_RESULT)) {
-      return ASYNC_RESULT;
     } else if (fqcn.equals(ClassModel.JSON_ARRAY)) {
       return JSON_ARRAY;
     } else if (fqcn.equals(ClassModel.JSON_OBJECT)) {
