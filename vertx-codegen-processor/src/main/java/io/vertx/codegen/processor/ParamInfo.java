@@ -23,6 +23,8 @@ import io.vertx.codegen.processor.doc.Text;
 import io.vertx.codegen.format.CamelCase;
 import io.vertx.codegen.format.Case;
 
+import java.util.Objects;
+
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
@@ -75,19 +77,11 @@ public class ParamInfo {
    *         parameter, otherwise it returns null
    */
   public Boolean isNullableCallback() {
-    switch (type.getKind()) {
-      case HANDLER:
-        TypeInfo handler = ((ParameterizedTypeInfo)type).getArg(0);
-        switch (handler.getKind()) {
-          case ASYNC_RESULT:
-            TypeInfo asyncResult = ((ParameterizedTypeInfo)handler).getArg(0);
-            return asyncResult.isNullable();
-          default:
-            return handler.isNullable();
-        }
-      default:
-        return null;
+    if (Objects.requireNonNull(type.getKind()) == ClassKind.HANDLER) {
+      TypeInfo handler = ((ParameterizedTypeInfo) type).getArg(0);
+      return handler.isNullable();
     }
+    return null;
   }
 
   public TypeInfo getType() {

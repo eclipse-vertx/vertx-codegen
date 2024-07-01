@@ -964,12 +964,12 @@ public class ClassTest extends ClassTestBase {
     assertEquals(MethodWithHandlerAsyncResultReturn.class.getSimpleName(), model.getIfaceSimpleName());
     assertTrue(model.getReferencedTypes().isEmpty());
     assertTrue(model.getSuperTypes().isEmpty());
-    assertEquals(1, model.getMethods().size());
+    assertEquals(1, model.getAnyJavaTypeMethods().size());
 
-    checkMethod(model.getMethods().get(0), "methodWithHandlerAsyncResultStringReturn", 0, new TypeLiteral<Handler<AsyncResult<String>>>() {}, MethodKind.OTHER);
-    TypeInfo returnType = model.getMethods().get(0).getReturnType();
+    checkMethod(model.getAnyJavaTypeMethods().get(0), "methodWithHandlerAsyncResultStringReturn", 0, new TypeLiteral<Handler<AsyncResult<String>>>() {}, MethodKind.OTHER);
+    TypeInfo returnType = model.getAnyJavaTypeMethods().get(0).getReturnType();
     assertEquals(ClassKind.HANDLER, returnType.getKind());
-    assertEquals(ClassKind.ASYNC_RESULT, ((ParameterizedTypeInfo)returnType).getArg(0).getKind());
+    assertEquals(ClassKind.OTHER, ((ParameterizedTypeInfo)returnType).getArg(0).getKind());
     assertEquals(ClassKind.STRING, ((ParameterizedTypeInfo)((ParameterizedTypeInfo)returnType).getArg(0)).getArg(0).getKind());
   }
 
@@ -1051,7 +1051,7 @@ public class ClassTest extends ClassTestBase {
     List<MethodInfo> methods = model.getMethods();
     assertEquals(2, methods.size());
     TypeParamInfo t = model.getType().getParams().get(0);
-    checkMethod(methods.get(0), "methodWithClassTypeParam", 3, "T", MethodKind.OTHER);
+    checkMethod(methods.get(0), "methodWithClassTypeParam", 2, "T", MethodKind.OTHER);
     List<ParamInfo> params1 = methods.get(0).getParams();
     checkParam(params1.get(0), "t", new TypeLiteral<T>(){});
     assertTrue(params1.get(0).getType() instanceof TypeVariableInfo);
@@ -1060,8 +1060,7 @@ public class ClassTest extends ClassTestBase {
     assertFalse(((TypeVariableInfo)params1.get(0).getType()).isMethodParam());
     assertNull(methods.get(0).resolveClassTypeParam((TypeVariableInfo) params1.get(0).getType()));
     checkParam(params1.get(1), "handler", new TypeLiteral<Handler<T>>(){});
-    checkParam(params1.get(2), "asyncResultHandler", new TypeLiteral<Handler<AsyncResult<T>>>(){});
-    checkMethod(methods.get(1), "someGenericMethod", 3, new TypeLiteral<GenericInterface<R>>(){}, MethodKind.OTHER);
+    checkMethod(methods.get(1), "someGenericMethod", 2, new TypeLiteral<GenericInterface<R>>(){}, MethodKind.OTHER);
     List<ParamInfo> params2 = methods.get(1).getParams();
     checkParam(params2.get(0), "r", new TypeLiteral<R>(){});
     assertTrue(params2.get(0).getType() instanceof TypeVariableInfo);
@@ -1070,7 +1069,6 @@ public class ClassTest extends ClassTestBase {
     assertTrue(((TypeVariableInfo) params2.get(0).getType()).isMethodParam());
     assertNull(methods.get(1).resolveClassTypeParam((TypeVariableInfo) params2.get(0).getType()));
     checkParam(params2.get(1), "handler", new TypeLiteral<Handler<R>>(){});
-    checkParam(params2.get(2), "asyncResultHandler", new TypeLiteral<Handler<AsyncResult<R>>>(){});
   }
 
 
@@ -1355,10 +1353,9 @@ public class ClassTest extends ClassTestBase {
     assertTrue(model.getSuperTypes().contains(TypeReflectionFactory.create(InterfaceWithParameterizedDeclaredSupertype.class.getGenericInterfaces()[0])));
     List<MethodInfo> methods = model.getMethods();
     assertEquals(1, methods.size());
-    checkMethod(methods.get(0), "methodWithClassTypeParam", 3, "java.lang.String", MethodKind.OTHER);
+    checkMethod(methods.get(0), "methodWithClassTypeParam", 2, "java.lang.String", MethodKind.OTHER);
     checkParam(methods.get(0).getParam(0), "t", new TypeLiteral<String>() {}, new TypeLiteral<T>() {});
     checkParam(methods.get(0).getParam(1), "handler", new TypeLiteral<Handler<String>>() {}, new TypeLiteral<Handler<T>>() {});
-    checkParam(methods.get(0).getParam(2), "asyncResultHandler", new TypeLiteral<Handler<AsyncResult<String>>>() {}, new TypeLiteral<Handler<AsyncResult<T>>>() {});
   }
 
   @Test
@@ -1421,16 +1418,6 @@ public class ClassTest extends ClassTestBase {
   }
 
   @Test
-  public void testIterableInvalidSuperType() throws Exception {
-    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithIllegalArgumentIterableSuperType.class);
-    assertEquals(InterfaceWithIllegalArgumentIterableSuperType.class.getName(), model.getIfaceFQCN());
-    assertEquals(InterfaceWithIllegalArgumentIterableSuperType.class.getSimpleName(), model.getIfaceSimpleName());
-    assertEquals(0, model.getSuperTypes().size());
-    assertEquals(0, model.getMethods().size());
-    assertFalse(model.isIterable());
-  }
-
-  @Test
   public void testFunctionValidSuperType() throws Exception {
     Map<Class<?>, Class<?>> valid = new HashMap<>();
     valid.put(InterfaceWithFunctionStringSuperType.class, String.class);
@@ -1461,16 +1448,6 @@ public class ClassTest extends ClassTestBase {
     TypeInfo[] functionArgs = model.getFunctionArgs();
     assertThat(functionArgs[0], is(instanceOf(TypeVariableInfo.class)));
     assertThat(functionArgs[1], is(instanceOf(TypeVariableInfo.class)));
-  }
-
-  @Test
-  public void testFunctionInvalidSuperType() throws Exception {
-    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithIllegalArgumentFunctionSuperType.class);
-    assertEquals(InterfaceWithIllegalArgumentFunctionSuperType.class.getName(), model.getIfaceFQCN());
-    assertEquals(InterfaceWithIllegalArgumentFunctionSuperType.class.getSimpleName(), model.getIfaceSimpleName());
-    assertEquals(0, model.getSuperTypes().size());
-    assertEquals(0, model.getMethods().size());
-    assertFalse(model.isFunction());
   }
 
   @Test
@@ -1511,7 +1488,9 @@ public class ClassTest extends ClassTestBase {
     assertEquals(InterfaceWithIllegalArgumentSupplierSuperType.class.getSimpleName(), model.getIfaceSimpleName());
     assertEquals(0, model.getSuperTypes().size());
     assertEquals(0, model.getMethods().size());
-    assertFalse(model.isSupplier());
+    assertTrue(model.isSupplier());
+    TypeInfo supplierArg = model.getSupplierArg();
+
   }
 
   @Test
@@ -1818,10 +1797,9 @@ public class ClassTest extends ClassTestBase {
     assertEquals(ClassKind.STRING, superTypeArg.getKind());
     List<MethodInfo> methods = model.getMethods();
     assertEquals(1, methods.size());
-    checkMethod(methods.get(0), "methodWithClassTypeParam", 3, String.class, MethodKind.OTHER);
+    checkMethod(methods.get(0), "methodWithClassTypeParam", 2, String.class, MethodKind.OTHER);
     checkParam(methods.get(0).getParam(0), "t", String.class);
     checkParam(methods.get(0).getParam(1), "handler", new TypeLiteral<Handler<String>>() {});
-    checkParam(methods.get(0).getParam(2), "asyncResultHandler", new TypeLiteral<Handler<AsyncResult<String>>>() {});
   }
 
   @Test
@@ -1913,25 +1891,6 @@ public class ClassTest extends ClassTestBase {
     s1.getParams().remove(8);
     assertEquals(8, s1.getParams().size());
     assertEquals(9, mi.getParams().size());
-  }
-
-  @Test
-  public void testOverloadedMethodFuture() throws Exception {
-    ClassModel model = new GeneratorHelper().generateClass(InterfaceWithOverloadedFutureMethod.class);
-    assertEquals(4, model.getMethods().size());
-    assertEquals(2, model.getMethodMap().size());
-    List<MethodInfo> closes = model.getMethodMap().get("close");
-    assertEquals(0, closes.get(0).getParams().size());
-    assertEquals(1, closes.get(1).getParams().size());
-    Signature closeSignature = closes.get(1).getSignature();
-    closeSignature.getParams().remove(0);
-    assertEquals(closes.get(0).getSignature(), closeSignature);
-    List<MethodInfo> foos = model.getMethodMap().get("foo");
-    assertEquals(1, foos.get(0).getParams().size());
-    assertEquals(2, foos.get(1).getParams().size());
-    Signature fooSignature = foos.get(1).getSignature();
-    fooSignature.getParams().remove(1);
-    assertEquals(foos.get(0).getSignature(), fooSignature);
   }
 
   @Test
@@ -2234,14 +2193,16 @@ public class ClassTest extends ClassTestBase {
   public void testRecursiveFuture() throws Exception {
     // Check we can build this type
     ClassModel model = new GeneratorHelper().generateClass(RecursiveFuture.class);
-    assertNull(model.getHandlerArg());
+    assertEquals(new TypeLiteral<AsyncResult<RecursiveFuture>>() {
+    }.type.toString(), model.getHandlerArg().getName());
   }
 
   @Test
-  public void testFutureLike() throws Exception {
+  public <T> void testFutureLike() throws Exception {
     // Check we can build this type
     ClassModel model = new GeneratorHelper().generateClass(FutureLike.class);
-    assertNull(model.getHandlerArg());
+    assertEquals(new TypeLiteral<AsyncResult<T>>() {
+    }.type.toString(), model.getHandlerArg().getName());
   }
 
   @Test
@@ -2357,11 +2318,6 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testMethodInvalidHandlerDataObjectParam() throws Exception {
     new GeneratorHelper().generateClass(MethodWithInvalidHandlerDataObjectParam.class);
-  }
-
-  @Test
-  public void testMethodInvalidHandlerAsyncResultDataObjectsParam() throws Exception {
-    new GeneratorHelper().generateClass(MethodWithInvalidHandlerAsyncResultDataObjectParam.class);
   }
 
   @Test

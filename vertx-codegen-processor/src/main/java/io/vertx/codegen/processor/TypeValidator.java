@@ -213,14 +213,7 @@ class TypeValidator {
   private static boolean isValidHandlerType(Element elem, TypeInfo type, boolean allowAnyJavaType) {
     if (type.getErased().getKind() == ClassKind.HANDLER) {
       TypeInfo eventType = ((ParameterizedTypeInfo) type).getArgs().get(0);
-      if (isValidCallbackValueType(elem, eventType, allowAnyJavaType)) {
-        return true;
-      } else if (eventType.getErased().getKind() == ClassKind.ASYNC_RESULT && !eventType.isNullable()) {
-        TypeInfo resultType = ((ParameterizedTypeInfo) eventType).getArgs().get(0);
-        if (isValidCallbackValueType(elem, resultType, allowAnyJavaType)) {
-          return true;
-        }
-      }
+      return isValidCallbackValueType(elem, eventType, allowAnyJavaType);
     }
     return false;
   }

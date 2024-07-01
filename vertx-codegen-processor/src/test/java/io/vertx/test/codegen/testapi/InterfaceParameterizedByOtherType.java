@@ -2,7 +2,6 @@ package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
 import java.util.Locale;
@@ -15,9 +14,9 @@ public interface InterfaceParameterizedByOtherType extends GenericInterface<Loca
 
   @GenIgnore(GenIgnore.PERMITTED_TYPE)
   @Override
-  Locale methodWithClassTypeParam(Locale locale, Handler<Locale> handler, Handler<AsyncResult<Locale>> asyncResultHandler);
+  Locale methodWithClassTypeParam(Locale locale, Handler<Locale> handler);
 
   @GenIgnore(GenIgnore.PERMITTED_TYPE)
   @Override
-  <R> GenericInterface<R> someGenericMethod(R r, Handler<R> handler, Handler<AsyncResult<R>> asyncResultHandler);
+  <R> GenericInterface<R> someGenericMethod(R r, Handler<R> handler);
 }

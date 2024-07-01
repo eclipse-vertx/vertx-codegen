@@ -11,7 +11,7 @@ import io.vertx.core.Handler;
 @VertxGen
 public interface FutureLike<T> extends AsyncResult<T>, Handler<AsyncResult<T>> {
 
-  @GenIgnore
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   @Override
   void handle(AsyncResult<T> asyncResult);
 

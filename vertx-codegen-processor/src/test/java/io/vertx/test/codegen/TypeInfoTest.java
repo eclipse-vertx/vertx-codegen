@@ -111,18 +111,6 @@ public class TypeInfoTest {
   }
 
   @Test
-  public void testAsync() throws Exception {
-    doTest(AsyncHolder.class, map -> {
-      assertClass(assertAsync(map.get("asyncVoid"), "java.lang.Void"), "java.lang.Void", ClassKind.VOID);
-      assertClass(assertAsync(map.get("asyncString"), "java.lang.String"), "java.lang.String", ClassKind.STRING);
-      assertClass(assertParameterized(assertAsync(map.get("asyncListString"), "java.util.List<java.lang.String>"), "java.util.List<java.lang.String>", ClassKind.LIST).getArg(0), "java.lang.String", ClassKind.STRING);
-      assertApi(assertParameterized(assertAsync(map.get("asyncListApi"), "java.util.List<" + ApiObject.class.getName() + ">"), "java.util.List<" + ApiObject.class.getName() + ">", ClassKind.LIST).getArg(0), ApiObject.class.getName());
-      assertTypeVariable(assertParameterized(assertAsync(map.get("asyncParameterizedByClassTypeParam"), GenericInterface.class.getName() + "<ClassTypeParam>"), GenericInterface.class.getName() + "<ClassTypeParam>", ClassKind.API).getArg(0), "ClassTypeParam");
-      assertTypeVariable(assertParameterized(assertAsync(map.get("asyncParameterizedByMethodTypeParam"), GenericInterface.class.getName() + "<MethodTypeParam>"), GenericInterface.class.getName() + "<MethodTypeParam>", ClassKind.API).getArg(0), "MethodTypeParam");
-    });
-  }
-
-  @Test
   public void testDataObject() throws Exception {
     doTest(DataObjectHolder.class, map -> {
       assertDataObject(map.get("dataObject"), TestDataObject.class.getName(), ClassKind.OTHER);
@@ -216,13 +204,6 @@ public class TypeInfoTest {
     assertEquals(expectedKind, parameterizedType.getKind());
     assertEquals(expectedName, parameterizedType.getName());
     return parameterizedType;
-  }
-
-  private TypeInfo assertAsync(TypeInfo type, String name) {
-    String asyncName = "io.vertx.core.AsyncResult<" + name + ">";
-    ParameterizedTypeInfo handlerType = assertParameterized(assertHandler(type, asyncName), asyncName, ClassKind.ASYNC_RESULT);
-    ParameterizedTypeInfo resultType = assertParameterized(handlerType, asyncName, ClassKind.ASYNC_RESULT);
-    return resultType.getArg(0);
   }
 
   private TypeInfo assertHandler(TypeInfo type, String name) {
