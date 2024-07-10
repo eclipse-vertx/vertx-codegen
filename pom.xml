@@ -29,8 +29,13 @@
 
   <name>Vert.x Codegen Parent</name>
 
+  <scm>
+    <connection>scm:git:git@github.com:eclipse-vertx/vertx-codegen.git</connection>
+    <developerConnection>scm:git:git@github.com:eclipse-vertx/vertx-codegen.git</developerConnection>
+    <url>git@github.com:vert-x3/vertx-sockjs-service-proxy.git</url>
+  </scm>
+
   <properties>
-    <stack.version>5.0.0-SNAPSHOT</stack.version>
     <jar.manifest>${project.basedir}/src/main/resources/META-INF/MANIFEST.MF</jar.manifest>
   </properties>
 
@@ -39,14 +44,14 @@
       <dependency>
         <groupId>io.vertx</groupId>
         <artifactId>vertx-dependencies</artifactId>
-        <version>${stack.version}</version>
+        <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>io.vertx</groupId>
         <artifactId>vertx-codegen-api</artifactId>
-        <version>${stack.version}</version>
+        <version>${project.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
