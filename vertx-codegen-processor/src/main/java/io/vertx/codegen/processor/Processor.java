@@ -16,7 +16,6 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -35,18 +34,17 @@ import java.util.stream.StreamSupport;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@javax.annotation.processing.SupportedOptions({"codegen.output","codegen.generators"})
+@javax.annotation.processing.SupportedOptions({"codegen.generators"})
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)
 public class Processor extends AbstractProcessor {
 
-  private static final int JAVA= 0, RESOURCE = 1, OTHER = 2;
+  private static final int JAVA= 0, RESOURCE = 1;
   private static final String JSON_MAPPERS_PROPERTIES_PATH = "META-INF/vertx/json-mappers.properties";
   public static final Logger log = Logger.getLogger(Processor.class.getName());
   private File outputDirectory;
   private List<? extends Generator<?>> codeGenerators;
-  private Map<String, GeneratedFile> generatedFiles = new HashMap<>();
+//  private Map<String, GeneratedFile> generatedFiles = new HashMap<>();
   private Map<String, GeneratedFile> generatedResources = new HashMap<>();
-  private Map<String, String> relocations = new HashMap<>();
   private Set<Class<? extends Annotation>> supportedAnnotation = new HashSet<>();
   private List<CodeGen.Converter> mappers;
 
@@ -58,7 +56,6 @@ public class Processor extends AbstractProcessor {
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
-    generatedFiles.clear();
     generatedResources.clear();
     supportedAnnotation = new HashSet<>(Arrays.asList(DataObject.class, VertxGen.class));
     getCodeGenerators()
@@ -88,18 +85,6 @@ public class Processor extends AbstractProcessor {
 
   private Collection<? extends Generator<?>> getCodeGenerators() {
     if (codeGenerators == null) {
-      String outputDirectoryOption = processingEnv.getOptions().get("codegen.output");
-      if (outputDirectoryOption != null) {
-        outputDirectory = new File(outputDirectoryOption);
-        if (!outputDirectory.exists()) {
-          if (!outputDirectory.mkdirs()) {
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " does not exist");
-          }
-        }
-        if (!outputDirectory.isDirectory()) {
-          processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Output directory " + outputDirectoryOption + " is not a directory");
-        }
-      }
       // load GeneratorLoader by ServiceLoader
       ServiceLoader<GeneratorLoader> genLoaders = ServiceLoader.load(GeneratorLoader.class, Processor.class.getClassLoader());
       Iterator<GeneratorLoader> it = genLoaders.iterator();
@@ -125,15 +110,6 @@ public class Processor extends AbstractProcessor {
           processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Could not load code generator: " + e.getMessage());
         }
       }
-
-      relocations = processingEnv.getOptions()
-        .entrySet()
-        .stream()
-        .filter(e -> e.getKey().startsWith("codegen.output."))
-        .collect(Collectors.toMap(
-          e -> e.getKey().substring("codegen.output.".length()),
-          Map.Entry::getValue)
-        );
 
       codeGenerators = generators;
     }
@@ -280,18 +256,9 @@ public class Processor extends AbstractProcessor {
                 if (relativeName != null) {
                   int kind;
                   if (relativeName.endsWith(".java") && !relativeName.contains("/")) {
-                    String relocation = relocations.get(codeGenerator.name);
-                    if (relocation != null) {
-                      kind = OTHER;
-                      relativeName = relocation + '/' +
-                        relativeName.substring(0, relativeName.length() - ".java".length()).replace('.', '/') + ".java";
-                    } else {
-                      kind = JAVA;
-                    }
-                  } else if (relativeName.startsWith("resources/")) {
-                    kind = RESOURCE;
+                    kind = JAVA;
                   } else {
-                    kind = OTHER;
+                    kind = RESOURCE;
                   }
                   if (kind == JAVA) {
                     // Special handling for .java
@@ -302,12 +269,9 @@ public class Processor extends AbstractProcessor {
                     }
                     List<ModelProcessing> processings = generatedClasses.computeIfAbsent(fqn, GeneratedFile::new);
                     processings.add(new ModelProcessing(model, codeGenerator));
-                  } else if (kind == RESOURCE) {
-                    relativeName = relativeName.substring("resources/".length());
-                    List<ModelProcessing> processings = generatedResources.computeIfAbsent(relativeName, GeneratedFile::new);
-                    processings.add(new ModelProcessing(model, codeGenerator));
                   } else {
-                    List<ModelProcessing> processings = generatedFiles.computeIfAbsent(relativeName, GeneratedFile::new);
+                    // RESOURCE
+                    List<ModelProcessing> processings = generatedResources.computeIfAbsent(relativeName, GeneratedFile::new);
                     processings.add(new ModelProcessing(model, codeGenerator));
                   }
                 }
@@ -322,7 +286,6 @@ public class Processor extends AbstractProcessor {
 
         // Generate classes
         generatedClasses.values().forEach(generated -> {
-          boolean shouldWarningsBeSuppressed = false;
           try {
             String content = generated.generate();
             if (content.length() > 0) {
@@ -343,11 +306,11 @@ public class Processor extends AbstractProcessor {
 
       // Generate resources
       for (GeneratedFile generated : generatedResources.values()) {
-        boolean shouldWarningsBeSuppressed = false;
         try {
           String content = generated.generate();
-          if (content.length() > 0) {
-            try (Writer w = processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", generated.uri).openWriter()) {
+          if (!content.isEmpty()) {
+            try (Writer w = processingEnv.getFiler()
+              .createResource(StandardLocation.CLASS_OUTPUT, "", generated.uri).openWriter()) {
               w.write(content);
             }
             boolean createSource;
@@ -371,30 +334,6 @@ public class Processor extends AbstractProcessor {
           reportException(e, generated.get(0).model.getElement());
         }
       }
-      // Generate files
-      generatedFiles.values().forEach(generated -> {
-        Path path = new File(generated.uri).toPath();
-        if (path.isAbsolute()) {
-          // Nothing to do
-        } else if (outputDirectory != null) {
-          path = outputDirectory.toPath().resolve(path);
-        } else {
-          return;
-        }
-        File file = path.toFile();
-        Helper.ensureParentDir(file);
-        String content = generated.generate();
-        if (content.length() > 0) {
-          try (FileWriter fileWriter = new FileWriter(file)) {
-            fileWriter.write(content);
-          } catch (GenException e) {
-            reportGenException(e);
-          } catch (Exception e) {
-            reportException(e, generated.get(0).model.getElement());
-          }
-          processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
-        }
-      });
     }
     return true;
   }
