@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -38,12 +37,10 @@ import java.util.stream.StreamSupport;
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)
 public class Processor extends AbstractProcessor {
 
-  private static final int JAVA= 0, RESOURCE = 1;
   private static final String JSON_MAPPERS_PROPERTIES_PATH = "META-INF/vertx/json-mappers.properties";
   public static final Logger log = Logger.getLogger(Processor.class.getName());
   private File outputDirectory;
   private List<? extends Generator<?>> codeGenerators;
-//  private Map<String, GeneratedFile> generatedFiles = new HashMap<>();
   private Map<String, GeneratedFile> generatedResources = new HashMap<>();
   private Set<Class<? extends Annotation>> supportedAnnotation = new HashSet<>();
   private List<CodeGen.Converter> mappers;
@@ -254,13 +251,7 @@ public class Processor extends AbstractProcessor {
               if (codeGenerator.kinds.contains(model.getKind())) {
                 String relativeName = codeGenerator.filename(model);
                 if (relativeName != null) {
-                  int kind;
-                  if (relativeName.endsWith(".java") && !relativeName.contains("/")) {
-                    kind = JAVA;
-                  } else {
-                    kind = RESOURCE;
-                  }
-                  if (kind == JAVA) {
+                  if (relativeName.endsWith(".java")) {
                     // Special handling for .java
                     String fqn = relativeName.substring(0, relativeName.length() - ".java".length());
                     // Avoid to recreate the same file (this may happen as we unzip and recompile source trees)

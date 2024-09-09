@@ -19,7 +19,6 @@
     <protoc.version>3.21.12</protoc.version>
   </properties>
 
-
   <dependencies>
     <dependency>
       <groupId>io.vertx</groupId>
@@ -66,36 +65,6 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <artifactId>maven-clean-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>default-clean</id>
-              <configuration>
-                <filesets>
-                  <fileset>
-                    <directory>${project.basedir}/src/converters/generated</directory>
-                  </fileset>
-                </filesets>
-              </configuration>
-            </execution>
-            <execution>
-              <id>clean-mock</id>
-              <goals>
-                <goal>clean</goal>
-              </goals>
-              <phase>process-test-classes</phase>
-              <configuration>
-                <excludeDefaultDirectories>true</excludeDefaultDirectories>
-                <filesets>
-                  <fileset>
-                    <directory>${project.build.outputDirectory}/io/vertx/core</directory>
-                  </fileset>
-                </filesets>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <executions>
@@ -109,6 +78,22 @@
                   <arg>-Adocgen.source=${asciidoc.dir}</arg>
                   <arg>-Adocgen.output=${project.build.directory}/asciidoc/java</arg>
                 </compilerArgs>
+              </configuration>
+            </execution>
+            <execution>
+              <id>generate-test-converters</id>
+              <goals>
+                <goal>testCompile</goal>
+              </goals>
+              <phase>generate-test-sources</phase>
+              <configuration>
+                <annotationProcessors>
+                  <annotationProcessor>io.vertx.codegen.processor.Processor</annotationProcessor>
+                </annotationProcessors>
+                <compileSourceRoots>
+                  <compileSourceRoot>${project.basedir}/src/converters/java</compileSourceRoot>
+                </compileSourceRoots>
+                <generatedTestSourcesDirectory>${project.basedir}/src/converters/generated</generatedTestSourcesDirectory>
               </configuration>
             </execution>
           </executions>
@@ -200,46 +185,8 @@
             </goals>
             <configuration>
               <sources>
-                <source>${basedir}/src/converters/java</source>
                 <source>${basedir}/src/stubs/java</source>
-                <source>${basedir}/src/converters/generated</source>
               </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- Remove BSC-->
-      <plugin>
-        <groupId>org.bsc.maven</groupId>
-        <artifactId>maven-processor-plugin</artifactId>
-        <version>3.1.0</version>
-        <configuration>
-          <systemProperties>
-            <java.util.logging.SimpleFormatter.format>%4$s: %3$s - %5$s %6$s%n</java.util.logging.SimpleFormatter.format>
-          </systemProperties>
-        </configuration>
-        <executions>
-          <!-- Converters -->
-          <execution>
-            <id>generate-converters-sources</id>
-            <goals>
-              <goal>process-test</goal>
-            </goals>
-            <phase>generate-test-sources</phase>
-            <configuration>
-              <!-- We use this workaround to have a specific json-mappers.properties file for this gen -->
-              <classpathElements>
-                <classpathElement>${project.build.outputDirectory}</classpathElement>
-                <classpathElement>${project.build.directory}/test-classpath</classpathElement>
-                <classpathElement>${project.basedir}/src/converters/resources</classpathElement>
-              </classpathElements>
-              <processors>
-                <processor>io.vertx.codegen.processor.Processor</processor>
-              </processors>
-              <optionMap>
-              </optionMap>
-              <sourceDirectory>${project.basedir}/src/converters/java</sourceDirectory>
-              <outputDirectory>${project.basedir}/src/converters/generated</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -253,7 +200,7 @@
         <executions>
           <execution>
             <id>copy-standard-proto</id>
-            <phase>generate-test-sources</phase>
+            <phase>process-sources</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
@@ -271,7 +218,7 @@
           </execution>
           <execution>
             <id>copy-generated-proto</id>
-            <phase>generate-test-sources</phase>
+            <phase>process-test-sources</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
@@ -318,62 +265,9 @@
         <executions>
           <execution>
             <id>package-docs</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <attach>true</attach>
-              <descriptors>
-                <descriptor>src/main/assembly/docs.xml</descriptor>
-              </descriptors>
-            </configuration>
           </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-
-    <!-- Documentation generation : activate with -Pdocs -->
-    <profile>
-      <id>docs</id>
-      <build>
-        <plugins>
-          <!-- Transform the Asciidoctor to html -->
-          <plugin>
-            <groupId>org.asciidoctor</groupId>
-            <artifactId>asciidoctor-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>process-asciidoc</goal>
-                </goals>
-                <configuration>
-                  <sourceDirectory>${project.build.directory}/asciidoc</sourceDirectory>
-                </configuration>
-                <phase>package</phase>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>javadoc</goal>
-                </goals>
-                <configuration>
-                  <reportOutputDirectory>${project.build.directory}/docs</reportOutputDirectory>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-
 </project>

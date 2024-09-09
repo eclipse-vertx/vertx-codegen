@@ -8,7 +8,7 @@ There can be as many generators as you like.
 
 ## Generated output
 
-A generator can create 3 different kinds of output: Java classes, resources and anything else
+A generator can create 2 different kinds of output: Java classes or resources
 
 ### Generated Java classes
 
@@ -24,31 +24,9 @@ The following generators use it:
 
 ### Generated resources
 
-A generator declaring a filename prefixed by `resources/` will have its content generated as a compiler resource. This resource will be stored in the generated sources directory and the generated class directory.
+Any other file is considered as a java resource, its content generated is considered as a compiler resource. This resource will be stored in the generated sources directory and the generated class directory.
 
 Generated files are handled by the Java compiler (`-s` option), usually build tools configures the compiler to store them in a specific build location, for instance Maven by default uses the `target/generated-sources/annotations` directory.
-
-### Other generated files
-
-Anything else will be stored in the file system using the filename, when the `filename` is relative (it usually is) the target path will be resolved against the `codegen.output` directory.
-
-The following generators use it:
-
-- Scala generator
-- Kotlin extension methods
-
-When the `codegen.output` is not specified, generated files are discarded.
-
-### Relocation
-
-Sometimes you want to have a generator to output its files in another directory, you can do that with the
-`codegen.output.generator-name` compiler option:
-
-```
-<codegen.output.data_object_converters>generated</codegen.output.data_object_converters>
-```
-
-Generators will store its content in the `codegen.output/generated` directory instead as a Java class.
 
 ## Processor configuration
 
@@ -62,8 +40,7 @@ You can configure the `CodeGenProcessor` as any Java annotation processor, here 
       <artifactId>maven-compiler-plugin</artifactId>
       <version>3.8.1</version>
       <configuration>
-        <source>1.8</source>
-        <target>1.8</target>
+        <release>11</release>
         <encoding>${project.build.sourceEncoding}</encoding>
         <!-- Important: there are issues with apt and incremental compilation in the maven-compiler-plugin -->
         <useIncrementalCompilation>false</useIncrementalCompilation>
@@ -84,9 +61,6 @@ You can configure the `CodeGenProcessor` as any Java annotation processor, here 
               </path>
               <!-- ... more path such as vertx-service-proxy/vertx-rx-java2 depends on what you want to generate ... -->
             </annotationProcessorPaths>
-            <compilerArgs>
-              <arg>-Acodegen.output=${project.basedir}/src/main</arg>
-            </compilerArgs>
           </configuration>
         </execution>
       </executions>
@@ -114,8 +88,7 @@ task annotationProcessing(type: JavaCompile, group: 'other') { // codegen
   options.annotationProcessorPath = configurations.compileClasspath
   options.compilerArgs = [
     "-proc:only",
-    "-processor", "io.vertx.codegen.CodeGenProcessor",
-    "-Acodegen.output=${project.projectDir}/src/main"
+    "-processor", "io.vertx.codegen.CodeGenProcessor"
   ]
 }
 
@@ -150,8 +123,7 @@ tasks.register<JavaCompile>("annotationProcessing") {
     options.annotationProcessorPath = configurations.compileClasspath.get()
     options.compilerArgs = listOf(
         "-proc:only",
-        "-processor", "io.vertx.codegen.CodeGenProcessor",
-        "-Acodegen.output=${project.projectDir}/src/main"
+        "-processor", "io.vertx.codegen.CodeGenProcessor"
     )
 }
 
@@ -179,14 +151,8 @@ Besides you can use the `processor` classified dependency that declares the anno
 </dependency>
 ```
 
-You still need to configure the `codegen.output` for generating files non resources/classes as the processors
-requires this option to know where to place them.
-
-The processor is configured by a few options
-
-- `codegen.output` : where the non Java classes / non resources are stored
-- `codegen.output.<generator-name>` : relocate the output of _<generator-name>_ to another directory
-- `codegen.generators` : a comma separated list of generators, each expression is a regex, allow to filter undesired generators
+The processor is configured by a the `codegen.generators` option,  a comma separated list of generators, each expression
+is a regex, allow to filter undesired generators
 
 ## API constraints
 

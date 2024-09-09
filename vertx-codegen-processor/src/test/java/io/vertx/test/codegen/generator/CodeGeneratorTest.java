@@ -145,7 +145,7 @@ public class CodeGeneratorTest {
   public void testIncrementalClass() throws Exception {
     Compiler compiler = new Compiler(new Processor());
     compiler.addOption("-Acodegen.generators=testgen2");
-    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
+    compiler.setClassOutput(testDir);
     assertTrue(compiler.compile(ModuleScopedApi.class, ModuleScopedSubApi.class));
     File classes = compiler.getClassOutput();
     ClassLoader loader = new URLClassLoader(new URL[]{classes.toURI().toURL()});
@@ -164,7 +164,6 @@ public class CodeGeneratorTest {
     compiler.setClassOutput(assertMkDirs(new File(testDir, "classes")));
     compiler.setSourceOutput(assertMkDirs(new File(testDir, "sources")));
     compiler.addOption("-Acodegen.generators=testgen4");
-    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
     assertTrue(compiler.compile(VertxGenClass1.class));
     assertFile("should_not_be_compiled", new File(testDir, "sources/file.txt".replace('/', File.separatorChar)));
     assertFile("should_not_be_compiled", new File(testDir, "classes/file.txt".replace('/', File.separatorChar)));
@@ -176,7 +175,7 @@ public class CodeGeneratorTest {
     compiler.setClassOutput(assertMkDirs(new File(testDir, "classes")));
     compiler.setSourceOutput(new File(testDir, "classes"));
     compiler.addOption("-Acodegen.generators=testgen4");
-    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
+    compiler.setClassOutput(testDir);
     assertTrue(compiler.compile(VertxGenClass1.class));
     assertFile("should_not_be_compiled", new File(testDir, "classes/file.txt".replace('/', File.separatorChar)));
   }
@@ -187,7 +186,6 @@ public class CodeGeneratorTest {
     compiler.setClassOutput(assertMkDirs(new File(testDir, "classes")));
     compiler.setSourceOutput(assertMkDirs(new File(testDir, "sources")));
     compiler.addOption("-Acodegen.generators=testgen4");
-    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
     assertTrue(compiler.compile(VertxGenClass1.class, VertxGenClass2.class));
     assertFile("should_not_be_compiled", new File(testDir, "sources/file.txt".replace('/', File.separatorChar)));
     assertFile("should_not_be_compiled", new File(testDir, "classes/file.txt".replace('/', File.separatorChar)));
