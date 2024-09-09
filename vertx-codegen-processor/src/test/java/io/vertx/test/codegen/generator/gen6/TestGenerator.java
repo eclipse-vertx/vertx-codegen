@@ -27,7 +27,7 @@ public class TestGenerator extends Generator<Model>{
 
   @Override
   public String filename(Model model) {
-    return "resource/result.txt";
+    return "result.txt";
   }
 
   @Override

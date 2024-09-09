@@ -60,8 +60,8 @@ public class CodeGeneratorTest {
 
   private Properties assertCompile(String gen, Class... classes) throws Exception {
     Compiler compiler = new Compiler(new Processor());
+    compiler.setClassOutput(testDir);
     compiler.addOption("-Acodegen.generators=" + gen);
-    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
     assertTrue(compiler.compile(classes));
     File f = new File(testDir, classes[0].getName().replace('.', '_') + ".properties");
     Properties props = new Properties();
@@ -131,8 +131,8 @@ public class CodeGeneratorTest {
   public void testModuleGen() throws Exception {
     URL url = Processor.class.getClassLoader().getResource("io/vertx/test/codegen/testmodule/customgroup/package-info.java");
     Compiler compiler = new Compiler(new Processor());
+    compiler.setClassOutput(testDir);
     compiler.addOption("-Acodegen.generators=testgen1");
-    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
     assertTrue(compiler.compile(new File(url.toURI())));
     File f = new File(testDir, "io_vertx_test_codegen_testmodule_customgroup.properties");
     Properties props = new Properties();
@@ -145,7 +145,7 @@ public class CodeGeneratorTest {
   public void testIncrementalClass() throws Exception {
     Compiler compiler = new Compiler(new Processor());
     compiler.addOption("-Acodegen.generators=testgen2");
-    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
+    compiler.setClassOutput(testDir);
     assertTrue(compiler.compile(ModuleScopedApi.class, ModuleScopedSubApi.class));
     File classes = compiler.getClassOutput();
     ClassLoader loader = new URLClassLoader(new URL[]{classes.toURI().toURL()});
@@ -159,25 +159,11 @@ public class CodeGeneratorTest {
   }
 
   @Test
-  public void testAbsoluteFilename() throws Exception {
-    // Does not pass on windows because of drive letter
-    Assume.assumeFalse(System.getProperty("os.name").toLowerCase().contains("win"));
-    Compiler compiler = new Compiler(new Processor());
-    compiler.addOption("-Acodegen.generators=testgen3");
-
-    assertTrue(compiler.compile(VertxGenClass1.class));
-    File f = new File(testDir, "somedir/file.txt".replace('/', File.separatorChar));
-    assertTrue(f.exists());
-    assertTrue(f.isFile());
-  }
-
-  @Test
   public void testFileTypes() throws Exception {
     Compiler compiler = new Compiler(new Processor());
     compiler.setClassOutput(assertMkDirs(new File(testDir, "classes")));
     compiler.setSourceOutput(assertMkDirs(new File(testDir, "sources")));
     compiler.addOption("-Acodegen.generators=testgen4");
-    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
     assertTrue(compiler.compile(VertxGenClass1.class));
     assertFile("should_not_be_compiled", new File(testDir, "sources/file.txt".replace('/', File.separatorChar)));
     assertFile("should_not_be_compiled", new File(testDir, "classes/file.txt".replace('/', File.separatorChar)));
@@ -189,7 +175,7 @@ public class CodeGeneratorTest {
     compiler.setClassOutput(assertMkDirs(new File(testDir, "classes")));
     compiler.setSourceOutput(new File(testDir, "classes"));
     compiler.addOption("-Acodegen.generators=testgen4");
-    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
+    compiler.setClassOutput(testDir);
     assertTrue(compiler.compile(VertxGenClass1.class));
     assertFile("should_not_be_compiled", new File(testDir, "classes/file.txt".replace('/', File.separatorChar)));
   }
@@ -200,32 +186,18 @@ public class CodeGeneratorTest {
     compiler.setClassOutput(assertMkDirs(new File(testDir, "classes")));
     compiler.setSourceOutput(assertMkDirs(new File(testDir, "sources")));
     compiler.addOption("-Acodegen.generators=testgen4");
-    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
     assertTrue(compiler.compile(VertxGenClass1.class, VertxGenClass2.class));
     assertFile("should_not_be_compiled", new File(testDir, "sources/file.txt".replace('/', File.separatorChar)));
     assertFile("should_not_be_compiled", new File(testDir, "classes/file.txt".replace('/', File.separatorChar)));
   }
 
   @Test
-  public void testRelocation() throws Exception {
-    Compiler compiler = new Compiler(new Processor());
-    compiler.addOption("-Acodegen.generators=testgen5");
-    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
-    compiler.addOption("-Acodegen.output.testgen5=foo/bar");
-    assertTrue(compiler.compile(MethodWithValidVertxGenParams.class, VertxGenClass1.class, VertxGenClass2.class));
-    File f = new File(testDir, "foo/bar/io/vertx/test/codegen/testapi/MethodWithValidVertxGenParams_Other.java".replace('/', File.separatorChar));
-    assertTrue(f.exists());
-    assertTrue(f.isFile());
-  }
-
-  @Test
   public void testMultipleTypes() throws Exception {
     Compiler compiler = new Compiler(new Processor());
     compiler.addOption("-Acodegen.generators=testgen6");
-    compiler.addOption("-Acodegen.output=" + testDir.getAbsolutePath());
-    compiler.addOption("-Acodegen.output.testgen6=foo/bar");
+    compiler.setClassOutput(assertMkDirs(new File(testDir, "classes")));
     assertTrue(compiler.compile(CommentedDataObject.class, VertxGenClass1.class, VertxGenClass2.class));
-    File f = new File(testDir, "resource/result.txt".replace('/', File.separatorChar));
+    File f = new File(testDir, "classes/result.txt".replace('/', File.separatorChar));
     assertTrue(f.exists());
     assertTrue(f.isFile());
     Scanner s = new Scanner(f);

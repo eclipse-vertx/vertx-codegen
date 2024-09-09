@@ -36,7 +36,7 @@ public class ProtoFileGen extends Generator<Model> {
   public String filename(Model model) {
     if ((model instanceof DataObjectModel || model instanceof EnumModel)
       && model.getAnnotations().stream().anyMatch(ann -> ann.getName().equals(ProtobufGen.class.getName()))) {
-      return "resources/dataobjects.proto";
+      return "dataobjects.proto";
     }
     return null;
   }
