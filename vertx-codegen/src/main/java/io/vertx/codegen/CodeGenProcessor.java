@@ -8,6 +8,6 @@ import io.vertx.codegen.processor.Processor;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @javax.annotation.processing.SupportedOptions("codegen.generators")
-@javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)
+@javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_11)
 public class CodeGenProcessor extends Processor {
 }

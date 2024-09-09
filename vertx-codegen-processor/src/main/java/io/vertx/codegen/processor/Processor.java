@@ -8,6 +8,7 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.FilerException;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
@@ -34,7 +35,7 @@ import java.util.stream.Stream;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @javax.annotation.processing.SupportedOptions({"codegen.generators"})
-@javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_8)
+@javax.annotation.processing.SupportedSourceVersion(SourceVersion.RELEASE_11)
 public class Processor extends AbstractProcessor {
 
   private static final String JSON_MAPPERS_PROPERTIES_PATH = "META-INF/vertx/json-mappers.properties";
