@@ -34,10 +34,11 @@ public abstract class Generator<M extends Model> {
    * When the returned value
    * <ul>
    *   <li>is {@code null}, no file is created</li>
-   *   <li>ends with {@code .java} suffix, the file is created as a Java source file by the annotation processor,
-   *   the class will be compiled by the current compilation process</li>
-   *   <li>otherwise, the file is created as a resource file by the annotation processor and the file will likely end
+   *   <li>does not start with {@code /} and ends with {@code .java}, the file is created as a source file by the annotation processor
+   *   and the class will be compiled by the current compilation process</li>
+   *   <li>does not start with {@code /} the file is created as a resource file by the annotation processor, the file will likely end
    *   in the classes directory</li>
+   *   <li>starts with {@code /} the resource is created as a file on the filesystem</li>
    * </ul>
    *
    * @param model the model

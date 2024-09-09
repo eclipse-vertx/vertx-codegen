@@ -8,11 +8,11 @@ There can be as many generators as you like.
 
 ## Generated output
 
-A generator can create 2 different kinds of output: Java classes or resources
+A generator can create 3 different kinds of output: Java classes, resources or absolute files.
 
 ### Generated Java classes
 
-A generator declaring a filename matching a Java FQN followed by `.java` suffix will have its content generated as a Java class. This class will be automatically compiled by the same compiler (that's a Java compiler feature).
+A generator declaring a filename not starting with `/`' matching a Java FQN followed by `.java` suffix will have its content generated as a Java class. This class will be automatically compiled by the same compiler (that's a Java compiler feature).
 
 The generated files are handled by the Java compiler (`-s` option), usually build tools configures the compiler to store them in a specific build location, for instance Maven by default uses the `target/generated-sources/annotations` directory.
 
@@ -24,9 +24,13 @@ The following generators use it:
 
 ### Generated resources
 
-Any other file is considered as a java resource, its content generated is considered as a compiler resource. This resource will be stored in the generated sources directory and the generated class directory.
+A file not starting with `/` is considered as a java resource, its content generated is considered as a compiler resource. This resource will be stored in the generated sources directory and the generated class directory.
 
 Generated files are handled by the Java compiler (`-s` option), usually build tools configures the compiler to store them in a specific build location, for instance Maven by default uses the `target/generated-sources/annotations` directory.
+
+### Absolute files
+
+A file starting with `/` will be written as an absolute file on the filesystem, this file is not managed by the java compiler.
 
 ## Processor configuration
 

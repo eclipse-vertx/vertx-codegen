@@ -16,12 +16,10 @@ import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Predicate;
@@ -252,7 +250,7 @@ public class Processor extends AbstractProcessor {
               if (codeGenerator.kinds.contains(model.getKind())) {
                 String relativeName = codeGenerator.filename(model);
                 if (relativeName != null) {
-                  if (relativeName.endsWith(".java")) {
+                  if (!relativeName.startsWith("/") && relativeName.endsWith(".java")) {
                     // Special handling for .java
                     String fqn = relativeName.substring(0, relativeName.length() - ".java".length());
                     // Avoid to recreate the same file (this may happen as we unzip and recompile source trees)
@@ -300,25 +298,33 @@ public class Processor extends AbstractProcessor {
       for (GeneratedFile generated : generatedResources.values()) {
         try {
           String content = generated.generate();
-          if (!content.isEmpty()) {
-            try (Writer w = processingEnv.getFiler()
-              .createResource(StandardLocation.CLASS_OUTPUT, "", generated.uri).openWriter()) {
-              w.write(content);
+          if (generated.uri.startsWith("/")) {
+            File f = new File(generated.uri);
+            f.getParentFile().mkdirs();
+            try (OutputStream out = new FileOutputStream(f)) {
+              out.write(content.getBytes(StandardCharsets.UTF_8));
             }
-            boolean createSource;
-            try {
-              processingEnv.getFiler().getResource(StandardLocation.SOURCE_OUTPUT, "", generated.uri);
-              createSource = true;
-            } catch (FilerException e) {
-              // SOURCE_OUTPUT == CLASS_OUTPUT
-              createSource = false;
-            }
-            if (createSource) {
-              try (Writer w = processingEnv.getFiler().createResource(StandardLocation.SOURCE_OUTPUT, "", generated.uri).openWriter()) {
+          } else {
+            if (!content.isEmpty()) {
+              try (Writer w = processingEnv.getFiler()
+                .createResource(StandardLocation.CLASS_OUTPUT, "", generated.uri).openWriter()) {
                 w.write(content);
               }
+              boolean createSource;
+              try {
+                processingEnv.getFiler().getResource(StandardLocation.SOURCE_OUTPUT, "", generated.uri);
+                createSource = true;
+              } catch (FilerException e) {
+                // SOURCE_OUTPUT == CLASS_OUTPUT
+                createSource = false;
+              }
+              if (createSource) {
+                try (Writer w = processingEnv.getFiler().createResource(StandardLocation.SOURCE_OUTPUT, "", generated.uri).openWriter()) {
+                  w.write(content);
+                }
+              }
+              processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
             }
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Generated model " + generated.get(0).model.getFqn() + ": " + generated.uri);
           }
         } catch (GenException e) {
           reportGenException(e);

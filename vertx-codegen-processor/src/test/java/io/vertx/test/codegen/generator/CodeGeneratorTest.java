@@ -159,6 +159,19 @@ public class CodeGeneratorTest {
   }
 
   @Test
+  public void testAbsoluteFilename() throws Exception {
+    // Does not pass on windows because of drive letter
+    Assume.assumeFalse(System.getProperty("os.name").toLowerCase().contains("win"));
+    Compiler compiler = new Compiler(new Processor());
+    compiler.addOption("-Acodegen.generators=testgen3");
+
+    assertTrue(compiler.compile(VertxGenClass1.class));
+    File f = new File(testDir, "somedir/file.txt".replace('/', File.separatorChar));
+    assertTrue(f.exists());
+    assertTrue(f.isFile());
+  }
+
+  @Test
   public void testFileTypes() throws Exception {
     Compiler compiler = new Compiler(new Processor());
     compiler.setClassOutput(assertMkDirs(new File(testDir, "classes")));
