@@ -13,7 +13,7 @@ import java.util.Arrays;
 import io.vertx.codegen.protobuf.ProtobufEncodingMode;
 import io.vertx.core.json.JsonObject;
 import io.vertx.codegen.protobuf.utils.ExpandableIntArray;
-import io.vertx.codegen.protobuf.converters.*;
+import io.vertx.codegen.protobuf.impl.converters.*;
 
 public class UserProtoConverter {
 

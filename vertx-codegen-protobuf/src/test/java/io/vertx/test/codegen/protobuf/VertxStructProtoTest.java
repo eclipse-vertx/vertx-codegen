@@ -5,7 +5,7 @@ import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.codegen.protobuf.converters.VertxStructProtoConverter;
+import io.vertx.codegen.protobuf.impl.converters.VertxStructProtoConverter;
 import io.vertx.protobuf.Value;
 import org.junit.Assert;
 import org.junit.Test;

@@ -73,7 +73,7 @@ public class DataObjectProtobufGen extends Generator<DataObjectModel> {
     writer.print("import io.vertx.codegen.protobuf.ProtobufEncodingMode;\n");
     writer.print("import io.vertx.core.json.JsonObject;\n");
     writer.print("import io.vertx.codegen.protobuf.utils.ExpandableIntArray;\n");
-    writer.print("import io.vertx.codegen.protobuf.converters.*;\n");
+    writer.print("import io.vertx.codegen.protobuf.impl.converters.*;\n");
     writer.print("\n");
     code
       .codeln("public class " + model.getType().getSimpleName() + "ProtoConverter {"

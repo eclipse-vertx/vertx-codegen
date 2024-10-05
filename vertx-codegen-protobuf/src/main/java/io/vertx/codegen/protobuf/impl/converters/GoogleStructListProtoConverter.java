@@ -1,4 +1,4 @@
-package io.vertx.codegen.protobuf.converters;
+package io.vertx.codegen.protobuf.impl.converters;
 
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
@@ -8,14 +8,14 @@ import io.vertx.core.json.JsonObject;
 import java.io.IOException;
 
 import static com.google.protobuf.WireFormat.WIRETYPE_LENGTH_DELIMITED;
-import static io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter.NUMBER_FIELD_NUMBER;
-import static io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter.NUMBER_TAG;
-import static io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter.STRING_FIELD_NUMBER;
-import static io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter.STRING_TAG;
-import static io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter.STRUCT_FIELD_NUMBER;
-import static io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter.STRUCT_TAG;
-import static io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter.TOP_LEVEL_FIELD_NUMBER;
-import static io.vertx.codegen.protobuf.converters.GoogleStructProtoConverter.TOP_LEVEL_TAG;
+import static io.vertx.codegen.protobuf.impl.converters.GoogleStructProtoConverter.NUMBER_FIELD_NUMBER;
+import static io.vertx.codegen.protobuf.impl.converters.GoogleStructProtoConverter.NUMBER_TAG;
+import static io.vertx.codegen.protobuf.impl.converters.GoogleStructProtoConverter.STRING_FIELD_NUMBER;
+import static io.vertx.codegen.protobuf.impl.converters.GoogleStructProtoConverter.STRING_TAG;
+import static io.vertx.codegen.protobuf.impl.converters.GoogleStructProtoConverter.STRUCT_FIELD_NUMBER;
+import static io.vertx.codegen.protobuf.impl.converters.GoogleStructProtoConverter.STRUCT_TAG;
+import static io.vertx.codegen.protobuf.impl.converters.GoogleStructProtoConverter.TOP_LEVEL_FIELD_NUMBER;
+import static io.vertx.codegen.protobuf.impl.converters.GoogleStructProtoConverter.TOP_LEVEL_TAG;
 
 public class GoogleStructListProtoConverter {
   public static JsonArray fromProto(CodedInputStream input) throws IOException {
