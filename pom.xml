@@ -35,10 +35,6 @@
     <url>git@github.com:vert-x3/vertx-sockjs-service-proxy.git</url>
   </scm>
 
-  <properties>
-    <jar.manifest>${project.basedir}/src/main/resources/META-INF/MANIFEST.MF</jar.manifest>
-  </properties>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
