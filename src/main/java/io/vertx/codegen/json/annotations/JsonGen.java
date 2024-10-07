@@ -50,6 +50,8 @@ public @interface JsonGen {
    * </ul>
    *
    * @return if generated converters are enabled, buffers should default to the configured type.
+   * @deprecated avoid using this attribute which defaults to {@code base64url} which is the only type supported in Vert.x 5
    */
+  @Deprecated
   String base64Type() default "";
 }
