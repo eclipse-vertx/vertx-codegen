@@ -17,7 +17,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 @DataObject
-@JsonGen(base64Type = "base64url")
+@JsonGen
 public class TestDataObjectBase64URL {
 
   private Buffer data;

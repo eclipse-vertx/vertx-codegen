@@ -36,7 +36,6 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
   private Case formatter;
   private boolean isPublic;
   private boolean inheritConverter;
-  private String base64Type;
   private boolean generate;
 
   public DataObjectJsonGen() {
@@ -70,25 +69,9 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
   public String render(DataObjectModel model, int index, int size, Map<String, Object> session) {
     AnnotationValueInfo jsonGenAnn = findJsonGenAnnotation(model);
     ClassTypeInfo cti = getFormatter(model, JsonGen.class, "jsonPropertyNameFormatter");
-    String base64Type = (String) jsonGenAnn.getMember("base64Type");
-    if (base64Type == null) {
-      throw new GenException(model.getElement(), "Data object base64 type cannot be null");
-    } else {
-      switch (base64Type) {
-        case "":
-          // special type to use vertx-core default
-        case "basic":
-        case "base64url":
-          // ok
-          break;
-        default:
-          throw new GenException(model.getElement(), "Data object base64 unsupported type: " + base64Type);
-      }
-    }
     formatter = getCase(cti);
     isPublic = jsonGenAnn.getMember("publicConverter") == Boolean.TRUE;
     inheritConverter = jsonGenAnn.getMember("inheritConverter") == Boolean.TRUE;
-    this.base64Type = base64Type;
     generate = true;
     return renderJson(model);
   }
@@ -123,19 +106,9 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
       .codeln("public class " + model.getType().getSimpleName() + "Converter {"
       ).newLine();
     if (generate) {
-      switch (base64Type) {
-        case "basic":
-          writer.print(
-            "  private static final Base64.Decoder BASE64_DECODER = Base64.getDecoder();\n" +
-            "  private static final Base64.Encoder BASE64_ENCODER = Base64.getEncoder();\n");
-          break;
-        default:
-        case "base64url":
-          writer.print(
-            "  private static final Base64.Decoder BASE64_DECODER = Base64.getUrlDecoder();\n" +
-            "  private static final Base64.Encoder BASE64_ENCODER = Base64.getUrlEncoder().withoutPadding();\n");
-          break;
-      }
+      writer.print(
+        "  private static final Base64.Decoder BASE64_DECODER = Base64.getUrlDecoder();\n" +
+        "  private static final Base64.Encoder BASE64_ENCODER = Base64.getUrlEncoder().withoutPadding();\n");
       writer.print("\n");
 
       genFromJson(visibility, inheritConverter, model, writer);
