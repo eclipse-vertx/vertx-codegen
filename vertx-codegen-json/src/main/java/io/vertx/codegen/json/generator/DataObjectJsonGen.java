@@ -96,7 +96,6 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
     writer.print("import io.vertx.core.json.JsonArray;\n");
     writer.print("import java.time.Instant;\n");
     writer.print("import java.time.format.DateTimeFormatter;\n");
-    writer.print("import java.util.Base64;\n");
     writer.print("\n");
     writer.print("/**\n");
     writer.print(" * Converter and mapper for {@link " + model.getType() + "}.\n");
@@ -106,10 +105,6 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
       .codeln("public class " + model.getType().getSimpleName() + "Converter {"
       ).newLine();
     if (generate) {
-      writer.print(
-        "  private static final Base64.Decoder BASE64_DECODER = Base64.getUrlDecoder();\n" +
-        "  private static final Base64.Encoder BASE64_ENCODER = Base64.getUrlEncoder().withoutPadding();\n");
-      writer.print("\n");
 
       genFromJson(visibility, inheritConverter, model, writer);
       writer.print("\n");
@@ -162,8 +157,6 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
                   throw new UnsupportedOperationException();
               }
               genPropToJson(m, match, prop, writer);
-            } else if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
-              genPropToJson("BASE64_ENCODER.encodeToString(", ".getBytes())", prop, writer);
             }
           } else {
             switch (propKind) {
@@ -292,8 +285,6 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
                 writer
               );
 
-            } else if (prop.getType().getName().equals("io.vertx.core.buffer.Buffer")) {
-              genPropFromJson("String", "io.vertx.core.buffer.Buffer.buffer(BASE64_DECODER.decode((String)", "))", prop, writer);
             }
           } else {
             switch (propKind) {
