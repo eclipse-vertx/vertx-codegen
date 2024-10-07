@@ -972,32 +972,6 @@ public class DataObjectTest {
   }
 
   @Test
-  public void testBase64Basic() {
-    TestDataObjectBase64Basic obj = new TestDataObjectBase64Basic();
-    JsonObject expected = new JsonObject()
-      .put("data", "PDw/Pz8+Pg==");
-
-    // parse
-    TestDataObjectBase64BasicConverter.fromJson(expected, obj);
-    Assert.assertEquals(Buffer.buffer("<<???>>".getBytes(StandardCharsets.UTF_8)), obj.getData());
-
-    // encode
-    JsonObject json = new JsonObject();
-    TestDataObjectBase64BasicConverter.toJson(obj, json);
-    Assert.assertEquals("PDw/Pz8+Pg==", json.getValue("data"));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testBase64BasicBad() {
-    TestDataObjectBase64Basic obj = new TestDataObjectBase64Basic();
-    JsonObject expected = new JsonObject()
-      .put("data", "PDw_Pz8-Pg");
-
-    // parse should fail
-    TestDataObjectBase64BasicConverter.fromJson(expected, obj);
-  }
-
-  @Test
   public void testBase64URL() {
     TestDataObjectBase64URL obj = new TestDataObjectBase64URL();
     JsonObject expected = new JsonObject()
