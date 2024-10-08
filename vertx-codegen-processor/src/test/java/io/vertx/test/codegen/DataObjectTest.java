@@ -960,8 +960,9 @@ public class DataObjectTest {
 
     PropertyInfo prop = model.getPropertyMap().get("buffer");
     assertNotNull(prop);
-    assertFalse(prop.getType().getDataObject().isDeserializable());
-    assertFalse(prop.getType().getDataObject().isSerializable());
-    assertNull(prop.getType().getDataObject().getJsonType());
+    assertTrue(prop.getType().getDataObject().isDeserializable());
+    assertTrue(prop.getType().getDataObject().isSerializable());
+    assertNotNull(prop.getType().getDataObject().getJsonType());
+    assertEquals("java.lang.String", prop.getType().getDataObject().getJsonType().getName());
   }
 }
