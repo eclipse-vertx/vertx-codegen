@@ -54,16 +54,4 @@ public @interface ModuleGen {
    */
   String groupPackage();
 
-  /**
-   * Shall be removed in the future.
-   */
-  @Deprecated
-  boolean useFutures() default false;
-
-  /**
-   * Shall be removed in the future.
-   */
-  @Deprecated
-  boolean checkCallbackDeprecation() default false;
-
 }
