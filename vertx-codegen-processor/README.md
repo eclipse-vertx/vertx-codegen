@@ -2,7 +2,7 @@
 
 ## API generator
 
-A code generator is a class extending `io.vertx.codegen.Generator` loaded by a class implementing `io.vertx.codegen.GeneratorLoader` declared as a `META-INF/services/io.vertx.codegen.GeneratorLoader` JVM service.
+A code generator is a class extending `io.vertx.codegen.processor.Generator` loaded by a class implementing `io.vertx.codegen.processor.GeneratorLoader` declared as a `META-INF/services/io.vertx.codegen.processor.GeneratorLoader` JVM service.
 
 There can be as many generators as you like.
 
@@ -34,7 +34,7 @@ A file starting with `/` will be written as an absolute file on the filesystem, 
 
 ## Processor configuration
 
-You can configure the `CodeGenProcessor` as any Java annotation processor, here is how to do with Maven:
+You can configure the `>io.vertx.codegen.processor.Processor` as any Java annotation processor, here is how to do with Maven:
 
 ~~~~
 <pluginManagement>
@@ -42,7 +42,7 @@ You can configure the `CodeGenProcessor` as any Java annotation processor, here 
     <!-- Configure the execution of the compiler to execute the codegen processor -->
     <plugin>
       <artifactId>maven-compiler-plugin</artifactId>
-      <version>3.8.1</version>
+      <version>3.13.0</version>
       <configuration>
         <release>11</release>
         <encoding>${project.build.sourceEncoding}</encoding>
@@ -54,7 +54,7 @@ You can configure the `CodeGenProcessor` as any Java annotation processor, here 
           <id>default-compile</id>
           <configuration>
             <annotationProcessors>
-              <annotationProcessor>io.vertx.codegen.CodeGenProcessor</annotationProcessor>
+              <annotationProcessor>io.vertx.codegen.processor.Processor</annotationProcessor>
             </annotationProcessors>
              <!-- It is new option since v3.5 to instruct compiler detect annotation processors classpath -->
             <annotationProcessorPaths>
@@ -92,7 +92,7 @@ task annotationProcessing(type: JavaCompile, group: 'other') { // codegen
   options.annotationProcessorPath = configurations.compileClasspath
   options.compilerArgs = [
     "-proc:only",
-    "-processor", "io.vertx.codegen.CodeGenProcessor"
+    "-processor", ">io.vertx.codegen.processor.Processor"
   ]
 }
 
@@ -127,7 +127,7 @@ tasks.register<JavaCompile>("annotationProcessing") {
     options.annotationProcessorPath = configurations.compileClasspath.get()
     options.compilerArgs = listOf(
         "-proc:only",
-        "-processor", "io.vertx.codegen.CodeGenProcessor"
+        "-processor", ">io.vertx.codegen.processor.Processor"
     )
 }
 
@@ -185,8 +185,8 @@ We define _`Basic`_:
 
 We define _`Json`_:
 
-*`io.vertx.core.json.JsonObject`
-*`io.vertx.core.json.JsonArray`
+* `io.vertx.core.json.JsonObject`
+* `io.vertx.core.json.JsonArray`
 
 We define _`DataObject`_:
 
@@ -269,17 +269,15 @@ The `io.vertx.codegen.annotations.Nullable` annotates types declarations to sign
 
 Method return type can be `io.vertx.codegen.annotations.Nullable`:
 
-[source,java]
-----
+```java
 @Nullable String getAttribute(String name);
-----
+```
 
 As well as method parameter type:
 
-[source,java]
-----
+```java
 void close(@Nullable Handler<Void> closeHandler);
-----
+```
 
 WARNING: type validation is a non goal of this feature, its purpose is to give hints to code generators
 
@@ -394,7 +392,7 @@ A module must define:
 - a `groupPackage` to define the package of the group used for generating the generated package names
 (for _Groovy_, _RxJava_ or _Ceylon_ generation):
 
-```
+```java
 @ModuleGen(name = "acme", groupPackage="com.acme")
 package com.acme.myservice;
 ```
@@ -527,7 +525,7 @@ A `@DataObject` annotated type is a Java class with the only purpose to be a con
 
 A data object can be created from JSON with a constructor or a factory method:
 
-.with a constructor
+_with a constructor_
 ```java
 public class MyDataObject {
   public MyDataObject(JsonObject json) {
@@ -536,7 +534,7 @@ public class MyDataObject {
 }
 ```
 
-.with a factory
+_with a factory_
 ```java
 public class MyDataObject {
   public static MyDataObject fromJson(JsonObject json) {
@@ -547,7 +545,7 @@ public class MyDataObject {
 
 A data object can be converted to JSON with a `toJson()` method:
 
-.with a factory
+_with a factory_
 ```java
 public class MyDataObject {
   public JsonObject toJson() {
@@ -617,7 +615,7 @@ that stands for anything converted by `io.vertx.core.json.JsonObject` and `io.ve
 
 List/set multi-valued properties can be declared via a _setter_ :
 
-.a multi valued setter
+_a multi valued setter_
 ```java
 @DataObject
 @JsonGen
@@ -631,9 +629,9 @@ public class WebServerOptions {
 }
 ```
 
-Or an _adder_ :
+Or:
 
-.a multi valued adder
+_a multi valued adder_
 ```java
 @DataObject
 @JsonGen
