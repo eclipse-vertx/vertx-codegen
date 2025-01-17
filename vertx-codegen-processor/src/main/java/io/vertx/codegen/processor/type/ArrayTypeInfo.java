@@ -12,6 +12,10 @@ public class ArrayTypeInfo extends TypeInfo {
     this.nullable = nullable;
   }
 
+  public TypeInfo getComponentType() {
+    return componentType;
+  }
+
   @Override
   public boolean isNullable() {
     return nullable;
