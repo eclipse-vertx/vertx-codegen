@@ -20,7 +20,6 @@ import javax.lang.model.util.Types;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 /**
@@ -46,7 +45,6 @@ public class CodeGen {
     PROVIDERS = list;
   }
 
-  private static final Logger logger = Logger.getLogger(CodeGen.class.getName());
   final static Map<ProcessingEnvironment, ClassLoader> loaderMap = new WeakHashMap<>();
 
   private final Map<String, Map<String, Map.Entry<TypeElement, Model>>> models = new HashMap<>();

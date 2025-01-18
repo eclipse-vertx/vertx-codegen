@@ -34,7 +34,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,7 +53,6 @@ public class ClassModel implements Model {
   public static final String ITERATOR = "java.util.Iterator";
   public static final String FUNCTION = "java.util.function.Function";
   public static final String SUPPLIER = "java.util.function.Supplier";
-  private static final Logger logger = Logger.getLogger(ClassModel.class.getName());
 
   protected final ProcessingEnvironment env;
   protected final AnnotationValueInfoFactory annotationValueInfoFactory;
@@ -697,7 +695,7 @@ public class ClassModel implements Model {
         String msg = "Interface " + modelElt + " does not redeclare the @Fluent return type " +
             " of method " + modelMethod + " declared by " + declaringElt;
         messager.printMessage(Diagnostic.Kind.WARNING, msg, modelElt, fluentAnnotation);
-        logger.warning(msg);
+        env.getMessager().printMessage(Diagnostic.Kind.WARNING, msg);
       } else {
         TypeMirror fluentType = modelMethod.getReturnType();
         if (!typeUtils.isAssignable(fluentType, modelElt.asType())) {

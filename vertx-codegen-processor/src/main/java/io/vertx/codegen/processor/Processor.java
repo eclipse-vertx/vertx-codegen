@@ -23,8 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,7 +35,6 @@ import java.util.stream.Stream;
 public class Processor extends AbstractProcessor {
 
   private static final String JSON_MAPPERS_PROPERTIES_PATH = "META-INF/vertx/json-mappers.properties";
-  public static final Logger log = Logger.getLogger(Processor.class.getName());
   private File outputDirectory;
   private List<? extends Generator<?>> codeGenerators;
   private Map<String, GeneratedFile> generatedResources = new HashMap<>();
@@ -155,6 +152,15 @@ public class Processor extends AbstractProcessor {
     return null;
   }
 
+  private String throwableToMessageString(Throwable e) {
+    StringBuilder builder = new StringBuilder();
+    builder.append(e.getMessage()).append("\n");
+    for (StackTraceElement stackTraceElement : e.getStackTrace()) {
+      builder.append("    ").append(stackTraceElement.toString()).append("\n");
+    }
+    return builder.toString();
+  }
+
   private List<CodeGen.Converter> loadJsonMappers() {
     Exception exception = null;
     List<CodeGen.Converter> merged = new ArrayList<>();
@@ -199,7 +205,7 @@ public class Processor extends AbstractProcessor {
             loadJsonMappers(merged, is);
             processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded json-mappers.properties from '" + source + "'");
           } catch (IOException e) {
-            log.log(Level.SEVERE, "Could not load json-mappers.properties", e);
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.MANDATORY_WARNING, "Could not load json-mappers.properties: " + throwableToMessageString(e));
             processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Unable to open properties file at " + source);
           }
         }
@@ -220,7 +226,7 @@ public class Processor extends AbstractProcessor {
             loadJsonMappers(merged, is);
             processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Loaded json-mappers.properties from '" + source + "'");
           } catch (IOException e) {
-            log.log(Level.SEVERE, "Could not load json-mappers.properties", e);
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.MANDATORY_WARNING, "Could not load json-mappers.properties: " + throwableToMessageString(e));
             processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Unable to open properties file at " + source);
           }
         }
@@ -342,13 +348,13 @@ public class Processor extends AbstractProcessor {
       name = e.element.getEnclosingElement() + "#" + name;
     }
     String msg = "Could not generate model for " + name + ": " + e.msg;
-    log.log(Level.SEVERE, msg, e);
+    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg + "\nCaused by: " + throwableToMessageString(e));
     processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, e.element);
   }
 
   private void reportException(Exception e, Element elt) {
     String msg = "Could not generate element for " + elt + ": " + e.getMessage();
-    log.log(Level.SEVERE, msg, e);
+    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg + "\nCaused by: " + throwableToMessageString(e));
     processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, elt);
   }
 

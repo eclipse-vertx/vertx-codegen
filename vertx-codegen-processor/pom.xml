@@ -214,6 +214,7 @@
                 <classpathElement>${project.build.directory}/test-classpath</classpathElement>
                 <classpathElement>${project.basedir}/src/tck/resources</classpathElement>
               </classpathElements>
+              <outputDiagnostics>true</outputDiagnostics>
               <processors>
                 <processor>io.vertx.codegen.processor.Processor</processor>
               </processors>

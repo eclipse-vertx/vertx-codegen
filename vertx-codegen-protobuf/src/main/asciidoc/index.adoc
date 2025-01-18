@@ -147,6 +147,7 @@ Lombok uses internal compiler API to update Abstract Syntax Tree of the compiler
         <version>${vertx.version}</version>
       </path>
     </annotationProcessorPaths>
+    <showWarnings>true</showWarnings>
   </configuration>
 </plugin>
 ----
