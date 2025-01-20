@@ -153,12 +153,9 @@ public class Processor extends AbstractProcessor {
   }
 
   private String throwableToMessageString(Throwable e) {
-    StringBuilder builder = new StringBuilder();
-    builder.append(e.getMessage()).append("\n");
-    for (StackTraceElement stackTraceElement : e.getStackTrace()) {
-      builder.append("    ").append(stackTraceElement.toString()).append("\n");
-    }
-    return builder.toString();
+    StringWriter writer = new StringWriter();
+    e.printStackTrace(new PrintWriter(writer));
+    return writer.toString();
   }
 
   private List<CodeGen.Converter> loadJsonMappers() {
