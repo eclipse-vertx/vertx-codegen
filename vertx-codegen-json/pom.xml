@@ -53,6 +53,7 @@
             <execution>
               <id>default-compile</id>
               <configuration>
+                <showWarnings>true</showWarnings>
                 <annotationProcessorPaths>
                   <annotationProcessorPath>
                     <groupId>io.vertx</groupId>

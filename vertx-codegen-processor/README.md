@@ -48,6 +48,7 @@ You can configure the `>io.vertx.codegen.processor.Processor` as any Java annota
         <encoding>${project.build.sourceEncoding}</encoding>
         <!-- Important: there are issues with apt and incremental compilation in the maven-compiler-plugin -->
         <useIncrementalCompilation>false</useIncrementalCompilation>
+        <showWarnings>true</showWarnings>
       </configuration>
       <executions>
         <execution>
