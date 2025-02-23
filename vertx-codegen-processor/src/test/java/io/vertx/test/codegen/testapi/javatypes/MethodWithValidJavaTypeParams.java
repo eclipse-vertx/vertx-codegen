@@ -36,28 +36,68 @@ import java.util.function.Supplier;
 public interface MethodWithValidJavaTypeParams {
 
   @GenIgnore(GenIgnore.PERMITTED_TYPE)
-  void methodWithParams(Socket socket,
+  void methodWithParams0(Socket socket,
                         List<Socket> listSocket,
                         Set<Socket> setSocket,
                         Map<String, Socket> mapSocket);
 
   @GenIgnore(GenIgnore.PERMITTED_TYPE)
-  void methodWithHandlerParams(Handler<Socket> socketHandler,
+  void methodWithHandlerParams0(Handler<Socket> socketHandler,
                                Handler<List<Socket>> listSocketHandler,
                                Handler<Set<Socket>> setSocketHandler,
                                Handler<Map<String, Socket>> mapSocketHandler);
 
   @GenIgnore(GenIgnore.PERMITTED_TYPE)
-  void methodWithFunctionParams(Function<Socket, Socket> socketFunction,
+  void methodWithFunctionParams0(Function<Socket, Socket> socketFunction,
                                 Function<List<Socket>, List<Socket>> listSocketFunction,
                                 Function<Set<Socket>, Set<Socket>> setSocketFunction,
                                 Function<Map<String, Socket>, Map<String, Socket>> mapSocketFunction);
 
   @GenIgnore(GenIgnore.PERMITTED_TYPE)
-  void methodWithSupplierParams(Supplier<Socket> socketSupplier,
+  void methodWithSupplierParams0(Supplier<Socket> socketSupplier,
                                 Supplier<List<Socket>> listSocketSupplier,
                                 Supplier<Set<Socket>> setSocketSupplier,
                                 Supplier<Map<String, Socket>> mapSocketSupplier);
+
+  void methodWithParams1(PermittedType socket,
+                        List<PermittedType> listSocket,
+                        Set<PermittedType> setSocket,
+                        Map<String, PermittedType> mapSocket);
+
+  void methodWithHandlerParams1(Handler<PermittedType> socketHandler,
+                               Handler<List<PermittedType>> listSocketHandler,
+                               Handler<Set<PermittedType>> setSocketHandler,
+                               Handler<Map<String, PermittedType>> mapSocketHandler);
+
+  void methodWithFunctionParams1(Function<PermittedType, PermittedType> socketFunction,
+                                Function<List<PermittedType>, List<PermittedType>> listSocketFunction,
+                                Function<Set<PermittedType>, Set<PermittedType>> setSocketFunction,
+                                Function<Map<String, PermittedType>, Map<String, PermittedType>> mapSocketFunction);
+
+  void methodWithSupplierParams1(Supplier<PermittedType> socketSupplier,
+                                Supplier<List<PermittedType>> listSocketSupplier,
+                                Supplier<Set<PermittedType>> setSocketSupplier,
+                                Supplier<Map<String, PermittedType>> mapSocketSupplier);
+
+  void methodWithParams2(PermittedType socket,
+                         List<PermittedType> listSocket,
+                         Set<PermittedType> setSocket,
+                         Map<String, PermittedType> mapSocket);
+
+  void methodWithHandlerParams2(Handler<ParameterizedPermittedType<String>> socketHandler,
+                                Handler<List<ParameterizedPermittedType<String>>> listSocketHandler,
+                                Handler<Set<ParameterizedPermittedType<String>>> setSocketHandler,
+                                Handler<Map<String, ParameterizedPermittedType<String>>> mapSocketHandler);
+
+  void methodWithFunctionParams2(Function<ParameterizedPermittedType<String>, ParameterizedPermittedType<String>> socketFunction,
+                                 Function<List<ParameterizedPermittedType<String>>, List<ParameterizedPermittedType<String>>> listSocketFunction,
+                                 Function<Set<ParameterizedPermittedType<String>>, Set<ParameterizedPermittedType<String>>> setSocketFunction,
+                                 Function<Map<String, ParameterizedPermittedType<String>>, Map<String, ParameterizedPermittedType<String>>> mapSocketFunction);
+
+  void methodWithSupplierParams2(Supplier<ParameterizedPermittedType<String>> socketSupplier,
+                                 Supplier<List<ParameterizedPermittedType<String>>> listSocketSupplier,
+                                 Supplier<Set<ParameterizedPermittedType<String>>> setSocketSupplier,
+                                 Supplier<Map<String, ParameterizedPermittedType<String>>> mapSocketSupplier);
 
   @GenIgnore(GenIgnore.PERMITTED_TYPE)
   void methodWithArrayParams(byte[] byteArray,

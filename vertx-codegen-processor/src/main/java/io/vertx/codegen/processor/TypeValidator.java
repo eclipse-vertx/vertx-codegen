@@ -1,9 +1,6 @@
 package io.vertx.codegen.processor;
 
-import io.vertx.codegen.processor.type.ClassKind;
-import io.vertx.codegen.processor.type.ParameterizedTypeInfo;
-import io.vertx.codegen.processor.type.TypeInfo;
-import io.vertx.codegen.processor.type.TypeVariableInfo;
+import io.vertx.codegen.processor.type.*;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -20,6 +17,62 @@ import java.util.Set;
  * Validates codegen types.
  */
 class TypeValidator {
+
+  static boolean isAnyJavaType(MethodInfo method) {
+    for (ParamInfo param : method.getParams()) {
+      if (isAnyJavaType(param.getType())) {
+        return true;
+      }
+    }
+    return isAnyJavaType(method.getReturnType());
+  }
+
+  static boolean isAnyJavaType(TypeInfo type) {
+    switch (type.getKind()) {
+      case API:
+      case BOXED_PRIMITIVE:
+      case ENUM:
+      case PRIMITIVE:
+      case JSON_OBJECT:
+      case JSON_ARRAY:
+      case VOID:
+      case OBJECT:
+      case CLASS_TYPE:
+      case STRING:
+      case THROWABLE:
+        return false;
+      case MAP:
+        ParameterizedTypeInfo mapType = (ParameterizedTypeInfo) type;
+        return isAnyJavaType(mapType.getArg(1));
+      case LIST:
+        ParameterizedTypeInfo listType = (ParameterizedTypeInfo) type;
+        return isAnyJavaType(listType.getArg(0));
+      case SET:
+        ParameterizedTypeInfo setType = (ParameterizedTypeInfo) type;
+        return isAnyJavaType(setType.getArg(0));
+      case FUTURE:
+        ParameterizedTypeInfo futureType = (ParameterizedTypeInfo) type;
+        return isAnyJavaType(futureType.getArg(0));
+      case SUPPLIER:
+        ParameterizedTypeInfo supplierType = (ParameterizedTypeInfo) type;
+        return isAnyJavaType(supplierType.getArg(0));
+      case HANDLER:
+        ParameterizedTypeInfo handlerType = (ParameterizedTypeInfo) type;
+        return isAnyJavaType(handlerType.getArg(0));
+      case FUNCTION:
+        ParameterizedTypeInfo functionType = (ParameterizedTypeInfo) type;
+        return isAnyJavaType(functionType.getArg(0)) || isAnyJavaType(functionType.getArg(1));
+      case OTHER:
+        if (type instanceof ParameterizedTypeInfo) {
+          return isAnyJavaType(type.getRaw());
+        } else {
+          ClassTypeInfo otherType = (ClassTypeInfo) type;
+          return otherType.isPermitted();
+        }
+      default:
+        throw new UnsupportedOperationException("" + type.getKind());
+    }
+  }
 
   static void validateParamType(ExecutableElement elem, TypeInfo typeInfo, boolean allowAnyJavaType) {
     if (isValidNonCallableType(elem, typeInfo, true, false, true, allowAnyJavaType)) {
@@ -161,7 +214,14 @@ class TypeValidator {
   }
 
   private static boolean isValidOtherType(TypeInfo type, boolean allowAnyJavaType) {
-    return allowAnyJavaType && type.getKind() == ClassKind.OTHER;
+    if (type instanceof ClassTypeInfo) {
+      allowAnyJavaType |= ((ClassTypeInfo)type).isPermitted();
+      return allowAnyJavaType && type.getKind() == ClassKind.OTHER;
+    } else if (type instanceof ParameterizedTypeInfo) {
+      return isValidOtherType(type.getRaw(), allowAnyJavaType);
+    } else {
+      return allowAnyJavaType;
+    }
   }
 
   private static boolean isValidVertxGenInterface(Element elem, TypeInfo type, boolean allowParameterized, boolean allowAnyJavaType) {

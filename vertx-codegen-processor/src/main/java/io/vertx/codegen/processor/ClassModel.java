@@ -454,8 +454,13 @@ public class ClassModel implements Model {
               if (allowAnyJavaType) {
                 anyJavaTypeMethods.put(elt, meth);
               } else {
-                methodAnnotationsMap.put(meth.getName(), elt.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList()));
-                methods.put(elt, meth);
+                boolean isAnyJavaType = TypeValidator.isAnyJavaType(meth);
+                if (isAnyJavaType) {
+                  anyJavaTypeMethods.put(elt, meth);
+                } else {
+                  methodAnnotationsMap.put(meth.getName(), elt.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList()));
+                  methods.put(elt, meth);
+                }
               }
             }
           });

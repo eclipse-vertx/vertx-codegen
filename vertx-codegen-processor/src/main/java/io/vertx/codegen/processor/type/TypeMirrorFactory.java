@@ -1,6 +1,7 @@
 package io.vertx.codegen.processor.type;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.codegen.processor.*;
@@ -23,8 +24,8 @@ import java.util.Map;
 public class TypeMirrorFactory {
 
   public static final ModuleInfo VERTX_CORE_MOD = new ModuleInfo("io.vertx.core", "vertx", "io.vertx");
-  public static final ClassTypeInfo JSON_OBJECT = new ClassTypeInfo(ClassKind.JSON_OBJECT, "io.vertx.core.json.JsonObject", VERTX_CORE_MOD, false, Collections.emptyList(), null);
-  public static final ClassTypeInfo STRING = new ClassTypeInfo(ClassKind.STRING, "java.lang.String", null, false, Collections.emptyList(), null);
+  public static final ClassTypeInfo JSON_OBJECT = new ClassTypeInfo(ClassKind.JSON_OBJECT, "io.vertx.core.json.JsonObject", VERTX_CORE_MOD, false, Collections.emptyList(), false, null);
+  public static final ClassTypeInfo STRING = new ClassTypeInfo(ClassKind.STRING, "java.lang.String", null, false, Collections.emptyList(), false, null);
 
   final Elements elementUtils;
   final Types typeUtils;
@@ -133,7 +134,7 @@ public class TypeMirrorFactory {
         if (kind == ClassKind.BOXED_PRIMITIVE) {
           raw = ClassTypeInfo.PRIMITIVES.get(fqcn);
           if (nullable) {
-            raw = new ClassTypeInfo(raw.kind, raw.name, raw.module, true, raw.params, null);
+            raw = new ClassTypeInfo(raw.kind, raw.name, raw.module, true, raw.params, false, null);
           }
         } else {
           MapperInfo serializer = serializers.get(fqcn);
@@ -150,6 +151,13 @@ public class TypeMirrorFactory {
           DataObjectInfo dataObject = null;
           if (annotated || serializer != null || deserializer != null) {
             dataObject = new DataObjectInfo(annotated, serializer, deserializer);
+          }
+
+          boolean permitted;
+          if (elt.getAnnotation(GenIgnore.class) != null) {
+            permitted = true;
+          } else {
+            permitted = false;
           }
 
           List<TypeParamInfo.Class> typeParams = createTypeParams(type);
@@ -173,7 +181,7 @@ public class TypeMirrorFactory {
             }
             raw = new ApiTypeInfo(fqcn, genAnn.concrete(), typeParams, handlerArg, module, nullable, proxyGen, dataObject);
           } else {
-            raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams, dataObject);
+            raw = new ClassTypeInfo(kind, fqcn, module, nullable, typeParams, permitted, dataObject);
           }
         }
         return raw;
