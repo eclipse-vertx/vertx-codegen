@@ -1,5 +1,6 @@
 package io.vertx.codegen.processor.type;
 
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.processor.Helper;
 import io.vertx.codegen.processor.MapperKind;
 import io.vertx.codegen.processor.ModuleInfo;
@@ -81,14 +82,21 @@ public class TypeReflectionFactory {
             return new ApiTypeInfo(fqcn, true, typeParams, handlerArg != null ? create(handlerArg) : null, module, false, false, null);
           } else {
             DataObjectInfo dataObject;
+            boolean permitted;
             if (classType.getDeclaredAnnotation(DataObject.class) != null) {
               MapperInfo serializer = getDataObjectSerializer(classType);
               MapperInfo deserializer = getDataObjectDeserializer(classType);
               dataObject = new DataObjectInfo(true, serializer, deserializer);
+              permitted = false;
             } else {
               dataObject = null;
+              if (classType.getDeclaredAnnotation(GenIgnore.class) != null) {
+                permitted = true;
+              } else {
+                permitted = false;
+              }
             }
-            return new ClassTypeInfo(kind, fqcn, module, false, typeParams, dataObject);
+            return new ClassTypeInfo(kind, fqcn, module, false, typeParams, permitted, dataObject);
           }
         }
       }
