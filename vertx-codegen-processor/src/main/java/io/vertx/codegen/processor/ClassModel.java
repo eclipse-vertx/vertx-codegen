@@ -93,6 +93,7 @@ public class ClassModel implements Model {
   // The methods, grouped by name
   protected Map<String, List<MethodInfo>> methodMap;
   protected Map<String, List<AnnotationValueInfo>> methodAnnotationsMap = new LinkedHashMap<>();
+  protected Map<String, List<AnnotationValueInfo>> anyMethodAnnotationsMap = new LinkedHashMap<>();
   protected List<AnnotationValueInfo> annotations;
   protected boolean deprecated;
   protected Text deprecatedDesc;
@@ -238,6 +239,13 @@ public class ClassModel implements Model {
    */
   public Map<String, List<AnnotationValueInfo>> getMethodAnnotations() {
     return methodAnnotationsMap;
+  }
+
+  /**
+   * @return a map of the method's annotations for this class, by method name.
+   */
+  public Map<String, List<AnnotationValueInfo>> getAnyMethodAnnotations() {
+    return anyMethodAnnotationsMap;
   }
 
   private void sortMethodMap(Map<String, List<MethodInfo>> map) {
@@ -451,17 +459,21 @@ public class ClassModel implements Model {
             MethodInfo meth = createMethod(elt, allowAnyJavaType);
             if (meth != null) {
               meth.collectImports(collectedTypes);
+              Map<String, List<AnnotationValueInfo>> map;
               if (allowAnyJavaType) {
                 anyJavaTypeMethods.put(elt, meth);
+                map = anyMethodAnnotationsMap;
               } else {
                 boolean isAnyJavaType = TypeValidator.isAnyJavaType(meth);
                 if (isAnyJavaType) {
+                  map = anyMethodAnnotationsMap;
                   anyJavaTypeMethods.put(elt, meth);
                 } else {
-                  methodAnnotationsMap.put(meth.getName(), elt.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList()));
+                  map = methodAnnotationsMap;
                   methods.put(elt, meth);
                 }
               }
+              map.put(meth.getName(), elt.getAnnotationMirrors().stream().map(annotationValueInfoFactory::processAnnotation).collect(Collectors.toList()));
             }
           });
 
