@@ -31,6 +31,7 @@ public class PropertySetters {
   public PropertySetters setPrimitiveBoolean(boolean b) { throw new UnsupportedOperationException(); }
   public PropertySetters setBoxedLong(Long b) { throw new UnsupportedOperationException(); }
   public PropertySetters setPrimitiveLong(long b) { throw new UnsupportedOperationException(); }
+  public PropertySetters setObject(Object b) { throw new UnsupportedOperationException(); }
   public PropertySetters setInstant(Instant i) { throw new UnsupportedOperationException(); }
 
   public PropertySetters setApiObject(ApiObject s) { throw new UnsupportedOperationException(); }
