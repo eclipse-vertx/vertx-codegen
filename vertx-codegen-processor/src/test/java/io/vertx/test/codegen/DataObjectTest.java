@@ -86,19 +86,12 @@ public class DataObjectTest {
   }
 
   @Test
-  public void testObjectProperty() throws Exception {
-    DataObjectModel model = new GeneratorHelper().generateDataObject(DataObjectWithObjectProperty.class);
-    assertNotNull(model);
-    assertEquals(0, model.getPropertyMap().size());
-  }
-
-  @Test
   public void testPropertySetters() throws Exception {
     DataObjectModel model = new GeneratorHelper()
       .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
       .generateDataObject(PropertySetters.class, ApiObjectWithMapper.class);
     assertNotNull(model);
-    assertEquals(15, model.getPropertyMap().size());
+    assertEquals(16, model.getPropertyMap().size());
 
     // Check order
     Iterator<String> i = model.getPropertyMap().keySet().iterator();
@@ -109,6 +102,7 @@ public class DataObjectTest {
     assertEquals("primitiveBoolean", i.next());
     assertEquals("boxedLong", i.next());
     assertEquals("primitiveLong", i.next());
+    assertEquals("object", i.next());
     assertEquals("instant", i.next());
     assertEquals("apiObject", i.next());
     assertEquals("apiObjectWithMapper", i.next());
@@ -126,6 +120,7 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("primitiveBoolean"), "primitiveBoolean", "setPrimitiveBoolean", null, null, TypeReflectionFactory.create(boolean.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("boxedLong"), "boxedLong", "setBoxedLong", null, null, TypeReflectionFactory.create(Long.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("primitiveLong"), "primitiveLong", "setPrimitiveLong", null, null, TypeReflectionFactory.create(long.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("object"), "object", "setObject", null, null, TypeReflectionFactory.create(Object.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("instant"), "instant", "setInstant", null, null, TypeReflectionFactory.create(Instant.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("apiObject"), "apiObject", "setApiObject", null, null, TypeReflectionFactory.create(ApiObject.class), true, PropertyKind.VALUE, false);
     assertProperty(model.getPropertyMap().get("apiObjectWithMapper"), "apiObjectWithMapper", "setApiObjectWithMapper", null, null, TypeReflectionFactory.create(ApiObjectWithMapper.class), true, PropertyKind.VALUE, true);
@@ -311,7 +306,7 @@ public class DataObjectTest {
       .registerConverter(ApiObjectWithMapper.class, ApiObjectWithMapper.class, "toJson")
       .generateDataObject(PropertyGetters.class, ApiObjectWithMapper.class);
     assertNotNull(model);
-    assertEquals(15, model.getPropertyMap().size());
+    assertEquals(16, model.getPropertyMap().size());
     assertProperty(model.getPropertyMap().get("string"), "string", null, null, "getString", TypeReflectionFactory.create(String.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("boxedInteger"), "boxedInteger", null, null, "getBoxedInteger", TypeReflectionFactory.create(Integer.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("primitiveInteger"), "primitiveInteger", null, null, "getPrimitiveInteger", TypeReflectionFactory.create(int.class), true, PropertyKind.VALUE, true);
@@ -319,6 +314,7 @@ public class DataObjectTest {
     assertProperty(model.getPropertyMap().get("primitiveBoolean"), "primitiveBoolean", null, null, "isPrimitiveBoolean", TypeReflectionFactory.create(boolean.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("boxedLong"), "boxedLong", null, null, "getBoxedLong", TypeReflectionFactory.create(Long.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("primitiveLong"), "primitiveLong", null, null, "getPrimitiveLong", TypeReflectionFactory.create(long.class), true, PropertyKind.VALUE, true);
+    assertProperty(model.getPropertyMap().get("object"), "object", null, null, "getObject", TypeReflectionFactory.create(Object.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("instant"), "instant", null, null, "getInstant", TypeReflectionFactory.create(Instant.class), true, PropertyKind.VALUE, true);
     assertProperty(model.getPropertyMap().get("apiObject"), "apiObject", null, null, "getApiObject", TypeReflectionFactory.create(ApiObject.class), true, PropertyKind.VALUE, false);
     assertProperty(model.getPropertyMap().get("apiObjectWithMapper"), "apiObjectWithMapper", null, null, "getApiObjectWithMapper", TypeReflectionFactory.create(ApiObjectWithMapper.class), true, PropertyKind.VALUE, true);

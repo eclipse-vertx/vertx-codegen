@@ -31,6 +31,7 @@ public class PropertyGetters {
   public boolean isPrimitiveBoolean() { throw new UnsupportedOperationException(); }
   public Long getBoxedLong() { throw new UnsupportedOperationException(); }
   public long getPrimitiveLong() { throw new UnsupportedOperationException(); }
+  public Object getObject() { throw new UnsupportedOperationException(); }
   public Instant getInstant() { throw new UnsupportedOperationException(); }
 
   public ApiObject getApiObject() { throw new UnsupportedOperationException(); }

@@ -204,7 +204,6 @@ public class DataObjectModel implements Model {
   }
 
   private void traverse() {
-    DataObject ann = modelElt.getAnnotation(DataObject.class);
     this.isClass = modelElt.getKind() == ElementKind.CLASS;
     this.concrete = isClass && !modelElt.getModifiers().contains(Modifier.ABSTRACT);
     try {
@@ -501,9 +500,6 @@ public class DataObjectModel implements Model {
     boolean jsonifiable;
     switch (propType.getKind()) {
       case OBJECT:
-        if (propKind == PropertyKind.VALUE) {
-          return;
-        }
       case PRIMITIVE:
       case BOXED_PRIMITIVE:
       case STRING:
