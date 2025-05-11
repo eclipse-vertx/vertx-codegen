@@ -423,17 +423,17 @@ public class ClassModel implements Model {
         flatMap(Helper.FILTER_FIELD).
         forEach(elt -> {
           GenIgnore genIgnore = elt.getAnnotation(GenIgnore.class);
-          boolean allowAnyJavaType;
+          boolean validate;
           if (genIgnore != null) {
             if (!Arrays.asList(genIgnore.value()).contains(GenIgnore.PERMITTED_TYPE)) {
               // Regular ignore
               return;
             }
-            allowAnyJavaType = true;
+            validate = false;
           } else {
-            allowAnyJavaType = false;
+            validate = true;
           }
-          ConstantInfo cst = fieldMethod(typeUtils, elt, allowAnyJavaType);
+          ConstantInfo cst = fieldMethod(typeUtils, elt, validate);
           if (cst != null) {
             cst.getType().collectImports(collectedTypes);
             constants.add(cst);
@@ -446,21 +446,21 @@ public class ClassModel implements Model {
           flatMap(Helper.FILTER_METHOD).
           forEach(elt -> {
             GenIgnore genIgnore = elt.getAnnotation(GenIgnore.class);
-            boolean allowAnyJavaType;
+            boolean validate;
             if (genIgnore != null) {
               if (!Arrays.asList(genIgnore.value()).contains(GenIgnore.PERMITTED_TYPE)) {
                 // Regular ignore
                 return;
               }
-              allowAnyJavaType = true;
+              validate = false;
             } else {
-              allowAnyJavaType = false;
+              validate = true;
             }
-            MethodInfo meth = createMethod(elt, allowAnyJavaType);
+            MethodInfo meth = createMethod(elt, validate);
             if (meth != null) {
               meth.collectImports(collectedTypes);
               Map<String, List<AnnotationValueInfo>> map;
-              if (allowAnyJavaType) {
+              if (!validate) {
                 anyJavaTypeMethods.put(elt, meth);
                 map = anyMethodAnnotationsMap;
               } else {
@@ -487,8 +487,8 @@ public class ClassModel implements Model {
         ExecutableElement methodElt = entry.getKey();
         if (!method.isFluent()) {
           // Only validate when it's not inherited
-          if (method.isOwnedBy(type)) {
-            checkReturnType(methodElt, returnType, anyJavaTypeMethods.containsKey(methodElt));
+          if (method.isOwnedBy(type) && !anyJavaTypeMethods.containsKey(methodElt)) {
+            checkReturnType(methodElt, returnType);
           }
         } else if (returnType.isNullable()) {
           throw new GenException(methodElt, "Fluent return type cannot be nullable");
@@ -520,13 +520,13 @@ public class ClassModel implements Model {
   }
 
   // Service proxy override
-  protected void checkParamType(ExecutableElement elem, TypeInfo typeInfo, int pos, int numParams, boolean allowAnyJavaType) {
-    TypeValidator.validateParamType(elem, typeInfo, allowAnyJavaType);
+  protected void checkParamType(ExecutableElement elem, TypeInfo typeInfo, int pos, int numParams) {
+    TypeValidator.validateParamType(elem, typeInfo);
   }
 
   // Service proxy override
-  protected void checkReturnType(ExecutableElement elem, TypeInfo type, boolean allowAnyJavaType) {
-    TypeValidator.validateReturnType(elem, type, allowAnyJavaType);
+  protected void checkReturnType(ExecutableElement elem, TypeInfo type) {
+    TypeValidator.validateReturnType(elem, type);
   }
 
   private TypeInfo extractArg(String subType, DeclaredType declaredType) {
@@ -550,18 +550,20 @@ public class ClassModel implements Model {
     return null;
   }
 
-  private ConstantInfo fieldMethod(Types typeUtils, VariableElement modelField, boolean allowAnyJavaType) {
+  private ConstantInfo fieldMethod(Types typeUtils, VariableElement modelField, boolean validate) {
     Set<Modifier> mods = modelField.getModifiers();
     if (!mods.contains(Modifier.PUBLIC)) {
       return null;
     }
     TypeInfo type = typeFactory.create(modelField.asType());
-    TypeValidator.validateConstantType(typeUtils, modelField, type, modelField.asType(),allowAnyJavaType);
+    if (validate) {
+      TypeValidator.validateConstantType(typeUtils, modelField, type, modelField.asType());
+    }
     Doc doc = docFactory.createDoc(modelField);
     return new ConstantInfo(doc, modelField.getSimpleName().toString(), type);
   }
 
-  private MethodInfo createMethod(ExecutableElement modelMethod, boolean allowAnyJavaType) {
+  private MethodInfo createMethod(ExecutableElement modelMethod, boolean validate) {
     Set<Modifier> mods = modelMethod.getModifiers();
     if (!mods.contains(Modifier.PUBLIC)) {
       return null;
@@ -778,7 +780,9 @@ public class ClassModel implements Model {
       // Only validate when it's not inherited
       List<ParamInfo> p = methodInfo.getParams();
       for (int i = 0;i < p.size();i++) {
-        checkParamType(modelMethod, p.get(i).getType(), i, p.size(), allowAnyJavaType);
+        if (validate) {
+          checkParamType(modelMethod, p.get(i).getType(), i, p.size());
+        }
       }
     }
 
