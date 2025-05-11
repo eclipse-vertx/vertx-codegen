@@ -787,7 +787,7 @@ public class ClassTest extends ClassTestBase {
   @Test
   public void testValidJavaTypeParams() throws Exception {
     ClassModel model = new GeneratorHelper().generateClass(MethodWithValidJavaTypeParams.class);
-    assertEquals(14, model.getAnyJavaTypeMethods().size());
+    assertEquals(15, model.getAnyJavaTypeMethods().size());
 
     MethodInfo method = model.getAnyJavaTypeMethods().get(0);
     checkMethod(method, "methodWithParams0", 4, "void", MethodKind.OTHER);
@@ -826,6 +826,14 @@ public class ClassTest extends ClassTestBase {
     assertTrue(method.isContainingAnyJavaType());
 
     method = model.getAnyJavaTypeMethods().get(4);
+    checkMethod(method, "methodWithBilto0", 3, "void", MethodKind.OTHER);
+    params = method.getParams();
+    checkParam(params.get(0), "listSocket", new TypeLiteral<List<? extends Socket>>(){});
+    checkParam(params.get(1), "setSocket", new TypeLiteral<Set<? extends Socket>>(){});
+    checkParam(params.get(2), "mapSocket", new TypeLiteral<Map<? extends String, ? extends Socket>>(){});
+    assertTrue(method.isContainingAnyJavaType());
+
+    method = model.getAnyJavaTypeMethods().get(5);
     checkMethod(method, "methodWithParams1", 4, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "socket", new TypeLiteral<PermittedType>(){});
@@ -834,7 +842,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(3), "mapSocket", new TypeLiteral<Map<String, PermittedType>>(){});
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getAnyJavaTypeMethods().get(5);
+    method = model.getAnyJavaTypeMethods().get(6);
     checkMethod(method, "methodWithHandlerParams1", 4, "void", MethodKind.HANDLER);
     params = method.getParams();
     checkParam(params.get(0), "socketHandler", new TypeLiteral<Handler<PermittedType>>(){});
@@ -843,7 +851,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(3), "mapSocketHandler", new TypeLiteral<Handler<Map<String, PermittedType>>>(){});
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getAnyJavaTypeMethods().get(6);
+    method = model.getAnyJavaTypeMethods().get(7);
     checkMethod(method, "methodWithFunctionParams1", 4, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "socketFunction", new TypeLiteral<Function<PermittedType, PermittedType>>(){});
@@ -852,7 +860,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(3), "mapSocketFunction", new TypeLiteral<Function<Map<String, PermittedType>, Map<String, PermittedType>>>(){});
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getAnyJavaTypeMethods().get(7);
+    method = model.getAnyJavaTypeMethods().get(8);
     checkMethod(method, "methodWithSupplierParams1", 4, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "socketSupplier", new TypeLiteral<Supplier<PermittedType>>(){});
@@ -861,7 +869,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(3), "mapSocketSupplier", new TypeLiteral<Supplier<Map<String, PermittedType>>>(){});
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getAnyJavaTypeMethods().get(8);
+    method = model.getAnyJavaTypeMethods().get(9);
     checkMethod(method, "methodWithParams2", 4, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "socket", new TypeLiteral<PermittedType>(){});
@@ -870,7 +878,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(3), "mapSocket", new TypeLiteral<Map<String, PermittedType>>(){});
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getAnyJavaTypeMethods().get(9);
+    method = model.getAnyJavaTypeMethods().get(10);
     checkMethod(method, "methodWithHandlerParams2", 4, "void", MethodKind.HANDLER);
     params = method.getParams();
     checkParam(params.get(0), "socketHandler", new TypeLiteral<Handler<ParameterizedPermittedType<String>>>(){});
@@ -879,7 +887,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(3), "mapSocketHandler", new TypeLiteral<Handler<Map<String, ParameterizedPermittedType<String>>>>(){});
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getAnyJavaTypeMethods().get(10);
+    method = model.getAnyJavaTypeMethods().get(11);
     checkMethod(method, "methodWithFunctionParams2", 4, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "socketFunction", new TypeLiteral<Function<ParameterizedPermittedType<String>, ParameterizedPermittedType<String>>>(){});
@@ -888,7 +896,7 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(3), "mapSocketFunction", new TypeLiteral<Function<Map<String, ParameterizedPermittedType<String>>, Map<String, ParameterizedPermittedType<String>>>>(){});
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getAnyJavaTypeMethods().get(11);
+    method = model.getAnyJavaTypeMethods().get(12);
     checkMethod(method, "methodWithSupplierParams2", 4, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "socketSupplier", new TypeLiteral<Supplier<ParameterizedPermittedType<String>>>(){});
@@ -897,14 +905,14 @@ public class ClassTest extends ClassTestBase {
     checkParam(params.get(3), "mapSocketSupplier", new TypeLiteral<Supplier<Map<String, ParameterizedPermittedType<String>>>>(){});
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getAnyJavaTypeMethods().get(12);
+    method = model.getAnyJavaTypeMethods().get(13);
     checkMethod(method, "methodWithArrayParams", 2, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "byteArray", new TypeLiteral<byte[]>(){});
     checkParam(params.get(1), "booleanArray", new TypeLiteral<boolean[]>(){});
     assertTrue(method.isContainingAnyJavaType());
 
-    method = model.getAnyJavaTypeMethods().get(13);
+    method = model.getAnyJavaTypeMethods().get(14);
     checkMethod(method, "methodWithParameterizedParams", 1, "void", MethodKind.OTHER);
     params = method.getParams();
     checkParam(params.get(0), "iterableString", new TypeLiteral<Iterable<String>>(){});

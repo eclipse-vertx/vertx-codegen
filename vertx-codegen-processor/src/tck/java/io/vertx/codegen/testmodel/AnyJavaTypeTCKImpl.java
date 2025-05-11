@@ -132,4 +132,31 @@ public class AnyJavaTypeTCKImpl implements AnyJavaTypeTCK {
     sockets.put("1", socket);
     return Future.succeededFuture(sockets);
   }
+
+  @Override
+  public void methodWithWildcardParam(List<?> socketList) {
+  }
+
+  @Override
+  public void methodWithExtendsWildcardParam(List<? extends Socket> socketSet) {
+  }
+
+  @Override
+  public void methodWithSuperWildcardParam(List<? super Socket> socketMap) {
+  }
+
+  @Override
+  public List<?> methodWithWildcardReturn() {
+    return List.of();
+  }
+
+  @Override
+  public List<? extends Socket> methodWithExtendsWildcardReturn() {
+    return List.of();
+  }
+
+  @Override
+  public List<? super Socket> methodWithSuperWildcardReturn() {
+    return List.of();
+  }
 }

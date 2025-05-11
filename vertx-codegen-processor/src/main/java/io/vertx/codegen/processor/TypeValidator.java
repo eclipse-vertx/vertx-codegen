@@ -74,40 +74,40 @@ class TypeValidator {
     }
   }
 
-  static void validateParamType(ExecutableElement elem, TypeInfo typeInfo, boolean allowAnyJavaType) {
-    if (isValidNonCallableType(elem, typeInfo, true, false, true, allowAnyJavaType)) {
+  static void validateParamType(ExecutableElement elem, TypeInfo typeInfo) {
+    if (isValidNonCallableType(elem, typeInfo, true, false, true)) {
       return;
     }
     if (isValidClassTypeParam(elem, typeInfo)) {
       return;
     }
-    if (isValidHandlerType(elem, typeInfo, allowAnyJavaType)) {
+    if (isValidHandlerType(elem, typeInfo)) {
       return;
     }
-    if (isValidFunctionType(elem, typeInfo, allowAnyJavaType)) {
+    if (isValidFunctionType(elem, typeInfo)) {
       return;
     }
-    if (isValidSupplierType(elem, typeInfo, allowAnyJavaType)) {
+    if (isValidSupplierType(elem, typeInfo)) {
       return;
     }
     throw new GenException(elem, "type " + typeInfo + " is not legal for use for a parameter in code generation");
   }
 
-  static void validateReturnType(ExecutableElement elem, TypeInfo type, boolean allowAnyJavaType) {
+  static void validateReturnType(ExecutableElement elem, TypeInfo type) {
     if (type.isVoid()) {
       return;
     }
-    if (isValidNonCallableType(elem, type, false, true, true, allowAnyJavaType)) {
+    if (isValidNonCallableType(elem, type, false, true, true)) {
       return;
     }
-    if (isValidHandlerType(elem, type, allowAnyJavaType)) {
+    if (isValidHandlerType(elem, type)) {
       return;
     }
     throw new GenException(elem, "type " + type + " is not legal for use for a return type in code generation");
   }
 
-  static void validateConstantType(Types typeUtils, VariableElement elem, TypeInfo type, TypeMirror typeMirror, boolean allowAnyJavaType) {
-    if (isValidNonCallableType(elem, type, false, true, true, allowAnyJavaType)) {
+  static void validateConstantType(Types typeUtils, VariableElement elem, TypeInfo type, TypeMirror typeMirror) {
+    if (isValidNonCallableType(elem, type, false, true, true)) {
       return;
     }
     // Workaround for Kotlin companion objects.
@@ -118,7 +118,7 @@ class TypeValidator {
     throw new GenException(elem, "type " + type + " is not legal for use for a constant type in code generation");
   }
 
-  private static boolean isValidNonCallableType(Element elem, TypeInfo type, boolean isParam, boolean isReturn, boolean allowParameterized, boolean allowAnyJavaType) {
+  private static boolean isValidNonCallableType(Element elem, TypeInfo type, boolean isParam, boolean isReturn, boolean allowParameterized) {
     if (type.isDataObjectHolder()) {
       return true;
     }
@@ -143,16 +143,16 @@ class TypeValidator {
     if (type.getKind() == ClassKind.OBJECT) {
       return true;
     }
-    if (isValidFutureType(elem, type, allowAnyJavaType)) {
+    if (isValidFutureType(elem, type)) {
       return true;
     }
-    if (isValidVertxGenInterface(elem, type, allowParameterized, allowAnyJavaType)) {
+    if (isValidVertxGenInterface(elem, type, allowParameterized)) {
       return true;
     }
-    if (isValidOtherType(type, allowAnyJavaType)) {
+    if (isValidOtherType(type)) {
       return true;
     }
-    if (allowParameterized && isValidContainer(elem, type, allowAnyJavaType)) {
+    if (allowParameterized && isValidContainer(elem, type)) {
       return true;
     }
     return false;
@@ -192,7 +192,7 @@ class TypeValidator {
     return false;
   }
 
-  private static boolean isValidContainer(Element elem, TypeInfo type, boolean allowAnyJavaType) {
+  private static boolean isValidContainer(Element elem, TypeInfo type) {
     TypeInfo argument = null;
     if (rawTypeIs(type, List.class, Set.class, Map.class)) {
       ParameterizedTypeInfo parameterizedType = (ParameterizedTypeInfo) type;
@@ -202,29 +202,28 @@ class TypeValidator {
         argument= parameterizedType.getArgs().get(1);
       }
     }
-    return argument != null && isValidContainerComponent(elem, argument, allowAnyJavaType);
+    return argument != null && isValidContainerComponent(elem, argument);
   }
 
-  private static boolean isValidContainerComponent(Element elem, TypeInfo arg, boolean allowAnyJavaType) {
-    return isValidNonCallableType(elem, arg, true, true, false, allowAnyJavaType);
+  private static boolean isValidContainerComponent(Element elem, TypeInfo arg) {
+    return isValidNonCallableType(elem, arg, true, true, false);
   }
 
-  private static boolean isValidVertxGenTypeArgument(Element elem, TypeInfo arg, boolean allowAnyJavaType) {
-    return isValidNonCallableType(elem, arg, false, false, true, allowAnyJavaType);
+  private static boolean isValidVertxGenTypeArgument(Element elem, TypeInfo arg) {
+    return isValidNonCallableType(elem, arg, false, false, true);
   }
 
-  private static boolean isValidOtherType(TypeInfo type, boolean allowAnyJavaType) {
+  private static boolean isValidOtherType(TypeInfo type) {
     if (type instanceof ClassTypeInfo) {
-      allowAnyJavaType |= ((ClassTypeInfo)type).isPermitted();
-      return allowAnyJavaType && type.getKind() == ClassKind.OTHER;
+      return type.getKind() == ClassKind.OTHER && ((ClassTypeInfo)type).isPermitted();
     } else if (type instanceof ParameterizedTypeInfo) {
-      return isValidOtherType(type.getRaw(), allowAnyJavaType);
+      return isValidOtherType(type.getRaw());
     } else {
-      return allowAnyJavaType;
+      return false;
     }
   }
 
-  private static boolean isValidVertxGenInterface(Element elem, TypeInfo type, boolean allowParameterized, boolean allowAnyJavaType) {
+  private static boolean isValidVertxGenInterface(Element elem, TypeInfo type, boolean allowParameterized) {
     if (type.getKind() == ClassKind.API) {
       if (type.isParameterized()) {
         ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
@@ -232,7 +231,7 @@ class TypeValidator {
           parameterized
             .getArgs()
             .stream()
-            .noneMatch(arg -> !isValidVertxGenTypeArgument(elem, arg, allowAnyJavaType) || arg.isNullable());
+            .noneMatch(arg -> !isValidVertxGenTypeArgument(elem, arg) || arg.isNullable());
       } else {
         return true;
       }
@@ -240,46 +239,46 @@ class TypeValidator {
     return false;
   }
 
-  private static boolean isValidFutureType(Element elem, TypeInfo type, boolean allowAnyJavaType) {
+  private static boolean isValidFutureType(Element elem, TypeInfo type) {
     if (type.getKind() == ClassKind.FUTURE) {
       ParameterizedTypeInfo parameterized = (ParameterizedTypeInfo) type;
       return parameterized
           .getArgs()
           .stream()
-          .allMatch(arg -> isValidCallbackValueType(elem, arg, allowAnyJavaType));
+          .allMatch(arg -> isValidCallbackValueType(elem, arg));
     }
     return false;
   }
 
-  private static boolean isValidFunctionType(Element elem, TypeInfo typeInfo, boolean allowAnyJavaType) {
+  private static boolean isValidFunctionType(Element elem, TypeInfo typeInfo) {
     if (typeInfo.getErased().getKind() == ClassKind.FUNCTION) {
       TypeInfo paramType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(0);
-      if (isValidCallbackValueType(elem, paramType, allowAnyJavaType)) {
+      if (isValidCallbackValueType(elem, paramType)) {
         TypeInfo returnType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(1);
-        return isValidNonCallableType(elem, returnType, true, false, true, allowAnyJavaType);
+        return isValidNonCallableType(elem, returnType, true, false, true);
       }
     }
     return false;
   }
 
-  private static boolean isValidSupplierType(Element elem, TypeInfo typeInfo, boolean allowAnyJavaType) {
+  private static boolean isValidSupplierType(Element elem, TypeInfo typeInfo) {
     if (typeInfo.getErased().getKind() == ClassKind.SUPPLIER) {
       TypeInfo returnType = ((ParameterizedTypeInfo) typeInfo).getArgs().get(0);
-      return isValidNonCallableType(elem, returnType, true, false, true, allowAnyJavaType);
+      return isValidNonCallableType(elem, returnType, true, false, true);
     }
     return false;
   }
 
-  private static boolean isValidHandlerType(Element elem, TypeInfo type, boolean allowAnyJavaType) {
+  private static boolean isValidHandlerType(Element elem, TypeInfo type) {
     if (type.getErased().getKind() == ClassKind.HANDLER) {
       TypeInfo eventType = ((ParameterizedTypeInfo) type).getArgs().get(0);
-      return isValidCallbackValueType(elem, eventType, allowAnyJavaType);
+      return isValidCallbackValueType(elem, eventType);
     }
     return false;
   }
 
-  private static boolean isValidCallbackValueType(Element elem, TypeInfo type, boolean allowAnyJavaType) {
-    return isValidNonCallableType(elem, type, false, true, true, allowAnyJavaType);
+  private static boolean isValidCallbackValueType(Element elem, TypeInfo type) {
+    return isValidNonCallableType(elem, type, false, true, true);
   }
 
   private static boolean rawTypeIs(TypeInfo type, Class<?>... classes) {

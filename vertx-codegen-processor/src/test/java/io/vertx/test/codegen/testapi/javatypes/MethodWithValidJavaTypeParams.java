@@ -59,6 +59,11 @@ public interface MethodWithValidJavaTypeParams {
                                 Supplier<Set<Socket>> setSocketSupplier,
                                 Supplier<Map<String, Socket>> mapSocketSupplier);
 
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
+  void methodWithBilto0(List<? extends Socket> listSocket,
+                        Set<? extends Socket> setSocket,
+                        Map<? extends String, ? extends Socket> mapSocket);
+
   void methodWithParams1(PermittedType socket,
                         List<PermittedType> listSocket,
                         Set<PermittedType> setSocket,
