@@ -33,4 +33,12 @@ public interface AnyJavaTypeTCK {
   @GenIgnore(GenIgnore.PERMITTED_TYPE) Future<List<Socket>> methodWithHandlerAsyncResultListOfJavaTypeParam();
   @GenIgnore(GenIgnore.PERMITTED_TYPE) Future<Set<Socket>> methodWithHandlerAsyncResultSetOfJavaTypeParam();
   @GenIgnore(GenIgnore.PERMITTED_TYPE) Future<Map<String, Socket>> methodWithHandlerAsyncResultMapOfJavaTypeParam();
+
+  @GenIgnore(GenIgnore.PERMITTED_TYPE) void methodWithWildcardParam(List<?> socketList);
+  @GenIgnore(GenIgnore.PERMITTED_TYPE) void methodWithExtendsWildcardParam(List<? extends Socket> socketSet);
+  @GenIgnore(GenIgnore.PERMITTED_TYPE) void methodWithSuperWildcardParam(List<? super Socket> socketMap);
+
+  @GenIgnore(GenIgnore.PERMITTED_TYPE) List<?> methodWithWildcardReturn();
+  @GenIgnore(GenIgnore.PERMITTED_TYPE) List<? extends Socket> methodWithExtendsWildcardReturn();
+  @GenIgnore(GenIgnore.PERMITTED_TYPE) List<? super Socket> methodWithSuperWildcardReturn();
 }

@@ -112,6 +112,15 @@ public class TypeReflectionFactory {
       java.lang.reflect.TypeVariable typeVar = (java.lang.reflect.TypeVariable) type;
       TypeParamInfo param = TypeParamInfo.create(typeVar);
       return new TypeVariableInfo(param, false, ((java.lang.reflect.TypeVariable) type).getName());
+    } else if (type instanceof  WildcardType) {
+      WildcardType wildcardType = (WildcardType) type;
+      if (wildcardType.getUpperBounds().length > 0) {
+        return new WildcardTypeInfo(create(wildcardType.getUpperBounds()[0]), null);
+      } else if (wildcardType.getLowerBounds().length > 0) {
+        return new WildcardTypeInfo(null, create(wildcardType.getLowerBounds()[0]));
+      } else {
+        return new WildcardTypeInfo(null, null);
+      }
     } else {
       throw new IllegalArgumentException("Unsupported type " + type);
     }

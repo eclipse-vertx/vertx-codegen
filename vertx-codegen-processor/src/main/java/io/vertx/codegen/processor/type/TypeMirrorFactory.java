@@ -80,6 +80,8 @@ public class TypeMirrorFactory {
         return create(use, (TypeVariable) type);
       case ARRAY:
         return create(use, (ArrayType) type);
+      case WILDCARD:
+        return create(use, (WildcardType) type);
       default:
         throw new IllegalArgumentException("Illegal type " + type + " of kind " + type.getKind());
     }
@@ -198,6 +200,12 @@ public class TypeMirrorFactory {
   public ArrayTypeInfo create(TypeUse use, ArrayType type) {
     TypeMirror componentType = type.getComponentType();
     return new ArrayTypeInfo(create(componentType), use != null && use.isNullable());
+  }
+
+  public WildcardTypeInfo create(TypeUse use, WildcardType type) {
+    TypeInfo extendsBound = type.getExtendsBound() != null ? create(use, type.getExtendsBound()) : null;
+    TypeInfo superBound = type.getSuperBound() != null ? create(use, type.getSuperBound()) : null;
+    return new WildcardTypeInfo(extendsBound, superBound);
   }
 
   private List<TypeParamInfo.Class> createTypeParams(DeclaredType type) {
