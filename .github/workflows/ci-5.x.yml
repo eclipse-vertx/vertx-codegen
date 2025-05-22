@@ -2,10 +2,10 @@ name: CI/CD (5.x)
 on:
   push:
     branches:
-      - 'master'
+      - master
   pull_request:
     branches:
-      - 'master'
+      - master
   schedule:
     - cron: '0 5 * * *'
 jobs:
