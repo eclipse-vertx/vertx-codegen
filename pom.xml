@@ -10,6 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>vertx-codegen</artifactId>
+  <name>Vert.x Codegen</name>
   <version>4.5.16-SNAPSHOT</version>
 
   <scm>
