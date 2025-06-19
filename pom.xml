@@ -11,7 +11,7 @@
 
   <artifactId>vertx-codegen</artifactId>
   <name>Vert.x Codegen</name>
-  <version>4.5.16</version>
+  <version>4.5.17-SNAPSHOT</version>
 
   <scm>
     <connection>scm:git:git@github.com:eclipse-vertx/vertx-codegen.git</connection>
