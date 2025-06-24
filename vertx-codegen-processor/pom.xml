@@ -12,6 +12,8 @@
   <artifactId>vertx-codegen-processor</artifactId>
   <version>5.0.1-SNAPSHOT</version>
 
+  <name>Vert.x Codegen Processor</name>
+
   <properties>
     <asciidoc.dir>${project.basedir}/src/main/asciidoc</asciidoc.dir>
   </properties>

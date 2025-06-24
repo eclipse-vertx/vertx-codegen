@@ -12,6 +12,8 @@
   <artifactId>vertx-codegen-json</artifactId>
   <version>5.0.1-SNAPSHOT</version>
 
+  <name>Vert.x Codegen JSON</name>
+
   <properties>
     <doc.skip>false</doc.skip>
     <asciidoc.dir>${project.basedir}/src/main/asciidoc</asciidoc.dir>

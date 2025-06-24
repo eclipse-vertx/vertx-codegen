@@ -12,6 +12,8 @@
   <artifactId>vertx-codegen-api</artifactId>
   <version>5.0.1-SNAPSHOT</version>
 
+  <name>Vert.x Codegen API</name>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
