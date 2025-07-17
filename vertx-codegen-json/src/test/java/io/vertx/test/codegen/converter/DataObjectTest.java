@@ -20,6 +20,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -66,6 +67,7 @@ public class DataObjectTest {
     JsonArray jsonArrayValue = new JsonArray().add(TestUtils.randomAlphaString(20));
     TimeUnit enumValue = TimeUnit.values()[TestUtils.randomPositiveInt() % TimeUnit.values().length];
     ZonedDateTime methodMappedValue = ZonedDateTime.now();
+    Duration durationValue = Duration.ofSeconds(methodMappedValue.toEpochSecond());
     Object objectValue = stringValue;
     TestCustomEnum customEnumValue = TestCustomEnum.DEV;
     AutoMapped autoMappedValue = AutoMapped.of("vertx.io", 80);
@@ -105,6 +107,7 @@ public class DataObjectTest {
     json.put("jsonArrayValue", jsonArrayValue);
     json.put("enumValue", enumValue.toString());
     json.put("methodMappedValue", methodMappedValue.toString());
+    json.put("durationValue", durationValue.toMillis());
     json.put("objectValue", objectValue.toString());
     json.put("noConverterDataObjectValue", new JsonObject());
     json.put("noConverter2DataObjectValue", new JsonObject());
@@ -127,6 +130,7 @@ public class DataObjectTest {
     json.put("jsonArrayValueList", new JsonArray().add(jsonArrayValue));
     json.put("enumValueList", new JsonArray().add(enumValue.toString()));
     json.put("methodMappedValueList", new JsonArray().add(methodMappedValue.toString()));
+    json.put("durationValueList", new JsonArray().add(durationValue.toMillis()));
     json.put("noConverterDataObjectValueList", new JsonArray().add(new JsonObject()));
     json.put("noConverter2DataObjectValueList", new JsonArray().add(new JsonObject()));
     json.put("objectValueList", new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)));
@@ -149,6 +153,7 @@ public class DataObjectTest {
     json.put("jsonArrayValueSet", new JsonArray().add(jsonArrayValue));
     json.put("enumValueSet", new JsonArray().add(enumValue.toString()));
     json.put("methodMappedValueSet", new JsonArray().add(methodMappedValue.toString()));
+    json.put("durationValueSet", new JsonArray().add(durationValue.toMillis()));
     json.put("objectValueSet", new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)));
     json.put("noConverterDataObjectValueSet", new JsonArray().add(new JsonObject()));
     json.put("noConverter2DataObjectValueSet", new JsonArray().add(new JsonObject()));
@@ -179,6 +184,7 @@ public class DataObjectTest {
     json.put("addedJsonArrayValues", new JsonArray().add(jsonArrayValue));
     json.put("addedEnumValues", new JsonArray().add(enumValue.toString()));
     json.put("addedMethodMappedValues", new JsonArray().add(methodMappedValue.toString()));
+    json.put("addedDurationValues", new JsonArray().add(durationValue.toMillis()));
     json.put("addedObjectValues", new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)));
     json.put("addedNoConverterDataObjectValues", new JsonArray().add(new JsonObject()));
     json.put("addedNoConverter2DataObjectValues", new JsonArray().add(new JsonObject()));
@@ -201,6 +207,7 @@ public class DataObjectTest {
     json.put("jsonArrayValueMap", new JsonObject().put(key, jsonArrayValue));
     json.put("enumValueMap", new JsonObject().put(key, enumValue.toString()));
     json.put("methodMappedValueMap", new JsonObject().put(key, methodMappedValue.toString()));
+    json.put("durationValueMap", new JsonObject().put(key, durationValue.toMillis()));
     json.put("objectValueMap", toJson(map));
     json.put("noConverterDataObjectValueMap", new JsonObject().put(key, new JsonObject()));
     json.put("noConverter2DataObjectValueMap", new JsonObject().put(key, new JsonObject()));
@@ -223,6 +230,7 @@ public class DataObjectTest {
     json.put("keyedJsonArrayValues", new JsonObject().put(key, jsonArrayValue));
     json.put("keyedEnumValues", new JsonObject().put(key, enumValue.name()));
     json.put("keyedMethodMappedValues", new JsonObject().put(key, methodMappedValue.toString()));
+    json.put("keyedDurationValues", new JsonObject().put(key, durationValue.toMillis()));
     json.put("keyedObjectValues", toJson(map));
     json.put("keyedNoConverterDataObjectValues", new JsonObject());
     json.put("keyedNoConverter2DataObjectValues", new JsonObject());
@@ -257,6 +265,7 @@ public class DataObjectTest {
     Assert.assertEquals(jsonArrayValue, obj.getJsonArrayValue());
     Assert.assertEquals(enumValue, obj.getEnumValue());
     Assert.assertEquals(methodMappedValue, obj.getMethodMappedValue());
+    Assert.assertEquals(durationValue, obj.getDurationValue());
     Assert.assertEquals(objectValue, obj.getObjectValue());
     Assert.assertNotNull(obj.getNoConverterDataObjectValue());
     Assert.assertNull(obj.getNoConverter2DataObjectValue());
@@ -279,6 +288,7 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singletonList(jsonArrayValue), obj.getJsonArrayValueList());
     Assert.assertEquals(Collections.singletonList(enumValue), obj.getEnumValueList());
     Assert.assertEquals(Collections.singletonList(methodMappedValue), obj.getMethodMappedValueList());
+    Assert.assertEquals(Collections.singletonList(durationValue), obj.getDurationValueList());
     Assert.assertEquals(list, obj.getObjectValueList());
     Assert.assertEquals(1, obj.getNoConverterDataObjectValueList().size());
     Assert.assertNull(obj.getNoConverter2DataObjectValueList());
@@ -301,6 +311,7 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singleton(jsonArrayValue), obj.getJsonArrayValueSet());
     Assert.assertEquals(Collections.singleton(enumValue), obj.getEnumValueSet());
     Assert.assertEquals(Collections.singleton(methodMappedValue), obj.getMethodMappedValueSet());
+    Assert.assertEquals(Collections.singleton(durationValue), obj.getDurationValueSet());
     Assert.assertEquals(new LinkedHashSet<>(list), obj.getObjectValueSet());
     Assert.assertEquals(1, obj.getNoConverterDataObjectValueSet().size());
     Assert.assertNull(obj.getNoConverter2DataObjectValueSet());
@@ -323,6 +334,7 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singletonList(jsonArrayValue), obj.getAddedJsonArrayValues());
     Assert.assertEquals(Collections.singletonList(enumValue), obj.getAddedEnumValues());
     Assert.assertEquals(Collections.singletonList(methodMappedValue), obj.getAddedMethodMappedValues());
+    Assert.assertEquals(Collections.singletonList(durationValue), obj.getAddedDurationValues());
     Assert.assertEquals(list, obj.getAddedObjectValues());
     Assert.assertEquals(1, obj.getAddedNoConverterDataObjectValues().size());
     Assert.assertEquals(0, obj.getAddedNoConverter2DataObjectValues().size());
@@ -345,6 +357,7 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singletonMap(key, jsonArrayValue), obj.getJsonArrayValueMap());
     Assert.assertEquals(Collections.singletonMap(key, enumValue), obj.getEnumValueMap());
     Assert.assertEquals(Collections.singletonMap(key, methodMappedValue), obj.getMethodMappedValueMap());
+    Assert.assertEquals(Collections.singletonMap(key, durationValue), obj.getDurationValueMap());
     Assert.assertEquals(map, obj.getObjectValueMap());
     Assert.assertEquals(1, obj.getNoConverterDataObjectValueMap().size());
     Assert.assertNull(obj.getNoConverter2DataObjectValueMap());
@@ -367,6 +380,7 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.singletonMap(key, jsonArrayValue), obj.getKeyedJsonArrayValues());
     Assert.assertEquals(Collections.singletonMap(key, enumValue), obj.getKeyedEnumValues());
     Assert.assertEquals(Collections.singletonMap(key, methodMappedValue), obj.getKeyedMethodMappedValues());
+    Assert.assertEquals(Collections.singletonMap(key, durationValue), obj.getKeyedDurationValues());
     Assert.assertEquals(map, obj.getObjectValueMap());
     Assert.assertEquals(1, obj.getNoConverterDataObjectValueMap().size());
     Assert.assertNull(obj.getNoConverter2DataObjectValueMap());
@@ -417,6 +431,7 @@ public class DataObjectTest {
     Assert.assertEquals(null, obj.getJsonObjectValue());
     Assert.assertEquals(null, obj.getJsonArrayValue());
     Assert.assertEquals(null, obj.getMethodMappedValue());
+    Assert.assertEquals(null, obj.getDurationValue());
     Assert.assertEquals(null, obj.getObjectValue());
     Assert.assertEquals(null, obj.getNoConverterDataObjectValue());
     Assert.assertEquals(null, obj.getNoConverter2DataObjectValue());
@@ -437,6 +452,7 @@ public class DataObjectTest {
     Assert.assertEquals(null, obj.getJsonArrayValueList());
     Assert.assertEquals(null, obj.getEnumValueList());
     Assert.assertEquals(null, obj.getMethodMappedValueList());
+    Assert.assertEquals(null, obj.getDurationValueList());
     Assert.assertEquals(null, obj.getObjectValueList());
     Assert.assertEquals(null, obj.getNoConverterDataObjectValueList());
     Assert.assertEquals(null, obj.getNoConverter2DataObjectValueList());
@@ -457,6 +473,7 @@ public class DataObjectTest {
     Assert.assertEquals(null, obj.getJsonArrayValueSet());
     Assert.assertEquals(null, obj.getEnumValueSet());
     Assert.assertEquals(null, obj.getMethodMappedValueSet());
+    Assert.assertEquals(null, obj.getDurationValueSet());
     Assert.assertEquals(null, obj.getObjectValueSet());
     Assert.assertEquals(null, obj.getNoConverterDataObjectValueSet());
     Assert.assertEquals(null, obj.getNoConverter2DataObjectValueSet());
@@ -477,6 +494,7 @@ public class DataObjectTest {
     Assert.assertEquals(Collections.emptyList(), obj.getAddedJsonArrayValues());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedEnumValues());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedMethodMappedValues());
+    Assert.assertEquals(Collections.emptyList(), obj.getAddedDurationValues());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedObjectValues());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedNoConverterDataObjectValues());
     Assert.assertEquals(Collections.emptyList(), obj.getAddedNoConverter2DataObjectValues());
@@ -497,6 +515,7 @@ public class DataObjectTest {
     Assert.assertEquals(null, obj.getJsonArrayValueMap());
     Assert.assertEquals(null, obj.getEnumValueMap());
     Assert.assertEquals(null, obj.getMethodMappedValueMap());
+    Assert.assertEquals(null, obj.getDurationValueMap());
     Assert.assertEquals(null, obj.getObjectValueMap());
     Assert.assertEquals(null, obj.getNoConverterDataObjectValueMap());
     Assert.assertEquals(null, obj.getNoConverter2DataObjectValueMap());
@@ -530,6 +549,7 @@ public class DataObjectTest {
     JsonArray jsonArrayValue = new JsonArray().add(TestUtils.randomAlphaString(20));
     TimeUnit enumValue = TimeUnit.values()[TestUtils.randomPositiveInt() % TimeUnit.values().length];
     ZonedDateTime methodMappedValue = ZonedDateTime.now();
+    Duration durationValue = Duration.ofSeconds(methodMappedValue.toEpochSecond());
     Object objectValue = stringValue;
     TestCustomEnum customEnumValue = TestCustomEnum.DEV;
     AutoMapped autoMappedValue = AutoMapped.of("vertx.io", 80);
@@ -570,6 +590,7 @@ public class DataObjectTest {
     obj.setJsonArrayValue(jsonArrayValue);
     obj.setEnumValue(enumValue);
     obj.setMethodMappedValue(methodMappedValue);
+    obj.setDurationValue(durationValue);
     obj.setObjectValue(objectValue);
     obj.setNoConverterDataObjectValue(new NoConverterDataObject());
     obj.setNoConverter2DataObjectValue(new NoConverter2DataObject());
@@ -592,6 +613,7 @@ public class DataObjectTest {
     obj.setJsonArrayValueList(Collections.singletonList(jsonArrayValue));
     obj.setEnumValueList(Collections.singletonList(enumValue));
     obj.setMethodMappedValueList(Collections.singletonList(methodMappedValue));
+    obj.setDurationValueList(Collections.singletonList(durationValue));
     obj.setObjectValueList(list);
     obj.setNoConverterDataObjectValueList(Collections.singletonList(new NoConverterDataObject()));
     obj.setNoConverter2DataObjectValueList(Collections.singletonList(new NoConverter2DataObject()));
@@ -615,6 +637,7 @@ public class DataObjectTest {
     obj.setJsonArrayValueSet(Collections.singleton(jsonArrayValue));
     obj.setEnumValueSet(Collections.singleton(enumValue));
     obj.setMethodMappedValueSet(Collections.singleton(methodMappedValue));
+    obj.setDurationValueSet(Collections.singleton(durationValue));
     obj.setObjectValueSet(new LinkedHashSet<>(list));
     obj.setNoConverterDataObjectValueSet(Collections.singleton(new NoConverterDataObject()));
     obj.setNoConverter2DataObjectValueSet(Collections.singleton(new NoConverter2DataObject()));
@@ -635,7 +658,7 @@ public class DataObjectTest {
     obj.setJsonObjectValueMap(Collections.singletonMap(key, jsonObjectValue));
     obj.setJsonArrayValueMap(Collections.singletonMap(key, jsonArrayValue));
     obj.setEnumValueMap(Collections.singletonMap(key, enumValue));
-    obj.setMethodMappedValueMap(Collections.singletonMap(key, methodMappedValue));
+    obj.setDurationValueMap(Collections.singletonMap(key, durationValue));
     obj.setObjectValueMap(map);
     obj.setNoConverterDataObjectValueMap(Collections.singletonMap(key, new NoConverterDataObject()));
     obj.setNoConverter2DataObjectValueMap(Collections.singletonMap(key, new NoConverter2DataObject()));
@@ -658,6 +681,7 @@ public class DataObjectTest {
     obj.addKeyedJsonArrayValue(key, jsonArrayValue);
     obj.addKeyedEnumValue(key, enumValue);
     obj.addKeyedMethodMappedValue(key, methodMappedValue);
+    obj.addKeyedDurationValue(key, durationValue);
     map.forEach(obj::addKeyedObjectValue);
     obj.addKeyedNoConverterDataObjectValue(key, new NoConverterDataObject());
     obj.addKeyedNoConverter2DataObjectValue(key, new NoConverter2DataObject());
@@ -692,6 +716,7 @@ public class DataObjectTest {
     assertEquals(jsonArrayValue, json.get("jsonArrayValue"));
     assertEquals(enumValue.name(), json.get("enumValue"));
     assertEquals(methodMappedValue.toString(), json.get("methodMappedValue"));
+    assertEquals(durationValue.toMillis(), json.get("durationValue"));
     assertEquals(objectValue, json.get("objectValue"));
     assertNull(json.get("noConverterDataObjectValue"));
     assertEquals(new JsonObject(), json.get("noConverter2DataObjectValue"));
@@ -716,6 +741,7 @@ public class DataObjectTest {
     assertEquals(new JsonArray().add(jsonArrayValue), json.get("jsonArrayValueList"));
     assertEquals(new JsonArray().add(enumValue.name()), json.get("enumValueList"));
     assertEquals(new JsonArray().add(methodMappedValue.toString()), json.get("methodMappedValueList"));
+    assertEquals(new JsonArray().add(durationValue.toMillis()), json.get("durationValueList"));
     assertEquals(new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)), json.get("objectValueList"));
     assertNull(json.get("noConverterDataObjectValueList"));
     assertEquals(new JsonArray().add(new JsonObject()), json.get("noConverter2DataObjectValueList"));
@@ -740,6 +766,7 @@ public class DataObjectTest {
     assertEquals(new JsonArray().add(jsonArrayValue), json.get("jsonArrayValueSet"));
     assertEquals(new JsonArray().add(enumValue.name()), json.get("enumValueSet"));
     assertEquals(new JsonArray().add(methodMappedValue.toString()), json.get("methodMappedValueSet"));
+    assertEquals(new JsonArray().add(durationValue.toMillis()), json.get("durationValueSet"));
     assertEquals(new JsonArray().add(list.get(0)).add(list.get(1)).add(list.get(2)), json.get("objectValueSet"));
     assertNull(json.get("noConverterDataObjectValueSet"));
     assertEquals(new JsonArray().add(new JsonObject()), json.get("noConverter2DataObjectValueSet"));
@@ -763,7 +790,7 @@ public class DataObjectTest {
     assertEquals(new JsonObject().put(key, jsonObjectValue), json.get("jsonObjectValueMap"));
     assertEquals(new JsonObject().put(key, jsonArrayValue), json.get("jsonArrayValueMap"));
     assertEquals(new JsonObject().put(key, enumValue.name()), json.get("enumValueMap"));
-    assertEquals(new JsonObject().put(key, methodMappedValue.toString()), json.get("methodMappedValueMap"));
+    assertEquals(new JsonObject().put(key, durationValue.toMillis()), json.get("durationValueMap"));
     assertEquals(toJson(map), json.get("objectValueMap"));
     assertNull(json.get("noConverterDataObjectValueMap"));
     assertEquals(new JsonObject().put(key, new JsonObject()), json.get("noConverter2DataObjectValueMap"));
@@ -787,7 +814,7 @@ public class DataObjectTest {
     assertEquals(new JsonObject().put(key, jsonObjectValue), json.get("keyedJsonObjectValues"));
     assertEquals(new JsonObject().put(key, jsonArrayValue), json.get("keyedJsonArrayValues"));
     assertEquals(new JsonObject().put(key, enumValue.name()), json.get("keyedEnumValues"));
-    assertEquals(new JsonObject().put(key, methodMappedValue.toString()), json.get("keyedMethodMappedValues"));
+    assertEquals(new JsonObject().put(key, durationValue.toMillis()), json.get("keyedDurationValues"));
     assertEquals(toJson(map), json.get("keyedObjectValues"));
     assertNull(json.get("keyedNoConverterDataObjectValues"));
     assertEquals(new JsonObject().put(key, new JsonObject()), json.get("keyedNoConverter2DataObjectValues"));

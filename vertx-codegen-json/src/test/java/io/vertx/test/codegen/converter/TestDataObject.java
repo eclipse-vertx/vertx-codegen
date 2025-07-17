@@ -18,6 +18,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -71,6 +72,7 @@ public class TestDataObject {
   private JsonArray jsonArrayValue;
   private TimeUnit enumValue;
   private ZonedDateTime methodMappedValue;
+  private Duration durationValue;
   private Object objectValue;
   private NoConverterDataObject noConverterDataObjectValue;
   private NoConverter2DataObject noConverter2DataObjectValue;
@@ -94,6 +96,7 @@ public class TestDataObject {
   private List<JsonArray> jsonArrayValueList;
   private List<TimeUnit> enumValueList;
   private List<ZonedDateTime> methodMappedValueList;
+  private List<Duration> durationValueList;
   private List<Object> objectValueList;
   private List<NoConverterDataObject> noConverterDataObjectValueList;
   private List<NoConverter2DataObject> noConverter2DataObjectValueList;
@@ -117,6 +120,7 @@ public class TestDataObject {
   private Set<JsonArray> jsonArrayValueSet;
   private Set<TimeUnit> enumValueSet;
   private Set<ZonedDateTime> methodMappedValueSet;
+  private Set<Duration> durationValueSet;
   private Set<Object> objectValueSet;
   private Set<NoConverterDataObject> noConverterDataObjectValueSet;
   private Set<NoConverter2DataObject> noConverter2DataObjectValueSet;
@@ -140,6 +144,7 @@ public class TestDataObject {
   private List<JsonArray> addedJsonArrayValues = new ArrayList<>();
   private List<TimeUnit> addedEnumValues = new ArrayList<>();
   private List<ZonedDateTime> addedMethodMappedValues = new ArrayList<>();
+  private List<Duration> addedDurationValues = new ArrayList<>();
   private List<Object> addedObjectValues = new ArrayList<>();
   private List<NoConverterDataObject> addedNoConverterDataObjectValues = new ArrayList<>();
   private List<NoConverter2DataObject> addedNoConverter2DataObjectValues = new ArrayList<>();
@@ -163,6 +168,7 @@ public class TestDataObject {
   private Map<String, JsonArray> jsonArrayValueMap;
   private Map<String, TimeUnit> enumValueMap;
   private Map<String, ZonedDateTime> methodMappedValueMap;
+  private Map<String, Duration> durationValueMap;
   private Map<String, Object> objectValueMap;
   private Map<String, NoConverterDataObject> noConverterDataObjectValueMap;
   private Map<String, NoConverter2DataObject> noConverter2DataObjectValueMap;
@@ -186,6 +192,7 @@ public class TestDataObject {
   private Map<String, JsonArray> keyedJsonArrayValues = new HashMap<>();
   private Map<String, TimeUnit> keyedEnumValues = new HashMap<>();
   private Map<String, ZonedDateTime> keyedMethodMappedValues = new HashMap<>();
+  private Map<String, Duration> keyedDurationValues = new HashMap<>();
   private Map<String, Object> keyedObjectValues = new HashMap<>();
   private Map<String, NoConverterDataObject> keyedNoConverterDataObjectValues = new HashMap<>();
   private Map<String, NoConverter2DataObject> keyedNoConverter2DataObjectValues = new HashMap<>();
@@ -418,6 +425,15 @@ public class TestDataObject {
     return this;
   }
 
+  public Duration getDurationValue() {
+    return durationValue;
+  }
+
+  public TestDataObject setDurationValue(Duration durationValue) {
+    this.durationValue = durationValue;
+    return this;
+  }
+
   public Object getObjectValue() {
     return objectValue;
   }
@@ -625,6 +641,15 @@ public class TestDataObject {
     return this;
   }
 
+  public List<Duration> getDurationValueList() {
+    return durationValueList;
+  }
+
+  public TestDataObject setDurationValueList(List<Duration> durationValueList) {
+    this.durationValueList = durationValueList;
+    return this;
+  }
+
   public List<Object> getObjectValueList() {
     return objectValueList;
   }
@@ -820,6 +845,15 @@ public class TestDataObject {
 
   public TestDataObject setMethodMappedValueSet(Set<ZonedDateTime> methodMappedValueSet) {
     this.methodMappedValueSet = methodMappedValueSet;
+    return this;
+  }
+
+  public Set<Duration> getDurationValueSet() {
+    return durationValueSet;
+  }
+
+  public TestDataObject setDurationValueSet(Set<Duration> durationValueSet) {
+    this.durationValueSet = durationValueSet;
     return this;
   }
 
@@ -1021,6 +1055,20 @@ public class TestDataObject {
     return this;
   }
 
+  public List<Duration> getAddedDurationValues() {
+    return addedDurationValues;
+  }
+
+  public TestDataObject setAddedDurationValues(List<Duration> addedDurationValues) {
+    this.addedDurationValues = addedDurationValues;
+    return this;
+  }
+
+  public TestDataObject addAddedDurationValue(Duration duration) {
+    this.addedDurationValues.add(duration);
+    return this;
+  }
+
   public List<Object> getAddedObjectValues() {
     return addedObjectValues;
   }
@@ -1219,6 +1267,15 @@ public class TestDataObject {
     return this;
   }
 
+  public Map<String, Duration> getDurationValueMap() {
+    return durationValueMap;
+  }
+
+  public TestDataObject setDurationValueMap(Map<String, Duration> durationValueMap) {
+    this.durationValueMap = durationValueMap;
+    return this;
+  }
+
   public Map<String, Object> getObjectValueMap() {
     return objectValueMap;
   }
@@ -1414,6 +1471,20 @@ public class TestDataObject {
 
   public TestDataObject addKeyedMethodMappedValue(String key, ZonedDateTime value) {
     this.keyedMethodMappedValues.put(key, value);
+    return this;
+  }
+
+  public Map<String, Duration> getKeyedDurationValues() {
+    return keyedDurationValues;
+  }
+
+  public TestDataObject setKeyedDurationValues(Map<String, Duration> keyedDurationValues) {
+    this.keyedDurationValues = keyedDurationValues;
+    return this;
+  }
+
+  public TestDataObject addKeyedDurationValue(String key, Duration value) {
+    this.keyedDurationValues.put(key, value);
     return this;
   }
 
