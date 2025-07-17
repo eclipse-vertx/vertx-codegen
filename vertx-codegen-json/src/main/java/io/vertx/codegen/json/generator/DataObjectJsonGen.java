@@ -1,7 +1,6 @@
 package io.vertx.codegen.json.generator;
 
 import io.vertx.codegen.processor.DataObjectModel;
-import io.vertx.codegen.processor.GenException;
 import io.vertx.codegen.processor.Generator;
 import io.vertx.codegen.processor.PropertyInfo;
 import io.vertx.codegen.annotations.DataObject;
@@ -23,6 +22,7 @@ import io.vertx.codegen.processor.writer.CodeWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.annotation.Annotation;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
@@ -94,8 +94,6 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
     writer.print("\n");
     writer.print("import io.vertx.core.json.JsonObject;\n");
     writer.print("import io.vertx.core.json.JsonArray;\n");
-    writer.print("import java.time.Instant;\n");
-    writer.print("import java.time.format.DateTimeFormatter;\n");
     writer.print("\n");
     writer.print("/**\n");
     writer.print(" * Converter and mapper for {@link " + model.getType() + "}.\n");
@@ -122,58 +120,64 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
     writer.print("\n");
     writer.print("  " + visibility + " static void toJson(" + simpleName + " obj, java.util.Map<String, Object> json) {\n");
     model_.getPropertyMap().values().forEach(prop -> {
-      if ((prop.isDeclared() || inheritConverter) && prop.getGetterMethod() != null && prop.isJsonifiable()) {
-        ClassKind propKind = prop.getType().getKind();
-        if (propKind.basic) {
-          if (propKind == ClassKind.STRING) {
-            genPropToJson("", "", prop, writer);
+      if ((prop.isDeclared() || inheritConverter) && prop.getGetterMethod() != null) {
+        if (prop.isJsonifiable()) {
+          ClassKind propKind = prop.getType().getKind();
+          if (propKind.basic) {
+            if (propKind == ClassKind.STRING) {
+              genPropToJson("", "", prop, writer);
+            } else {
+              switch (prop.getType().getSimpleName()) {
+                case "char":
+                case "Character":
+                  genPropToJson("Character.toString(", ")", prop, writer);
+                  break;
+                default:
+                  genPropToJson("", "", prop, writer);
+              }
+            }
           } else {
-            switch (prop.getType().getSimpleName()) {
-              case "char":
-              case "Character":
-                genPropToJson("Character.toString(", ")", prop, writer);
-                break;
-              default:
-                genPropToJson("", "", prop, writer);
+            DataObjectInfo dataObject = prop.getType().getDataObject();
+            if (dataObject != null) {
+              if (dataObject.isSerializable()) {
+                String m;
+                MapperInfo mapperInfo = dataObject.getSerializer();
+                String match;
+                switch (mapperInfo.getKind()) {
+                  case SELF:
+                    m = "";
+                    match = "." + String.join(".", mapperInfo.getSelectors()) + "()";
+                    break;
+                  case STATIC_METHOD:
+                    m = mapperInfo.getQualifiedName() + "." + String.join(".", mapperInfo.getSelectors()) + "(";
+                    match = ")";
+                    break;
+                  default:
+                    throw new UnsupportedOperationException();
+                }
+                genPropToJson(m, match, prop, writer);
+              }
+            } else {
+              switch (propKind) {
+                case ENUM:
+                  genPropToJson("", ".name()", prop, writer);
+                  break;
+                case JSON_OBJECT:
+                case JSON_ARRAY:
+                case OBJECT:
+                  genPropToJson("", "", prop, writer);
+                  break;
+                case OTHER:
+                  if (prop.getType().getName().equals(Instant.class.getName())) {
+                    genPropToJson("java.time.format.DateTimeFormatter.ISO_INSTANT.format(", ")", prop, writer);
+                  }
+                  break;
+              }
             }
           }
         } else {
-          DataObjectInfo dataObject = prop.getType().getDataObject();
-          if (dataObject != null) {
-            if (dataObject.isSerializable()) {
-              String m;
-              MapperInfo mapperInfo = dataObject.getSerializer();
-              String match;
-              switch (mapperInfo.getKind()) {
-                case SELF:
-                  m = "";
-                  match = "." + String.join(".", mapperInfo.getSelectors()) + "()";
-                  break;
-                case STATIC_METHOD:
-                  m = mapperInfo.getQualifiedName() + "." + String.join(".", mapperInfo.getSelectors()) + "(";
-                  match = ")";
-                  break;
-                default:
-                  throw new UnsupportedOperationException();
-              }
-              genPropToJson(m, match, prop, writer);
-            }
-          } else {
-            switch (propKind) {
-              case ENUM:
-                genPropToJson("", ".name()", prop, writer);
-                break;
-              case JSON_OBJECT:
-              case JSON_ARRAY:
-              case OBJECT:
-                genPropToJson("", "", prop, writer);
-                break;
-              case OTHER:
-                if (prop.getType().getName().equals(Instant.class.getName())) {
-                  genPropToJson("DateTimeFormatter.ISO_INSTANT.format(", ")", prop, writer);
-                }
-                break;
-            }
+          if (prop.getType().getName().equals(Duration.class.getName())) {
+            genPropToJson("", ".toMillis()", prop, writer);
           }
         }
       }
@@ -302,7 +306,9 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
                 break;
               case OTHER:
                 if (prop.getType().getName().equals(Instant.class.getName())) {
-                  genPropFromJson("String", "Instant.from(DateTimeFormatter.ISO_INSTANT.parse((String)", "))", prop, writer);
+                  genPropFromJson("String", "java.time.Instant.from(java.time.format.DateTimeFormatter.ISO_INSTANT.parse((String)", "))", prop, writer);
+                } else if (prop.getType().getName().equals(Duration.class.getName())) {
+                  genPropFromJson("Number", "java.time.Duration.of(((Number)", ").longValue(), java.time.temporal.ChronoUnit.MILLIS)", prop, writer);
                 }
                 break;
               default:
