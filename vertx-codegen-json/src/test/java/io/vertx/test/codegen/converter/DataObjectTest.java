@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -72,6 +73,7 @@ public class DataObjectTest {
     TestCustomEnum customEnumValue = TestCustomEnum.DEV;
     AutoMapped autoMappedValue = AutoMapped.of("vertx.io", 80);
     AutoMappedWithVertxGen autoMappedWithVertxGenValue = AutoMappedWithVertxGen.of("vertx.io", 80);
+    UUID uuidValue = UUID.randomUUID();
 
     Map<String, Object> map = new HashMap<>();
     map.put(TestUtils.randomAlphaString(10), TestUtils.randomAlphaString(20));
@@ -114,6 +116,7 @@ public class DataObjectTest {
     json.put("customEnumValue", customEnumValue.getShortName());
     json.put("autoMappedValue", autoMappedValue.toJson());
     json.put("autoMappedWithVertxGenValue", autoMappedWithVertxGenValue.toJson());
+    json.put("uuidValue", uuidValue.toString());
     json.put("stringValueList", new JsonArray().add(stringValue));
     json.put("boxedBooleanValueList", new JsonArray().add(boxedBooleanValue));
     json.put("boxedByteValueList", new JsonArray().add(boxedByteValue));
@@ -266,6 +269,7 @@ public class DataObjectTest {
     Assert.assertEquals(enumValue, obj.getEnumValue());
     Assert.assertEquals(methodMappedValue, obj.getMethodMappedValue());
     Assert.assertEquals(durationValue, obj.getDurationValue());
+    Assert.assertEquals(uuidValue, obj.getUuidValue());
     Assert.assertEquals(objectValue, obj.getObjectValue());
     Assert.assertNotNull(obj.getNoConverterDataObjectValue());
     Assert.assertNull(obj.getNoConverter2DataObjectValue());
@@ -554,6 +558,7 @@ public class DataObjectTest {
     TestCustomEnum customEnumValue = TestCustomEnum.DEV;
     AutoMapped autoMappedValue = AutoMapped.of("vertx.io", 80);
     AutoMappedWithVertxGen autoMappedWithVertxGenValue = AutoMappedWithVertxGen.of("vertx.io", 80);
+    UUID uuidValue = UUID.randomUUID();
 
     Map<String, Object> map = new HashMap<>();
     map.put(TestUtils.randomAlphaString(10), TestUtils.randomAlphaString(20));
@@ -597,6 +602,7 @@ public class DataObjectTest {
     obj.setCustomEnumValue(customEnumValue);
     obj.setAutoMappedValue(autoMappedValue);
     obj.setAutoMappedWithVertxGenValue(autoMappedWithVertxGenValue);
+    obj.setUuidValue(uuidValue);
     obj.setStringValueList(Collections.singletonList(stringValue));
     obj.setBoxedBooleanValueList(Collections.singletonList(boxedBooleanValue));
     obj.setBoxedByteValueList(Collections.singletonList(boxedByteValue));
@@ -717,6 +723,7 @@ public class DataObjectTest {
     assertEquals(enumValue.name(), json.get("enumValue"));
     assertEquals(methodMappedValue.toString(), json.get("methodMappedValue"));
     assertEquals(durationValue.toMillis(), json.get("durationValue"));
+    assertEquals(uuidValue.toString(), json.get("uuidValue"));
     assertEquals(objectValue, json.get("objectValue"));
     assertNull(json.get("noConverterDataObjectValue"));
     assertEquals(new JsonObject(), json.get("noConverter2DataObjectValue"));

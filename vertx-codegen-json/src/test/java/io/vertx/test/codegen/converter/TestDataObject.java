@@ -79,6 +79,7 @@ public class TestDataObject {
   private TestCustomEnum customEnumValue;
   private AutoMapped autoMappedValue;
   private AutoMappedWithVertxGen autoMappedWithVertxGenValue;
+  private UUID uuidValue;
 
   private List<String> stringValueList;
   private List<Boolean> boxedBooleanValueList;
@@ -494,6 +495,15 @@ public class TestDataObject {
 
   public TestDataObject setAutoMappedWithVertxGenValue(AutoMappedWithVertxGen autoMappedWithVertxGenValue) {
     this.autoMappedWithVertxGenValue = autoMappedWithVertxGenValue;
+    return this;
+  }
+
+  public UUID getUuidValue() {
+    return uuidValue;
+  }
+
+  public TestDataObject setUuidValue(UUID uuidValue) {
+    this.uuidValue = uuidValue;
     return this;
   }
 
