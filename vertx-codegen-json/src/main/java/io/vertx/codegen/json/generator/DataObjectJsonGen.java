@@ -27,6 +27,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -178,6 +179,8 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
         } else {
           if (prop.getType().getName().equals(Duration.class.getName())) {
             genPropToJson("", ".toMillis()", prop, writer);
+          } else if (prop.getType().getName().equals(UUID.class.getName())) {
+            genPropToJson("", ".toString()", prop, writer);
           }
         }
       }
@@ -309,6 +312,8 @@ public class DataObjectJsonGen extends Generator<DataObjectModel> {
                   genPropFromJson("String", "java.time.Instant.from(java.time.format.DateTimeFormatter.ISO_INSTANT.parse((String)", "))", prop, writer);
                 } else if (prop.getType().getName().equals(Duration.class.getName())) {
                   genPropFromJson("Number", "java.time.Duration.of(((Number)", ").longValue(), java.time.temporal.ChronoUnit.MILLIS)", prop, writer);
+                } else if (prop.getType().getName().equals(UUID.class.getName())) {
+                  genPropFromJson("String", "java.util.UUID.fromString((String)", ")", prop, writer);
                 }
                 break;
               default:
