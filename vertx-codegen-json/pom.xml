@@ -9,8 +9,8 @@
 
   <modelVersion>4.0.0</modelVersion>
 
+  <name>vertx-codegen-json</name>
   <artifactId>vertx-codegen-json</artifactId>
-  <version>5.1.0-SNAPSHOT</version>
 
   <properties>
     <doc.skip>false</doc.skip>

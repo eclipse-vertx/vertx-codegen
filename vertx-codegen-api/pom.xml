@@ -9,8 +9,8 @@
 
   <modelVersion>4.0.0</modelVersion>
 
+  <name>vertx-codegen-api</name>
   <artifactId>vertx-codegen-api</artifactId>
-  <version>5.1.0-SNAPSHOT</version>
 
   <dependencies>
     <dependency>
