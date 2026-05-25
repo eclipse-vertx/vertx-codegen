@@ -3,7 +3,6 @@ package io.vertx.test.codegen.testapi.nullable;
 import io.vertx.codegen.annotations.Nullable;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 
 import java.util.function.Function;
 

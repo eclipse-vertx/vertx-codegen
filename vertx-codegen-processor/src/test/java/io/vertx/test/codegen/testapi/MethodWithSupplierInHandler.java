@@ -3,7 +3,6 @@ package io.vertx.test.codegen.testapi;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**

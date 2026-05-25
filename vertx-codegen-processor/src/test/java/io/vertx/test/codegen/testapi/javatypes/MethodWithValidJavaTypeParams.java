@@ -18,7 +18,6 @@ package io.vertx.test.codegen.testapi.javatypes;
 
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
 import java.net.Socket;

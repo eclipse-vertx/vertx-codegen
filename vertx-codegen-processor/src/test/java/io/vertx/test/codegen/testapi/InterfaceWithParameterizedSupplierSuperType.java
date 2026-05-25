@@ -18,7 +18,6 @@ package io.vertx.test.codegen.testapi;
 
 import io.vertx.codegen.annotations.VertxGen;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**

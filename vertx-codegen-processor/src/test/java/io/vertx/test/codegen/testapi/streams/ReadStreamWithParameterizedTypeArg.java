@@ -4,7 +4,6 @@ import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.test.codegen.testapi.GenericInterface;
 
-import java.util.List;
 
 /*
  * Mimics MessageConsumer<T> extends ReadStream<Message<T>>.

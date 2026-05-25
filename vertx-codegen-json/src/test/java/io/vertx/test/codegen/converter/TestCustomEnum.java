@@ -1,9 +1,9 @@
 package io.vertx.test.codegen.converter;
 
 public enum TestCustomEnum {
-  
-  DEV("dev", "development"), 
-  
+
+  DEV("dev", "development"),
+
   ITEST("itest", "integration-test");
 
   public static TestCustomEnum of(String pName) {

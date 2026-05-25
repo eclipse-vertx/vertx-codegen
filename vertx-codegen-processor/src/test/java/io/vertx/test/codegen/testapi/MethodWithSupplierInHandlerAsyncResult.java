@@ -4,7 +4,6 @@ import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**

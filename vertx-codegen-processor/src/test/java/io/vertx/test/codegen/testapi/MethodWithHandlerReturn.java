@@ -1,8 +1,6 @@
 package io.vertx.test.codegen.testapi;
 
-import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
 /**

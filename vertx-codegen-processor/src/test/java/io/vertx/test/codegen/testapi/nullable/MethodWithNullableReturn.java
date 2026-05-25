@@ -1,6 +1,5 @@
 package io.vertx.test.codegen.testapi.nullable;
 
-import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.Nullable;
 import io.vertx.codegen.annotations.VertxGen;
 

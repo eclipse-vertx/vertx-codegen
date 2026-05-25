@@ -5,7 +5,6 @@ import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
 import io.vertx.test.codegen.testapi.VertxGenClass1;
 
-import java.util.List;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>

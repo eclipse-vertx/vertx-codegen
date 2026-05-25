@@ -5,10 +5,10 @@ import io.vertx.codegen.annotations.VertxGen;
 /**MyEnumWithCustomFactory doc*/
 @VertxGen
 public enum MyEnumWithCustomFactory {
-  
+
   /**DEV doc*/
-  DEV("dev", "development"), 
-  
+  DEV("dev", "development"),
+
   /**ITEST doc*/
   ITEST("itest", "integration-test");
 

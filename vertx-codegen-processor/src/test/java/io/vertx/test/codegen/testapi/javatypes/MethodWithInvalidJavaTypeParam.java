@@ -17,14 +17,8 @@
 package io.vertx.test.codegen.testapi.javatypes;
 
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
 
 import java.net.Socket;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>

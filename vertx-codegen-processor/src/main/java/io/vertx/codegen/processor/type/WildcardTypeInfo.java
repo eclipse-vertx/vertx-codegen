@@ -1,6 +1,5 @@
 package io.vertx.codegen.processor.type;
 
-import javax.lang.model.type.WildcardType;
 import java.util.Objects;
 
 public class WildcardTypeInfo extends TypeInfo {

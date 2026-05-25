@@ -1,6 +1,5 @@
 package io.vertx.codegen.processor.type;
 
-import io.vertx.codegen.processor.Helper;
 import io.vertx.codegen.annotations.Nullable;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -13,7 +12,6 @@ import javax.lang.model.type.TypeMirror;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
