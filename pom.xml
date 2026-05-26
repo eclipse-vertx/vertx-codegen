@@ -25,7 +25,7 @@
 
   <name>vertx-codegen-parent</name>
   <artifactId>vertx-codegen-parent</artifactId>
-  <version>5.1.0-SNAPSHOT</version>
+  <version>5.1.0</version>
   <packaging>pom</packaging>
 
 
