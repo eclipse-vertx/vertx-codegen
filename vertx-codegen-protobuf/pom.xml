@@ -15,7 +15,7 @@
   <properties>
     <doc.skip>false</doc.skip>
     <asciidoc.dir>${project.basedir}/src/main/asciidoc</asciidoc.dir>
-    <grpc.version>1.50.2</grpc.version>
+    <grpc.version>1.53.0</grpc.version>
     <protoc.version>3.21.12</protoc.version>
     <vertx.javadoc.legacyMode>true</vertx.javadoc.legacyMode>
   </properties>
