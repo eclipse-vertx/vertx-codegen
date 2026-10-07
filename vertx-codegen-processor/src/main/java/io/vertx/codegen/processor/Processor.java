@@ -281,6 +281,7 @@ public class Processor extends AbstractProcessor {
         generatedClasses.values().forEach(generated -> {
           try {
             String content = generated.generate();
+            content = convertToLocalLineSeparator(content);
             if (content.length() > 0) {
               JavaFileObject target = processingEnv.getFiler().createSourceFile(generated.uri);
               try (Writer writer = target.openWriter()) {
@@ -301,6 +302,7 @@ public class Processor extends AbstractProcessor {
       for (GeneratedFile generated : generatedResources.values()) {
         try {
           String content = generated.generate();
+          content = convertToLocalLineSeparator(content);
           if (generated.uri.startsWith("/")) {
             File f = new File(generated.uri);
             f.getParentFile().mkdirs();
@@ -337,6 +339,20 @@ public class Processor extends AbstractProcessor {
       }
     }
     return true;
+  }
+
+  /**
+   * Convert the line endings to the local OS' line endings.
+   * <p>
+   * This will allow on Windows systems for Git to check in and check out the contents by default with OS specific CRLF,
+   * and also any re-generation of sources will use CRLF in those line endings.
+   */
+  private static String convertToLocalLineSeparator(String content) {
+    String lineSeparator = System.lineSeparator();
+    if (!lineSeparator.equals("\n")) {
+      content = content.replaceAll("\n", lineSeparator);
+    }
+    return content;
   }
 
   private void reportGenException(GenException e) {
